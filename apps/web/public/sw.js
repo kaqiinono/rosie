@@ -55,6 +55,7 @@ registerRoute(
 // the stale cache.
 registerRoute(
   ({ url, request }) =>
+    !url.pathname.startsWith('/api/baidu/audio/') &&
     !url.pathname.includes('/storage/v1/object/sign/task-audio/') &&
     !url.pathname.includes('/storage/v1/object/sign/chinese-reading-recordings/') &&
     (request.destination === 'audio' ||

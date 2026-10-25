@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
+import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
 import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { SEA_POOL, SEA_LESSONS, SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { gradeOf, GRADE_LABEL, gradesInOrder } from '@rosie/math-kit/utils/lesson-grade'
@@ -250,7 +251,7 @@ function SeaGrid({
                   className="mb-1 text-[13px] font-semibold leading-tight"
                   style={{ color: count >= 3 ? '#ffd166' : count >= 1 ? '#c8e6f5' : 'rgba(180,210,235,0.75)' }}
                 >
-                  {problem.title}
+                  {problemDisplayId(problem)} · {problem.title}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   <span className={`rounded-full px-1.5 py-px text-[9px] font-semibold ${tagStyle}`}>

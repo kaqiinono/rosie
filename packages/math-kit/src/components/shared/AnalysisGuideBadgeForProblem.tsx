@@ -8,10 +8,11 @@ type Props = {
   problem: Problem
   size?: 'sm' | 'md'
   className?: string
+  variant?: 'default' | 'toolbar'
 }
 
 /** Resolves static + cloud analysis image, then shows badge when available. */
-export default function AnalysisGuideBadgeForProblem({ problem, size, className }: Props) {
+export default function AnalysisGuideBadgeForProblem({ problem, size, className, variant }: Props) {
   const url = useProblemImageUrl(problem, 'analysis')
-  return <AnalysisGuideBadge hasImage={url !== null} size={size} className={className} />
+  return <AnalysisGuideBadge hasImage={url !== null} size={size} className={className} variant={variant} />
 }

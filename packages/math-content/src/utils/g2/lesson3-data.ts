@@ -30,7 +30,7 @@ const LESSON: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '2-3-L2',
+    id: '2-3-L2', displayId: 'L1-1',
     title: '练一练 · 西瓜菠萝柚子',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -65,7 +65,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '2-3-L4',
+    id: '2-3-L4', displayId: 'L2-1',
     title: '练一练 · 西瓜与榴莲',
     tag: 'type1',
     tagLabel: '等量代换',
@@ -99,7 +99,7 @@ const LESSON: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '2-3-L6',
+    id: '2-3-L6', displayId: 'L4',
     title: '例4 · 师徒组装零件',
     tag: 'type1',
     tagLabel: '等量代换',

@@ -165,7 +165,7 @@ function pendingReinforcementOutcomes(results: SessionOutcome[]): SessionOutcome
   const latest = new Map<string, SessionOutcome>()
   for (const result of results) latest.set(result.wordKey, result)
   return [...latest.values()].filter(
-    (result) => !result.correct || result.usedRetry === true || result.usedHelp === true,
+    (result) => !result.correct || result.usedRetry === true || result.usedHelp === true || (result.usedHelpCount ?? 0) > 0,
   )
 }
 
@@ -447,10 +447,24 @@ export default function AdaptivePlanSession({
     setReviewCursor(snap.reviewCursor)
     setReviewDoneKeys(new Set(snap.reviewDoneKeys))
     setStudyIdx(snap.studyIdx)
-    setQuizSlots(snap.quizSlots)
-    setCurQ(Math.min(snap.curQ, Math.max(0, snap.quizSlots.length - 1)))
+    const pendingKeys = new Set<string>()
+    const restoredSlots = snap.quizSlots.filter((slot, index) => {
+      if (index < snap.curQ || !slot.reinforcement) return true
+      if (pendingKeys.has(slot.key)) return false
+      pendingKeys.add(slot.key)
+      return true
+    })
+    setQuizSlots(restoredSlots)
+    setCurQ(Math.min(snap.curQ, Math.max(0, restoredSlots.length - 1)))
     setScore(snap.score)
-    setHelpClicks({})
+    const outcomes = snap.phase === 'review' ? snap.reviewOutcomes
+      : snap.phase === 'boss' ? snap.bossFirstPassOutcomes
+      : snap.phase === 'boss_sink' ? snap.bossSinkOutcomes : snap.finalOutcomes
+    const legacyHelp = Object.fromEntries((snap.curQ > 0 ? outcomes.slice(-snap.curQ) : [])
+      .filter((outcome) => outcome.usedHelp || (outcome.usedHelpCount ?? 0) > 0)
+      .map((outcome) => [outcome.wordKey, 1]))
+    setHelpClicks(Object.fromEntries(Object.entries(snap.helpClicks ?? legacyHelp)
+      .filter(([, count]) => count > 0).map(([key]) => [key, 1])))
     setActivationApplied(snap.activationApplied)
     setNewStudyDone(snap.newStudyDone)
     setRestoredActivateKeys(snap.roundActivateKeys)
@@ -489,6 +503,7 @@ export default function AdaptivePlanSession({
       startedAt: logStartedAtRef.current ?? undefined,
       phase: phase as AdaptiveSnapshotPhase,
       quizSlots,
+      helpClicks,
       curQ,
       score,
       reviewCursor,
@@ -511,6 +526,7 @@ export default function AdaptivePlanSession({
   }, [
     activateKeys,
     activationApplied,
+    helpClicks,
     curQ,
     newStudyDone,
     phase,
@@ -887,7 +903,13 @@ export default function AdaptivePlanSession({
   const startFinalQuiz = useCallback(
     (keys: string[], slots?: QuizSlot[]) => {
       finalPassWrongKeysRef.current = new Set()
-      setQuizSlots(slots ?? buildSlots(keys))
+      const assisted = new Set(pendingReinforcementOutcomes(reviewOutcomesRef.current)
+        .filter((outcome) => outcome.usedHelp || (outcome.usedHelpCount ?? 0) > 0)
+        .map((outcome) => outcome.wordKey))
+      setQuizSlots(slots ?? [
+        ...buildSlots(keys.filter((key) => !assisted.has(key))),
+        ...uniqueKeys(keys).filter((key) => assisted.has(key)).map((key): QuizSlot => ({ key, type: 'C', reinforcement: true })),
+      ])
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
@@ -922,17 +944,16 @@ export default function AdaptivePlanSession({
       pendingReinforcementOutcomes(outcomes).flatMap((outcome) => {
         const entry = findWordByKey(vocab, outcome.wordKey)
         if (!entry) return []
-        const type = outcome.usedHelp === true ? 'C' : (outcome.quizType ?? 'A')
-        const repetitions = Math.max(1, outcome.usedHelpCount ?? 0)
-        return Array.from({ length: repetitions }, () => ({
+        const type = outcome.usedHelp === true || (outcome.usedHelpCount ?? 0) > 0 ? 'C' : (outcome.quizType ?? 'A')
+        return [{
           key: outcome.wordKey,
           type,
           reinforcement: true,
           // A fully missed spelling word gets the same gentle half-letter
           // bridge used by the standalone/weekly rescue flow.
           revealedHalf:
-            !outcome.correct && type === 'C' ? Math.ceil(entry.word.length / 2) : undefined,
-        }))
+            !outcome.usedHelp && !(outcome.usedHelpCount ?? 0) && !outcome.correct && type === 'C' ? Math.ceil(entry.word.length / 2) : undefined,
+        }]
       }),
     [vocab],
   )
@@ -1666,7 +1687,7 @@ export default function AdaptivePlanSession({
   const handleHelpReveal = useCallback(() => {
     if (!currentQuestion) return
     const key = wordKey(currentQuestion.word)
-    setHelpClicks((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + 1 }))
+    setHelpClicks((prev) => ({ ...prev, [key]: 1 }))
   }, [currentQuestion])
 
   const runner = useQuizRunner({
@@ -2101,8 +2122,8 @@ export default function AdaptivePlanSession({
           total={quizSlots.length}
           runner={runner}
           questionKey={`${phase}-${curQ}-${currentQuestion.word.word}`}
-          helpRevealed={helpClicks[wordKey(currentQuestion.word)] ?? 0}
           onHelpReveal={handleHelpReveal}
+          onMagicReveal={handleHelpReveal}
         />
       </div>
     )

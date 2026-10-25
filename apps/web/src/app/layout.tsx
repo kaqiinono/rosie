@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { ServiceWorkerRegistrar } from '@rosie/ui'
 import AiFloatingAssistantHost from '@/components/AiFloatingAssistantHost'
+import BaiduAudioSessionCleanup from '@/components/BaiduAudioSessionCleanup'
 import { AuthProvider } from '@rosie/core'
 import { ImmersiveProvider } from '@rosie/core'
 import { TopRightBar } from '@rosie/ui'
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body className="min-h-screen font-sans text-text-primary antialiased">
         <AuthProvider>
+          <BaiduAudioSessionCleanup />
           <ImmersiveProvider>
             <ServiceWorkerRegistrar />
             <AuthGuard>

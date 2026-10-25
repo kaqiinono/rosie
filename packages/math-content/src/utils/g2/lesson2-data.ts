@@ -96,7 +96,7 @@ const LESSON: Problem[] = [
     finalAns: 190,
   },
   {
-    id: '2-2-L6',
+    id: '2-2-L6', displayId: 'L5-1',
     title: '练一练 · 糖果分组',
     tag: 'type3',
     tagLabel: '分组统计',
@@ -113,7 +113,7 @@ const LESSON: Problem[] = [
     finalAns: 164,
   },
   {
-    id: '2-2-L7',
+    id: '2-2-L7', displayId: 'L6',
     title: '例6 · 排队距离',
     tag: 'type4',
     tagLabel: '位置推理',
@@ -129,7 +129,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '2-2-L8',
+    id: '2-2-L8', displayId: 'L7',
     title: '例7 · 扑克牌点数',
     tag: 'type5',
     tagLabel: '逻辑综合',
@@ -145,7 +145,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-2-L9',
+    id: '2-2-L9', displayId: 'L8',
     title: '例8 · 帽子与气球',
     tag: 'type5',
     tagLabel: '逻辑综合',
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '2-2-L10',
+    id: '2-2-L10', displayId: 'L9',
     title: '例9 · 合作加工时间',
     tag: 'type5',
     tagLabel: '逻辑综合',

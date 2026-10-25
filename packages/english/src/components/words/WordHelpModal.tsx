@@ -220,7 +220,7 @@ export default function WordHelpModal({
           {/* Soft warning about reinforcement — friendly, not scary */}
           <div className="font-nunito mt-3 flex items-center justify-center gap-1.5 text-[11px] font-bold text-rose-500/85">
             <span>🌱</span>
-            <span>每点一次帮助，练习结束后会多巩固这个词一次</span>
+            <span>使用帮助或魔法棒，本轮结束后会再练这个词一次</span>
           </div>
         </div>
       </div>

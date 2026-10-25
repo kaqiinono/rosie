@@ -100,7 +100,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '1-43-L2',
+    id: '1-43-L2', displayId: 'L1-1',
     title: '练一练 · 递减数列第10项',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -115,7 +115,7 @@ const LESSON: Problem[] = [
     finalAns: 29,
   },
   {
-    id: '1-43-L3',
+    id: '1-43-L3', displayId: 'L2',
     title: '例2 · 大于100的奇数第31个',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -131,7 +131,7 @@ const LESSON: Problem[] = [
     finalAns: 161,
   },
   {
-    id: '1-43-L4',
+    id: '1-43-L4', displayId: 'L2-1',
     title: '练一练 · 从0开始的偶数第102个',
     tag: 'type1',
     tagLabel: '求第几项', difficulty: 2,
@@ -146,7 +146,7 @@ const LESSON: Problem[] = [
     finalAns: 202,
   },
   {
-    id: '1-43-L5',
+    id: '1-43-L5', displayId: 'L3',
     title: '例3 · 已知两项求公差',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 2,
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-43-L6',
+    id: '1-43-L6', displayId: 'L3-1',
     title: '练一练 · 已知首项和第7项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 2,
@@ -176,7 +176,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '1-43-L7',
+    id: '1-43-L7', displayId: 'L4',
     title: '例4 · 求首项与第15项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -192,7 +192,7 @@ const LESSON: Problem[] = [
     finalAns: 46,
   },
   {
-    id: '1-43-L8',
+    id: '1-43-L8', displayId: 'L4-1',
     title: '练一练 · 求首项与第29项',
     tag: 'type3',
     tagLabel: '求公差/首末项', difficulty: 3,
@@ -208,7 +208,7 @@ const LESSON: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '1-43-L9',
+    id: '1-43-L9', displayId: 'L5',
     title: '例5 · 弹珠递减求公差',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -224,7 +224,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '1-43-L10',
+    id: '1-43-L10', displayId: 'L5-1',
     title: '练一练 · 卖包子递增',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -240,7 +240,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-43-L11',
+    id: '1-43-L11', displayId: 'L6',
     title: '例6 · 报数求人数',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,
@@ -255,7 +255,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '1-43-L12',
+    id: '1-43-L12', displayId: 'L6-1',
     title: '练一练 · 读书天数',
     tag: 'type4',
     tagLabel: '数列应用', difficulty: 3,

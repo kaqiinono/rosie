@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { TaskInstance, CourseOccurrence, Subject } from '../types'
 import { SUBJECTS } from '../types'
 import { localDate, displayTime, atTime } from '../time'
 import CourseConfirm from './CourseConfirm'
 import TaskAudio from './TaskAudio'
+import TodayCourseSummary from './TodayCourseSummary'
 import { useTasks, Panel, Field, inputClass, buttonClass, minorClass, SubjectSelect, lines, text, safeHref } from './shared'
 
 function TaskCard({ task, audio, onAudio }: { task: TaskInstance; audio: boolean; onAudio: () => void }) {
@@ -39,12 +40,24 @@ export default function TaskList() {
   const [todayOnly, setTodayOnly] = useState(false)
   const [audioId, setAudioId] = useState('')
   const [confirm, setConfirm] = useState<CourseOccurrence | null>(null)
-  const tasks = api.data.tasks.filter(t => (!subject || t.subject === subject) && (history ? true : ['pending', 'active'].includes(t.status)) && (!todayOnly || !t.due_at || localDate(new Date(t.due_at)) <= localDate() || localDate(new Date(t.created_at)) === localDate() || api.data.blocks.some(b => b.task_id === t.id && localDate(new Date(b.starts_at)) === localDate()))).sort((a, b) => (a.due_at ?? '9999').localeCompare(b.due_at ?? '9999'))
-  const reminders = api.data.reminders.filter(r => !r.read_at && r.status !== 'cancelled' && +new Date(r.remind_at) <= Date.now() && (!r.task_id || api.data.tasks.some(t => t.id === r.task_id && ['pending', 'active'].includes(t.status))) && (r.task_id || !r.occurrence_id || api.data.occurrences.some(o => o.id === r.occurrence_id && o.status === 'scheduled')))
+  const [courseFilter, setCourseFilter] = useState(''), [taskFilter, setTaskFilter] = useState('')
+  useEffect(() => { const params = new URLSearchParams(window.location.search); setCourseFilter(params.get('course') ?? ''); setTaskFilter(params.get('task') ?? ''); if (params.has('task')) setHistory(true) }, [])
+  const tasks = api.data.tasks.filter(t => (!courseFilter || t.course_id === courseFilter) && (!taskFilter || t.id === taskFilter) && (!subject || t.subject === subject) && (history ? true : ['pending', 'active'].includes(t.status)) && (!todayOnly || !t.due_at || localDate(new Date(t.due_at)) <= localDate() || localDate(new Date(t.created_at)) === localDate() || api.data.blocks.some(b => b.task_id === t.id && localDate(new Date(b.starts_at)) === localDate()))).sort((a, b) => (a.due_at ?? '9999').localeCompare(b.due_at ?? '9999'))
+  const reminders = api.data.reminders.filter(r => !r.read_at && r.status !== 'cancelled' && +new Date(r.remind_at) <= Date.now() && (!r.expires_at || +new Date(r.expires_at) > Date.now()) && (!r.task_id || api.data.tasks.some(t => t.id === r.task_id && ['pending', 'active'].includes(t.status))) && (!r.exam_id || api.data.exams.some(exam => exam.id === r.exam_id && +new Date(exam.ends_at) > Date.now())) && (r.task_id || !r.occurrence_id || api.data.occurrences.some(o => o.id === r.occurrence_id && o.status === 'scheduled')))
   const pending = api.data.occurrences.filter(o => o.status === 'scheduled' && +new Date(o.ends_at) <= Date.now()).sort((a, b) => a.ends_at.localeCompare(b.ends_at))
   const courseName = (id: string) => api.data.courses.find(c => c.id === id)?.name ?? '课程'
+  const reminderHref = (reminder: typeof reminders[number]) => {
+    if (reminder.task_id) return `#task-${reminder.task_id}`
+    const exam = api.data.exams.find(item => item.id === reminder.exam_id)
+    if (exam) return `/tasks/timetable?date=${localDate(new Date(exam.starts_at))}`
+    const occurrence = api.data.occurrences.find(item => item.id === reminder.occurrence_id)
+    if (occurrence && +new Date(occurrence.ends_at) > Date.now()) return `/tasks/timetable?date=${localDate(new Date(occurrence.starts_at))}&course=${encodeURIComponent(occurrence.course_id)}`
+    return reminder.occurrence_id ? '#pending-courses' : '/tasks/timetable'
+  }
   return <div className="space-y-5">
-    {reminders.length > 0 && <Panel title="现在需要留意"><div className="space-y-3">{reminders.map(r => <div key={r.id} className="flex items-center justify-between gap-3 text-sm"><a href={r.task_id ? `#task-${r.task_id}` : '#pending-courses'} className="text-indigo-700">{r.title} · {displayTime(r.remind_at)}</a><button disabled={busy} className={minorClass} onClick={() => void run(() => api.save('reminders', { id: r.id, read_at: new Date().toISOString() }))}>已读</button></div>)}</div></Panel>}
+    <TodayCourseSummary />
+    {(courseFilter || taskFilter) && <div className="flex items-center gap-3 text-sm text-emerald-900"><span>正在查看{courseFilter ? courseName(courseFilter) : '指定'}的关联任务</span><button className={minorClass} onClick={() => { setCourseFilter(''); setTaskFilter('') }}>查看全部任务</button></div>}
+    {reminders.length > 0 && <Panel title="现在需要留意"><div className="space-y-3">{reminders.map(r => <div key={r.id} className="flex items-center justify-between gap-3 text-sm"><Link href={reminderHref(r)} className="text-emerald-800 hover:underline">{r.title} · {displayTime(r.remind_at)}</Link><button disabled={busy} className={minorClass} onClick={() => void run(() => api.save('reminders', { id: r.id, read_at: new Date().toISOString() }))}>已读</button></div>)}</div></Panel>}
     <div id="pending-courses" />
     <Panel title="待确认课程">{!pending.length && <p className="text-sm text-slate-500">没有待确认课程。</p>}{pending.map(o => <div key={o.id} className="flex items-center justify-between gap-3 border-t border-slate-100 py-3"><span>{courseName(o.course_id)} · {displayTime(o.ends_at)}</span><button className={buttonClass} onClick={() => setConfirm(o)}>确认课程</button></div>)}
       <details><summary className="cursor-pointer text-sm text-slate-500">已确认课程 / 修改语文预备课</summary>{api.data.occurrences.filter(o => o.status === 'confirmed' && api.data.courses.find(c => c.id === o.course_id)?.subject === 'chinese').sort((a, b) => b.ends_at.localeCompare(a.ends_at)).slice(0, 30).map(o => <button key={o.id} className={`${minorClass} m-1`} onClick={() => setConfirm(o)}>{displayTime(o.ends_at)} · {o.confirmation?.lesson.title}</button>)}</details>

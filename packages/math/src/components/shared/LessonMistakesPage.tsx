@@ -12,6 +12,7 @@ import { fetchWrongDraftProblemIds } from '@rosie/math-kit/utils/math-scratch-db
 import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
 import { lessonKeyFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
+import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
 
 type TagStyleMap = Record<string, string>
 
@@ -72,7 +73,7 @@ function MistakeRow({
         {MASTERY_ICON[level]}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-[13px] font-semibold text-text-primary">{p.title}</div>
+        <div className="text-[13px] font-semibold text-text-primary">{problemDisplayId(p)} · {p.title}</div>
         <div className="mt-0.5 flex flex-wrap gap-1">
           <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagStyle[p.tag] || 'bg-gray-100 text-gray-600'}`}>
             {p.tagLabel}

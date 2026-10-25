@@ -143,7 +143,7 @@ const LESSON: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '1-41-L2',
+    id: '1-41-L2', displayId: 'L1-1',
     title: '练一练 · 锯面包',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -160,7 +160,7 @@ const LESSON: Problem[] = [
     finalAns: 45,
   },
   {
-    id: '1-41-L3',
+    id: '1-41-L3', displayId: 'L2',
     title: '例2 · 比较工作量',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 2,
@@ -176,7 +176,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '1-41-L4',
+    id: '1-41-L4', displayId: 'L2-1',
     title: '练一练 · 多规格比较',
     tag: 'type1',
     tagLabel: '锯木头与切割', difficulty: 3,
@@ -192,7 +192,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-41-L5',
+    id: '1-41-L5', displayId: 'L3',
     title: '例3 · 爬楼梯求时间',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 2,
@@ -209,7 +209,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '1-41-L6',
+    id: '1-41-L6', displayId: 'L3-1',
     title: '练一练 · 送餐员爬楼',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -226,7 +226,7 @@ const LESSON: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '1-41-L7',
+    id: '1-41-L7', displayId: 'L4',
     title: '例4 · 速度比较',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 2,
@@ -244,7 +244,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '1-41-L8',
+    id: '1-41-L8', displayId: 'L4-1',
     title: '练一练 · 青蛙跳台阶',
     tag: 'type2',
     tagLabel: '爬楼梯', difficulty: 3,
@@ -262,7 +262,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '1-41-L9',
+    id: '1-41-L9', displayId: 'L5',
     title: '例5 · 几点钟敲几下',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 2,
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '1-41-L10',
+    id: '1-41-L10', displayId: 'L5-1',
     title: '练一练 · 钟楼敲钟',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,
@@ -296,7 +296,7 @@ const LESSON: Problem[] = [
     finalAns: 88,
   },
   {
-    id: '1-41-L11',
+    id: '1-41-L11', displayId: 'L6',
     title: '例6 · 间隔计时推算',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 2,
@@ -313,7 +313,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '1-41-L12',
+    id: '1-41-L12', displayId: 'L6-1',
     title: '练一练 · 庙里敲钟倒推',
     tag: 'type3',
     tagLabel: '敲钟与计时', difficulty: 3,

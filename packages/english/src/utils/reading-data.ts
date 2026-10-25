@@ -1759,6 +1759,4388 @@ export const readingPassages: ReadingPassage[] = [
       ] },
     ],
   },
+  // 5A Units 3–5: transcribed from IMG_1836–IMG_1856 (1838 supplied separately).
+  // Pages: U3 28–33; U4 36–41; U5 48–53. Duplicate photos are merged.
+  // Listening-only tasks and handwritten annotations are excluded.
+  // Open questions use answer: '' and visible reference options, not exact-match grading.
+  // Cambridge references: official Essential Grammar in Use contents (4th edition):
+  // https://assets.cambridge.org/97811074/80537/frontmatter/9781107480537_frontmatter.pdf
+  // Intermediate extensions follow English Grammar in Use Units 9, 10, 15, 20, 23, 24.
+  {
+    "key": "5a-u3l1",
+    "stage": "5A",
+    "unit": "Unit 3",
+    "lesson": "Lesson 1",
+    "title": "What To Do About Wildfires",
+    "paragraphs": [
+      "Nature can be beautiful, but it can also be dangerous. Take wildfires, for example. More and more wildfires have been burning recently. They’ve burnt millions of hectares in the last few years. Wildfires occur most often in the western USA, but they can happen anywhere.",
+      "Natural causes like lightning and hot sun have caused wildfires, but most wildfires are started by humans. Once a wildfire starts, it burns anything in its path such as trees, bushes and even buildings. Dry weather and high winds help wildfires spread, and they can move very quickly, up to 23 km (14 mi.) an hour.",
+      "So, what should you do to prevent a wildfire? First, always be careful around fire. Follow fire safety rules in parks and public areas, especially when camping. And if you do make a fire outdoors, be sure that you put it out completely. Even if you’re careful, you should be prepared for a wildfire. If one starts in your area, check TV, radio and emergency alerts on smartphones to learn what to do. Pay attention to the fire and communicate with emergency workers. Always follow their instructions.",
+      "Wildfires can be scary, but did you know they can actually help a forest? The fire kills sick plants and harmful insects that have been living in the forest’s ecosystem. Certain animals do better in the burnt-out habitat that fires create. And by burning trees and their leaves, wildfires allow sunlight to reach the forest floor, so light can reach seedlings and help them grow into new plants. Wildfires are dangerous and can cause a lot of damage. But they’re also a part of the natural world, and they can be healthy for a forest. So, we can’t simply view them as destruction, but also as nature making room for new beginnings."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "理解野火的成因、预防与影响",
+        "groups": [
+          {
+            "section": "4",
+            "bookPage": 28,
+            "instruction": "Answer the questions. Use evidence from the article.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Where do wildfires occur most often?",
+                "answer": "",
+                "options": [
+                  "参考：In the western USA."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "What are two natural causes of wildfires?",
+                "answer": "",
+                "options": [
+                  "参考：Lightning and hot sun."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "How are most wildfires started?",
+                "answer": "",
+                "options": [
+                  "参考：They are started by humans."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "What can you do to prevent wildfires?",
+                "answer": "",
+                "options": [
+                  "参考：Be careful around fire, follow fire safety rules and put outdoor fires out completely."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "What should you do if a wildfire burns nearby?",
+                "answer": "",
+                "options": [
+                  "参考：Check emergency alerts and follow emergency workers’ instructions."
+                ]
+              },
+              {
+                "number": 6,
+                "type": "short_answer",
+                "prompt": "What are two ways that a wildfire can help a forest?",
+                "answer": "",
+                "options": [
+                  "参考：It kills sick plants and harmful insects, and allows sunlight to reach seedlings."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "10",
+            "bookPage": 29,
+            "instruction": "Discuss with a partner. These are open questions.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "What kind of natural disasters have happened in your country recently?",
+                "answer": ""
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "What happened?",
+                "answer": ""
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "What did people do to help?",
+                "answer": ""
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "What have people been doing to prevent another similar disaster?",
+                "answer": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "present-perfect-continuous",
+        "eyebrow": "语法",
+        "title": "Present perfect continuous",
+        "groups": [
+          {
+            "section": "5",
+            "bookPage": 29,
+            "instruction": "Find the present perfect continuous verbs in the article. How many are there?",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Write the verb phrases and their number.",
+                "answer": "",
+                "options": [
+                  "参考：Two: have been burning; have been living."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "6",
+            "bookPage": 29,
+            "instruction": "Complete with the present perfect continuous: build, burn, clean, not rain, not watch, work.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "My hands are dirty because I ______ up from the fire.",
+                "answer": "have been cleaning"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "We ______ TV recently, so we didn’t know about the fire.",
+                "answer": "haven’t been watching\nhave not been watching"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "______ the fire ______ all night?",
+                "answer": "Has; been burning"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "The weather’s been cool, but it ______.",
+                "answer": "hasn’t been raining\nhas not been raining"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "The birds ______ a nest in that tree since yesterday.",
+                "answer": "have been building"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "______ you ______ as a firefighter for many years?",
+                "answer": "Have; been working"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 9,
+            "role": "extension",
+            "label": "中级：现在完成进行时"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 19,
+            "role": "foundation",
+            "label": "for / since / ago"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "从过去持续到现在",
+              "formula": "have / has been + verb-ing",
+              "signals": "all day / night / week · for · since · lately · recently",
+              "points": [
+                {
+                  "label": "持续的动作",
+                  "text": "He’s been working really hard all summer."
+                },
+                {
+                  "label": "最近反复发生",
+                  "text": "They’ve been communicating with firefighters in recent weeks."
+                }
+              ]
+            },
+            {
+              "title": "询问持续时间",
+              "formula": "How long have / has ... been + verb-ing?",
+              "signals": "for + 时间段 · since + 起点",
+              "points": [
+                {
+                  "label": "时间段",
+                  "text": "We’ve been watching the fire burn for two hours."
+                },
+                {
+                  "label": "起点",
+                  "text": "They’ve been helping out in the forests since 2008."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "They’ve burnt millions of hectares.",
+              "note": "现在完成时强调结果：烧毁了多少。"
+            },
+            {
+              "example": "More and more wildfires have been burning recently.",
+              "note": "现在完成进行时强调近期持续或反复发生。"
+            }
+          ],
+          "decisionGuide": [
+            "强调从过去延续到现在的活动或最近反复发生的活动 → have / has been + -ing。",
+            "问持续多久用 How long；时间段前用 for，起点前用 since。"
+          ],
+          "reminders": [
+            "for (very) long 常用于疑问句和否定句。中级拓展单元需对应书籍已录入后使用。"
+          ]
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "野火与自然灾害词汇",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 28,
+            "instruction": "Write the word: burning, caused, damage, emergency, prevent, put out, spread.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "How can we ______ wildfires from starting?",
+                "answer": "prevent"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "Please use this bucket of water to ______ the fire.",
+                "answer": "put out"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "A wildfire has been ______ in this area for three weeks.",
+                "answer": "burning"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "When you have an ______, you must call for help.",
+                "answer": "emergency"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "Last month’s fire ______ 100 million euros’ worth of ______.",
+                "answer": "caused; damage"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "The fire started in the garage and quickly ______ through the rest of the house.",
+                "answer": "spread"
+              }
+            ]
+          },
+          {
+            "section": "8",
+            "bookPage": 29,
+            "instruction": "Match each definition to a natural disaster.",
+            "items": [
+              {
+                "number": 1,
+                "type": "matching",
+                "prompt": "When the ocean’s water comes onto the land",
+                "answer": "tsunami",
+                "options": [
+                  "wildfire",
+                  "tsunami",
+                  "hurricane",
+                  "flood",
+                  "drought",
+                  "volcano"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "matching",
+                "prompt": "When rain fills buildings and streets with water",
+                "answer": "flood",
+                "options": [
+                  "wildfire",
+                  "tsunami",
+                  "hurricane",
+                  "flood",
+                  "drought",
+                  "volcano"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "matching",
+                "prompt": "A long period of very dry weather",
+                "answer": "drought",
+                "options": [
+                  "wildfire",
+                  "tsunami",
+                  "hurricane",
+                  "flood",
+                  "drought",
+                  "volcano"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "matching",
+                "prompt": "A mountain that lets out fiery hot liquid",
+                "answer": "volcano",
+                "options": [
+                  "wildfire",
+                  "tsunami",
+                  "hurricane",
+                  "flood",
+                  "drought",
+                  "volcano"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "matching",
+                "prompt": "A fire that is not under control",
+                "answer": "wildfire",
+                "options": [
+                  "wildfire",
+                  "tsunami",
+                  "hurricane",
+                  "flood",
+                  "drought",
+                  "volcano"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "matching",
+                "prompt": "A large storm with strong winds and rain",
+                "answer": "hurricane",
+                "options": [
+                  "wildfire",
+                  "tsunami",
+                  "hurricane",
+                  "flood",
+                  "drought",
+                  "volcano"
+                ]
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "burn"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "cause"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "damage"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "emergency"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "prevent"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "put out"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "spread"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "drought"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "flood"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "hurricane"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "tsunami"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "volcano"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 1",
+            "word": "wildfire"
+          }
+        ]
+      },
+      {
+        "type": "writing",
+        "id": "natural-disaster-writing",
+        "eyebrow": "写作",
+        "title": "Write about a natural disaster",
+        "prompt": "Write a short paragraph about the natural disaster you discussed in Activity 10. The model below is an example, not a report of a real event.",
+        "questions": [
+          "What happened and where?",
+          "What did people do to help?",
+          "What have people been doing to prevent a similar disaster?"
+        ],
+        "suggestedWords": [
+          "flood",
+          "damage",
+          "emergency",
+          "prevent",
+          "have been helping"
+        ],
+        "modelAnswer": [
+          "Last month, heavy rain caused a flood in a small town. Water filled the streets and damaged some houses. Emergency workers helped people get to safe places. Since then, people have been cleaning the streets and repairing their homes. They have also been checking the drains to help prevent another flood."
+        ]
+      }
+    ]
+  },
+  {
+    "key": "5a-u3l2",
+    "stage": "5A",
+    "unit": "Unit 3",
+    "lesson": "Lesson 2",
+    "title": "Nature’s Creative Creatures",
+    "paragraphs": [
+      "You’ve probably learnt a lot about animals, but we bet you haven’t been studying animals as unusual as these. Here are three unusual creatures found in nature.",
+      "This unusual Australian animal seems to have parts from other, more common species: a duck’s bill, a body covered with fur, and a beaver-like tail.",
+      "The platypus is a good swimmer, but it also lives on land. Its webbed feet change when it’s on land to help it run. The platypus is a mammal – mothers nurse their babies for about four months. But what’s unusual about this mammal is that it lays eggs!",
+      "The short-horned lizard lives in North America. It’s got horns on its head and back, and a body covered in scales. What makes the short-horned lizard different from other reptiles is how it defends itself. It can blow its body up so it looks like a spiked balloon. If that doesn’t work, it shoots blood from its eyes to trick predators. It can shoot the blood from 1 m (3 ft) away!",
+      "Don’t judge this bird by its colourful appearance. Although it looks bright and cheerful, the king vulture has got a pretty disgusting job: it eats dead animals. By eating these bodies, the king vulture cleans up the forest floor in Central and South America, where it lives. This helps prevent the spread of disease. The vulture’s brightly coloured head is bald, and this lack of feathers helps it stay clean while it eats. Plus, it’s got a very strong beak and claws, which are also useful at mealtimes.",
+      "The duck-billed platypus might look very cute, but be careful! The male platypus is poisonous and its sting can be deadly."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "奇特动物的生存本领",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 30,
+            "instruction": "Choose the correct answer.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "What’s a mammal?",
+                "answer": "an animal that gets milk from its mother",
+                "options": [
+                  "an animal with scales",
+                  "an animal that gets milk from its mother"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "What’s unusual about a platypus’s feet?",
+                "answer": "They change on land and in water.",
+                "options": [
+                  "They change on land and in water.",
+                  "They’ve got strong claws."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "How does the king vulture help its habitat?",
+                "answer": "It prevents the spread of disease.",
+                "options": [
+                  "It makes it more colourful.",
+                  "It prevents the spread of disease."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Which is one way the short-horned lizard defends itself?",
+                "answer": "It shoots blood from its eyes.",
+                "options": [
+                  "It covers itself in scales.",
+                  "It shoots blood from its eyes."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "Which type of animal commonly lays eggs?",
+                "answer": "reptiles",
+                "options": [
+                  "reptiles",
+                  "mammals"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "8",
+            "bookPage": 31,
+            "instruction": "Write two things each animal has got. Use beak, bill, claw, fur, horn, scales and any others you know.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "lion",
+                "answer": "",
+                "options": [
+                  "参考：For example: fur and claws."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "penguin",
+                "answer": "",
+                "options": [
+                  "参考：For example: a beak and feathers."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "snake",
+                "answer": "",
+                "options": [
+                  "参考：For example: scales and a tail."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "rhinoceros",
+                "answer": "",
+                "options": [
+                  "参考：For example: a horn and a tail."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "platypus",
+                "answer": "",
+                "options": [
+                  "参考：For example: a bill and fur."
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "perfect-simple-vs-continuous",
+        "eyebrow": "语法",
+        "title": "Present perfect simple and continuous",
+        "groups": [
+          {
+            "section": "5",
+            "bookPage": 31,
+            "instruction": "Circle the correct words.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "Have you ever ______ a vet?",
+                "answer": "met",
+                "options": [
+                  "met",
+                  "been meeting"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "I have ______ for this species of lizard all year.",
+                "answer": "been searching",
+                "options": [
+                  "searched",
+                  "been searching"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "Ky has ______ the film about Australian animals four times.",
+                "answer": "watched",
+                "options": [
+                  "been watching",
+                  "watched"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Have you ever ______ about the echidna? It’s another egg-laying mammal.",
+                "answer": "read",
+                "options": [
+                  "read",
+                  "been reading"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "We’ve ______ about mammals in science all term.",
+                "answer": "been learning",
+                "options": [
+                  "been learning",
+                  "learnt"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "They’ve just ______ a new species of frog.",
+                "answer": "found",
+                "options": [
+                  "been finding",
+                  "found"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "6",
+            "bookPage": 31,
+            "instruction": "Complete the dialogue with the present perfect simple or continuous.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Theo: You look so tired, Emma! What ______? (you/do)",
+                "answer": "have you been doing"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "Emma: I ______ on my unusual animal project. (work)",
+                "answer": "have been working"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "But I ______ it yet. (not finish)",
+                "answer": "haven’t finished\nhave not finished"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "I ______ for information online all morning. (search)",
+                "answer": "have been searching"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "Theo: ______ your animal? (you/choose)",
+                "answer": "Have you chosen"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "Emma: Yes, I have. I ______ to write about the naked mole rat. (decide)",
+                "answer": "have decided"
+              },
+              {
+                "number": 7,
+                "type": "fill_blank",
+                "prompt": "Theo: Really? I ______ of them before. (hear)",
+                "answer": "haven’t heard\nhave not heard"
+              },
+              {
+                "number": 8,
+                "type": "fill_blank",
+                "prompt": "Emma: I saw one at the zoo last year. And since then I ______ to know more about them. (want)",
+                "answer": "have wanted"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 10,
+            "role": "extension",
+            "label": "中级：现在完成进行时与现在完成时"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 18,
+            "role": "foundation",
+            "label": "How long have you ...?"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "结果与数量",
+              "formula": "have / has + past participle",
+              "signals": "how many · how much · how many times · just · ever",
+              "points": [
+                {
+                  "label": "已完成",
+                  "text": "I’ve read a book about reptiles. (= I’ve finished the book.)"
+                },
+                {
+                  "label": "数量",
+                  "text": "How many books about birds have you read?"
+                }
+              ]
+            },
+            {
+              "title": "活动与持续时间",
+              "formula": "have / has been + verb-ing",
+              "signals": "how long · all day · all morning · all year",
+              "points": [
+                {
+                  "label": "活动过程",
+                  "text": "I’ve been reading a great book about volcanoes."
+                },
+                {
+                  "label": "持续的活动",
+                  "text": "I’m tired because I’ve been planting trees all day."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "I’ve read a book about reptiles.",
+              "note": "着重完成的结果。"
+            },
+            {
+              "example": "How long have you been reading your book?",
+              "note": "着重阅读持续多久。"
+            }
+          ],
+          "decisionGuide": [
+            "问完成了多少或几次 → 现在完成时。",
+            "问活动持续多久或解释活动造成的现状 → 现在完成进行时。",
+            "want 等状态动词一般不用进行时。"
+          ],
+          "reminders": [
+            "教材第 6 题第 7 空括号为 hear；句意为“以前没听说过”，需使用否定形式。"
+          ]
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "动物特征与短语动词",
+        "groups": [
+          {
+            "section": "4",
+            "bookPage": 30,
+            "instruction": "Write the word for each meaning.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "The way something looks: ______",
+                "answer": "appearance"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "The group of scaly animals that includes snakes and lizards: ______",
+                "answer": "reptiles"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "A group of animals related to each other (i.e. dogs, wolves): ______",
+                "answer": "species"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "The group of animals that get milk from their mothers: ______",
+                "answer": "mammals"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "An animal that hunts other animals: ______",
+                "answer": "predator"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "To protect oneself: ______",
+                "answer": "defend"
+              }
+            ]
+          },
+          {
+            "section": "Phrasal verbs",
+            "bookPage": 31,
+            "instruction": "Complete with: answer for, cut down on, die out, get across, look into, run out of.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Some species will ______ if we don’t act.",
+                "answer": "die out"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "We must ______ protecting endangered animals.",
+                "answer": "look into"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Changing habitats may cause some animals to ______ food.",
+                "answer": "run out of"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "How can we ______ the important messages about the environment ______ to everybody?",
+                "answer": "get; across"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "In the future, we’ll have to ______ the things we do wrong today.",
+                "answer": "answer for"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "I want to ______ the number of plastic bags I use because they can harm animals.",
+                "answer": "cut down on"
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "appearance"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "defend"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "mammal"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "predator"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "reptile"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "species"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "beak"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "bill"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "claw"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "fur"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "horn"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 2",
+            "word": "scales"
+          }
+        ]
+      }
+    ],
+    "paragraphTitles": [
+      "",
+      "Duck-billed platypus",
+      "",
+      "Short-horned lizard",
+      "King vulture",
+      "Guess what!"
+    ],
+    "glossary": [
+      {
+        "word": "platypus",
+        "meaningCn": "n. 鸭嘴兽",
+        "meaningEn": "an Australian egg-laying mammal with a duck-like bill",
+        "category": "超纲词汇"
+      },
+      {
+        "word": "vulture",
+        "meaningCn": "n. 秃鹫",
+        "meaningEn": "a bird that feeds on dead animals",
+        "category": "超纲词汇"
+      }
+    ]
+  },
+  {
+    "key": "5a-u3l3",
+    "stage": "5A",
+    "unit": "Unit 3",
+    "lesson": "Lesson 3",
+    "title": "Amelie’s Iceland Journal",
+    "paragraphs": [
+      "I’m so excited to be in Iceland this weekend. This morning, we got on a bus to the southern coast, to see some of Iceland’s natural beauty. We’re going to try to see the Northern Lights tomorrow night. Even if we don’t see them, I’ve already seen some of the most amazing sights on the journey.",
+      "We stopped in a national park today and explored an ice cave. They call it the ‘Crystal Cave’ because the ice is as clear as crystal. Exploring ice caves can be dangerous, so we went with a guide. We had to wear special boots – the least comfortable boots I’ve ever worn – but it was worth it.",
+      "Today we explored the Jökulsárlón glacier lagoon. It’s a large lake made from melted glaciers, and the coldest lake I’ve ever visited! I did NOT want to go swimming. We also saw waterfalls and a black sand beach. It was nothing like the beaches near us. The guide said it was called ‘Diamond Beach’, because the black sand shines like diamonds.",
+      "At night, we went out to look for the Northern Lights. They occur when the Sun’s energy meets certain gases in the Earth’s atmosphere. It’s hard to know when they’ll appear. But we got lucky and saw them our first night. They were green and purple. It was incredible – a light show by nature. I’ve never seen anything more amazing in my life!",
+      "Sadly, we’re leaving tomorrow. It went too fast, but I’ll remember this weekend better than any other. It was amazing!"
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "冰岛的自然景观",
+        "groups": [
+          {
+            "section": "2",
+            "bookPage": 32,
+            "instruction": "Answer the questions.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "What did Amelie do first in Iceland?",
+                "answer": "",
+                "options": [
+                  "参考：She got on a bus to the southern coast."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "Why did she need a guide to explore the ice cave?",
+                "answer": "",
+                "options": [
+                  "参考：Exploring ice caves can be dangerous."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "What’s a glacier lagoon?",
+                "answer": "",
+                "options": [
+                  "参考：A large lake made from melted glaciers."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "Why was the beach called ‘Diamond Beach’?",
+                "answer": "",
+                "options": [
+                  "参考：Because the black sand shines like diamonds."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "When do the Northern Lights appear?",
+                "answer": "",
+                "options": [
+                  "参考：When the Sun’s energy meets certain gases in the Earth’s atmosphere."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "Say it like this",
+            "bookPage": 32,
+            "instruction": "Talk about what is or isn’t worth doing when travelling. Use: It’s worth + verb-ing because ... / It isn’t worth + verb-ing because ...",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Would you like to see the places in Amelie’s journal? Why or why not?",
+                "answer": ""
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "Discuss going by bus, taking photos, staying in a nice hotel, renting a bike, eating at restaurants and seeing sights.",
+                "answer": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "comparatives-superlatives",
+        "eyebrow": "语法",
+        "title": "Comparatives and superlatives",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 33,
+            "instruction": "Complete with the comparative or superlative form.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "People should try ______ (hard) than they already do to look after the environment.",
+                "answer": "harder"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "One of the ______ (big) problems is pollution from cars.",
+                "answer": "biggest"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "People use their cars ______ (frequently) than they need to.",
+                "answer": "more frequently"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "Public transport is often ______ (fast) and ______ (cheap) than it was in the past.",
+                "answer": "faster; cheaper"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "They should go to the ______ (near) park and explore it.",
+                "answer": "nearest"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "Some of ______ (beautiful) sights in nature, like caves, waterfalls and cliffs, can be seen at a park.",
+                "answer": "the most beautiful"
+              },
+              {
+                "number": 7,
+                "type": "fill_blank",
+                "prompt": "Once people understand the natural world ______ (good), they learn to take care of it.",
+                "answer": "better"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "essential",
+            "unitNumber": 87,
+            "role": "foundation",
+            "label": "比较级的构成"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 89,
+            "role": "foundation",
+            "label": "not as ... as"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 90,
+            "role": "primary",
+            "label": "最高级"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "比较两者",
+              "formula": "-er / more ... than · (not) as ... as",
+              "signals": "than · as ... as",
+              "points": [
+                {
+                  "label": "短形容词或副词",
+                  "text": "Jan can cycle faster than Mick."
+                },
+                {
+                  "label": "长形容词或副词",
+                  "text": "Exploring ice caves is more difficult than exploring ordinary caves."
+                },
+                {
+                  "label": "同级比较",
+                  "text": "The bus is as quick as the car in traffic."
+                }
+              ]
+            },
+            {
+              "title": "与一组比较",
+              "formula": "the + -est / most",
+              "signals": "in my class · of all",
+              "points": [
+                {
+                  "label": "最高级",
+                  "text": "Lily is the oldest girl in my class."
+                },
+                {
+                  "label": "副词最高级",
+                  "text": "Helen works the most carefully of all my students."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "My computer is slower than yours.",
+              "note": "两者比较用比较级。"
+            },
+            {
+              "example": "Science is the most interesting lesson.",
+              "note": "一组中最突出用最高级。"
+            }
+          ],
+          "decisionGuide": [
+            "先判断比较两者还是在一组中比较。",
+            "短词常加 -er/-est，长词常用 more/most；同等程度用 as ... as。"
+          ],
+          "reminders": [
+            "good / well → better → best；bad / badly → worse → worst；far → further → furthest；many / much → more → most；little → less → least。"
+          ]
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "表达观点与教材范文",
+        "groups": [
+          {
+            "section": "Writing A",
+            "bookPage": 33,
+            "instruction": "Practise giving your opinion with: I (really) think/believe ...; In my opinion/view, ...; It is/isn’t true that ...; I agree/disagree that ...",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Give your opinion about a natural place you know.",
+                "answer": ""
+              }
+            ]
+          },
+          {
+            "section": "Writing B",
+            "bookPage": 33,
+            "instruction": "Read the model letter and identify phrases expressing opinions.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Dear Sir or Madam,\n\nIn last month’s magazine, you asked for readers to suggest new Natural Wonders of the World. I really think that the national park on my island should be a natural wonder. I’m talking about El Yunque National Forest, in Puerto Rico.\n\nIt’s true that the park isn’t the biggest. It’s only about 12,000 hectares. Even though it’s small, it’s got beautiful caves and waterfalls, as well as a big variety of plants and animals. There are hundreds of types of trees, and many rare plants. Lots of reptiles, birds and mammals live in the forest, but El Yunque is best known for the coquí frog. In my view, this is the cutest frog you’ll ever see. Some people don’t like its noise, but I disagree. It sounds like music to me.\n\nIn addition to everything above, I really believe that El Yunque is one of the safest rain forests in the world. There are lots of people, and none of its animals is poisonous. In my opinion, El Yunque deserves to be a Natural Wonder!\n\nYours faithfully,\nYanira",
+                "answer": "",
+                "options": [
+                  "参考：I really think; It’s true that; In my view; I disagree; I really believe; In my opinion."
+                ]
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "incredible"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "beauty"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "crystal"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "lagoon"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "melt"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "diamond"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 3",
+            "lesson": "Lesson 3",
+            "word": "gas"
+          }
+        ]
+      },
+      {
+        "type": "writing",
+        "id": "natural-wonder-letter",
+        "eyebrow": "写作",
+        "title": "Nominate a Natural Wonder",
+        "prompt": "Write a letter to a magazine nominating a place you know to be a Natural Wonder. Use opinion phrases, then check them as in Activity D.",
+        "questions": [
+          "Paragraph 1: Mention the contest and name the place.",
+          "Paragraph 2: Explain why you are nominating it and why it should be a Natural Wonder.",
+          "Paragraph 3: Summarise your argument."
+        ],
+        "suggestedWords": [
+          "I really think",
+          "In my view",
+          "In my opinion",
+          "I believe",
+          "beautiful",
+          "incredible"
+        ],
+        "modelAnswer": [
+          "Dear Sir or Madam,\n\nYou asked readers to suggest a new Natural Wonder. I really think that the lake near my town should win.",
+          "In my view, it is the most beautiful place in our area. The water is clear, and tall trees grow around it. Many birds live there. I believe that it is a wonderful place to learn about nature.",
+          "In my opinion, this lake deserves to be a Natural Wonder because of its beauty and wildlife.\n\nYours faithfully,\nRosie"
+        ]
+      }
+    ],
+    "paragraphTitles": [
+      "2 January",
+      "",
+      "3 January",
+      "",
+      ""
+    ],
+    "glossary": [
+      {
+        "word": "Jökulsárlón",
+        "meaningCn": "杰古沙龙冰河湖（冰岛）",
+        "meaningEn": "a glacier lagoon in Iceland",
+        "category": "专有名词",
+        "isProperNoun": true
+      },
+      {
+        "word": "Northern Lights",
+        "meaningCn": "北极光",
+        "meaningEn": "coloured lights sometimes seen in the northern sky",
+        "category": "专有名词",
+        "isProperNoun": true
+      }
+    ]
+  },
+  {
+    "key": "5a-u4l1",
+    "stage": "5A",
+    "unit": "Unit 4",
+    "lesson": "Lesson 1",
+    "title": "The Legendary Bermuda Triangle: A Mystery No More",
+    "paragraphs": [
+      "For years, people have believed that an area of the Atlantic Ocean between Bermuda, Puerto Rico and Florida, USA was a dangerous place. They thought planes and boats passing through here were likely to disappear. By 1964, a writer had called the area the ‘Bermuda Triangle’. The name stuck, and so did the mystery.",
+      "In 1945, five US Navy planes, called Flight 19, took off from Florida and never came back. After they disappeared into the Bermuda Triangle, theories had begun to spread that the area was a danger zone. Even before this famous flight, several ships had disappeared in these waters. People had many different ideas about why this happened. Some people even believed that a giant octopus was responsible!",
+      "However, scientists believe that weather is part of the problem. Unusually shaped clouds above the area create strong winds that go down into the water, creating huge tsunami waves that can take down boats or low-flying planes. And many researchers believe that there’s no mystery at all. Shipwrecks and plane crashes happen all over the world. It just seems to happen more in the Bermuda Triangle because there’s more traffic.",
+      "The Bermuda Triangle is also one of the deepest areas of the Atlantic, with some areas being 8 km (5 mi.) deep. So, remains are hard to find, which makes the disappearances seem even more mysterious. In 2011, the Flight 19 planes were found, proving that they didn’t completely disappear. But no matter how much evidence there is that the Bermuda Triangle is no more dangerous than any other part of the ocean, many still believe that there’s a mystery."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "理解文章中的说法与证据",
+        "groups": [
+          {
+            "section": "4",
+            "bookPage": 36,
+            "instruction": "According to the article, tick True or False.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "By the time Flight 19 disappeared, the area had already been called the Bermuda Triangle.",
+                "answer": "False",
+                "options": [
+                  "True",
+                  "False"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "People had many different theories about what caused the disappearances.",
+                "answer": "True",
+                "options": [
+                  "True",
+                  "False"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "A giant octopus had probably eaten the planes and ships.",
+                "answer": "False",
+                "options": [
+                  "True",
+                  "False"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Strong winds and waves probably caused some of the crashes.",
+                "answer": "True",
+                "options": [
+                  "True",
+                  "False"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "The Bermuda Triangle has got some of the deepest areas of the Atlantic.",
+                "answer": "True",
+                "options": [
+                  "True",
+                  "False"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "Evidence shows that the Bermuda Triangle is the most dangerous zone in the Atlantic Ocean.",
+                "answer": "False",
+                "options": [
+                  "True",
+                  "False"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "10",
+            "bookPage": 37,
+            "instruction": "Describe a mystery you’ve heard about to a partner.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "What happened?",
+                "answer": ""
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "Has it been solved? What evidence is there?",
+                "answer": ""
+              }
+            ]
+          }
+        ],
+        "description": "以下题目按教材文章作答。文章中的历史与科学说法属于原文内容。"
+      },
+      {
+        "type": "grammar",
+        "id": "past-perfect-simple",
+        "eyebrow": "语法",
+        "title": "Past perfect simple",
+        "groups": [
+          {
+            "section": "5",
+            "bookPage": 37,
+            "instruction": "Circle the correct words.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "By July 1582, they had ______ the war.",
+                "answer": "lost",
+                "options": [
+                  "lose",
+                  "lost"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "I thought you had ______ the island before.",
+                "answer": "visited",
+                "options": [
+                  "visited",
+                  "visit"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "______ about the Bermuda Triangle?",
+                "answer": "Had Victor heard",
+                "options": [
+                  "Had heard Victor",
+                  "Had Victor heard"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "I had finished my journey ______ last night.",
+                "answer": "by",
+                "options": [
+                  "by",
+                  "since"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "The expert said that the lost city had never ______.",
+                "answer": "existed",
+                "options": [
+                  "existed",
+                  "exist"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "They ______ about the Bermuda Triangle before they went on the ship.",
+                "answer": "hadn’t heard",
+                "options": [
+                  "hadn’t heard",
+                  "heard"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "6",
+            "bookPage": 37,
+            "instruction": "Complete with the past perfect simple: hear, learn, leave, not read, not see, take off.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "By the time I got to Jakub’s house, he ______ for the library.",
+                "answer": "had left"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "______ anybody ______ of this mystery before the 1940s?",
+                "answer": "Had; heard"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Jenny ______ anything about shipwrecks before you gave her this book.",
+                "answer": "hadn’t read\nhad not read"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "The planes of Flight 19 disappeared after they ______ from Florida.",
+                "answer": "had taken off"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "______ the people ______ how to swim before they got on the ship?",
+                "answer": "Had; learnt"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "Harry ______ the Atlantic Ocean before he got to Puerto Rico last week.",
+                "answer": "hadn’t seen\nhad not seen"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 15,
+            "role": "extension",
+            "label": "中级：过去完成时"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 24,
+            "role": "foundation",
+            "label": "规则与不规则动词"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "过去的过去",
+              "formula": "had + past participle",
+              "signals": "before · by + 过去时间",
+              "points": [
+                {
+                  "label": "先于另一个过去动作",
+                  "text": "Rebecca had read a book about mysteries at sea, so she enjoyed the film about the Bermuda Triangle."
+                },
+                {
+                  "label": "截至过去某时已经完成",
+                  "text": "By 1950, several boats had disappeared."
+                }
+              ]
+            },
+            {
+              "title": "否定与疑问",
+              "formula": "had not / hadn’t + past participle · Had + subject + past participle?",
+              "signals": "before + 过去事件",
+              "points": [
+                {
+                  "label": "所有主语都用 had",
+                  "text": "They hadn’t heard about the Bermuda Triangle before they went on the ship."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "They had disappeared before the search began.",
+              "note": "先发生的动作：had disappeared。"
+            },
+            {
+              "example": "The search began.",
+              "note": "后发生的过去动作：一般过去时。"
+            }
+          ],
+          "decisionGuide": [
+            "找出两个过去时间点：更早的动作用过去完成时。",
+            "by 强调截至某个过去时间，before 强调在另一个过去事件之前。"
+          ],
+          "reminders": []
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "谜团、前缀与后缀",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 36,
+            "instruction": "Complete with: crash, disappeared, evidence, mystery, theory, shipwreck, zone.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "The ship ______ at sea, with 300 people on board.",
+                "answer": "disappeared"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "There’s no ______ that the Bermuda Triangle is more dangerous than anywhere else.",
+                "answer": "evidence"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "In the past, no one knew why they got lost. It was a ______.",
+                "answer": "mystery"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "Cars must go slowly in the school ______.",
+                "answer": "zone"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "Dad has got an interesting ______ about what caused the plane ______.",
+                "answer": "theory; crash"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "The divers were exploring the ______ at the bottom of the ocean.",
+                "answer": "shipwreck"
+              }
+            ]
+          },
+          {
+            "section": "7",
+            "bookPage": 37,
+            "instruction": "Read the examples. Prefixes: dis- (disappear, dishonest), im- (impatient, impossible), ir- (irregular, irresponsible), un- (unpleasant, unwise). Suffixes: -able (doable, believable), -ful (careful, useful), -ish (childish, foolish), -less (careless, harmless).",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "If you’re careful, you can swim here.",
+                "answer": "",
+                "options": [
+                  "参考：careful: taking care to avoid danger."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "These people are not telling the truth. They’re not being honest.",
+                "answer": "",
+                "options": [
+                  "参考：honest: telling the truth."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "It’s foolish to go swimming during a storm.",
+                "answer": "",
+                "options": [
+                  "参考：foolish: not sensible."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "Going out on a boat is pleasant on a sunny day, but not in the rain.",
+                "answer": "",
+                "options": [
+                  "参考：pleasant: enjoyable."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "The captain is responsible for getting the ship to its destination.",
+                "answer": "",
+                "options": [
+                  "参考：responsible: having a duty."
+                ]
+              },
+              {
+                "number": 6,
+                "type": "short_answer",
+                "prompt": "It’s wise to stay indoors in a hurricane.",
+                "answer": "",
+                "options": [
+                  "参考：wise: showing good judgement."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "8",
+            "bookPage": 37,
+            "instruction": "Complete by adding a prefix or suffix to the word in brackets.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Mum didn’t think the story of the shipwreck was very ______ (believe).",
+                "answer": "believable"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "Pablo is very ______ (child). He only wants to play.",
+                "answer": "childish"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "It would be ______ (wise) to miss the exam.",
+                "answer": "unwise"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "The information hasn’t been very ______ (use).",
+                "answer": "useful"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "I wonder what caused the aeroplanes to ______ (appear).",
+                "answer": "disappear"
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "crash"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "disappear"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "evidence"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "mystery"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "theory"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "shipwreck"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "zone"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "careful"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "honest"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "foolish"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "pleasant"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "responsible"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 1",
+            "word": "wise"
+          }
+        ]
+      },
+      {
+        "type": "writing",
+        "id": "mystery-paragraph",
+        "eyebrow": "写作",
+        "title": "Describe a mystery",
+        "prompt": "Write a paragraph about the mystery you described in Activity 10. Say what happened and whether it has been solved. The model is a fictional example.",
+        "questions": [
+          "What disappeared or seemed strange?",
+          "What had happened before it?",
+          "How was the mystery solved, or why is it still a mystery?"
+        ],
+        "suggestedWords": [
+          "mystery",
+          "disappeared",
+          "evidence",
+          "had left",
+          "found"
+        ],
+        "modelAnswer": [
+          "One morning, our class trophy disappeared. We had left it on a shelf the day before, but nobody could find it. We looked for evidence and asked our teacher for help. Later, the cleaner told us that she had put it in a cupboard before cleaning the shelf. The mystery was solved, and everyone was happy."
+        ]
+      }
+    ],
+    "glossary": [
+      {
+        "word": "Bermuda Triangle",
+        "meaningCn": "百慕大三角",
+        "meaningEn": "an area of the Atlantic Ocean between Bermuda, Puerto Rico and Florida",
+        "category": "专有名词",
+        "isProperNoun": true
+      },
+      {
+        "word": "Flight 19",
+        "meaningCn": "第 19 飞行队",
+        "meaningEn": "the group of five US Navy planes discussed in the article",
+        "category": "专有名词",
+        "isProperNoun": true
+      }
+    ]
+  },
+  {
+    "key": "5a-u4l2",
+    "stage": "5A",
+    "unit": "Unit 4",
+    "lesson": "Lesson 2",
+    "title": "The Mysterious Disappearance of Amelia Earhart",
+    "paragraphs": [
+      "On the morning of 2nd July, 1937, Amelia Earhart was due to land her plane on the tiny island of Howland in the Pacific Ocean. She never arrived, though. She and her plane simply disappeared.",
+      "Amelia was ten when she saw her first plane. She didn’t think it was very exciting. She had said, ‘It was a thing of rusty wire and wood and not at all interesting ...’ Ten years later, however, she was a passenger in a plane for ten minutes, flying over Los Angeles. At that moment, she decided to learn how to fly.",
+      "Amelia was a pilot at a time when many women didn’t work, and most people had never been in a plane. By the age of 35, she had already broken one world record. In 1932, she became the first woman to fly alone across the Atlantic Ocean. But Amelia had even bigger dreams. She wanted to be the first woman to fly around the world.",
+      "In June 1937, she began her flight from Miami, Florida, with her navigator, Fred Noonan. After they had flown across the USA, they went to Brazil. They continued their journey across Africa, Asia and Australia. On 2nd July they took off from New Guinea and headed for Howland Island, but the plane never arrived. People searched for Earhart and Noonan for weeks, but didn’t find them.",
+      "There are several theories about what happened. Some think Fred and Amelia got lost, ran out of fuel, and crashed into the sea; others think they landed on another island and got stuck there. Some people even think that Amelia had been working as a spy and was captured. One thing is certain: Amelia Earhart will always be a legend.",
+      "In 2014, another pilot named Amelia Earhart (no relation) made a record-breaking flight. She became the youngest woman to fly 39,000 km (24,300 mi.) around the world in a single-engine plane."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "Amelia 的飞行与失踪",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 38,
+            "instruction": "Read. Answer the questions.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "What did Amelia Earhart think of the first aeroplane she saw?",
+                "answer": "",
+                "options": [
+                  "参考：She thought it was rusty and not interesting."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "What world record did Amelia break?",
+                "answer": "",
+                "options": [
+                  "参考：She became the first woman to fly alone across the Atlantic Ocean."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "What was Fred Noonan’s job on Amelia’s flight?",
+                "answer": "",
+                "options": [
+                  "参考：He was her navigator."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "What are three theories about Amelia’s disappearance?",
+                "answer": "",
+                "options": [
+                  "参考：They ran out of fuel and crashed; they landed on another island; or Amelia was captured as a spy."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "Why is Amelia a legend?",
+                "answer": "",
+                "options": [
+                  "参考：For example: she set a world record and inspired people with her flying achievements."
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "past-simple-vs-perfect",
+        "eyebrow": "语法",
+        "title": "Past simple and past perfect simple",
+        "groups": [
+          {
+            "section": "5",
+            "bookPage": 39,
+            "instruction": "Complete the paragraph with the past simple or past perfect simple.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "I had a strange experience a few months ago. It ______ (be) a summer evening.",
+                "answer": "was"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "I ______ (just say) goodnight to my friend Janet.",
+                "answer": "had just said"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "She ______ (invite) me to her house to watch a film.",
+                "answer": "had invited"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "I ______ (leave) her house at 8 o’clock.",
+                "answer": "left"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "I realised that it ______ (already get) dark.",
+                "answer": "had already got"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "I started walking when suddenly, I ______ (notice) a bright red light in the sky.",
+                "answer": "noticed"
+              },
+              {
+                "number": 7,
+                "type": "fill_blank",
+                "prompt": "It blinked very fast, and then it ______ (disappear).",
+                "answer": "disappeared"
+              },
+              {
+                "number": 8,
+                "type": "fill_blank",
+                "prompt": "Was it from a TV tower? Maybe. It ______ (be) all very mysterious.",
+                "answer": "was"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 15,
+            "role": "extension",
+            "label": "中级：过去完成时"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 11,
+            "role": "foundation",
+            "label": "一般过去时"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "较早完成的动作",
+              "formula": "had + past participle",
+              "signals": "before · already · just",
+              "points": [
+                {
+                  "label": "先用完燃料",
+                  "text": "The plane crashed because it had run out of fuel."
+                }
+              ]
+            },
+            {
+              "title": "后来发生的动作",
+              "formula": "past simple",
+              "signals": "when · after",
+              "points": [
+                {
+                  "label": "降落先于暴风雨",
+                  "text": "They had just landed when the storm began."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "The plane crashed.",
+              "note": "叙述过去发生的事件。"
+            },
+            {
+              "example": "It had run out of fuel.",
+              "note": "解释那件事之前已经发生了什么。"
+            }
+          ],
+          "decisionGuide": [
+            "先理清事件顺序，再选时态。",
+            "较早的动作用 had + 过去分词；后来的动作用一般过去时。"
+          ],
+          "reminders": []
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "飞行、get 短语与形容词介词搭配",
+        "groups": [
+          {
+            "section": "4",
+            "bookPage": 38,
+            "instruction": "Write the word for each definition.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Come down to the ground in a plane: ______",
+                "answer": "land"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "A person on a plane who finds its route: ______",
+                "answer": "navigator"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Go up into the air in a plane: ______",
+                "answer": "take off"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "Go towards: ______",
+                "answer": "head for"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "Gas or petrol: ______",
+                "answer": "fuel"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "The best performance ever of an activity: ______",
+                "answer": "record"
+              },
+              {
+                "number": 7,
+                "type": "fill_blank",
+                "prompt": "A person who’s known for doing something well: ______",
+                "answer": "legend"
+              }
+            ]
+          },
+          {
+            "section": "6",
+            "bookPage": 39,
+            "instruction": "Read these phrases and their examples.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "get a chance — Did you get a chance to watch the film?",
+                "answer": "",
+                "options": [
+                  "参考：有机会。"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "get home — Tom got home at 11:00.",
+                "answer": "",
+                "options": [
+                  "参考：到家。"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "get the impression — I got the impression that she was an interesting woman.",
+                "answer": "",
+                "options": [
+                  "参考：获得某种印象。"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "get a job — My aunt got a job at the shop.",
+                "answer": "",
+                "options": [
+                  "参考：找到工作。"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "get a reply — I never got a reply from you.",
+                "answer": "",
+                "options": [
+                  "参考：收到回复。"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "short_answer",
+                "prompt": "get a surprise — Henri really got a surprise when his mum gave him a puppy.",
+                "answer": "",
+                "options": [
+                  "参考：感到惊喜。"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "7",
+            "bookPage": 39,
+            "instruction": "Complete with the correct form of the phrases from Activity 6.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "She ______ in an office, but her hobby was flying.",
+                "answer": "got a job"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "‘Who’s there?’ I asked. I didn’t ______.",
+                "answer": "get a reply"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Did you ______ to talk to the police?",
+                "answer": "get a chance"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "I ______ when I found out my cousin had arrived.",
+                "answer": "got a surprise"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "I’m not sure why, but I ______ that he doesn’t like me.",
+                "answer": "get the impression"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "What time did you ______ last night?",
+                "answer": "get home"
+              }
+            ]
+          },
+          {
+            "section": "Prepositions A",
+            "bookPage": 39,
+            "instruction": "Use about, at, for, in or of.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "afraid ______",
+                "answer": "of"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "capable ______",
+                "answer": "of"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "good ______",
+                "answer": "at"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "interested ______",
+                "answer": "in"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "jealous ______",
+                "answer": "of"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "responsible ______",
+                "answer": "for"
+              },
+              {
+                "number": 7,
+                "type": "fill_blank",
+                "prompt": "suitable ______",
+                "answer": "for"
+              },
+              {
+                "number": 8,
+                "type": "fill_blank",
+                "prompt": "worried ______",
+                "answer": "about"
+              }
+            ]
+          },
+          {
+            "section": "Prepositions B",
+            "bookPage": 39,
+            "instruction": "Complete with the adjectives and prepositions from A.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Was the pilot ______ the crash?",
+                "answer": "responsible for"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "I’m ______ flying. Let’s go by train.",
+                "answer": "afraid of"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Some people were ______ Amelia because she was clever.",
+                "answer": "jealous of"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "Nobody has seen John this week. Frank is really ______ him.",
+                "answer": "worried about"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "Were they ______ surviving alone on an island? Could they do it?",
+                "answer": "capable of"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "The film was very scary and not ______ children.",
+                "answer": "suitable for"
+              },
+              {
+                "number": 7,
+                "type": "fill_blank",
+                "prompt": "Are you ______ ancient places?",
+                "answer": "interested in"
+              },
+              {
+                "number": 8,
+                "type": "fill_blank",
+                "prompt": "She’s really ______ physics and wants to be a pilot.",
+                "answer": "good at"
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "land"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "navigator"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "take off"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "head for"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "fuel"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "record"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "legend"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "get a chance"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "get home"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "get the impression"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "get a job"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "get a reply"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 2",
+            "word": "get a surprise"
+          }
+        ]
+      }
+    ],
+    "paragraphTitles": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Guess what!"
+    ],
+    "glossary": [
+      {
+        "word": "Amelia Earhart",
+        "meaningCn": "阿梅莉亚·埃尔哈特（飞行员）",
+        "meaningEn": "the pilot whose disappearance is discussed in the article",
+        "category": "专有名词",
+        "isProperNoun": true
+      },
+      {
+        "word": "Fred Noonan",
+        "meaningCn": "弗雷德·努南（领航员）",
+        "meaningEn": "Amelia Earhart’s navigator",
+        "category": "专有名词",
+        "isProperNoun": true
+      },
+      {
+        "word": "Howland Island",
+        "meaningCn": "豪兰岛",
+        "meaningEn": "a small island in the Pacific Ocean",
+        "category": "专有名词",
+        "isProperNoun": true
+      }
+    ]
+  },
+  {
+    "key": "5a-u4l3",
+    "stage": "5A",
+    "unit": "Unit 4",
+    "lesson": "Lesson 3",
+    "title": "Anansi and the Basket of Wisdom",
+    "paragraphs": [
+      "Anansi the spider knew that he was very clever, but he also knew he wasn’t wise. He didn’t like this, but he did not know what to do. One day he had an idea. He went around the village with a basket and asked each person to give him some of their wisdom. The people laughed at Anansi because they knew that of all the creatures, he needed wisdom the most. So each person put a bit in his basket and wished him good luck with his search.",
+      "Soon his basket was full, but Anansi was worried that someone might be jealous of his wisdom and take it from him. He decided to hide it at the top of a tall tree. When he had tied the basket to the front part of his body, he tried to climb the tree, but it was too difficult. He tried again and again without success.",
+      "Then his youngest son walked by. ‘What are you doing, Father?’ he asked, and Anansi told him. ‘Why don’t you carry the basket on your back instead?’ his son said.",
+      "Anansi put the basket on his back and climbed the tree easily. But he wasn’t happy. ‘I walked all over the village and collected so much wisdom that I am the wisest creature ever, but my baby son is still wiser than me. Take back your wisdom!’ he said. And he threw the basket into the air and went home. With that, wisdom was spread all over the world."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "Anansi 的智慧故事",
+        "groups": [
+          {
+            "section": "1",
+            "bookPage": 40,
+            "instruction": "Think of a good title for the folk tale.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Give the story a title and explain your choice.",
+                "answer": ""
+              }
+            ]
+          },
+          {
+            "section": "2",
+            "bookPage": 40,
+            "instruction": "Answer the questions.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "What opinion did Anansi have about his own character?",
+                "answer": "",
+                "options": [
+                  "参考：He thought he was clever but not wise."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "Where did he get his wisdom from?",
+                "answer": "",
+                "options": [
+                  "参考：From people in his village."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "Why did the people laugh at Anansi?",
+                "answer": "",
+                "options": [
+                  "参考：They thought he needed wisdom the most."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "Why couldn’t he climb the tree at first?",
+                "answer": "",
+                "options": [
+                  "参考：The basket was tied to the front of his body."
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "Why was Anansi angry after he had climbed the tree?",
+                "answer": "",
+                "options": [
+                  "参考：His young son was still wiser than he was."
+                ]
+              },
+              {
+                "number": 6,
+                "type": "short_answer",
+                "prompt": "What happened to the wisdom in the end?",
+                "answer": "",
+                "options": [
+                  "参考：It was spread all over the world."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "4",
+            "bookPage": 41,
+            "instruction": "Book discussion: Which books would suit you, a brother or sister, a best friend, and your mum or dad? Give reasons.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Choose from a joke book, Amazing Mysteries, fairy tales, short stories, Peter Pan and Amazing Mazes. Explain your choices.",
+                "answer": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "changed-plans",
+        "eyebrow": "语法",
+        "title": "Talking about plans that change",
+        "groups": [
+          {
+            "section": "Say it like this",
+            "bookPage": 40,
+            "instruction": "Talk to a partner about yourself and how your own plans changed.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Use was/were supposed to and was/were going to. Explain what actually happened.",
+                "answer": ""
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 20,
+            "role": "extension",
+            "label": "中级：going to（包括过去的打算）"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 26,
+            "role": "foundation",
+            "label": "be going to"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "原定的安排",
+              "formula": "was / were (not) supposed to + verb",
+              "signals": "for homework · but",
+              "points": [
+                {
+                  "label": "原来应该做",
+                  "text": "We were supposed to write a story for homework, but we didn’t have any ideas."
+                }
+              ]
+            },
+            {
+              "title": "过去的打算",
+              "formula": "was / were (not) going to + verb",
+              "signals": "but · didn’t",
+              "points": [
+                {
+                  "label": "打算改变",
+                  "text": "I was going to write an email, but I didn’t have time."
+                },
+                {
+                  "label": "与原打算不同",
+                  "text": "They weren’t going to tell us about the mystery, but they did."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "I wasn’t supposed to read the ending of the story.",
+              "note": "原定要求或安排。"
+            },
+            {
+              "example": "I was going to write an email, but I didn’t have time.",
+              "note": "当时的打算，后来没有实现。"
+            }
+          ],
+          "decisionGuide": [
+            "说明原定安排或要求 → was / were supposed to。",
+            "说明过去的打算 → was / were going to；用 but 说明变化。"
+          ],
+          "reminders": []
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "叙事顺序与范文",
+        "groups": [
+          {
+            "section": "Writing A",
+            "bookPage": 41,
+            "instruction": "Write your own examples using narrative sequence words: once upon a time; at the beginning; one day/morning/night; after a while; suddenly; about an hour/a few minutes/days later; then; after that; the next thing I knew; soon; in the end; finally.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "One night, Alex had a strange dream. Write another opening sentence.",
+                "answer": ""
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "I was falling through the air and, suddenly, I woke up! Write another sentence with suddenly.",
+                "answer": ""
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "The day started badly, but everything was OK in the end. Write another ending.",
+                "answer": ""
+              }
+            ]
+          },
+          {
+            "section": "Writing B",
+            "bookPage": 41,
+            "instruction": "The Boy Who Cried Wolf: Read the story and circle the correct words.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "______ there was a boy who lived with his sheep on a mountain near a forest. He was bored and he wanted to have some fun.",
+                "answer": "Once upon a time",
+                "options": [
+                  "One day",
+                  "Once upon a time"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "______ he was looking after his sheep one day, he had an idea. He left his sheep, ran towards the village and shouted, ‘Wolf! Wolf!’",
+                "answer": "While",
+                "options": [
+                  "Soon",
+                  "While",
+                  "before"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "______ the villagers heard him, they came to help him. But there was no wolf and they all went home, annoyed at the boy.",
+                "answer": "As soon as",
+                "options": [
+                  "Then",
+                  "As soon as"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "______ the boy tried the same trick, and again the villagers came to help him and went home, angry again.",
+                "answer": "A few days later",
+                "options": [
+                  "A few days later",
+                  "Just then"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "______ a few days later, something strange happened. The boy woke up and, as he was looking out of the window, he saw that a wolf had really come out of the forest! ‘Wolf! Wolf!’ he shouted even louder than before. This time the villagers, who had believed him twice before, didn’t believe him.",
+                "answer": "Then",
+                "options": [
+                  "Then",
+                  "At first"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "______ nobody came to help him and the wolf ate all the boy’s sheep. He was very sad, but he learnt an important lesson. He realised that lying is wrong and that it causes a lot of trouble.",
+                "answer": "In the end",
+                "options": [
+                  "In the end",
+                  "At first"
+                ]
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 3",
+            "word": "wisdom"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 3",
+            "word": "search"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 4",
+            "lesson": "Lesson 3",
+            "word": "jealous"
+          }
+        ]
+      },
+      {
+        "type": "writing",
+        "id": "folk-tale-writing",
+        "eyebrow": "写作",
+        "title": "Write a folk tale",
+        "prompt": "Write about a mystery or a folk tale you know. Use past tenses, narrative sequence words and a title. Check the sequence words as in Activity D.",
+        "questions": [
+          "Paragraph 1: Introduce the main characters and set the scene. Where and when did it happen?",
+          "Paragraphs 2 and 3: Explain what happened, in order.",
+          "Paragraph 4: Explain the ending and describe the characters’ feelings and reactions."
+        ],
+        "suggestedWords": [
+          "once upon a time",
+          "one day",
+          "then",
+          "suddenly",
+          "after that",
+          "in the end"
+        ],
+        "modelAnswer": [
+          "The Lion and the Mouse\n\nOnce upon a time, a lion lived in a forest. One day, a little mouse ran over him while he was sleeping.",
+          "The lion woke up and caught the mouse. The mouse begged him to let her go and promised to help him one day. The lion laughed, but he set her free.",
+          "A few days later, the lion was caught in a net. The mouse heard his cries and came to help. She bit through the ropes until he was free.",
+          "In the end, the lion thanked the mouse. He had thought she was too small to help him, but she had saved his life. He learnt that even a small friend can be a great help."
+        ]
+      }
+    ],
+    "glossary": [
+      {
+        "word": "Anansi",
+        "meaningCn": "阿南西（非洲民间故事中的蜘蛛）",
+        "meaningEn": "the spider character in this African folk tale",
+        "category": "专有名词",
+        "isProperNoun": true
+      }
+    ]
+  },
+  {
+    "key": "5a-u5l1",
+    "stage": "5A",
+    "unit": "Unit 5",
+    "lesson": "Lesson 1",
+    "title": "What type of career is best for you?",
+    "paragraphs": [
+      "Each spring, school careers officers meet with students to talk about their goals for the future. They talk about students’ interests, qualifications and what the students will do after finishing school. Next, the careers officer gives students a quiz to learn more about them and their preferences. Here’s an example of the type of quiz a careers officer might give.",
+      "Are you going to want to spend time with people at work?\na Yes, all the time\nb Yes, some of the time\nc No, I like working alone",
+      "How important is it to be well paid?\na Very important\nb Somewhat important\nc The least important part of the job",
+      "How experienced are you with technology?\na Very experienced\nb Not very experienced, but willing to learn\nc I don’t like working with technology",
+      "Are you a leader?\na Yes\nb Somewhat, but I also like to learn from others\nc No",
+      "How creative are you?\na Somewhat creative\nb Very creative\nc It depends on my interest",
+      "If you got mostly a’s, you are ambitious and want to make money. But you’re willing to help others, too. You’re going to spend a lot of time working, too. You might be a doctor, for example.",
+      "If you got mostly b’s, you will have a career doing something creative. You’re going to be a teacher or a writer, for example.",
+      "If you got mostly c’s, you will work with your hands in some way. Maybe you’re going to work with machines, for example. Think about becoming a mechanic or a gardener."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "职业兴趣与选择",
+        "groups": [
+          {
+            "section": "4",
+            "bookPage": 48,
+            "instruction": "Answer the questions.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Why do careers officers meet with students?",
+                "answer": "",
+                "options": [
+                  "参考：To talk about their goals for the future."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "What do they discuss?",
+                "answer": "",
+                "options": [
+                  "参考：Students’ interests, qualifications and what they will do after finishing school."
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "Why does the careers officer give the quiz?",
+                "answer": "",
+                "options": [
+                  "参考：To learn more about students and their preferences."
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "What other jobs can you think of for each category?",
+                "answer": ""
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "Take the quiz in the reading. Write your five choices (a/b/c), count them, then read the corresponding result. What is your result? Do you agree? Why?",
+                "answer": ""
+              }
+            ]
+          },
+          {
+            "section": "11",
+            "bookPage": 49,
+            "instruction": "Talk about your future career. Ask and answer with a partner.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "What job are you going to do in the future?",
+                "answer": ""
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "What qualifications and skills will you need?",
+                "answer": ""
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "What will be difficult about it? What will be enjoyable?",
+                "answer": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "future-simple-going-to",
+        "eyebrow": "语法",
+        "title": "Future simple and be going to",
+        "groups": [
+          {
+            "section": "5",
+            "bookPage": 49,
+            "instruction": "Find four examples of the future simple in the reading. Which uses do they illustrate?",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Quote the four phrases and explain their uses.",
+                "answer": "",
+                "options": [
+                  "参考：教材要求找 4 个例子，但可见原文只有 3 处 will：will do、will have a career、will work，均表示预测。going to 不是 will 形式。"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "6",
+            "bookPage": 49,
+            "instruction": "Find four examples of be going to in the reading. Which two meanings do they have?",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Quote four phrases and explain whether each expresses a plan or a prediction.",
+                "answer": "",
+                "options": [
+                  "参考：Are you going to want ...?; You’re going to spend ...; You’re going to be ...; you’re going to work ... . Discuss plans/intentions and predictions based on the quiz results."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "7",
+            "bookPage": 49,
+            "instruction": "Complete Samira’s email with the future simple or be going to.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Hi! I’ve got something exciting to tell you. This summer I ______ (work) on an island!",
+                "answer": "am going to work"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "My uncle ______ (open) a restaurant in Malta and he needs some waiters and waitresses.",
+                "answer": "is going to open"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "He thinks the restaurant probably ______ (not be) busy at first.",
+                "answer": "won’t be\nwill not be"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "So I’m sure that we ______ (have) lots of time to relax.",
+                "answer": "will have"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "The only thing I’m worried about is my English. I ______ (study) very hard from now on.",
+                "answer": "am going to study"
+              },
+              {
+                "number": 6,
+                "type": "fill_blank",
+                "prompt": "PS ______ (you/go) to Dina’s party on Saturday?",
+                "answer": "Are you going to go"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "essential",
+            "unitNumber": 26,
+            "role": "foundation",
+            "label": "be going to"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 27,
+            "role": "foundation",
+            "label": "will / shall"
+          },
+          {
+            "book": "intermediate",
+            "unitNumber": 23,
+            "role": "extension",
+            "label": "中级：will 与 be going to"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "will",
+              "formula": "will + verb",
+              "signals": "I think · I hope · I’m sure · probably",
+              "points": [
+                {
+                  "label": "预测",
+                  "text": "There will be more students at university next year."
+                },
+                {
+                  "label": "即时决定",
+                  "text": "I won’t phone Kim this evening."
+                },
+                {
+                  "label": "承诺与帮助",
+                  "text": "I promise I’ll finish the work tonight."
+                },
+                {
+                  "label": "请求",
+                  "text": "Will you tell me your name and address?"
+                }
+              ]
+            },
+            {
+              "title": "be going to",
+              "formula": "am / is / are going to + verb",
+              "signals": "已做的计划 · 眼前证据",
+              "points": [
+                {
+                  "label": "计划或意图",
+                  "text": "I’m going to be a teacher."
+                },
+                {
+                  "label": "有依据的预测",
+                  "text": "He’s going to pass the test because he’s clever."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "Stop talking or I’ll tell the teacher.",
+              "note": "will 可以表示警告。"
+            },
+            {
+              "example": "I’m going to be a teacher.",
+              "note": "be going to 表示事先的计划。"
+            }
+          ],
+          "decisionGuide": [
+            "刚作决定、请求、承诺或个人预测 → will。",
+            "既有计划或根据眼前证据作预测 → be going to。"
+          ],
+          "reminders": []
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "职业与教育词汇",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 48,
+            "instruction": "Circle the correct words.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "Martin isn’t very ______. He just wants to play video games all day.",
+                "answer": "ambitious",
+                "options": [
+                  "ambitious",
+                  "experienced"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "What are the ______ needed for this job?",
+                "answer": "qualifications",
+                "options": [
+                  "goals",
+                  "qualifications"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "My sister wants a ______ in the arts.",
+                "answer": "career",
+                "options": [
+                  "career",
+                  "leader"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Diana is a(n) ______ writer. Her stories are so unique!",
+                "answer": "creative",
+                "options": [
+                  "ambitious",
+                  "creative"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "My ______ is to become a professional dancer.",
+                "answer": "goal",
+                "options": [
+                  "goal",
+                  "leader"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "Bao is a(n) ______ police officer. He’s been doing it for eighteen years.",
+                "answer": "experienced",
+                "options": [
+                  "creative",
+                  "experienced"
+                ]
+              },
+              {
+                "number": 7,
+                "type": "multiple_choice",
+                "prompt": "Our school has needed a new ______ ever since Mrs Thompson left.",
+                "answer": "leader",
+                "options": [
+                  "career",
+                  "leader"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "8",
+            "bookPage": 49,
+            "instruction": "Read the vocabulary examples.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "After you fill out the job application, sign and date it.",
+                "answer": "",
+                "options": [
+                  "参考：application: 申请。"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "Her boss let her take three days off.",
+                "answer": "",
+                "options": [
+                  "参考：boss: 老板。"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "Micah is taking language courses so he can work in China.",
+                "answer": "",
+                "options": [
+                  "参考：course: 课程。"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "Mum has got a degree in medicine.",
+                "answer": "",
+                "options": [
+                  "参考：degree: 学位。"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "When you finish school, they sometimes give you a diploma.",
+                "answer": "",
+                "options": [
+                  "参考：diploma: 毕业文凭。"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "short_answer",
+                "prompt": "What is Jillian’s occupation? Is she a teacher?",
+                "answer": "",
+                "options": [
+                  "参考：occupation: 职业。"
+                ]
+              },
+              {
+                "number": 7,
+                "type": "short_answer",
+                "prompt": "The starting salary for this career is 80,000 € a year.",
+                "answer": "",
+                "options": [
+                  "参考：salary: 薪水。"
+                ]
+              },
+              {
+                "number": 8,
+                "type": "short_answer",
+                "prompt": "After finishing secondary school, I’ll go to university to study art.",
+                "answer": "",
+                "options": [
+                  "参考：university: 大学。"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "9",
+            "bookPage": 49,
+            "instruction": "Circle the odd one out.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "Circle the odd one out.",
+                "answer": "course",
+                "options": [
+                  "boss",
+                  "course",
+                  "university"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "Circle the odd one out.",
+                "answer": "goal",
+                "options": [
+                  "occupation",
+                  "career",
+                  "goal"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "Circle the odd one out.",
+                "answer": "application",
+                "options": [
+                  "leader",
+                  "diploma",
+                  "application"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Circle the odd one out.",
+                "answer": "leader",
+                "options": [
+                  "degree",
+                  "diploma",
+                  "leader"
+                ]
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "ambitious"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "career"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "creative"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "experienced"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "goal"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "leader"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "qualification"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "application"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "boss"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "course"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "degree"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "diploma"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "occupation"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "salary"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 1",
+            "word": "university"
+          }
+        ]
+      },
+      {
+        "type": "writing",
+        "id": "perfect-job-writing",
+        "eyebrow": "写作",
+        "title": "My perfect job",
+        "prompt": "Write a paragraph about your perfect job. Answer the questions in Activity 11.",
+        "questions": [
+          "What job are you going to do?",
+          "What qualifications and skills will you need?",
+          "What will be difficult? What will be enjoyable?"
+        ],
+        "suggestedWords": [
+          "career",
+          "qualification",
+          "degree",
+          "creative",
+          "will",
+          "going to"
+        ],
+        "modelAnswer": [
+          "My perfect job is to be a teacher. I’m going to study hard and get a university degree. I will need to be patient and good at explaining things. Planning lessons for different students will sometimes be difficult, but I think the job will be enjoyable. I will help children learn new things and become more confident."
+        ]
+      }
+    ],
+    "paragraphTitles": [
+      "",
+      "Quiz: Question 1",
+      "Question 2",
+      "Question 3",
+      "Question 4",
+      "Question 5",
+      "Mostly a’s",
+      "Mostly b’s",
+      "Mostly c’s"
+    ]
+  },
+  {
+    "key": "5a-u5l2",
+    "stage": "5A",
+    "unit": "Unit 5",
+    "lesson": "Lesson 2",
+    "title": "Kiara’s Solution to Drought",
+    "paragraphs": [
+      "In 2016, South Africa had a terrible drought. As a result, crops were destroyed and farm animals died. It’s difficult to prevent these losses during a drought, but there’s a solution: a special substance for the soil called a super-absorbent polymer, or SAP. The purpose of an SAP is to help soil absorb water and keep it in the ground. During a drought, the SAPs can slowly let water out to keep the crops alive. However, SAPs have got their own problems. Some have got chemicals which are bad for the environment. Also, they’re very expensive, at US $2,000–$3,000 per metric tonne, which makes it tough for many farmers to buy and use them.",
+      "South African student Kiara Nirghin understands these problems and has got a sensible solution. She discovered that orange and avocado peels work well as a natural SAP. She created a powder from these peels that absorbs water and keeps it in the ground, just like any other SAP. But her powder doesn’t add chemicals, and it costs less money because it’s made from orange peels thrown away at juice factories. Kiara’s solution can sell for US $30–$60 per metric tonne. And it isn’t just cheaper – it’s more effective! In 2016, sixteen-year-old Kiara won the top prize at the Google Science Fair for this discovery.",
+      "Kiara is an ambitious student. For her, the Google Science Fair prize is just the beginning. ‘I might look into health sciences or engineering,’ she says when asked about her goals. ‘Something so I can improve the world.’ In the future, Kiara will probably be working in agriculture sciences doing work to help farmers. She will also be testing her orange peel SAP for other uses, including improving water quality. Kiara is determined to make a difference.",
+      "Students between the ages of 13 and 18 can enter the Google Science Fair. The top prize for winning the competition is $50,000 in scholarship money."
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "问题与解决方案",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 50,
+            "instruction": "Read and choose Problem or Solution.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "The drought in South Africa has harmed crops and farm animals.",
+                "answer": "Problem",
+                "options": [
+                  "Problem",
+                  "Solution"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "SAPs absorb water and let it out during a drought.",
+                "answer": "Solution",
+                "options": [
+                  "Problem",
+                  "Solution"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "SAPs cost between US $2,000–$3,000 per metric tonne.",
+                "answer": "Problem",
+                "options": [
+                  "Problem",
+                  "Solution"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Kiara creates a low-cost SAP that sells for US $30–$60 per metric tonne.",
+                "answer": "Solution",
+                "options": [
+                  "Problem",
+                  "Solution"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "Kiara is testing her SAP for other uses.",
+                "answer": "Solution",
+                "options": [
+                  "Problem",
+                  "Solution"
+                ]
+              }
+            ]
+          }
+        ],
+        "description": "保留教材 2016 年报道及赛事旁栏；其中赛事年龄和奖金描述属于当时的教材内容。"
+      },
+      {
+        "type": "grammar",
+        "id": "future-continuous",
+        "eyebrow": "语法",
+        "title": "Future continuous",
+        "groups": [
+          {
+            "section": "7",
+            "bookPage": 51,
+            "instruction": "Complete with the future continuous.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "I ______ (not take) my science exams this May. I’m not ready.",
+                "answer": "won’t be taking\nwill not be taking"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "______ you ______ (leave) school this time next year?",
+                "answer": "Will; be leaving"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Sonja ______ (write) her school project all day tomorrow.",
+                "answer": "will be writing"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "We ______ (travel) to Brazil in a few days.",
+                "answer": "will be travelling"
+              }
+            ]
+          },
+          {
+            "section": "8",
+            "bookPage": 51,
+            "instruction": "Write complete sentences in the future continuous.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "In a few days / we / do our experiment",
+                "answer": "In a few days, we will be doing our experiment."
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "This time tomorrow / I / leave for school",
+                "answer": "This time tomorrow, I will be leaving for school."
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "Daniel / not finish his project / soon",
+                "answer": "Daniel won’t be finishing his project soon.\nDaniel will not be finishing his project soon."
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "During the weekend / Mum and Dad / take us to the science fair",
+                "answer": "During the weekend, Mum and Dad will be taking us to the science fair."
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "In five years / she / not work as a scientist",
+                "answer": "In five years, she won’t be working as a scientist.\nIn five years, she will not be working as a scientist."
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 24,
+            "role": "extension",
+            "label": "中级：将来进行时与将来完成时"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 27,
+            "role": "foundation",
+            "label": "will / shall"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "将来某时正在进行",
+              "formula": "will be + verb-ing",
+              "signals": "this time tomorrow · in a few days · next week · during the trip",
+              "points": [
+                {
+                  "label": "肯定",
+                  "text": "This time tomorrow, we’ll be travelling to South Africa."
+                },
+                {
+                  "label": "疑问",
+                  "text": "Will she be studying during the trip?"
+                },
+                {
+                  "label": "否定",
+                  "text": "No, I won’t. They won’t be working this hard in a few days."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "Kiara will probably be working in agriculture sciences.",
+              "note": "强调将来某时正在做的活动。"
+            },
+            {
+              "example": "The invention will affect how people water their plants.",
+              "note": "一般将来时说明将来的影响。"
+            }
+          ],
+          "decisionGuide": [
+            "看到将来某个时刻，并强调那时正在发生 → will be + -ing。",
+            "所有人称都用 will；否定用 will not / won’t be + -ing。"
+          ],
+          "reminders": []
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "科学研究与短语动词",
+        "groups": [
+          {
+            "section": "4",
+            "bookPage": 50,
+            "instruction": "Circle the best meaning for each word.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "tough",
+                "answer": "difficult",
+                "options": [
+                  "soft",
+                  "difficult"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "sensible",
+                "answer": "reasonable",
+                "options": [
+                  "reasonable",
+                  "experienced"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "purpose",
+                "answer": "reason",
+                "options": [
+                  "reason",
+                  "opinion"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "determined",
+                "answer": "focused on a goal",
+                "options": [
+                  "focused on a goal",
+                  "well paid"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "effective",
+                "answer": "useful",
+                "options": [
+                  "foolish",
+                  "useful"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "substance",
+                "answer": "material",
+                "options": [
+                  "material",
+                  "career"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "5",
+            "bookPage": 51,
+            "instruction": "Read the vocabulary in context.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "The invention will affect how people water their plants.",
+                "answer": "",
+                "options": [
+                  "参考：affect: 影响。"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "short_answer",
+                "prompt": "Kiara’s mum wants her to inspire other girls to study science.",
+                "answer": "",
+                "options": [
+                  "参考：inspire: 激励。"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "short_answer",
+                "prompt": "You need a good knowledge of science to understand the problem.",
+                "answer": "",
+                "options": [
+                  "参考：knowledge: 知识。"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "short_answer",
+                "prompt": "They’re studying biology to prepare for a career as a scientist.",
+                "answer": "",
+                "options": [
+                  "参考：prepare: 做准备。"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "short_answer",
+                "prompt": "We’re working on our science project after school this week.",
+                "answer": "",
+                "options": [
+                  "参考：project: 项目。"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "short_answer",
+                "prompt": "We’re doing this experiment to prove our theory.",
+                "answer": "",
+                "options": [
+                  "参考：prove: 证明。"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "6",
+            "bookPage": 51,
+            "instruction": "Complete with words from Activity 5.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "My experiment will ______ that this species can live with little water.",
+                "answer": "prove"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "Are you ______ to enter the science fair?",
+                "answer": "prepared"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "Nobody is sure how these chemicals will ______ the soil.",
+                "answer": "affect"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "My uncle has a good ______ of the newest technology, so I’ll ask him.",
+                "answer": "knowledge"
+              }
+            ]
+          },
+          {
+            "section": "Phrasal verbs",
+            "bookPage": 51,
+            "instruction": "Circle the correct words.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "I can’t keep ______ with James. He walks so fast.",
+                "answer": "up",
+                "options": [
+                  "out",
+                  "up"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "How did you put up ______ sleeping on the ground for two weeks?",
+                "answer": "with",
+                "options": [
+                  "with",
+                  "to"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "Don’t give ______ now! You can do it!",
+                "answer": "up",
+                "options": [
+                  "up",
+                  "off"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Pete was quite ill. It took him months to get ______ it.",
+                "answer": "over",
+                "options": [
+                  "by",
+                  "over"
+                ]
+              },
+              {
+                "number": 5,
+                "type": "multiple_choice",
+                "prompt": "I wanted to go camping this year, but Joe put me ______.",
+                "answer": "off",
+                "options": [
+                  "on",
+                  "off"
+                ]
+              },
+              {
+                "number": 6,
+                "type": "multiple_choice",
+                "prompt": "He wanted to participate in the science fair, but the organisers turned him ______.",
+                "answer": "down",
+                "options": [
+                  "down",
+                  "up"
+                ]
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "tough"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "sensible"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "purpose"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "determined"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "effective"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "substance"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "affect"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "inspire"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "knowledge"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "prepare"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "project"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 2",
+            "word": "prove"
+          }
+        ]
+      }
+    ],
+    "paragraphTitles": [
+      "",
+      "",
+      "",
+      "Guess what!"
+    ],
+    "glossary": [
+      {
+        "word": "Kiara Nirghin",
+        "meaningCn": "基亚拉·尼尔金（南非学生发明者）",
+        "meaningEn": "the South African student featured in the article",
+        "category": "专有名词",
+        "isProperNoun": true
+      },
+      {
+        "word": "Google Science Fair",
+        "meaningCn": "谷歌科学挑战赛（教材所述赛事）",
+        "meaningEn": "the science competition described in the textbook",
+        "category": "专有名词",
+        "isProperNoun": true
+      },
+      {
+        "word": "super-absorbent polymer",
+        "meaningCn": "n. 高吸水性聚合物（SAP）",
+        "meaningEn": "a material that absorbs and holds a large amount of water",
+        "category": "超纲词汇"
+      }
+    ]
+  },
+  {
+    "key": "5a-u5l3",
+    "stage": "5A",
+    "unit": "Unit 5",
+    "lesson": "Lesson 3",
+    "title": "The Future",
+    "paragraphs": [
+      "I’m about to apply to university for courses in computer science. After university, I’m not going to get a job. I’m going to start my own company and be my own boss! There are so many young people running online companies. I think anyone with an original idea can succeed. By the age of twenty-five, I probably won’t have become a millionaire, but maybe I’ll have enough money to buy my own home.",
+      "I play the guitar in a band called Nobody’s Heroes. We’ve played a few times at local music festivals and people say we’ve got talent. By the time I’m twenty-five, I hope we will have become famous. Maybe we will have even been on a world tour! My parents are worried that I’m wasting my time and they complain about the noise I make when I’m practising. They hope that I’ll give up music and try to get some qualifications for a career in business or medicine.",
+      "I’m not interested in being rich or famous, but I really love travelling and photography! First, I want to study for a degree in languages. I’m determined to travel round the world taking amazing photos of people and places. By the time I’m twenty-five, I hope I will have visited lots of interesting places and had some amazing experiences. Who knows? Maybe I will have sold my photos to magazines! Maybe I will have moved to another country!"
+    ],
+    "learningSections": [
+      {
+        "type": "exercises",
+        "id": "reading-comprehension",
+        "eyebrow": "总结",
+        "title": "三位少年的未来梦想",
+        "groups": [
+          {
+            "section": "2",
+            "bookPage": 52,
+            "instruction": "Choose Laura, Tomás or Chiyo.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "Who may live in another country one day?",
+                "answer": "Chiyo",
+                "options": [
+                  "Laura",
+                  "Tomás",
+                  "Chiyo"
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "Who wants to be his/her own boss?",
+                "answer": "Laura",
+                "options": [
+                  "Laura",
+                  "Tomás",
+                  "Chiyo"
+                ]
+              },
+              {
+                "number": 3,
+                "type": "multiple_choice",
+                "prompt": "Who has got a special talent that he/she wants to use?",
+                "answer": "Tomás",
+                "options": [
+                  "Laura",
+                  "Tomás",
+                  "Chiyo"
+                ]
+              },
+              {
+                "number": 4,
+                "type": "multiple_choice",
+                "prompt": "Who has got parents that don’t support his/her dream?",
+                "answer": "Tomás",
+                "options": [
+                  "Laura",
+                  "Tomás",
+                  "Chiyo"
+                ]
+              }
+            ]
+          },
+          {
+            "section": "2.5",
+            "bookPage": 52,
+            "instruction": "Who will continue his/her education after school? Write both names.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Name the two teenagers and explain.",
+                "answer": "",
+                "options": [
+                  "参考：Laura wants to study computer science; Chiyo wants a degree in languages."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "Say it like this",
+            "bookPage": 52,
+            "instruction": "Use be about to + verb for immediate future plans. Example: I’m about to make a cup of tea. Do you want one? Mum is about to go shopping.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Tell a partner about something you are about to do: go on holiday, have lunch, start a project or do homework.",
+                "answer": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "grammar",
+        "id": "future-perfect-simple",
+        "eyebrow": "语法",
+        "title": "Future perfect simple",
+        "groups": [
+          {
+            "section": "3",
+            "bookPage": 53,
+            "instruction": "Complete with the future perfect simple.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "Emad ______ (not save) enough money for his trip by next year.",
+                "answer": "won’t have saved\nwill not have saved"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "By next week, ______ you ______ (complete) your applications for university?",
+                "answer": "will; have completed"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "By the age of twenty-five, we ______ (find) good jobs.",
+                "answer": "will have found"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "Grandma and Grandpa ______ (leave) for Japan by next month.",
+                "answer": "will have left"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "The judges ______ (not decide) the winners of the science fair by this evening.",
+                "answer": "won’t have decided\nwill not have decided"
+              }
+            ]
+          },
+          {
+            "section": "4",
+            "bookPage": 53,
+            "instruction": "Write what Vicki will or won’t have done by 2030. The textbook photos show: footballer ✗, married ✓, Machu Picchu ✓, degree ✓, expensive car ✗.",
+            "items": [
+              {
+                "number": 1,
+                "type": "fill_blank",
+                "prompt": "By 2030, Vicki ______ a professional footballer.",
+                "answer": "won’t have become\nwill not have become"
+              },
+              {
+                "number": 2,
+                "type": "fill_blank",
+                "prompt": "By 2030, Vicki ______ married.",
+                "answer": "will have got"
+              },
+              {
+                "number": 3,
+                "type": "fill_blank",
+                "prompt": "By 2030, Vicki ______ Machu Picchu.",
+                "answer": "will have visited"
+              },
+              {
+                "number": 4,
+                "type": "fill_blank",
+                "prompt": "By 2030, Vicki ______ a degree from university.",
+                "answer": "will have got"
+              },
+              {
+                "number": 5,
+                "type": "fill_blank",
+                "prompt": "By 2030, Vicki ______ an expensive car.",
+                "answer": "won’t have bought\nwill not have bought"
+              }
+            ]
+          }
+        ],
+        "grammarRefs": [
+          {
+            "book": "intermediate",
+            "unitNumber": 24,
+            "role": "extension",
+            "label": "中级：将来进行时与将来完成时"
+          },
+          {
+            "book": "essential",
+            "unitNumber": 24,
+            "role": "foundation",
+            "label": "规则与不规则动词"
+          }
+        ],
+        "summary": {
+          "cards": [
+            {
+              "title": "将来某时之前完成",
+              "formula": "will have + past participle",
+              "signals": "by the time · by the age of · by tomorrow / next week / month / year",
+              "points": [
+                {
+                  "label": "截至将来某时",
+                  "text": "By the time I get home, I will have fallen asleep."
+                },
+                {
+                  "label": "截至某个年龄",
+                  "text": "By the age of 30, she will have become a doctor."
+                }
+              ]
+            }
+          ],
+          "contrastTitle": "关键区别",
+          "contrasts": [
+            {
+              "example": "She will be working as a scientist.",
+              "note": "将来进行时：那时正在做。"
+            },
+            {
+              "example": "She will have become a doctor.",
+              "note": "将来完成时：那时之前已经完成。"
+            }
+          ],
+          "decisionGuide": [
+            "先找将来的截止时间（by ...）。",
+            "强调截止前已经完成 → will have + 过去分词；否定用 won’t have。"
+          ],
+          "reminders": []
+        }
+      },
+      {
+        "type": "exercises",
+        "id": "place-vocabulary",
+        "eyebrow": "词汇",
+        "title": "写作技巧：主题句",
+        "groups": [
+          {
+            "section": "Writing A",
+            "bookPage": 53,
+            "instruction": "Each paragraph begins with a topic sentence. Choose the sentence that fits.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "Elora’s Dream: ______ She is quite shy with people, though, and it can be tough for her to make friends. So, she prefers spending her time with animals.",
+                "answer": "Elora, who is 17 years old, is a lovely person.",
+                "options": [
+                  "Elora, who is 17 years old, is very popular at school.",
+                  "Elora, who is 17 years old, is a lovely person."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "Writing A discussion",
+            "bookPage": 53,
+            "instruction": "Explain why the other topic sentence does not fit.",
+            "items": [
+              {
+                "number": 1,
+                "type": "short_answer",
+                "prompt": "Why does “very popular at school” not fit the paragraph?",
+                "answer": "",
+                "options": [
+                  "参考：The paragraph describes her shyness and difficulty making friends; it does not develop the idea of popularity."
+                ]
+              }
+            ]
+          },
+          {
+            "section": "Writing B",
+            "bookPage": 53,
+            "instruction": "Choose the topic sentence for each paragraph.",
+            "items": [
+              {
+                "number": 1,
+                "type": "multiple_choice",
+                "prompt": "______ Now she’s determined to make her dream come true. She is good at science and is studying very hard to go to university next year. She’s also working part-time at a local animal shelter, where she looks after animals that don’t have a home.",
+                "answer": "Elora has always dreamed of becoming a vet.",
+                "options": [
+                  "Elora has always dreamed of becoming a vet.",
+                  "Since she was a little girl, Elora has wanted to work in an animal shelter."
+                ]
+              },
+              {
+                "number": 2,
+                "type": "multiple_choice",
+                "prompt": "______ I’m sure she’ll pass her exams, go to university and get a degree. In a few years, she will be working as a vet and helping animals which she loves so much.",
+                "answer": "I think that Elora will succeed in getting her dream job.",
+                "options": [
+                  "I think that Elora will succeed in getting her dream job.",
+                  "In a couple of years, Elora will have become a vet."
+                ]
+              }
+            ]
+          }
+        ],
+        "wordRefs": [
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 3",
+            "word": "complain"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 3",
+            "word": "be about to do ..."
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 3",
+            "word": "run"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 3",
+            "word": "succeed"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 3",
+            "word": "millionaire"
+          },
+          {
+            "stage": "5A",
+            "unit": "Unit 5",
+            "lesson": "Lesson 3",
+            "word": "tour"
+          }
+        ]
+      },
+      {
+        "type": "writing",
+        "id": "ambition-article",
+        "eyebrow": "写作",
+        "title": "Write about someone’s ambition",
+        "prompt": "Write an article about someone you know who has got an ambition to do something. Use a topic sentence in each main paragraph, and check them as in Activity D.",
+        "questions": [
+          "Paragraph 1: Introduce the person and describe his/her skills and abilities.",
+          "Paragraph 2: State the dream or ambition and explain how the person is trying to make it come true.",
+          "Paragraph 3: Say if and when you think the person will achieve the goal."
+        ],
+        "suggestedWords": [
+          "ambition",
+          "determined",
+          "prepare",
+          "succeed",
+          "will be",
+          "will have"
+        ],
+        "modelAnswer": [
+          "Mia’s Dream\n\nMy friend Mia is a creative and patient person. She enjoys drawing animals and is good at noticing small details. She also likes telling stories with her pictures.",
+          "Mia dreams of becoming an illustrator. She practises drawing every day and reads many picture books. She is going to study art and learn how to use computer drawing programs.",
+          "I think Mia will achieve her goal because she works hard and enjoys learning. By the time she finishes university, she will have made a collection of her best drawings. I hope she will be illustrating books one day."
+        ]
+      }
+    ],
+    "paragraphTitles": [
+      "Laura, 15",
+      "Tomás, 17",
+      "Chiyo, 16"
+    ],
+    "glossary": [
+      {
+        "word": "Nobody’s Heroes",
+        "meaningCn": "Nobody’s Heroes（Tomás 的乐队名）",
+        "meaningEn": "the band Tomás plays in",
+        "category": "专有名词",
+        "isProperNoun": true
+      }
+    ]
+  },
 ]
 
 /**

@@ -8,7 +8,7 @@ import { useAuth } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
 import { useReadingPassageAudio } from '@rosie/english'
 import { useWordData } from '@rosie/english'
-import { ReadingAudioButton } from '@rosie/english'
+import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import {
   findPassageByKey,
   buildEntryRegex,
@@ -43,6 +43,11 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const { vocab: fullVocab } = useWordData(user)
   const { weeklyPlan, updateDayProgress } = useWeeklyPlan(user)
   const audioUrl = useReadingPassageAudio(user, key)
+  const player = usePlaylistPlayer()
+  const { stop } = player
+  useEffect(() => { stop() }, [key, stop])
+  const narrationActive = player.current?.refLink === `/english/words/reading/${key}`
+  const narrationPlaying = narrationActive && player.isPlaying && !player.isPaused
   const searchParams = useSearchParams()
   const focusWord = searchParams.get('focus')
 
@@ -321,7 +326,34 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
               </span>
               <span className="hidden whitespace-nowrap sm:inline">专注</span>
             </button>
-            <ReadingAudioButton src={audioUrl} mode="once" size="md" className="mt-0.5" />
+            <button
+              type="button"
+              disabled={!audioUrl}
+              aria-label={!audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '播放朗读'}
+              aria-pressed={narrationPlaying}
+              title={!audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'}
+              onClick={() => {
+                if (!audioUrl) return
+                if (narrationActive && player.isPlaying) {
+                  player.togglePause()
+                } else {
+                  player.play([{
+                    url: audioUrl,
+                    label: passage.title,
+                    refLink: `/english/words/reading/${key}`,
+                    mediaType: 'audio',
+                    source: null,
+                  }])
+                }
+              }}
+              className={`mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] ring-1 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:cursor-not-allowed disabled:opacity-40 ${
+                narrationPlaying
+                  ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white shadow-sm ring-orange-300'
+                  : 'cursor-pointer bg-white/90 text-orange-700 ring-orange-200 hover:bg-white'
+              }`}
+            >
+              <span aria-hidden>{narrationPlaying ? '⏸' : '🔊'}</span>
+            </button>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
@@ -395,6 +427,7 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
         onEntryChange={setStripSelected}
         onClose={() => setStripSelected(null)}
       />
+      <PlayerDock player={player} theme="light" showProgress />
     </main>
   )
 }

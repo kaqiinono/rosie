@@ -3,17 +3,15 @@
 import { useRouter } from 'next/navigation'
 import type { MasteryLevel, Problem } from '@rosie/core'
 import { MASTERY_ICON, MASTERY_BADGE_BG } from '@rosie/core'
-import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
-import AnalysisGuideBadgeForProblem from '@rosie/math-kit/components/shared/AnalysisGuideBadgeForProblem'
-import ProblemDraftActions from '@rosie/math-kit/components/shared/ProblemDraftActions'
+import { problemCardDisplayId } from '../../utils/problem-display-id'
 
 type LessonProblemDetailHeaderProps = {
   problemId: string
   title: string
   masteryLevel: MasteryLevel
   practiceCount: number
-  /** When provided, shows 📊 图解 badge if this problem has an analysis image. */
+  /** Provides the business display number when it differs from the stored ID. */
   problem?: Problem
 }
 
@@ -27,28 +25,34 @@ export default function LessonProblemDetailHeader({
   const router = useRouter()
 
   return (
-    <div className="mb-4 flex items-center gap-2.5 border-b border-border-light pb-3.5">
-      <button
-        onClick={() => router.back()}
-        className="flex h-[34px] w-[34px] shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-gray-100 text-lg transition-colors hover:bg-gray-200"
-      >
-        ‹
-      </button>
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="text-[17px] font-bold">{title}</div>
-          {problem && <AnalysisGuideBadgeForProblem problem={problem} size="md" />}
+    <div className="mb-4 space-y-3 border-b border-border-light pb-3.5">
+      <div className="flex items-start gap-2.5">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="返回上一页"
+          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-surface-dim text-text-secondary hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-app-blue"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+            <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <div className="min-w-0 flex-1">
+          <div className="flex min-h-9 items-start gap-2">
+            <span className="mt-1 flex h-8 min-w-8 shrink-0 items-center justify-center whitespace-nowrap rounded-lg bg-app-blue-light px-2 text-xs font-semibold tabular-nums text-app-blue-dark">
+              {problemCardDisplayId(problem ?? { id: problemId })}
+            </span>
+            <div className="min-w-0 flex-1 pt-1 text-[17px] font-bold leading-snug break-words">{title}</div>
+          </div>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <PracticeCountBadge count={practiceCount} compact />
+          </div>
         </div>
-        <div className="mt-1">
-          <PracticeCountBadge count={practiceCount} />
+        <div
+          className={`flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[masteryLevel]}`}
+        >
+          {MASTERY_ICON[masteryLevel] || '·'}
         </div>
-      </div>
-      <FavoriteHeart problemId={problemId} size="md" />
-      {problem && <ProblemDraftActions problem={problem} />}
-      <div
-        className={`flex h-[30px] min-w-[30px] items-center justify-center rounded-full px-1.5 text-sm font-bold ${MASTERY_BADGE_BG[masteryLevel]}`}
-      >
-        {MASTERY_ICON[masteryLevel] || '·'}
       </div>
     </div>
   )

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { PracticeHelpProblem } from '@rosie/math-kit/utils/practice-queue-types'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 import { problemSetSectionLabel } from '@rosie/math-kit/utils/problem-set-helpers'
+import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 
 export default function PracticeHelpPanel({
@@ -59,6 +60,7 @@ export default function PracticeHelpPanel({
           </button>
           <div className="px-4">
             <div className="mb-3 flex items-center gap-2">
+              <span className="shrink-0 whitespace-nowrap rounded-full bg-amber-100 px-2 py-1 text-xs font-bold text-amber-900">{problemDisplayId(problem)}</span>
               <div className="min-w-0 flex-1 text-sm font-extrabold text-text-primary">{problem.title}</div>
               <span className="shrink-0 rounded-full border border-orange-200 bg-white px-2.5 py-1 text-xs font-bold text-orange-700">
                 {problemSetSectionLabel(item.section, lessonId)}

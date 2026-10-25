@@ -524,7 +524,7 @@ export const TAG_STYLE: Record<string, string> = {
 
 const LESSON: Problem[] = [
   {
-    id: '2-7-L1',
+    id: '2-7-L1', displayId: 'L1a',
     title: '例题1-1 · 加法竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -543,7 +543,7 @@ const LESSON: Problem[] = [
     finalAns: 459,
   },
   {
-    id: '2-7-L2',
+    id: '2-7-L2', displayId: 'L1b',
     title: '例题1-2 · 加法竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -562,7 +562,7 @@ const LESSON: Problem[] = [
     finalAns: 1051,
   },
   {
-    id: '2-7-L3',
+    id: '2-7-L3', displayId: 'L1c',
     title: '例题1-3 · 加法竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -582,7 +582,7 @@ const LESSON: Problem[] = [
     finalAns: 1438,
   },
   {
-    id: '2-7-L4',
+    id: '2-7-L4', displayId: 'L2a',
     title: '例题2-1 · 加法竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -600,7 +600,7 @@ const LESSON: Problem[] = [
     finalAns: 10222,
   },
   {
-    id: '2-7-L5',
+    id: '2-7-L5', displayId: 'L2b',
     title: '例题2-2 · 三数相加',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -614,7 +614,7 @@ const LESSON: Problem[] = [
     finalAns: 1000,
   },
   {
-    id: '2-7-L6',
+    id: '2-7-L6', displayId: 'L2c',
     title: '例题2-3 · 两数相加',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -631,7 +631,7 @@ const LESSON: Problem[] = [
     finalAns: 1090,
   },
   {
-    id: '2-7-L7',
+    id: '2-7-L7', displayId: 'L3',
     title: '例题3 · 多位加法竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -650,7 +650,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '2-7-L8',
+    id: '2-7-L8', displayId: 'L4',
     title: '例题4 · 六位数字之和',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -668,7 +668,7 @@ const LESSON: Problem[] = [
     finalAns: 52,
   },
   {
-    id: '2-7-L9',
+    id: '2-7-L9', displayId: 'L5',
     title: '例题5 · 汉字竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -682,7 +682,7 @@ const LESSON: Problem[] = [
     finalAns: 1851851853,
   },
   {
-    id: '2-7-L10',
+    id: '2-7-L10', displayId: 'L6',
     title: '例题6 · 兴趣高',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -701,7 +701,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '2-7-L11',
+    id: '2-7-L11', displayId: 'L7',
     title: '例题7 · 图形竖式',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -715,7 +715,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '2-7-L12',
+    id: '2-7-L12', displayId: 'L8',
     title: '例题8 · 三好学生',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -733,7 +733,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '2-7-L13',
+    id: '2-7-L13', displayId: 'L9',
     title: '例题9 · 喜爱数学',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -747,7 +747,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '2-7-L14',
+    id: '2-7-L14', displayId: 'L10',
     title: '例题10 · 双竖式字母',
     tag: 'type1',
     tagLabel: '加法数字谜',
@@ -761,7 +761,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '2-7-L15',
+    id: '2-7-L15', displayId: 'L11a',
     title: '例题11-1 · 减法竖式',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -775,7 +775,7 @@ const LESSON: Problem[] = [
     finalAns: 78,
   },
   {
-    id: '2-7-L16',
+    id: '2-7-L16', displayId: 'L11b',
     title: '例题11-2 · 减法竖式',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -789,7 +789,7 @@ const LESSON: Problem[] = [
     finalAns: 290,
   },
   {
-    id: '2-7-L17',
+    id: '2-7-L17', displayId: 'L11c',
     title: '例题11-3 · 减法竖式',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -803,7 +803,7 @@ const LESSON: Problem[] = [
     finalAns: 73,
   },
   {
-    id: '2-7-L18',
+    id: '2-7-L18', displayId: 'L12',
     title: '例题12 · 加减混合竖式',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -817,7 +817,7 @@ const LESSON: Problem[] = [
     finalAns: 94,
   },
   {
-    id: '2-7-L19',
+    id: '2-7-L19', displayId: 'L13',
     title: '例题13 · 字母减法',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -831,7 +831,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '2-7-L20',
+    id: '2-7-L20', displayId: 'L14',
     title: '例题14 · 四字母减法',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -845,7 +845,7 @@ const LESSON: Problem[] = [
     finalAns: 0,
   },
   {
-    id: '2-7-L21',
+    id: '2-7-L21', displayId: 'L15',
     title: '例题15 · 星三角减',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -859,7 +859,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '2-7-L22',
+    id: '2-7-L22', displayId: 'L16',
     title: '例题16 · 图形减法',
     tag: 'type2',
     tagLabel: '减法数字谜',
@@ -873,7 +873,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '2-7-L23',
+    id: '2-7-L23', displayId: 'L17',
     title: '例题17 · 数字和最大',
     tag: 'type3',
     tagLabel: '数字和分析',
@@ -891,7 +891,7 @@ const LESSON: Problem[] = [
     finalAns: 46,
   },
   {
-    id: '2-7-L24',
+    id: '2-7-L24', displayId: 'L18',
     title: '例题18 · 数字和倍数',
     tag: 'type3',
     tagLabel: '数字和分析',
@@ -905,7 +905,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '2-7-L25',
+    id: '2-7-L25', displayId: 'L19a',
     title: '例题19-1 · 数字和最大',
     tag: 'type3',
     tagLabel: '数字和分析',
@@ -919,7 +919,7 @@ const LESSON: Problem[] = [
     finalAns: 54,
   },
   {
-    id: '2-7-L26',
+    id: '2-7-L26', displayId: 'L19b',
     title: '例题19-2 · 数字和最小',
     tag: 'type3',
     tagLabel: '数字和分析',

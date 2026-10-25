@@ -116,7 +116,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L1.png',
   },
   {
-    id: '1-42-L2',
+    id: '1-42-L2', displayId: 'L1-1',
     title: '练一练 · 三砝码单边',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 3,
@@ -135,7 +135,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L2.png',
   },
   {
-    id: '1-42-L3',
+    id: '1-42-L3', displayId: 'L2',
     title: '例2 · 砝码两边称重',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 2,
@@ -153,7 +153,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L3.png',
   },
   {
-    id: '1-42-L4',
+    id: '1-42-L4', displayId: 'L2-1',
     title: '练一练 · 两边称重',
     tag: 'type1',
     tagLabel: '砝码称重组合', difficulty: 3,
@@ -170,7 +170,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L4.png',
   },
   {
-    id: '1-42-L5',
+    id: '1-42-L5', displayId: 'L3',
     title: '例3 · 三人买面包分账',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 2,
@@ -187,7 +187,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L5.png',
   },
   {
-    id: '1-42-L6',
+    id: '1-42-L6', displayId: 'L3-1',
     title: '练一练 · 雪糕分账',
     tag: 'type2',
     tagLabel: '公平分账', difficulty: 3,
@@ -205,7 +205,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L6.png',
   },
   {
-    id: '1-42-L7',
+    id: '1-42-L7', displayId: 'L4',
     title: '例4 · 4 空瓶换 1 瓶',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 2,
@@ -223,7 +223,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L7.png',
   },
   {
-    id: '1-42-L8',
+    id: '1-42-L8', displayId: 'L4-1',
     title: '练一练 · 桃核换桃',
     tag: 'type3',
     tagLabel: '空瓶换水', difficulty: 3,
@@ -241,7 +241,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L8.png',
   },
   {
-    id: '1-42-L9',
+    id: '1-42-L9', displayId: 'L5',
     title: '例5 · 绳子定时 9 分钟',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -259,7 +259,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L9.png',
   },
   {
-    id: '1-42-L10',
+    id: '1-42-L10', displayId: 'L5-1',
     title: '练一练 · 香测 15 分钟',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -277,7 +277,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L10.png',
   },
   {
-    id: '1-42-L11',
+    id: '1-42-L11', displayId: 'L6',
     title: '例6 · 量出 100 克水',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 2,
@@ -298,7 +298,7 @@ const LESSON: Problem[] = [
     analysisImg: '/img/math/42-L11.png',
   },
   {
-    id: '1-42-L12',
+    id: '1-42-L12', displayId: 'L6-1',
     title: '练一练 · 量 3 升水',
     tag: 'type4',
     tagLabel: '计时与量水', difficulty: 3,

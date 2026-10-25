@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useId, useMemo, useState } from 'react'
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { ProblemDifficulty } from '@rosie/core'
 import DifficultyFilterRow from '@rosie/math-kit/components/shared/DifficultyFilterRow'
@@ -112,6 +112,8 @@ export function createFilterPanel(
     const startPractice = useStartPracticeQueue()
     const [favOnly, setFavOnly] = useState(false)
     const [autoExpand, setAutoExpand] = useState(true)
+    const [filtersOpen, setFiltersOpen] = useState(false)
+    const filterRegionId = useId()
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
 
     const all: { p: Problem; setName: string; idx: number }[] = []
@@ -184,81 +186,94 @@ export function createFilterPanel(
     return (
       <div>
         <div className={`mb-3 rounded-[14px] border ${theme.containerBorder} ${theme.containerGradient} p-4`}>
-          <div className={`mb-1.5 text-[15px] font-extrabold ${theme.titleColor}`}>{title}</div>
+          <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <div className={`text-[15px] font-extrabold ${theme.titleColor}`}>{title}</div>
+            <button
+              type="button"
+              aria-expanded={filtersOpen}
+              aria-controls={filterRegionId}
+              onClick={() => setFiltersOpen(open => !open)}
+              className={`${btnBase} ${btnOff} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-blue`}
+            >
+              {filtersOpen ? '收起筛选 ↑' : '展开筛选 ↓'}
+            </button>
+          </div>
           <div className={`mb-2.5 text-xs ${theme.labelColor}`}>全部{total}道题 · 多选筛选 · 按题型/来源练习</div>
 
-          <div className="mb-2">
-            <div className="mb-1.5 flex items-center justify-between">
-              <span className={`text-[11px] font-bold ${theme.labelColor}`}>📂 来源筛选</span>
-              <button onClick={() => sourceBtns.forEach(b => { if (allSourceSelected || !filters.source.has(b.key)) onToggleFilter('source', b.key) })} className={`cursor-pointer text-[10px] ${theme.toggleColor} transition-colors`}>{allSourceSelected ? '全不选' : '全选'}</button>
+          <div id={filterRegionId} hidden={!filtersOpen}>
+            <div className="mb-2">
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className={`text-[11px] font-bold ${theme.labelColor}`}>📂 来源筛选</span>
+                <button onClick={() => sourceBtns.forEach(b => { if (allSourceSelected || !filters.source.has(b.key)) onToggleFilter('source', b.key) })} className={`cursor-pointer text-[10px] ${theme.toggleColor} transition-colors`}>{allSourceSelected ? '全不选' : '全选'}</button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {sourceBtns.map(b => (
+                  <button key={b.key} onClick={() => onToggleFilter('source', b.key)}
+                    className={`${btnBase} ${filters.source.has(b.key) ? btnOn : btnOff}`}>{b.label}</button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {sourceBtns.map(b => (
-                <button key={b.key} onClick={() => onToggleFilter('source', b.key)}
-                  className={`${btnBase} ${filters.source.has(b.key) ? btnOn : btnOff}`}>{b.label}</button>
-              ))}
-            </div>
-          </div>
 
-          <div className="mb-2">
-            <div className="mb-1.5 flex items-center justify-between">
-              <span className={`text-[11px] font-bold ${theme.labelColor}`}>🏷️ 题型筛选</span>
-              <button onClick={() => typeBtns.forEach(b => { if (allTypeSelected || !filters.type.has(b.key)) onToggleFilter('type', b.key) })} className={`cursor-pointer text-[10px] ${theme.toggleColor} transition-colors`}>{allTypeSelected ? '全不选' : '全选'}</button>
+            <div className="mb-2">
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className={`text-[11px] font-bold ${theme.labelColor}`}>🏷️ 题型筛选</span>
+                <button onClick={() => typeBtns.forEach(b => { if (allTypeSelected || !filters.type.has(b.key)) onToggleFilter('type', b.key) })} className={`cursor-pointer text-[10px] ${theme.toggleColor} transition-colors`}>{allTypeSelected ? '全不选' : '全选'}</button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {typeBtns.map(b => (
+                  <button key={b.key} onClick={() => onToggleFilter('type', b.key)}
+                    className={`${btnBase} ${filters.type.has(b.key) ? btnOn : btnOff}`}>{b.label}</button>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {typeBtns.map(b => (
-                <button key={b.key} onClick={() => onToggleFilter('type', b.key)}
-                  className={`${btnBase} ${filters.type.has(b.key) ? btnOn : btnOff}`}>{b.label}</button>
-              ))}
+
+            <DifficultyFilterRow
+              selected={filters.difficulty}
+              onToggle={level => onToggleFilter('difficulty', String(level))}
+              btnBase={btnBase}
+              btnOn={btnOn}
+              btnOff={btnOff}
+              accentClass={theme.accentClass}
+            />
+
+            <div className="mb-2">
+              <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📊 练习</div>
+              <div className="flex flex-wrap gap-1.5">
+                {PRACTICE_BTNS.map(b => (
+                  <button key={b.key} onClick={() => onSetPractice(b.key)}
+                    className={`${btnBase} ${filters.practice === b.key ? btnOn : btnOff}`}>{b.label}</button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <DifficultyFilterRow
-            selected={filters.difficulty}
-            onToggle={level => onToggleFilter('difficulty', String(level))}
-            btnBase={btnBase}
-            btnOn={btnOn}
-            btnOff={btnOff}
-            accentClass={theme.accentClass}
-          />
-
-          <div className="mb-2">
-            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📊 练习</div>
-            <div className="flex flex-wrap gap-1.5">
-              {PRACTICE_BTNS.map(b => (
-                <button key={b.key} onClick={() => onSetPractice(b.key)}
-                  className={`${btnBase} ${filters.practice === b.key ? btnOn : btnOff}`}>{b.label}</button>
-              ))}
+            <div className="mb-2">
+              <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>🎯 掌握度</div>
+              <div className="flex flex-wrap gap-1.5">
+                {MASTERY_BTNS.map(b => (
+                  <button key={b.key} onClick={() => onSetMastery(b.key)}
+                    className={`${btnBase} ${filters.mastery === b.key ? btnOn : btnOff}`}>{b.label}</button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="mb-2">
-            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>🎯 掌握度</div>
-            <div className="flex flex-wrap gap-1.5">
-              {MASTERY_BTNS.map(b => (
-                <button key={b.key} onClick={() => onSetMastery(b.key)}
-                  className={`${btnBase} ${filters.mastery === b.key ? btnOn : btnOff}`}>{b.label}</button>
-              ))}
+            <div className="mb-2">
+              <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>⭐ 收藏</div>
+              <div className="flex flex-wrap gap-1.5">
+                <button onClick={() => setFavOnly(v => !v)}
+                  className={`${btnBase} ${favOnly ? btnOn : btnOff}`}>
+                  {favOnly ? '❤️ 只看收藏' : '🤍 只看收藏'}
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="mb-2">
-            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>⭐ 收藏</div>
-            <div className="flex flex-wrap gap-1.5">
-              <button onClick={() => setFavOnly(v => !v)}
-                className={`${btnBase} ${favOnly ? btnOn : btnOff}`}>
-                {favOnly ? '❤️ 只看收藏' : '🤍 只看收藏'}
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-2">
-            <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📖 题解显示</div>
-            <div className="flex flex-wrap gap-1.5">
-              <button onClick={toggleAutoExpand}
-                className={`${btnBase} ${autoExpand ? btnOn : btnOff}`}>
-                自动展开题解
-              </button>
+            <div className="mb-2">
+              <div className={`mb-1.5 text-[11px] font-bold ${theme.labelColor}`}>📖 题解显示</div>
+              <div className="flex flex-wrap gap-1.5">
+                <button onClick={toggleAutoExpand}
+                  className={`${btnBase} ${autoExpand ? btnOn : btnOff}`}>
+                  自动展开题解
+                </button>
+              </div>
             </div>
           </div>
 

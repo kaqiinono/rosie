@@ -38,3 +38,9 @@ so content must not import back (enforced by `scripts/check-package-cycles.mjs`)
 Lesson files now live here (not in `@rosie/math`). After creating them, register the lesson in the
 TOP package's aggregators: `packages/math/src/utils/lesson-module-registry.ts` and `sea-data.ts`.
 See `docs/add-new-lesson/` + the `add-lesson` skill (both must reflect this two-package flow).
+
+## Question numbering
+
+Follow `docs/add-new-lesson/data.md#题目-id`: preserve textbook numbers and gaps, example1 practice is L1-1/L1-2, split items use letters (L1a/L1-1a). New lessons use canonical real IDs without displayId. Existing IDs and array order must not change; only confirmed legacy classroom corrections receive an explicit short displayId. Infer practice parentage from example grouping, titles, problem types and textbook order; a regular example/practice sequence is sufficient without an explicit parent label. Separate independent practices (-1/-2) from subquestions of one practice (-1a/-1b), and distinguish globally corresponding practice numbers from local ordinals. Only conflicting or cross-group-ambiguous cases stay unchanged in `scripts/math-problem-numbering-review.json`; avoid display collisions with unresolved old questions.
+
+Reusable read-only CLI: `node scripts/audit-math-problem-numbers.mjs` (optional `--lesson`, `--json`, `--strict`), including factory/map-generated questions. This command, all project checks and browser verification are user-manual only. See the numbering guide for manual acceptance.

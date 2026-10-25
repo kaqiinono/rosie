@@ -1,13 +1,14 @@
 import type { Problem, ProblemSet } from '@rosie/core'
 import { SOURCE_LABELS } from '@rosie/core'
 import { lessonSourceButtons } from '@rosie/math-kit/utils/lesson-source-btns'
+import { problemIdSuffix } from './problem-display-id'
 
 const SOURCE_ORDER = ['pretest', 'lesson', 'homework', 'workbook', 'supplement'] as const
 
 export type ProblemWithSource = { problem: Problem; setName: string }
 
 export function setNameFromProblemId(problemId: string): string | null {
-  const suffix = problemId.split('-')[1] ?? ''
+  const suffix = problemIdSuffix(problemId)
   if (suffix.startsWith('P')) return 'pretest'
   if (suffix.startsWith('L')) return 'lesson'
   if (suffix.startsWith('H')) return 'homework'

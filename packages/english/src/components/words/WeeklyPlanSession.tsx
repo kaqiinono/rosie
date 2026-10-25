@@ -568,17 +568,19 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
       return
     }
 
-    // End of current pass. Append rescue ladder (half/eaten batches) and/or
-    // help-reveal reinforcement if any words need it, and we haven't done so yet.
-    if (!reinforcementAppended) {
-      const { reviewWords, practice } = rescue.buildBatches(Date.now())
+    // Rescue is generated once; each later pass can add one spelling per assisted word.
+    if (!reinforcementAppended || Object.values(helpClicks).some((count) => count > 0)) {
+      const { reviewWords, practice } = reinforcementAppended
+        ? { reviewWords: [], practice: [] }
+        : rescue.buildBatches(Date.now())
       const helpExtras = Object.values(helpClicks).some((c) => c > 0)
         ? buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now() + 1)
         : []
+      // Rescue ladder steps retain their own progression; help adds one full spelling.
       const extras = [...practice, ...helpExtras]
       if (extras.length > 0) {
         const mainScore = quizResultBuffer.current.filter((r) => r.correct).length
-        setMainPassSnapshot({ score: mainScore, total: quizQs.length })
+        if (!reinforcementAppended) setMainPassSnapshot({ score: mainScore, total: quizQs.length })
         const kindByKey = new Map<string, WordKind>()
         for (const q of quizQs) kindByKey.set(wordKey(q.word), q.kind)
         const newKeys = extras.map((q) => ({
@@ -591,6 +593,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
           rescueRole: q.rescueRole ?? ('reinforce-half' as RescueRole),
         }))
         setQuizQKeys((prev) => [...prev, ...newKeys])
+        setHelpClicks({})
         setReinforcementAppended(true)
         // Eaten words get a manual review carousel (回看) before practice begins.
         if (reviewWords.length > 0) setRescueReview(reviewWords)
@@ -690,10 +693,9 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
   const handleHelpReveal = useCallback(() => {
     if (!currentQuestion) return
     const k = wordKey(currentQuestion.word)
-    setHelpClicks((prev) => ({ ...prev, [k]: (prev[k] ?? 0) + 1 }))
+    setHelpClicks((prev) => ({ ...prev, [k]: 1 }))
   }, [currentQuestion])
 
-  const helpRevealedForCurrent = currentQuestion ? (helpClicks[wordKey(currentQuestion.word)] ?? 0) : 0
   const inReinforcement = reinforcementAppended && mainPassSnapshot !== null && curQ >= mainPassSnapshot.total
 
   const planClassification = useMemo(() => classifyPlanWords(plan, vocab), [plan, vocab])
@@ -1320,8 +1322,8 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
             total={quizQs.length}
             runner={runner}
             questionKey={curQ}
-            helpRevealed={helpRevealedForCurrent}
             onHelpReveal={handleHelpReveal}
+            onMagicReveal={handleHelpReveal}
             spellButtonStyle={practiceButtonStyle}
             eatenSceneActive={eatenScene !== null}
           />

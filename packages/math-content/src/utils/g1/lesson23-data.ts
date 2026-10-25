@@ -105,7 +105,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-23-L2',
+    id: '1-23-L2', displayId: 'L1-1',
     title: '练一练 · 积木颜色形状',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 2,
@@ -122,7 +122,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-23-L3',
+    id: '1-23-L3', displayId: 'L2',
     title: '例2 · 三人职业推断',
     tag: 'type1',
     tagLabel: '题型1·排除法', difficulty: 3,
@@ -138,7 +138,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-23-L4',
+    id: '1-23-L4', displayId: 'L2-1',
     title: '练一练 · 导演经理会计',
     tag: 'type2',
     tagLabel: '题型2·关系对应', difficulty: 3,
@@ -154,7 +154,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-23-L5',
+    id: '1-23-L5', displayId: 'L3',
     title: '例3 · 混双搭档关系',
     tag: 'type2',
     tagLabel: '题型2·关系对应', difficulty: 4,
@@ -171,7 +171,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-23-L6',
+    id: '1-23-L6', displayId: 'L3-1',
     title: '练一练 · 三对父子的搭档',
     tag: 'type2',
     tagLabel: '题型2·关系对应', difficulty: 4,
@@ -188,7 +188,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-23-L7',
+    id: '1-23-L7', displayId: 'L4',
     title: '例4 · 谁打破了玻璃',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 3,
@@ -205,7 +205,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-23-L8',
+    id: '1-23-L8', displayId: 'L4-1',
     title: '练一练 · 谁会游泳',
     tag: 'type3',
     tagLabel: '题型3·假设验证法', difficulty: 3,
@@ -222,7 +222,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-23-L9',
+    id: '1-23-L9', displayId: 'L5',
     title: '例5 · 五省份编号',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 5,
@@ -239,7 +239,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-23-L10',
+    id: '1-23-L10', displayId: 'L5-1',
     title: '练一练 · 象棋比赛排名',
     tag: 'type4',
     tagLabel: '题型4·双半真', difficulty: 4,
@@ -256,7 +256,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-23-L11',
+    id: '1-23-L11', displayId: 'L6',
     title: '例6 · 写信的是谁',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,
@@ -273,7 +273,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-23-L12',
+    id: '1-23-L12', displayId: 'L6-1',
     title: '练一练 · 四兄弟排行',
     tag: 'type5',
     tagLabel: '题型5·复合逻辑', difficulty: 4,

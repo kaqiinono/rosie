@@ -6,6 +6,11 @@ export function readingPassageAudioPath(passageKey: string): string {
   return `passages/${passageKey}/narration.mp3`
 }
 
+/** Same-origin authenticated stream; Baidu credentials never enter the URL. */
+export function baiduReadingAudioUrl(passageKey: string): string {
+  return `/api/baidu/audio/${encodeURIComponent(passageKey)}`
+}
+
 export type ReadingPassageMediaRow = {
   passageKey: string
   audioPath: string

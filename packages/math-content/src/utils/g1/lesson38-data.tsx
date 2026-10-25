@@ -168,7 +168,7 @@ const LESSON: Problem[] = [
   },
   // ── 练一练 ──
   {
-    id: '1-38-L7',
+    id: '1-38-L7', displayId: 'L1-1',
     title: '练1 · 判断一笔画（2图）',
     tag: 'type4',
     tagLabel: '一笔画判断',
@@ -186,7 +186,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr1 />,
   },
   {
-    id: '1-38-L8',
+    id: '1-38-L8', displayId: 'L2-1',
     title: '练2 · 游乐场路线比较',
     tag: 'type4',
     tagLabel: '一笔画判断',
@@ -207,7 +207,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr2 />,
   },
   {
-    id: '1-38-L9',
+    id: '1-38-L9', displayId: 'L3-1',
     title: '练3 · 五桥问题',
     tag: 'type5',
     tagLabel: '欧拉路径',
@@ -227,7 +227,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr3 />,
   },
   {
-    id: '1-38-L10',
+    id: '1-38-L10', displayId: 'L4-1',
     title: '练4 · 两图最少几笔',
     tag: 'type4',
     tagLabel: '一笔画判断',
@@ -245,7 +245,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr4 />,
   },
   {
-    id: '1-38-L11',
+    id: '1-38-L11', displayId: 'L5-1',
     title: '练5 · 四棱锥添铁丝',
     tag: 'type4',
     tagLabel: '一笔画判断',
@@ -266,7 +266,7 @@ const LESSON: Problem[] = [
     figureNode: <LessonPr5 />,
   },
   {
-    id: '1-38-L12',
+    id: '1-38-L12', displayId: 'L6-1',
     title: '练6 · 学校道路最多走多少米',
     tag: 'type7',
     tagLabel: '最长路程',

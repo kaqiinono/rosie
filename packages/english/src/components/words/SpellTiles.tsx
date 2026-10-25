@@ -12,6 +12,7 @@ import {
   pickNonAdjacentJellyPresets,
   type JellyPresetKey,
 } from '@rosie/ui'
+import { MAGIC_STAR_COLOR } from './MagicWand'
 import { acceptedSpellings, normalizeSpelling } from '../../utils/english-helpers'
 
 export type SpellButtonStyle = 'candy' | 'jelly'
@@ -29,6 +30,8 @@ interface SpellTilesProps {
   onRetryAcknowledged?: () => void
   /** 半字母露出提示：预填并锁定前 N 个字母（按 word 顺序） */
   revealedHalf?: number
+  magicDemo?: { answer: string; count: number; fading: boolean; holding: boolean }
+  magicReset?: number
 }
 
 type CandyPresetKey = keyof typeof CANDY_PRESETS
@@ -60,6 +63,8 @@ export default function SpellTiles({
   attempt = 'first',
   onRetryAcknowledged,
   revealedHalf,
+  magicDemo,
+  magicReset = 0,
 }: SpellTilesProps) {
   // The catalog may store a British spelling plus an AmE alternative. Do not
   // make the learner spell the annotation itself; size the board for either
@@ -89,7 +94,7 @@ export default function SpellTiles({
     return result
   }, [segments])
 
-  const lockedCount = revealedHalf && revealedHalf > 0 ? Math.min(revealedHalf, primarySpelling.length) : 0
+  const lockedCount = magicReset === 0 && revealedHalf && revealedHalf > 0 ? Math.min(revealedHalf, primarySpelling.length) : 0
 
   const [poolState] = useState<PoolState>(() => {
     const letters = spellingAnswers.join('').replace(/ /g, '').split('')
@@ -199,7 +204,7 @@ export default function SpellTiles({
   const placeholderSize = 'text-[.75rem]'
 
   const handlePoolTap = (letter: string) => {
-    if (answered || allFilled) return
+    if (magicDemo || answered || allFilled) return
     const firstEmpty = placed.indexOf(null)
     if (firstEmpty === -1) return
     setPlaced((prev) => {
@@ -210,7 +215,7 @@ export default function SpellTiles({
   }
 
   const handlePlacedTap = (slotIdx: number) => {
-    if (answered || slotIdx < lockedCount) return
+    if (magicDemo || answered || slotIdx < lockedCount) return
     setPlaced((prev) => {
       const next = [...prev]
       next[slotIdx] = null
@@ -219,10 +224,18 @@ export default function SpellTiles({
   }
 
   const handleConfirm = () => {
+    if (magicDemo || answered) return
     onSubmit(placed.join(''))
   }
 
   const [retryFeedback, setRetryFeedback] = useState<{ correct: Set<number>; wrong: Set<number> } | null>(null)
+
+  const [previousMagicReset, setPreviousMagicReset] = useState(magicReset)
+  if (previousMagicReset !== magicReset) {
+    setPreviousMagicReset(magicReset)
+    setPlaced(Array(slotTemplate.length).fill(null))
+    setRetryFeedback(null)
+  }
 
   // Compute which tiles are right/wrong at the moment we enter the retry state.
   // Derived during render (with a transition guard) — not via a setState-in-effect.
@@ -277,15 +290,18 @@ export default function SpellTiles({
   const retryHintSpell = useMemo(() => pickMessage(RETRY_SPELL_MESSAGES), [word])
 
   return (
-    <div className="flex w-full flex-col gap-3">
+    <div inert={!!magicDemo} className="flex w-full flex-col gap-3">
       {/* Answer slots grouped by word segment */}
       <div className="flex w-full flex-wrap items-center justify-center gap-2">
         {segments.map((seg, si) => (
           <div key={si} className={`flex flex-wrap items-center justify-center ${tileGap}`}>
             {Array.from({ length: seg.length }).map((_, ci) => {
               const slotIdx = segmentSlots[si].start + ci
-              const letter = placed[slotIdx]
+              const letter = magicDemo
+                ? (slotIdx < magicDemo.count ? magicDemo.answer[slotIdx] ?? null : null)
+                : placed[slotIdx]
 
+              const magicLit = !!magicDemo && slotIdx < magicDemo.count && slotIdx < magicDemo.answer.length
               const isCorrectSlot = retryFeedback?.correct.has(slotIdx)
               const isWrongSlot = retryFeedback?.wrong.has(slotIdx)
               const isLockedSlot = slotIdx < lockedCount
@@ -309,18 +325,28 @@ export default function SpellTiles({
               return (
                 <div
                   key={ci}
+                  data-magic-slot={slotIdx}
+                  style={magicLit ? {
+                    borderColor: MAGIC_STAR_COLOR,
+                    backgroundColor: 'rgba(162,238,255,.1)',
+                    boxShadow: '0 0 16px rgba(162,238,255,.22)',
+                  } : undefined}
                   onClick={() => {
                     if (letter && !answered && slotIdx >= lockedCount) handlePlacedTap(slotIdx)
                   }}
                   className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] touch-manipulation select-none transition-[transform,background,border-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] ${letter && !answered && slotIdx >= lockedCount ? 'cursor-pointer active:scale-90 animate-pop-in' : ''} ${cls}`}
                 >
-                  {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
+                  <span style={magicDemo ? { color: MAGIC_STAR_COLOR } : undefined} className={`transition-opacity duration-200 ${magicDemo?.fading ? 'opacity-0' : 'opacity-100'} `}>
+                    {letter === ' ' ? '␣' : letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
+                  </span>
                 </div>
               )
             })}
           </div>
         ))}
       </div>
+
+      {magicDemo?.holding && <div className="text-center text-sm font-bold text-amber-200">记住了吗？轮到你啦</div>}
 
       {/* Pool tiles — render mode depends on buttonStyle */}
       {!answered &&
@@ -401,7 +427,7 @@ export default function SpellTiles({
         ))}
 
       {/* Confirm button — warm honey amber, encouraging not alarming */}
-      {canSubmit && !answered && (
+      {canSubmit && !answered && !magicDemo && (
         <button
           type="button"
           onClick={handleConfirm}

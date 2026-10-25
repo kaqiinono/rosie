@@ -33,6 +33,8 @@ export interface AdaptiveSessionSnapshot {
   startedAt?: string
   phase: AdaptiveSnapshotPhase
   quizSlots: AdaptiveQuizSlotSnapshot[]
+  /** Assisted words in the current pass; optional for older snapshots. */
+  helpClicks?: Record<string, number>
   curQ: number
   score: number
   reviewCursor: number

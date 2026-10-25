@@ -53,3 +53,26 @@ module). Needs all three, mirroring `@rosie/math`:
 
 Within this package, cross-file imports keep the `@rosie/math-kit/...` deep-subpath form (self-reference)
 or co-located relative form, same as `@rosie/math`.
+
+Question labels use `utils/problem-display-id.ts`: prefer legacy-only Problem.displayId, otherwise remove only the canonical/legacy lesson prefix, preserving L1-1/L1a/L1-1a in full. Source classification reads the complete real-ID suffix. Keep real IDs for storage and navigation; practice progress and paper sequence numbers retain their meaning. See `docs/add-new-lesson/data.md#题目-id`.
+
+`ProblemCardActions` owns the shared bottom action bar for `LessonProblemList`,
+`ExpandedProblemCard`, and `QuestionLayout`: replay, analysis, electronic/paper drafts,
+favorite, and optional expansion. Expanded cards suppress the nested detail footer via
+`ExternalProblemActions`. List draft actions receive a per-card `ProblemScratchProvider`
+with the correct problem index and source section. `ProblemVideoReplay` is the shared
+Baidu video entry. `utils/problem-video.ts` resolves
+`{lessonKey}-{displayId}` when a nonempty displayId exists, otherwise the full real problem ID.
+The app owns `/api/baidu/video/**` and maps these keys to `/airosie/math/ny/{key}.mp4`.
+Card action controls use their `toolbar` variants and the shared `ProblemActionIcon`
+SVG family; replay always occupies the rightmost footer column. Default control variants
+remain available for other surfaces. Keep the analysis marker non-interactive.
+Cards, detail headers, and replay labels use `problemCardDisplayId`: a nonempty trimmed
+`displayId` wins; otherwise omit the lesson prefix (`2-10-L1` → `L1`), preserving
+compound question suffixes such as `L1-1a`. Stored IDs and video filenames stay complete.
+The existing short-number helper remains unchanged for search and other consumers.
+`utils/problem-practice-style.ts` is the shared two-color palette for card top accents,
+borders, and footer tints: zero practices = amber; positive practice count = emerald.
+Pass `practiceCount` to `ProblemCardActions`; unknown counts use a neutral footer.
+Difficulty is neutral text. `tagStyles` still colors knowledge-point labels, and mastery
+growth icons retain their meaning without introducing extra card-border colors.

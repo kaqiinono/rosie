@@ -19,6 +19,7 @@ export const TYPE_TIP: Record<string, string> = {
 
 type ProblemInput = {
   id: string
+  displayId?: string
   title: string
   tag: keyof typeof TYPE_TIP
   text: string
@@ -41,9 +42,10 @@ const TAG_LABELS: Record<keyof typeof TYPE_TIP, string> = {
   type11: '平方巧算',
 }
 
-function problem({ id, title, tag, text, analysis, answer, difficulty = 2 }: ProblemInput): Problem {
+function problem({ id, displayId, title, tag, text, analysis, answer, difficulty = 2 }: ProblemInput): Problem {
   return {
     id: `2-9-${id}`,
+    ...(displayId !== undefined ? { displayId } : {}),
     title,
     tag,
     tagLabel: TAG_LABELS[tag],
@@ -76,46 +78,46 @@ function sourcedProblem(
 }
 
 const LESSON: Problem[] = [
-  problem({ id: 'L1', title: '例题1(1) · 25与4凑整', tag: 'type1', text: '17 × 25 × 4', analysis: ['交换顺序，先算 25×4=100', '17×100=<strong>1700</strong>'], answer: 1700 }),
-  problem({ id: 'L2', title: '例题1(2) · 125与8凑整', tag: 'type1', text: '125 × 19 × 8', analysis: ['先算 125×8=1000', '19×1000=<strong>19000</strong>'], answer: 19000 }),
-  problem({ id: 'L3', title: '例题1(3) · 拆出8', tag: 'type1', text: '125 × 72', analysis: ['把 72 拆成 8×9', '125×8×9=1000×9=<strong>9000</strong>'], answer: 9000 }),
-  problem({ id: 'L4', title: '例题1(4) · 两组凑整', tag: 'type1', text: '25 × 125 × 16', analysis: ['把 16 改写成 4×8÷2', '(25×4)×(125×8)÷2=100×1000÷2=<strong>50000</strong>'], answer: 50000 }),
-  problem({ id: 'L5', title: '例题2(1) · 构造整十', tag: 'type1', text: '24068 × 5', analysis: ['写成 24068×10÷2', '240680÷2=<strong>120340</strong>'], answer: 120340 }),
-  problem({ id: 'L6', title: '例题2(2) · 构造整百', tag: 'type1', text: '1248 × 25', analysis: ['写成 1248×100÷4', '124800÷4=<strong>31200</strong>'], answer: 31200 }),
-  problem({ id: 'L7', title: '例题2(3) · 构造整千', tag: 'type1', text: '4032 × 125', analysis: ['写成 4032×1000÷8', '4032000÷8=<strong>504000</strong>'], answer: 504000 }),
-  problem({ id: 'L8', title: '练一练 · 乘25', tag: 'type1', text: '2004 × 25', analysis: ['写成 2004×100÷4', '200400÷4=<strong>50100</strong>'], answer: 50100 }),
-  problem({ id: 'L9', title: '练一练 · 乘125', tag: 'type1', text: '125 × 792', analysis: ['把 792 拆成 8×99', '125×8×99=1000×99=<strong>99000</strong>'], answer: 99000 }),
+  problem({ id: 'L1', displayId: 'L1a', title: '例题1(1) · 25与4凑整', tag: 'type1', text: '17 × 25 × 4', analysis: ['交换顺序，先算 25×4=100', '17×100=<strong>1700</strong>'], answer: 1700 }),
+  problem({ id: 'L2', displayId: 'L1b', title: '例题1(2) · 125与8凑整', tag: 'type1', text: '125 × 19 × 8', analysis: ['先算 125×8=1000', '19×1000=<strong>19000</strong>'], answer: 19000 }),
+  problem({ id: 'L3', displayId: 'L1c', title: '例题1(3) · 拆出8', tag: 'type1', text: '125 × 72', analysis: ['把 72 拆成 8×9', '125×8×9=1000×9=<strong>9000</strong>'], answer: 9000 }),
+  problem({ id: 'L4', displayId: 'L1d', title: '例题1(4) · 两组凑整', tag: 'type1', text: '25 × 125 × 16', analysis: ['把 16 改写成 4×8÷2', '(25×4)×(125×8)÷2=100×1000÷2=<strong>50000</strong>'], answer: 50000 }),
+  problem({ id: 'L5', displayId: 'L2a', title: '例题2(1) · 构造整十', tag: 'type1', text: '24068 × 5', analysis: ['写成 24068×10÷2', '240680÷2=<strong>120340</strong>'], answer: 120340 }),
+  problem({ id: 'L6', displayId: 'L2b', title: '例题2(2) · 构造整百', tag: 'type1', text: '1248 × 25', analysis: ['写成 1248×100÷4', '124800÷4=<strong>31200</strong>'], answer: 31200 }),
+  problem({ id: 'L7', displayId: 'L2c', title: '例题2(3) · 构造整千', tag: 'type1', text: '4032 × 125', analysis: ['写成 4032×1000÷8', '4032000÷8=<strong>504000</strong>'], answer: 504000 }),
+  problem({ id: 'L8', displayId: 'L2-1', title: '练一练 · 乘25', tag: 'type1', text: '2004 × 25', analysis: ['写成 2004×100÷4', '200400÷4=<strong>50100</strong>'], answer: 50100 }),
+  problem({ id: 'L9', displayId: 'L2-2', title: '练一练 · 乘125', tag: 'type1', text: '125 × 792', analysis: ['把 792 拆成 8×99', '125×8×99=1000×99=<strong>99000</strong>'], answer: 99000 }),
 
-  problem({ id: 'L10', title: '例题3(1) · 调序抵消', tag: 'type2', text: '100 ÷ 17 × 34 ÷ 25', analysis: ['带着符号调序：(100÷25)×(34÷17)', '4×2=<strong>8</strong>'], answer: 8, difficulty: 3 }),
-  problem({ id: 'L11', title: '例题3(2) · 调序抵消', tag: 'type2', text: '55 ÷ 25 × 150 ÷ 5', analysis: ['调整为 (55÷5)×(150÷25)', '11×6=<strong>66</strong>'], answer: 66, difficulty: 3 }),
-  problem({ id: 'L12', title: '例题4(1) · 拆括号', tag: 'type2', text: '54 × 24 ÷ (9 × 4)', analysis: ['除以括号内的乘积，等于依次除以 9、4', '(54÷9)×(24÷4)=6×6=<strong>36</strong>'], answer: 36, difficulty: 3 }),
-  problem({ id: 'L13', title: '例题4(2) · 除号前拆括号', tag: 'type2', text: '760 ÷ (38 ÷ 125) × 80', analysis: ['括号前是除号，去括号后 ÷38、×125', '(760÷38)×(125×80)=20×10000=<strong>200000</strong>'], answer: 200000, difficulty: 4 }),
-  problem({ id: 'L14', title: '例题5 · 连续抵消', tag: 'type2', text: '6 ÷ (7 ÷ 11) ÷ (11 ÷ 13) ÷ (18 ÷ 21)', analysis: ['去括号：6÷7×11÷11×13÷18×21', '约去 11，且 6÷18×21÷7=1，所以结果为 <strong>13</strong>'], answer: 13, difficulty: 4 }),
-  problem({ id: 'L15', title: '例题6 · 连锁抵消', tag: 'type2', text: '1 ÷ (3 ÷ 5) ÷ (5 ÷ 7) ÷ (7 ÷ 9) ÷……÷ (37 ÷ 39)', analysis: ['去括号后得到 1÷3×5÷5×7÷7×9÷……÷37×39', '中间因数依次抵消，只剩 39÷3=<strong>13</strong>'], answer: 13, difficulty: 5 }),
+  problem({ id: 'L10', displayId: 'L3a', title: '例题3(1) · 调序抵消', tag: 'type2', text: '100 ÷ 17 × 34 ÷ 25', analysis: ['带着符号调序：(100÷25)×(34÷17)', '4×2=<strong>8</strong>'], answer: 8, difficulty: 3 }),
+  problem({ id: 'L11', displayId: 'L3b', title: '例题3(2) · 调序抵消', tag: 'type2', text: '55 ÷ 25 × 150 ÷ 5', analysis: ['调整为 (55÷5)×(150÷25)', '11×6=<strong>66</strong>'], answer: 66, difficulty: 3 }),
+  problem({ id: 'L12', displayId: 'L4a', title: '例题4(1) · 拆括号', tag: 'type2', text: '54 × 24 ÷ (9 × 4)', analysis: ['除以括号内的乘积，等于依次除以 9、4', '(54÷9)×(24÷4)=6×6=<strong>36</strong>'], answer: 36, difficulty: 3 }),
+  problem({ id: 'L13', displayId: 'L4b', title: '例题4(2) · 除号前拆括号', tag: 'type2', text: '760 ÷ (38 ÷ 125) × 80', analysis: ['括号前是除号，去括号后 ÷38、×125', '(760÷38)×(125×80)=20×10000=<strong>200000</strong>'], answer: 200000, difficulty: 4 }),
+  problem({ id: 'L14', displayId: 'L5', title: '例题5 · 连续抵消', tag: 'type2', text: '6 ÷ (7 ÷ 11) ÷ (11 ÷ 13) ÷ (18 ÷ 21)', analysis: ['去括号：6÷7×11÷11×13÷18×21', '约去 11，且 6÷18×21÷7=1，所以结果为 <strong>13</strong>'], answer: 13, difficulty: 4 }),
+  problem({ id: 'L15', displayId: 'L6', title: '例题6 · 连锁抵消', tag: 'type2', text: '1 ÷ (3 ÷ 5) ÷ (5 ÷ 7) ÷ (7 ÷ 9) ÷……÷ (37 ÷ 39)', analysis: ['去括号后得到 1÷3×5÷5×7÷7×9÷……÷37×39', '中间因数依次抵消，只剩 39÷3=<strong>13</strong>'], answer: 13, difficulty: 5 }),
 
-  problem({ id: 'L16', title: '例题7(1) · 和的分配律', tag: 'type3', text: '125 × (100 + 8)', analysis: ['125×100+125×8', '12500+1000=<strong>13500</strong>'], answer: 13500 }),
-  problem({ id: 'L17', title: '例题7(2) · 差的分配律', tag: 'type3', text: '25 × (200 − 4)', analysis: ['25×200−25×4', '5000−100=<strong>4900</strong>'], answer: 4900 }),
-  problem({ id: 'L18', title: '例题8(1) · 乘99', tag: 'type3', text: '73 × 99', analysis: ['99=100−1', '73×100−73=<strong>7227</strong>'], answer: 7227 }),
-  problem({ id: 'L19', title: '例题8(2) · 乘999', tag: 'type3', text: '473 × 999', analysis: ['999=1000−1', '473000−473=<strong>472527</strong>'], answer: 472527, difficulty: 3 }),
-  problem({ id: 'L20', title: '例题8(4) · 构造999', tag: 'type3', text: '333 × 666', analysis: ['333×3=999，666÷3=222，所以原式=999×222', '(1000−1)×222=222000−222=<strong>221778</strong>'], answer: 221778, difficulty: 4 }),
-  problem({ id: 'L21', title: '练一练 · 乘9999', tag: 'type3', text: '256 × 9999', analysis: ['9999=10000−1', '2560000−256=<strong>2559744</strong>'], answer: 2559744, difficulty: 3 }),
-  problem({ id: 'L22', title: '例题9(1) · 除法分配律', tag: 'type3', text: '4175 ÷ 25', analysis: ['把被除数拆成 4000+175', '4000÷25+175÷25=160+7=<strong>167</strong>'], answer: 167 }),
-  problem({ id: 'L23', title: '例题9(2) · 除法分配律', tag: 'type3', text: '8875 ÷ 125', analysis: ['把被除数拆成 8000+875', '8000÷125+875÷125=64+7=<strong>71</strong>'], answer: 71 }),
-  problem({ id: 'L24', title: '练一练(1) · 除以25', tag: 'type3', text: '825 ÷ 25', analysis: ['拆成 800+25', '800÷25+25÷25=32+1=<strong>33</strong>'], answer: 33 }),
-  problem({ id: 'L25', title: '练一练(2) · 除以125', tag: 'type3', text: '3625 ÷ 125', analysis: ['拆成 2500+1125', '2500÷125+1125÷125=20+9=<strong>29</strong>'], answer: 29 }),
+  problem({ id: 'L16', displayId: 'L7a', title: '例题7(1) · 和的分配律', tag: 'type3', text: '125 × (100 + 8)', analysis: ['125×100+125×8', '12500+1000=<strong>13500</strong>'], answer: 13500 }),
+  problem({ id: 'L17', displayId: 'L7b', title: '例题7(2) · 差的分配律', tag: 'type3', text: '25 × (200 − 4)', analysis: ['25×200−25×4', '5000−100=<strong>4900</strong>'], answer: 4900 }),
+  problem({ id: 'L18', displayId: 'L8a', title: '例题8(1) · 乘99', tag: 'type3', text: '73 × 99', analysis: ['99=100−1', '73×100−73=<strong>7227</strong>'], answer: 7227 }),
+  problem({ id: 'L19', displayId: 'L8b', title: '例题8(2) · 乘999', tag: 'type3', text: '473 × 999', analysis: ['999=1000−1', '473000−473=<strong>472527</strong>'], answer: 472527, difficulty: 3 }),
+  problem({ id: 'L20', displayId: 'L8d', title: '例题8(4) · 构造999', tag: 'type3', text: '333 × 666', analysis: ['333×3=999，666÷3=222，所以原式=999×222', '(1000−1)×222=222000−222=<strong>221778</strong>'], answer: 221778, difficulty: 4 }),
+  problem({ id: 'L21', displayId: 'L8-1', title: '练一练 · 乘9999', tag: 'type3', text: '256 × 9999', analysis: ['9999=10000−1', '2560000−256=<strong>2559744</strong>'], answer: 2559744, difficulty: 3 }),
+  problem({ id: 'L22', displayId: 'L9a', title: '例题9(1) · 除法分配律', tag: 'type3', text: '4175 ÷ 25', analysis: ['把被除数拆成 4000+175', '4000÷25+175÷25=160+7=<strong>167</strong>'], answer: 167 }),
+  problem({ id: 'L23', displayId: 'L9b', title: '例题9(2) · 除法分配律', tag: 'type3', text: '8875 ÷ 125', analysis: ['把被除数拆成 8000+875', '8000÷125+875÷125=64+7=<strong>71</strong>'], answer: 71 }),
+  problem({ id: 'L24', displayId: 'L9-1a', title: '练一练(1) · 除以25', tag: 'type3', text: '825 ÷ 25', analysis: ['拆成 800+25', '800÷25+25÷25=32+1=<strong>33</strong>'], answer: 33 }),
+  problem({ id: 'L25', displayId: 'L9-1b', title: '练一练(2) · 除以125', tag: 'type3', text: '3625 ÷ 125', analysis: ['拆成 2500+1125', '2500÷125+1125÷125=20+9=<strong>29</strong>'], answer: 29 }),
 
-  problem({ id: 'L26', title: '例题10(1) · 直接提取公因数', tag: 'type4', text: '11 × 18 − 23 × 11 + 11 × 17', analysis: ['提取公因数 11：11×(18−23+17)', '11×12=<strong>132</strong>'], answer: 132 }),
-  problem({ id: 'L27', title: '例题10(2) · 直接提取公因数', tag: 'type4', text: '7 × 22 + 7 × 35 − 7 × 17', analysis: ['提取公因数 7：7×(22+35−17)', '7×40=<strong>280</strong>'], answer: 280 }),
-  problem({ id: 'L28', title: '例题11(1) · 两次提取', tag: 'type4', text: '28 × 7 + 36 × 7 + 64 × 13', analysis: ['前两项提取 7：(28+36)×7+64×13', '得到 64×7+64×13=64×20=<strong>1280</strong>'], answer: 1280, difficulty: 3 }),
-  problem({ id: 'L29', title: '例题11(2) · 两次提取', tag: 'type4', text: '33 × 17 + 40 × 17 − 7 × 73', analysis: ['前两项提取 17：(33+40)×17−7×73=73×17−7×73', '提取 73：73×(17−7)=<strong>730</strong>'], answer: 730, difficulty: 3 }),
-  problem({ id: 'L30', title: '例题12(1) · 倍数构造公因数', tag: 'type4', text: '13 × 58 − 26 × 11 + 39 × 21', analysis: ['26=13×2，39=13×3', '13×(58−2×11+3×21)=13×99=<strong>1287</strong>'], answer: 1287, difficulty: 4 }),
-  problem({ id: 'L31', title: '例题12(2) · 倍数构造公因数', tag: 'type4', text: '26 × 44 + 37 × 88', analysis: ['88=44×2，所以 37×88=74×44', '(26+74)×44=100×44=<strong>4400</strong>'], answer: 4400, difficulty: 3 }),
-  problem({ id: 'L32', title: '例题13(1) · 单倍数构造', tag: 'type4', text: '80 × 1995 − 3990 + 1995 × 22', analysis: ['3990=1995×2', '1995×(80−2+22)=1995×100=<strong>199500</strong>'], answer: 199500, difficulty: 4 }),
-  problem({ id: 'L33', title: '例题13(2) · 分开提取', tag: 'type4', text: '88 × 22 + 55 × 73 − 44 × 44 − 33 × 55', analysis: ['88×22=44×44，两项抵消', '55×(73−33)=55×40=<strong>2200</strong>'], answer: 2200, difficulty: 4 }),
-  problem({ id: 'L34', title: '例题14(1) · 相近数构造', tag: 'type4', text: '53 × 46 + 71 × 54 + 82 × 54', analysis: ['53=54−1，将 53×46 改写为 54×46−46', '54×(46+71+82)−46=54×199−46=<strong>10700</strong>'], answer: 10700, difficulty: 4 }),
-  problem({ id: 'L35', title: '例题14(2) · 相近数构造', tag: 'type4', text: '126 × 3 + 12 × 125 − 124 × 7', analysis: ['126=125+1，124=125−1', '125×(3+12−7)+(3+7)=1000+10=<strong>1010</strong>'], answer: 1010, difficulty: 4 }),
-  problem({ id: 'L36', title: '例题15(1) · 除法提公因数', tag: 'type4', text: '48 ÷ 7 + 40 ÷ 7 + 24 ÷ 7', analysis: ['合并相同除数：(48+40+24)÷7', '112÷7=<strong>16</strong>'], answer: 16 }),
-  problem({ id: 'L37', title: '例题15(2) · 除法提公因数', tag: 'type4', text: '27 ÷ 8 + 51 ÷ 8 − 14 ÷ 8', analysis: ['合并相同除数：(27+51−14)÷8', '64÷8=<strong>8</strong>'], answer: 8 }),
+  problem({ id: 'L26', displayId: 'L10a', title: '例题10(1) · 直接提取公因数', tag: 'type4', text: '11 × 18 − 23 × 11 + 11 × 17', analysis: ['提取公因数 11：11×(18−23+17)', '11×12=<strong>132</strong>'], answer: 132 }),
+  problem({ id: 'L27', displayId: 'L10b', title: '例题10(2) · 直接提取公因数', tag: 'type4', text: '7 × 22 + 7 × 35 − 7 × 17', analysis: ['提取公因数 7：7×(22+35−17)', '7×40=<strong>280</strong>'], answer: 280 }),
+  problem({ id: 'L28', displayId: 'L11a', title: '例题11(1) · 两次提取', tag: 'type4', text: '28 × 7 + 36 × 7 + 64 × 13', analysis: ['前两项提取 7：(28+36)×7+64×13', '得到 64×7+64×13=64×20=<strong>1280</strong>'], answer: 1280, difficulty: 3 }),
+  problem({ id: 'L29', displayId: 'L11b', title: '例题11(2) · 两次提取', tag: 'type4', text: '33 × 17 + 40 × 17 − 7 × 73', analysis: ['前两项提取 17：(33+40)×17−7×73=73×17−7×73', '提取 73：73×(17−7)=<strong>730</strong>'], answer: 730, difficulty: 3 }),
+  problem({ id: 'L30', displayId: 'L12a', title: '例题12(1) · 倍数构造公因数', tag: 'type4', text: '13 × 58 − 26 × 11 + 39 × 21', analysis: ['26=13×2，39=13×3', '13×(58−2×11+3×21)=13×99=<strong>1287</strong>'], answer: 1287, difficulty: 4 }),
+  problem({ id: 'L31', displayId: 'L12b', title: '例题12(2) · 倍数构造公因数', tag: 'type4', text: '26 × 44 + 37 × 88', analysis: ['88=44×2，所以 37×88=74×44', '(26+74)×44=100×44=<strong>4400</strong>'], answer: 4400, difficulty: 3 }),
+  problem({ id: 'L32', displayId: 'L13a', title: '例题13(1) · 单倍数构造', tag: 'type4', text: '80 × 1995 − 3990 + 1995 × 22', analysis: ['3990=1995×2', '1995×(80−2+22)=1995×100=<strong>199500</strong>'], answer: 199500, difficulty: 4 }),
+  problem({ id: 'L33', displayId: 'L13b', title: '例题13(2) · 分开提取', tag: 'type4', text: '88 × 22 + 55 × 73 − 44 × 44 − 33 × 55', analysis: ['88×22=44×44，两项抵消', '55×(73−33)=55×40=<strong>2200</strong>'], answer: 2200, difficulty: 4 }),
+  problem({ id: 'L34', displayId: 'L14a', title: '例题14(1) · 相近数构造', tag: 'type4', text: '53 × 46 + 71 × 54 + 82 × 54', analysis: ['53=54−1，将 53×46 改写为 54×46−46', '54×(46+71+82)−46=54×199−46=<strong>10700</strong>'], answer: 10700, difficulty: 4 }),
+  problem({ id: 'L35', displayId: 'L14b', title: '例题14(2) · 相近数构造', tag: 'type4', text: '126 × 3 + 12 × 125 − 124 × 7', analysis: ['126=125+1，124=125−1', '125×(3+12−7)+(3+7)=1000+10=<strong>1010</strong>'], answer: 1010, difficulty: 4 }),
+  problem({ id: 'L36', displayId: 'L15a', title: '例题15(1) · 除法提公因数', tag: 'type4', text: '48 ÷ 7 + 40 ÷ 7 + 24 ÷ 7', analysis: ['合并相同除数：(48+40+24)÷7', '112÷7=<strong>16</strong>'], answer: 16 }),
+  problem({ id: 'L37', displayId: 'L15b', title: '例题15(2) · 除法提公因数', tag: 'type4', text: '27 ÷ 8 + 51 ÷ 8 − 14 ÷ 8', analysis: ['合并相同除数：(27+51−14)÷8', '64÷8=<strong>8</strong>'], answer: 8 }),
 ]
 
 const HOMEWORK: Problem[] = [
@@ -148,17 +150,22 @@ const PRETEST: Problem[] = [
   sourcedProblem('P7', '小测验7 · 提取公因数', 'type4', '17 × 446 − 34 × 119 + 51 × 264', 17000, '提取 17，括号内为 446−238+792=1000。'),
 ]
 
+/** Compatibility for the existing source additions; stored IDs remain unchanged. */
+function numberedSourceProblem(displayId: string, ...args: Parameters<typeof sourcedProblem>): Problem {
+  return { ...sourcedProblem(...args), displayId }
+}
+
 const SOURCE_LESSON: Problem[] = [
-  sourcedProblem('L38', '例题16 · 同除数合并', 'type2', '18 ÷ 4 + 45 ÷ 17 + 14 ÷ 4 + 23 ÷ 17', 12, '按相同除数合并为 (18+14)÷4+(45+23)÷17。'),
+  numberedSourceProblem('L16', 'L38', '例题16 · 同除数合并', 'type2', '18 ÷ 4 + 45 ÷ 17 + 14 ÷ 4 + 23 ÷ 17', 12, '按相同除数合并为 (18+14)÷4+(45+23)÷17。'),
   ...[11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((n, index) =>
-    sourcedProblem('L' + (39 + index), '例题17(' + (index + 1) + ') · 平方', 'type11', n + '²', n * n),
+    numberedSourceProblem('L17' + String.fromCharCode(97 + index), 'L' + (39 + index), '例题17(' + (index + 1) + ') · 平方', 'type11', n + '²', n * n),
   ),
   ...[1, 2, 3, 4, 5, 6, 7].map((n, index) =>
-    sourcedProblem('L' + (49 + index), '例题18(' + (index + 1) + ') · 走马灯', 'type5', '142857 × ' + n, 142857 * n, '走马灯口诀：末位乘几，结果最后就是几；其余数字按 142857 的循环顺序走马灯。'),
+    numberedSourceProblem('L18' + String.fromCharCode(97 + index), 'L' + (49 + index), '例题18(' + (index + 1) + ') · 走马灯', 'type5', '142857 × ' + n, 142857 * n, '走马灯口诀：末位乘几，结果最后就是几；其余数字按 142857 的循环顺序走马灯。'),
   ),
-  sourcedProblem('L56', '例题19(1) · 缺8数', 'type6', '12345679 × 9', 111111111, '缺8数口诀：12345679 乘几，答案就写几个 111；乘9得 9 个 1。'),
-  sourcedProblem('L57', '例题19(2) · 缺8数', 'type6', '12345679 × 81', 999999999, '先拆成 12345679×9×9；第一次得到 9 个1，再乘9得到 9 个9。'),
-  sourcedProblem('L58', '例题19(3) · 缺8数', 'type6', '12345679 × 99', 1222222221, '先拆成 12345679×9×11；先得 111111111，再用乘11的“两边一拉，中间相加”。'),
+  numberedSourceProblem('L19a', 'L56', '例题19(1) · 缺8数', 'type6', '12345679 × 9', 111111111, '缺8数口诀：12345679 乘几，答案就写几个 111；乘9得 9 个 1。'),
+  numberedSourceProblem('L19b', 'L57', '例题19(2) · 缺8数', 'type6', '12345679 × 81', 999999999, '先拆成 12345679×9×9；第一次得到 9 个1，再乘9得到 9 个9。'),
+  numberedSourceProblem('L19c', 'L58', '例题19(3) · 缺8数', 'type6', '12345679 × 99', 1222222221, '先拆成 12345679×9×11；先得 111111111，再用乘11的“两边一拉，中间相加”。'),
   ...[
     ['73 × 77', 5621],
     ['84 × 86', 7224],
@@ -167,23 +174,23 @@ const SOURCE_LESSON: Problem[] = [
     ['103 × 107', 11021],
     ['101 × 109', 11009],
   ].map(([text, answer], index) =>
-    sourcedProblem('L' + (59 + index), '例题20(' + (index + 1) + ') · 头同尾合十', 'type7', String(text), Number(answer), '头同尾合十口诀：前半部分=头×(头+1)，后半部分=尾×尾；后半不足两位补0。'),
+    numberedSourceProblem('L20' + String.fromCharCode(97 + index), 'L' + (59 + index), '例题20(' + (index + 1) + ') · 头同尾合十', 'type7', String(text), Number(answer), '头同尾合十口诀：前半部分=头×(头+1)，后半部分=尾×尾；后半不足两位补0。'),
   ),
   ...[25, 35, 45, 55, 65, 75, 85, 95, 205, 995].map((n, index) =>
-    sourcedProblem('L' + (65 + index), '例题21(' + (index + 1) + ') · 平方', 'type11', n + ' × ' + n, n * n, '把相同的两个数相乘，按平方计算；必要时可拆成整十（整百）加减一个数。'),
+    numberedSourceProblem('L21' + String.fromCharCode(97 + index), 'L' + (65 + index), '例题21(' + (index + 1) + ') · 平方', 'type11', n + ' × ' + n, n * n, '把相同的两个数相乘，按平方计算；必要时可拆成整十（整百）加减一个数。'),
   ),
-  sourcedProblem('L75', '例题22(1) · 特殊数1001', 'type8', '3 × 7 × 11 × 13 × 15 × 17', 765765, '特殊数口诀：7×11×13=1001；先凑出1001，再算剩下的 3×15×17。'),
-  sourcedProblem('L76', '例题22(2) · 特殊数111', 'type8', '37 × 3', 111, '特殊数口诀：3×37=111。'),
-  sourcedProblem('L77', '例题22(3) · 特殊数999', 'type8', '27 × 37', 999, '把27拆成9×3，利用3×37=111，得到9×111=999。'),
-  sourcedProblem('L78', '例题22(4) · 构造999', 'type8', '81 × 74 × 13', 77922, '分解后构造 999×78。'),
-  sourcedProblem('L79', '例题22(5) · 构造1001', 'type8', '5 × 7 × 22 × 39 × 49', 1471470, '分解、重组后构造 1001×10。'),
-  sourcedProblem('L80', '例题23(1) · 椅子数', 'type9', '56 × 101', 5656, '椅子数口诀：101=01 01，是两把椅子；56有两位，刚好每把椅子放一次56，得到5656。'),
-  sourcedProblem('L81', '例题23(2) · 椅子数', 'type9', '357 × 1001001', 357357357, '把1001001看作三个001组成的椅子数；357是三位数，每把椅子对应一组357。'),
-  sourcedProblem('L82', '例题23(3) · 椅子数', 'type9', '4869 × 10001', 48694869, '10001相当于两个0001组成的椅子数；4869有四位，结果重复两次4869。'),
-  sourcedProblem('L83', '例题23(4) · 特殊因数', 'type3', '1234 × 10002', 12342468),
-  sourcedProblem('L84', '例题24(1) · 两边一拉中间相加', 'type10', '123 × 11', 1353, '乘11口诀：两边一拉，中间相加；写两端1、3，中间写1+2=3、2+3=5。'),
-  sourcedProblem('L85', '例题24(2) · 两边一拉中间相加', 'type10', '1254 × 11', 13794, '乘11口诀：两边一拉，中间相加；从右向左处理进位。'),
-  sourcedProblem('L86', '例题24(3) · 两边一拉中间相加', 'type10', '456 × 11', 5016, '乘11口诀：两边一拉，中间相加；4、5、6两端保留，中间是4+5=9、5+6=11，需要进位。'),
+  numberedSourceProblem('L22a', 'L75', '例题22(1) · 特殊数1001', 'type8', '3 × 7 × 11 × 13 × 15 × 17', 765765, '特殊数口诀：7×11×13=1001；先凑出1001，再算剩下的 3×15×17。'),
+  numberedSourceProblem('L22b', 'L76', '例题22(2) · 特殊数111', 'type8', '37 × 3', 111, '特殊数口诀：3×37=111。'),
+  numberedSourceProblem('L22c', 'L77', '例题22(3) · 特殊数999', 'type8', '27 × 37', 999, '把27拆成9×3，利用3×37=111，得到9×111=999。'),
+  numberedSourceProblem('L22d', 'L78', '例题22(4) · 构造999', 'type8', '81 × 74 × 13', 77922, '分解后构造 999×78。'),
+  numberedSourceProblem('L22e', 'L79', '例题22(5) · 构造1001', 'type8', '5 × 7 × 22 × 39 × 49', 1471470, '分解、重组后构造 1001×10。'),
+  numberedSourceProblem('L23a', 'L80', '例题23(1) · 椅子数', 'type9', '56 × 101', 5656, '椅子数口诀：101=01 01，是两把椅子；56有两位，刚好每把椅子放一次56，得到5656。'),
+  numberedSourceProblem('L23b', 'L81', '例题23(2) · 椅子数', 'type9', '357 × 1001001', 357357357, '把1001001看作三个001组成的椅子数；357是三位数，每把椅子对应一组357。'),
+  numberedSourceProblem('L23c', 'L82', '例题23(3) · 椅子数', 'type9', '4869 × 10001', 48694869, '10001相当于两个0001组成的椅子数；4869有四位，结果重复两次4869。'),
+  numberedSourceProblem('L23d', 'L83', '例题23(4) · 特殊因数', 'type3', '1234 × 10002', 12342468),
+  numberedSourceProblem('L24a', 'L84', '例题24(1) · 两边一拉中间相加', 'type10', '123 × 11', 1353, '乘11口诀：两边一拉，中间相加；写两端1、3，中间写1+2=3、2+3=5。'),
+  numberedSourceProblem('L24b', 'L85', '例题24(2) · 两边一拉中间相加', 'type10', '1254 × 11', 13794, '乘11口诀：两边一拉，中间相加；从右向左处理进位。'),
+  numberedSourceProblem('L24c', 'L86', '例题24(3) · 两边一拉中间相加', 'type10', '456 × 11', 5016, '乘11口诀：两边一拉，中间相加；4、5、6两端保留，中间是4+5=9、5+6=11，需要进位。'),
 ]
 
 const SOURCE_HOMEWORK: Problem[] = [

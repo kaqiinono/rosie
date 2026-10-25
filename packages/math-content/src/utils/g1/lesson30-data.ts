@@ -113,7 +113,7 @@ const LESSON: Problem[] = [
     finalAns: 40,
   },
   {
-    id: '1-30-L2',
+    id: '1-30-L2', displayId: 'L1-1',
     title: '练一练 · 差是多少',
     tag: 'type1',
     tagLabel: '题型1·特殊和差关系', difficulty: 2,
@@ -131,7 +131,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '1-30-L3',
+    id: '1-30-L3', displayId: 'L2',
     title: '例2 · 语文小组有多少人',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -149,7 +149,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '1-30-L4',
+    id: '1-30-L4', displayId: 'L2-1',
     title: '练一练 · 杏树有多少棵',
     tag: 'type2',
     tagLabel: '题型2·三量和差', difficulty: 3,
@@ -167,7 +167,7 @@ const LESSON: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '1-30-L5',
+    id: '1-30-L5', displayId: 'L3',
     title: '例3 · 乙粮仓有多少吨',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 3,
@@ -185,7 +185,7 @@ const LESSON: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '1-30-L6',
+    id: '1-30-L6', displayId: 'L3-1',
     title: '练一练 · 第一组比第三组多多少人',
     tag: 'type3',
     tagLabel: '题型3·三量和倍', difficulty: 4,
@@ -204,7 +204,7 @@ const LESSON: Problem[] = [
     finalAns: 104,
   },
   {
-    id: '1-30-L7',
+    id: '1-30-L7', displayId: 'L4',
     title: '例4 · 三连比一连多几辆',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 4,
@@ -223,7 +223,7 @@ const LESSON: Problem[] = [
     finalAns: 71,
   },
   {
-    id: '1-30-L8',
+    id: '1-30-L8', displayId: 'L4-1',
     title: '练一练 · 甲有多少元',
     tag: 'type4',
     tagLabel: '题型4·三量差倍', difficulty: 4,
@@ -241,7 +241,7 @@ const LESSON: Problem[] = [
     finalAns: 58,
   },
   {
-    id: '1-30-L9',
+    id: '1-30-L9', displayId: 'L5',
     title: '例5 · 课外活动共多少人',
     tag: 'type5',
     tagLabel: '题型5·特殊变形', difficulty: 4,
@@ -260,7 +260,7 @@ const LESSON: Problem[] = [
     finalAns: 170,
   },
   {
-    id: '1-30-L10',
+    id: '1-30-L10', displayId: 'L5-1',
     title: '练一练 · 一共有多少盆花',
     tag: 'type5',
     tagLabel: '题型5·特殊变形', difficulty: 4,
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 570,
   },
   {
-    id: '1-30-L11',
+    id: '1-30-L11', displayId: 'L6',
     title: '例6 · 文具盒里共多少支笔',
     tag: 'type6',
     tagLabel: '题型6·综合变形', difficulty: 4,
@@ -297,7 +297,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '1-30-L12',
+    id: '1-30-L12', displayId: 'L6-1',
     title: '练一练 · 绿纸鹤多少个',
     tag: 'type6',
     tagLabel: '题型6·综合变形', difficulty: 4,

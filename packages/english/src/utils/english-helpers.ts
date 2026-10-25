@@ -434,7 +434,7 @@ export function maskWordInExample(example: string, word: string, revealed: numbe
 
 /**
  * Build reinforcement Type-C questions for words the user asked for help on.
- * Each word gets one repetition per click. Reps are interleaved so the same
+ * Each assisted word gets one repetition per round. Questions are interleaved so the same
  * word never appears adjacent within `minGap`.
  */
 export function buildReinforcementQuestions(
@@ -450,7 +450,7 @@ export function buildReinforcementQuestions(
     const entry = vocab.find(w => keyOf(w) === k)
     if (!entry) continue
     const reps: QuizQuestion[] = []
-    for (let i = 0; i < count; i++) reps.push({ word: entry, type: 'C' })
+    reps.push({ word: entry, type: 'C' })
     groups.push(reps)
   }
   if (!groups.length) return []

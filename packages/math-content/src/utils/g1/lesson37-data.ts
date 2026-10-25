@@ -19,7 +19,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-37-L2',
+    id: '1-37-L2', displayId: 'L1-1',
     title: '练一练：蜻蜓蜘蛛7只46腿',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -36,7 +36,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-37-L3',
+    id: '1-37-L3', displayId: 'L2',
     title: '例题2：自行车三轮车8辆21轮',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 2,
@@ -53,7 +53,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-37-L4',
+    id: '1-37-L4', displayId: 'L2-1',
     title: '练一练：三角形长方形9张33角',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -70,7 +70,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '1-37-L5',
+    id: '1-37-L5', displayId: 'L3',
     title: '例题3：2分5分硬币12枚39分',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 2,
@@ -87,7 +87,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '1-37-L6',
+    id: '1-37-L6', displayId: 'L3-1',
     title: '练一练：1角5角邮票14张30角',
     tag: 'type1',
     tagLabel: '头和腿和·基础', difficulty: 3,
@@ -104,7 +104,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-37-L7',
+    id: '1-37-L7', displayId: 'L4',
     title: '例题4：骆驼24驼峰60只脚',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 2,
@@ -123,7 +123,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '1-37-L8',
+    id: '1-37-L8', displayId: 'L4-1',
     title: '练一练：新兵270千米平均30',
     tag: 'type2',
     tagLabel: '先求头和', difficulty: 3,
@@ -142,7 +142,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-37-L9',
+    id: '1-37-L9', displayId: 'L5',
     title: '例题5：喜羊羊分水果80桔70苹',
     tag: 'type3',
     tagLabel: '双组分配', difficulty: 2,
@@ -162,7 +162,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '1-37-L10',
+    id: '1-37-L10', displayId: 'L5-1',
     title: '练一练：优良生分练习本30数26英',
     tag: 'type3',
     tagLabel: '双组分配', difficulty: 3,
@@ -182,7 +182,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-37-L11',
+    id: '1-37-L11', displayId: 'L6',
     title: '例题6（倒扣分）：婷婷竞赛20题60分',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 3,
@@ -201,7 +201,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '1-37-L12',
+    id: '1-37-L12', displayId: 'L6-1',
     title: '练一练（倒扣分）：工人运花瓶40个352元',
     tag: 'type4',
     tagLabel: '倒扣分', difficulty: 4,

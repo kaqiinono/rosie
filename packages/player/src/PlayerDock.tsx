@@ -15,6 +15,8 @@ type Props = {
   /** 由调用方接 collections.toggleFavorite(player.current)。省略则隐藏桃心。 */
   onToggleFavorite?: () => void
   theme?: 'dark' | 'light'
+  /** Opt in to a seek bar without changing existing dock layouts. */
+  showProgress?: boolean
 }
 
 /**
@@ -22,9 +24,11 @@ type Props = {
  * 纯音频时隐藏画面、视频时弹出浮层），并把 player.audioRef 绑上去。
  * 视觉：暖橙拟物条，两种主题共用同一橙色外观，仅外发光略有差异。
  */
-export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme = 'dark' }: Props) {
+export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme = 'dark', showProgress = false }: Props) {
   const [videoMinimized, setVideoMinimized] = useState(false)
   const [showQueue, setShowQueue] = useState(false)
+  const [position, setPosition] = useState(0)
+  const [duration, setDuration] = useState(0)
 
   // Destructure so render only reads state/callbacks, not the ref-bearing player object.
   const {
@@ -75,6 +79,19 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
           onEnded={onEnded}
           onPlay={notifyPlay}
           onPause={notifyPause}
+          onLoadStart={() => {
+            if (!showProgress) return
+            setPosition(0)
+            setDuration(0)
+          }}
+          onTimeUpdate={(event) => {
+            if (showProgress) setPosition(event.currentTarget.currentTime)
+          }}
+          onDurationChange={(event) => {
+            if (!showProgress) return
+            const value = event.currentTarget.duration
+            setDuration(Number.isFinite(value) && value > 0 ? value : 0)
+          }}
         />
         <div className="flex items-center justify-between bg-black/60 px-3 py-1.5">
           <span className="truncate text-[11px] font-bold text-white/80">{current?.label}</span>
@@ -218,6 +235,30 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
                 </button>
               )}
             </div>
+            {showProgress && (
+              <div className="mt-1 flex items-center gap-2 text-[10px] font-bold tabular-nums text-orange-950">
+                <span>{formatPlaybackTime(position)}</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={duration || 1}
+                  step={0.1}
+                  value={Math.min(position, duration || 1)}
+                  disabled={!duration}
+                  aria-label="播放进度"
+                  aria-valuetext={`${formatPlaybackTime(position)} / ${formatPlaybackTime(duration)}`}
+                  onChange={(event) => {
+                    const element = audioRef.current
+                    if (!element || !duration) return
+                    const target = Math.min(duration, Math.max(0, Number(event.currentTarget.value)))
+                    element.currentTime = target
+                    setPosition(target)
+                  }}
+                  className="h-6 min-w-0 flex-1 cursor-pointer accent-orange-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-950 disabled:cursor-wait"
+                />
+                <span>{formatPlaybackTime(duration)}</span>
+              </div>
+            )}
             </div>
           </div>
 
@@ -297,6 +338,11 @@ export default function PlayerDock({ player, isFavorite, onToggleFavorite, theme
       )}
     </>
   )
+}
+
+function formatPlaybackTime(value: number): string {
+  const seconds = Number.isFinite(value) && value > 0 ? Math.floor(value) : 0
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 }
 
 function Equalizer({ live }: { live: boolean }) {

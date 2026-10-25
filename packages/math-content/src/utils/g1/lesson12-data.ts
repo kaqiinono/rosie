@@ -80,7 +80,7 @@ const PRETEST: Problem[] = [
 
 const LESSON: Problem[] = [
   {
-    id: '1-12-L1',
+    id: '1-12-L1', displayId: 'L1a',
     title: '例1(1) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 1,
@@ -95,7 +95,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '1-12-L2',
+    id: '1-12-L2', displayId: 'L1b',
     title: '例1(2) · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -110,7 +110,7 @@ const LESSON: Problem[] = [
     finalAns: 401,
   },
   {
-    id: '1-12-L3',
+    id: '1-12-L3', displayId: 'L1-1',
     title: '练一练1 · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 1,
@@ -125,7 +125,7 @@ const LESSON: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '1-12-L4',
+    id: '1-12-L4', displayId: 'L1-2',
     title: '练一练2 · 凑整法',
     tag: 'type1',
     tagLabel: '凑整法', difficulty: 2,
@@ -140,7 +140,7 @@ const LESSON: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '1-12-L5',
+    id: '1-12-L5', displayId: 'L2',
     title: '例2 · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 3,
@@ -155,7 +155,7 @@ const LESSON: Problem[] = [
     finalAns: 2000,
   },
   {
-    id: '1-12-L6',
+    id: '1-12-L6', displayId: 'L2-1',
     title: '练一练 · 花减法',
     tag: 'type2',
     tagLabel: '花减法', difficulty: 3,
@@ -170,7 +170,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '1-12-L7',
+    id: '1-12-L7', displayId: 'L3a',
     title: '例3(1) · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 1,
@@ -185,7 +185,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '1-12-L8',
+    id: '1-12-L8', displayId: 'L3b',
     title: '例3(2) · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 3,
@@ -200,7 +200,7 @@ const LESSON: Problem[] = [
     finalAns: 700,
   },
   {
-    id: '1-12-L9',
+    id: '1-12-L9', displayId: 'L3-1',
     title: '练一练1 · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 1,
@@ -215,7 +215,7 @@ const LESSON: Problem[] = [
     finalAns: 1000,
   },
   {
-    id: '1-12-L10',
+    id: '1-12-L10', displayId: 'L3-2',
     title: '练一练2 · +括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 3,
@@ -230,7 +230,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '1-12-L11',
+    id: '1-12-L11', displayId: 'L4a',
     title: '例4(1) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 2,
@@ -245,7 +245,7 @@ const LESSON: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '1-12-L12',
+    id: '1-12-L12', displayId: 'L4b',
     title: '例4(2) · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 4,
@@ -260,7 +260,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '1-12-L13',
+    id: '1-12-L13', displayId: 'L4-1',
     title: '练一练1 · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 2,
@@ -275,7 +275,7 @@ const LESSON: Problem[] = [
     finalAns: 600,
   },
   {
-    id: '1-12-L14',
+    id: '1-12-L14', displayId: 'L4-2',
     title: '练一练2 · -括号法',
     tag: 'type3',
     tagLabel: '括号法', difficulty: 4,
@@ -290,7 +290,7 @@ const LESSON: Problem[] = [
     finalAns: 200,
   },
   {
-    id: '1-12-L15',
+    id: '1-12-L15', displayId: 'L5a',
     title: '例5(1) · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -305,7 +305,7 @@ const LESSON: Problem[] = [
     finalAns: 555,
   },
   {
-    id: '1-12-L16',
+    id: '1-12-L16', displayId: 'L5b',
     title: '例5(2) · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -320,7 +320,7 @@ const LESSON: Problem[] = [
     finalAns: 760,
   },
   {
-    id: '1-12-L17',
+    id: '1-12-L17', displayId: 'L5-1',
     title: '练一练1 · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -335,7 +335,7 @@ const LESSON: Problem[] = [
     finalAns: 375,
   },
   {
-    id: '1-12-L18',
+    id: '1-12-L18', displayId: 'L5-2',
     title: '练一练2 · 归整法',
     tag: 'type4',
     tagLabel: '归整法', difficulty: 2,
@@ -350,7 +350,7 @@ const LESSON: Problem[] = [
     finalAns: 718,
   },
   {
-    id: '1-12-L19',
+    id: '1-12-L19', displayId: 'L6',
     title: '例6 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 2,
@@ -365,7 +365,7 @@ const LESSON: Problem[] = [
     finalAns: 192,
   },
   {
-    id: '1-12-L20',
+    id: '1-12-L20', displayId: 'L6-1',
     title: '练一练 · 等差求和',
     tag: 'type5',
     tagLabel: '等差求和', difficulty: 1,

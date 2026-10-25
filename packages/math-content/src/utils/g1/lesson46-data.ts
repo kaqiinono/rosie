@@ -195,7 +195,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-46-L2',
+    id: '1-46-L2', displayId: 'L1-1',
     title: '练一练 · 饼干放抽屉',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -212,7 +212,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '1-46-L3',
+    id: '1-46-L3', displayId: 'L2',
     title: '例题2 · 同一天生日',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -229,7 +229,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '1-46-L4',
+    id: '1-46-L4', displayId: 'L2-1',
     title: '练一练 · 鸽子回舍',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -280,7 +280,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-46-L7',
+    id: '1-46-L7', displayId: 'L3-1',
     title: '练一练 · 借书同种',
     tag: 'type1',
     tagLabel: '抽屉原理',
@@ -331,7 +331,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '1-46-L10',
+    id: '1-46-L10', displayId: 'L4-1',
     title: '练一练 · 保证有黄球',
     tag: 'type3',
     tagLabel: '保证目标出现',
@@ -348,7 +348,7 @@ const LESSON: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '1-46-L11',
+    id: '1-46-L11', displayId: 'L4-2',
     title: '练一练 · 保证两种颜色',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -382,7 +382,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '1-46-L13',
+    id: '1-46-L13', displayId: 'L5-1',
     title: '练一练 · 报名项目',
     tag: 'type6',
     tagLabel: '组合·完全相同',
@@ -450,7 +450,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '1-46-L17',
+    id: '1-46-L17', displayId: 'L6-1',
     title: '练一练 · 四色袜子都取到',
     tag: 'type4',
     tagLabel: '保证种类齐全',
@@ -467,7 +467,7 @@ const LESSON: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '1-46-L18',
+    id: '1-46-L18', displayId: 'L6-2',
     title: '练一练 · 保证 2 双同色袜',
     tag: 'type5',
     tagLabel: '保证成双',

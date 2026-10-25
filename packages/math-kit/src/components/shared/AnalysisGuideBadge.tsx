@@ -1,13 +1,15 @@
 import clsx from 'clsx'
+import ProblemActionIcon from './ProblemActionIcon'
 
 type Props = {
   hasImage: boolean
   /** When true, also show a badge for problems without an analysis image (admin UIs). */
   showMissing?: boolean
   size?: 'sm' | 'md'
-  /** List cards: icon only */
+  /** List cards: circular 图 marker */
   compact?: boolean
   className?: string
+  variant?: 'default' | 'toolbar'
 }
 
 /** Marks whether a problem has a 题解配图. */
@@ -17,16 +19,30 @@ export default function AnalysisGuideBadge({
   size = 'sm',
   compact = false,
   className,
+  variant = 'default',
 }: Props) {
   if (!hasImage && !showMissing) return null
+
+  if (variant === 'toolbar' && hasImage) {
+    return (
+      <span title="本题有详细图解解析" className={clsx('inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center text-text-secondary', className)}>
+        <ProblemActionIcon name="diagram" />
+        <span className="sr-only">本题有详细图解解析</span>
+      </span>
+    )
+  }
 
   if (compact && hasImage) {
     return (
       <span
         title="本题有详细图解解析"
-        className={clsx('inline-flex shrink-0 text-[11px] leading-none opacity-80', className)}
+        aria-label="本题有详细图解解析"
+        className={clsx(
+          'inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-app-blue-light text-[11px] font-semibold leading-none text-app-blue-dark',
+          className,
+        )}
       >
-        📊
+        图
       </span>
     )
   }

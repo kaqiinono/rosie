@@ -23,3 +23,18 @@ Routes are `/tasks/**`; `/today` and all subject progress remain independent.
 
 Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` templates,
 `components/` small page sections. Shared foundations must never import this package.
+
+## ClassTable-aligned timetable
+
+- `timetable.ts` is the pure recurrence/preview/overlap layer. Previewing arbitrary dates
+  must not generate tasks. `task_tick` materializes a bounded window and the next actual
+  lesson independently; next-class deadlines must not depend on the five-week window.
+- Course edits use atomic `saveCourse` / `task_save_course`, with an effective date and
+  preserved rule identities. Archive courses rather than deleting their learning history.
+- `components/timetable/` owns the course dialog, calendar views, exams and settings.
+  Course colors remain stable; confirmation/cancellation are separate status labels.
+- `transfer.ts` validates untrusted JSON/ICS. Imports use the atomic idempotent RPC;
+  snapshots are schedule-only and restore additively, never overwrite learning records.
+- Calendars, preferences and snapshots persist in owned database rows, not localStorage.
+- `20261023051528_tasks_classtable.sql` was applied to the linked project on
+  2026-10-23 via the migration API; its filename matches hosted migration history.

@@ -7,6 +7,9 @@ reading passages, flipbook books, or the audio module.
 `PlayerDock` (transport UI; favorites props are optional — omit them and the ❤️ is hidden),
 `audio-manager-types` (`PlayerTrack`/`LoopMode`/`trackKey`), `audio-compress` (mp3 encode).
 
+`PlayerDock` accepts optional `showProgress` (default false) to display elapsed/duration and a
+keyboard-accessible seek slider. Reading detail pages opt in; existing dock layouts keep their defaults.
+
 **Depends on:** only npm (clsx, next, react, `@breezystack/lamejs`). NOT `@rosie/core`, NOT any
 module — this is the lowest layer.
 

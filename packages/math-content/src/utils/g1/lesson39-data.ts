@@ -21,7 +21,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '1-39-L2',
+    id: '1-39-L2', displayId: 'L1-1',
     title: '练一练 · 盈盈问题：孙悟空发香蕉',
     tag: 'type1',
     tagLabel: '盈盈', difficulty: 3,
@@ -40,7 +40,7 @@ const LESSON: Problem[] = [
     finalAns: 53,
   },
   {
-    id: '1-39-L3',
+    id: '1-39-L3', displayId: 'L2',
     title: '例2 · 盈恰问题：弹珠放盒子',
     tag: 'type4',
     tagLabel: '盈恰', difficulty: 2,
@@ -59,7 +59,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '1-39-L4',
+    id: '1-39-L4', displayId: 'L2-1',
     title: '练一练 · 亏恰问题：约约做数学题',
     tag: 'type5',
     tagLabel: '亏恰', difficulty: 4,
@@ -78,7 +78,7 @@ const LESSON: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '1-39-L5',
+    id: '1-39-L5', displayId: 'L3',
     title: '例3 · 亏亏问题：张阿姨的玫瑰花',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 2,
@@ -97,7 +97,7 @@ const LESSON: Problem[] = [
     finalAns: 39,
   },
   {
-    id: '1-39-L6',
+    id: '1-39-L6', displayId: 'L3-1',
     title: '练一练 · 亏亏问题：花花买发卡',
     tag: 'type2',
     tagLabel: '亏亏', difficulty: 3,
@@ -117,7 +117,7 @@ const LESSON: Problem[] = [
     finalAns: 83,
   },
   {
-    id: '1-39-L7',
+    id: '1-39-L7', displayId: 'L4',
     title: '例4 · 盈亏问题：兔妈妈的萝卜',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -136,7 +136,7 @@ const LESSON: Problem[] = [
     finalAns: 83,
   },
   {
-    id: '1-39-L8',
+    id: '1-39-L8', displayId: 'L4-1',
     title: '练一练 · 盈亏问题：搬砖',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -155,7 +155,7 @@ const LESSON: Problem[] = [
     finalAns: 25,
   },
   {
-    id: '1-39-L9',
+    id: '1-39-L9', displayId: 'L5',
     title: '例5 · 盈亏问题：合唱队开会',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -174,7 +174,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '1-39-L10',
+    id: '1-39-L10', displayId: 'L5-1',
     title: '练一练 · 盈亏问题：朱朱的水果箱',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,
@@ -194,7 +194,7 @@ const LESSON: Problem[] = [
     finalAns: 33,
   },
   {
-    id: '1-39-L11',
+    id: '1-39-L11', displayId: 'L6',
     title: '例6 · 变形盈亏：少先队员植树',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 2,
@@ -214,7 +214,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '1-39-L12',
+    id: '1-39-L12', displayId: 'L6-1',
     title: '练一练 · 变形盈亏：韦老师安排帐篷',
     tag: 'type3',
     tagLabel: '盈亏', difficulty: 3,

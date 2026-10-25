@@ -70,7 +70,7 @@ export default function TodayReport() {
   const calcDaily = useCalcDaily(user)
 
   // ── Chinese ──
-  const chinese = useChineseRoadmapProgress(user)
+  useChineseRoadmapProgress(user)
   const {
     activePlan: chineseActivePlan,
     completedPlan: chineseCompletedPlan,

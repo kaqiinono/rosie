@@ -147,7 +147,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '2-6-L5',
+    id: '2-6-L5', displayId: 'L5a',
     title: '例题5-1 · 两数和10',
     tag: 'type2',
     tagLabel: '无序分堆',
@@ -160,7 +160,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '2-6-L6',
+    id: '2-6-L6', displayId: 'L5b',
     title: '例题5-2 · 三数和10',
     tag: 'type2',
     tagLabel: '无序分堆',
@@ -173,7 +173,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '2-6-L7',
+    id: '2-6-L7', displayId: 'L5c',
     title: '例题5-3 · 四数和10',
     tag: 'type2',
     tagLabel: '无序分堆',
@@ -186,7 +186,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '2-6-L8',
+    id: '2-6-L8', displayId: 'L6',
     title: '例题6 · 分糖豆',
     tag: 'type2',
     tagLabel: '无序分堆',
@@ -203,7 +203,7 @@ const LESSON: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '2-6-L9',
+    id: '2-6-L9', displayId: 'L7',
     title: '例题7 · 分苹果',
     tag: 'type2',
     tagLabel: '无序分堆',
@@ -216,7 +216,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '2-6-L10',
+    id: '2-6-L10', displayId: 'L8',
     title: '例题8 · 选7数和33',
     tag: 'type2',
     tagLabel: '无序分堆',
@@ -229,7 +229,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '2-6-L11',
+    id: '2-6-L11', displayId: 'L9a',
     title: '例题9-1 · 组三位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -242,7 +242,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '2-6-L12',
+    id: '2-6-L12', displayId: 'L9b',
     title: '例题9-2 · 组三位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -255,7 +255,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '2-6-L13',
+    id: '2-6-L13', displayId: 'L9c',
     title: '例题9-3 · 组三位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -268,7 +268,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-6-L14',
+    id: '2-6-L14', displayId: 'L9d',
     title: '例题9-4 · 组三位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -281,7 +281,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '2-6-L15',
+    id: '2-6-L15', displayId: 'L9e',
     title: '例题9-5 · 组三位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -294,7 +294,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '2-6-L16',
+    id: '2-6-L16', displayId: 'L9f',
     title: '例题9-6 · 组三位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -307,7 +307,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-6-L17',
+    id: '2-6-L17', displayId: 'L10a',
     title: '例题10-1 · 组四位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -320,7 +320,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '2-6-L18',
+    id: '2-6-L18', displayId: 'L10b',
     title: '例题10-2 · 组四位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -333,7 +333,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '2-6-L19',
+    id: '2-6-L19', displayId: 'L10c',
     title: '例题10-3 · 组四位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -346,7 +346,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '2-6-L20',
+    id: '2-6-L20', displayId: 'L10d',
     title: '例题10-4 · 组四位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -359,7 +359,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '2-6-L21',
+    id: '2-6-L21', displayId: 'L10e',
     title: '例题10-5 · 组四位数',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -372,7 +372,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-6-L22',
+    id: '2-6-L22', displayId: 'L11a',
     title: '例题11-1 · 组四位数(含0)',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -385,7 +385,7 @@ const LESSON: Problem[] = [
     finalAns: 18,
   },
   {
-    id: '2-6-L23',
+    id: '2-6-L23', displayId: 'L11b',
     title: '例题11-2 · 组四位数(含0)',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -398,7 +398,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '2-6-L24',
+    id: '2-6-L24', displayId: 'L11c',
     title: '例题11-3 · 组四位数(含0)',
     tag: 'type3',
     tagLabel: '数字排序',
@@ -411,7 +411,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '2-6-L25',
+    id: '2-6-L25', displayId: 'L12a',
     title: '例题12-1 · 数字和/排列',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -424,7 +424,7 @@ const LESSON: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '2-6-L26',
+    id: '2-6-L26', displayId: 'L12b',
     title: '例题12-2 · 数字和/排列',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -437,7 +437,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '2-6-L27',
+    id: '2-6-L27', displayId: 'L12c',
     title: '例题12-3 · 数字和/排列',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -450,7 +450,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '2-6-L28',
+    id: '2-6-L28', displayId: 'L12d',
     title: '例题12-4 · 数字和/排列',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -463,7 +463,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '2-6-L29',
+    id: '2-6-L29', displayId: 'L12e',
     title: '例题12-5 · 数字和/排列',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -476,7 +476,7 @@ const LESSON: Problem[] = [
     finalAns: 3,
   },
   {
-    id: '2-6-L30',
+    id: '2-6-L30', displayId: 'L12f',
     title: '例题12-6 · 数字和/排列',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -489,7 +489,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-6-L31',
+    id: '2-6-L31', displayId: 'L13a',
     title: '例题13-1 · 数字和',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -502,7 +502,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '2-6-L32',
+    id: '2-6-L32', displayId: 'L13b',
     title: '例题13-2 · 数字和',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -515,7 +515,7 @@ const LESSON: Problem[] = [
     finalAns: 28,
   },
   {
-    id: '2-6-L33',
+    id: '2-6-L33', displayId: 'L13c',
     title: '例题13-3 · 数字和',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -528,7 +528,7 @@ const LESSON: Problem[] = [
     finalAns: 56,
   },
   {
-    id: '2-6-L34',
+    id: '2-6-L34', displayId: 'L14',
     title: '例题14 · 分铅笔',
     tag: 'type4',
     tagLabel: '有序分堆',
@@ -541,7 +541,7 @@ const LESSON: Problem[] = [
     finalAns: 15,
   },
   {
-    id: '2-6-L35',
+    id: '2-6-L35', displayId: 'L15',
     title: '例题15 · 数字和26',
     tag: 'type4',
     tagLabel: '有序分堆',

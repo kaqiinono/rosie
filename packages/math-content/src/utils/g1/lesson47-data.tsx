@@ -60,7 +60,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L2',
+    id: '1-47-L2', displayId: 'L1-1',
     title: '练一练 · 数连',
     tag: 'type1',
     tagLabel: '数连',
@@ -82,7 +82,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L3',
+    id: '1-47-L3', displayId: 'L2',
     title: '例题2 · 数桥',
     tag: 'type2',
     tagLabel: '数桥',
@@ -111,7 +111,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L4',
+    id: '1-47-L4', displayId: 'L2-1',
     title: '练一练 · 数桥',
     tag: 'type2',
     tagLabel: '数桥',
@@ -136,7 +136,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L5',
+    id: '1-47-L5', displayId: 'L3',
     title: '例题3 · 数方',
     tag: 'type3',
     tagLabel: '数方',
@@ -162,7 +162,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L6',
+    id: '1-47-L6', displayId: 'L3-1',
     title: '练一练 · 数方',
     tag: 'type3',
     tagLabel: '数方',
@@ -184,7 +184,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L7',
+    id: '1-47-L7', displayId: 'L4',
     title: '例题4 · 不等号数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -211,7 +211,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L8',
+    id: '1-47-L8', displayId: 'L4-1',
     title: '练一练 · 不等号数独',
     tag: 'type4',
     tagLabel: '不等号数独',
@@ -233,7 +233,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L9',
+    id: '1-47-L9', displayId: 'L5',
     title: '例题5 · 无马数独',
     tag: 'type5',
     tagLabel: '无马数独',
@@ -263,7 +263,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L10',
+    id: '1-47-L10', displayId: 'L5-1',
     title: '练一练 · 无马数独',
     tag: 'type5',
     tagLabel: '无马数独',
@@ -287,7 +287,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L11',
+    id: '1-47-L11', displayId: 'L6',
     title: '例题6 · 窗口数独',
     tag: 'type6',
     tagLabel: '窗口数独',
@@ -346,7 +346,7 @@ const LESSON: Problem[] = [
     }),
   },
   {
-    id: '1-47-L12',
+    id: '1-47-L12', displayId: 'L6-1',
     title: '练一练 · 窗口数独',
     tag: 'type6',
     tagLabel: '窗口数独',

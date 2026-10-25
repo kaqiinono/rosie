@@ -102,6 +102,20 @@ change, run `pnpm lint`/`pnpm typecheck` to catch type errors. Before merging UI
 
 ## Environment Variables
 
+### Baidu Netdisk OAuth
+
+Administrator authorization is initiated from the global settings panel (`/setting` or `/admin`)
+using authenticated `POST /api/baidu/oauth/start`; `GET /api/baidu/oauth/callback` consumes a
+single-use, ten-minute state and saves the primary account's credentials server-side. Configure
+`BAIDU_APP_KEY`, `BAIDU_SECRET_KEY`, `BAIDU_REDIRECT_URI` and the existing
+`SUPABASE_SERVICE_ROLE_KEY`. Tables `baidu_oauth_states` and `baidu_oauth_credentials` are
+service-role-only, with no browser grants or RLS policies. Textbook narration maps keys such as
+`5a-u3l1` to `/airosie/english/audio/5A/U3L1.mp3`. Authenticated audio-session POST establishes
+an HttpOnly cookie; each audio stream validates its Supabase session and supports Range requests,
+with public Storage fallback. Token refresh uses a database lease and compare-and-set persistence;
+ambiguous refresh failures require administrator reauthorization. Proxy audio is excluded from SW
+caching. See `docs/baidu-oauth.md` for migrations, setup and manual verification.
+
 Required for Supabase auth and cloud sync:
 
 ```

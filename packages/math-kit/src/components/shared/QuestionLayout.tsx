@@ -12,6 +12,7 @@ import React, {
 } from 'react'
 import type { Problem } from '@rosie/core'
 import ProblemNotesPanel from '@rosie/math-kit/components/shared/ProblemNotesPanel'
+import ProblemCardActions, { useExternalProblemActions } from './ProblemCardActions'
 
 type SolutionToggleContextValue = {
   node: React.ReactNode
@@ -101,6 +102,7 @@ export default function QuestionLayout({
   problem,
   answerActions,
 }: QuestionLayoutProps) {
+  const externalActions = useExternalProblemActions()
   const solutionAvailabilityOverride = useContext(SolutionAvailabilityOverrideContext)
   const effectiveSolutionAvailable = solutionAvailable || solutionAvailabilityOverride
   const [solutionOpen, setSolutionOpen] = useState(
@@ -247,6 +249,8 @@ export default function QuestionLayout({
 
         {problemId ? <ProblemNotesPanel problemId={problemId} problem={problem} /> : null}
 
+        {problem && !externalActions && <ProblemCardActions problem={problem} />}
+
         <style>{`
         /* ─── 容器 ─── */
         .question-layout {
@@ -258,11 +262,11 @@ export default function QuestionLayout({
           max-width: 100%;
           box-sizing: border-box;
           margin: 0 auto;
-          border-radius: 18px;
+          border-radius: 12px;
           overflow: hidden;
           box-shadow:
-            0 2px 8px rgba(0,0,0,0.06),
-            0 0 0 1.5px rgba(0,0,0,0.06);
+            0 1px 2px rgba(15,23,42,0.03),
+            0 0 0 1px #e2e8f0;
           background: #ffffff;
         }
 

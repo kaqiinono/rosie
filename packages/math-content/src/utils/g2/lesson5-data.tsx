@@ -96,7 +96,7 @@ export const TAG_STYLE: Record<string, string> = {
 
 const LESSON: Problem[] = [
   {
-    id: '2-5-L1',
+    id: '2-5-L1', displayId: 'L1a',
     title: '例题1-1 · 等差数列',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -109,7 +109,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '2-5-L2',
+    id: '2-5-L2', displayId: 'L1b',
     title: '例题1-2 · 等比数列',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -122,7 +122,7 @@ const LESSON: Problem[] = [
     finalAns: 64,
   },
   {
-    id: '2-5-L3',
+    id: '2-5-L3', displayId: 'L1c',
     title: '例题1-3 · 平方数列',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -135,7 +135,7 @@ const LESSON: Problem[] = [
     finalAns: 36,
   },
   {
-    id: '2-5-L4',
+    id: '2-5-L4', displayId: 'L2a',
     title: '例题2-1 · 二级等差',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -148,7 +148,7 @@ const LESSON: Problem[] = [
     finalAns: 41,
   },
   {
-    id: '2-5-L5',
+    id: '2-5-L5', displayId: 'L2b',
     title: '例题2-2 · 差为等比',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 42,
   },
   {
-    id: '2-5-L6',
+    id: '2-5-L6', displayId: 'L2c',
     title: '例题2-3 · 复杂递增',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -174,7 +174,7 @@ const LESSON: Problem[] = [
     finalAns: 114,
   },
   {
-    id: '2-5-L7',
+    id: '2-5-L7', displayId: 'L3a',
     title: '例题3-1 · 递推数列',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -187,7 +187,7 @@ const LESSON: Problem[] = [
     finalAns: 128,
   },
   {
-    id: '2-5-L8',
+    id: '2-5-L8', displayId: 'L3b',
     title: '例题3-2 · 斐波那契差',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -200,7 +200,7 @@ const LESSON: Problem[] = [
     finalAns: 43,
   },
   {
-    id: '2-5-L9',
+    id: '2-5-L9', displayId: 'L3c',
     title: '例题3-3 · 乘2减1',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -213,7 +213,7 @@ const LESSON: Problem[] = [
     finalAns: 33,
   },
   {
-    id: '2-5-L10',
+    id: '2-5-L10', displayId: 'L4a',
     title: '例题4-1 · 交错数列',
     tag: 'type4',
     tagLabel: '综合挑战',
@@ -230,7 +230,7 @@ const LESSON: Problem[] = [
     finalAns: 7,
   },
   {
-    id: '2-5-L11',
+    id: '2-5-L11', displayId: 'L4b',
     title: '例题4-2 · 双数列',
     tag: 'type4',
     tagLabel: '综合挑战',
@@ -246,7 +246,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-5-L12',
+    id: '2-5-L12', displayId: 'L5a',
     title: '例题5-1 · 分组数列',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -263,7 +263,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '2-5-L13',
+    id: '2-5-L13', displayId: 'L5b',
     title: '例题5-2 · 周期数列',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-5-L14',
+    id: '2-5-L14', displayId: 'L6',
     title: '例题6 · 配对递增',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -292,7 +292,7 @@ const LESSON: Problem[] = [
     finalAns: 31,
   },
   {
-    id: '2-5-L15',
+    id: '2-5-L15', displayId: 'L7a',
     title: '例题7-1 · 平方减1',
     tag: 'type1',
     tagLabel: '数列找规律',
@@ -305,7 +305,7 @@ const LESSON: Problem[] = [
     finalAns: 143,
   },
   {
-    id: '2-5-L16',
+    id: '2-5-L16', displayId: 'L7b',
     title: '例题7-2 · 交错复杂',
     tag: 'type4',
     tagLabel: '综合挑战',
@@ -321,7 +321,7 @@ const LESSON: Problem[] = [
     finalAns: 26,
   },
   {
-    id: '2-5-L17',
+    id: '2-5-L17', displayId: 'L8a',
     title: '例题8-1 · 数表方格',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -335,7 +335,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '2-5-L18',
+    id: '2-5-L18', displayId: 'L8b',
     title: '例题8-2 · 数表三角',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -349,7 +349,7 @@ const LESSON: Problem[] = [
     finalAns: 16,
   },
   {
-    id: '2-5-L19',
+    id: '2-5-L19', displayId: 'L9a',
     title: '例题9-1 · 四圆规律',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -363,7 +363,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '2-5-L20',
+    id: '2-5-L20', displayId: 'L9b',
     title: '例题9-2 · 箭头图形',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -381,7 +381,7 @@ const LESSON: Problem[] = [
     finalAns: 62,
   },
   {
-    id: '2-5-L21',
+    id: '2-5-L21', displayId: 'L10',
     title: '例题10 · 乘积数表',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -399,7 +399,7 @@ const LESSON: Problem[] = [
     finalAns: 8,
   },
   {
-    id: '2-5-L22',
+    id: '2-5-L22', displayId: 'L11',
     title: '例题11 · 图形轮换',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -423,7 +423,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '2-5-L23',
+    id: '2-5-L23', displayId: 'L12',
     title: '例题12 · 对角与圆点',
     tag: 'type2',
     tagLabel: '数表图形',
@@ -437,7 +437,7 @@ const LESSON: Problem[] = [
     finalAns: 1,
   },
   {
-    id: '2-5-L24',
+    id: '2-5-L24', displayId: 'L13',
     title: '例题13 · 图形组合',
     tag: 'type3',
     tagLabel: '图形编码',
@@ -451,7 +451,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '2-5-L25',
+    id: '2-5-L25', displayId: 'L14',
     title: '例题14 · 圆圈乘积',
     tag: 'type3',
     tagLabel: '图形编码',
@@ -465,7 +465,7 @@ const LESSON: Problem[] = [
     finalAns: 2,
   },
   {
-    id: '2-5-L26',
+    id: '2-5-L26', displayId: 'L15',
     title: '例题15 · 形状编码',
     tag: 'type3',
     tagLabel: '图形编码',

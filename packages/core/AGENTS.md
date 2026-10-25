@@ -28,3 +28,5 @@ Agent rule: `.cursor/rules/session-store-data-fetch.mdc`. Design:
 `docs/superpowers/specs/2026-07-30-session-store-evolution-design.md`.
 
 Barrel: `import { … } from '@rosie/core'`. Internal cross-file imports are relative.
+
+`Problem.displayId?: string` is display-only compatibility for existing math classroom questions. New lessons omit it and use correctly numbered real IDs. Keep all persistence, routes, references and ordering based on real IDs.

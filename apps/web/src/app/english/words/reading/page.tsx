@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { useAuth, supabase } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
-import { useReadingPassageMedia } from '@rosie/english'
+import { useReadingPassageMedia, useBaiduReadingAudio, baiduReadingAudioUrl } from '@rosie/english'
 import { usePlaylistPlayer } from '@rosie/player'
 import { useWordsContext } from '@rosie/english'
 import { ReadingAudioUploadButton } from '@rosie/english'
@@ -24,6 +24,11 @@ export default function ReadingIndexPage() {
   const { vocab, masteryMap, selStage, setSelStage } = useWordsContext()
   const searchParams = useSearchParams()
   const { hasAudio, uploadPassageAudio } = useReadingPassageMedia(user)
+  const { hasAudio: hasBaiduAudio } = useBaiduReadingAudio(user)
+  const hasPlayableAudio = useCallback(
+    (key: string) => hasBaiduAudio(key) || hasAudio(key),
+    [hasBaiduAudio, hasAudio],
+  )
   const player = usePlaylistPlayer()
   const collection = searchParams.get('collection') === 'story' ? 'story' : 'houhai'
   const houhaiStages = useMemo(
@@ -88,13 +93,13 @@ export default function ReadingIndexPage() {
   const trackByKey = useMemo(() => {
     const map = new Map<string, PlayerTrack>()
     for (const p of stagePassages) {
-      if (!hasAudio(p.key)) continue
+      if (!hasPlayableAudio(p.key)) continue
       const { data } = supabase.storage
         .from(READING_AUDIO_BUCKET)
         .getPublicUrl(readingPassageAudioPath(p.key))
       if (!data?.publicUrl) continue
       map.set(p.key, {
-        url: data.publicUrl,
+        url: hasBaiduAudio(p.key) ? baiduReadingAudioUrl(p.key) : data.publicUrl,
         label: p.title,
         refLink: `/english/words/reading/${p.key}`,
         mediaType: 'audio',
@@ -102,11 +107,11 @@ export default function ReadingIndexPage() {
       })
     }
     return map
-  }, [stagePassages, hasAudio])
+  }, [stagePassages, hasPlayableAudio, hasBaiduAudio])
 
   const audiobookKeys = useMemo(
-    () => stagePassages.filter((p) => hasAudio(p.key)).map((p) => p.key),
-    [stagePassages, hasAudio],
+    () => stagePassages.filter((p) => hasPlayableAudio(p.key)).map((p) => p.key),
+    [stagePassages, hasPlayableAudio],
   )
 
   // Drop selection that belongs to another textbook after a stage switch.
@@ -237,7 +242,7 @@ export default function ReadingIndexPage() {
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {cards.map(
             ({ passage: p, wordCount, masteredCount, glossaryCount, paragraphCount, isFocus }) => {
-              const passageHasAudio = hasAudio(p.key)
+              const passageHasAudio = hasPlayableAudio(p.key)
               const track = trackByKey.get(p.key)
               const queuePos = queueKeys.indexOf(p.key)
               const inQueue = queuePos !== -1

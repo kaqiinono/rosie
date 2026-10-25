@@ -179,7 +179,7 @@ export default function ImmersiveMode({
     //  1) letter-reveal help words (Type-C drill), and
     //  2) 错题补练: words missed even after the gentle retry, re-drilled in their
     //     original type (deduped against the help set so nothing repeats twice).
-    if (!reinforcementAppended) {
+    if (!reinforcementAppended || Object.values(helpClicks).some((count) => count > 0)) {
       const helpExtras = Object.values(helpClicks).some((c) => c > 0)
         ? buildReinforcementQuestions(helpClicks, allWords, wordKey, Date.now())
         : []
@@ -199,11 +199,12 @@ export default function ImmersiveMode({
         seen.add(k)
         wrongItems.push({ entry: r.entry, type: t })
       }
-      const wrongExtras = buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
+      const wrongExtras = reinforcementAppended ? [] : buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
       const extras = [...helpExtras, ...wrongExtras]
       if (extras.length > 0) {
-        setMainPassTotal(quizQs.length)
+        if (!reinforcementAppended) setMainPassTotal(quizQs.length)
         setQuizQs((prev) => [...prev, ...extras])
+        setHelpClicks({})
         setReinforcementAppended(true)
         setCurQ(next)
         return
@@ -217,10 +218,9 @@ export default function ImmersiveMode({
   const handleHelpReveal = useCallback(() => {
     if (!currentQ) return
     const k = wordKey(currentQ.word)
-    setHelpClicks((prev) => ({ ...prev, [k]: (prev[k] ?? 0) + 1 }))
+    setHelpClicks((prev) => ({ ...prev, [k]: 1 }))
   }, [currentQ])
 
-  const helpRevealedForCurrent = currentQ ? (helpClicks[wordKey(currentQ.word)] ?? 0) : 0
   const inReinforcement = reinforcementAppended && mainPassTotal !== null && curQ >= mainPassTotal
 
   const runner = useQuizRunner({
@@ -622,8 +622,8 @@ export default function ImmersiveMode({
               runner={runner}
               questionKey={curQ}
               progressSlot={moonProgress}
-              helpRevealed={helpRevealedForCurrent}
               onHelpReveal={handleHelpReveal}
+              onMagicReveal={handleHelpReveal}
               spellButtonStyle={spellButtonStyle}
             />
           )}

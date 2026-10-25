@@ -15,7 +15,7 @@ export const TYPE_TIP: Record<string, string> = {
 const LESSON: Problem[] = [
   // ===== 模块一：交换律结合律 =====
   {
-    id: '2-1-L1',
+    id: '2-1-L1', displayId: 'L1a',
     title: '例1 · 凑整加法(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -31,7 +31,7 @@ const LESSON: Problem[] = [
     finalAns: 700,
   },
   {
-    id: '2-1-L2',
+    id: '2-1-L2', displayId: 'L1b',
     title: '例1 · 凑整加法(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -47,7 +47,7 @@ const LESSON: Problem[] = [
     finalAns: 1541,
   },
   {
-    id: '2-1-L3',
+    id: '2-1-L3', displayId: 'L1-1a',
     title: '练一练 · 凑整(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -63,7 +63,7 @@ const LESSON: Problem[] = [
     finalAns: 251,
   },
   {
-    id: '2-1-L4',
+    id: '2-1-L4', displayId: 'L1-1b',
     title: '练一练 · 凑整(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -79,7 +79,7 @@ const LESSON: Problem[] = [
     finalAns: 500,
   },
   {
-    id: '2-1-L5',
+    id: '2-1-L5', displayId: 'L2a',
     title: '例2 · 加减混合凑整(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -95,7 +95,7 @@ const LESSON: Problem[] = [
     finalAns: 2000,
   },
   {
-    id: '2-1-L6',
+    id: '2-1-L6', displayId: 'L2b',
     title: '例2 · 加减混合凑整(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -111,7 +111,7 @@ const LESSON: Problem[] = [
     finalAns: 6007,
   },
   {
-    id: '2-1-L7',
+    id: '2-1-L7', displayId: 'L3',
     title: '例3 · 多数凑整',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -127,7 +127,7 @@ const LESSON: Problem[] = [
     finalAns: 76,
   },
   {
-    id: '2-1-L8',
+    id: '2-1-L8', displayId: 'L4',
     title: '例4 · 长串加减',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -144,7 +144,7 @@ const LESSON: Problem[] = [
     finalAns: 34,
   },
   {
-    id: '2-1-L9',
+    id: '2-1-L9', displayId: 'L5a',
     title: '例5 · 接近整数凑整(1)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 3202,
   },
   {
-    id: '2-1-L10',
+    id: '2-1-L10', displayId: 'L5b',
     title: '例5 · 接近整数凑整(2)',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -178,7 +178,7 @@ const LESSON: Problem[] = [
     finalAns: 6998,
   },
   {
-    id: '2-1-L11',
+    id: '2-1-L11', displayId: 'L6',
     title: '例6 · 凑整加法',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -194,7 +194,7 @@ const LESSON: Problem[] = [
     finalAns: 3998,
   },
   {
-    id: '2-1-L12',
+    id: '2-1-L12', displayId: 'L6-1',
     title: '练一练 · 对称凑整',
     tag: 'type1',
     tagLabel: '交换律结合律',
@@ -211,7 +211,7 @@ const LESSON: Problem[] = [
   },
   // ===== 模块二：去括号 =====
   {
-    id: '2-1-L13',
+    id: '2-1-L13', displayId: 'L7a',
     title: '例7 · 去括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -227,7 +227,7 @@ const LESSON: Problem[] = [
     finalAns: 668,
   },
   {
-    id: '2-1-L14',
+    id: '2-1-L14', displayId: 'L7b',
     title: '例7 · 去括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -243,7 +243,7 @@ const LESSON: Problem[] = [
     finalAns: 750,
   },
   {
-    id: '2-1-L15',
+    id: '2-1-L15', displayId: 'L7c',
     title: '例7 · 去括号(3)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -260,7 +260,7 @@ const LESSON: Problem[] = [
     finalAns: 300,
   },
   {
-    id: '2-1-L16',
+    id: '2-1-L16', displayId: 'L7d',
     title: '例7 · 去括号(4)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -277,7 +277,7 @@ const LESSON: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '2-1-L17',
+    id: '2-1-L17', displayId: 'L8a',
     title: '例8 · 双括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -293,7 +293,7 @@ const LESSON: Problem[] = [
     finalAns: 400,
   },
   {
-    id: '2-1-L18',
+    id: '2-1-L18', displayId: 'L8b',
     title: '例8 · 双括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -310,7 +310,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '2-1-L19',
+    id: '2-1-L19', displayId: 'L9a',
     title: '例9 · 多括号(1)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -327,7 +327,7 @@ const LESSON: Problem[] = [
     finalAns: 5045,
   },
   {
-    id: '2-1-L20',
+    id: '2-1-L20', displayId: 'L9b',
     title: '例9 · 多括号(2)',
     tag: 'type2',
     tagLabel: '去括号',
@@ -345,7 +345,7 @@ const LESSON: Problem[] = [
   },
   // ===== 模块三：按位相加 =====
   {
-    id: '2-1-L21',
+    id: '2-1-L21', displayId: 'L10a',
     title: '例10 · 按位相加(1)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -361,7 +361,7 @@ const LESSON: Problem[] = [
     finalAns: 666,
   },
   {
-    id: '2-1-L22',
+    id: '2-1-L22', displayId: 'L10b',
     title: '例10 · 按位相加(2)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -377,7 +377,7 @@ const LESSON: Problem[] = [
     finalAns: 11110,
   },
   {
-    id: '2-1-L23',
+    id: '2-1-L23', displayId: 'L11a',
     title: '例11 · 循环数除法(1)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -394,7 +394,7 @@ const LESSON: Problem[] = [
     finalAns: 55555,
   },
   {
-    id: '2-1-L24',
+    id: '2-1-L24', displayId: 'L11b',
     title: '例11 · 循环数除法(2)',
     tag: 'type3',
     tagLabel: '按位相加',
@@ -412,7 +412,7 @@ const LESSON: Problem[] = [
   },
   // ===== 模块四：基准数 =====
   {
-    id: '2-1-L25',
+    id: '2-1-L25', displayId: 'L12',
     title: '例12 · 基准数求和',
     tag: 'type4',
     tagLabel: '基准数',
@@ -429,7 +429,7 @@ const LESSON: Problem[] = [
     finalAns: 1527,
   },
   {
-    id: '2-1-L26',
+    id: '2-1-L26', displayId: 'L12-1',
     title: '练一练 · 基准数求和',
     tag: 'type4',
     tagLabel: '基准数',

@@ -8,6 +8,7 @@ import { useAuth } from '@rosie/core'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import { SEA_LESSON_MAP, type SeaProblem } from '@rosie/math/utils/sea-data'
 import { problemSetSectionLabel } from '@rosie/math-kit/utils/problem-set-helpers'
+import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
 import QuestionLayout from '@rosie/math-kit/components/shared/QuestionLayout'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerPanel'
@@ -356,7 +357,7 @@ function PracticeProblem({
 
   return (
     <div className="practice-overlay-enter">
-      <div className="mb-3 text-[15px] font-bold text-gray-800">{problem.title}</div>
+      <div className="mb-3 text-[15px] font-bold text-gray-800">{problemDisplayId(problem)} · {problem.title}</div>
       <QuestionLayout
         question={question}
         solution={solution}

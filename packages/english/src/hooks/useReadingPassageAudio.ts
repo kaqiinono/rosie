@@ -3,15 +3,18 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
-import { READING_AUDIO_BUCKET, readingPassageAudioPath } from '../utils/reading-audio-types'
+import { READING_AUDIO_BUCKET, readingPassageAudioPath, baiduReadingAudioUrl } from '../utils/reading-audio-types'
+import { useBaiduReadingAudio } from './useBaiduReadingAudio'
 
 /**
- * Detail-page hook: emit the audio URL for a single passage synchronously,
+ * Detail-page hook: prefer discovered Baidu narration, otherwise emit Storage synchronously,
  * with an asynchronous `?v=<updatedAt>` cache-buster appended once the DB
  * lookup completes. Never lists the storage bucket, never scans all passages.
  */
 export function useReadingPassageAudio(user: User | null, passageKey: string) {
-  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
+  const baidu = useBaiduReadingAudio(user)
+  const [revision, setRevision] = useState<{ key: string; updatedAt: string } | null>(null)
+  const updatedAt = revision?.key === passageKey ? revision.updatedAt : null
 
   const baseUrl = useMemo(() => {
     const path = readingPassageAudioPath(passageKey)
@@ -30,7 +33,7 @@ export function useReadingPassageAudio(user: User | null, passageKey: string) {
         .maybeSingle()
       if (cancelled) return
       const ts = (data as { updated_at?: string } | null)?.updated_at
-      if (ts) setUpdatedAt(ts)
+      if (ts) setRevision({ key: passageKey, updatedAt: ts })
     })()
     return () => {
       cancelled = true
@@ -38,7 +41,8 @@ export function useReadingPassageAudio(user: User | null, passageKey: string) {
   }, [user, passageKey])
 
   return useMemo(() => {
+    if (baidu.hasAudio(passageKey)) return baiduReadingAudioUrl(passageKey)
     if (!baseUrl) return null
     return updatedAt ? `${baseUrl}?v=${encodeURIComponent(updatedAt)}` : baseUrl
-  }, [baseUrl, updatedAt])
+  }, [baidu.hasAudio, passageKey, baseUrl, updatedAt])
 }

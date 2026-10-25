@@ -6,6 +6,7 @@ export const LESSON_SOURCE_BTNS: Record<string, LessonSourceBtn[]> = {
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },
     { key: 'homework', label: '✏️ 课后巩固' },
+    { key: 'supplement', label: '📒 附加题' },
   ],
   '1-12': [
     { key: 'pretest', label: '📝 课前测' },

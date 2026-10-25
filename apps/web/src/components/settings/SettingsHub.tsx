@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { isAdminUser, useAuth } from '@rosie/core'
 import { PageBreadcrumb } from '@rosie/ui'
+import BaiduOAuthConnect from './BaiduOAuthConnect'
 
 interface SettingTool {
   href: string
@@ -62,7 +63,7 @@ function ToolGrid({ tools }: { tools: SettingTool[] }) {
 }
 
 export function AdminSettingsCards() {
-  return <ToolGrid tools={ADMIN_TOOLS} />
+  return <><ToolGrid tools={ADMIN_TOOLS} /><BaiduOAuthConnect /></>
 }
 
 export default function SettingsHub() {

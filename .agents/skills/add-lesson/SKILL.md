@@ -1,7 +1,7 @@
 ---
 name: add-lesson
 description: Add new math lessons to the Rosie platform. Reads one per-lesson source file docs/math/lessons/{lessonKey}.md (template docs/math/new-lesson-template.md) — extracting complete questions and solutions from linked PDFs or supplied images when needed — confirms problem counts and grade before entering data, and generates package files + registry entries following docs/add-new-lesson/. Must complete full registration (not just the md file) or the grade homepage card will not appear.
-version: 5.5.0
+version: 5.6.1
 trigger: /add-lesson
 ---
 
@@ -90,6 +90,12 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 ---
 
+## 题号与历史兼容（先于数据生成）
+
+完整编号规则、映射表和验收样例只维护在 [`data.md#题目-id`](../../../docs/add-new-lesson/data.md#题目-id)。先整理「教材题号 → 例题/练一练归属 → 平台 ID」再生成数据，保留教材编号及跳号。例题 `L1`、其练一练 `L1-1`，拆分小题用字母（`L1a`、`L1-1a`）。结合例题分组、标题、题型和教材顺序推断练一练归属；常规“例题 → 练一练 → 下一例题”可以直接推断，不要求标题显式写出所属例题。独立练一练用 `L1-1/L1-2`，同一个练一练的拆分小题用 `L1-1a/L1-1b`；完整推断规则见 `data.md`。来源、归属或拆分层级经推断仍有冲突才询问；已在本会话确认的规则和元数据不重复询问。
+
+新课真实 ID 直接规范命名，**不添加 `displayId`**。旧题真实 ID 已有关联，**禁止重命名**；仅对编号需纠正且依据明确的旧课堂题显式补短题号 `displayId`，已符合规范的不重复填写。旧题也使用上述分组推断规则补齐显示号，并解除此前仅因练一练未映射而占用题号的兼容阻塞。仅对重复题号、整题与拆分题重叠或跨组归属仍有冲突的旧题保留编号并登记待确认，不把可合理推断的练一练留在清单中。
+
 ## 第零步：读索引
 
 读 `docs/add-new-lesson.md`。
@@ -107,7 +113,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 1. 解析 md 中的相对链接并确认文件存在；用户直接提供 PDF 时，以该文件为源。
 2. 用 `pdfinfo` 确认页数，再用 `pdftotext -layout` 做初步提取。
 3. **必须**用 `pdftoppm -png` 渲染所有相关页并逐页视觉核对；扫描件、手写批注、公式或图形不得只依赖文本提取。
-4. 同时提取题干与题解。多小题拆成独立题目；保留原题编号到 `title`，平台 ID 则连续使用 `{lessonKey}-L1` / `H1` 等。
+4. 同时提取题干与题解。多小题拆成独立题目；先记录教材题号及所属例题/练一练，再按 `data.md` 的映射规则生成真实 ID，保留原题编号到 `title`。
 5. PDF 编号跳号时不得擅自补题；记录“源文件编号跳号”，但保证所有实际出现的题目都录入。
 6. 把核对后的逐题清单和题解回填到 `docs/math/lessons/{lessonKey}.md`，使 md 成为可审阅的文本底稿，再生成代码。
 7. 录入前报告每个模块题数和总数；纯数值、图形、竖式谜分别判断是否需要 figure/custom answer widget。
@@ -118,11 +124,11 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 1. HEIC → PNG（`sips`）
 2. 抄题写入 `docs/math/lessons/{lessonKey}.md`
-3. 多小题拆成 `L1`、`L2`…
+3. 整理教材题号、练一练归属与拆分层级的映射；拆分小题使用字母，规则见 `data.md`。
 
-**确认（录入前必做）：**
+**录入前整理（已有会话确认直接沿用；仅缺失或矛盾的信息询问用户）：**
 
-1. 通读全部章节，逐题列出
+1. 通读全部章节，逐题列出教材题号、例题/练一练归属、平台 ID 映射
 2. **grade**；未写则 `gradeForNewLesson()`
 3. **seq**（见上表规则）
 4. **lessonKey** = `{grade}-{seq}`；**basePath** = `/math/ny/{grade}/{seq}`
@@ -159,7 +165,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 ### 组件模板
 
-复制**同年级上一讲**目录，改 `BASE` / `lessonKey` / 色系 / Provider 名。
+复制**同年级上一讲**目录，改 `BASE` / `lessonKey` / 色系 / Provider 名。生成新题前清除骨架中的旧题内容、旧真实 ID 和旧 `displayId`；兼容字段不得复制到新课。
 
 **含答题区自定义组件时：** `ProblemDetail` 必须跟题型对齐（宫格 → 模板 A `1-47`；竖式谜 → 模板 B `2-7`）。草稿纸由 `ScratchPadCustomAnswerWidget` 自动接入，**勿**在讲次目录里再写草稿专用答题 UI。见 [`custom-answer-widget.md`](../../../docs/add-new-lesson/custom-answer-widget.md)。
 
@@ -190,7 +196,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 ### 禁止事项
 
-- **禁止** legacy 题目 ID（`56-L1`、`52-L1`）—— 一律 `{lessonKey}-L1`
+- **新课程禁止** legacy 题目 ID（`56-L1`、`52-L1`）—— 使用 `{lessonKey}-{完整后缀}`；旧真实 ID 保留不动
 - **禁止** href `/math/ny/56` 或 `/math/ny/g2/8`
 - **禁止** registry / module / SEA / plan / quiz 使用 legacyId 或 `lessonNN` 根目录
 - **禁止** md 文件名用全局编号（`57.md`）—— 必须用 `2-8.md`
@@ -199,7 +205,13 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 ---
 
-## 第三步：验证
+## 第三步：交付与用户手动验收
+
+所有 build / test / lint / typecheck、环境验证、启动服务、依赖安装、审计脚本和浏览器验证均由用户手动触发；代理不得自动执行。完成代码和完整注册后给出精简状态及待确认项，不以未运行的检查声称通过。
+
+编号完成条件：教材编号和跳号一致、练一练归属明确、同讲次真实 ID 与有效显示编号分别唯一、完整多段后缀不截断、新课程无 `displayId`。旧题待确认项按 `data.md` 登记，保留旧编号，并明确其尚未完成教材核对。
+
+以下命令仅供用户手动选择执行：
 
 ```bash
 pnpm --filter @rosie/math typecheck

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '@rosie/core'
 import type { LessonRef, TaskMaterial } from '../types'
 import { useTasks, Panel, Field, inputClass, buttonClass, minorClass, CourseSelect, safeHref, text } from './shared'
@@ -9,6 +9,7 @@ import LessonPicker from './LessonPicker'
 export default function Materials() {
   const { api, catalog, run, busy } = useTasks()
   const [course, setCourse] = useState('')
+  useEffect(() => { setCourse(new URLSearchParams(window.location.search).get('course') ?? '') }, [])
   const [lesson, setLesson] = useState<LessonRef | null>(null)
   const [kind, setKind] = useState('reading')
   const [editing, setEditing] = useState<TaskMaterial | null>(null)

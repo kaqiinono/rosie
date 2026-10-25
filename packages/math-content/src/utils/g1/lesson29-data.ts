@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const LESSON: Problem[] = [
   {
-    id: '1-29-L1',
+    id: '1-29-L1', displayId: 'L1a',
     title: '例1-1 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -20,7 +20,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '1-29-L2',
+    id: '1-29-L2', displayId: 'L1b',
     title: '例1-2 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -38,7 +38,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '1-29-L3',
+    id: '1-29-L3', displayId: 'L1c',
     title: '例1-3 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -56,7 +56,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '1-29-L4',
+    id: '1-29-L4', displayId: 'L1d',
     title: '例1-4 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -74,7 +74,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '1-29-L5',
+    id: '1-29-L5', displayId: 'L1-1',
     title: '练一练1 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -91,7 +91,7 @@ const LESSON: Problem[] = [
     finalAns: 10,
   },
   {
-    id: '1-29-L6',
+    id: '1-29-L6', displayId: 'L1-2',
     title: '练一练2 · 填四则运算符',
     tag: 'type1',
     tagLabel: '题型1·填四则运算符', difficulty: 2,
@@ -108,7 +108,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '1-29-L7',
+    id: '1-29-L7', displayId: 'L2a',
     title: '例2-1 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -128,7 +128,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '1-29-L8',
+    id: '1-29-L8', displayId: 'L2b',
     title: '例2-2 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 2,
@@ -145,7 +145,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '1-29-L9',
+    id: '1-29-L9', displayId: 'L2c',
     title: '例2-3 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -162,7 +162,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '1-29-L10',
+    id: '1-29-L10', displayId: 'L2d',
     title: '例2-4 · 24点游戏',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -180,7 +180,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '1-29-L11',
+    id: '1-29-L11', displayId: 'L2-1',
     title: '练一练（24点）1 · 2,8,9,10',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,
@@ -197,7 +197,7 @@ const LESSON: Problem[] = [
     finalAns: 24,
   },
   {
-    id: '1-29-L12',
+    id: '1-29-L12', displayId: 'L2-4',
     title: '练一练（24点）4 · 3,4,7,8',
     tag: 'type2',
     tagLabel: '题型2·24点游戏', difficulty: 3,

@@ -99,7 +99,7 @@ const LESSON: Problem[] = [
     finalAns: 100,
   },
   {
-    id: '1-13-L2',
+    id: '1-13-L2', displayId: 'L1-1',
     title: '练一练 · 已知棵数求路长',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 1,
@@ -114,7 +114,7 @@ const LESSON: Problem[] = [
     finalAns: 120,
   },
   {
-    id: '1-13-L3',
+    id: '1-13-L3', displayId: 'L2a',
     title: '例2(1) · 两端都放',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 1,
@@ -128,7 +128,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '1-13-L4',
+    id: '1-13-L4', displayId: 'L2b',
     title: '例2(2) · 只一端放',
     tag: 'type2',
     tagLabel: '直线型一端不种', difficulty: 1,
@@ -142,7 +142,7 @@ const LESSON: Problem[] = [
     finalAns: 5,
   },
   {
-    id: '1-13-L5',
+    id: '1-13-L5', displayId: 'L2c',
     title: '例2(3) · 两端都不放',
     tag: 'type3',
     tagLabel: '直线型两端不种', difficulty: 1,
@@ -156,7 +156,7 @@ const LESSON: Problem[] = [
     finalAns: 4,
   },
   {
-    id: '1-13-L6',
+    id: '1-13-L6', displayId: 'L2-1',
     title: '练一练 · 桥上挂彩灯',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 1,
@@ -170,7 +170,7 @@ const LESSON: Problem[] = [
     finalAns: 101,
   },
   {
-    id: '1-13-L7',
+    id: '1-13-L7', displayId: 'L3',
     title: '例3 · 已知路长和棵数求间距',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -186,7 +186,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '1-13-L8',
+    id: '1-13-L8', displayId: 'L3-1',
     title: '练一练 · 110米栏架间距',
     tag: 'type1',
     tagLabel: '直线型两端都种', difficulty: 2,
@@ -201,7 +201,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '1-13-L9',
+    id: '1-13-L9', displayId: 'L4',
     title: '例4 · 行程速度求距离',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 3,
@@ -217,7 +217,7 @@ const LESSON: Problem[] = [
     finalAns: 2400,
   },
   {
-    id: '1-13-L10',
+    id: '1-13-L10', displayId: 'L4-1',
     title: '练一练 · 行程速度求总距离',
     tag: 'type5',
     tagLabel: '行程与速度', difficulty: 3,
@@ -264,7 +264,7 @@ const LESSON: Problem[] = [
     finalAns: 27,
   },
   {
-    id: '1-13-L13',
+    id: '1-13-L13', displayId: 'L5',
     title: '例5 · 三角形池塘封闭型',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -279,7 +279,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '1-13-L14',
+    id: '1-13-L14', displayId: 'L5-1',
     title: '练一练 · 长方形地种杨树',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,
@@ -294,7 +294,7 @@ const LESSON: Problem[] = [
     finalAns: 70,
   },
   {
-    id: '1-13-L15',
+    id: '1-13-L15', displayId: 'L6',
     title: '例6 · 圆形鱼池求周长和花盆数',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 3,
@@ -310,7 +310,7 @@ const LESSON: Problem[] = [
     finalAns: 50,
   },
   {
-    id: '1-13-L16',
+    id: '1-13-L16', displayId: 'L6-1',
     title: '练一练 · 正方形池塘求周长',
     tag: 'type4',
     tagLabel: '封闭型', difficulty: 2,

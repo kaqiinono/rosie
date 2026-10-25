@@ -105,7 +105,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '1-15-L2',
+    id: '1-15-L2', displayId: 'L1-1',
     title: '练一练 · 桃树梨树',
     tag: 'type1',
     tagLabel: '基本和差', difficulty: 1,
@@ -122,7 +122,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '1-15-L3',
+    id: '1-15-L3', displayId: 'L2',
     title: '例2 · 口算题时间匹配',
     tag: 'type2',
     tagLabel: '时间匹配和差', difficulty: 2,
@@ -140,7 +140,7 @@ const LESSON: Problem[] = [
     finalAns: 30,
   },
   {
-    id: '1-15-L4',
+    id: '1-15-L4', displayId: 'L2-1',
     title: '练一练 · 打字速度',
     tag: 'type2',
     tagLabel: '时间匹配和差', difficulty: 2,
@@ -158,7 +158,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '1-15-L5',
+    id: '1-15-L5', displayId: 'L3',
     title: '例3 · 语数平均分',
     tag: 'type3',
     tagLabel: '平均数变形', difficulty: 2,
@@ -176,7 +176,7 @@ const LESSON: Problem[] = [
     finalAns: 90,
   },
   {
-    id: '1-15-L6',
+    id: '1-15-L6', displayId: 'L3-1',
     title: '练一练 · 玩具身高',
     tag: 'type3',
     tagLabel: '平均数变形', difficulty: 2,
@@ -194,7 +194,7 @@ const LESSON: Problem[] = [
     finalAns: 60,
   },
   {
-    id: '1-15-L7',
+    id: '1-15-L7', displayId: 'L4',
     title: '例4 · 书架上下层',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -211,7 +211,7 @@ const LESSON: Problem[] = [
     finalAns: 32,
   },
   {
-    id: '1-15-L8',
+    id: '1-15-L8', displayId: 'L4-1',
     title: '练一练 · 红黄油桶',
     tag: 'type4',
     tagLabel: '移多补少', difficulty: 2,
@@ -228,7 +228,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '1-15-L9',
+    id: '1-15-L9', displayId: 'L5',
     title: '例5 · 萝卜小白黑兔',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -246,7 +246,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '1-15-L10',
+    id: '1-15-L10', displayId: 'L5-1',
     title: '练一练 · 零花钱乐乐豆丁',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -264,7 +264,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '1-15-L11',
+    id: '1-15-L11', displayId: 'L6',
     title: '例6 · 数学英语兴趣小组',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,
@@ -282,7 +282,7 @@ const LESSON: Problem[] = [
     finalAns: 20,
   },
   {
-    id: '1-15-L12',
+    id: '1-15-L12', displayId: 'L6-1',
     title: '练一练 · 故事科技书',
     tag: 'type5',
     tagLabel: '双向变化找差', difficulty: 3,

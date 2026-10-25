@@ -84,6 +84,8 @@ export interface AnswerCheckResult {
 
 export interface Problem {
   id: string
+  /** 仅用于旧题编号兼容；展示用短题号，不参与存储、导航或关联。新题直接使用规范 id。 */
+  displayId?: string
   title: string
   tag: string
   tagLabel: string

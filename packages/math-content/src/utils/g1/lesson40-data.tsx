@@ -223,7 +223,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 2,
     },
     {
-      id: '1-40-L2',
+      id: '1-40-L2', displayId: 'L1-1',
       title: '练一练1 · 6个正方形拼大长方形（种数）',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -240,7 +240,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 2,
     },
     {
-      id: '1-40-L3',
+      id: '1-40-L3', displayId: 'L2',
       title: '课2 · 4个小长方形拼大长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 2,
@@ -265,7 +265,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 42,
     },
     {
-      id: '1-40-L4',
+      id: '1-40-L4', displayId: 'L2-1',
       title: '练一练2 · 4个小长方形拼大长方形',
       tag: 'type1',
       tagLabel: '拼图法', difficulty: 3,
@@ -289,7 +289,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 60,
     },
     {
-      id: '1-40-L5',
+      id: '1-40-L5', displayId: 'L3',
       title: '课3 · 长方形横剪1刀竖剪2刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 2,
@@ -313,7 +313,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 46,
     },
     {
-      id: '1-40-L6',
+      id: '1-40-L6', displayId: 'L3-1',
       title: '练一练3 · 正方形横剪1刀竖剪1刀',
       tag: 'type2',
       tagLabel: '剪切法', difficulty: 3,
@@ -337,7 +337,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 64,
     },
     {
-      id: '1-40-L7',
+      id: '1-40-L7', displayId: 'L4',
       title: '课4 · 礼品盒阶梯形周长',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 2,
@@ -361,7 +361,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 300,
     },
     {
-      id: '1-40-L8',
+      id: '1-40-L8', displayId: 'L4-1',
       title: '练一练4 · 等边三角形拼平行四边形',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 3,
@@ -386,7 +386,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 88,
     },
     {
-      id: '1-40-L9',
+      id: '1-40-L9', displayId: 'L5',
       title: '课5 · 小区平面图晨跑',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 2,
@@ -410,7 +410,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 1200,
     },
     {
-      id: '1-40-L10',
+      id: '1-40-L10', displayId: 'L5-1',
       title: '练一练5 · 凹凸图形周长（平移法）',
       tag: 'type3',
       tagLabel: '平移法', difficulty: 3,
@@ -428,7 +428,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 28,
     },
     {
-      id: '1-40-L11',
+      id: '1-40-L11', displayId: 'L6',
       title: '课6 · 标向法求多边形周长',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 2,
@@ -453,7 +453,7 @@ export const PROBLEMS: ProblemSet = {
       finalAns: 42,
     },
     {
-      id: '1-40-L12',
+      id: '1-40-L12', displayId: 'L6-1',
       title: '练一练6 · 两图形标向法',
       tag: 'type4',
       tagLabel: '标向法', difficulty: 3,

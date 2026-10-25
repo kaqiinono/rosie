@@ -99,3 +99,5 @@ the entry cards.
 pnpm --filter @rosie/math typecheck   # scoped — type-checks ONLY math
 pnpm --filter @rosie/math lint
 ```
+
+Business question labels use `@rosie/math-kit/utils/problem-display-id`; displayId is only a legacy classroom compatibility override. Stored references, routes, lookups and ordering continue using real IDs. Practice progress and paper sequence numbers retain their meaning. See `docs/add-new-lesson/data.md#题目-id` for numbering and user-manual acceptance.

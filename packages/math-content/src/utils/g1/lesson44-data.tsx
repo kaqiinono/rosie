@@ -115,7 +115,7 @@ const LESSON: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '1-44-L2',
+    id: '1-44-L2', displayId: 'L1-1',
     title: '练一练 · 榨果汁',
     tag: 'type1',
     tagLabel: '合理安排时间',
@@ -132,7 +132,7 @@ const LESSON: Problem[] = [
     finalAns: 12,
   },
   {
-    id: '1-44-L3',
+    id: '1-44-L3', displayId: 'L2',
     title: '例2 · 四人用水',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -148,7 +148,7 @@ const LESSON: Problem[] = [
     finalAns: 35,
   },
   {
-    id: '1-44-L4',
+    id: '1-44-L4', displayId: 'L2-1',
     title: '练一练 · 三人看病',
     tag: 'type2',
     tagLabel: '等候时间最短',
@@ -161,7 +161,7 @@ const LESSON: Problem[] = [
     finalAns: 14,
   },
   {
-    id: '1-44-L5',
+    id: '1-44-L5', displayId: 'L3',
     title: '例3 · 两面刷漆',
     tag: 'type3',
     tagLabel: '刷漆晾晒',
@@ -178,7 +178,7 @@ const LESSON: Problem[] = [
     finalAns: 11,
   },
   {
-    id: '1-44-L6',
+    id: '1-44-L6', displayId: 'L3-1',
     title: '练一练 · 木板刷漆',
     tag: 'type3',
     tagLabel: '刷漆晾晒',
@@ -195,7 +195,7 @@ const LESSON: Problem[] = [
     finalAns: 17,
   },
   {
-    id: '1-44-L7',
+    id: '1-44-L7', displayId: 'L4',
     title: '例4 · 赶牛过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -211,7 +211,7 @@ const LESSON: Problem[] = [
     finalAns: 13,
   },
   {
-    id: '1-44-L8',
+    id: '1-44-L8', displayId: 'L4-1',
     title: '练一练 · 三头牛过河',
     tag: 'type4',
     tagLabel: '过河问题',
@@ -227,7 +227,7 @@ const LESSON: Problem[] = [
     finalAns: 19,
   },
   {
-    id: '1-44-L9',
+    id: '1-44-L9', displayId: 'L5',
     title: '例5 · 烙饼问题',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -245,7 +245,7 @@ const LESSON: Problem[] = [
     finalAns: 6,
   },
   {
-    id: '1-44-L10',
+    id: '1-44-L10', displayId: 'L5-1',
     title: '练一练 · 煎牛排',
     tag: 'type5',
     tagLabel: '烙饼问题',
@@ -262,7 +262,7 @@ const LESSON: Problem[] = [
     finalAns: 21,
   },
   {
-    id: '1-44-L11',
+    id: '1-44-L11', displayId: 'L6',
     title: '例6 · 最短路径',
     tag: 'type6',
     tagLabel: '最短路径',
@@ -281,7 +281,7 @@ const LESSON: Problem[] = [
     finalAns: 9,
   },
   {
-    id: '1-44-L12',
+    id: '1-44-L12', displayId: 'L6-1',
     title: '练一练 · 校园最短路径',
     tag: 'type6',
     tagLabel: '最短路径',

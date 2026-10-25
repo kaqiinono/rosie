@@ -42,11 +42,11 @@
 
 ## ⚠️ 铁律
 
-1. 题目 ID：`{lessonKey}-L1`，禁止 legacy 前缀或裸 `L1`。
+1. 新课 ID：`{lessonKey}-{完整后缀}`，先映射教材题号与练一练归属，禁止 legacy 前缀、裸 ID 和 displayId。旧真实 ID 禁止重命名；完整规则见 [data.md](add-new-lesson/data.md#题目-id)。
 2. href / basePath：`/math/ny/{grade}/{seq}`。
 3. md 文件名 = lessonKey（`2-8.md`，不是 `57.md`）。
 4. 组件在 `lesson/g{grade}/lesson{seq}/`，不是根目录 `lesson57/`。
-5. green build ≠ 渲染正常 — 改 UI 后真机看一眼。
+5. 构建及渲染均由用户手动验收，代理不自动运行检查或浏览器验证。
 6. **答题区自定义组件**（竖式谜、宫格）必须走 `custom-answer-widget.md` 统一逻辑；禁止题面 `<pre>` 竖式、禁止 per-lesson 草稿答题 UI。
 
 ---
@@ -92,7 +92,9 @@
 
 ---
 
-## 验证
+## 用户手动验证
+
+代理完成文件和全部注册后停止，不自动执行 build/test/lint/typecheck、环境验证、审计脚本、依赖安装、启动服务或浏览器验证。以下仅供用户手动执行；编号样例和旧记录验收见 [data.md](add-new-lesson/data.md#手动验收样例与历史保护)。
 
 ```bash
 pnpm --filter @rosie/math typecheck

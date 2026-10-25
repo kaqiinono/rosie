@@ -2,7 +2,7 @@ import type { Problem, ProblemSet } from '@rosie/core'
 
 const LESSON: Problem[] = [
   {
-    id: '1-36-L1', title: '例题1(1)：过100天是星期几', tag: 'type1', tagLabel: '同月推算', difficulty: 1,
+    id: '1-36-L1', displayId: 'L1a', title: '例题1(1)：过100天是星期几', tag: 'type1', tagLabel: '同月推算', difficulty: 1,
     text: '今天是<strong>星期六</strong>，过7天是星期几？过<strong>100天</strong>是星期几？',
     analysis: [
       '过7天=整整一周，星期不变，还是星期六',
@@ -14,7 +14,7 @@ const LESSON: Problem[] = [
     finalQ: '过100天是星期几？（1=周一，2=周二，...，7=周日）', finalUnit: '', finalAns: 1,
   },
   {
-    id: '1-36-L2', title: '例题1(2)：同月推算', tag: 'type1', tagLabel: '同月推算', difficulty: 1,
+    id: '1-36-L2', displayId: 'L1b', title: '例题1(2)：同月推算', tag: 'type1', tagLabel: '同月推算', difficulty: 1,
     text: '2026年<strong>2月3日</strong>是星期二，2月25日是星期几？',
     analysis: [
       '同月内推算：25−3=22天后',
@@ -27,7 +27,7 @@ const LESSON: Problem[] = [
     finalQ: '2月25日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 3,
   },
   {
-    id: '1-36-L3', title: '例题2：跨月推算', tag: 'type2', tagLabel: '跨月推算', difficulty: 2,
+    id: '1-36-L3', displayId: 'L2', title: '例题2：跨月推算', tag: 'type2', tagLabel: '跨月推算', difficulty: 2,
     text: '2026年<strong>4月4日</strong>是星期六，那么2026年6月23日是星期几？',
     analysis: [
       '计算天数差：4月4日→6月23日',
@@ -40,7 +40,7 @@ const LESSON: Problem[] = [
     finalQ: '6月23日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 2,
   },
   {
-    id: '1-36-L4', title: '例题3：跨年推算元旦', tag: 'type3', tagLabel: '跨年推算（同月同日）', difficulty: 2,
+    id: '1-36-L4', displayId: 'L3', title: '例题3：跨年推算元旦', tag: 'type3', tagLabel: '跨年推算（同月同日）', difficulty: 2,
     text: '2023年<strong>1月1日</strong>是星期日，2026年1月1日是星期几？',
     analysis: [
       '每过一年，元旦往后推：平年+1，闰年+2',
@@ -53,7 +53,7 @@ const LESSON: Problem[] = [
     finalQ: '2026年1月1日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 4,
   },
   {
-    id: '1-36-L5', title: '例题4：跨年跨月推算', tag: 'type4', tagLabel: '跨年跨月', difficulty: 2,
+    id: '1-36-L5', displayId: 'L4', title: '例题4：跨年跨月推算', tag: 'type4', tagLabel: '跨年跨月', difficulty: 2,
     text: '2021年<strong>12月18日</strong>是星期六，那么2026年1月5日是星期几？',
     analysis: [
       '计算总天数：13+365+365+366+365+5=1479天',
@@ -66,7 +66,7 @@ const LESSON: Problem[] = [
     finalQ: '2026年1月5日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 1,
   },
   {
-    id: '1-36-L6', title: '例题5：31天确定31日星期几', tag: 'type5', tagLabel: '确定星期几', difficulty: 4,
+    id: '1-36-L6', displayId: 'L5', title: '例题5：31天确定31日星期几', tag: 'type5', tagLabel: '确定星期几', difficulty: 4,
     text: '某月有<strong>31天</strong>，有<strong>4个星期二</strong>和<strong>5个星期三</strong>，那么这个月的31日是星期几？',
     analysis: [
       '31=4×7+3，最后3天（29、30、31日）各出现5次',
@@ -80,7 +80,7 @@ const LESSON: Problem[] = [
     finalQ: '这个月的31日是星期几？（1=周一，...，7=周日）', finalUnit: '', finalAns: 5,
   },
   {
-    id: '1-36-L7', title: '例题6：由日期和确定第一个星期三', tag: 'type6', tagLabel: '日期总和反推', difficulty: 4,
+    id: '1-36-L7', displayId: 'L6', title: '例题6：由日期和确定第一个星期三', tag: 'type6', tagLabel: '日期总和反推', difficulty: 4,
     text: '已知某个月<strong>所有星期三的日期加起来是80</strong>，则这个月第一个星期三是几号？',
     analysis: [
       '设第一个星期三是x号，星期三依次为x, x+7, x+14, x+21...',

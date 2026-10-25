@@ -9,11 +9,12 @@ import {
   submitPaperWorkingArchive,
 } from '@rosie/math-kit/utils/paper-scratch'
 import { useLessonScratchActions } from '@rosie/math-kit/components/shared/ScratchPad/LessonScratchActionsContext'
+import ProblemActionIcon, { PROBLEM_ACTION_BUTTON_CLASS } from './ProblemActionIcon'
 
 type PaperDraftUploadButtonProps = {
   problem: Problem
   paperId?: string | null
-  variant?: 'compact' | 'labeled'
+  variant?: 'compact' | 'labeled' | 'toolbar'
   className?: string
   onUploaded?: () => void
   onFlash?: (message: string) => void
@@ -123,16 +124,20 @@ export default function PaperDraftUploadButton({
       <button
         type="button"
         disabled={uploading}
+        aria-busy={uploading}
         title="拍照或上传纸质草稿"
+        aria-label="上传草稿"
         onClick={() => inputRef.current?.click()}
         className={
-          variant === 'compact'
+          variant === 'toolbar'
+            ? `${PROBLEM_ACTION_BUTTON_CLASS} text-text-secondary ${className}`
+            : variant === 'compact'
             ? `flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-amber-200 bg-amber-50 text-base transition-all hover:bg-amber-100 active:scale-95 disabled:opacity-60 ${className}`
             : `flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 px-3 py-1.5 text-[12px] font-semibold text-amber-800 shadow-sm transition-all hover:from-amber-100 hover:to-orange-100 active:scale-95 disabled:opacity-60 ${className}`
         }
       >
-        <span className="text-sm leading-none">📷</span>
-        {variant !== 'compact' && (
+        {variant === 'toolbar' ? <ProblemActionIcon name="upload" /> : <span className="text-sm leading-none">📷</span>}
+        {variant === 'labeled' && (
           <span>{uploading ? '上传中…' : '纸质草稿'}</span>
         )}
       </button>

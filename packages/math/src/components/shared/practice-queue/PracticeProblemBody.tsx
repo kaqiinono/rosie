@@ -9,6 +9,7 @@ import { ProblemScratchProvider } from '@rosie/math-kit/components/shared/Scratc
 import { ProblemWorkspaceRuntimeProvider } from '@rosie/math-kit/components/shared/ProblemWorkspaceRuntime'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import { problemSetSectionLabel } from '@rosie/math-kit/utils/problem-set-helpers'
+import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
 import { lessonModuleByKey } from '@rosie/math/utils/lesson-module-registry'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
 import PracticeHelpPanel from './PracticeHelpPanel'
@@ -105,6 +106,9 @@ export default function PracticeProblemBody({
         <Provider>
           <div className="practice-overlay-enter">
             <div className="mb-3 flex items-center gap-2">
+              <span className="shrink-0 whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs font-bold text-text-secondary">
+                {problemDisplayId(problem)}
+              </span>
               <div className="min-w-0 flex-1 text-[15px] font-bold text-text-primary">
                 {problem.title}
               </div>

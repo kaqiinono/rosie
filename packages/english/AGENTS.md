@@ -13,10 +13,25 @@ audio, flipbook).
 - **Vocabulary (`components/words/`)** — flash cards, quiz runner, spelling tiles, study/practice
   phases, daily + weekly-plan sessions, mastery panels, monster-eat error feedback, xlsx import.
   Mastery uses the spaced-repetition stage system (logic in `@rosie/core`'s `masteryUtils`).
+- **Quiz assistance** — `QuizQuestionBody` owns per-question letter hints and the decorative
+  `MagicWand` demo. Demo letters never submit answers; `SpellTiles` clears all input and unlocks
+  prefilled letters after the demo. Every session tracks assisted words separately from reveal
+  counts and adds at most one full Type-C question per word per pass; assistance in that pass
+  schedules another pass. Existing wrong-answer rescue ladders remain separate. Adaptive pending
+  snapshots retain `helpClicks` as optional per-pass assistance flags for backward compatibility.
 - **Reading (`components/reading/`)** — passages with glossary/word popups, recall quizzes, and
   **their own audio** stored in `reading_passage_media` (hooks `useReadingPassageMedia` /
   `useReadingPassageAudio`). Reading playback was **decoupled from the audio module**: it builds its
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
+  Textbook narration now prefers discovered Baidu files under
+  `/airosie/english/audio/{4A|5A}/U{unit}L{lesson}.mp3`. `useBaiduReadingAudio` caches available
+  keys per user through `createUserSessionStore` and establishes/renews an HttpOnly audio session;
+  the detail hook and reading-list queues use the same-origin `/api/baidu/audio/{passageKey}`
+  stream only for discovered keys. The app-owned server proxy validates login on each request,
+  handles token refresh/Range and falls back to the original Storage MP3. Uploads still belong
+  to the reading bucket. Story narration retains its existing behavior.
+  Textbook detail narration uses `usePlaylistPlayer` + `PlayerDock` with `showProgress`, sharing
+  the list player's pause/loop controls and adding seek support. Changing passages stops the old queue.
   The reading shelf groups textbook stages `4A` and `5A` under the top-level **厚海** collection;
   learners choose the collection, then the volume, then a passage. 厚海 passage highlighting
   matches vocabulary across all 厚海 volumes (currently 4A + 5A), while recall exercises remain

@@ -7,10 +7,11 @@ import { useProblemScratchContext } from './ProblemScratchContext'
 import ScratchPadSession from './ScratchPadSession'
 import { resolveWrongAttemptId } from '@rosie/math-kit/utils/math-scratch-db'
 import type { ScratchSessionMode } from '@rosie/math-kit/hooks/math-scratch-types'
+import ProblemActionIcon, { PROBLEM_ACTION_BUTTON_CLASS } from '../ProblemActionIcon'
 
 type ScratchPadTriggerProps = {
   problem: Problem
-  variant?: 'default' | 'compact'
+  variant?: 'default' | 'compact' | 'toolbar'
   className?: string
   /** Override problem list (e.g. mistake list) */
   problems?: Problem[]
@@ -65,15 +66,18 @@ export default function ScratchPadTrigger({
       <button
         type="button"
         onClick={() => void handleOpen()}
-        title={readOnly ? '查看草稿' : '草稿纸'}
+        title={readOnly ? '查看草稿' : '打草稿'}
+        aria-label={readOnly ? '查看草稿' : '打草稿'}
         className={
-          variant === 'compact'
+          variant === 'toolbar'
+            ? `${PROBLEM_ACTION_BUTTON_CLASS} text-text-secondary ${className}`
+            : variant === 'compact'
             ? `flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-base transition-all hover:bg-indigo-100 active:scale-95 ${className}`
             : `flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 px-3 py-1.5 text-[12px] font-semibold text-indigo-700 shadow-sm transition-all hover:from-indigo-100 hover:to-violet-100 active:scale-95 ${className}`
         }
       >
-        <span className="text-sm leading-none">📝</span>
-        {variant !== 'compact' && <span>{readOnly ? '查看草稿' : '草稿纸'}</span>}
+        {variant === 'toolbar' ? <ProblemActionIcon name="pencil" /> : <span className="text-sm leading-none">📝</span>}
+        {variant === 'default' && <span>{readOnly ? '查看草稿' : '草稿纸'}</span>}
       </button>
       {open && (
         <ScratchPadSession

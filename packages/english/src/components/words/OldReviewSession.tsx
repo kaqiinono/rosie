@@ -196,7 +196,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     //  2) 错题补练: words missed even after the gentle retry, re-drilled in their
     //     original type (deduped against the help set). quizQKeys only carries
     //     {key,type}, so the Type-C half-reveal hint is dropped here by design.
-    if (!reinforcementAppended) {
+    if (!reinforcementAppended || Object.values(helpClicks).some((count) => count > 0)) {
       const helpExtras = Object.values(helpClicks).some((c) => c > 0)
         ? buildReinforcementQuestions(helpClicks, vocab, wordKey, Date.now())
         : []
@@ -216,13 +216,14 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         seen.add(k)
         wrongItems.push({ entry: r.entry, type: t })
       }
-      const wrongExtras = buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
+      const wrongExtras = reinforcementAppended ? [] : buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
       const extras = [...helpExtras, ...wrongExtras]
       if (extras.length > 0) {
         setQuizQKeys((prev) => [
           ...prev,
           ...extras.map((q) => ({ key: wordKey(q.word), type: q.type })),
         ])
+        setHelpClicks({})
         setReinforcementAppended(true)
         setCurQ(next)
         return
@@ -237,7 +238,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     const q = quizQs[curQ]
     if (!q) return
     const k = wordKey(q.word)
-    setHelpClicks((prev) => ({ ...prev, [k]: (prev[k] ?? 0) + 1 }))
+    setHelpClicks((prev) => ({ ...prev, [k]: 1 }))
   }, [quizQs, curQ])
 
   const currentQuestion = quizQs[curQ] ?? null
@@ -320,8 +321,8 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
           total={quizQs.length}
           runner={runner}
           questionKey={curQ}
-          helpRevealed={currentQuestion ? (helpClicks[wordKey(currentQuestion.word)] ?? 0) : 0}
           onHelpReveal={handleHelpReveal}
+          onMagicReveal={handleHelpReveal}
         />
       </div>
     )

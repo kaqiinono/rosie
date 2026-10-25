@@ -5,9 +5,9 @@ import type { TaskDataApi } from '../useTaskData'
 import type { TaskCatalogAdapter, Subject } from '../types'
 import { SUBJECTS } from '../types'
 
-export const inputClass = 'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800'
-export const buttonClass = 'rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50'
-export const minorClass = 'rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 disabled:opacity-50'
+export const inputClass = 'w-full min-w-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-emerald-600 focus:outline-2 focus:outline-offset-1 focus:outline-emerald-600 disabled:bg-slate-100 disabled:text-slate-500'
+export const buttonClass = 'cursor-pointer rounded-xl bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-50'
+export const minorClass = 'cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-colors hover:border-emerald-400 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:opacity-50'
 export const TasksContext = createContext<{ api: TaskDataApi; catalog: TaskCatalogAdapter; run: (work: () => Promise<unknown>) => Promise<boolean>; busy: boolean; notify: (message: string) => void } | null>(null)
 export function useTasks() { const ctx = useContext(TasksContext); if (!ctx) throw new Error('TasksContext required'); return ctx }
 export function Field({ label, children }: { label: string; children: ReactNode }) { return <label className="flex min-w-0 flex-col gap-1 text-sm font-medium text-slate-600">{label}{children}</label> }

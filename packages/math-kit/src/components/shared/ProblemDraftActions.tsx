@@ -6,13 +6,15 @@ import PaperDraftUploadButton from '@rosie/math-kit/components/shared/PaperDraft
 import { useProblemWorkspaceRuntime } from '@rosie/math-kit/components/shared/ProblemWorkspaceRuntime'
 import { useLessonScratchActions } from '@rosie/math-kit/components/shared/ScratchPad/LessonScratchActionsContext'
 import ScratchPadTrigger from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadTrigger'
+import ProblemActionIcon, { PROBLEM_ACTION_BUTTON_CLASS } from './ProblemActionIcon'
 
 type Props = {
   problem: Problem
+  variant?: 'compact' | 'toolbar'
 }
 
-/** Shared top-toolbar actions for electronic and photographed paper drafts. */
-export default function ProblemDraftActions({ problem }: Props) {
+/** Shared actions for electronic and photographed paper drafts. */
+export default function ProblemDraftActions({ problem, variant = 'compact' }: Props) {
   const scratchActions = useLessonScratchActions()
   const runtime = useProblemWorkspaceRuntime()
   const [flash, setFlash] = useState<string | null>(null)
@@ -28,15 +30,16 @@ export default function ProblemDraftActions({ problem }: Props) {
         <button
           type="button"
           onClick={runtime.onOpenScratch}
-          title="草稿纸"
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-base transition-all hover:bg-indigo-100 active:scale-95"
+          title="打草稿"
+          aria-label="打草稿"
+          className={variant === 'toolbar' ? `${PROBLEM_ACTION_BUTTON_CLASS} text-text-secondary` : 'flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-base transition-all hover:bg-indigo-100 active:scale-95'}
         >
-          <span className="text-sm leading-none">📝</span>
+          {variant === 'toolbar' ? <ProblemActionIcon name="pencil" /> : <span className="text-sm leading-none">📝</span>}
         </button>
       ) : (
         <ScratchPadTrigger
           problem={problem}
-          variant="compact"
+          variant={variant}
           onSolve={scratchActions?.onSolve}
           onWrong={scratchActions?.onWrong}
           onResolved={scratchActions?.onResolved}
@@ -44,7 +47,7 @@ export default function ProblemDraftActions({ problem }: Props) {
       )}
       <PaperDraftUploadButton
         problem={problem}
-        variant="compact"
+        variant={variant}
         onFlash={showFlash}
         onArchived={runtime?.onPaperArchived}
       />

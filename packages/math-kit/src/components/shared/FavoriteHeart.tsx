@@ -1,16 +1,33 @@
 'use client'
 
 import { useMathFavoritesContext } from '@rosie/math-kit/components/MathFavoritesProvider'
+import ProblemActionIcon, { PROBLEM_ACTION_BUTTON_CLASS } from './ProblemActionIcon'
 
 type FavoriteHeartProps = {
   problemId: string
   size?: 'sm' | 'md'
+  variant?: 'default' | 'toolbar'
 }
 
-export default function FavoriteHeart({ problemId, size = 'md' }: FavoriteHeartProps) {
+export default function FavoriteHeart({ problemId, size = 'md', variant = 'default' }: FavoriteHeartProps) {
   const { isFavorite, toggleFavorite } = useMathFavoritesContext()
   const fav = isFavorite(problemId)
   const dim = size === 'sm' ? 'h-7 w-7 text-lg' : 'h-9 w-9 text-xl'
+
+  if (variant === 'toolbar') {
+    return (
+      <button
+        type="button"
+        aria-pressed={fav}
+        aria-label={fav ? '取消收藏' : '收藏'}
+        title={fav ? '取消收藏' : '收藏'}
+        onClick={(event) => { event.preventDefault(); event.stopPropagation(); toggleFavorite(problemId) }}
+        className={`${PROBLEM_ACTION_BUTTON_CLASS} ${fav ? 'text-app-blue-dark' : 'text-text-secondary'}`}
+      >
+        <ProblemActionIcon name="heart" filled={fav} />
+      </button>
+    )
+  }
 
   return (
     <span
