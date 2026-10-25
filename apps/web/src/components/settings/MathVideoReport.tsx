@@ -35,14 +35,24 @@ export default function MathVideoReport({ userId, lessonKey, revision, sources }
   const [copyMessage, setCopyMessage] = useState('')
   const searchId = useId()
   const searchRef = useRef<HTMLInputElement>(null)
+  const requestKey = `${userId}:${lessonKey}:${revision}:${attempt}`
+  const [previousRequestKey, setPreviousRequestKey] = useState(requestKey)
+  const [previousSources, setPreviousSources] = useState(sources)
 
-  useEffect(() => { setPage(1) }, [sources])
-
-  useEffect(() => {
-    const controller = new AbortController()
+  // Reset local presentation state before rendering changed inputs, without an extra effect render.
+  if (previousSources !== sources) {
+    setPreviousSources(sources)
+    setPage(1)
+  }
+  if (previousRequestKey !== requestKey) {
+    setPreviousRequestKey(requestKey)
     setLoading(true)
     setError('')
     setComparisonFile(null)
+  }
+
+  useEffect(() => {
+    const controller = new AbortController()
     void requestBaiduVideoData('report', userId, lessonKey, controller.signal).then((value) => {
       if (controller.signal.aborted) return
       if (!value || typeof value !== 'object') throw new Error('报告格式异常，请重新读取。')
