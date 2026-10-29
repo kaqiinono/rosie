@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import type { TaskTemplate, ReminderRule } from '../types'
 import type { TaskPoolItem } from '../courseTypes'
 import { ScopeFields, MaterialSelectorField } from './CourseTaskBindings'
@@ -10,6 +10,15 @@ import { useTasks, Panel, Field, inputClass, buttonClass, minorClass, SubjectSel
 const triggerLabels: Record<TaskTemplate['trigger'], string> = { before_class: '课程开始前', after_class: '课程结束后', confirmed: '课程确认完成后', unit_completed: '单元完成后', weekly: '固定每周', once: '指定日期一次' }
 export default function Templates() {
   const { api, run, busy, catalog } = useTasks()
+  const validationId = useId()
+  const [validationError, setValidationError] = useState('')
+  const invalidControl = useRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null>(null)
+  function clearValidation() {
+    invalidControl.current?.removeAttribute('aria-invalid')
+    invalidControl.current?.removeAttribute('aria-describedby')
+    invalidControl.current = null
+    setValidationError('')
+  }
   const [editing, setEditing] = useState<string | null>(null)
   const [draft, setDraft] = useState<TemplateDraft>(templateDraft())
   const patch = (v: Partial<TemplateDraft>) => setDraft(p => ({ ...p, ...v }))
@@ -20,7 +29,25 @@ export default function Templates() {
     {api.data.pool_items.map(t => <div key={t.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 py-2"><div><strong>{t.name}</strong><p className="text-sm text-slate-500">{triggerLabels[t.trigger]} · {t.enabled ? '已启用' : '已停用'}</p></div><div className="flex gap-2"><button className={minorClass} onClick={() => edit(t)}>编辑</button><button disabled={busy} className={minorClass} onClick={() => void run(() => api.save('pool_items', { id: t.id, enabled: !t.enabled }))}>{t.enabled ? '停用' : '启用'}</button></div></div>)}
     <button className={minorClass} onClick={() => { setEditing(null); setDraft(templateDraft()) }}>新建活动</button>
   </Panel><Panel title={editing ? '编辑活动（用于后续任务）' : '新建池活动'}>
-    <form noValidate className="space-y-4" onSubmit={e => { e.preventDefault(); void run(async () => {
+    <form noValidate className="space-y-4" onSubmit={e => {
+      e.preventDefault()
+      clearValidation()
+      // Retain every declared required/min/max/step/type constraint without native bubbles.
+      // HTML numeric inputs default to step=1, including deadline and reminder JSON fields.
+      const form = e.currentTarget
+      if (!form.checkValidity()) {
+        const invalid = form.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input:invalid, select:invalid, textarea:invalid')
+        if (invalid) {
+          const label = invalid.labels?.[0]?.textContent?.trim() || invalid.getAttribute('aria-label') || '填写内容'
+          setValidationError(`${label}格式不正确，请检查必填项、整数和允许范围。`)
+          invalid.setAttribute('aria-invalid', 'true')
+          invalid.setAttribute('aria-describedby', validationId)
+          invalidControl.current = invalid
+          invalid.focus()
+        }
+        return
+      }
+      void run(async () => {
       if (!draft.name.trim()) throw new Error('请填写任务名称')
       if (!Number.isInteger(draft.estimated_minutes) || draft.estimated_minutes < 1 || draft.estimated_minutes > 1440) throw new Error('预计分钟需为 1–1440 的整数')
       if (draft.scope.kind === 'unit' && (!draft.scope.book || !draft.scope.unit)) throw new Error('请选择书册和单元')
@@ -32,6 +59,7 @@ export default function Templates() {
       if (draft.deadline.kind === 'fixed' && !draft.deadline.at) throw new Error('请填写指定截止时间')
       await api.save('pool_items', { ...draft, activity_key: draft.activity_key || `custom:${crypto.randomUUID()}`, id: editing ?? undefined }); await api.refresh(); setEditing(null); setDraft(templateDraft())
     }) }}>
+      {validationError && <p id={validationId} role="alert" className="text-sm text-amber-900">{validationError}</p>}
       <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
       <Field label="活动标识（同标识、同阶段、同对象时专项覆盖通用）"><input className={inputClass} value={draft.activity_key} onChange={e => patch({ activity_key: e.target.value })} placeholder="留空自动创建独立活动" /></Field>
       <ScopeFields value={draft.scope} onChange={scope => patch({ scope })} lessons={draft.subject && draft.subject in catalog ? catalog[draft.subject as 'chinese' | 'math' | 'english'] : []} />
