@@ -82,3 +82,23 @@ pnpm --filter web test -- tests/task-time.test.ts
 8. 打开任务管理等待站内提醒，验证已读和完成任务后不再展示提醒；页面不会请求系统通知权限。
 9. 用两个账号确认任务表数据和私有音频保持隔离。
 10. 关闭页面后重新打开并刷新，确认补齐已到时的周期任务和课程确认待办，不重复生成、不补发过时课前提醒。
+
+## 任务池与课程绑定（本地开发）
+
+`/tasks/pool` 替代原任务模板入口，旧 `/tasks/templates` 跳转保留。存储表和旧 ID 不变。
+池可配置完整目录/教学段范围、预计时长、进度方式、截止与提醒；课程通过独立绑定覆盖范围、时长和物料。
+同活动、同触发阶段、同内容对象时专项覆盖通用；不同活动全部保留。`confirmed` 和 `after_class` 仅在去重身份上等价。
+每周/一次任务继续独立，不参与课程事件匹配。缺物料不会删掉任务或清零预计时间。
+建议活动包含原 workbook、L1 听读/跟读/理解、L2 听写/默写、L3 背诵和独立作文，以及语文认读/书写/组词/积累。数学作业未选题时保留“待选题”。
+已有账号可用“从预设添加”逐项选择增加缺项，不改写已有条目。后续事件运行时和统一物料选择器分别由 Task 4、Task 7 接入。
+
+课程编辑器使用公开的 `CourseTaskBindings`，传入 `items/value/onChange/lessons/segments`。
+`CourseTaskBindingDraft` 不要求 course_id/user_id，可在新建课程保存前选活动；须由原子保存同时写入课程、规则和绑定。
+`renderMaterialPicker` 接收 `MaterialSelector` 的 value/onChange/disabled，供应用层统一物料选择器接入。
+验证：`pnpm --filter web exec vitest run tests/tasks/task-pool.test.ts tests/tasks/course-task-bindings.test.tsx`。
+
+`matchTaskPool(event, bindings, items, context?)` 仅处理显式启用的绑定。
+`context.next_lesson_snapshot` 用于 next 内容；缺失时不以当课替代，并向 `context.issues` 追加 `missing_next_lesson`。
+`context.completed_unit={book,unit}` 必须由调用方根据目录边界/单元完成状态验证；未传入时不匹配单元完成活动。
+显式 binding.scope_override 同时替代旧 lesson_filter，未覆盖时仍联合校验池范围与旧课次。
+本地新增迁移 `20261029054202_tasks_pool_initialize.sql` 补全初始化字段与新账号默认绑定，重复调用不恢复已停用/删除的绑定。

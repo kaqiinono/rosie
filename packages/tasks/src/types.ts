@@ -37,7 +37,7 @@ export type TaskReminder = OwnedRow & { task_id: string | null; occurrence_id: s
 export type TaskData = { courses: TaskCourse[]; rules: TimetableRule[]; exceptions: CourseException[]; occurrences: CourseOccurrence[]; templates: TaskTemplate[]; tasks: TaskInstance[]; windows: AvailabilityWindow[]; blocks: TaskTimeBlock[]; materials: TaskMaterial[]; progress: TaskProgress[]; scopes: UnitScope[]; reminders: TaskReminder[]; calendars: TaskCalendar[]; exams: TaskExam[]; preferences: TaskPreference[]; snapshots: TaskSnapshot[] }
 export type ProblemOption = { key: string; title: string; href?: string }
 export type TaskCatalogAdapter = { chinese: LessonRef[]; math: LessonRef[]; english: LessonRef[]; loadMathProblems: (key: string) => Promise<ProblemOption[]> }
-export type TasksSection = 'tasks' | 'schedule' | 'timetable' | 'templates' | 'materials'
+export type TasksSection = 'tasks' | 'schedule' | 'timetable' | 'pool' | 'templates' | 'materials'
 
 export type TaskCalendar = OwnedRow & { name: string; starts_on: string; ends_on: string | null; created_at: string }
 export type TaskExam = OwnedRow & { calendar_id: string | null; course_id: string | null; title: string; starts_at: string; ends_at: string; location: string; notes: string; reminder_minutes: number | null }

@@ -14,9 +14,9 @@ function SectionLoading() {
 const TaskList = dynamic(() => import('./components/TaskList'), { loading: SectionLoading })
 const Timetable = dynamic(() => import('./components/Timetable'), { loading: SectionLoading })
 const Schedule = dynamic(() => import('./components/Schedule'), { loading: SectionLoading })
-const Templates = dynamic(() => import('./components/Templates'), { loading: SectionLoading })
+const TaskPool = dynamic(() => import('./components/TaskPool'), { loading: SectionLoading })
 const Materials = dynamic(() => import('./components/Materials'), { loading: SectionLoading })
-const tabs: { key: TasksSection; href: string; label: string }[] = [ { key: 'tasks', href: '/tasks', label: '我的任务' }, { key: 'schedule', href: '/tasks/schedule', label: '时间安排' }, { key: 'timetable', href: '/tasks/timetable', label: '周课表' }, { key: 'templates', href: '/tasks/templates', label: '任务模板' }, { key: 'materials', href: '/tasks/materials', label: '学习资料' } ]
+const tabs: { key: TasksSection; href: string; label: string }[] = [ { key: 'tasks', href: '/tasks', label: '我的任务' }, { key: 'schedule', href: '/tasks/schedule', label: '时间安排' }, { key: 'timetable', href: '/tasks/timetable', label: '周课表' }, { key: 'pool', href: '/tasks/pool', label: '任务池' }, { key: 'materials', href: '/tasks/materials', label: '学习资料' } ]
 
 function errorText(error: unknown): string {
   const message = error && typeof error === 'object' && 'message' in error ? String(error.message) : String(error)
@@ -44,11 +44,11 @@ export default function TasksPage({ catalog, section = 'tasks' }: { catalog: Tas
   }, [])
   return <TasksContext.Provider value={{ api, catalog, run, busy, notify: setMessage }}><main className="min-h-screen bg-slate-50 px-3 py-5 pb-32 text-slate-800 sm:px-6"><div className="mx-auto max-w-7xl space-y-5">
     <header className="flex items-center justify-between gap-3"><div><Link href="/" className="rounded text-sm text-emerald-800 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700">← 首页</Link><h1 className="mt-2 text-2xl font-extrabold">任务管理</h1></div><button disabled={busy || api.isLoading} className={`${minorClass} min-w-24 shrink-0`} onClick={() => void run(api.refresh)}>{api.isLoading ? '读取中…' : '刷新'}</button></header>
-    <nav aria-label="任务管理" className="sticky top-0 z-40 flex h-14 items-stretch gap-5 overflow-x-auto border-b border-slate-200 bg-slate-50 px-1 sm:gap-7">{tabs.map(t => <Link key={t.key} href={t.href} scroll={false} aria-current={section === t.key ? 'page' : undefined} className={`flex shrink-0 items-center whitespace-nowrap border-b-2 px-1 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 ${section === t.key ? 'border-emerald-800 text-emerald-900' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800'}`}>{t.label}</Link>)}</nav>
+    <nav aria-label="任务管理" className="sticky top-0 z-40 flex h-14 items-stretch gap-5 overflow-x-auto border-b border-slate-200 bg-slate-50 px-1 sm:gap-7">{tabs.map(t => <Link key={t.key} href={t.href} scroll={false} aria-current={(section === 'templates' ? 'pool' : section) === t.key ? 'page' : undefined} className={`flex shrink-0 items-center whitespace-nowrap border-b-2 px-1 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700 ${(section === 'templates' ? 'pool' : section) === t.key ? 'border-emerald-800 text-emerald-900' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-800'}`}>{t.label}</Link>)}</nav>
     <div className="min-h-96 min-w-0 space-y-5">
     {!!(message || api.error) && <div role="alert" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900">{message || errorText(api.error)}</div>}
     {!api.user ? <p>请先登录。</p> : api.isLoading ? <SectionLoading /> : api.error ? <p className="text-sm">请先应用任务模块数据库迁移，再点击刷新重试。</p> : <>
-      {section === 'tasks' && <TaskList />}{section === 'timetable' && <Timetable />}{section === 'schedule' && <Schedule />}{section === 'templates' && <Templates />}{section === 'materials' && <Materials />}
+      {section === 'tasks' && <TaskList />}{section === 'timetable' && <Timetable />}{section === 'schedule' && <Schedule />}{(section === 'templates' || section === 'pool') && <TaskPool />}{section === 'materials' && <Materials />}
     </>}
     </div>
   </div></main></TasksContext.Provider>

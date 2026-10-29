@@ -1,6 +1,6 @@
 # @rosie/tasks
 
-Independent timetable, task templates, course confirmations, time planning and reminders.
+Independent timetable, task pool activities, course confirmations, time planning and reminders.
 Routes are `/tasks/**`; `/today` and all subject progress remain independent.
 
 - Dependencies: core and player only. App-owned `TasksHost` supplies Chinese, math and
@@ -64,3 +64,13 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
   `completed`. Legacy confirmed events are completed with unknown (`null`)
   `completed_at`; preserve `legacy_confirmation`. New completion operations set
   the actual completion timestamp, never derive it from scheduled end time.
+
+## Task pool and bindings
+
+- `/tasks/pool` is the activity editor; `/tasks/templates` redirects there. Storage and existing template IDs remain `task_templates` / `template_id`.
+- `taskPool.ts` matches explicit enabled course bindings only. Scope keys include book/unit/lesson or stable teaching-segment IDs. Legacy `lesson_filter` remains an extra constraint unless a binding explicitly replaces scope.
+- Overrides dedupe by activity + normalized phase (`confirmed` = `after_class`) + target. Event + that logical identity forms `source_key`; never dedupe two separate events.
+- `CourseTaskBindings` is a controlled draft component, including before a course has an ID. Course editor saves its selected bindings atomically alongside course/rules (integration in Task 2).
+- Material selection uses typed selectors and `renderMaterialPicker`; concrete asset UI is supplied by the application adapter in Task 7. Never expose asset UUID entry. Missing auto materials retain nonzero activity estimates and a pending-material status.
+- Next-target activities require `TaskPoolMatchContext.next_lesson_snapshot`; missing targets append `missing_next_lesson` to its issues and do not match current content. Unit completion requires caller-verified `completed_unit` matching the event book/unit.
+- Pool editing does not itself emit tasks or touch subject progress. Event runtime integration consumes matching output in Task 4.

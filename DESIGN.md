@@ -101,3 +101,7 @@ counts once. A file can open the full-lesson ID/displayId/expected-name comparis
 kept visible. Source checkboxes beside grade/lesson default to classroom questions and only filter
 the secondary question view and its counts. File matching always uses every source in the lesson.
 Source changes reuse the loaded report and never trigger synchronization.
+
+## Task pool (approved course-domain extension, 2026-10-29)
+
+The task pool reuses the existing tasks shell, emerald actions, slate borders, white panels and responsive two-column form. No new palette or typography. `components/CourseTaskBindings.tsx` owns reusable native scope/material selectors and controlled course-binding drafts. Catalog labels retain book/unit context; unresolved materials use explicit amber text. Old template URLs redirect to the pool; historical template identifiers remain stable. The established package UX contract owns native popup geometry and save/error behavior.

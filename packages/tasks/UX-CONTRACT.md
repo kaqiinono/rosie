@@ -14,3 +14,23 @@
 - Notifications: station-only. No permission prompt, service-worker push, background scheduler or notification guarantee while closed.
 - Transfer: only timetable configuration, exams and exceptions; never upload private audio or export learning/task records as a share. Reject malformed/unimplemented ICS rules instead of silently changing schedules.
 - Accessibility: keyboard-accessible buttons/links, explicit labels, focus return, reduced motion; any drag enhancement has a form alternative.
+
+## Task pool
+
+- Reuse `shared.tsx` fields/panels/buttons and the TasksPage feedback owner. Scope and material controls are shared by pool activities and course bindings in `CourseTaskBindings.tsx`; native selects keep OS-owned popup behavior.
+- New course bindings are local controlled drafts, with no pre-save network mutation. Save atomically with the course. Individual bindings may be paused while preserving their overrides.
+- Scope selection shows catalog titles and full book/unit context; identity is the stable catalog key. Existing unseen scope values survive editing.
+- Material overrides support follow-course/none and an application picker slot; no raw UUID fields. Missing materials are a visible pending condition, never an instruction to omit work.
+- `/tasks/templates` redirects to `/tasks/pool`; legacy row IDs and generated task history are unchanged.
+- Task 3 execution authorization supersedes the historical manual-only local-check restriction for this session.
+
+## Canonical UI Map
+
+| Capability | Canonical owner | Source of truth | Allowed variants | Verification |
+| --- | --- | --- | --- | --- |
+| Select/Listbox | shared.tsx and CourseTaskBindings.tsx native selects | Existing native-control policy above | native | course-task-bindings.test.tsx; manual OS popup |
+| Date | Existing native date/time fields; TimetableDialog time picker | Existing native-control policy above | native | manual Asia/Shanghai/date keyboard |
+| Form | shared.tsx Field and TasksPage run | Existing form/feedback contract above | create/edit | focused bindings tests; manual network error |
+| Scrollbar | apps/web/src/app/globals.css | DESIGN.md runtime ownership | global | manual narrow viewport |
+| Toast | TasksPage alert/status | Existing feedback contract above | inline error | manual error/retry |
+| CRUD | useTaskData session store | Package AGENTS.md and existing lifecycle rules | persistent owned rows / controlled draft | task-pool-initialize.sql; bindings interactions |

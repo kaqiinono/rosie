@@ -4,3 +4,8 @@ export { freeIntervals, blockNeedsReschedule } from './time'
 
 export * from './courseTypes'
 export { normalizeCourseInput, deriveCourseEventKey } from './courseProgress'
+
+export { default as CourseTaskBindings } from './components/CourseTaskBindings'
+export type { CourseTaskBindingDraft, CourseTaskBindingsProps, MaterialPickerSlot } from './components/CourseTaskBindings'
+export { matchTaskPool, resolveActivityOverrides, scopeMatches } from './taskPool'
+export type { MatchedActivity, TaskPoolMatchContext, TaskPoolMatchIssue } from './taskPool'
