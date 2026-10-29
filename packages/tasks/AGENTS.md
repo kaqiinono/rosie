@@ -7,17 +7,18 @@ Routes are `/tasks/**`; `/today` and all subject progress remain independent.
   English catalogs through `TaskCatalogAdapter`. Never import subject packages here.
 - `useTaskData` owns a user session store. Route remounts reuse it; explicit refresh and
   visibility/minute refresh generate and reconcile station-only tasks. User data lives in Supabase.
-- `task_confirm_course` atomically records confirmation/progress and emits tasks. The
-  per-user transaction lock plus unique source keys protect retries and multiple devices.
+- `task_complete_event` and `task_revise_event` share the private event runtime with
+  `task_tick` and the minute worker. Assignment and actual completion are independent;
+  user advisory locks, canonical source keys and expected revisions serialize mutations.
 - Generated tasks snapshot their template. Template edits apply to future tasks. Only
   course-relative deadlines/reminders follow timetable changes; fixed overrides remain fixed.
 - Private audio is stored under `task-audio/<user id>/...`. Signed URLs must not enter
   shared service-worker caches. Playback repeats one clip until the learner moves on.
 - New UI uses global theme utilities. Its Tailwind scan source is registered in globals.css.
-- The task migration has been applied to the linked project. There is no system push,
-  notification permission, push secret or Cron requirement. The authenticated page calls
-  task_tick on initial load, explicit refresh and visible-page minute refresh.
-  Historical push tables/functions remain unused for migration-history compatibility. See README.md.
+- Event runtime migration is LOCAL ONLY. When deployed with pg_cron installed, the private
+  `tasks-background-generation` job runs every minute. `task_runtime_status()` reports
+  whether scheduling actually exists; without the extension it explicitly reports disabled.
+  The signed-in page's `task_tick` is same-engine catch-up, never a separate emitter.
 - Follow the user's manual-control preference: do not install, start servers, build,
   lint, typecheck or run tests without an explicit instruction.
 
@@ -121,3 +122,45 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
   Event current segment labels use saved owner/version/lesson identity, never the next course cursor.
 - Disposable full task baseline assertions: `supabase/tests/task-atomic-course-configuration.sql`.
   Do not apply this migration remotely before the event runtime is integrated and reviewed.
+
+## Unified event runtime (Task 4, local migration pending)
+
+- `courseEvents.ts` owns pure candidate enumeration, snapshot projection, deadline/window
+  resolution and bounded-save retry; `courseProgress.advanceCourseCursor` respects explicit
+  progression mode and segment closure. Task11 must reuse these, `matchTaskPool`, and the
+  shared `supabase/tests/fixtures/course-runtime.json` expectations.
+- `private.task_process_due_user(user,now,limit)` is browser-inaccessible. Durable course
+  `generation_date` scans unlimited historical duration in bounded daily batches; current
+  date stays open for later classes. Automatic assignment never marks actual completion.
+- Preview and after-class sources are distinct. Flexible preview release uses Shanghai date
+  midnight minus trigger_minutes without populating class clocks. Initial activation skips
+  previews whose cutoff already passed; previously active late work stays overdue. Invalid
+  release/deadline windows remain explicit event issues. Overdue original deadlines never
+  get moved; future relative deadlines may follow schedule revisions.
+- Course config writes go through the sole owner-checked save/import/replace/archive/restore
+  RPCs. Browser DML on courses/rules/events/catalog snapshots is revoked. Catalogs are immutable.
+  `task_save_course` returning NULL commits bounded old-config compensation only; retry at most
+  three times, never rebase expected revisions. An ordinary edit MUST omit cursor. An explicit
+  cursor patch requires expected_cursor_revision; check before catch-up, then apply intentional
+  override after catch-up. Re-read live cursor after the hook.
+- `cursor_intent:'resume'` is request-only: validate an actually consumed paused segment and
+  advance it once using the repaired snapshot; reset scan date to Shanghai today. Explicit
+  selection uses 'set' (including intentional repeated study). Resume never backfills pause dates
+  or fabricates an extra event for an already processed day.
+- Event content revisions preserve completed task history, archive old progress, reset changed
+  percentage content, and retain real problem completion by stable item_key. `task_instance_items`
+  is the authoritative item seam for Task5; legacy items JSON is reconciled on content revision.
+  Math homework starts `selection_state:'pending'` with no completable fake item and full estimate.
+- Task7 replaces only `private.task_resolve_materials(user,course,scope,selector,content)`.
+  Return `{status:'pending'|'not_required'|'selected',asset_ids:string[]}` after canonical asset
+  permission checks; never return signed/private URLs. Until then non-none selectors are pending.
+- SQL tests run against the complete nine-migration baseline plus Task4. Seed legacy source-key
+  fixture immediately before Task4; its assertion proves old tasks keep progress and cannot reemit.
+  The separate native PostgreSQL harness tests actual cross-connection advisory-lock contention.
+
+Forecast input must include existing `CourseEvent[]` as `enumerateCourseEvents`'s sixth
+argument (`stored`), plus occurrences as its seventh argument when available. Explicit
+makeup events (`rule_id === null`) participate by release date with no fabricated clocks;
+owner/course boundaries and cancelled states are filtered. Stable `event_key` dedupes stored
+rule events and forecasts, and request UUID dedupes makeup creation. Preserve stored phase
+flags so `projectCourseEvents` does not forecast already processed work again.

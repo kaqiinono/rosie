@@ -17,7 +17,7 @@ export type TaskTemplate = OwnedRow & {
   name: string; subject: Subject | null; course_id: string | null; enabled: boolean; mode: TaskMode
   trigger: 'before_class' | 'after_class' | 'confirmed' | 'unit_completed' | 'weekly' | 'once'
   target: 'current' | 'next' | 'unit'; checklist: string[]; estimated_minutes: number
-  deadline: { kind: 'same_day' | 'days_after' | 'next_class' | 'fixed'; time: string; days: number; at: string | null }
+  deadline: { kind: 'course_default' | 'same_day' | 'days_after' | 'next_class' | 'fixed'; time: string; days: number; at: string | null }
   reminders: ReminderRule[]; trigger_minutes: number; weekdays: number[]; scheduled_at: string | null
   lesson_filter: number | null; material_kind: 'general' | 'reading' | 'dictation' | 'recitation'; item_source: 'template' | 'class' | 'homework'
   created_at: string
@@ -25,6 +25,7 @@ export type TaskTemplate = OwnedRow & {
 export type ChecklistItem = { id: string; label: string; done: boolean; href?: string }
 export type TaskInstance = OwnedRow & {
   title: string; subject: Subject | null; course_id: string | null; occurrence_id: string | null; template_id: string | null
+  selection_state?: 'ready' | 'pending' | 'no_homework'; material_status?: 'pending' | 'selected' | 'not_required'; material_assets?: string[]; content_snapshot?: import('./courseTypes').CourseLessonSnapshot | null
   source_key: string; status: TaskStatus; mode: TaskMode; items: ChecklistItem[]; lesson: LessonRef | null
   due_at: string | null; due_kind: string; due_occurrence_id: string | null; estimated_minutes: number
   material_kind: string; created_at: string
@@ -63,7 +64,7 @@ export type TaskCalendar = OwnedRow & { name: string; starts_on: string; ends_on
 export type TaskExam = OwnedRow & { calendar_id: string | null; course_id: string | null; title: string; starts_at: string; ends_at: string; location: string; notes: string; reminder_minutes: number | null }
 export type TimetablePreferences = { week_start: 0 | 1; show_weekends: boolean; start_hour: number; end_hour: number; hour_height: number; hour12: boolean; show_teacher: boolean; show_location: boolean; default_reminder_minutes: number | null }
 export type TaskPreference = OwnedRow & { settings: TimetablePreferences }
-export type CourseInput = Pick<TaskCourse, 'name' | 'subject'> & Partial<Omit<TaskCourse, 'user_id' | 'created_at' | 'name' | 'subject'>> & { catalog_snapshot?: CourseCatalogSnapshot | null; bindings?: (Pick<CourseTaskBinding, 'pool_item_id' | 'enabled' | 'scope_override' | 'estimated_minutes_override' | 'material_override'> & { id?: string })[] }
+export type CourseInput = Pick<TaskCourse, 'name' | 'subject'> & Partial<Omit<TaskCourse, 'user_id' | 'created_at' | 'name' | 'subject'>> & { cursor_intent?: 'resume' | 'set'; expected_cursor_revision?: number; catalog_snapshot?: CourseCatalogSnapshot | null; bindings?: (Pick<CourseTaskBinding, 'pool_item_id' | 'enabled' | 'scope_override' | 'estimated_minutes_override' | 'material_override'> & { id?: string })[] }
 export type RuleInput = NormalizedCourseRuleInput | (Omit<TimetableRule, 'id' | 'user_id' | 'course_id'> & { id?: string; kind?: 'timetabled' })
 export type TimetableSnapshotPayload = { version: 1 | 2; calendars: Omit<TaskCalendar, 'user_id'>[]; courses: (Omit<TaskCourse, 'user_id' | keyof CourseConfiguration> & Pick<CourseConfiguration, 'course_type' | 'effective_from'>)[]; rules: (Omit<CourseRule, 'user_id'> | (Omit<TimetableRule, 'user_id'> & { kind?: 'timetabled' }))[]; exams: Omit<TaskExam, 'user_id'>[]; exceptions?: Omit<CourseException, 'user_id'>[]; settings?: TimetablePreferences }
 export type TaskSnapshot = OwnedRow & { name: string; payload: TimetableSnapshotPayload; created_at: string }

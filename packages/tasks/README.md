@@ -5,14 +5,14 @@
 
 ## 使用与生成时机
 
-仅在任务管理模块内部展示待办、课后确认、截止提醒和逾期任务。
-不发送系统通知，不请求设备通知权限，不需要推送密钥、调度密钥或 Cron。
+仅在任务管理模块内部展示课程事件、待办、截止提醒和逾期任务。
+不发送系统通知，不请求设备通知权限。新版事件运行时使用数据库 Cron；部署前须确认扩展与调度状态。
 
 - 首次打开任务管理时，调用 `task_tick` 展开课表并生成已经满足条件的任务与站内提醒。
 - 页面可见时每分钟更新一次；切回页面或点击刷新也会更新。
-- 关闭页面期间不运行后台任务；再次读取时按课程、模板和模块内进度补齐应有待办，重复读取不会重复生成。
-- 课程确认仍在提交时通过事务立即生成作业与首次满足条件的单元复习。
-- 过时的课前提醒不会补发，未完成任务和待确认课程保留在模块内。
+- 部署新版迁移且启用 pg_cron 后，关闭页面也由同一私有运行时生成；页面读取仍按持久扫描游标补偿，不受五周预览限制。
+- 自动分配与自动推进独立。显式完课共用事件运行时，已自动分配不会重复发放。
+- 过时站内提醒取消；已启用课程的逾期预习任务仍补偿并保留原截止。移除必须逐课确认的待办。
 
 ## 启用状态
 
@@ -32,8 +32,8 @@
 
 - 默认北京时间、周一展示起点。课次滚动生成未来五周，浏览课表可按规则预览更远日期；下一节课的查找不受五周窗口限制。单次例外以原规则和原日期定位，调课后仍使用原课程实例。
 - 课程名称定义一条进度流：同一纳约课程多个时段共用下次课截止，另建不同课程则互不影响。
-- 下课仅生成确认提醒；语文/纳约/厚海作业在孩子明确确认后生成。
-- 语文一次只确认一课讲完，默认下一条教材目录为预备课。可修改预备课；已经开始、完成或勾选过清单的旧预习任务保留原内容。
+- 课表课到实际下课时、自由课到所选日期日界时，按课程开关处理显式绑定活动。
+- 本次内容、下一次游标与实际完课独立保存。未到期预习按明确修订协调；已完成任务历史保留。
 - 单元范围默认课文与园地，可在学习资料调整。已生成单元复习后锁定范围。补录仅更新任务模块内进度，并允许首次触发单元复习。
 - 纳约题目只手动勾选，不读取练习记录。题库项保留入口，线下题号作为自定义清单项。
 - 厚海目录从已有 4A/5A 词库与阅读目录组合，按单元补齐 L1/L2/L3；缺失阅读不自动虚构课文，可上传或关联已有链接。
@@ -207,3 +207,60 @@ alias fix and Task6 metadata migration), then run `supabase/tests/task-atomic-co
 The test uses authenticated RLS, actual tick/ensure-next, ownership, exact-version conflicts, rollback,
 stale revisions, unchanged IDs, future conversion re-edit/history, and schedule-only import. It rolls
 back its fixtures. No hosted migration or generation has been verified by this local test.
+
+
+## Task4 event-runtime handoff (authoritative for the local pending rollout)
+
+This section supersedes the staged legacy-runtime statements in earlier Task2 handoff notes.
+The generated migration is `20261029095159_tasks_background_generation.sql`; do not deploy it
+independently from this application revision. No hosted migration or live Cron job was applied.
+
+`task_runtime_status()` returns `cron_enabled/detail`; an absent pg_cron extension is explicitly
+reported as disabled, while `task_tick(auth.uid())` remains same-engine page catch-up. The private
+minute entry `private.task_run_due(now(),20,100)` processes bounded users/days, records errors and
+retry times, and rotates by last run. Task13 may add planning invalidation around this engine;
+it must not reintroduce a second formal course emitter.
+
+Public mutations: `task_complete_event(event_id,expected_revision)` and
+`task_revise_event(event_id,content,expected_revision)` return the event, or `{status:'retry'}`
+when an old-config catch-up batch committed without the requested action. Content is `{cursor}`
+for a persisted catalog or `{lesson}` for a manual description. Stale versions fail before catch-up.
+`task_set_course_progress(course_id,cursor,expected_revision)` uses cursor_revision and returns
+`{status:'updated',cursor_revision}` or `{status:'retry'}`. `task_cancel_event` preserves completed
+history. `task_makeup_event(course_id,request_id,on_date)` is idempotent by request UUID and returns
+an event UUID, or NULL for bounded catch-up; reuse the request ID on retries.
+
+`task_archive_course_runtime(course_id)` returns updated/retry. The legacy void archive delegates
+and raises catch_up_required on a bounded retry (old clients should refresh/tick). Restore uses
+`task_restore_course`, preserves history and resumes from the current Shanghai date/activation.
+
+Course saves retain their UUID result; NULL means only compensation committed. The client retries
+at most three times and preserves its draft. Ordinary edits omit cursor. Explicit cursor/catalog
+selection includes the original expected_cursor_revision. `cursor_intent:'resume'` means resume an
+actually consumed missing-segment pause; 'set' means an intentional selection/repeated segment.
+A resumed existing same-day event is still deduped, and pause dates are not emitted retroactively.
+
+Pure Task11 APIs: `enumerateCourseEvents`, `projectCourseEvents`, `resolveEventContent`,
+`resolveCourseDeadline`, `resolveActivityWindow`, `advanceCourseCursor`, and `matchTaskPool`.
+Projection does not mutate actual state. Preserve event+activity+normalized-phase+target source
+keys exactly, including JavaScript encodeURIComponent UTF-8 encoding. Resolve materials through
+the Task7 seam documented in AGENTS; missing material/selection retains the estimated minutes.
+
+Task5 uses `selection_state`, `content_snapshot`, `progress_mode`, `completion_percent`,
+`task_instance_items.item_key`, `task_instances.revision`, and append-only `task_progress_events`.
+Event revision owns content reconciliation; execution-progress RPCs must share the same user
+transaction lock (hashtextextended(user UUID,228)), check expected revision, and preserve completed
+history. Homework with pending selection has zero fake items and cannot be completed by the current UI.
+
+Validation fixtures: `supabase/tests/task-generation.sql`, legacy seed/assert SQL, and shared
+`supabase/tests/fixtures/course-runtime.json`. The disposable validation harness must apply all nine
+related task migrations before Task4; inject legacy seed immediately before Task4. These are local
+PostgreSQL assertions, not evidence of hosted RLS/PostgREST/Cron deployment. Final broad build and
+rollout verification remain Task15.
+
+Forecast input must include existing `CourseEvent[]` as `enumerateCourseEvents`'s sixth
+argument (`stored`), plus occurrences as its seventh argument when available. Explicit
+makeup events (`rule_id === null`) participate by release date with no fabricated clocks;
+owner/course boundaries and cancelled states are filtered. Stable `event_key` dedupes stored
+rule events and forecasts, and request UUID dedupes makeup creation. Preserve stored phase
+flags so `projectCourseEvents` does not forecast already processed work again.

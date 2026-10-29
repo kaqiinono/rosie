@@ -52,3 +52,21 @@ export function deriveCourseEventKey(input: EventIdentity): string {
   const key = `${input.kind}:${encodeURIComponent(identity)}:${input.on_date}`
   return input.kind === 'flexible' && input.extra_event_id !== undefined ? `${key}:extra:${encodeURIComponent(input.extra_event_id)}` : key
 }
+
+/** A partial teaching sequence is a configuration gap, never evidence of completion. */
+export function advanceCourseCursor(snapshot: import('./courseTypes').CourseCatalogSnapshot, cursor: import('./courseTypes').CourseCursor): import('./courseTypes').AdvanceResult {
+  const index = snapshot.ordered_lessons.findIndex(l => l.key === cursor.lesson_key)
+  if (index < 0) throw new Error('invalid_course_cursor')
+  if (snapshot.progression_mode === 'segment') {
+    const segments = snapshot.teaching_segments.filter(s => s.lesson_key === cursor.lesson_key)
+    const current = segments.findIndex(s => s.key === cursor.segment_key)
+    if (current < 0) return { kind: 'missing_segment', lesson_key: cursor.lesson_key }
+    if (segments[current + 1]) return { kind: 'next', cursor: { lesson_key: cursor.lesson_key, segment_key: segments[current + 1].key } }
+    if (!segments[current].completes_lesson) return { kind: 'missing_segment', lesson_key: cursor.lesson_key }
+  }
+  const next = snapshot.ordered_lessons[index + 1]
+  if (!next) return { kind: 'finished' }
+  const segment = snapshot.progression_mode === 'segment' ? snapshot.teaching_segments.find(s => s.lesson_key === next.key) : null
+  if (snapshot.progression_mode === 'segment' && !segment) return { kind: 'missing_segment', lesson_key: next.key }
+  return { kind: 'next', cursor: { lesson_key: next.key, segment_key: segment?.key ?? null } }
+}

@@ -4,7 +4,7 @@ import type { TaskPoolItem } from './courseTypes'
 
 export type TemplateDraft = Omit<TaskPoolItem, 'id' | 'user_id' | 'created_at'>
 export function templateDraft(subject: Subject | null = null): TemplateDraft {
-  return { activity_key: '', scope: { kind: 'all' }, progress_mode: 'items', material_selector: { kind: 'auto' }, name: '', subject, course_id: null, enabled: true, mode: 'checklist', trigger: 'confirmed', target: 'current', checklist: [], estimated_minutes: 20, deadline: { kind: 'next_class', time: '20:30', days: 1, at: null }, reminders: [{ anchor: 'deadline', minutes: -60 }], trigger_minutes: 0, weekdays: [1], scheduled_at: null, lesson_filter: null, material_kind: 'general', item_source: 'template' }
+  return { activity_key: '', scope: { kind: 'all' }, progress_mode: 'items', material_selector: { kind: 'auto' }, name: '', subject, course_id: null, enabled: true, mode: 'checklist', trigger: 'confirmed', target: 'current', checklist: [], estimated_minutes: 20, deadline: { kind: 'course_default', time: '20:30', days: 1, at: null }, reminders: [{ anchor: 'deadline', minutes: -60 }], trigger_minutes: 0, weekdays: [1], scheduled_at: null, lesson_filter: null, material_kind: 'general', item_source: 'template' }
 }
 export function builtInTemplates(): TemplateDraft[] {
   const make = (subject: Subject, name: string, change: Partial<TemplateDraft> = {}): TemplateDraft => ({ ...templateDraft(subject), name, activity_key: `${subject}:${name}`, checklist: [name], ...change })

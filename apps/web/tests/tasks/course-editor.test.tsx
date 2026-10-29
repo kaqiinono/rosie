@@ -139,3 +139,13 @@ it('loads an existing deadline in Shanghai time and can clear it to the system d
  await waitFor(() => expect(save).toHaveBeenCalled())
  expect(save.mock.calls[0][0].default_deadline).toBeNull()
 })
+
+it('ordinary edits omit loaded cursor so a background advance cannot be overwritten', async () => {
+ const course={id:'c',user_id:'u',name:'C',subject:'art' as const,created_at:'',course_type:'flexible' as const,rules_revision:1,cursor_revision:5,cursor:{lesson_key:'a',segment_key:null}}
+ const save=setup({...empty,courses:[course],course_rules:[{id:'r',user_id:'u',course_id:'c',kind:'flexible',weekday:1,valid_from:date,valid_until:null,start_time:null,end_time:null}]})
+ fireEvent.change(screen.getByLabelText(/课程名称/),{target:{value:'renamed'}})
+ fireEvent.click(screen.getByRole('button',{name:'保存'}))
+ await waitFor(()=>expect(save).toHaveBeenCalled())
+ expect(save.mock.calls[0][0]).not.toHaveProperty('cursor')
+ expect(save.mock.calls[0][0]).not.toHaveProperty('expected_cursor_revision')
+})

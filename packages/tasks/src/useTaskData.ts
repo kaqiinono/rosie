@@ -1,6 +1,7 @@
 'use client'
 
 import { createUserSessionStore, supabase, useAuth } from '@rosie/core'
+import { saveCourseWithCatchup } from './courseEvents'
 import { builtInTemplates } from './defaults'
 import type { CourseInput, RuleInput } from './types'
 import type { CourseDomainData } from './courseTypes'
@@ -88,9 +89,16 @@ export function useTaskData() {
     return data as unknown
   }
   async function saveCourse(course: CourseInput, rules: RuleInput[], effectiveFrom?: string): Promise<string> {
-    return await rpc('task_save_course', { p_course: course, p_rules: rules, p_effective_from: effectiveFrom || null }) as string
+    return saveCourseWithCatchup(async () => {
+      if (!user) throw new Error('请先登录')
+      const { data, error } = await supabase.rpc('task_save_course', { p_course: course, p_rules: rules, p_effective_from: effectiveFrom || null })
+      if (error) throw error
+      return data as string | null
+    }, refresh)
   }
-  async function archiveCourse(id: string) { await rpc('task_archive_course', { p_course: id }) }
+  async function archiveCourse(id: string) {
+    await saveCourseWithCatchup(async () => { const result = await rpc('task_archive_course_runtime', { p_course: id }) as { status: string }; return result.status === 'updated' ? id : null }, refresh)
+  }
   return { ...state, user, save, remove, rpc, refresh, saveCourse, archiveCourse }
 }
 export type TaskDataApi = ReturnType<typeof useTaskData>

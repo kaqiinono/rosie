@@ -21,7 +21,7 @@ do $$ declare c uuid; copy_id uuid; timed uuid; rid uuid; history_id uuid; snap_
  begin perform public.task_save_course(payload,r,null); raise exception 'expected_stale_rejection'; exception when others then if sqlerrm<>'stale_course_revision' then raise; end if; end;
  catalog:=jsonb_build_object('id','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','user_id',auth.uid(),'created_at','1900-01-01','subject','math','source','manual','progression_mode','lesson','version','v-1','ordered_lessons','[{"key":"manual:1","title":"小数","book":"学校数学","unit":"一","kind":"manual"}]'::jsonb,'teaching_segments','[]'::jsonb);
  select * into saved from public.task_courses where id=c;
- payload:=payload||jsonb_build_object('rules_revision',saved.rules_revision,'catalog_snapshot',catalog,'cursor',jsonb_build_object('lesson_key','manual:1','segment_key',null),'auto_assign',true,'auto_advance',true,'bindings','[{"pool_item_id":"22000000-0000-0000-0000-000000000010","enabled":true,"scope_override":null,"estimated_minutes_override":30,"material_override":{"kind":"none"}}]'::jsonb);
+ payload:=payload||jsonb_build_object('rules_revision',saved.rules_revision,'expected_cursor_revision',saved.cursor_revision,'catalog_snapshot',catalog,'cursor',jsonb_build_object('lesson_key','manual:1','segment_key',null),'auto_assign',true,'auto_advance',true,'bindings','[{"pool_item_id":"22000000-0000-0000-0000-000000000010","enabled":true,"scope_override":null,"estimated_minutes_override":30,"material_override":{"kind":"none"}}]'::jsonb);
  perform public.task_save_course(payload,r,null);
  select * into saved from public.task_courses where id=c; snap_id:=saved.catalog_snapshot_id;
  if snap_id='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' or not exists(select 1 from public.task_course_catalog_snapshots where id=snap_id and created_at>'2026-01-01') then raise exception 'snapshot_identity_time_trusted_client'; end if;
@@ -108,7 +108,7 @@ do $$ declare c uuid; saved public.task_courses; r jsonb; policy jsonb; bad json
  if saved.effective_from is distinct from '2099-03-01'::date or saved.auto_assign or saved.default_deadline is not null then raise exception 'pending_import_configuration_wrong'; end if;
  if (select count(*) from public.task_timetable_rules t where course_id=saved.id and public.task_rule_occurs(t,'2099-02-16'))<>1 or not exists(select 1 from public.task_timetable_rules t where course_id=saved.id and kind='timetabled' and public.task_rule_occurs(t,'2099-02-16')) then raise exception 'pending_import_history_lost'; end if;
  select jsonb_agg(to_jsonb(t)) into r from public.task_timetable_rules t where course_id=saved.id and disabled_from is null;
- perform public.task_save_course(to_jsonb(saved),r,saved.effective_from);
+ perform public.task_save_course(to_jsonb(saved)-'cursor',r,saved.effective_from);
  if not exists(select 1 from public.task_timetable_rules t where course_id=saved.id and kind='timetabled' and public.task_rule_occurs(t,'2099-02-16')) then raise exception 'pending_import_edit_history_lost'; end if;
 end $$;
 rollback;

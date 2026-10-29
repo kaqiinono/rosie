@@ -1,0 +1,1183 @@
+{
+  "matching": [
+    {
+      "name": "UTF8 source key",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": [
+        {
+          "pool_item_id": "pool",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:after_class:current",
+          "target_key": "book:u1:l1",
+          "estimated_minutes": 20
+        }
+      ]
+    },
+    {
+      "name": "disabled binding never falls back",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": false,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": []
+    },
+    {
+      "name": "override replaces legacy lesson filter",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": 3,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": {
+            "kind": "lessons",
+            "lesson_keys": [
+              "book:u1:l1"
+            ]
+          },
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": [
+        {
+          "pool_item_id": "pool",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:after_class:current",
+          "target_key": "book:u1:l1",
+          "estimated_minutes": 20
+        }
+      ]
+    },
+    {
+      "name": "specific override wins",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        },
+        {
+          "id": "specific",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "lessons",
+            "lesson_keys": [
+              "book:u1:l1"
+            ]
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        },
+        {
+          "id": "specific-binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "specific",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": 35,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": [
+        {
+          "pool_item_id": "specific",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:after_class:current",
+          "target_key": "book:u1:l1",
+          "estimated_minutes": 35
+        }
+      ]
+    },
+    {
+      "name": "before and confirmed remain separate phases",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "before_class",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        },
+        {
+          "id": "after",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "confirmed",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        },
+        {
+          "id": "after-binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "after",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": [
+        {
+          "pool_item_id": "pool",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:before_class:current",
+          "target_key": "book:u1:l1",
+          "estimated_minutes": 20
+        },
+        {
+          "pool_item_id": "after",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:after_class:current",
+          "target_key": "book:u1:l1",
+          "estimated_minutes": 20
+        }
+      ]
+    },
+    {
+      "name": "next scope uses next lesson",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "next",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "lessons",
+            "lesson_keys": [
+              "book:u1:l2"
+            ]
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": [
+        {
+          "pool_item_id": "pool",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:after_class:next",
+          "target_key": "book:u1:l2",
+          "estimated_minutes": 20
+        }
+      ]
+    },
+    {
+      "name": "missing next is never current",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "after_class",
+          "target": "next",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": null
+      },
+      "expected": []
+    },
+    {
+      "name": "unit is not complete without evidence",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "unit_completed",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "next_lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l2",
+            "title": "Lesson 2",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 2
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l2",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        }
+      },
+      "expected": []
+    },
+    {
+      "name": "verified unit completion",
+      "event": {
+        "id": "event",
+        "user_id": "u",
+        "course_id": "course",
+        "rule_id": null,
+        "occurrence_id": null,
+        "event_key": "flexible:course:2026-10-26",
+        "on_date": "2026-10-26",
+        "starts_at": null,
+        "ends_at": null,
+        "release_at": "2026-10-25T16:00:00.000Z",
+        "lesson_snapshot": {
+          "lesson": {
+            "key": "book:u1:l1",
+            "title": "Lesson 1",
+            "book": "book",
+            "unit": "1",
+            "kind": "lesson",
+            "lesson": 1
+          },
+          "cursor": {
+            "lesson_key": "book:u1:l1",
+            "segment_key": null
+          },
+          "catalog_version": "v"
+        },
+        "revision": 1,
+        "assignment_state": "pending",
+        "completion_state": "pending",
+        "completed_at": null,
+        "legacy_confirmation": null
+      },
+      "items": [
+        {
+          "id": "pool",
+          "user_id": "u",
+          "name": "Read",
+          "subject": "english",
+          "course_id": null,
+          "enabled": true,
+          "mode": "reading",
+          "trigger": "unit_completed",
+          "target": "current",
+          "checklist": [],
+          "estimated_minutes": 20,
+          "deadline": {
+            "kind": "course_default",
+            "time": "20:30",
+            "days": 1,
+            "at": null
+          },
+          "reminders": [],
+          "trigger_minutes": 60,
+          "weekdays": [],
+          "scheduled_at": null,
+          "lesson_filter": null,
+          "material_kind": "reading",
+          "item_source": "template",
+          "created_at": "",
+          "activity_key": "读:书/!",
+          "scope": {
+            "kind": "all"
+          },
+          "progress_mode": "percentage",
+          "material_selector": {
+            "kind": "auto"
+          }
+        }
+      ],
+      "bindings": [
+        {
+          "id": "binding",
+          "user_id": "u",
+          "course_id": "course",
+          "pool_item_id": "pool",
+          "enabled": true,
+          "scope_override": null,
+          "estimated_minutes_override": null,
+          "material_override": null
+        }
+      ],
+      "context": {
+        "completed_unit": {
+          "book": "book",
+          "unit": "1"
+        }
+      },
+      "expected": [
+        {
+          "pool_item_id": "pool",
+          "source_key": "pool:flexible%3Acourse%3A2026-10-26:%E8%AF%BB%3A%E4%B9%A6%2F!:unit_completed:current",
+          "target_key": "book:u1:l1",
+          "estimated_minutes": 20
+        }
+      ]
+    }
+  ],
+  "deadlines": [
+    {
+      "name": "course inherited same day",
+      "pool": {
+        "kind": "course_default",
+        "days": 1,
+        "time": "20:30",
+        "at": null
+      },
+      "course": {
+        "kind": "same_day",
+        "days": 1,
+        "time": "21:00",
+        "at": null
+      },
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": "2026-10-26T08:00:00.000Z"
+      },
+      "next": null,
+      "phase": "after_class",
+      "expected": "2026-10-26T13:00:00.000Z"
+    },
+    {
+      "name": "pool concrete wins",
+      "pool": {
+        "kind": "days_after",
+        "days": 2,
+        "time": "19:00",
+        "at": null
+      },
+      "course": {
+        "kind": "same_day",
+        "days": 1,
+        "time": "20:30",
+        "at": null
+      },
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": "2026-10-26T08:00:00.000Z"
+      },
+      "next": null,
+      "phase": "after_class",
+      "expected": "2026-10-28T11:00:00.000Z"
+    },
+    {
+      "name": "system flexible next day",
+      "pool": {
+        "kind": "course_default",
+        "days": 1,
+        "time": "20:30",
+        "at": null
+      },
+      "course": null,
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": "2026-10-26T08:00:00.000Z"
+      },
+      "next": {
+        "on_date": "2026-11-09",
+        "starts_at": null
+      },
+      "phase": "after_class",
+      "expected": "2026-11-08T12:30:00.000Z"
+    },
+    {
+      "name": "before uses represented class",
+      "pool": {
+        "kind": "next_class",
+        "days": 1,
+        "time": "20:30",
+        "at": null
+      },
+      "course": null,
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": "2026-10-26T08:00:00.000Z"
+      },
+      "next": {
+        "on_date": "2026-11-09",
+        "starts_at": "2026-11-09T08:00:00.000Z"
+      },
+      "phase": "before_class",
+      "expected": "2026-10-26T08:00:00.000Z"
+    },
+    {
+      "name": "before date-only cutoff",
+      "pool": {
+        "kind": "next_class",
+        "days": 1,
+        "time": "20:30",
+        "at": null
+      },
+      "course": null,
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": null
+      },
+      "next": null,
+      "phase": "before_class",
+      "expected": "2026-10-25T12:30:00.000Z"
+    },
+    {
+      "name": "no next has no invented due",
+      "pool": {
+        "kind": "next_class",
+        "days": 1,
+        "time": "20:30",
+        "at": null
+      },
+      "course": null,
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": "2026-10-26T08:00:00.000Z"
+      },
+      "next": null,
+      "phase": "after_class",
+      "expected": null
+    },
+    {
+      "name": "fixed keeps offset",
+      "pool": {
+        "kind": "fixed",
+        "days": 1,
+        "time": "20:30",
+        "at": "2026-11-09T21:00:00+08:00"
+      },
+      "course": null,
+      "event": {
+        "on_date": "2026-10-26",
+        "starts_at": "2026-10-26T08:00:00.000Z"
+      },
+      "next": null,
+      "phase": "after_class",
+      "expected": "2026-11-09T13:00:00.000Z"
+    }
+  ]
+}

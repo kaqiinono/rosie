@@ -5,6 +5,10 @@ export type CourseCursor = { lesson_key: string; segment_key: string | null }
 export type AdvanceResult = { kind: 'next'; cursor: CourseCursor } | { kind: 'finished' } | { kind: 'missing_segment'; lesson_key: string }
 export type CourseDeadlinePolicy = { kind: 'next_class' | 'same_day' | 'days_after' | 'fixed'; time: string; days: number; at: string | null }
 export type CourseConfiguration = {
+  cursor_revision?: number
+  generation_state?: 'active' | 'paused' | 'finished'
+  generation_issue?: { kind?: string; code?: string; lesson_key?: string } | null
+  generation_date?: string | null
   default_deadline?: CourseDeadlinePolicy | null
   course_type?: CourseType
   auto_assign?: boolean
@@ -33,12 +37,15 @@ export type CourseCatalogSnapshot = OwnedRow & {
   source: 'builtin' | 'manual'; progression_mode: 'lesson' | 'segment'
   version: string; subject: Subject; ordered_lessons: LessonRef[]; teaching_segments: TeachingSegment[]; created_at: string
 }
-export type CourseLessonSnapshot = { lesson: LessonRef | null; cursor: CourseCursor | null; catalog_version: string | null; problem_keys?: string[] }
+export type CourseLessonSnapshot = { lesson: LessonRef | null; cursor: CourseCursor | null; catalog_version: string | null; problem_keys?: string[]; segment_title?: string | null }
 export type CourseEvent = OwnedRow & {
   course_id: string; rule_id: string | null; occurrence_id: string | null; event_key: string; on_date: string
   starts_at: string | null; ends_at: string | null; release_at: string
   lesson_snapshot: CourseLessonSnapshot | null; revision: number
   assignment_state: 'pending' | 'assigned' | 'skipped' | 'cancelled'
+  content_origin?: 'cursor' | 'explicit'
+  after_processed?: boolean; cursor_advanced?: boolean; next_snapshot?: CourseLessonSnapshot | null
+  runtime_issues?: { code: string }[]
   completion_state: 'pending' | 'completed'; completed_at: string | null; legacy_confirmation: CourseConfirmation | null
 }
 /** Scope identity uses catalog keys, never display titles or a lesson number alone. */
