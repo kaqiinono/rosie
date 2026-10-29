@@ -59,3 +59,8 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
   the course's current `course_type`. Retired timed rules and confirmed occurrences
   must survive later type changes. Atomic course-save must validate newly active
   rule kinds against the requested course type.
+
+- Completion is independent of assignment: `completion_state` is `pending` or
+  `completed`. Legacy confirmed events are completed with unknown (`null`)
+  `completed_at`; preserve `legacy_confirmation`. New completion operations set
+  the actual completion timestamp, never derive it from scheduled end time.

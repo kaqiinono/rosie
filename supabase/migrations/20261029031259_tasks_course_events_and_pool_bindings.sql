@@ -52,7 +52,9 @@ create table public.task_course_events (
  lesson_snapshot jsonb check(lesson_snapshot is null or jsonb_typeof(lesson_snapshot)='object'),
  revision integer not null default 1 check(revision>0),
  assignment_state text not null default 'pending' check(assignment_state in ('pending','assigned','skipped','cancelled')),
+ completion_state text not null default 'pending' check(completion_state in ('pending','completed')),
  completed_at timestamptz, legacy_confirmation jsonb,
+ check(completion_state='completed' or completed_at is null),
  unique(user_id,id), unique(user_id,event_key), unique(user_id,occurrence_id),
  foreign key(user_id,course_id) references public.task_courses(user_id,id),
  foreign key(user_id,rule_id) references public.task_timetable_rules(user_id,id),
@@ -78,13 +80,13 @@ insert into public.task_course_pool_bindings(user_id,course_id,pool_item_id,enab
  where t.trigger in ('before_class','after_class','confirmed','unit_completed');
 
 -- Existing confirmations are readable in both representations. No original rows are changed.
--- Legacy rows have no confirmed_at; ends_at is retained as their historical completion anchor.
-insert into public.task_course_events(id,user_id,course_id,rule_id,occurrence_id,event_key,on_date,starts_at,ends_at,release_at,lesson_snapshot,assignment_state,completed_at,legacy_confirmation)
+-- Legacy rows have no confirmed_at: preserve completion state without inventing a timestamp.
+insert into public.task_course_events(id,user_id,course_id,rule_id,occurrence_id,event_key,on_date,starts_at,ends_at,release_at,lesson_snapshot,assignment_state,completion_state,completed_at,legacy_confirmation)
  select o.id,o.user_id,o.course_id,o.rule_id,o.id,'timetabled:'||o.rule_id::text||':'||o.original_date::text,o.original_date,o.starts_at,o.ends_at,o.ends_at,
  case when o.confirmation is null then null else jsonb_build_object('lesson',o.confirmation->'lesson','cursor',
  case when nullif(o.confirmation->'lesson'->>'key','') is null then null else jsonb_build_object('lesson_key',o.confirmation->'lesson'->>'key','segment_key',null) end,'catalog_version',null) end,
  case when o.status='cancelled' then 'cancelled' when o.status='confirmed' then 'assigned' else 'pending' end,
- case when o.status='confirmed' then o.ends_at end,o.confirmation from public.task_course_occurrences o;
+ case when o.status='confirmed' then 'completed' else 'pending' end,null,o.confirmation from public.task_course_occurrences o;
 
 alter table public.task_instances
  add column course_event_id uuid,

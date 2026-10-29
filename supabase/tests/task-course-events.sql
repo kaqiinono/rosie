@@ -53,6 +53,12 @@ do $$ begin
  if has_table_privilege('authenticated','public.task_progress_events','SELECT') or has_table_privilege('authenticated','public.task_progress_events','INSERT') then raise exception 'browser can access audit control table'; end if;
  if has_table_privilege('anon','public.task_course_events','SELECT') then raise exception 'anonymous event access'; end if;
 end $$;
+-- Completion and assignment are independent; legacy completion may have no known timestamp.
+update public.task_course_events set completion_state='completed',completed_at=null,
+ legacy_confirmation='{"lesson":{"key":"legacy-lesson"}}' where event_key like 'flexible:20000000%';
+do $$ begin
+ if not exists(select 1 from public.task_course_events where completion_state='completed' and completed_at is null and assignment_state='pending' and legacy_confirmation->'lesson'->>'key'='legacy-lesson') then raise exception 'completion was coupled to assignment or an invented timestamp'; end if;
+end $$;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000002',true);
 do $$ begin
  if exists(select 1 from public.task_course_events where event_key like 'flexible:20000000%') then raise exception 'RLS leaked event'; end if;

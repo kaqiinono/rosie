@@ -1,4 +1,4 @@
-import type { CourseInput, LessonRef, OwnedRow, Subject, TaskData, TaskTemplate, TimetableRule } from './types'
+import type { CourseConfirmation, CourseInput, LessonRef, OwnedRow, Subject, TaskData, TaskTemplate, TimetableRule } from './types'
 
 export type CourseType = 'timetabled' | 'flexible'
 export type CourseCursor = { lesson_key: string; segment_key: string | null }
@@ -35,7 +35,8 @@ export type CourseEvent = OwnedRow & {
   course_id: string; rule_id: string | null; occurrence_id: string | null; event_key: string; on_date: string
   starts_at: string | null; ends_at: string | null; release_at: string
   lesson_snapshot: CourseLessonSnapshot | null; revision: number
-  assignment_state: 'pending' | 'assigned' | 'skipped' | 'cancelled'; completed_at: string | null
+  assignment_state: 'pending' | 'assigned' | 'skipped' | 'cancelled'
+  completion_state: 'pending' | 'completed'; completed_at: string | null; legacy_confirmation: CourseConfirmation | null
 }
 /** Scope identity uses catalog keys, never display titles or a lesson number alone. */
 export type CourseScope = { kind: 'all' } | { kind: 'lessons'; lesson_keys: string[] } | { kind: 'segments'; segment_keys: string[] } | { kind: 'unit'; book: string; unit: string }
