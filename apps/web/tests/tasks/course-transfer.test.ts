@@ -24,3 +24,11 @@ it('accepts legacy v1 and strips hostile learning fields from imported schedule 
  expect(payload.courses[0]).not.toHaveProperty('cursor')
  expect(payload.rules[0]).toMatchObject({ kind: 'timetabled', start_time: '10:00' })
 })
+
+it('roundtrips pending schedule effective metadata while dropping learning settings', () => {
+ const pending = { ...data, courses: [{ ...data.courses[0], effective_from: '2099-03-01', default_deadline: { kind: 'same_day' as const, days: 0, time: '20:30', at: null } }] }
+ const restored = parseTimetableJSON(JSON.stringify(schedulePayload(pending)))
+ expect(restored.courses[0]).toHaveProperty('effective_from', '2099-03-01')
+ expect(restored.courses[0]).not.toHaveProperty('default_deadline')
+ expect(restored.courses[0]).not.toHaveProperty('auto_assign')
+})

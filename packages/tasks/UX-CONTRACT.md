@@ -48,3 +48,10 @@
 - “已分配任务” and “已完课” are independent labels. Next-content editing never rewrites event history.
 - Course notes retain resize-none and expand their row count for existing multiline content. Palette, modal geometry, stable
   focus treatment and action header retain the established design owners.
+
+- Course default deadline controls reuse Field/native select/time/number and parent validation. Null
+  clearly selects system default. Fractional offsets and missing fixed datetime focus the invalid field.
+  Fixed timestamps display in Asia/Shanghai. Task4 owns pool inheritance selection and runtime resolution.
+- Schedule JSON keeps pending effective dates; flexible import previews show recurrence without null clocks.
+- Current event book/unit/segment stays separate from next content. Missing immutable segment details
+  remain visibly unavailable instead of borrowing the current course catalog's title.

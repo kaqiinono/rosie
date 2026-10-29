@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import CourseEditor from '../../../../packages/tasks/src/components/timetable/CourseEditor'
+import { parseTimetableJSON, schedulePayload } from '../../../../packages/tasks/src/transfer'
 import { TasksContext } from '../../../../packages/tasks/src/components/shared'
 import type { TaskDataApi } from '../../../../packages/tasks/src/useTaskData'
 import type { CourseDomainData } from '../../../../packages/tasks/src/courseTypes'
@@ -77,4 +78,64 @@ it('preserves original reminder and descriptive fields when scheduling a type co
  fireEvent.click(screen.getByRole('button', { name: '保存' }))
  await waitFor(() => expect(save).toHaveBeenCalled())
  expect(save.mock.calls[0][0]).toMatchObject({ reminder_minutes: 15, teacher: '王老师', location: '三楼', notes: '带课本', credits: 2, color: '#123456' })
+})
+
+it('re-edits a pending schedule restored from schedule-only JSON at its target date', async () => {
+ const course = { id: 'c', user_id: 'u', created_at: '', name: '数学', subject: 'math' as const, course_type: 'flexible' as const, effective_from: '2099-11-01', rules_revision: 1 }
+ const common = { user_id: 'u', course_id: 'c', weekday: 1, valid_until: null }
+ const original: CourseDomainData = { ...empty, courses: [course], course_rules: [
+ { ...common, id: 'old', kind: 'timetabled', start_time: '09:00', end_time: '10:00', valid_from: '2026-01-01', disabled_from: '2099-11-01' },
+ { ...common, id: 'new', kind: 'flexible', start_time: null, end_time: null, valid_from: '2099-11-01' },
+ ] }
+ const payload = parseTimetableJSON(JSON.stringify(schedulePayload(original)))
+ const restored: CourseDomainData = { ...empty, courses: payload.courses.map(c => ({ ...c, user_id: 'u', rules_revision: 1 })), course_rules: payload.rules.map(r => ({ ...r, user_id: 'u', kind: r.kind ?? 'timetabled' })) as CourseDomainData['course_rules'] }
+ const save = setup(restored)
+ expect(screen.getByLabelText('排课规则生效日')).toHaveValue('2099-11-01')
+ expect(screen.getAllByRole('checkbox', { name: '周一' })).toHaveLength(1)
+ fireEvent.click(screen.getByRole('button', { name: '保存' }))
+ await waitFor(() => expect(save).toHaveBeenCalled())
+ expect(save.mock.calls[0][1]).toHaveLength(1)
+ expect(save.mock.calls[0][1][0]).toMatchObject({ id: 'new', kind: 'flexible' })
+ expect(save.mock.calls[0][0].auto_assign).toBe(false)
+})
+it('persists an explicit course-default deadline and validates its day offset', async () => {
+ const save = setup()
+ fireEvent.change(screen.getByLabelText(/课程名称/), { target: { value: '阅读' } })
+ fireEvent.change(screen.getByLabelText('课程类型'), { target: { value: 'flexible' } })
+ fireEvent.click(screen.getByRole('button', { name: '添加上课星期' }))
+ fireEvent.change(screen.getByLabelText('课程默认截止策略'), { target: { value: 'next_class' } })
+ const days = screen.getByLabelText('自由课程提前天数')
+ fireEvent.change(days, { target: { value: '1.5' } })
+ fireEvent.click(screen.getByRole('button', { name: '保存' }))
+ expect(save).not.toHaveBeenCalled()
+ expect(days).toHaveAttribute('aria-invalid', 'true')
+ fireEvent.change(days, { target: { value: '2' } })
+ fireEvent.change(screen.getByLabelText('默认截止时刻'), { target: { value: '19:15' } })
+ fireEvent.click(screen.getByRole('button', { name: '保存' }))
+ await waitFor(() => expect(save).toHaveBeenCalled())
+ expect(save.mock.calls[0][0].default_deadline).toEqual({ kind: 'next_class', time: '19:15', days: 2, at: null })
+})
+
+it('requires a fixed deadline timestamp and persists its Shanghai timezone', async () => {
+ const save = setup()
+ fireEvent.change(screen.getByLabelText(/课程名称/), { target: { value: '阅读' } })
+ fireEvent.change(screen.getByLabelText('课程类型'), { target: { value: 'flexible' } })
+ fireEvent.click(screen.getByRole('button', { name: '添加上课星期' }))
+ fireEvent.change(screen.getByLabelText('课程默认截止策略'), { target: { value: 'fixed' } })
+ fireEvent.click(screen.getByRole('button', { name: '保存' }))
+ expect(save).not.toHaveBeenCalled()
+ expect(screen.getByLabelText('固定截止日期时间')).toHaveFocus()
+ fireEvent.change(screen.getByLabelText('固定截止日期时间'), { target: { value: '2099-11-01T19:15' } })
+ fireEvent.click(screen.getByRole('button', { name: '保存' }))
+ await waitFor(() => expect(save).toHaveBeenCalled())
+ expect(save.mock.calls[0][0].default_deadline).toMatchObject({ kind: 'fixed', at: '2099-11-01T19:15:00+08:00' })
+})
+it('loads an existing deadline in Shanghai time and can clear it to the system default', async () => {
+ const course = { id: 'c', user_id: 'u', created_at: '', name: '阅读', subject: 'other' as const, course_type: 'flexible' as const, rules_revision: 1, default_deadline: { kind: 'fixed' as const, time: '20:30', days: 1, at: '2099-11-01T12:30:00Z' } }
+ const save = setup({ ...empty, courses: [course], course_rules: [{ id: 'r', user_id: 'u', course_id: 'c', kind: 'flexible', weekday: 1, start_time: null, end_time: null, valid_from: date, valid_until: null }] })
+ expect(screen.getByLabelText('固定截止日期时间')).toHaveValue('2099-11-01T20:30')
+ fireEvent.change(screen.getByLabelText('课程默认截止策略'), { target: { value: 'system' } })
+ fireEvent.click(screen.getByRole('button', { name: '保存' }))
+ await waitFor(() => expect(save).toHaveBeenCalled())
+ expect(save.mock.calls[0][0].default_deadline).toBeNull()
 })

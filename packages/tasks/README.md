@@ -154,14 +154,31 @@ problem keys, defaulting the picker to classroom questions. No group defines tea
 “本讲最后一段” only for an actual final segment. Future missing/unclosed segments warn; current
 cursor must be valid before either automation switch is enabled. Failed preparation keeps the prior
 snapshot; “放弃未准备的目录修改” restores its local preparation fields. Only Save persists any of it.
-Task deadlines continue to come from bound pool activity deadlines; this task adds no competing
-course deadline schema. Material selectors/overrides retain the Task3 controlled contract; Task7
+`CourseConfiguration.default_deadline?: CourseDeadlinePolicy | null` stores a concrete course policy:
+`{ kind: 'next_class' | 'same_day' | 'days_after' | 'fixed', time: 'HH:mm', days: integer 0..365,
+at: timezone-qualified ISO timestamp | null }`. `at` must be present and null except for `fixed`,
+which requires a valid timestamp. The atomic RPC preserves an omitted field; explicit null resets
+to the system policy. `task_courses.default_deadline` is nullable JSON with a database check, so
+invalid direct writes also fail. The editor validates the same required fields and integer bounds.
+It displays/edits fixed times in Asia/Shanghai, including previously stored UTC timestamps.
+Task4 owns the explicit pool `kind: 'course_default'` option and runtime precedence:
+concrete pool deadline (existing explicit override) → course policy when inheritance is selected →
+system default when course policy is null. System default is next_class, days=1, time=20:30.
+For next_class, timed events use the next event's actual start; date-only events use the next event
+calendar date minus days at time. New course-triggered drafts/presets may inherit; weekly/once
+activities cannot. Preserve every existing concrete pool deadline. Task4 must add matching SQL/TS
+precedence fixtures; Task11 reuses this contract. This migration does not change generation/runtime.
+Material selectors/overrides retain the Task3 controlled contract; Task7
 supplies a concrete `renderMaterialPicker` and application material adapter. No raw asset IDs are UI inputs.
 
 `effectiveFrom` applies to schedule rules only. Learning settings change immediately. The UI labels
 both semantics. Pending timed→flexible or flexible→timed changes retain the old rules' own clock and
 validity until the named day. Re-edit defaults to the pending target rule set; changing the effective
-date does not reset unsaved weekday/content choices. JSON v2 stores schedule fields only and accepts
+date does not reset unsaved weekday/content choices. When postponing a never-effective revision,
+its superseded target rows are disabled by their original valid_from (an empty effective interval),
+while only the previous schedule extends to the new boundary. No historical rule is deleted.
+JSON v2 includes schedule-only `effective_from`, so import→edit loads the target rules and retains
+old timed validity; it excludes default_deadline along with learning settings. It accepts
 v1; imported automation flags/cursors/snapshots/events/bindings are discarded. ICS never manufactures
 all-day entries and exposes `X-ROSIE-OMITTED-FLEXIBLE`; the export panel shows the count.
 
@@ -177,7 +194,11 @@ catalog snapshot) must be removed/replaced when Task4 owns all explicit binding/
 The legacy next-class deadline engine still refers to timed occurrences; Task4 owns date-only event deadlines.
 
 Details already read `CourseDomainData.events`, show assigned vs completed independently, select
-same-day events by ID and retain separate next-cursor display. Task4 wires actual event revision,
+same-day events by ID and retain separate next-cursor display. Current book/unit/title comes from
+the event lesson snapshot. Segment titles resolve using the event owner/version and exact saved
+lesson identity against immutable snapshots (not the course's mutable subject/catalog/cursor).
+Missing or ambiguous legacy catalogs show “教学段历史详情不可用”; never substitute next content.
+Task4 wires actual event revision,
 completion, flexible cancellation/makeup and manual generation through these existing details.
 This task keeps existing timed exception, archive/restore and confirmation controls intact.
 

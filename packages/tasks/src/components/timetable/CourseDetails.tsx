@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { CourseEvent } from '../../courseTypes'
 import type { TaskCourse, TimetableOccurrence } from '../../types'
 import { atTime, displayTime, localDate } from '../../time'
 import { recurrenceLabel } from '../../timetable'
@@ -26,6 +27,15 @@ export default function CourseDetails({ course, occurrence, onClose, onEdit, onS
   const snapshot = api.data.catalog_snapshots.find(s => s.id === course.catalog_snapshot_id)
   const nextLesson = snapshot?.ordered_lessons.find(l => l.key === course.cursor?.lesson_key)
   const nextSegment = snapshot?.teaching_segments.find(s => s.key === course.cursor?.segment_key)
+  const eventContent = (event: CourseEvent) => {
+    const saved = event.lesson_snapshot
+    if (!saved?.lesson) return '尚未设置内容'
+    // Legacy events omit subject; match their immutable lesson identity, never mutable course metadata.
+    const candidates = api.data.catalog_snapshots.filter(s => s.user_id === event.user_id && s.version === saved.catalog_version && s.ordered_lessons.some(l => l.key === saved.lesson?.key && l.book === saved.lesson.book && l.unit === saved.lesson.unit && l.title === saved.lesson.title && l.kind === saved.lesson.kind))
+    const catalog = candidates.length === 1 ? candidates[0] : undefined
+    const segment = catalog?.teaching_segments.find(s => s.key === saved.cursor?.segment_key && s.lesson_key === saved.lesson?.key)
+    return [saved.lesson.book, saved.lesson.unit, saved.lesson.title, segment?.title ?? (saved.cursor?.segment_key ? '教学段历史详情不可用' : null)].filter(Boolean).join(' · ')
+  }
   const materials = api.data.materials.filter(material => material.course_id === course.id)
   const tasks = api.data.tasks.filter(task => task.course_id === course.id && (!occurrence || task.occurrence_id === occurrence.id))
   const exams = api.data.exams.filter(exam => exam.course_id === course.id)
@@ -55,8 +65,8 @@ export default function CourseDetails({ course, occurrence, onClose, onEdit, onS
       <section className="space-y-3 rounded-xl border border-slate-200 p-4"><h3 className="font-bold">本次与下一次内容</h3>
         <p className="text-sm text-slate-600">自动分配：{course.auto_assign ? '开启' : '关闭'} · 自动推进：{course.auto_advance ? '开启' : '关闭'}</p>
         {course.effective_from && course.effective_from > localDate() && <p className="text-sm text-amber-800">{course.effective_from} 起使用{course.course_type === 'flexible' ? '自由课程' : '课表课程'}规则；此前按各自的原排课时间上课。</p>}
-        {events.length > 1 && <Field label="选择学习事件"><select className={inputClass} value={currentEvent?.id ?? ''} onChange={e => setSelectedEvent(e.target.value)}>{events.map(e => <option key={e.id} value={e.id}>{e.on_date} {e.starts_at ? clockTime(e.starts_at) : '自由课程'} · {e.lesson_snapshot?.lesson?.title ?? '尚未分配内容'}</option>)}</select></Field>}
-        {currentEvent ? <div className="space-y-1 text-sm"><p>本次：{currentEvent.lesson_snapshot?.lesson?.title ?? '尚未设置内容'}</p><p>{currentEvent.assignment_state === 'assigned' ? '已分配任务' : currentEvent.assignment_state === 'cancelled' ? '已取消' : '尚未分配任务'} · {currentEvent.completion_state === 'completed' ? '已完课' : '尚未完课'}</p></div> : <p className="text-sm text-slate-500">尚无学习事件。</p>}
+        {events.length > 1 && <Field label="选择学习事件"><select className={inputClass} value={currentEvent?.id ?? ''} onChange={e => setSelectedEvent(e.target.value)}>{events.map(e => <option key={e.id} value={e.id}>{e.on_date} {e.starts_at ? clockTime(e.starts_at) : '自由课程'} · {eventContent(e)}</option>)}</select></Field>}
+        {currentEvent ? <div className="space-y-1 text-sm"><p>本次：{eventContent(currentEvent)}</p><p>{currentEvent.assignment_state === 'assigned' ? '已分配任务' : currentEvent.assignment_state === 'cancelled' ? '已取消' : '尚未分配任务'} · {currentEvent.completion_state === 'completed' ? '已完课' : '尚未完课'}</p></div> : <p className="text-sm text-slate-500">尚无学习事件。</p>}
         <p className="text-sm">下一次：{nextLesson ? `${nextLesson.book} · ${nextLesson.unit} · ${nextLesson.title}${nextSegment ? ` · ${nextSegment.title}` : ''}` : '未设置'}</p>
         {snapshot?.progression_mode === 'segment' && course.cursor && !nextSegment && <p className="text-sm text-amber-800">下一教学段尚未配置，请编辑课程补齐后继续。</p>}
         <p className="text-xs text-slate-500">分配任务与实际完课分别记录。编辑下一次内容不会改写本次或已完成历史。</p>

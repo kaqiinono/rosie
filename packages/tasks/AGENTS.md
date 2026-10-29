@@ -111,6 +111,13 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
   course emitter excludes configured catalog courses; Task4 must replace this bridge with auto_assign
   and explicit binding matching for ALL course types, including generic activities without catalogs.
 - JSON snapshots normalize to v2 and explicitly whitelist schedule fields; v1 remains readable.
+  V2 preserves schedule-only effective_from for pending-transition re-edit; excludes default_deadline.
   Both JSON and ICS exclude learning state/automation. ICS reports skipped flexible course count.
+- `CourseConfiguration.default_deadline?: CourseDeadlinePolicy | null` is a validated concrete policy
+  persisted atomically. Omission preserves, null resets to system next_class (days=1,time=20:30).
+  Task4 adds explicit pool course_default inheritance/resolution; concrete pool deadlines stay overrides.
+  Do not infer inheritance from missing fields or alter legacy pool deadlines during migration.
+- Pending superseded targets retire at their own start, never overlapping the extended prior schedule.
+  Event current segment labels use saved owner/version/lesson identity, never the next course cursor.
 - Disposable full task baseline assertions: `supabase/tests/task-atomic-course-configuration.sql`.
   Do not apply this migration remotely before the event runtime is integrated and reviewed.

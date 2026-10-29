@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CourseInput, CatalogLesson, ProblemOption, ProblemGroup } from '../../types'
 import type { CourseCatalogSnapshot, TeachingSegment } from '../../courseTypes'
+import CourseDeadlineFields from './CourseDeadlineFields'
 import { useTasks, Field, inputClass, minorClass } from '../shared'
 
 type Props = { value: CourseInput; snapshot?: CourseCatalogSnapshot; onChange: (patch: Partial<CourseInput>) => void; onPendingChange: (message: string) => void }
@@ -52,6 +53,7 @@ export default function CourseLearningSettings({ value, snapshot, onChange, onPe
     <h3 className="font-semibold">学习内容与自动安排</h3>
     <p className="text-sm text-slate-500">学习设置保存后立即生效。自动分配仅安排任务，不表示实际完课。</p>
     <div className="flex flex-wrap gap-4"><label><input type="checkbox" checked={value.auto_assign ?? false} onChange={e => onChange({ auto_assign: e.target.checked })} /> 自动分配任务</label><label><input type="checkbox" checked={value.auto_advance ?? false} onChange={e => onChange({ auto_advance: e.target.checked })} /> 自动推进内容</label></div>
+    <CourseDeadlineFields value={value.default_deadline ?? null} flexible={value.course_type === 'flexible'} onChange={default_deadline => onChange({ default_deadline })} />
     <details><summary className="cursor-pointer py-3 font-medium">配置目录范围与教学段</summary>
       <fieldset disabled={busy} className="space-y-3 pt-3">
         <Field label="目录来源"><select className={inputClass} value={source} onChange={e => { setSource(e.target.value as typeof source); pending() }}><option value="manual">手动目录（适用所有科目）</option>{['chinese', 'english', 'math'].includes(value.subject) && <option value="builtin">已有学科目录</option>}</select></Field>

@@ -3,7 +3,9 @@ import type { CourseConfirmation, CourseInput, LessonRef, OwnedRow, Subject, Tas
 export type CourseType = 'timetabled' | 'flexible'
 export type CourseCursor = { lesson_key: string; segment_key: string | null }
 export type AdvanceResult = { kind: 'next'; cursor: CourseCursor } | { kind: 'finished' } | { kind: 'missing_segment'; lesson_key: string }
+export type CourseDeadlinePolicy = { kind: 'next_class' | 'same_day' | 'days_after' | 'fixed'; time: string; days: number; at: string | null }
 export type CourseConfiguration = {
+  default_deadline?: CourseDeadlinePolicy | null
   course_type?: CourseType
   auto_assign?: boolean
   auto_advance?: boolean

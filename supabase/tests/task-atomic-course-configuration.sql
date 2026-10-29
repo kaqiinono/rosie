@@ -57,13 +57,58 @@ do $$ declare c uuid; copy_id uuid; timed uuid; rid uuid; history_id uuid; snap_
  perform public.task_save_course(jsonb_build_object('id',timed,'rules_revision',saved.rules_revision,'name','课表转自由','subject','math','course_type','flexible'),r,'2099-03-01');
  if not exists(select 1 from public.task_timetable_rules where id=rid and disabled_from='2099-03-01') then raise exception 'pending_transition_gap'; end if;
  if not exists(select 1 from public.task_timetable_rules where course_id=timed and kind='flexible' and valid_from='2099-03-01' and disabled_from is null) then raise exception 'pending_transition_date_not_changed'; end if;
+ if (select count(*) from public.task_timetable_rules t where course_id=timed and public.task_rule_occurs(t,'2099-02-16'))<>1
+ or not exists(select 1 from public.task_timetable_rules t where course_id=timed and kind='timetabled' and public.task_rule_occurs(t,'2099-02-16'))
+ or (select count(*) from public.task_timetable_rules t where course_id=timed and public.task_rule_occurs(t,'2099-03-02'))<>1
+ or not exists(select 1 from public.task_timetable_rules t where course_id=timed and kind='flexible' and public.task_rule_occurs(t,'2099-03-02')) then raise exception 'postponed_transition_not_exclusive'; end if;
  -- Flexible to timed revision keeps the earlier flexible rule date-only.
  select rules_revision into saved.rules_revision from public.task_courses where id=copy_id;
  select jsonb_agg((to_jsonb(t)-'start_time'-'end_time'-'kind')||'{"kind":"timetabled","start_time":"14:00","end_time":"15:00"}'::jsonb) into r from public.task_timetable_rules t where course_id=copy_id and disabled_from is null;
  perform public.task_save_course(jsonb_build_object('id',copy_id,'rules_revision',saved.rules_revision,'name','副本','subject','math','course_type','timetabled'),r,'2099-04-01');
  if not exists(select 1 from public.task_timetable_rules where course_id=copy_id and kind='flexible' and start_time is null and disabled_from='2099-04-01') or not exists(select 1 from public.task_timetable_rules where course_id=copy_id and kind='timetabled' and start_time='14:00' and disabled_from is null) then raise exception 'flexible_to_timed_history_lost'; end if;
+ select rules_revision into saved.rules_revision from public.task_courses where id=copy_id;
+ select jsonb_agg(to_jsonb(t)) into r from public.task_timetable_rules t where course_id=copy_id and disabled_from is null;
+ perform public.task_save_course(jsonb_build_object('id',copy_id,'rules_revision',saved.rules_revision,'name','副本','subject','math','course_type','timetabled'),r,'2099-05-01');
+ if (select count(*) from public.task_timetable_rules t where course_id=copy_id and public.task_rule_occurs(t,'2099-04-13'))<>1
+ or not exists(select 1 from public.task_timetable_rules t where course_id=copy_id and kind='flexible' and public.task_rule_occurs(t,'2099-04-13'))
+ or (select count(*) from public.task_timetable_rules t where course_id=copy_id and public.task_rule_occurs(t,'2099-05-04'))<>1
+ or not exists(select 1 from public.task_timetable_rules t where course_id=copy_id and kind='timetabled' and public.task_rule_occurs(t,'2099-05-04')) then raise exception 'reverse_postponed_transition_not_exclusive'; end if;
  -- Additive schedule import explicitly drops activation/progress even for malicious v2 JSON.
  perform public.task_import_timetable('{"version":2,"calendars":[],"exams":[],"courses":[{"id":"import-c","name":"导入自由课程","subject":"math","course_type":"flexible","auto_assign":true,"auto_advance":true,"cursor":{"lesson_key":"secret","segment_key":null}}],"rules":[{"id":"import-r","course_id":"import-c","kind":"flexible","weekday":3,"start_time":null,"end_time":null,"valid_from":"2099-01-01","valid_until":null}]}',null,'导入测试','task2-import');
  if not exists(select 1 from public.task_courses where name='导入自由课程' and course_type='flexible' and not auto_assign and not auto_advance and cursor is null and catalog_snapshot_id is null) then raise exception 'import_activated_learning'; end if;
+end $$;
+-- Course deadline persistence belongs to the same revision/ownership transaction.
+do $$ declare c uuid; saved public.task_courses; r jsonb; policy jsonb; bad jsonb; before_count int; imported uuid; begin
+ r:='[{"kind":"flexible","weekday":1,"start_time":null,"end_time":null,"valid_from":"2099-01-01","valid_until":null}]';
+ policy:='{"kind":"next_class","time":"19:15","days":2,"at":null}';
+ c:=public.task_save_course(jsonb_build_object('name','截止策略','subject','other','course_type','flexible','default_deadline',policy),r,null);
+ select * into saved from public.task_courses where id=c;
+ if saved.default_deadline is distinct from policy then raise exception 'deadline_not_persisted'; end if;
+ select jsonb_agg(to_jsonb(t)) into r from public.task_timetable_rules t where course_id=c and disabled_from is null;
+ perform public.task_save_course(jsonb_build_object('id',c,'rules_revision',saved.rules_revision,'name','截止策略','subject','other','course_type','flexible'),r,null);
+ select * into saved from public.task_courses where id=c;
+ if saved.default_deadline is distinct from policy then raise exception 'omitted_deadline_lost'; end if;
+ for bad in select value from jsonb_array_elements('[{"kind":"next_class","time":"19:15","days":1.5,"at":null},{"kind":"next_class","time":"24:00","days":1,"at":null},{"kind":"next_class","time":"20:30","days":366,"at":null},{"kind":"next_class","time":"20:30","days":-1,"at":null},{"kind":"fixed","time":"20:30","days":0,"at":null},{"kind":"fixed","time":"20:30","days":0,"at":"2099-02-31T20:30:00+08:00"},{"kind":"course_default","time":"20:30","days":1,"at":null}]') loop
+ begin
+ perform public.task_save_course(jsonb_build_object('id',c,'rules_revision',saved.rules_revision,'name','不得写入','subject','other','course_type','flexible','default_deadline',bad),r,null);
+ raise exception 'expected_deadline_rejection'; exception when check_violation then null; end;
+ if not exists(select 1 from public.task_courses where id=c and name='截止策略' and rules_revision=saved.rules_revision and default_deadline=policy) then raise exception 'deadline_failure_not_atomic'; end if;
+ end loop;
+ -- A late binding failure also rolls back a valid changed deadline.
+ begin
+ perform public.task_save_course(jsonb_build_object('id',c,'rules_revision',saved.rules_revision,'name','截止策略','subject','other','course_type','flexible','default_deadline',null,'bindings','[{"pool_item_id":"22000000-0000-0000-0000-000000000011"}]'::jsonb),r,null);
+ raise exception 'expected_binding_failure'; exception when others then if sqlerrm<>'invalid_pool_binding' then raise; end if; end;
+ if (select default_deadline from public.task_courses where id=c) is distinct from policy then raise exception 'deadline_binding_rollback_failed'; end if;
+ perform public.task_save_course(jsonb_build_object('id',c,'rules_revision',saved.rules_revision,'name','截止策略','subject','other','course_type','flexible','default_deadline',null),r,null);
+ if (select default_deadline from public.task_courses where id=c) is not null then raise exception 'system_default_not_restored'; end if;
+ if not public.task_valid_course_deadline('{"kind":"fixed","time":"20:30","days":0,"at":"2099-11-01T12:30:00Z"}') or not public.task_valid_course_deadline('{"kind":"same_day","time":"20:30","days":0,"at":null}') or not public.task_valid_course_deadline('{"kind":"days_after","time":"20:30","days":365,"at":null}') then raise exception 'valid_deadline_rejected'; end if;
+ -- Pending schedule-only imports preserve both validity periods and the target date.
+ imported:=public.task_import_timetable('{"version":2,"calendars":[],"exams":[],"courses":[{"id":"pending","name":"待生效导入","subject":"math","course_type":"flexible","effective_from":"2099-03-01","default_deadline":{"kind":"same_day","time":"20:30","days":0,"at":null},"auto_assign":true}],"rules":[{"id":"past","course_id":"pending","kind":"timetabled","weekday":1,"start_time":"09:00","end_time":"10:00","valid_from":"2026-01-01","disabled_from":"2099-03-01"},{"id":"target","course_id":"pending","kind":"flexible","weekday":1,"start_time":null,"end_time":null,"valid_from":"2099-03-01"}]}',null,'待生效导入','task2-pending-import');
+ select * into saved from public.task_courses where calendar_id=imported;
+ if saved.effective_from is distinct from '2099-03-01'::date or saved.auto_assign or saved.default_deadline is not null then raise exception 'pending_import_configuration_wrong'; end if;
+ if (select count(*) from public.task_timetable_rules t where course_id=saved.id and public.task_rule_occurs(t,'2099-02-16'))<>1 or not exists(select 1 from public.task_timetable_rules t where course_id=saved.id and kind='timetabled' and public.task_rule_occurs(t,'2099-02-16')) then raise exception 'pending_import_history_lost'; end if;
+ select jsonb_agg(to_jsonb(t)) into r from public.task_timetable_rules t where course_id=saved.id and disabled_from is null;
+ perform public.task_save_course(to_jsonb(saved),r,saved.effective_from);
+ if not exists(select 1 from public.task_timetable_rules t where course_id=saved.id and kind='timetabled' and public.task_rule_occurs(t,'2099-02-16')) then raise exception 'pending_import_edit_history_lost'; end if;
 end $$;
 rollback;
