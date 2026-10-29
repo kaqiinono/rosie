@@ -92,3 +92,25 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
   defaults need no env/network. Checkpoint/resume/dedupe/gaps are documented in README and docs/task-material-inventory.md.
   Remote GET feeds require explicit opt-in and a page budget. Never catalog private task/story recordings.
 - `TaskMaterialAdapter` is an injected application seam. Shared-material storage belongs to Task 7; no materials dependency here.
+
+## Atomic course configuration (Task 2, local migration pending)
+
+- `saveCourse(course, rules, effectiveFrom?)` remains the sole atomic course editor API.
+  `CourseInput` now carries optional `catalog_snapshot` and controlled `bindings`; existing
+  edits include `rules_revision`. An omitted bindings payload preserves bindings, `[]` clears them.
+- Schedule `effectiveFrom` governs rule validity and type only. Learning settings change immediately.
+  Current course_type is the target configuration; calendars/events must use each rule's own kind.
+  Re-editing a pending conversion initializes target rules and preserves earlier timed identities.
+- Snapshot insertion/reuse is inside `task_save_course`: server owner/time/id, exact source/progression/
+  lesson/segment comparison on version reuse, owner+subject and current cursor validation. No generic save.
+- `task_course_before_configuration_change(uuid,uuid)` is an explicit Task4 integration hook under
+  the existing user transaction lock, before any course/catalog/rule/binding mutations. It currently
+  runs legacy `task_tick` only. Task4 must replace it with old-configuration due-event compensation.
+- Legacy tick/ensure-next only materialize timed rules. Formal event generation, event content edits,
+  flexible completion/cancellation/makeup and actual completion remain Task4. The temporary legacy
+  course emitter excludes configured catalog courses; Task4 must replace this bridge with auto_assign
+  and explicit binding matching for ALL course types, including generic activities without catalogs.
+- JSON snapshots normalize to v2 and explicitly whitelist schedule fields; v1 remains readable.
+  Both JSON and ICS exclude learning state/automation. ICS reports skipped flexible course count.
+- Disposable full task baseline assertions: `supabase/tests/task-atomic-course-configuration.sql`.
+  Do not apply this migration remotely before the event runtime is integrated and reviewed.

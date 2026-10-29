@@ -1,4 +1,4 @@
-import type { CourseCatalogSnapshot, CourseConfiguration, CourseScope, TeachingSegment } from './courseTypes'
+import type { CourseCatalogSnapshot, CourseConfiguration, CourseScope, TeachingSegment, CourseRule, NormalizedCourseRuleInput, CourseTaskBinding } from './courseTypes'
 
 export type Subject = 'chinese' | 'english' | 'math' | 'art' | 'science' | 'sports' | 'dance' | 'piano' | 'swimming' | 'other'
 export const SUBJECTS: Record<Subject, string> = { chinese: '语文', english: '英语', math: '数学', art: '美术', science: '科学', sports: '体育', dance: '舞蹈', piano: '钢琴', swimming: '游泳', other: '未分类' }
@@ -63,8 +63,8 @@ export type TaskCalendar = OwnedRow & { name: string; starts_on: string; ends_on
 export type TaskExam = OwnedRow & { calendar_id: string | null; course_id: string | null; title: string; starts_at: string; ends_at: string; location: string; notes: string; reminder_minutes: number | null }
 export type TimetablePreferences = { week_start: 0 | 1; show_weekends: boolean; start_hour: number; end_hour: number; hour_height: number; hour12: boolean; show_teacher: boolean; show_location: boolean; default_reminder_minutes: number | null }
 export type TaskPreference = OwnedRow & { settings: TimetablePreferences }
-export type CourseInput = Pick<TaskCourse, 'name' | 'subject'> & Partial<Omit<TaskCourse, 'user_id' | 'created_at' | 'name' | 'subject'>>
-export type RuleInput = Omit<TimetableRule, 'id' | 'user_id' | 'course_id'> & { id?: string }
-export type TimetableSnapshotPayload = { version: 1; calendars: Omit<TaskCalendar, 'user_id'>[]; courses: Omit<TaskCourse, 'user_id'>[]; rules: Omit<TimetableRule, 'user_id'>[]; exams: Omit<TaskExam, 'user_id'>[]; exceptions?: Omit<CourseException, 'user_id'>[]; settings?: TimetablePreferences }
+export type CourseInput = Pick<TaskCourse, 'name' | 'subject'> & Partial<Omit<TaskCourse, 'user_id' | 'created_at' | 'name' | 'subject'>> & { catalog_snapshot?: CourseCatalogSnapshot | null; bindings?: (Pick<CourseTaskBinding, 'pool_item_id' | 'enabled' | 'scope_override' | 'estimated_minutes_override' | 'material_override'> & { id?: string })[] }
+export type RuleInput = NormalizedCourseRuleInput | (Omit<TimetableRule, 'id' | 'user_id' | 'course_id'> & { id?: string; kind?: 'timetabled' })
+export type TimetableSnapshotPayload = { version: 1 | 2; calendars: Omit<TaskCalendar, 'user_id'>[]; courses: (Omit<TaskCourse, 'user_id' | keyof CourseConfiguration> & Pick<CourseConfiguration, 'course_type'>)[]; rules: (Omit<CourseRule, 'user_id'> | (Omit<TimetableRule, 'user_id'> & { kind?: 'timetabled' }))[]; exams: Omit<TaskExam, 'user_id'>[]; exceptions?: Omit<CourseException, 'user_id'>[]; settings?: TimetablePreferences }
 export type TaskSnapshot = OwnedRow & { name: string; payload: TimetableSnapshotPayload; created_at: string }
 export type TimetableOccurrence = CourseOccurrence & { preview: boolean }

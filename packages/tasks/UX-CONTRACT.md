@@ -34,3 +34,17 @@
 | Scrollbar | apps/web/src/app/globals.css | DESIGN.md runtime ownership | global | manual narrow viewport |
 | Toast | TasksPage alert/status | Existing feedback contract above | inline error | manual error/retry |
 | CRUD | useTaskData session store | Package AGENTS.md and existing lifecycle rules | persistent owned rows / controlled draft | task-pool-initialize.sql; bindings interactions |
+
+## Course configuration extension
+
+- Continue using CourseEditor/CourseDetails and their native TimetableDialog owner. Free courses have
+  required weekdays and original recurrence, date-only previews, and no calendar occupancy.
+- Keep Save disabled while directory preparation is pending; retain draft on failed persistence.
+  Failed preparation preserves the existing catalog. Native constraint validation is invoked explicitly
+  with `checkValidity` under `noValidate`, and the first invalid input is marked, described and focused.
+  Fractional minutes, date ranges, required fields and maximum lengths remain enforced.
+- Learning settings apply at Save; the separately labelled schedule-rule effective date controls rule
+  revisions. Past and still-valid timed history retains its own clock even when target type is flexible.
+- “已分配任务” and “已完课” are independent labels. Next-content editing never rewrites event history.
+- Course notes retain resize-none and expand their row count for existing multiline content. Palette, modal geometry, stable
+  focus treatment and action header retain the established design owners.

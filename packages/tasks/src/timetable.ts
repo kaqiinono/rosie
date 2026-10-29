@@ -1,10 +1,11 @@
-import type { TaskData, TimetableOccurrence, TimetablePreferences, TimetableRule, CourseOccurrence } from './types'
+import type { TaskData, TimetableOccurrence, TimetablePreferences, TimetableRule, CourseOccurrence, RuleInput } from './types'
+import type { CourseRule } from './courseTypes'
 import { atTime, dateAfter, localDate } from './time'
 
 export const DEFAULT_TIMETABLE_PREFERENCES: TimetablePreferences = { week_start: 1, show_weekends: true, start_hour: 7, end_hour: 22, hour_height: 64, hour12: false, show_teacher: true, show_location: true, default_reminder_minutes: 10 }
 const dayNumber = (date: string) => Math.floor(Date.parse(`${date}T00:00:00Z`) / 86400000)
 const monday = (date: string) => dayNumber(date) - (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7
-export function ruleOccursOn(rule: TimetableRule, date: string): boolean {
+export function ruleOccursOn(rule: Omit<TimetableRule, 'id' | 'user_id' | 'course_id' | 'start_time' | 'end_time'>, date: string): boolean {
   if (date < rule.valid_from || (rule.valid_until && date > rule.valid_until) || (rule.disabled_from && date >= rule.disabled_from)) return false
   if (new Date(`${date}T00:00:00Z`).getUTCDay() !== rule.weekday) return false
   const anchor = rule.anchor_date || rule.valid_from
@@ -14,14 +15,23 @@ export function ruleOccursOn(rule: TimetableRule, date: string): boolean {
   return rule.recurrence === 'weeks' ? (rule.teaching_weeks || []).includes(week + 1) : week % (rule.interval_weeks || 1) === 0
 }
 
+/** Date-only editor preview; repeated matching rules share one default learning day. */
+export function previewCourseDates(rules: RuleInput[], from: string, to: string): string[] {
+  if (from > to || dayNumber(to) - dayNumber(from) > 3660) return []
+  const dates: string[] = []
+  for (let date = from; date <= to; date = dateAfter(date, 1)) if (rules.some(rule => ruleOccursOn(rule, date))) dates.push(date)
+  return dates
+}
+
 /** Calendar browsing is pure: no RPC, occurrence writes or task generation. */
-export function previewOccurrences(data: Pick<TaskData, 'courses' | 'rules' | 'exceptions' | 'occurrences'>, from: string, to: string): TimetableOccurrence[] {
+export function previewOccurrences(data: Pick<TaskData, 'courses' | 'exceptions' | 'occurrences'> & { rules: (TimetableRule | CourseRule)[] }, from: string, to: string): TimetableOccurrence[] {
   if (from > to || dayNumber(to) - dayNumber(from) > 3660) return []
   const result = new Map<string, TimetableOccurrence>()
   const existing = new Map(data.occurrences.map(o => [`${o.rule_id}:${o.original_date}`, o]))
   const exceptions = new Map(data.exceptions.map(e => [`${e.rule_id}:${e.original_date}`, e]))
   const inRange = (start: string, end: string) => +new Date(end) > +new Date(atTime(from, '00:00')) && +new Date(start) < +new Date(atTime(dateAfter(to, 1), '00:00'))
   for (const rule of data.rules) {
+    if (rule.start_time == null || rule.end_time == null) continue
     if (data.courses.find(c => c.id === rule.course_id)?.archived_at) continue
     const dates = new Set<string>()
     for (let d = from; d <= to; d = dateAfter(d, 1)) if (ruleOccursOn(rule, d)) dates.add(d)
@@ -37,7 +47,7 @@ export function previewOccurrences(data: Pick<TaskData, 'courses' | 'rules' | 'e
   for (const o of data.occurrences) if ((o.status === 'confirmed' || +new Date(o.ends_at) < Date.now()) && inRange(o.starts_at, o.ends_at)) result.set(`${o.rule_id}:${o.original_date}`, { ...o, preview: false })
   return [...result.values()].sort((a, b) => +new Date(a.starts_at) - +new Date(b.starts_at) || a.id.localeCompare(b.id))
 }
-export function recurrenceLabel(rule: TimetableRule): string {
+export function recurrenceLabel(rule: Omit<TimetableRule, 'id' | 'user_id' | 'course_id' | 'start_time' | 'end_time'>): string {
   if (rule.recurrence === 'once') return '仅一次'
   if (rule.recurrence === 'weeks') return `第 ${(rule.teaching_weeks || []).join('、')} 周`
   return (rule.interval_weeks || 1) === 1 ? '每周' : `每隔 ${(rule.interval_weeks || 1) - 1} 周`
@@ -63,10 +73,11 @@ export function timetableStats(occurrences: CourseOccurrence[]) {
   const conflicts = active.filter((o, index) => active.some((p, other) => other !== index && +new Date(o.starts_at) < +new Date(p.ends_at) && +new Date(p.starts_at) < +new Date(o.ends_at))).length
   return { courses: new Set(active.map(o => o.course_id)).size, occurrences: active.length, minutes: active.reduce((n, o) => n + (+new Date(o.ends_at) - +new Date(o.starts_at)) / 60000, 0), conflicts }
 }
-export function nextPreviewOccurrence(data: Pick<TaskData, 'courses' | 'rules' | 'exceptions' | 'occurrences'>, after = new Date()): TimetableOccurrence | null {
+export function nextPreviewOccurrence(data: Pick<TaskData, 'courses' | 'exceptions' | 'occurrences'> & { rules: (TimetableRule | CourseRule)[] }, after = new Date()): TimetableOccurrence | null {
   const candidates: TimetableOccurrence[] = []
   const from = localDate(after)
   for (const rule of data.rules) {
+    if (rule.start_time == null || rule.end_time == null) continue
     if (data.courses.find(c => c.id === rule.course_id)?.archived_at) continue
     const anchor = rule.anchor_date || rule.valid_from
     const dates = new Set<string>()

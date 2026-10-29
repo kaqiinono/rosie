@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { layoutOccurrences, nextPreviewOccurrence, previewOccurrences, ruleOccursOn, timetableStats } from '../../../packages/tasks/src/timetable'
+import { layoutOccurrences, nextPreviewOccurrence, previewOccurrences, previewCourseDates, ruleOccursOn, timetableStats } from '../../../packages/tasks/src/timetable'
 import { atTime } from '../../../packages/tasks/src/time'
 import type { CourseOccurrence, TaskCourse, TaskData, TimetableRule } from '../../../packages/tasks/src/types'
 
@@ -57,4 +57,16 @@ describe('timetable recurrence and identity', () => {
     expect(layout[2].columns).toBe(1)
     expect(timetableStats(items)).toEqual({ courses: 1, occurrences: 3, minutes: 165, conflicts: 2 })
   })
+})
+
+// The production regression here is passing date-only rules into atTime/grid layout.
+it('excludes flexible rules from calendars while retaining their recurrence', () => {
+ const flexible = { ...rule, kind: 'flexible' as const, start_time: null, end_time: null }
+ expect(ruleOccursOn(flexible, '2026-10-23')).toBe(true)
+ expect(previewOccurrences({ ...data(), rules: [flexible] }, '2026-10-23', '2026-10-23')).toEqual([])
+})
+
+it('previews flexible dates once per course day and keeps teaching-week filters', () => {
+ const flexible = { kind: 'flexible' as const, weekday: 1, start_time: null, end_time: null, valid_from: '2026-12-28', valid_until: null, recurrence: 'weeks' as const, teaching_weeks: [1, 3], anchor_date: '2026-12-28' }
+ expect(previewCourseDates([flexible, flexible], '2026-12-28', '2027-01-11')).toEqual(['2026-12-28', '2027-01-11'])
 })

@@ -135,3 +135,54 @@ Retry-After、超时及页预算；本任务未执行远端读取。`scan_comple
 其他科目 lesson；旧 JSON 未标记 lesson 结束时继续保守等待配置。
 验证：`pnpm --filter web exec vitest run tests/tasks/catalog-adapters.test.ts tests/tasks/catalog-inventory.test.ts tests/tasks/catalog-readiness.test.tsx`；
 SQL 断言：`supabase/tests/task-catalog-snapshot.sql`（仅授权的 disposable/local PostgreSQL）。
+
+### Atomic course editing and integration handoff (2026-10-29)
+
+The existing timetable editor owns course type, subject, colors/notes/teacher/location, recurrence,
+learning directory and next cursor, automation switches and controlled pool bindings. It uses the
+existing `saveCourse(course: CourseInput, rules: RuleInput[], effectiveFrom?: string): Promise<string>`.
+The RPC is still `task_save_course(p_course jsonb, p_rules jsonb, p_effective_from date default null)`.
+New `CourseInput.catalog_snapshot` contains a prepared Task6 snapshot, and `.bindings` is the Task3
+controlled draft array. Existing edits must send the loaded `rules_revision`; stale drafts fail atomically.
+The existing `rpc` helper refreshes the same user session store after success. Never insert snapshots
+with generic `save`: a builder ID does not identify an existing database row.
+
+`CourseLearningSettings` prepares a directory through injected `catalog.prepareSnapshot`. Manual
+ordered directories work for every subject; builtin directories require an explicit book/stage and
+selected lesson keys. Builtin math requires explicit teaching segments using selected real stable
+problem keys, defaulting the picker to classroom questions. No group defines teaching order. Mark
+“本讲最后一段” only for an actual final segment. Future missing/unclosed segments warn; current
+cursor must be valid before either automation switch is enabled. Failed preparation keeps the prior
+snapshot; “放弃未准备的目录修改” restores its local preparation fields. Only Save persists any of it.
+Task deadlines continue to come from bound pool activity deadlines; this task adds no competing
+course deadline schema. Material selectors/overrides retain the Task3 controlled contract; Task7
+supplies a concrete `renderMaterialPicker` and application material adapter. No raw asset IDs are UI inputs.
+
+`effectiveFrom` applies to schedule rules only. Learning settings change immediately. The UI labels
+both semantics. Pending timed→flexible or flexible→timed changes retain the old rules' own clock and
+validity until the named day. Re-edit defaults to the pending target rule set; changing the effective
+date does not reset unsaved weekday/content choices. JSON v2 stores schedule fields only and accepts
+v1; imported automation flags/cursors/snapshots/events/bindings are discarded. ICS never manufactures
+all-day entries and exposes `X-ROSIE-OMITTED-FLEXIBLE`; the export panel shows the count.
+
+Task4 must replace `task_course_before_configuration_change(p_user uuid,p_course uuid) returns void`.
+It is SECURITY INVOKER, search_path empty, authenticated/service_role EXECUTE only (PUBLIC/anon
+revoked), calls `task_user_lock` (which authenticates owner), and currently calls legacy `task_tick`.
+`task_save_course` calls it after locking/ownership/stale-revision checks and before snapshot insertion
+or any course/rule/cursor/binding mutation. A new course passes null course ID. Replace the body with
+old-config due-event catch-up under the same lock; any error must roll back the entire save.
+Do not move compensation to a client request. The post-save legacy tick is a compatibility reconciliation
+step, not formal learning generation. The temporary legacy emitter guard (`auto_assign` plus absent
+catalog snapshot) must be removed/replaced when Task4 owns all explicit binding/event generation.
+The legacy next-class deadline engine still refers to timed occurrences; Task4 owns date-only event deadlines.
+
+Details already read `CourseDomainData.events`, show assigned vs completed independently, select
+same-day events by ID and retain separate next-cursor display. Task4 wires actual event revision,
+completion, flexible cancellation/makeup and manual generation through these existing details.
+This task keeps existing timed exception, archive/restore and confirmation controls intact.
+
+Local assertions: install the entire task migration chain in a disposable DB (including the historical
+alias fix and Task6 metadata migration), then run `supabase/tests/task-atomic-course-configuration.sql`.
+The test uses authenticated RLS, actual tick/ensure-next, ownership, exact-version conflicts, rollback,
+stale revisions, unchanged IDs, future conversion re-edit/history, and schedule-only import. It rolls
+back its fixtures. No hosted migration or generation has been verified by this local test.
