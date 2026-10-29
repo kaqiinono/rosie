@@ -17,28 +17,30 @@ export function useChineseBookLessons(bookSlug: ChineseBookSlug | null): {
   lessons: ChineseLessonRow[]
   lessonGroups: LessonCharGroup[]
   isLoading: boolean
+  ready: boolean
+  error: unknown | null
 } {
   const { user } = useAuth()
-  const { data: catalogCache, isLoading: cacheSlotLoading } =
+  const { data: catalogCache, isLoading: cacheSlotLoading, error: cacheError } =
     chineseRoadmapCatalogStore.useSessionData(user)
-  const [fetchError, setFetchError] = useState(false)
+  const [fetchError, setFetchError] = useState<unknown | null>(null)
 
   const catalog = bookSlug ? catalogCache[bookSlug] : undefined
   const bookLoading = !!user && !!bookSlug && !catalog && !fetchError
 
   useEffect(() => {
     if (!user || !bookSlug) {
-      setFetchError(false)
+      setFetchError(null)
       return
     }
     if (catalogCache[bookSlug]) {
-      setFetchError(false)
+      setFetchError(null)
       return
     }
     let cancelled = false
-    setFetchError(false)
-    void ensureBookCatalog(user.id, bookSlug).catch(() => {
-      if (!cancelled) setFetchError(true)
+    setFetchError(null)
+    void ensureBookCatalog(user.id, bookSlug).catch((error: unknown) => {
+      if (!cancelled) setFetchError(error)
     })
     return () => {
       cancelled = true
@@ -46,6 +48,8 @@ export function useChineseBookLessons(bookSlug: ChineseBookSlug | null): {
   }, [user, bookSlug, catalogCache])
 
   return {
+    ready: !!user && !!bookSlug && !!catalog && !cacheError && !fetchError,
+    error: cacheError ?? fetchError,
     lessons: catalog?.lessons ?? [],
     lessonGroups: catalog?.lessonGroups ?? [],
     isLoading: !!bookSlug && (cacheSlotLoading || bookLoading),

@@ -74,3 +74,21 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
 - Material selection uses typed selectors and `renderMaterialPicker`; concrete asset UI is supplied by the application adapter in Task 7. Never expose asset UUID entry. Missing auto materials retain nonzero activity estimates and a pending-material status.
 - Next-target activities require `TaskPoolMatchContext.next_lesson_snapshot`; missing targets append `missing_next_lesson` to its issues and do not match current content. Unit completion requires caller-verified `completed_unit` matching the event book/unit.
 - Pool editing does not itself emit tasks or touch subject progress. Event runtime integration consumes matching output in Task 4.
+
+
+## Catalog preparation and inventory
+
+- App-owned pure adapters prepare persisted snapshots; `source` and `progression_mode` are explicit row metadata.
+  Manual ordered directories work for every subject, including school math, without loading built-in math banks.
+- Catalog readiness is independent of arrays being empty. `prepareSnapshot` returns ready+configuration issues or
+  unavailable+readiness/code. Never replace the last persisted catalog from incomplete/failed sources.
+- Math picker keys remain group:id for compatibility; formal stable_key includes lesson/group/real ID.
+  Groups classify materials and never silently define teaching order. Validate user-configured segment real keys.
+- `TeachingSegment.completes_lesson` defaults conservatively false. Only the final same-lesson segment may set true;
+  missing/unclosed future segments remain ready configuration issues, and runtime must pause rather than finish.
+- Task 2 owns atomic snapshot/course/rule/cursor/binding persistence. Reuse `(user_id,subject,version)` only after
+  content validation; owner/time are server-authoritative. Generic save with builder.id performs UPDATE, not INSERT.
+- Reusable `scripts/task-material-catalog.mjs` imports authoritative repository exports via root jiti. Local/fixture
+  defaults need no env/network. Checkpoint/resume/dedupe/gaps are documented in README and docs/task-material-inventory.md.
+  Remote GET feeds require explicit opt-in and a page budget. Never catalog private task/story recordings.
+- `TaskMaterialAdapter` is an injected application seam. Shared-material storage belongs to Task 7; no materials dependency here.

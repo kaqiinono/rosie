@@ -26,8 +26,9 @@ export type CourseRule = OwnedRow & { course_id: string } & NormalizedCourseRule
 export type NormalizedCourseInput = { course: CourseInput; rules: NormalizedCourseRuleInput[] }
 export type EventIdentity = { kind: 'timetabled'; rule_id: string; on_date: string } | { kind: 'flexible'; course_id: string; on_date: string; extra_event_id?: string }
 
-export type TeachingSegment = { key: string; lesson_key: string; title: string; problem_keys: string[] }
+export type TeachingSegment = { key: string; lesson_key: string; title: string; problem_keys: string[]; completes_lesson?: boolean }
 export type CourseCatalogSnapshot = OwnedRow & {
+  source: 'builtin' | 'manual'; progression_mode: 'lesson' | 'segment'
   version: string; subject: Subject; ordered_lessons: LessonRef[]; teaching_segments: TeachingSegment[]; created_at: string
 }
 export type CourseLessonSnapshot = { lesson: LessonRef | null; cursor: CourseCursor | null; catalog_version: string | null; problem_keys?: string[] }

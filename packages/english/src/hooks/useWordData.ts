@@ -371,12 +371,14 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
   }, [userId, isStageScoped])
 
   // Stage mode must not trigger the full-library session-store fetch.
-  const { data: fullVocab, isLoading: fullLoading } = wordEntriesStore.useSessionData(
+  const { data: fullVocab, isLoading: fullLoading, error: fullError } = wordEntriesStore.useSessionData(
     isStageScoped ? null : user,
   )
 
   const [stageVocab, setStageVocab] = useState<WordEntry[]>([])
   const [stageLoading, setStageLoading] = useState(true)
+  const [stageError, setStageError] = useState<unknown | null>(null)
+  const [stageReadyKey, setStageReadyKey] = useState<string | null>(null)
 
   useEffect(() => {
     if (!userId || !isStageScoped) return
@@ -388,6 +390,7 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
     const key = stageKey(scopeStage)
     let cancelled = false
     setStageLoading(true)
+    setStageError(null)
     // Cache-first hydrate, then always re-request so the cache stays fresh.
     const cached = readCachedStageVocab(userId, key)
     if (cached) {
@@ -400,10 +403,11 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
       .then((words) => {
         if (cancelled) return
         setStageVocab(words)
+        setStageReadyKey(`${userId}:${key}`)
         setStageLoading(false)
       })
-      .catch(() => {
-        if (!cancelled) setStageLoading(false)
+      .catch((error: unknown) => {
+        if (!cancelled) { setStageError(error); setStageLoading(false) }
       })
     return () => {
       cancelled = true
@@ -539,5 +543,7 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
     [user],
   )
 
-  return { vocab, upsertByStage, addWords, updateWord, deleteWord, deleteStage, renameStage, isLoading }
+  const error = isStageScoped ? stageError : fullError
+  const ready = !!user && !isLoading && !error && (!isStageScoped || stageReadyKey === `${userId}:${stageKey(scopeStage ?? undefined)}`)
+  return { vocab, upsertByStage, addWords, updateWord, deleteWord, deleteStage, renameStage, isLoading, ready, error }
 }

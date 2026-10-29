@@ -1,40 +1,42 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useChineseBookLessons } from '@rosie/chinese'
+import { getBookAccumulation, getBookLessonPassages, getBookPinyinWriteWords, getBookPoems, useChineseBookLessons } from '@rosie/chinese'
 import { readingPassages, useWordData } from '@rosie/english'
 import { useAuth } from '@rosie/core'
 import { LESSONS } from '@rosie/math-kit/utils/lesson-registry'
-import { TasksPage, type TaskCatalogAdapter, type TasksSection, type LessonRef } from '@rosie/tasks'
+import { TasksPage, type CatalogReadiness, type TaskMaterialAdapter, type TasksSection } from '@rosie/tasks'
+import { adaptChineseCatalog, adaptEnglishCatalog, adaptMathCatalog, adaptMathProblems, catalogReadiness, chineseResources, CATALOG_READY, createTaskCatalogAdapter } from './taskCatalogAdapters'
 
-export default function TasksHost({ section = 'tasks' }: { section?: TasksSection }) {
+/** Task 7 supplies shared-material access here; private task/story recordings are never catalog sources. */
+export default function TasksHost({ section = 'tasks', materialAdapter }: { section?: TasksSection; materialAdapter?: TaskMaterialAdapter }) {
   const { user } = useAuth()
-  const { vocab } = useWordData(user)
+  const { vocab, ready: wordsReady, error: wordsError } = useWordData(user)
   // Catalog reads only; this adapter never reads or writes a subject's learning progress.
   const g1b = useChineseBookLessons('g1b')
   const g2a = useChineseBookLessons('g2a')
   const g2b = useChineseBookLessons('g2b')
-  const catalog = useMemo<TaskCatalogAdapter>(() => {
-    const chinese = ([['g1b', g1b.lessons], ['g2a', g2a.lessons], ['g2b', g2b.lessons]] as const).flatMap(([book, rows]) => rows.slice().sort((a, b) => a.sortOrder - b.sortOrder).map(l => ({ key: l.lessonKey.includes('::') ? l.lessonKey : `${book}::${l.lessonKey}`, title: l.lessonTitle, book, unit: String(l.unit), kind: l.lessonKind, href: `/chinese/${book}/units/${l.unit}` })))
-    const stages = [...new Set([...readingPassages, ...vocab].filter(p => p.stage && ['4A', '5A'].includes(p.stage)).map(p => p.stage!))].sort()
-    const english: LessonRef[] = stages.flatMap(stage => {
-      const units = [...new Set([...readingPassages, ...vocab].filter(p => p.stage === stage).map(p => Number(p.unit.match(/\d+/)?.[0] ?? 1)))].sort((a, b) => a - b)
-      return units.flatMap(unit => [1, 2, 3].map(lesson => {
-        const passage = readingPassages.find(p => p.stage === stage && p.unit === `Unit ${unit}` && p.lesson === `Lesson ${lesson}`)
-        return { key: `${stage.toLowerCase()}-u${unit}l${lesson}`, title: `Unit ${unit} · L${lesson}${passage ? ` · ${passage.title}` : ''}`, book: stage, unit: String(unit), lesson, kind: 'lesson', ...(passage ? { href: `/english/words/reading/${passage.key}` } : {}) }
-      }))
-    })
-    return {
-      chinese, english,
-      math: LESSONS.map(l => ({ key: l.lessonKey, title: `${l.grade} 年级 · 第 ${l.seq} 讲`, book: `${l.grade} 年级`, unit: String(l.seq), kind: 'lesson', href: `/math/ny/${l.grade}/${l.seq}` })),
+  const catalog = useMemo(() => {
+    const books = [{ book: 'g1b' as const, ...g1b }, { book: 'g2a' as const, ...g2a }, { book: 'g2b' as const, ...g2b }]
+    const bookReadiness = Object.fromEntries(books.map(row => [row.book, catalogReadiness(row.ready, row.error)]))
+    const chinese = adaptChineseCatalog(books.map(row => ({ book: row.book, lessons: row.lessons, resources: Object.fromEntries(row.lessons.map(lesson => {
+      const key = lesson.lessonKey.split('::').pop()!
+      return [key, chineseResources(key, lesson.unit, lesson.lesson, lesson.lessonKind, { passages: getBookLessonPassages(row.book), poems: getBookPoems(row.book), accumulation: getBookAccumulation(row.book), dictation: getBookPinyinWriteWords(row.book), chars: row.lessonGroups })]
+    })) })))
+    const chineseReady = catalogReadiness(books.every(row => row.ready), books.find(row => row.error)?.error ?? null)
+    const readiness = { chinese: chineseReady, english: catalogReadiness(wordsReady, wordsError), math: CATALOG_READY }
+    return createTaskCatalogAdapter({
+      chinese, english: adaptEnglishCatalog(vocab, readingPassages), math: adaptMathCatalog(LESSONS), readiness, materials: materialAdapter,
+      readinessFor: (subject, selection): CatalogReadiness => subject === 'chinese' && selection?.book ? bookReadiness[selection.book] ?? { status: 'error', complete: false, error: 'unknown_book' } : readiness[subject as keyof typeof readiness] ?? { status: 'loading', complete: false, error: null },
       loadMathProblems: async key => {
         const { lessonModuleByKey } = await import('@rosie/math/utils/lesson-module-registry')
         const lessonModule = lessonModuleByKey(key)
-        const lesson = LESSONS.find(l => l.lessonKey === key)
+        const lesson = LESSONS.find(row => row.lessonKey === key)
         if (!lessonModule || !lesson) throw new Error('未找到该讲题库')
-        return (['pretest', 'lesson', 'homework', 'workbook', 'supplement'] as const).flatMap(group => (lessonModule.PROBLEMS[group] ?? []).map(p => ({ key: `${group}:${p.id}`, title: p.title, href: `/math/ny/${lesson.grade}/${lesson.seq}/${group}/${encodeURIComponent(p.id)}` })))
+        // Replay remains unknown until an application caller supplies verified catalog matches.
+        return adaptMathProblems(lesson, lessonModule.PROBLEMS)
       },
-    }
-  }, [g1b.lessons, g2a.lessons, g2b.lessons, vocab])
+    })
+  }, [g1b, g2a, g2b, vocab, wordsReady, wordsError, materialAdapter])
   return <TasksPage section={section} catalog={catalog} />
 }

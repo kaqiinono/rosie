@@ -102,3 +102,36 @@ pnpm --filter web test -- tests/task-time.test.ts
 `context.completed_unit={book,unit}` 必须由调用方根据目录边界/单元完成状态验证；未传入时不匹配单元完成活动。
 显式 binding.scope_override 同时替代旧 lesson_filter，未覆盖时仍联合校验池范围与旧课次。
 本地新增迁移 `20261029054202_tasks_pool_initialize.sql` 补全初始化字段与新账号默认绑定，重复调用不恢复已停用/删除的绑定。
+
+
+## 课程目录快照与本地物料盘点
+
+应用层 `apps/web/src/components/tasks/taskCatalogAdapters.ts` 归一化目录、题目和资源证据，
+`apps/web/src/lib/task-catalog-snapshot.ts` 提供无 React/浏览器依赖的 `buildCourseCatalogSnapshot`。
+`prepareSnapshot` 按 `selection.book/units/lesson_keys/segment_keys` 保留来源顺序；源未 ready/失败或空范围返回 unavailable，
+不得覆盖先前有效快照。学科 hook 仅增加真实 `ready/error` 字段，不改现有读取、缓存或刷新时机。
+`source: builtin|manual` 和 `progression_mode: lesson|segment` 必须随快照持久化；manual 可用于任何科目，
+通过 `manual_lessons` 提交明确有序目录，不强制读取内置数学题库。
+
+数学题保留兼容 picker `key=group:id`，正式 `stable_key=encodedLesson:group:encodedRealId`。
+题库分组不自动生成教学段；用户明确提交的 `teaching_segments` 逐项校验真实引用。
+`completes_lesson?: boolean` 缺省 false，只能在本讲最后一段显式 true。
+ready 结果的 `missing_teaching_segments` / `unclosed_teaching_segments` issues 允许后续补配置；
+运行时必须区分缺段暂停和完成，不能根据 subject/空数组猜测。Task 2 保存时服务器重验 owner/时间/内容，
+复用已有 `(user_id,subject,version)`，与课程、规则、cursor、bindings 同一事务保存。
+不要用带 id 的 generic `save` 插入新快照，它会走 UPDATE。沿用 `useTaskData.catalog_snapshots` session store。
+
+可重复 CLI：`node scripts/task-material-catalog.mjs --dry-run`（默认只读仓库、stdout）。
+`--out file --page-size 40 --max-pages 1` 保存分页 checkpoint，`--out file --resume` 恢复；
+`--fixture file` 支持本地数据验证。`--dry-run` 不写输出文件。来源变更拒绝恢复；同 key 同内容去重，冲突报错。
+远端只读 feed 仅在显式 `--remote-url URL --allow-remote --max-pages N` 后使用，具备游标、限流、
+Retry-After、超时及页预算；本任务未执行远端读取。`scan_complete` 是分页覆盖，`complete` 还要求无源加载错误；
+资源 missing/unverified 始终在 gaps 中。CLI 不读 env、不写 DB、不包含私有录音。
+来源/补录/证据范围和示例见 `docs/task-material-inventory.md`。
+
+`TaskMaterialAdapter.listForCourse(courseId,scope)` / `pickAssets(subject,selectedIds)` 返回窄 MaterialOption；
+客户端 `TasksHost` 的 `materialAdapter` seam 接入 Task 7。tasks 不导入物料/学科包，也不存另一套共享资产。
+本地增量迁移 `20261029065823_task_catalog_source_and_progression.sql` 将旧数学快照保守回填 segment，
+其他科目 lesson；旧 JSON 未标记 lesson 结束时继续保守等待配置。
+验证：`pnpm --filter web exec vitest run tests/tasks/catalog-adapters.test.ts tests/tasks/catalog-inventory.test.ts tests/tasks/catalog-readiness.test.tsx`；
+SQL 断言：`supabase/tests/task-catalog-snapshot.sql`（仅授权的 disposable/local PostgreSQL）。
