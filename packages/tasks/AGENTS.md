@@ -38,3 +38,24 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
 - Calendars, preferences and snapshots persist in owned database rows, not localStorage.
 - `20261023051528_tasks_classtable.sql` was applied to the linked project on
   2026-10-23 via the migration API; its filename matches hosted migration history.
+
+## Additive course-domain foundation (local migration pending)
+
+- `courseTypes.ts` defines course events, snapshots, bindings, pool items and the
+  `CourseRule` union. Existing `TimetableRule` and `TaskData` stay source-compatible;
+  `CourseDomainData` adds the new collections. The session store reads each source
+  table once and projects timed rules for the legacy grid.
+- `courseProgress.ts` normalizes course/rule input and derives stable event keys.
+  Flexible defaults use one event per Shanghai date and course; extra events need
+  an explicit identity. Timetabled events retain rule/date identities.
+- `20261029031259_tasks_course_events_and_pool_bindings.sql` is local only. Apply
+  together with event-aware runtime changes; old tick/save RPCs are unchanged in
+  this foundation and cannot process flexible rules yet. Legacy course automation
+  defaults off, and old occurrence/confirmation/template IDs remain readable.
+- Disposable-database assertions: `supabase/tests/task-course-events.sql`; run
+  only with an explicitly authorized local validation database and roll back.
+
+- A rule's `kind` describes its own validity period; it is not foreign-keyed to
+  the course's current `course_type`. Retired timed rules and confirmed occurrences
+  must survive later type changes. Atomic course-save must validate newly active
+  rule kinds against the requested course type.

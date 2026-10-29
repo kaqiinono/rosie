@@ -2,34 +2,52 @@
 
 import { createUserSessionStore, supabase, useAuth } from '@rosie/core'
 import { builtInTemplates } from './defaults'
-import type { TaskData, CourseInput, RuleInput } from './types'
+import type { CourseInput, RuleInput } from './types'
+import type { CourseDomainData } from './courseTypes'
 
-const tables = { courses: 'task_courses', rules: 'task_timetable_rules', exceptions: 'task_course_exceptions', occurrences: 'task_course_occurrences', templates: 'task_templates', tasks: 'task_instances', windows: 'task_availability_windows', blocks: 'task_time_blocks', materials: 'task_materials', progress: 'task_lesson_progress', scopes: 'task_unit_scopes', reminders: 'task_reminders', calendars: 'task_calendars', exams: 'task_exams', preferences: 'task_timetable_preferences', snapshots: 'task_timetable_snapshots' } as const
+const tables = { courses: 'task_courses', rules: 'task_timetable_rules', exceptions: 'task_course_exceptions', occurrences: 'task_course_occurrences', templates: 'task_templates', tasks: 'task_instances', windows: 'task_availability_windows', blocks: 'task_time_blocks', materials: 'task_materials', progress: 'task_lesson_progress', scopes: 'task_unit_scopes', reminders: 'task_reminders', calendars: 'task_calendars', exams: 'task_exams', preferences: 'task_timetable_preferences', snapshots: 'task_timetable_snapshots', course_rules: 'task_timetable_rules', events: 'task_course_events', catalog_snapshots: 'task_course_catalog_snapshots', bindings: 'task_course_pool_bindings', pool_items: 'task_templates' } as const
 export type DataKey = keyof typeof tables
-type Row<K extends DataKey> = TaskData[K][number]
-const empty: TaskData = { courses: [], rules: [], exceptions: [], occurrences: [], templates: [], tasks: [], windows: [], blocks: [], materials: [], progress: [], scopes: [], reminders: [], calendars: [], exams: [], preferences: [], snapshots: [] }
+type Row<K extends DataKey> = CourseDomainData[K][number]
+const empty: CourseDomainData = { courses: [], rules: [], exceptions: [], occurrences: [], templates: [], tasks: [], windows: [], blocks: [], materials: [], progress: [], scopes: [], reminders: [], calendars: [], exams: [], preferences: [], snapshots: [], course_rules: [], events: [], catalog_snapshots: [], bindings: [], pool_items: [] }
 
 async function loadRows<K extends DataKey>(key: K, userId: string): Promise<Row<K>[]> {
   const rows: Row<K>[] = []
   for (let offset = 0; ; offset += 500) {
     const { data, error } = await supabase.from(tables[key]).select('*').eq('user_id', userId).order('id').range(offset, offset + 499)
     if (error) throw error
-    rows.push(...(data ?? []) as Row<K>[])
+    // Legacy timetable consumers must never receive flexible rules with null times.
+    const compatible = key === 'rules' ? (data ?? []).filter(row => row.kind !== 'flexible') : (data ?? [])
+    rows.push(...compatible as Row<K>[])
     if (!data || data.length < 500) break
   }
   return rows
 }
-const store = createUserSessionStore<TaskData>('independent_tasks', {
+const store = createUserSessionStore<CourseDomainData>('independent_tasks', {
   empty,
   fetch: async userId => {
     const { error: initError } = await supabase.rpc('task_initialize', { p_templates: builtInTemplates() })
     if (initError) throw initError
     const { error } = await supabase.rpc('task_tick', { p_user: userId })
     if (error) throw error
-    const entries = await Promise.all((Object.keys(tables) as DataKey[]).map(async key => [key, await loadRows(key, userId)] as const))
-    return Object.fromEntries(entries) as TaskData
+    const entries = await Promise.all((Object.keys(tables) as DataKey[]).filter(key => key !== 'rules' && key !== 'templates').map(async key => [key, await loadRows(key, userId)] as const))
+    const data: CourseDomainData = { ...empty, ...Object.fromEntries(entries) }
+    data.rules = data.course_rules.filter(rule => rule.kind === 'timetabled') as typeof data.rules
+    data.templates = data.pool_items
+    return data
   },
 })
+
+
+function reconcileAliases(data: CourseDomainData, changed: DataKey): CourseDomainData {
+  if (changed === 'templates') data.pool_items = data.templates as CourseDomainData['pool_items']
+  if (changed === 'pool_items') data.templates = data.pool_items
+  if (changed === 'rules') {
+    const flexible = data.course_rules.filter(rule => rule.kind === 'flexible')
+    data.course_rules = [...flexible, ...data.rules.map(rule => ({ ...rule, kind: 'timetabled' as const }))]
+  }
+  if (changed === 'course_rules') data.rules = data.course_rules.filter(rule => rule.kind === 'timetabled') as typeof data.rules
+  return data
+}
 
 export function useTaskData() {
   const { user } = useAuth()
@@ -44,16 +62,23 @@ export function useTaskData() {
     const { data, error } = await query.select().single()
     if (error) throw error
     const next = data as Row<K>
-    store.patchSessionData(user.id, prev => ({ ...prev, [key]: [...(prev[key] as Row<K>[]).filter(r => r.id !== next.id), next] }))
+    store.patchSessionData(user.id, prev => {
+      const updated = { ...prev, [key]: [...(prev[key] as Row<K>[]).filter(r => r.id !== next.id), next] }
+      if (key === 'templates' || key === 'pool_items' || key === 'rules' || key === 'course_rules') return reconcileAliases(updated, key)
+      return updated
+    })
     return next
   }
   async function remove(key: DataKey, id: string) {
     if (!user) throw new Error('请先登录')
     if (key === 'courses') { await archiveCourse(id); return }
-    if (key === 'rules') throw new Error('请通过课程编辑器停用时段，以保留历史')
+    if (key === 'rules' || key === 'course_rules') throw new Error('请通过课程编辑器停用时段，以保留历史')
     const { error } = await supabase.from(tables[key]).delete().eq('user_id', user.id).eq('id', id)
     if (error) throw error
-    store.patchSessionData(user.id, prev => ({ ...prev, [key]: prev[key].filter(r => r.id !== id) }))
+    store.patchSessionData(user.id, prev => {
+      const updated = { ...prev, [key]: prev[key].filter(r => r.id !== id) }
+      return key === 'templates' || key === 'pool_items' ? reconcileAliases(updated, key) : updated
+    })
   }
   async function rpc(name: string, args: Record<string, unknown>) {
     if (!user) throw new Error('请先登录')

@@ -1,9 +1,11 @@
+import type { CourseConfiguration } from './courseTypes'
+
 export type Subject = 'chinese' | 'english' | 'math' | 'art' | 'science' | 'sports' | 'dance' | 'piano' | 'swimming' | 'other'
 export const SUBJECTS: Record<Subject, string> = { chinese: '语文', english: '英语', math: '数学', art: '美术', science: '科学', sports: '体育', dance: '舞蹈', piano: '钢琴', swimming: '游泳', other: '未分类' }
 export type TaskStatus = 'pending' | 'active' | 'completed' | 'cancelled'
 export type TaskMode = 'checklist' | 'reading' | 'audio'
 export type OwnedRow = { id: string; user_id: string }
-export type TaskCourse = OwnedRow & { name: string; subject: Subject; created_at: string; calendar_id?: string | null; teacher?: string; location?: string; credits?: number | null; notes?: string; color?: string; reminder_minutes?: number | null; archived_at?: string | null }
+export type TaskCourse = OwnedRow & CourseConfiguration & { name: string; subject: Subject; created_at: string; calendar_id?: string | null; teacher?: string; location?: string; credits?: number | null; notes?: string; color?: string; reminder_minutes?: number | null; archived_at?: string | null }
 export type TimetableRule = OwnedRow & { course_id: string; weekday: number; start_time: string; end_time: string; valid_from: string; valid_until: string | null; recurrence?: 'weekly' | 'once' | 'weeks'; interval_weeks?: number; anchor_date?: string; teaching_weeks?: number[]; disabled_from?: string | null }
 export type CourseException = OwnedRow & { rule_id: string; original_date: string; cancelled: boolean; starts_at: string | null; ends_at: string | null }
 export type LessonRef = { key: string; title: string; book: string; unit: string; kind: string; href?: string; lesson?: number }
