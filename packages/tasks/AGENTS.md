@@ -164,3 +164,17 @@ makeup events (`rule_id === null`) participate by release date with no fabricate
 owner/course boundaries and cancelled states are filtered. Stable `event_key` dedupes stored
 rule events and forecasts, and request UUID dedupes makeup creation. Preserve stored phase
 flags so `projectCourseEvents` does not forecast already processed work again.
+
+### Task4 pre-review corrections
+
+- `20261029145703_tasks_runtime_order_and_checkpoint_repairs.sql` is a forward-only follow-up.
+  `generation_date=today` remains open, but empty/already processed current dates consume no
+  daily work budget. `has_more` means a remaining historical checkpoint or unprocessed due event,
+  not a full numeric budget, empty today, or a static preview-projection issue.
+- Legacy `task_confirm_course` now catches up earlier due events under the same user lock before
+  reading the current event revision and completing. Its void compatibility result cannot carry
+  retry; incomplete compensation raises `catch_up_required`, requiring a separate `task_tick`.
+- `task_emit_event` content/schedule revisions retain expired original due_at/due_kind. Future
+  deadlines still recompute; changing event content is not permission to extend an overdue deadline.
+- Focused SQL: task-generation-legacy-order.sql, task-generation-fairness.sql, and
+  task-generation-overdue-preview.sql; native harness also reruns affected existing runtime/save tests.

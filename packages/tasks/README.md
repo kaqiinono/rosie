@@ -264,3 +264,13 @@ makeup events (`rule_id === null`) participate by release date with no fabricate
 owner/course boundaries and cancelled states are filtered. Stable `event_key` dedupes stored
 rule events and forecasts, and request UUID dedupes makeup creation. Preserve stored phase
 flags so `projectCourseEvents` does not forecast already processed work again.
+
+Task4 pre-review corrections require the follow-up migration
+`20261029145703_tasks_runtime_order_and_checkpoint_repairs.sql` after the initial runtime migration.
+Current-day checks with no unprocessed due event do not consume the day budget, so repeated
+catch-up converges even when there are more current courses than the batch size. The date stays
+open for later releases; `has_more` does not report static projection issues or empty current dates.
+The legacy void confirmation RPC first compensates earlier due work and reads the current event
+revision under the same lock; on incomplete catch-up it throws `catch_up_required`, and old
+clients must call the same-engine tick before retrying. Content/schedule revisions preserve expired
+original deadlines while still allowing future relative deadlines to follow rescheduling.
