@@ -137,4 +137,30 @@ describe('pure durable catalogs', () => {
     expect(() => buildCourseCatalogSnapshot(withoutProgression as CatalogSourceInput)).toThrow('catalog_progression_required')
   })
 
+  it('validates only math segments selected by book and segment scope while retaining structural validation', async () => {
+    const math = [{ ...lesson('1-12', '1 年级', '12'), order: 0 }, { ...lesson('2-1', '2 年级', '1'), order: 1 }]
+    const segments = [
+      { key: '1-12:example1', lesson_key: '1-12', title: '一年级例题', problem_keys: ['1-12:lesson:1-12-L1'], completes_lesson: true },
+      { key: '2-1:example1', lesson_key: '2-1', title: '二年级例题', problem_keys: ['2-1:lesson:2-1-L1'], completes_lesson: true },
+    ]
+    const loaded: string[] = []
+    const adapter = createTaskCatalogAdapter({ chinese: [], english: [], math, readiness: { math: ready }, loadMathProblems: async key => {
+      loaded.push(key)
+      if (key !== '2-1') throw new Error('unselected_bank_must_not_load')
+      return adaptMathProblems({ lessonKey: '2-1', grade: 2, seq: 1 }, { lesson: [{ id: '2-1-L1', title: '例题', tag: 'shape' }] })
+    } })
+    for (const selection of [{ book: '2 年级' }, { lesson_keys: ['2-1'], segment_keys: ['2-1:example1'] }]) {
+      const result = await adapter.prepareSnapshot({ ...identity, subject: 'math', progression_mode: 'segment', teaching_segments: segments, selection })
+      expect(result.status).toBe('ready')
+      if (result.status === 'ready') {
+        expect(result.snapshot.ordered_lessons.map(row => row.key)).toEqual(['2-1'])
+        expect(result.snapshot.teaching_segments).toEqual([segments[1]])
+        expect(result.issues).toEqual([])
+      }
+    }
+    expect(loaded).toEqual(['2-1', '2-1'])
+    expect(await adapter.prepareSnapshot({ ...identity, subject: 'math', teaching_segments: [{ ...segments[0], lesson_key: 'orphan' }, segments[1]], selection: { book: '2 年级' } })).toMatchObject({ status: 'unavailable', code: 'orphan_segment' })
+    expect(await adapter.prepareSnapshot({ ...identity, subject: 'math', teaching_segments: segments, selection: { book: '2 年级', segment_keys: ['1-12:example1'] } })).toMatchObject({ status: 'unavailable', code: 'selected_segment_outside_scope' })
+  })
+
 })

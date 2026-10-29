@@ -6,7 +6,7 @@ import { readingPassages, useWordData } from '@rosie/english'
 import { useAuth } from '@rosie/core'
 import { LESSONS } from '@rosie/math-kit/utils/lesson-registry'
 import { TasksPage, type CatalogReadiness, type TaskMaterialAdapter, type TasksSection } from '@rosie/tasks'
-import { adaptChineseCatalog, adaptEnglishCatalog, adaptMathCatalog, adaptMathProblems, catalogReadiness, chineseResources, CATALOG_READY, createTaskCatalogAdapter } from './taskCatalogAdapters'
+import { adaptChineseCatalog, adaptEnglishCatalogSource, adaptMathCatalog, adaptMathProblems, catalogReadiness, chineseResources, CATALOG_READY, createTaskCatalogAdapter } from './taskCatalogAdapters'
 
 /** Task 7 supplies shared-material access here; private task/story recordings are never catalog sources. */
 export default function TasksHost({ section = 'tasks', materialAdapter }: { section?: TasksSection; materialAdapter?: TaskMaterialAdapter }) {
@@ -24,9 +24,10 @@ export default function TasksHost({ section = 'tasks', materialAdapter }: { sect
       return [key, chineseResources(key, lesson.unit, lesson.lesson, lesson.lessonKind, { passages: getBookLessonPassages(row.book), poems: getBookPoems(row.book), accumulation: getBookAccumulation(row.book), dictation: getBookPinyinWriteWords(row.book), chars: row.lessonGroups })]
     })) })))
     const chineseReady = catalogReadiness(books.every(row => row.ready), books.find(row => row.error)?.error ?? null)
-    const readiness = { chinese: chineseReady, english: catalogReadiness(wordsReady, wordsError), math: CATALOG_READY }
+    const englishSource = adaptEnglishCatalogSource(vocab, readingPassages, catalogReadiness(wordsReady, wordsError))
+    const readiness = { chinese: chineseReady, english: englishSource.readiness, math: CATALOG_READY }
     return createTaskCatalogAdapter({
-      chinese, english: adaptEnglishCatalog(vocab, readingPassages), math: adaptMathCatalog(LESSONS), readiness, materials: materialAdapter,
+      chinese, english: englishSource.lessons, math: adaptMathCatalog(LESSONS), readiness, materials: materialAdapter,
       readinessFor: (subject, selection): CatalogReadiness => subject === 'chinese' && selection?.book ? bookReadiness[selection.book] ?? { status: 'error', complete: false, error: 'unknown_book' } : readiness[subject as keyof typeof readiness] ?? { status: 'loading', complete: false, error: null },
       loadMathProblems: async key => {
         const { lessonModuleByKey } = await import('@rosie/math/utils/lesson-module-registry')

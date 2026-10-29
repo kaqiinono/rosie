@@ -79,6 +79,16 @@ export function adaptEnglishCatalog(vocab: VocabularyCatalogRow[], passages: Pas
   })
 }
 
+/** UI source boundary: unsupported vocabulary labels must not throw during the shared Host render. */
+export function adaptEnglishCatalogSource(vocab: VocabularyCatalogRow[], passages: PassageCatalogRow[], readiness: CatalogReadiness): { lessons: OrderedCatalogLesson[]; readiness: CatalogReadiness } {
+  try {
+    return { lessons: adaptEnglishCatalog(vocab, passages), readiness }
+  } catch (error) {
+    // Strict normalization failed: expose the source error and prevent authoritative snapshot replacement.
+    return { lessons: [], readiness: catalogReadiness(false, error) }
+  }
+}
+
 export type MathCatalogEntry = { lessonKey: string; grade: number; seq: number }
 export type MathProblemRow = { id: string; displayId?: string; title: string; tag: string }
 export type MathProblemBank = Partial<Record<ProblemGroup, MathProblemRow[]>>
@@ -126,7 +136,9 @@ export function createTaskCatalogAdapter(sources: CatalogAdapterSources): TaskCa
             problems.forEach(problem => knownProblems.add(problem.stable_key))
             math = math.map(lesson => lesson.key === row.key ? { ...lesson, resources: [{ kind: 'problems', status: 'available', count: problems.length }, { kind: 'replay', status: 'unverified' }] } : lesson)
           }
-          if (segments.some(segment => segment.problem_keys.some(key => !knownProblems.has(key)))) throw new Error('unknown_segment_problem')
+          const selectedLessonKeys = new Set(selected.map(lesson => lesson.key))
+          const selectedSegments = segments.filter(segment => selectedLessonKeys.has(segment.lesson_key) && (!request.selection?.segment_keys || request.selection.segment_keys.includes(segment.key)))
+          if (selectedSegments.some(segment => segment.problem_keys.some(key => !knownProblems.has(key)))) throw new Error('unknown_segment_problem')
         }
         const snapshot = buildCourseCatalogSnapshot({ ...request, chinese: sources.chinese, english: sources.english, math, manual: request.manual_lessons ?? sources.manual ?? [], teaching_segments: segments, readiness })
         return { status: 'ready', snapshot, issues: catalogConfigurationIssues(snapshot) }
