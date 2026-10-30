@@ -20,3 +20,9 @@ never import tasks or subject packages. The application injects pickers and narr
 - Once/weekly tasks resolve explicit/none selectors with a null course through the same canonical
   resolver. Generators explicitly snapshot effective selectors on intentional revision; triggers
   must not rebase that policy from unrelated binding or progress changes.
+
+- DirectoryImport consumes application-owned course projections and never imports tasks. Suggestions
+  are advisory and start unselected; explicit confirmation calls Task7's atomic material_link_course.
+- Scan state lives server-side, not localStorage. Keep the scan number to resume after a reload.
+  Partial enumeration never archives absent assets or removes links. Provider offset listing has no
+  snapshot guarantee, so even completed enumeration cannot prove absence under concurrent moves.

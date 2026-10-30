@@ -1,4 +1,5 @@
 'use client'
+import { materialProblemProjection } from './materialCatalogProjection'
 import {
   CourseMaterialList,
   MaterialPicker,
@@ -72,9 +73,9 @@ export function useTaskMaterialsBridge() {
       catalog={{
         lessons: snapshot?.ordered_lessons ?? [],
         segments: snapshot?.teaching_segments ?? [],
-        problems: [
+        problems: materialProblemProjection([
           ...new Set(snapshot?.teaching_segments.flatMap((s) => s.problem_keys) ?? []),
-        ].map((stable_key) => ({ stable_key, label: stable_key })),
+        ]),
       }}
     />
   )

@@ -1,4 +1,5 @@
 'use client'
+import { DirectoryImport } from './DirectoryImport'
 import { useState } from 'react'
 import { materialRoleLabels } from './labels'
 import { useMaterialData } from '../useMaterialData'
@@ -10,7 +11,7 @@ import { buttonClass, inputClass } from './styles'
 export type MaterialCatalogProjection = {
   lessons: { key: string; title: string; book: string; unit: string }[]
   segments: { key: string; title: string }[]
-  problems?: { stable_key: string; label: string }[]
+  problems?: { stable_key: string; label: string; aliases?: string[] }[]
 }
 export function CourseMaterialList({
   courseId,
@@ -26,10 +27,15 @@ export function CourseMaterialList({
   const api = useMaterialData()
   const [scope, setScope] = useState<MaterialScope>({ kind: 'all' })
   const [ids, setIds] = useState<string[]>([])
+  const [filter, setFilter] = useState('')
   const [role, setRole] = useState('review')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const links = api.data.links.filter((l) => l.course_id === courseId)
+  const links = api.data.links.filter(
+    (l) =>
+      l.course_id === courseId &&
+      (!filter || api.data.assets.find((a) => a.id === l.asset_id)?.title.includes(filter)),
+  )
   const work = async (fn: () => Promise<unknown>) => {
     setBusy(true)
     setError('')
@@ -55,6 +61,25 @@ export function CourseMaterialList({
   return (
     <section className="space-y-3">
       <h3 className="font-bold">共享课程物料</h3>
+      <DirectoryImport
+        courses={[
+          {
+            id: courseId,
+            title: '当前课程',
+            subject,
+            catalog: catalog ?? { lessons: [], segments: [] },
+          },
+        ]}
+      />
+      <label className="block text-sm">
+        筛选关联物料
+        <input className={inputClass} value={filter} onChange={(e) => setFilter(e.target.value)} />
+      </label>
+      {filter && (
+        <button type="button" className={buttonClass} onClick={() => setFilter('')}>
+          清除筛选
+        </button>
+      )}
       {api.isLoading && <p role="status">正在读取…</p>}
       {!!(api.error || error) && (
         <p role="alert">{error || '物料读取失败，请在共享库刷新后重试'}</p>
@@ -73,6 +98,33 @@ export function CourseMaterialList({
                   {asset?.title ?? '物料暂不可用'} · {materialRoleLabels[l.role] ?? l.role}
                   {asset?.status === 'archived' ? ' · 已归档（保留引用）' : ''}
                 </p>
+                {asset?.source === 'baidu' && asset.path && (
+                  <p className="text-xs break-all">
+                    原目录：{asset.path.slice(0, asset.path.lastIndexOf('/'))} ·{' '}
+                    {asset.status === 'account_mismatch'
+                      ? '授权账户已更换（保留引用）'
+                      : asset.status === 'pending'
+                        ? '文件尚未就绪'
+                        : ''}
+                  </p>
+                )}
+                {asset?.source === 'baidu' &&
+                  asset.path &&
+                  /^\/airosie\/(english|chinese|math)(\/|$)/.test(asset.path) && (
+                    <a
+                      className="text-emerald-800 underline"
+                      href={
+                        '/materials?' +
+                        new URLSearchParams({
+                          root: asset.path.split('/')[2],
+                          directory: asset.path.split('/').slice(3, -1).join('/'),
+                          course: courseId,
+                        }).toString()
+                      }
+                    >
+                      定位原目录
+                    </a>
+                  )}
                 {asset && <MaterialPreview asset={asset} />}
                 <button
                   disabled={busy}

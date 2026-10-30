@@ -126,3 +126,9 @@ is a default filter; explicit cross-subject selection is supported. Native selec
 Catalog search/filter/page limits are transient inspection state. Lists expose loading/error/empty/count
 states and explicit load more. Text/link preview authenticates access; archiving uses inline confirmation
 explaining retained references. Metadata edits preserve content; replacement is a new asset.
+
+Directory import extends shared materials with a folder-first, explicit-review flow. Server roots and
+relative paths stay visible; partial results show completion state and a resumable scan number.
+Each candidate uses a native range selector and defaults to no association, including exact matches.
+Bulk confirmation uses the existing atomic link API; stale account/session failures preserve selections
+and existing links. Course detail shows original folder paths and a transient association filter.

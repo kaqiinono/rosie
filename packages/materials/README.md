@@ -56,3 +56,41 @@ the latest actual fetch promise shared by all hooks for the user (including auto
 reads), then rejects recorded errors even while the session store retains ready display data.
 Local focused regressions: `tests/materials/material-readiness.test.tsx`,
 `supabase/tests/material-independent-generation.sql`, `supabase/tests/material-selector-revision.sql`.
+
+## Directory import (Task8, local migration pending)
+
+The shared library and course detail expose DirectoryImport with allowlisted root, relative path,
+subject, target course, recursive option, folder inventory, partial/completed status, and scan-number
+recovery. Candidates never write links automatically. Ambiguous and unmatched files remain selectable
+for a deliberate course/unit/lesson/segment/real-question association. Confirmation reuses the <=200
+atomic material_link_course RPC; unlink still only removes the owner's association.
+
+Server allowlist: English/Chinese/math subject trees under `/airosie`, owned by
+apps/web/src/lib/baidu-material-catalog.ts. No arbitrary drive-root input is accepted. POST
+`/api/materials/baidu/scan` creates a durable user checkpoint first (cursor0); repeat unchanged
+rootId/relativePath/recursive/subject plus sessionId/cursor to list one200-entry provider page.
+GET `/api/materials/baidu/scan/{id}` restores the owner's current-account checkpoint. Session data
+and credentials have no browser table privileges. Bounds are20000 entries,2000 queued folders and
+100000 offset per directory. Failure retains the previous checkpoint and all prior links/assets.
+A retry after a lost response can restore the latest revision with GET. Offset enumeration is not
+a provider snapshot; even completed scans never infer missing-file archival.
+
+Identity foundation for Task9: OAuth callback verifies exact provider uinfo.uk before storing tokens.
+Service-only baidu_store_verified_credentials preserves generation for same-account reauthorization,
+rotates generation for a switch, and marks old assets account_mismatch while keeping links. Ordinary
+refresh retains account/generation. Existing credential rows without verified identity require admin
+reauthorization for account-aware material access. Unknown identity fails closed.
+getBaiduAccountContext returns server-only {accountId,generation,accessToken}. Task9 must capture this
+before provider work and atomically compare BOTH identity and generation at publication, as
+material_publish_scan does under the credential-row lock. SQL/session/JSON IDs remain exact strings;
+parseBaiduJson quotes unsafe integer tokens before JSON.parse. Never stringify an already rounded ID.
+Account-aware caches include generation. No provider token or dlink is returned by scan routes.
+
+File delivery/upload remains Task9. Read permissions do not establish upload-root rights. Real uk
+stability, root existence/permissions, offset consistency under concurrent changes, and provider
+transport remain unverified without live authorization. No real provider or hosted DB call was used.
+
+Local fixture verification: `pnpm --filter web exec vitest run tests/materials` and
+`node scripts/tmp/task8-material-validation.mjs`. The latter installs the full predecessor task
+migration chain plus OAuth/lease and Task8 into disposable native PostgreSQL, checks real RLS and
+atomic batch-link rollback, and uses two actual connections for a switch racing scan publication.

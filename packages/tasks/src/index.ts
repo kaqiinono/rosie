@@ -13,3 +13,5 @@ export type { MatchedActivity, TaskPoolMatchContext, TaskPoolMatchIssue } from '
 export * from './courseEvents'
 export { getTaskCompletion, getRemainingMinutes } from './taskProgress'
 export type { ProgressTask } from './taskProgress'
+
+export { useTaskData } from './useTaskData'

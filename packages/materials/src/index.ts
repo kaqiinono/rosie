@@ -5,3 +5,6 @@ export * from './MaterialsPage'
 export * from './components/MaterialPicker'
 export * from './components/MaterialPreview'
 export * from './components/CourseMaterialList'
+
+export * from './components/DirectoryImport'
+export * from './matchCourseMaterials'

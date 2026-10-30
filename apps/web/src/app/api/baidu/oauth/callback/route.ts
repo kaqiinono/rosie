@@ -1,16 +1,27 @@
+import { verifyBaiduAccount } from '@/lib/baidu-identity'
 import { createHash, timingSafeEqual } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminSupabase, isAdminRequestUser } from '@/lib/api-auth'
 import {
-  BAIDU_COOKIE_PATH, BAIDU_STATE_COOKIE, exchangeBaiduCode, getBaiduOAuthConfig,
-  type BaiduOAuthConfig, type BaiduOAuthTokens,
+  BAIDU_COOKIE_PATH,
+  BAIDU_STATE_COOKIE,
+  exchangeBaiduCode,
+  getBaiduOAuthConfig,
+  type BaiduOAuthConfig,
+  type BaiduOAuthTokens,
 } from '@/lib/baidu-oauth'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-type OAuthResult = 'success' | 'invalid_state' | 'cancelled' | 'forbidden'
-  | 'config_error' | 'storage_error' | 'exchange_failed'
+type OAuthResult =
+  | 'success'
+  | 'invalid_state'
+  | 'cancelled'
+  | 'forbidden'
+  | 'config_error'
+  | 'storage_error'
+  | 'exchange_failed'
 
 export async function GET(req: NextRequest) {
   function finish(result: OAuthResult) {
@@ -33,9 +44,11 @@ export async function GET(req: NextRequest) {
   const state = req.nextUrl.searchParams.get('state') ?? ''
   const cookie = req.cookies.get(BAIDU_STATE_COOKIE)?.value ?? ''
   if (
-    !/^[a-f0-9]{64}$/.test(state) || !/^[a-f0-9]{64}$/.test(cookie) ||
+    !/^[a-f0-9]{64}$/.test(state) ||
+    !/^[a-f0-9]{64}$/.test(cookie) ||
     !timingSafeEqual(Buffer.from(state), Buffer.from(cookie))
-  ) return finish('invalid_state')
+  )
+    return finish('invalid_state')
 
   let config: BaiduOAuthConfig
   try {
@@ -50,12 +63,15 @@ export async function GET(req: NextRequest) {
   try {
     admin = createAdminSupabase()
     // DELETE ... RETURNING consumes the attempt exactly once across server instances.
-    const { data, error } = await admin.from('baidu_oauth_states').delete()
+    const { data, error } = await admin
+      .from('baidu_oauth_states')
+      .delete()
       .eq('state_hash', createHash('sha256').update(state).digest('hex'))
       .eq('app_key', config.appKey)
       .eq('redirect_uri', config.redirectUri)
       .gt('expires_at', new Date().toISOString())
-      .select('initiated_by').maybeSingle()
+      .select('initiated_by')
+      .maybeSingle()
     if (error) return finish('storage_error')
     if (!data || typeof data.initiated_by !== 'string') return finish('invalid_state')
     initiatedBy = data.initiated_by
@@ -78,17 +94,20 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { error } = await admin.from('baidu_oauth_credentials').upsert({
-      id: 'primary',
-      app_key: config.appKey,
-      access_token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-      expires_at: tokens.expiresAt,
-      scope: tokens.scope,
-      authorized_by: initiatedBy,
-      updated_at: new Date().toISOString(),
-      refresh_lock_id: null,
-      refresh_lock_until: null,
+    const accountId = await verifyBaiduAccount(tokens.accessToken)
+    const { error } = await admin.rpc('baidu_store_verified_credentials', {
+      p_input: {
+        account_id: accountId,
+        app_key: config.appKey,
+        access_token: tokens.accessToken,
+        refresh_token: tokens.refreshToken,
+        expires_at: tokens.expiresAt,
+        scope: tokens.scope,
+        authorized_by: initiatedBy,
+        updated_at: new Date().toISOString(),
+        refresh_lock_id: null,
+        refresh_lock_until: null,
+      },
     })
     return finish(error ? 'storage_error' : 'success')
   } catch {
