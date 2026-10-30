@@ -197,3 +197,89 @@ it('undated fixed work before release remains uncovered and conflicted, never mo
   expect(r.complete).toBe(false)
   expect(JSON.stringify(i)).toBe(original)
 })
+
+it('keeps completed historical blocks advisory alongside feasible current work', () => {
+  const i = input(
+    [demand('done', 0), demand('current', 30)],
+    [capacity('2026-10-29', '18:00', '19:00')],
+  )
+  i.fixed_blocks = [
+    {
+      id: 'history',
+      user_id: 'u',
+      task_id: 'done',
+      starts_at: at('2026-10-28'),
+      ends_at: at('2026-10-28', '18:30'),
+    },
+  ]
+  const r = solveCapacity(i, 'allow_weekend')
+  expect(r.complete).toBe(true)
+  expect(r.feasible).toBe(true)
+  expect(r.issue_groups?.advisory.map((x) => x.code)).toContain('fixed_expired')
+  expect(r.issue_groups?.hard_conflicts).toEqual([])
+  expect(r.issue_groups?.incomplete).toEqual([])
+  expect(r.allocations.every((a) => !a.fixed && a.demand_key === 'current')).toBe(true)
+  expect(r.batch_metrics.done.status).toBe('completed')
+  expect(r.batch_metrics.current.status).toBe('weekday_feasible')
+  expect(r.batch_metrics.current.certainty).toBe('confirmed')
+  expect(r.batch_metrics.current.extra_capacity_minutes).toBe(30)
+  expect(r.batch_metrics.current.today_required_minutes).toBe(30)
+  expect(r.today_required_minutes).toBe(30)
+})
+
+it('reschedules all unfinished demand after an expired block without crediting history', () => {
+  const i = input([demand('a', 45)], [capacity('2026-10-29', '18:00', '19:00')])
+  i.fixed_blocks = [
+    {
+      id: 'history',
+      user_id: 'u',
+      task_id: 'a',
+      starts_at: at('2026-10-28'),
+      ends_at: at('2026-10-28', '18:30'),
+    },
+  ]
+  const r = solveCapacity(i, 'regular_only')
+  expect(r.feasible).toBe(true)
+  expect(r.allocations.reduce((n, a) => n + a.minutes, 0)).toBe(45)
+  expect(r.allocations.every((a) => !a.fixed && Date.parse(a.start) >= Date.parse(i.now))).toBe(
+    true,
+  )
+  expect(r.batch_metrics.a.remaining_minutes).toBe(45)
+  expect(r.batch_metrics.a.unallocated_minutes).toBe(0)
+  expect(r.batch_metrics.a.extra_capacity_minutes).toBe(15)
+  expect(r.today_required_minutes).toBe(45)
+  i.capacity = [capacity('2026-10-29', '18:00', '18:30')]
+  const short = solveCapacity(i, 'regular_only')
+  expect(short.complete).toBe(true)
+  expect(short.feasible).toBe(false)
+  expect(short.batch_metrics.a.unallocated_minutes).toBe(15)
+  expect(short.batch_metrics.a.status).toBe('insufficient')
+})
+
+it('keeps completed weekend reservations occupied but advisory in both policies', () => {
+  const i = input(
+    [demand('done', 0), demand('a', 30)],
+    [
+      capacity('2026-10-29', '18:00', '19:00'),
+      capacity('2026-10-31', '10:00', '11:00', 'weekend_reserve'),
+    ],
+  )
+  i.fixed_blocks = [
+    {
+      id: 'excess',
+      user_id: 'u',
+      task_id: 'done',
+      starts_at: at('2026-10-31', '10:00'),
+      ends_at: at('2026-10-31', '11:00'),
+    },
+  ]
+  for (const policy of ['regular_only', 'allow_weekend'] as const) {
+    const r = solveCapacity(i, policy)
+    expect(r.feasible).toBe(true)
+    expect(r.issue_groups?.advisory.map((x) => x.code)).toContain('fixed_release_suggested')
+    expect(r.issue_groups?.hard_conflicts).toEqual([])
+    expect(r.total_weekend_minutes).toBe(0)
+    expect(r.batch_metrics.a.extra_capacity_minutes).toBe(30)
+    expect(r.today_required_minutes).toBe(30)
+  }
+})

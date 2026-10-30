@@ -1,4 +1,5 @@
 import { allocateFlow } from './flowNetwork'
+import { classifyPlanningIssue } from './planningIssues'
 import type { PreparedCapacity } from './solveCapacity'
 import type { BatchMetrics, TaskAllocation } from './types'
 import { minute } from './intervals'
@@ -67,12 +68,10 @@ export function batchMetrics(
         missing = remaining - sum(assigned),
         weekend = sum(assigned.filter((a) => a.kind === 'weekend_reserve')),
         headroom = feasible ? headroomPrepared(p, key) : null
-      const hard = p.issues.some(
-        (i) => i.code.startsWith('fixed_') && i.code !== 'fixed_release_suggested',
-      )
+      const hard = p.issues.some((i) => classifyPlanningIssue(i) === 'hard_conflicts')
       const certainty =
         demands.some((d) => d.certainty === 'incomplete') ||
-        p.issues.some((i) => !i.code.startsWith('fixed_'))
+        p.issues.some((i) => classifyPlanningIssue(i) === 'incomplete')
           ? 'incomplete'
           : demands.some((d) => d.certainty === 'estimated')
             ? 'estimated'

@@ -1,4 +1,5 @@
 import { applyFixedBlocks } from './fixedBlocks'
+import { classifyPlanningIssue } from './planningIssues'
 import { allocateFlow } from './flowNetwork'
 import { minute, iso } from './intervals'
 import { batchMetrics, headroomPrepared, todayPrepared } from './batchMetrics'
@@ -130,7 +131,7 @@ export function prepareCapacity(input: PlanningInput, policy: CapacityPolicy) {
     now: input.now,
     previous: input.previous_allocations,
     known:
-      issues.every((i) => i.code === 'fixed_release_suggested') &&
+      issues.every((i) => classifyPlanningIssue(i) === 'advisory') &&
       valid.every((d) => d.certainty !== 'incomplete'),
   }
 }
@@ -212,11 +213,9 @@ export function solveCapacity(input: PlanningInput, policy: CapacityPolicy): Pla
       .reduce((n, a) => n + a.minutes, 0),
     today_required_minutes: feasible ? todayPrepared(p, null) : null,
     issue_groups: {
-      advisory: p.issues.filter((i) => i.code === 'fixed_release_suggested'),
-      hard_conflicts: p.issues.filter(
-        (i) => i.code.startsWith('fixed_') && i.code !== 'fixed_release_suggested',
-      ),
-      incomplete: p.issues.filter((i) => !i.code.startsWith('fixed_')),
+      advisory: p.issues.filter((i) => classifyPlanningIssue(i) === 'advisory'),
+      hard_conflicts: p.issues.filter((i) => classifyPlanningIssue(i) === 'hard_conflicts'),
+      incomplete: p.issues.filter((i) => classifyPlanningIssue(i) === 'incomplete'),
     },
   }
 }

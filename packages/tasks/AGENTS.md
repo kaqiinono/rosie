@@ -316,11 +316,15 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
 - `complete` means no incomplete modeling or hard fixed conflict; numeric shortage alone
   does not make it false. `feasible` additionally requires zero modeled shortage.
   Additive totals and `issue_groups` are always populated by this solver, optional in the
-  shared type for compatibility. Issue groups separate advisory release suggestions,
+  shared type for compatibility. The shared explicit planningIssues classifier separates historical expiry/advisory release suggestions,
   hard fixed conflicts, and incomplete modeling. Estimated demand retains its certainty.
 - Apply fixed blocks exactly once; keep accepted useful allocations and occupied excess
-  reservations. `regular_only` retains fixed weekend work and reports
+  reservations. Expired historical blocks give no execution credit and are advisory;
+  unfinished remaining demand still competes for current capacity. `regular_only` retains useful fixed weekend work and reports
   `fixed_weekend_commitment` / adjustment_required; counterfactuals are unknown.
+  Completed/excess future weekend reservations remain occupied/advisory.
+  total_weekend_minutes counts useful work, not full reservation occupancy; downstream
+  displays derive separate reserved minutes from fixed_blocks.
   Undated commitments use `batch_key=work.key`, `fixed_only=true`, full remaining demand
   and useful fixed allocations; uncovered minutes stay incomplete, never movable. A
   matched missing_deadline issue is resolved only when all that work has valid fixed
