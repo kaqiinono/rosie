@@ -345,3 +345,9 @@ See `packages/tasks/AGENTS.md` for returned revision/cache and planning-dirty co
 and app-injected picker/details previews. Tasks retains core/player-only dependencies; `TasksHost`
 injects materials via `TaskMaterialsBridge`. `/tasks/materials` retains private recordings. See
 `packages/materials/AGENTS.md` and README for local-only migration, scope/resolver and Tasks8/9 contracts.
+
+Task planning shared contracts live in `packages/tasks/src/planning/types.ts`. Capacity is
+Shanghai-only manual recurring/date state plus windows; weekends are explicit reserve periods.
+Fixed arrangements reserve capacity separately from useful remaining work and execution progress.
+Availability/block/exam/schedule edits increment the Task5 server planning revision for Task13;
+see `packages/tasks/AGENTS.md`. New forward migrations remain local until explicitly authorized.

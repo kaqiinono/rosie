@@ -6,7 +6,11 @@ export * from './courseTypes'
 export { normalizeCourseInput, deriveCourseEventKey, advanceCourseCursor } from './courseProgress'
 
 export { default as CourseTaskBindings } from './components/CourseTaskBindings'
-export type { CourseTaskBindingDraft, CourseTaskBindingsProps, MaterialPickerSlot } from './components/CourseTaskBindings'
+export type {
+  CourseTaskBindingDraft,
+  CourseTaskBindingsProps,
+  MaterialPickerSlot,
+} from './components/CourseTaskBindings'
 export { matchTaskPool, resolveActivityOverrides, scopeMatches } from './taskPool'
 export type { MatchedActivity, TaskPoolMatchContext, TaskPoolMatchIssue } from './taskPool'
 
@@ -15,3 +19,7 @@ export { getTaskCompletion, getRemainingMinutes } from './taskProgress'
 export type { ProgressTask } from './taskProgress'
 
 export { useTaskData } from './useTaskData'
+
+export * from './planning/types'
+export { buildCapacityIntervals } from './planning/availability'
+export { applyFixedBlocks } from './planning/fixedBlocks'

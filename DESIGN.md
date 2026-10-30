@@ -143,3 +143,13 @@ stays visible after errors. Recovery requires the original file, and uncertain r
 verification or cancel/restart. Cancel explains retained provider files. Successful verification exposes
 an explicit course/scope association through the existing atomic link API. Passive media previews use
 native controls; other files offer authenticated download. No automatic association or animation.
+
+## Manual task availability and fixed arrangements
+
+Schedule retains shared white/slate/emerald panels and native OS-owned date/time/select fields.
+Seven day chips distinguish 待配置 / 明确不可用 / 已配置时段; weekend chips say 备用.
+A date override replaces the full recurring day. Fixed arrangement warnings use explicit amber
+text and manual 移动安排 / 释放时间 actions. Completed/excess retained reservations stay visible.
+Both Schedule forms own validation via noValidate/checkValidity, accessible inline errors and
+first-invalid focus. Native popup geometry remains intentionally browser-owned. Approved local
+verification authorization supersedes the historical manual-only verification note for this task.

@@ -5,7 +5,7 @@ import { parseTimetableJSON, schedulePayload } from '../../../../packages/tasks/
 import { TasksContext } from '../../../../packages/tasks/src/components/shared'
 import type { TaskDataApi } from '../../../../packages/tasks/src/useTaskData'
 import type { CourseDomainData } from '../../../../packages/tasks/src/courseTypes'
-const empty: CourseDomainData = { courses: [], rules: [], course_rules: [], events: [], catalog_snapshots: [], bindings: [], pool_items: [], exceptions: [], occurrences: [], templates: [], tasks: [], windows: [], blocks: [], materials: [], progress: [], scopes: [], reminders: [], calendars: [], exams: [], preferences: [], snapshots: [] }
+const empty: CourseDomainData = { courses: [], rules: [], course_rules: [], events: [], catalog_snapshots: [], bindings: [], pool_items: [], exceptions: [], occurrences: [], templates: [], tasks: [], day_states: [], windows: [], blocks: [], materials: [], progress: [], scopes: [], reminders: [], calendars: [], exams: [], preferences: [], snapshots: [] }
 HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', '') }
 HTMLDialogElement.prototype.close = function () { this.removeAttribute('open') }
 const date = '2099-10-29'

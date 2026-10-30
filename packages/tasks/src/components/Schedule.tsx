@@ -1,36 +1,382 @@
 'use client'
 
-import { useState } from 'react'
-import { localDate, atTime, freeIntervals, displayTime, blockNeedsReschedule } from '../time'
+import { useState, type FormEvent } from 'react'
+import { localDate, atTime, dateAfter, displayTime } from '../time'
 import { previewOccurrences } from '../timetable'
-import { useTasks, Panel, Field, inputClass, buttonClass, minorClass, WeekdaySelect, weekdays, text } from './shared'
+import { buildCapacityIntervals } from '../planning/availability'
+import { applyFixedBlocks } from '../planning/fixedBlocks'
+import type { TaskDemand } from '../planning/types'
+import { getRemainingMinutes } from '../taskProgress'
+import {
+  useTasks,
+  Panel,
+  Field,
+  inputClass,
+  buttonClass,
+  minorClass,
+  WeekdaySelect,
+  weekdays,
+  text,
+} from './shared'
 
 export default function Schedule() {
   const { api, run, busy } = useTasks()
   const [date, setDate] = useState(localDate())
   const [task, setTask] = useState('')
-  const open = api.data.tasks.filter(t => t.status === 'pending' || t.status === 'active')
-  const activeBlocks = api.data.blocks.filter(b => open.some(t => t.id === b.task_id))
+  const [editing, setEditing] = useState<string | null>(null)
+  const [configuration, setConfiguration] = useState('configured')
+  const [error, setError] = useState('')
+  const now = new Date().toISOString()
+  const open = api.data.tasks.filter((t) => t.status === 'pending' || t.status === 'active')
+  const dayStart = atTime(date, '00:00'),
+    dayEnd = atTime(dateAfter(date, 1), '00:00')
   const calendarOccurrences = previewOccurrences(api.data, date, date)
-  const free = freeIntervals(date, api.data.windows, calendarOccurrences, activeBlocks)
-  return <div className="space-y-5">
-    <Panel title="可做作业的时间窗口"><form className="grid gap-3 sm:grid-cols-3" onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); void run(async () => { const unavailable = f.get('closed') === 'on'; if (unavailable && !text(f, 'date')) throw new Error('请指定不安排作业的日期'); if (unavailable && api.data.windows.some(w => w.on_date === text(f, 'date'))) throw new Error('请先移除这一天已有的单日窗口'); if (!unavailable && api.data.windows.some(w => w.on_date === text(f, 'date') && w.unavailable)) throw new Error('请先移除这一天的不安排作业设置'); await api.save('windows', { weekday: Number(text(f, 'weekday')), on_date: text(f, 'date') || null, start_time: text(f, 'start'), end_time: text(f, 'end'), unavailable }) }) }}>
-      <Field label="每周"><WeekdaySelect /></Field><Field label="仅指定日期（覆盖当天周设置）"><input type="date" name="date" className={inputClass} /></Field><span />
-      <Field label="开始"><input required type="time" name="start" defaultValue="17:00" className={inputClass} /></Field><Field label="结束"><input required type="time" name="end" defaultValue="20:30" className={inputClass} /></Field><button disabled={busy} className={buttonClass}>添加时间窗口</button>
-      <label className="text-sm"><input type="checkbox" name="closed" /> 指定日期不安排作业</label>
-    </form>
-    {api.data.windows.map(w => <div key={w.id} className="flex justify-between gap-2 text-sm"><span>{w.on_date ?? weekdays[w.weekday]} {w.unavailable ? '不安排作业' : `${w.start_time.slice(0, 5)}—${w.end_time.slice(0, 5)}`}</span><button disabled={busy} className={minorClass} onClick={() => void run(() => api.remove('windows', w.id))}>移除</button></div>)}
-    </Panel>
-    <Panel title="安排作业"><Field label="安排日期"><input required type="date" min={localDate()} value={date} onChange={e => setDate(e.target.value || localDate())} className={inputClass} /></Field>
-      <div className="flex flex-wrap gap-2">{free.map(w => <span key={w.start} className="rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{displayTime(new Date(w.start).toISOString())}—{displayTime(new Date(w.end).toISOString())}</span>)}{!free.length && <p className="text-sm text-amber-700">当天没有剩余可用时间，请选择其他日期或调整时间窗口。</p>}</div>
-      <form className="grid gap-3 sm:grid-cols-3" onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); void run(async () => { const starts = atTime(date, text(f, 'start')); const ends = atTime(date, text(f, 'end')); if (!free.some(w => +new Date(starts) >= w.start && +new Date(ends) <= w.end) || ends <= starts) throw new Error('请选择完整位于可用时段内的时间'); await api.save('blocks', { task_id: task, starts_at: starts, ends_at: ends }) }) }}>
-        <Field label="任务"><select required value={task} onChange={e => setTask(e.target.value)} className={inputClass}><option value="">选择任务</option>{open.map(t => <option key={t.id} value={t.id}>{t.title}（预计 {t.estimated_minutes} 分钟）</option>)}</select></Field>
-        <Field label="开始"><input required type="time" name="start" className={inputClass} /></Field><Field label="结束"><input required type="time" name="end" className={inputClass} /></Field><button disabled={busy} className={buttonClass}>安排这一段时间</button>
-      </form>
-      {open.map(t => { const minutes = activeBlocks.filter(b => b.task_id === t.id).reduce((n, b) => n + (+new Date(b.ends_at) - +new Date(b.starts_at)) / 60000, 0); return <p key={t.id} className="text-sm text-slate-600">{t.title} · 预计 {t.estimated_minutes} 分钟 / 已安排 {minutes} 分钟{minutes < t.estimated_minutes ? ` / 还需安排 ${t.estimated_minutes - minutes} 分钟` : ''}</p> })}
-    </Panel>
-    <Panel title="已安排的时间"><p className="text-sm text-slate-500">一项任务可安排多个时间块；调整课表后请处理冲突。</p>
-      {api.data.blocks.filter(b => localDate(new Date(b.starts_at)) === date).sort((a, b) => a.starts_at.localeCompare(b.starts_at)).map(b => <div key={b.id} className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3"><div><strong>{api.data.tasks.find(t => t.id === b.task_id)?.title}</strong><p className="text-sm">{displayTime(b.starts_at)}—{displayTime(b.ends_at)}</p>{activeBlocks.some(x => x.id === b.id) && blockNeedsReschedule(b, api.data.windows, calendarOccurrences, activeBlocks) && <p className="text-sm font-bold text-amber-700">需要重新安排：可用窗口或课程发生冲突</p>}</div><button disabled={busy} className={minorClass} onClick={() => void run(() => api.remove('blocks', b.id))}>移除安排</button></div>)}
-    </Panel>
-  </div>
+  const built = buildCapacityIntervals({
+    now: dayStart,
+    horizon_end: dayEnd,
+    day_states: api.data.day_states,
+    windows: api.data.windows,
+    courses: calendarOccurrences,
+    exams: api.data.exams,
+  })
+  const demands: TaskDemand[] = api.data.tasks.map((t) => ({
+    key: t.id,
+    task_id: t.id,
+    course_id: t.course_id,
+    batch_key: t.id,
+    origin: 'actual',
+    release_at: t.created_at,
+    due_at: t.due_at ?? '9999-01-01T00:00:00Z',
+    remaining_minutes: getRemainingMinutes(t),
+    priority: 0,
+    certainty: 'confirmed',
+    source_revision: t.revision,
+  }))
+  const blocks = api.data.blocks.filter((b) => b.starts_at < dayEnd && b.ends_at > dayStart)
+  const accounting = applyFixedBlocks(demands, built.capacity, blocks, now)
+  const free = applyFixedBlocks(
+    [],
+    built.capacity,
+    blocks.filter((b) => b.id !== editing),
+    now,
+  ).remaining_capacity
+  function submit(event: FormEvent<HTMLFormElement>, action: (f: FormData) => Promise<unknown>) {
+    event.preventDefault()
+    const form = event.currentTarget
+    if (!form.checkValidity()) {
+      const invalid = form.querySelector<HTMLElement>(':invalid')
+      invalid?.setAttribute('aria-invalid', 'true')
+      invalid?.setAttribute('aria-describedby', 'schedule-error')
+      invalid?.focus()
+      setError('请填写必填字段，并检查日期和时间。')
+      return
+    }
+    form.querySelectorAll('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'))
+    setError('')
+    const f = new FormData(form)
+    void run(async () => {
+      try {
+        await action(f)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : '保存失败，请重试')
+        throw e
+      }
+    })
+  }
+  return (
+    <div className="space-y-5">
+      <p id="schedule-error" role="alert" className="text-sm text-amber-800">
+        {error}
+      </p>
+      <Panel title="可做作业的时间窗口">
+        <p className="text-sm text-slate-600">
+          每天手动配置；周六、周日的时段作为备用。指定日期覆盖当天全部周设置。
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4, 5, 6, 0].map((n) => {
+            const state =
+              api.data.day_states.find((s) => s.on_date === null && s.weekday === n)?.state ??
+              (api.data.windows.some((w) => w.on_date === null && w.weekday === n && !w.unavailable)
+                ? 'configured'
+                : 'unconfigured')
+            return (
+              <span key={n} className="rounded-xl bg-slate-50 px-3 py-2 text-sm">
+                {weekdays[n]}
+                {n === 0 || n === 6 ? ' · 备用' : ''}：
+                {state === 'zero' ? '明确不可用' : state === 'configured' ? '已配置时段' : '待配置'}
+              </span>
+            )
+          })}
+        </div>
+        <form
+          noValidate
+          className="grid gap-3 sm:grid-cols-3"
+          onSubmit={(e) =>
+            submit(e, async (f) => {
+              const selectedDate = text(f, 'date') || null
+              if (configuration === 'configured' && text(f, 'end') <= text(f, 'start'))
+                throw new Error('结束时间必须晚于开始时间')
+              await api.setAvailability(
+                selectedDate ? null : Number(text(f, 'weekday')),
+                selectedDate,
+                configuration,
+                configuration === 'configured' ? text(f, 'start') : null,
+                configuration === 'configured' ? text(f, 'end') : null,
+              )
+            })
+          }
+        >
+          <Field label="每周">
+            <WeekdaySelect />
+          </Field>
+          <Field label="仅指定日期（覆盖当天周设置）">
+            <input type="date" name="date" className={inputClass} />
+          </Field>
+          <Field label="可用状态">
+            <select
+              className={inputClass}
+              value={configuration}
+              onChange={(e) => setConfiguration(e.target.value)}
+            >
+              <option value="configured">配置时段（可添加多段）</option>
+              <option value="zero">明确不可用（清空时段）</option>
+              <option value="unconfigured">待配置（清空时段）</option>
+            </select>
+          </Field>
+          {configuration === 'configured' && (
+            <>
+              <Field label="开始">
+                <input
+                  required
+                  type="time"
+                  name="start"
+                  defaultValue="17:00"
+                  className={inputClass}
+                />
+              </Field>
+              <Field label="结束">
+                <input
+                  required
+                  type="time"
+                  name="end"
+                  defaultValue="20:30"
+                  className={inputClass}
+                />
+              </Field>
+            </>
+          )}
+          <button disabled={busy} className={buttonClass}>
+            {busy ? '保存中…' : configuration === 'configured' ? '添加时间窗口' : '保存可用状态'}
+          </button>
+        </form>
+        {api.data.day_states
+          .filter((s) => s.on_date)
+          .map((s) => (
+            <p key={s.id} className="text-sm">
+              {s.on_date}：
+              {s.state === 'zero'
+                ? '明确不可用'
+                : s.state === 'configured'
+                  ? '已配置时段'
+                  : '待配置'}{' '}
+              <button
+                disabled={busy}
+                className={minorClass}
+                onClick={() =>
+                  void run(() => api.setAvailability(null, s.on_date, 'inherit', null, null))
+                }
+              >
+                恢复周设置
+              </button>
+            </p>
+          ))}
+        {api.data.windows.map((w) => (
+          <div key={w.id} className="flex justify-between gap-2 text-sm">
+            <span>
+              {w.on_date ?? weekdays[w.weekday]}{' '}
+              {w.unavailable
+                ? '不安排作业'
+                : `${w.start_time.slice(0, 5)}—${w.end_time.slice(0, 5)}`}
+            </span>
+            <button
+              disabled={busy}
+              className={minorClass}
+              onClick={() => void run(() => api.remove('windows', w.id))}
+            >
+              移除时段
+            </button>
+          </div>
+        ))}
+      </Panel>
+      <Panel title="安排作业">
+        <Field label="安排日期">
+          <input
+            required
+            type="date"
+            min={localDate()}
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value || localDate())
+              setEditing(null)
+            }}
+            className={inputClass}
+          />
+        </Field>
+        {built.issues.map((i, n) => (
+          <p key={n} className="text-sm text-amber-800">
+            {i.detail}
+          </p>
+        ))}
+        <div className="flex flex-wrap gap-2">
+          {free.map((w) => (
+            <span
+              key={w.key}
+              className="rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800"
+            >
+              {displayTime(w.start)}—{displayTime(w.end)}
+              {w.kind === 'weekend_reserve' ? ' · 周末备用' : ''}
+            </span>
+          ))}
+          {!free.length && (
+            <p className="text-sm text-amber-800">当天没有剩余可用时间，请调整日期或时段。</p>
+          )}
+        </div>
+        <form
+          key={`${editing}:${date}`}
+          noValidate
+          className="grid gap-3 sm:grid-cols-3"
+          onSubmit={(e) =>
+            submit(e, async (f) => {
+              const starts = atTime(date, text(f, 'start')),
+                ends = atTime(date, text(f, 'end'))
+              if (ends <= starts || !free.some((w) => starts >= w.start && ends <= w.end))
+                throw new Error('请选择完整位于当前可用时段内的时间')
+              const t = api.data.tasks.find((t) => t.id === task)
+              if (!t || t.status === 'completed' || t.status === 'cancelled')
+                throw new Error('请选择未完成任务')
+              if (starts < t.created_at || (t.due_at && ends > t.due_at))
+                throw new Error('安排必须在任务可开始和截止时间之内')
+              await api.save('blocks', {
+                ...(editing ? { id: editing } : {}),
+                task_id: task,
+                starts_at: starts,
+                ends_at: ends,
+              })
+              setEditing(null)
+            })
+          }
+        >
+          <Field label="任务">
+            <select
+              required
+              value={task}
+              onChange={(e) => setTask(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">选择任务</option>
+              {open.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.title}（剩余 {getRemainingMinutes(t)} 分钟）
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="开始">
+            <input
+              required
+              type="time"
+              name="start"
+              defaultValue={
+                blocks.find((b) => b.id === editing)?.starts_at
+                  ? new Date(blocks.find((b) => b.id === editing)!.starts_at).toLocaleTimeString(
+                      'en-GB',
+                      { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit' },
+                    )
+                  : ''
+              }
+              className={inputClass}
+            />
+          </Field>
+          <Field label="结束">
+            <input
+              required
+              type="time"
+              name="end"
+              defaultValue={
+                blocks.find((b) => b.id === editing)?.ends_at
+                  ? new Date(blocks.find((b) => b.id === editing)!.ends_at).toLocaleTimeString(
+                      'en-GB',
+                      { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit' },
+                    )
+                  : ''
+              }
+              className={inputClass}
+            />
+          </Field>
+          <button disabled={busy} className={buttonClass}>
+            {busy ? '保存中…' : editing ? '保存移动后的安排' : '安排这一段时间'}
+          </button>
+          {editing && (
+            <button type="button" className={minorClass} onClick={() => setEditing(null)}>
+              取消移动
+            </button>
+          )}
+        </form>
+        {open.map((t) => {
+          const remaining =
+            accounting.remaining_demands.find((d) => d.task_id === t.id)?.remaining_minutes ??
+            getRemainingMinutes(t)
+          return (
+            <p key={t.id} className="text-sm text-slate-600">
+              {t.title} · 剩余 {getRemainingMinutes(t)} 分钟 / 当天安排后还需 {remaining} 分钟
+            </p>
+          )
+        })}
+      </Panel>
+      <Panel title="已安排的时间">
+        <p className="text-sm text-slate-500">
+          固定安排保留占用；经过的时间不等于完成。冲突或多余时间请手动调整或释放。
+        </p>
+        {blocks.map((b) => (
+          <div
+            key={b.id}
+            className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3"
+          >
+            <div>
+              <strong>{api.data.tasks.find((t) => t.id === b.task_id)?.title}</strong>
+              <p className="text-sm">
+                {displayTime(b.starts_at)}—{displayTime(b.ends_at)}
+              </p>
+              {accounting.conflicts
+                .filter((i) => i.affected_keys.includes(b.id))
+                .map((i, n) => (
+                  <p key={n} className="text-sm text-amber-800">
+                    {i.detail}
+                  </p>
+                ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                disabled={busy}
+                className={minorClass}
+                onClick={() => {
+                  setEditing(b.id)
+                  setTask(b.task_id)
+                }}
+              >
+                移动安排
+              </button>
+              <button
+                disabled={busy}
+                className={minorClass}
+                onClick={() => void run(() => api.remove('blocks', b.id))}
+              >
+                释放时间
+              </button>
+            </div>
+          </div>
+        ))}
+      </Panel>
+    </div>
+  )
 }

@@ -179,6 +179,11 @@ export type AvailabilityWindow = OwnedRow & {
   end_time: string
   unavailable?: boolean
 }
+export type AvailabilityDayState = OwnedRow & {
+  weekday: number | null
+  on_date: string | null
+  state: 'unconfigured' | 'zero' | 'configured'
+}
 export type TaskTimeBlock = OwnedRow & { task_id: string; starts_at: string; ends_at: string }
 export type TaskMaterial = OwnedRow & {
   course_id: string
@@ -214,6 +219,7 @@ export type TaskData = {
   occurrences: CourseOccurrence[]
   templates: TaskTemplate[]
   tasks: TaskInstance[]
+  day_states: AvailabilityDayState[]
   windows: AvailabilityWindow[]
   blocks: TaskTimeBlock[]
   materials: TaskMaterial[]
@@ -272,7 +278,12 @@ export type CatalogSnapshotResult =
 export type MaterialOption = { id: string; title: string; kind: string; preview_ref: string | null }
 /** The application supplies shared-material access. No material storage or subject dependency here. */
 export type TaskMaterialAdapter = {
-  resolve?: (courseId:string|null,scope:CourseScope,selector:import('./courseTypes').MaterialSelector,content:import('./courseTypes').CourseLessonSnapshot|null)=>Promise<{status:'pending'|'not_required'|'selected';asset_ids:string[]}>
+  resolve?: (
+    courseId: string | null,
+    scope: CourseScope,
+    selector: import('./courseTypes').MaterialSelector,
+    content: import('./courseTypes').CourseLessonSnapshot | null,
+  ) => Promise<{ status: 'pending' | 'not_required' | 'selected'; asset_ids: string[] }>
   listForCourse: (courseId: string, scope: CourseScope) => Promise<MaterialOption[]>
   pickAssets: (subject: Subject, selectedIds: string[]) => Promise<MaterialOption[]>
 }
@@ -285,9 +296,18 @@ export type TaskCatalogAdapter = {
   readiness?: Partial<Record<Subject, CatalogReadiness>>
   readinessFor?: (subject: Subject, selection?: CatalogSelection) => CatalogReadiness
   prepareSnapshot?: (request: CatalogSnapshotRequest) => Promise<CatalogSnapshotResult>
-  renderMaterialPicker?: (props: {subject: Subject;value: import('./courseTypes').MaterialSelector;onChange:(value:import('./courseTypes').MaterialSelector)=>void;disabled?:boolean}) => import('react').ReactNode
-  renderCourseMaterials?: (props: {course:TaskCourse;content:import('./courseTypes').CourseLessonSnapshot|null; snapshot?:CourseCatalogSnapshot}) => import('react').ReactNode
-  renderTaskMaterials?: (ids:string[]) => import('react').ReactNode
+  renderMaterialPicker?: (props: {
+    subject: Subject
+    value: import('./courseTypes').MaterialSelector
+    onChange: (value: import('./courseTypes').MaterialSelector) => void
+    disabled?: boolean
+  }) => import('react').ReactNode
+  renderCourseMaterials?: (props: {
+    course: TaskCourse
+    content: import('./courseTypes').CourseLessonSnapshot | null
+    snapshot?: CourseCatalogSnapshot
+  }) => import('react').ReactNode
+  renderTaskMaterials?: (ids: string[]) => import('react').ReactNode
   materials?: TaskMaterialAdapter
 }
 export type TasksSection = 'tasks' | 'schedule' | 'timetable' | 'pool' | 'templates' | 'materials'

@@ -316,3 +316,35 @@ an isolated embedded PostgreSQL, runs owner-role SQL assertions and holds two ac
 on the same user lock while marking different real items. It uses the Task4 pinned temp dependencies
 under `/private/tmp/task4-postgres`, never loads env files, and stops/removes its database in finally.
 Do not run simultaneously with another Task4/5 native harness (shared port 55440/temp directory).
+
+### Manual capacity and retained fixed arrangements
+
+Availability remains recurring multiple windows plus whole-date overrides. Missing configuration
+is visibly pending, explicit zero is unavailable, and configured weekends are reserve capacity.
+No holiday calendar or implicit whole-day availability is inferred. Date “恢复周设置” removes
+both its state and all date windows. Removing the last window leaves configured-but-empty
+visible rather than silently reverting to recurring availability.
+
+Pure APIs: `buildCapacityIntervals(AvailabilityInput)` returns `capacity/issues`;
+`applyFixedBlocks(demands, capacity, blocks, now)` returns `remaining_demands`,
+`remaining_capacity`, `accepted_allocations`, `conflicts`. Input capacity must be the disjoint,
+integer-minute output of the builder. `accepted_allocations` credit useful work only;
+`remaining_capacity` subtracts all retained reservations, including excess/completed blocks.
+Do not subtract their capacity again in the solver, or treat reservations as execution progress.
+Conflicted blocks remain visible and reserve their union but do not credit demand. Manual
+moves revalidate the new arrangement, and failed moves retain the original row.
+
+The local-only `task_availability_configuration` migration adds owned day states and dirty
+revision triggers. Existing saved windows are preserved/backfilled; new account initialization
+creates no capacity. It extends the existing block guard without replacing execution RPCs.
+
+Focused local verification (authorized local dependencies only, no env/provider needed):
+
+```sh
+pnpm --filter web exec vitest run tests/task-time.test.ts tests/tasks/availability-capacity.test.ts tests/tasks/fixed-blocks.test.ts
+node scripts/tmp/task10-capacity-validation.mjs
+```
+
+The temporary native SQL harness uses the same disposable embedded PostgreSQL dependency as
+Task9 (`/private/tmp/task4-postgres`) on loopback 55450, full migration order, and only focused
+availability/bootstrap/backfill/isolation/save/move tests. It does not access hosted Supabase.

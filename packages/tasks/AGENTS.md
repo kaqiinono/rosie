@@ -242,3 +242,25 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
   resolution to the same independent once/weekly emitter (course-less explicit assets/none; auto
   stays pending). Event emitters write the exact effective selector on intentional revisions even
   when template JSON is unchanged. Insertion fallback never rebases later progress/metadata edits.
+
+## Capacity and fixed arrangements (Task10, local migration pending)
+
+- `planning/types.ts` owns shared `TaskDemand`, `CapacityInterval`, `PlanningInput`,
+  `TaskAllocation`, `PlanningResult`, `BatchMetrics`, and `PlanningIssue` contracts.
+  `availability.ts` and `fixedBlocks.ts` are pure; no React, browser, DB or subject imports.
+- Shanghai dates only. `day_states` distinguishes missing/unconfigured, explicit zero and
+  configured. Date state/windows replace the complete recurring day. Weekends are manual
+  reserve windows; holidays never create capacity. Legacy saved windows backfill states;
+  initialization never creates windows. Subtract first, ceil free starts/floor free ends.
+- `task_set_availability` atomically appends a window or sets a zero/unconfigured scope;
+  `inherit` is date-only and removes the whole override. Preserve accepted blocks on edits.
+  Session-store `setAvailability` refreshes the canonical table collections after the RPC.
+- Fixed reservations consume union once, including completed/excess blocks. Only nonconflicting
+  future whole minutes within capacity and task release/deadline credit remaining demand.
+  Expired blocks do not imply execution. Warnings require explicit move/release by the user.
+- Block insert/update revalidates current states, windows, unavailable spans, exams, timed
+  occurrences/events and recurrence exceptions plus all other retained blocks under lock228.
+  Moves also retain the Task5 execution mutation protocol; never write task progress here.
+- Capacity/schedule mutations and deletions increment `task_user_planning_revisions` for
+  Task13. Trigger locks support authenticated edits and the existing private worker runtime.
+  Read the server revision for publication; do not manufacture a client revision counter.
