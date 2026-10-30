@@ -8,3 +8,5 @@ export * from './components/CourseMaterialList'
 
 export * from './components/DirectoryImport'
 export * from './matchCourseMaterials'
+
+export * from './components/MaterialUpload'

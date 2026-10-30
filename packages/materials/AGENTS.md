@@ -31,3 +31,10 @@ never import tasks or subject packages. The application injects pickers and narr
   full recovery envelope. GET offset pages require a matching revision; no state/queue is browser data.
   Preserve reviewed exact file identities across pages/recovery; filename aliases require a complete
   normalized stem so hyphenated subquestions never match their parent alias.
+
+- Uploads use Worker complete ordered MD5 before init, raw4MiB parts/max2 lanes. Server-only durable
+  session RPC uses Task8 credential-row serialization; uncertain prepare/create verifies only, with
+  explicit cancel/restart if absent. Never repeat an unknown merge or publish before verification.
+- File preview/download uses scoped HttpOnly material session then authenticated streaming content;
+  passive MIME allowlist, all other content attachment. No blob-buffered large downloads, provider
+  credentials/redirects or SW cache. Upload completion refreshes the existing shared-materials store.

@@ -1,4 +1,5 @@
 'use client'
+import { MaterialUpload } from './MaterialUpload'
 import { DirectoryImport } from './DirectoryImport'
 import { useState } from 'react'
 import { materialRoleLabels } from './labels'
@@ -61,6 +62,16 @@ export function CourseMaterialList({
   return (
     <section className="space-y-3">
       <h3 className="font-bold">共享课程物料</h3>
+      <MaterialUpload
+        courses={[
+          {
+            id: courseId,
+            title: '当前课程',
+            subject,
+            catalog: catalog ?? { lessons: [], segments: [] },
+          },
+        ]}
+      />
       <DirectoryImport
         courses={[
           {

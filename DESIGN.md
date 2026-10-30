@@ -136,3 +136,10 @@ and existing links. Course detail shows original folder paths and a transient as
 Directory review pages retain selections across result batches and expose “恢复最新进度” while a
 scan is active. Starting a scan creates its checkpoint then reads the first provider page. Review
 paging is independent of scan continuation; a summary lists the cross-page choices before confirmation.
+
+Material upload uses the shared white/slate/emerald form and native labeled subject/file/course/range
+controls. Subject starts unselected. Progress names hashing/uploading/verifying; durable session number
+stays visible after errors. Recovery requires the original file, and uncertain results offer explicit
+verification or cancel/restart. Cancel explains retained provider files. Successful verification exposes
+an explicit course/scope association through the existing atomic link API. Passive media previews use
+native controls; other files offer authenticated download. No automatic association or animation.

@@ -2,7 +2,7 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.3.0/workbox
 
 const { precacheAndRoute } = workbox.precaching
 const { registerRoute, NavigationRoute } = workbox.routing
-const { StaleWhileRevalidate, CacheFirst, NetworkFirst } = workbox.strategies
+const { StaleWhileRevalidate, CacheFirst, NetworkFirst, NetworkOnly } = workbox.strategies
 const { ExpirationPlugin } = workbox.expiration
 const { CacheableResponsePlugin } = workbox.cacheableResponse
 const { RangeRequestsPlugin } = workbox.rangeRequests
@@ -13,6 +13,12 @@ precacheAndRoute([
   { url: '/icons/icon-192.png', revision: 'rosie-icon-split-v4' },
   { url: '/icons/icon-512.png', revision: 'rosie-icon-split-v4' },
 ])
+
+// Private content must bypass every destination cache, including image/PDF navigations.
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/api/materials/'),
+  new NetworkOnly(),
+)
 
 registerRoute(
   ({ request }) => request.destination === 'document',
@@ -56,6 +62,7 @@ registerRoute(
 registerRoute(
   ({ url, request }) =>
     !url.pathname.startsWith('/api/baidu/audio/') &&
+    !url.pathname.startsWith('/api/materials/') &&
     !url.pathname.includes('/storage/v1/object/sign/task-audio/') &&
     !url.pathname.includes('/storage/v1/object/sign/chinese-reading-recordings/') &&
     (request.destination === 'audio' ||

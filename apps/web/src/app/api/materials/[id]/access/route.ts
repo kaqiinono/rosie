@@ -26,6 +26,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       })
     return NextResponse.json({ text: data.text_content }, { headers })
   }
+  if (data.source === 'baidu')
+    return NextResponse.json({ content_url: `/api/materials/${id}/content` }, { headers })
   const url = safeMaterialHref(data.href)
   if (url) return NextResponse.json({ url }, { headers })
   return NextResponse.json({ error: 'transport_not_available' }, { status: 409, headers })

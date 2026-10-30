@@ -120,3 +120,58 @@ Math problem aliases now match the complete NFC/case-normalized filename stem (f
 removed), including full subquestion suffixes. No arbitrary trailing annotation is silently stripped.
 Real lesson12 `1-12-L2` and `1-12-L2-1` aliases remain different. Identical complete aliases projected
 from different question groups remain multiple candidates, never an automatic link.
+
+### Task9 upload and private delivery
+
+`BAIDU_MATERIAL_UPLOAD_ROOT` is required on the server. Configure the app's actual permitted write
+root (ordinary app roots may be `/apps/<app>`); existing `/airosie` read access proves no write access.
+`BAIDU_MATERIAL_MAX_BYTES` optionally lowers the default 2147483648-byte limit; zero-byte files are
+explicitly unsupported. No root/write permission, account quota or deployment throughput is verified
+by local fixtures. Provider permission failures remain errors; no optimistic ready asset is created.
+
+Worker hashes one 4194304-byte slice at a time before any init request. Browser sends raw parts with
+two lanes and three bounded attempts (500/1000ms backoff). Server validates exact length and MD5,
+wraps the validated bytes in multipart `file` upstream, and keeps all credentials server-only.
+Both precreate/create use the entire ordered manifest, even when provider requests only missing parts.
+Unique server UUID paths and `rtype=0` prohibit deliberate overwrite. Returned renamed paths fail.
+
+POST `/api/materials/uploads` reserves owner/account/generation session and returns its ID without
+provider mutation. POST `/{id}/prepare` claims precreate exactly once. GET/DELETE `/{id}` query/cancel;
+PUT `/{id}/parts/{index}` records a verified part; POST `/{id}/complete` returns session plus `asset`
+when ready. The split reservation ensures UI receives a recoverable ID before precreate can mutate.
+A response lost before reservation returns may leave only an empty orphan session, not a remote file.
+Close/reload requires keeping the displayed session ID and selecting the original file/subject; full
+manifest, size and name must match. Server sessions are not directly browser-readable tables.
+
+Precreate/create unknown outcomes never automatically repeat their mutation. Repeated completion
+checks exact unique path/ID/size and streams all bytes through ordered block MD5 verification. A
+crash after claim but before create can leave no file: verification stays unconfirmed and the user
+must cancel and start a new session. There is no guessed success, overwrite, provider deletion or
+hidden retry. Cancelled sessions cannot publish; remote orphan files may remain. Ready publication
+and account switching serialize on the same Task8 credential row before the session row. Refresh
+keeps that identity/generation; actual account switches invalidate publication. No second identity
+layer or OAuth change is needed. Native validation CLI: `node scripts/tmp/task9-material-validation.mjs`
+(disposable local PostgreSQL; full21-migration prerequisite chain; no hosted writes).
+
+`POST /api/materials/session` exchanges an authenticated bearer session for a strict HttpOnly cookie
+scoped to `/api/materials`, enabling native img/audio/video/iframe/download requests. Every content
+request validates the Supabase user again, reads the shared asset through RLS and checks the current
+verified Baidu account. `/api/materials/{id}/content` streams with backpressure/cancellation, exact
+Range/length validation, no-store, nosniff and sandbox CSP. Safe passive MIME allowlist supports
+JPEG/PNG/GIF/WebP/AVIF, common audio/video and PDF; unknown/HTML/SVG are octet-stream attachments.
+No dlink/token/redirect is sent to the browser. A first-match SW NetworkOnly rule covers ALL material
+API destinations, including image and PDF navigation. Full-file downloads are real streams, never
+one silently truncated range. Upstream ignoring Range fails. Late truncation errors the stream.
+
+Local >6MiB reconstruction proves application streaming rather than deployed capacity. Content is
+bounded by a280s upstream lifetime and300s function declaration; maximum-size downloads require
+actual sustained throughput verification on the deployed plan. Expired sessions require refreshing
+login and reopening preview. Cookie lifetime is at most1hour; expiry never grants public access.
+
+Task13/15: readiness remains canonical `resolveMaterials` / `private.task_resolve_materials`: uploads
+create NO asset until verification; pending/cancelled/uncertain uploads cannot clear a task's pending
+material state. Completion refreshes the existing per-user session store before offering Task7 links.
+Course linking supports all/unit/lesson/segment/full problem keys and preserves explicit selector
+snapshots; never rebase task selectors after an unrelated link edit. No `/today` or subject progress
+writes. Remaining deployment checks: real app capability/root/collision behavior, uk/refresh/switch,
+upload-ID lifetime, quota, Range and redirects, native media codecs, sustained transfer and disconnects.

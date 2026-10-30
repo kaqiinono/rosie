@@ -5,6 +5,7 @@ import type { MaterialAsset } from '../types'
 import { buttonClass } from './styles'
 export function MaterialPreview({ asset }: { asset: MaterialAsset }) {
   const [content, setContent] = useState<{
+    content_url?: string
     text?: string
     url?: string
     download_url?: string
@@ -41,7 +42,15 @@ export function MaterialPreview({ asset }: { asset: MaterialAsset }) {
         headers: { Authorization: `Bearer ${data.session?.access_token ?? ''}` },
       })
       if (!response.ok) throw Error('暂时无法打开，请重试')
-      setContent(await response.json())
+      const value = await response.json()
+      if (value.content_url) {
+        const session = await fetch('/api/materials/session', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${data.session?.access_token ?? ''}` },
+        })
+        if (!session.ok) throw Error('登录会话已失效，请重新登录')
+      }
+      setContent(value)
     } catch (e) {
       setError(e instanceof Error ? e.message : '打开失败')
     } finally {
@@ -65,6 +74,22 @@ export function MaterialPreview({ asset }: { asset: MaterialAsset }) {
             >
               下载文本
             </button>
+          )}
+          {content.content_url && (
+            <div className="space-y-2">
+              {asset.kind === 'image' ? (
+                <img src={content.content_url} alt={asset.title} className="max-h-96 max-w-full" />
+              ) : asset.kind === 'audio' ? (
+                <audio controls src={content.content_url} />
+              ) : asset.kind === 'video' ? (
+                <video controls src={content.content_url} className="max-h-96 max-w-full" />
+              ) : asset.kind === 'pdf' ? (
+                <iframe title={asset.title} src={content.content_url} className="h-96 w-full" />
+              ) : null}
+              <a className="text-emerald-800 underline" href={content.content_url + '?download=1'}>
+                下载文件
+              </a>
+            </div>
           )}
           {content.text && <p className="break-words whitespace-pre-wrap">{content.text}</p>}
           {content.url && (
