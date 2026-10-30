@@ -274,3 +274,23 @@ The legacy void confirmation RPC first compensates earlier due work and reads th
 revision under the same lock; on incomplete catch-up it throws `catch_up_required`, and old
 clients must call the same-engine tick before retrying. Content/schedule revisions preserve expired
 original deadlines while still allowing future relative deadlines to follow rescheduling.
+
+### Event lifecycle repair validation (local only)
+
+The temporary regression runner `scripts/tmp/task4-lifecycle-validation.mjs` restores the full
+11-migration task baseline, including `20261029145703`, and applies the forward lifecycle repair.
+It creates a disposable native PostgreSQL18 cluster on loopback port 55440, with fixture-only
+auth/storage stubs; shutdown deletes its data directory. Do not run two copies concurrently.
+No `.env.local`, hosted database, Baidu service or real Cron execution is used.
+
+```sh
+npm install --prefix /private/tmp/task4-postgres embedded-postgres@18.1.0-beta.15 pg@8.16.3
+node scripts/tmp/task4-lifecycle-validation.mjs --baseline # intentionally fails all three regressions
+node scripts/tmp/task4-lifecycle-validation.mjs --related  # regressions + affected prior SQL suites
+```
+
+Fixtures cover early explicit completion with homework available immediately and unchanged
+scheduled clocks/deadline policy; first same-day flexible assignment after a skipped tick;
+and cancellation-exception deletion for future timed previews and past flexible assignments.
+Restoration preserves source identity, partial/completed progress, original overdue deadlines
+and once-only cursor advancement even with automation now disabled.

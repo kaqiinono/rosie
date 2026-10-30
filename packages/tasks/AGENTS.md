@@ -178,3 +178,16 @@ flags so `projectCourseEvents` does not forecast already processed work again.
   deadlines still recompute; changing event content is not permission to extend an overdue deadline.
 - Focused SQL: task-generation-legacy-order.sql, task-generation-fairness.sql, and
   task-generation-overdue-preview.sql; native harness also reruns affected existing runtime/save tests.
+
+### Task4 event lifecycle repair
+
+- `20261030004949_tasks_event_lifecycle_repairs.sql` retains timed event clocks/release while
+  explicit early completion emits the normal after-class task identity with task release now.
+  Course/default deadlines retain their existing policies; scheduled-end processing cannot duplicate it.
+- First assignment activation reopens only skipped, incomplete current-date flexible events.
+  Their snapshots and once-only cursor flags remain intact; earlier dates stay excluded.
+- Deleting a cancellation exception restores the same event and task sources during the next
+  authoritative reconcile. Preserve completed tasks, partial progress, expired deadlines and
+  cursor advancement, including when automation has since been disabled.
+- Local native regression harness: `scripts/tmp/task4-lifecycle-validation.mjs`; setup and
+  focused baseline/GREEN commands are in README. No hosted database or env file is needed.
