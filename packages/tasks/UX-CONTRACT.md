@@ -55,3 +55,11 @@
 - Schedule JSON keeps pending effective dates; flexible import previews show recurrence without null clocks.
 - Current event book/unit/segment stays separate from next content. Missing immutable segment details
   remain visibly unavailable instead of borrowing the current course catalog's title.
+
+## Capacity risk and Gantt
+
+- PlanningDashboard consumes one owner snapshot; risk cards and Gantt share the selected policy result. Live clock expiry replaces safe wording and disables adoption. Refresh/recompute uses useTaskData, with no automatic fixed writes.
+- Native select/date/time popups remain OS-owned. Selection is transient, explicit per allocation and cleared on snapshot/policy change. Forecast-only and fixed allocations cannot be adopted; stale/conflict failures retain explanatory text and require refresh/reselection.
+- Desktop date columns and compressed available-slot columns have explicit scale labels. Mobile owns daily aggregation plus the same expandable course/task text list. Exact start/end and minutes are buttons available to keyboard and touch.
+- Actual course completion is weighted by actual task estimates, excludes cancelled tasks, and remains separate from remaining-work coverage. Per-batch headroom/today minima never sum. Retained fixed occupancy and useful solver allocations are separate.
+- Recovery editor writes only recovery_due_at with expected revision; original overdue deadline stays visible. Alerts explicitly distinguish read and resolved. Background configuration never promises delivery.

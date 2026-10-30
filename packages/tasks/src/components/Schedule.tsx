@@ -1,5 +1,6 @@
 'use client'
 
+import PlanningDashboard from './planning/PlanningDashboard'
 import { useState, type FormEvent } from 'react'
 import { localDate, atTime, dateAfter, displayTime } from '../time'
 import { previewOccurrences } from '../timetable'
@@ -107,6 +108,7 @@ export default function Schedule() {
   }
   return (
     <div className="space-y-5">
+      <PlanningDashboard />
       <p id="schedule-error" role="alert" className="text-sm text-amber-800">
         {error}
       </p>

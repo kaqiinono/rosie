@@ -1,0 +1,18 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["packages/tasks/src/components/planning"],
+  "locale": "zh-CN",
+  "canonicalMap": "packages/tasks/UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar", "Toast", "CRUD"],
+  "ownership": { "Select/Listbox": "native", "Date": "native" },
+  "requiredCommands": ["unit", "typecheck", "lint"],
+  "commands": {
+    "unit": "pnpm --filter web exec vitest run tests/tasks/course-risk-view.test.tsx tests/tasks/course-gantt.test.tsx tests/tasks/planning-interactions.test.tsx",
+    "typecheck": "pnpm typecheck",
+    "lint": "pnpm lint"
+  },
+  "evidence": {
+    "crudFullFlow": "apps/web/tests/tasks/planning-interactions.test.tsx",
+    "failurePaths": "apps/web/tests/tasks/planning-interactions.test.tsx"
+  }
+}

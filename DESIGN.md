@@ -153,3 +153,7 @@ text and manual 移动安排 / 释放时间 actions. Completed/excess retained r
 Both Schedule forms own validation via noValidate/checkValidity, accessible inline errors and
 first-invalid focus. Native popup geometry remains intentionally browser-owned. Approved local
 verification authorization supersedes the historical manual-only verification note for this task.
+
+## Course risk and Gantt
+
+The tasks homepage leads with risk-ranked course batches, reusing white/slate panels, emerald controls, Chinese typography and amber caution text. The existing daily incomplete/backlog task flow follows it. Risk cards and timeline consume the same persisted solver output. Natural date columns use weekend tint only as orientation; capacity is always manually marked. Compressed available-slot columns explicitly say non-natural time scale. Formal, forecast and fixed work use text plus solid/dashed/double borders. Mobile uses daily disclosures and the same course/task text detail list. Native platform controls, task-page feedback and package UX ownership remain canonical. Verification for this approved task includes authorized local tests, isolated env-free production build and simulated-persistence browser fixtures.

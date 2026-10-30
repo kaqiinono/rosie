@@ -380,3 +380,7 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
   `node scripts/tmp/task13-planning-validation.mjs`; it initializes a disposable native
   PG instance using the Task4 embedded-postgres dependencies, applies all24 migrations,
   and cleans up with nonzero exit on failure. No env/remote database is used.
+
+## Planning views
+
+`components/planning/PlanningDashboard` integrates the existing planning session snapshot into task home and Schedule. Cards and Gantt share a selected stored policy result; no UI scheduling algorithm. Live `isPlanningStale` expiry removes safe status and disables adoption. Explicit selected movable actual allocations alone use `acceptPlan`; forecast tasks remain unadoptable. RecoveryTargetEditor uses expected-revision `setRecoveryDue`, preserving original overdue metadata. Native popup ownership and mobile/readable-list behavior are documented in UX-CONTRACT.md.

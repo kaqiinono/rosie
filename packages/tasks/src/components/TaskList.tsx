@@ -8,6 +8,8 @@ import { localDate, displayTime, atTime } from '../time'
 import TaskProgressEditor from './TaskProgressEditor'
 import MathTaskItems from './MathTaskItems'
 import TaskAudio from './TaskAudio'
+import PlanningDashboard from './planning/PlanningDashboard'
+import RecoveryTargetEditor from './planning/RecoveryTargetEditor'
 import TodayCourseSummary from './TodayCourseSummary'
 import {
   useTasks,
@@ -77,8 +79,11 @@ function TaskCard({
         </p>
       )}
       {catalog.renderTaskMaterials?.(task.material_assets ?? [])}
-      {task.material_status === 'pending' && <p className="text-sm text-amber-800">待补物料 · 预计用时已保留</p>}
+      {task.material_status === 'pending' && (
+        <p className="text-sm text-amber-800">待补物料 · 预计用时已保留</p>
+      )}
       <TaskProgressEditor key={task.revision} task={task} />
+      {overdue && <RecoveryTargetEditor key={`recovery-${task.revision}`} task={task} now={now} />}
       {task.subject === 'math' && task.progress_mode === 'items' ? (
         <MathTaskItems key={task.revision} task={task} />
       ) : (
@@ -213,6 +218,7 @@ export default function TaskList() {
   }
   return (
     <div className="space-y-5">
+      <PlanningDashboard />
       <TodayCourseSummary />
       {(courseFilter || taskFilter) && (
         <div className="flex items-center gap-3 text-sm text-emerald-900">
