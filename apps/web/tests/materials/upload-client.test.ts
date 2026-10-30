@@ -93,3 +93,93 @@ it('resumes merging by verification only and reports uncertain outcome without a
   )
   expect(fetcher.mock.calls).toHaveLength(2)
 })
+it('settles an aborted sibling before failure unlocks immediate retry and cancellation', async () => {
+  const file = new File([new Uint8Array(8388608)], 'held.bin') as unknown as globalThis.File
+  const hashes = ['a'.repeat(32), 'b'.repeat(32)]
+  const session = {
+    id: 's',
+    name: file.name,
+    size: file.size,
+    subject: 'math',
+    hashes,
+    state: 'uploading',
+    asset_id: null,
+    missingParts: [0, 1],
+    partSize: 4194304,
+  }
+  const original = Error('first lane exhausted')
+  let active = 0,
+    maximum = 0,
+    attempts = 0,
+    phase = 1,
+    returned = false,
+    siblingAborted = false
+  let releaseSibling: () => void = () => {}
+  const retrySignals: AbortSignal[] = []
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (url: string, init: RequestInit) => {
+      if (!url.includes('/parts/')) return Response.json(session)
+      if (phase === 1 && url.endsWith('/0')) {
+        attempts++
+        throw original
+      }
+      active++
+      maximum = Math.max(maximum, active)
+      try {
+        await new Promise<void>((_resolve, reject) => {
+          const signal = init.signal!
+          const abort = () => {
+            if (phase === 1) {
+              siblingAborted = true
+              releaseSibling = () => reject(signal.reason)
+            } else reject(signal.reason)
+          }
+          if (phase === 1) releaseSibling = () => reject(Error('released old sibling'))
+          else retrySignals.push(signal)
+          signal.addEventListener('abort', abort, { once: true })
+        })
+      } finally {
+        active--
+      }
+      return Response.json(session)
+    }),
+  )
+  const first = uploadFile(file, 'math', 't', { sessionId: 's', hash: async () => hashes }).then(
+    () => {
+      returned = true
+      return null
+    },
+    (error) => {
+      returned = true
+      return error
+    },
+  )
+  await vi.waitFor(() => expect(attempts).toBe(3), { timeout: 4000 })
+  // Aborting a request may need asynchronous cleanup. The operation still owns this lane.
+  expect(siblingAborted).toBe(true)
+  expect(returned).toBe(false)
+  expect(active).toBe(1)
+  releaseSibling()
+  expect(await first).toBe(original)
+  expect(active).toBe(0)
+  phase = 2
+  const caller = new AbortController()
+  const add = vi.spyOn(caller.signal, 'addEventListener')
+  const remove = vi.spyOn(caller.signal, 'removeEventListener')
+  const cancelled = Error('user cancelled retry')
+  const retry = uploadFile(file, 'math', 't', {
+    sessionId: 's',
+    signal: caller.signal,
+    hash: async () => hashes,
+  }).catch((error) => error)
+  await vi.waitFor(() => expect(active).toBe(2))
+  caller.abort(cancelled)
+  expect(await retry).toBe(cancelled)
+  expect(active).toBe(0)
+  expect(maximum).toBe(2)
+  expect(retrySignals.every((signal) => signal.aborted)).toBe(true)
+  const linked = add.mock.calls.find(([event]) => event === 'abort')
+  expect(linked).toBeDefined()
+  expect(remove).toHaveBeenCalledWith('abort', linked![1])
+}, 10000)
