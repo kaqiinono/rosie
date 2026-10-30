@@ -4,6 +4,15 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/12',
+    title: '盈亏问题初步',
+    description: '找到物品与分配对象，转化两种分配方案，用总差÷单位差解决盈盈、盈亏、亏亏问题。',
+    icon: '⚖️',
+    lectureNum: '第 12 讲',
+    tags: ['三个不变量', '盈亏·方案转化', '24 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/2/10',
     title: '鸡兔同笼初步',
     description: '头和腿和用假设法，倍数与差倍关系用分组法；遇到几倍多几、几倍少几，先调整成整数倍再还原。',

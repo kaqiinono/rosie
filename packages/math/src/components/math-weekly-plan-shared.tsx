@@ -282,6 +282,16 @@ export const MATH_PLAN_LESSONS = [
     desc: '假设法·分组法·单位差变型',
   },
   {
+    id: '2-12',
+    label: '第12讲 · 盈亏问题初步',
+    short: '盈亏问题',
+    emoji: '⚖️',
+    color: 'rgba(217,119,6,1)',
+    bg: 'rgba(217,119,6,.08)',
+    border: 'rgba(217,119,6,.3)',
+    desc: '盈盈·盈亏·亏亏·方案转化',
+  },
+  {
     id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',

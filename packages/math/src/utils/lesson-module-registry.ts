@@ -261,14 +261,23 @@ import G2Lesson9FilterPanel from '@rosie/math-content/components/lesson/g2/lesso
 import G2Lesson9ProblemList from '@rosie/math-content/components/lesson/g2/lesson9/ProblemList'
 import G2Lesson9ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson9/ProblemDetail'
 import { PROBLEMS as G2Lesson10PROBLEMS, TAG_STYLE as G2Lesson10TAG_STYLE } from '@rosie/math-content/utils/g2/lesson10-data'
+import { PROBLEMS as G2Lesson12PROBLEMS, TAG_STYLE as G2Lesson12TAG_STYLE } from '@rosie/math-content/utils/g2/lesson12-data'
 import G2Lesson10Provider, { useG2Lesson10 } from '@rosie/math-content/components/lesson/g2/lesson10/G2Lesson10Provider'
+import G2Lesson12Provider, { useG2Lesson12 } from '@rosie/math-content/components/lesson/g2/lesson12/G2Lesson12Provider'
 import G2Lesson10HomePage from '@rosie/math-content/components/lesson/g2/lesson10/HomePage'
+import G2Lesson12HomePage from '@rosie/math-content/components/lesson/g2/lesson12/HomePage'
 import G2Lesson10AppHeader from '@rosie/math-content/components/lesson/g2/lesson10/AppHeader'
+import G2Lesson12AppHeader from '@rosie/math-content/components/lesson/g2/lesson12/AppHeader'
 import G2Lesson10Sidebar from '@rosie/math-content/components/lesson/g2/lesson10/Sidebar'
+import G2Lesson12Sidebar from '@rosie/math-content/components/lesson/g2/lesson12/Sidebar'
 import G2Lesson10BottomNav from '@rosie/math-content/components/lesson/g2/lesson10/BottomNav'
+import G2Lesson12BottomNav from '@rosie/math-content/components/lesson/g2/lesson12/BottomNav'
 import G2Lesson10FilterPanel from '@rosie/math-content/components/lesson/g2/lesson10/FilterPanel'
+import G2Lesson12FilterPanel from '@rosie/math-content/components/lesson/g2/lesson12/FilterPanel'
 import G2Lesson10ProblemList from '@rosie/math-content/components/lesson/g2/lesson10/ProblemList'
+import G2Lesson12ProblemList from '@rosie/math-content/components/lesson/g2/lesson12/ProblemList'
 import G2Lesson10ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson10/ProblemDetail'
+import G2Lesson12ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson12/ProblemDetail'
 
 export type LessonModule = {
   PROBLEMS: ProblemSet
@@ -705,6 +714,20 @@ export const LESSON_MODULES: Record<string, LessonModule> = {
     FilterPanel: G2Lesson10FilterPanel,
     ProblemList: G2Lesson10ProblemList,
     ProblemDetail: G2Lesson10ProblemDetail,
+    layoutBgClass: 'bg-[#fffbeb]',
+  },
+  '2-12': {
+    PROBLEMS: G2Lesson12PROBLEMS,
+    TAG_STYLE: G2Lesson12TAG_STYLE,
+    Provider: G2Lesson12Provider,
+    useLesson: useG2Lesson12,
+    HomePage: G2Lesson12HomePage,
+    AppHeader: G2Lesson12AppHeader,
+    Sidebar: G2Lesson12Sidebar,
+    BottomNav: G2Lesson12BottomNav,
+    FilterPanel: G2Lesson12FilterPanel,
+    ProblemList: G2Lesson12ProblemList,
+    ProblemDetail: G2Lesson12ProblemDetail,
     layoutBgClass: 'bg-[#fffbeb]',
   },
 }
