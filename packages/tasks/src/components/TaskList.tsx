@@ -69,6 +69,12 @@ function TaskCard({
       {task.selection_state === 'pending' && (
         <p className="rounded-xl bg-amber-50 p-2 text-sm text-amber-800">待选题 · 预计用时已保留</p>
       )}
+      {((task.mode === 'audio' && !material?.audio.length) ||
+        (task.mode === 'reading' && !href)) && (
+        <p className="rounded-xl bg-amber-50 p-2 text-sm text-amber-800">
+          待准备资料 · 请在学习资料中关联{task.mode === 'audio' ? '多段音频' : '阅读链接'}
+        </p>
+      )}
       <TaskProgressEditor key={task.revision} task={task} />
       {task.subject === 'math' && task.progress_mode === 'items' ? (
         <MathTaskItems key={task.revision} task={task} />

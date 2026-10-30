@@ -23,6 +23,12 @@ do $$ declare t jsonb; tid uuid; rev int; n int; begin
  t:=public.task_set_completion((t->>'id')::uuid,60,1);
  t:=public.task_save_execution(jsonb_build_object('id',t->>'id','items','[{"id":"a","label":"new"}]'::jsonb),2);
  if (t->>'completion_percent')::int<>0 or not exists(select 1 from public.task_progress_events where task_id=(t->>'id')::uuid and payload->'task'->>'completion_percent'='60') then raise exception 'content_reset_history'; end if;
+ if t->'items'->0->>'label'<>'new' or (select items->0->>'label' from public.task_instances where id=(t->>'id')::uuid)<>'new' then raise exception 'percentage_replacement_not_persisted'; end if;
+ t:=public.task_save_execution(jsonb_build_object('id',t->>'id','items','[{"id":"z","label":"first"},{"id":"a","label":"second"}]'::jsonb),3);
+ if t->'items'->0->>'id'<>'z' or t->'items'->1->>'id'<>'a' or (select items from public.task_instances where id=(t->>'id')::uuid)<>t->'items' then raise exception 'replacement_order_lost'; end if;
+ if not exists(select 1 from public.task_progress_events where task_id=(t->>'id')::uuid and revision=3 and payload->'task'->'items'->0->>'label'='new') then raise exception 'accepted_content_history_lost'; end if;
+ t:=public.task_save_execution(jsonb_build_object('id',t->>'id','items','[{"id":"z","label":"first"},{"id":"a","label":"second"}]'::jsonb),4);
+ if (t->>'revision')::int<>4 or (select count(*) from public.task_progress_events where task_id=(t->>'id')::uuid)<>3 then raise exception 'repeat_replacement_not_noop'; end if;
  -- Math overlaps preserve completion by real identity, empty selection retains pending work.
  t:=public.task_save_execution('{"title":"math","subject":"math","progress_mode":"items","items":[{"id":"2-1:homework:2-1-H1","label":"H1"},{"id":"2-1:homework:2-1-H2","label":"H2"}]}',null);
  t:=public.task_set_item_done((t->>'id')::uuid,'2-1:homework:2-1-H1',true);

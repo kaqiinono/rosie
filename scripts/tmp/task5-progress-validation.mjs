@@ -22,7 +22,7 @@ for (const name of (await fs.readdir(`${root}/supabase/migrations`)).filter(n=>n
  if(process.argv.includes('--baseline') && name.includes('tasks_event_lifecycle_repairs')) continue;
  await db.exec(await fs.readFile(`${root}/supabase/migrations/${name}`,'utf8')); console.log('Installed '+name);
 }
-for(const name of ['task-progress.sql']) {
+for(const name of ['task-progress.sql','task-progress-legacy.sql']) {
  try { await db.exec(await fs.readFile(`${root}/supabase/tests/${name}`,'utf8')); console.log(name+' PASS'); }
  catch(e) { console.error(name+' FAIL: '+e.message+' '+e.where); await db.exec('rollback'); failures++; }
 }

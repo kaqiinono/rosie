@@ -93,10 +93,14 @@ const store = createUserSessionStore<CourseDomainData>('independent_tasks', {
     data.rules = data.course_rules.filter((rule) => rule.kind === 'timetabled') as typeof data.rules
     data.templates = data.pool_items
     const current = store.getSessionData(userId)?.tasks ?? []
-    data.tasks = data.tasks.map((task) => {
-      const cached = current.find((t) => t.id === task.id)
-      return cached ? mergeTaskSnapshot(cached, task) : task
-    })
+    // Tasks cannot be deleted by clients: current-only rows may be successful creations
+    // committed after this fetch's task SELECT, while its other table reads were pending.
+    const tasksById = new Map(current.map((task) => [task.id, task]))
+    for (const task of data.tasks) {
+      const cached = tasksById.get(task.id)
+      tasksById.set(task.id, cached ? mergeTaskSnapshot(cached, task) : task)
+    }
+    data.tasks = [...tasksById.values()]
     return data
   },
 })

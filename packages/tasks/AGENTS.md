@@ -221,3 +221,10 @@ flags so `projectCourseEvents` does not forecast already processed work again.
   user store and injects the established ProblemVideoReplay component. Tasks imports no math module.
 - Local execution SQL and actual different-item two-connection lock contention:
   `node scripts/tmp/task5-progress-validation.mjs` (same disposable dependencies as Task4).
+
+- Task5 repair migration `20261030020435_tasks_execution_snapshot_repairs.sql` normalizes
+  accepted item snapshots/order for percentage content replacements too. Metadata-only writes
+  preserve legacy progress, including completed empty checklists; cancel/restore retains completion.
+- Refresh reconciliation retains current-only task rows as well as the highest revision for matching
+  IDs: a task created after the task SELECT must survive remaining background table reads. Tasks
+  cannot be deleted through the application, so removal must never be inferred from an older fetch.
