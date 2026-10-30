@@ -33,7 +33,8 @@ export function validateTaskForm(form: HTMLFormElement, errorId: string): boolea
     field.removeAttribute('aria-invalid'); field.removeAttribute('aria-describedby')
   })
   if (form.checkValidity()) return true
-  const invalid = form.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(':invalid')
+  const invalid = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, select, textarea'))
+    .find(field => field.willValidate && !field.validity.valid)
   invalid?.setAttribute('aria-invalid', 'true')
   invalid?.setAttribute('aria-describedby', errorId)
   invalid?.focus()

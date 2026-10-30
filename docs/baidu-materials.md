@@ -2,7 +2,7 @@
 
 共享物料入口 `/materials`；旧 `/tasks/materials` 是个人材料/录音，不能因升级自动公开。登录用户共享查看/上传资产，课程关联按用户隔离；删除关联不删除资产或网盘文件，创作者/管理员维护元数据与归档。替换内容创建新版本，旧任务引用保持可读。
 
-服务端使用现有 BAIDU_APP_KEY、BAIDU_SECRET_KEY、BAIDU_REDIRECT_URI、SUPABASE_SERVICE_ROLE_KEY 和管理员主账号 OAuth 凭据；这些均不得 NEXT_PUBLIC。授权管理见 `/admin/sync` 与 `docs/baidu-oauth.md`。物料根目录由服务端路径策略约束；客户端只提交相对目录，拒绝越界与任意远端 URL。
+服务端使用现有 BAIDU_APP_KEY、BAIDU_SECRET_KEY、BAIDU_REDIRECT_URI、SUPABASE_SERVICE_ROLE_KEY 和管理员主账号 OAuth 凭据；这些均不得 NEXT_PUBLIC。上传还必须设置服务端 `BAIDU_MATERIAL_UPLOAD_ROOT` 为应用实际获准写入的根目录（普通应用可能是 `/apps/<app>`）；已有 `/airosie` 读取权限不证明写权限。可选 `BAIDU_MATERIAL_MAX_BYTES` 可降低默认 2147483648 字节上限；不支持零字节文件。授权管理见 `/admin/sync` 与 `docs/baidu-oauth.md`。物料根目录由服务端路径策略约束；客户端只提交相对目录，拒绝越界与任意远端 URL。
 
 ## 扫描与关联
 
