@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useTaskMaterialsBridge } from '../materials/TaskMaterialsBridge'
 import {
   getBookAccumulation,
   getBookLessonPassages,
@@ -40,6 +41,7 @@ export default function TasksHost({
   materialAdapter?: TaskMaterialAdapter
 }) {
   const { user } = useAuth()
+  const bridge = useTaskMaterialsBridge()
   const { vocab, ready: wordsReady, error: wordsError } = useWordData(user)
   // Catalog reads only; this adapter never reads or writes a subject's learning progress.
   const g1b = useChineseBookLessons('g1b')
@@ -94,7 +96,7 @@ export default function TasksHost({
       english: englishSource.lessons,
       math: adaptMathCatalog(LESSONS),
       readiness,
-      materials: materialAdapter,
+      materials: materialAdapter ?? bridge.materials,
       readinessFor: (subject, selection): CatalogReadiness =>
         subject === 'chinese' && selection?.book
           ? (bookReadiness[selection.book] ?? {
@@ -128,9 +130,12 @@ export default function TasksHost({
     })
     return {
       ...adapter,
+      renderMaterialPicker: bridge.renderMaterialPicker,
+      renderCourseMaterials: bridge.renderCourseMaterials,
+      renderTaskMaterials: bridge.renderTaskMaterials,
       renderProblemReplay: (problem: import('@rosie/tasks').ProblemOption) =>
         problem.replay_ref ? <ProblemVideoReplay problem={problem} /> : null,
     }
-  }, [user, g1b, g2a, g2b, vocab, wordsReady, wordsError, materialAdapter])
+  }, [user, g1b, g2a, g2b, vocab, wordsReady, wordsError, materialAdapter, bridge])
   return <TasksPage section={section} catalog={catalog} />
 }

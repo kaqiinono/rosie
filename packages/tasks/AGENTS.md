@@ -228,3 +228,12 @@ flags so `projectCourseEvents` does not forecast already processed work again.
 - Refresh reconciliation retains current-only task rows as well as the highest revision for matching
   IDs: a task created after the task SELECT must survive remaining background table reads. Tasks
   cannot be deleted through the application, so removal must never be inferred from an older fetch.
+
+## Shared material integration (Task7, local migration pending)
+
+Application `TaskMaterialsBridge` injects renderMaterialPicker/renderCourseMaterials/renderTaskMaterials
+and `TaskMaterialAdapter.resolve`; tasks never imports materials. Actual CourseEditor binding and pool
+selectors use subject-aware pickers. Course details use immutable selected event content for matching.
+Private recording tables/bucket remain unchanged. `/materials` owns shared asset management.
+Pending resolution updates run under user lock228, preserve old snapshots in task_progress_events,
+increment task/planning revisions, and retain selected/completed/cancelled asset history on archive/unlink.

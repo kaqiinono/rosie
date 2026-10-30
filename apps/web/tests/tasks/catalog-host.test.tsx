@@ -23,6 +23,7 @@ vi.mock('@rosie/math/utils/lesson-module-registry', () => ({
     },
   }),
 }))
+vi.mock('../../../../packages/materials/src/useMaterialData',()=>({useMaterialData:()=>({user:{id:'catalog-user'},data:{assets:[],links:[]},listAssets:()=>[],readyData:async()=>({assets:[],links:[]})})}))
 vi.mock('@rosie/core', () => ({ useAuth: () => ({ user: { id: 'catalog-user' } }) }))
 vi.mock('@rosie/chinese', () => ({
   useChineseBookLessons: (book: string) => ({

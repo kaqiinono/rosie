@@ -51,7 +51,7 @@ function parseWeeks(value: string): number[] | null {
   return [...result].sort((a, b) => a - b)
 }
 export default function CourseEditor({ course, duplicate = false, date, time, calendarId, onClose }: { course?: TaskCourse; duplicate?: boolean; date: string; time?: string; calendarId?: string; onClose: () => void }) {
-  const { api, notify } = useTasks()
+  const { api, notify, catalog } = useTasks()
   const initialEffective = course?.effective_from && course.effective_from > localDate() ? course.effective_from : date < localDate() ? localDate() : date
   const [draft, setDraft] = useState<CourseInput>(() => ({ generation_state: duplicate ? 'active' : course?.generation_state, default_deadline: course?.default_deadline ?? null, course_type: course?.course_type ?? 'timetabled', auto_assign: course?.auto_assign ?? false, auto_advance: course?.auto_advance ?? false, cursor: course?.cursor ?? null, catalog_snapshot_id: course?.catalog_snapshot_id ?? null, rules_revision: duplicate ? undefined : course?.rules_revision, name: course ? `${course.name}${duplicate ? '（副本）' : ''}` : '', subject: course?.subject ?? 'other', calendar_id: course?.calendar_id ?? calendarId ?? null, teacher: course?.teacher ?? '', location: course?.location ?? '', credits: course?.credits ?? null, notes: course?.notes ?? '', color: courseColor(course).value, reminder_minutes: course?.reminder_minutes === undefined ? (api.data.preferences[0]?.settings ?? DEFAULT_TIMETABLE_PREFERENCES).default_reminder_minutes : course.reminder_minutes }))
   const [effective, setEffective] = useState(initialEffective)
@@ -194,7 +194,7 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
         </section>
 
         <CourseLearningSettings key={draft.subject} value={draft} snapshot={snapshot ?? undefined} onChange={edit} onPendingChange={message => { setLearningError(message); if (message) setDirty(true) }} />
-        <CourseTaskBindings items={api.data.pool_items.filter(item => item.subject === null || item.subject === draft.subject || bindings.some(b => b.pool_item_id === item.id))} value={bindings} onChange={value => { setBindings(value); setDirty(true) }} lessons={snapshot?.ordered_lessons} segments={snapshot?.teaching_segments} disabled={saving} />
+        <CourseTaskBindings items={api.data.pool_items.filter(item => item.subject === null || item.subject === draft.subject || bindings.some(b => b.pool_item_id === item.id))} value={bindings} onChange={value => { setBindings(value); setDirty(true) }} lessons={snapshot?.ordered_lessons} segments={snapshot?.teaching_segments} disabled={saving} renderMaterialPicker={catalog.renderMaterialPicker ? props => catalog.renderMaterialPicker!({...props,subject:draft.subject}) : undefined} />
         <section aria-label="课程颜色" className="space-y-2">
           <h3 className="px-1 text-sm font-semibold text-slate-700">课程颜色</h3>
           <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-3">

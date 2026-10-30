@@ -33,7 +33,8 @@ function TaskCard({
   onAudio: () => void
   now: number
 }) {
-  const { api, run, busy } = useTasks()
+  const { api, catalog, run, busy } = useTasks()
+
   const material = api.data.materials.find(
     (m) =>
       m.course_id === task.course_id &&
@@ -75,6 +76,8 @@ function TaskCard({
           待准备资料 · 请在学习资料中关联{task.mode === 'audio' ? '多段音频' : '阅读链接'}
         </p>
       )}
+      {catalog.renderTaskMaterials?.(task.material_assets ?? [])}
+      {task.material_status === 'pending' && <p className="text-sm text-amber-800">待补物料 · 预计用时已保留</p>}
       <TaskProgressEditor key={task.revision} task={task} />
       {task.subject === 'math' && task.progress_mode === 'items' ? (
         <MathTaskItems key={task.revision} task={task} />

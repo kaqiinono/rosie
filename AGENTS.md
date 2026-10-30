@@ -338,3 +338,10 @@ Task execution progress is authoritative through owner-checked execution RPCs, w
 `task_instances` / `task_instance_items` browser DML revoked (Task5 local migration pending).
 Ordinary new tasks use manual percentage; real math items use atomic stable-key completion.
 See `packages/tasks/AGENTS.md` for returned revision/cache and planning-dirty contracts.
+
+### Shared materials
+
+`@rosie/materials` (core-only) owns `/materials`, shared authenticated assets, private course links,
+and app-injected picker/details previews. Tasks retains core/player-only dependencies; `TasksHost`
+injects materials via `TaskMaterialsBridge`. `/tasks/materials` retains private recordings. See
+`packages/materials/AGENTS.md` and README for local-only migration, scope/resolver and Tasks8/9 contracts.

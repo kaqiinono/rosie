@@ -63,7 +63,7 @@ export default function Templates() {
       <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
       <Field label="活动标识（同标识、同阶段、同对象时专项覆盖通用）"><input className={inputClass} value={draft.activity_key} onChange={e => patch({ activity_key: e.target.value })} placeholder="留空自动创建独立活动" /></Field>
       <ScopeFields value={draft.scope} onChange={scope => patch({ scope })} lessons={draft.subject && draft.subject in catalog ? catalog[draft.subject as 'chinese' | 'math' | 'english'] : []} />
-      <MaterialSelectorField value={draft.material_selector} onChange={material_selector => patch({ material_selector })} />
+      <MaterialSelectorField renderMaterialPicker={catalog.renderMaterialPicker ? props => catalog.renderMaterialPicker!({...props,subject:draft.subject ?? 'other'}) : undefined} value={draft.material_selector} onChange={material_selector => patch({ material_selector })} />
       <Field label="进度方式"><select className={inputClass} value={draft.progress_mode} onChange={e => patch({ progress_mode: e.target.value as TemplateDraft['progress_mode'] })}><option value="items">逐项完成</option><option value="percentage">百分比</option></select></Field>
       <Field label="任务名称"><input required maxLength={120} value={draft.name} onChange={e => patch({ name: e.target.value })} className={inputClass} /></Field>
       <Field label="科目"><SubjectSelect all value={draft.subject ?? ''} onChange={v => patch({ subject: v || null })} /></Field>

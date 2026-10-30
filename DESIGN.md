@@ -117,3 +117,12 @@ stays visible next to progress controls; mutation errors remain in the shared ta
 Native select popups and date/datetime fields in execution forms remain browser/OS-owned, including
 calendar locale and popup geometry. Execution forms own validation (`noValidate`); multi-line
 content uses a fixed minimum height and resize-none to keep adjacent controls stable.
+
+## Shared materials
+
+Shared material screens reuse the tasks white/slate/emerald panels, Chinese typography and controls.
+Course detail, pool and binding selectors receive the same application-owned material picker. Subject
+is a default filter; explicit cross-subject selection is supported. Native select popups remain OS-owned.
+Catalog search/filter/page limits are transient inspection state. Lists expose loading/error/empty/count
+states and explicit load more. Text/link preview authenticates access; archiving uses inline confirmation
+explaining retained references. Metadata edits preserve content; replacement is a new asset.

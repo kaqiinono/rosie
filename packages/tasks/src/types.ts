@@ -158,6 +158,7 @@ export type TaskInstance = OwnedRow & {
   selection_state?: 'ready' | 'pending' | 'no_homework'
   material_status?: 'pending' | 'selected' | 'not_required'
   material_assets?: string[]
+  material_selector_snapshot?: import('./courseTypes').MaterialSelector
   content_snapshot?: import('./courseTypes').CourseLessonSnapshot | null
   source_key: string
   status: TaskStatus
@@ -271,6 +272,7 @@ export type CatalogSnapshotResult =
 export type MaterialOption = { id: string; title: string; kind: string; preview_ref: string | null }
 /** The application supplies shared-material access. No material storage or subject dependency here. */
 export type TaskMaterialAdapter = {
+  resolve?: (courseId:string,scope:CourseScope,selector:import('./courseTypes').MaterialSelector,content:import('./courseTypes').CourseLessonSnapshot|null)=>Promise<{status:'pending'|'not_required'|'selected';asset_ids:string[]}>
   listForCourse: (courseId: string, scope: CourseScope) => Promise<MaterialOption[]>
   pickAssets: (subject: Subject, selectedIds: string[]) => Promise<MaterialOption[]>
 }
@@ -283,6 +285,9 @@ export type TaskCatalogAdapter = {
   readiness?: Partial<Record<Subject, CatalogReadiness>>
   readinessFor?: (subject: Subject, selection?: CatalogSelection) => CatalogReadiness
   prepareSnapshot?: (request: CatalogSnapshotRequest) => Promise<CatalogSnapshotResult>
+  renderMaterialPicker?: (props: {subject: Subject;value: import('./courseTypes').MaterialSelector;onChange:(value:import('./courseTypes').MaterialSelector)=>void;disabled?:boolean}) => import('react').ReactNode
+  renderCourseMaterials?: (props: {course:TaskCourse;content:import('./courseTypes').CourseLessonSnapshot|null; snapshot?:CourseCatalogSnapshot}) => import('react').ReactNode
+  renderTaskMaterials?: (ids:string[]) => import('react').ReactNode
   materials?: TaskMaterialAdapter
 }
 export type TasksSection = 'tasks' | 'schedule' | 'timetable' | 'pool' | 'templates' | 'materials'

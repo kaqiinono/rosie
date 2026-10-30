@@ -11,7 +11,7 @@ function getRosiePackages(): string[] {
     return Object.keys(deps).filter((name) => name.startsWith('@rosie/'))
   } catch {
     // Fallback to hardcoded list if dynamic detection fails
-    return ['@rosie/core', '@rosie/rewards', '@rosie/player', '@rosie/ui', '@rosie/calc', '@rosie/math-kit', '@rosie/math-content', '@rosie/math', '@rosie/english', '@rosie/flipbook', '@rosie/audio', '@rosie/chinese', '@rosie/tasks']
+    return ['@rosie/core', '@rosie/rewards', '@rosie/player', '@rosie/ui', '@rosie/calc', '@rosie/math-kit', '@rosie/math-content', '@rosie/math', '@rosie/english', '@rosie/flipbook', '@rosie/audio', '@rosie/chinese', '@rosie/tasks', '@rosie/materials']
   }
 }
 
