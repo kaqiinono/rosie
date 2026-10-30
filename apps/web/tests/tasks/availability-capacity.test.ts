@@ -89,3 +89,11 @@ it('seconds in manual windows and busy intervals never add phantom minutes', () 
   x.courses = [{ id: 'c', starts_at: '2026-10-30T09:01:30Z', ends_at: '2026-10-30T09:02:01Z' }]
   expect(buildCapacityIntervals(x).capacity).toEqual([])
 })
+
+it('malformed public clock input becomes a window issue rather than a RangeError', () => {
+  const x = input()
+  x.windows = [window('bad', '20:00')]
+  expect(
+    buildCapacityIntervals(x).issues.some((i) => i.code === 'availability_invalid_window'),
+  ).toBe(true)
+})

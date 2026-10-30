@@ -171,6 +171,8 @@ export type TaskInstance = OwnedRow & {
   estimated_minutes: number
   material_kind: string
   created_at: string
+  release_at?: string | null
+  recovery_due_at?: string | null
 }
 export type AvailabilityWindow = OwnedRow & {
   weekday: number

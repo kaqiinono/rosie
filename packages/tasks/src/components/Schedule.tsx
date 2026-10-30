@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { localDate, atTime, dateAfter, displayTime } from '../time'
 import { previewOccurrences } from '../timetable'
 import { buildCapacityIntervals } from '../planning/availability'
+import { getTaskExecutionWindow } from '../planning/executionWindow'
 import { applyFixedBlocks } from '../planning/fixedBlocks'
 import type { TaskDemand } from '../planning/types'
 import { getRemainingMinutes } from '../taskProgress'
@@ -39,20 +40,41 @@ export default function Schedule() {
     courses: calendarOccurrences,
     exams: api.data.exams,
   })
-  const demands: TaskDemand[] = api.data.tasks.map((t) => ({
-    key: t.id,
-    task_id: t.id,
-    course_id: t.course_id,
-    batch_key: t.id,
-    origin: 'actual',
-    release_at: t.created_at,
-    due_at: t.due_at ?? '9999-01-01T00:00:00Z',
-    remaining_minutes: getRemainingMinutes(t),
-    priority: 0,
-    certainty: 'confirmed',
-    source_revision: t.revision,
-  }))
-  const blocks = api.data.blocks.filter((b) => b.starts_at < dayEnd && b.ends_at > dayStart)
+  const demands: TaskDemand[] = api.data.tasks.flatMap((t) => {
+    const window = getTaskExecutionWindow(t, now)
+    // Undated explicit reservations supply only their own finite local target here.
+    // This fixed-only display projection must never become movable solver demand.
+    const explicitEnds = api.data.blocks
+      .filter((b) => b.task_id === t.id)
+      .map((b) => Date.parse(b.ends_at))
+      .filter(Number.isFinite)
+    const fixedTarget = explicitEnds.length
+      ? new Date(Math.max(...explicitEnds)).toISOString()
+      : null
+    const deadline = window.due_at ?? fixedTarget
+    return deadline
+      ? [
+          {
+            key: t.id,
+            task_id: t.id,
+            course_id: t.course_id,
+            batch_key: t.id,
+            origin: 'actual' as const,
+            release_at: window.release_at,
+            due_at: deadline,
+            remaining_minutes: getRemainingMinutes(t),
+            priority: 0,
+            certainty: 'confirmed' as const,
+            source_revision: t.revision,
+          },
+        ]
+      : []
+  })
+  const blocks = api.data.blocks.filter(
+    (b) =>
+      Date.parse(b.starts_at) < Date.parse(dayEnd) && Date.parse(b.ends_at) > Date.parse(dayStart),
+  )
+  const editedBlock = api.data.blocks.find((b) => b.id === editing)
   const accounting = applyFixedBlocks(demands, built.capacity, blocks, now)
   const free = applyFixedBlocks(
     [],
@@ -217,7 +239,6 @@ export default function Schedule() {
             value={date}
             onChange={(e) => {
               setDate(e.target.value || localDate())
-              setEditing(null)
             }}
             className={inputClass}
           />
@@ -249,12 +270,25 @@ export default function Schedule() {
             submit(e, async (f) => {
               const starts = atTime(date, text(f, 'start')),
                 ends = atTime(date, text(f, 'end'))
-              if (ends <= starts || !free.some((w) => starts >= w.start && ends <= w.end))
+              if (
+                Date.parse(ends) <= Date.parse(starts) ||
+                !free.some(
+                  (w) =>
+                    Date.parse(starts) >= Date.parse(w.start) &&
+                    Date.parse(ends) <= Date.parse(w.end),
+                )
+              )
                 throw new Error('请选择完整位于当前可用时段内的时间')
               const t = api.data.tasks.find((t) => t.id === task)
               if (!t || t.status === 'completed' || t.status === 'cancelled')
                 throw new Error('请选择未完成任务')
-              if (starts < t.created_at || (t.due_at && ends > t.due_at))
+              const window = getTaskExecutionWindow(t, now)
+              if (window.issue && window.issue.code !== 'missing_deadline')
+                throw new Error(window.issue.detail)
+              if (
+                Date.parse(starts) < Date.parse(window.release_at) ||
+                (window.due_at && Date.parse(ends) > Date.parse(window.due_at))
+              )
                 throw new Error('安排必须在任务可开始和截止时间之内')
               await api.save('blocks', {
                 ...(editing ? { id: editing } : {}),
@@ -287,11 +321,12 @@ export default function Schedule() {
               type="time"
               name="start"
               defaultValue={
-                blocks.find((b) => b.id === editing)?.starts_at
-                  ? new Date(blocks.find((b) => b.id === editing)!.starts_at).toLocaleTimeString(
-                      'en-GB',
-                      { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit' },
-                    )
+                editedBlock?.starts_at
+                  ? new Date(editedBlock!.starts_at).toLocaleTimeString('en-GB', {
+                      timeZone: 'Asia/Shanghai',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
                   : ''
               }
               className={inputClass}
@@ -303,11 +338,12 @@ export default function Schedule() {
               type="time"
               name="end"
               defaultValue={
-                blocks.find((b) => b.id === editing)?.ends_at
-                  ? new Date(blocks.find((b) => b.id === editing)!.ends_at).toLocaleTimeString(
-                      'en-GB',
-                      { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit' },
-                    )
+                editedBlock?.ends_at
+                  ? new Date(editedBlock!.ends_at).toLocaleTimeString('en-GB', {
+                      timeZone: 'Asia/Shanghai',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
                   : ''
               }
               className={inputClass}
@@ -329,6 +365,10 @@ export default function Schedule() {
           return (
             <p key={t.id} className="text-sm text-slate-600">
               {t.title} · 剩余 {getRemainingMinutes(t)} 分钟 / 当天安排后还需 {remaining} 分钟
+              {getTaskExecutionWindow(t, now).deadline_source === 'suggested_recovery'
+                ? ' · 使用今天23:59建议补做目标（原截止不变）'
+                : ''}
+              {t.due_at === null ? ' · 无截止，仅固定覆盖部分纳入安排，剩余待设目标' : ''}
             </p>
           )
         })}

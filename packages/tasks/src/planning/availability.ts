@@ -51,8 +51,8 @@ export function buildCapacityIntervals(input: AvailabilityInput): CapacityBuildR
     if (status === 'zero') continue
     const spans = selected.map((w) => ({
       ...w,
-      start: Date.parse(atTime(date, w.start_time)),
-      end: Date.parse(atTime(date, w.end_time)),
+      start: Date.parse(`${date}T${w.start_time}+08:00`),
+      end: Date.parse(`${date}T${w.end_time}+08:00`),
     }))
     if (!spans.some((w) => !w.unavailable))
       result.issues.push({

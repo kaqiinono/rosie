@@ -90,3 +90,16 @@ it('seconds in now are rounded up and release/deadline violations never count as
   d.due_at = t('10:30')
   expect(applyFixedBlocks([d], cap, [block()], t('10:00')).accepted_allocations).toEqual([])
 })
+
+it('elapsed-only overlap cannot suppress the legal future portion of a current block', () => {
+  const r = applyFixedBlocks(
+    [demand()],
+    [{ ...cap[0], start: t('11:15'), end: t('13:00'), minutes: 105 }],
+    [block('expired', '10:00', '11:00'), block('current', '10:30', '12:00')],
+    t('11:15'),
+  )
+  expect(r.accepted_allocations.reduce((n, a) => n + a.minutes, 0)).toBe(45)
+  expect(r.remaining_demands[0].remaining_minutes).toBe(15)
+  expect(r.conflicts.some((i) => i.code === 'fixed_overlap')).toBe(false)
+  expect(r.conflicts.some((i) => i.code === 'fixed_expired')).toBe(true)
+})

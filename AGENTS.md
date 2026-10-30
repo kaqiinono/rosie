@@ -351,3 +351,7 @@ Shanghai-only manual recurring/date state plus windows; weekends are explicit re
 Fixed arrangements reserve capacity separately from useful remaining work and execution progress.
 Availability/block/exam/schedule edits increment the Task5 server planning revision for Task13;
 see `packages/tasks/AGENTS.md`. New forward migrations remain local until explicitly authorized.
+Execution-window recovery policy is shared by tasks pure `getTaskExecutionWindow` and SQL
+`task_effective_execution_window`: retain original due metadata, use future explicit recovery
+or read-only Shanghai-today23:59 suggestion for overdue work. Undated fixed commitments remain
+block-local; their uncovered remainder never becomes unlimited dated solver demand.

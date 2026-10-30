@@ -23,3 +23,6 @@ export { useTaskData } from './useTaskData'
 export * from './planning/types'
 export { buildCapacityIntervals } from './planning/availability'
 export { applyFixedBlocks } from './planning/fixedBlocks'
+
+export { getTaskExecutionWindow } from './planning/executionWindow'
+export type { TaskExecutionWindow, ExecutionWindowTask } from './planning/executionWindow'

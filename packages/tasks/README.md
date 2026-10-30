@@ -348,3 +348,21 @@ node scripts/tmp/task10-capacity-validation.mjs
 The temporary native SQL harness uses the same disposable embedded PostgreSQL dependency as
 Task9 (`/private/tmp/task4-postgres`) on loopback 55450, full migration order, and only focused
 availability/bootstrap/backfill/isolation/save/move tests. It does not access hosted Supabase.
+
+Task10 review repair adds `getTaskExecutionWindow(task, now)` and forward migration
+`task_fixed_execution_windows`. The helper returns release_at, due_at|null,
+`deadline_source: original|explicit_recovery|suggested_recovery|missing`, and issue|null.
+Persisted release wins over creation time. Original overdue metadata never changes; future
+explicit recovery wins, otherwise unfinished overdue work gets the read-only Shanghai-today
+23:59 suggested recovery target. After that cutoff the current window is unusable, with no
+silent tomorrow target; the suggestion rolls only when measured Shanghai date changes.
+
+Undated work keeps due_at=null: an explicit saved block is its own finite commitment, not
+an unlimited scheduling window. Its uncovered remainder stays pending/unknown. Schedule
+computes useful fixed coverage from accepted block endpoints solely for its display; future
+forecast/solver consumers must model only the covered fixed portion as hard demand, keeping
+undated residual out of dated movable demand. Recovery-target editing belongs to the later
+risk/configuration integration, through audited/versioned APIs.
+
+Additional focused verification includes `tests/tasks/execution-window.test.ts`; the temporary
+SQL harness now runs `task-fixed-execution-window.sql` after the full23-migration chain.

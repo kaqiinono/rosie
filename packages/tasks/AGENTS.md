@@ -264,3 +264,21 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
 - Capacity/schedule mutations and deletions increment `task_user_planning_revisions` for
   Task13. Trigger locks support authenticated edits and the existing private worker runtime.
   Read the server revision for publication; do not manufacture a client revision counter.
+
+### Fixed execution windows (Task10 review repair)
+
+- `getTaskExecutionWindow(task, now)` is the pure TS counterpart of the SQL
+  `task_effective_execution_window`. Use persisted `release_at`; only null legacy release
+  falls back to `created_at`. Original nonoverdue deadline remains authoritative.
+- Overdue unfinished work uses a future explicit `recovery_due_at`, otherwise a read-only
+  suggested Shanghai-today23:59 target. `deadline_source` distinguishes original,
+  explicit_recovery, suggested_recovery and missing. Preserve original/recovery metadata;
+  after23:59 no silent jump to tomorrow (`recovery_window_elapsed`). Recompute on measured
+  Shanghai midnight. Tasks13/14 own an audited editable recovery target, not generic task DML.
+- Undated tasks receive no default. Explicit manual fixed blocks may still be saved with
+  release/now/capacity/overlap validation; that block's end is its local commitment only.
+  Schedule's fixed-only coverage projection uses accepted block endpoints and must not be
+  passed as dated movable demand. Tasks11/12 retain uncovered undated work as unknown/pending.
+- Fixed overlap detection validates/clips future spans before comparing; elapsed-only overlaps
+  cannot suppress useful future credit. Cross-day moves retain the original ID and source
+  clock defaults; all task/block ISO boundary comparisons use numeric instants.

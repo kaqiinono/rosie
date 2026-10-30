@@ -21,13 +21,18 @@ export function applyFixedBlocks(
     .sort((a, b) => a.start - b.start || a.id.localeCompare(b.id))
   const issue = (code: string, ids: string[], detail: string) =>
     result.conflicts.push({ code, affected_keys: ids, detail })
+  const future = spans
+    .filter(
+      (b) => Number.isFinite(b.start) && Number.isFinite(b.end) && b.end > b.start && b.end > clock,
+    )
+    .map((b) => ({ ...b, start: Math.max(clock, b.start) }))
   const overlapping = new Set<string>()
-  for (let i = 0; i < spans.length; i++)
-    for (let j = i + 1; j < spans.length; j++)
-      if (spans[i].start < spans[j].end && spans[j].start < spans[i].end) {
-        overlapping.add(spans[i].id)
-        overlapping.add(spans[j].id)
-        issue('fixed_overlap', [spans[i].id, spans[j].id], '固定安排相互重叠，请调整')
+  for (let i = 0; i < future.length; i++)
+    for (let j = i + 1; j < future.length; j++)
+      if (future[i].start < future[j].end && future[j].start < future[i].end) {
+        overlapping.add(future[i].id)
+        overlapping.add(future[j].id)
+        issue('fixed_overlap', [future[i].id, future[j].id], '固定安排相互重叠，请调整')
       }
   const available = union(
     capacity.map((c) => ({ start: Date.parse(c.start), end: Date.parse(c.end) })),

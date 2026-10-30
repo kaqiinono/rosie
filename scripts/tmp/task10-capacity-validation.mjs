@@ -25,7 +25,7 @@ for (const name of (await fs.readdir(`${root}/supabase/migrations`)).filter(n=>n
  if(name.includes('task_availability_configuration')) await db.exec(`do $$begin if not exists(select 1 from public.task_availability_day_states where user_id='10101010-3333-4333-8333-333333333333' and weekday=6 and state='configured') then raise exception 'legacy backfill lost'; end if; end $$;`); console.log('Installed '+name);
 }
 
-for(const name of ['task-availability-capacity.sql']) {
+for(const name of ['task-availability-capacity.sql','task-fixed-execution-window.sql']) {
  try { await db.exec(await fs.readFile(`${root}/supabase/tests/${name}`,'utf8')); console.log(name+' PASS'); }
  catch(e) { console.error(name+' FAIL: '+e.message+' '+e.where); await db.exec('rollback'); failures++; }
 }
