@@ -355,3 +355,10 @@ Execution-window recovery policy is shared by tasks pure `getTaskExecutionWindow
 `task_effective_execution_window`: retain original due metadata, use future explicit recovery
 or read-only Shanghai-today23:59 suggestion for overdue work. Undated fixed commitments remain
 block-local; their uncovered remainder never becomes unlimited dated solver demand.
+
+Task planning background recomputation uses server-only `TASK_PLANNING_CRON_SECRET`
+and Vault `task_planning_cron_secret` / `task_planning_url` through an explicitly installed
+pg_cron + pg_net job. The Task13 migration does not install or configure live scheduling.
+Owner-authenticated `/api/tasks/planning` and the secret-authenticated internal recompute
+route consume the same pure planning adapter/solver. Snapshot status checks owner revision,
+shared material epoch and bounded time expiry; see `packages/tasks/AGENTS.md`.

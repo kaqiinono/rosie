@@ -393,3 +393,19 @@ rules/exceptions/occurrences, bindings/pool policies, availability, exams, block
 readiness and prior allocations under a consistent persisted planning version. Task13 owns
 transactional snapshot reads or read-before/read-after revision validation with bounded retry,
 and publication/adoption version checks. The structural adapter alone gives no read consistency.
+
+### Planning worker local verification
+
+`node scripts/tmp/task13-planning-validation.mjs` uses the disposable dependencies under
+`/private/tmp/task4-postgres/node_modules`, port55453 and a fresh temporary database.
+It installs the complete task/material migration chain, runs capacity/recovery/adoption/
+alert/ownership SQL assertions, then tests actual independent-connection lease claims,
+material MVCC invalidation, interrupted-worker recovery and monotonic publication.
+No hosted services, production secrets or existing env files are read.
+
+The new planning migration is local only. Server-only `TASK_PLANNING_CRON_SECRET` must
+match Vault `task_planning_cron_secret`; Vault `task_planning_url` is the full HTTPS URL
+of `/api/internal/task-planning/recompute`. The private install function is intentionally
+not executed in the migration. A scheduler presence is not proof of successful delivery.
+`GET /api/tasks/planning` reports explicit staleness and background capability status;
+`POST` recomputes the authenticated owner only. Neither accepts a caller-selected user ID.

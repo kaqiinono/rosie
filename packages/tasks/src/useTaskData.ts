@@ -2,6 +2,7 @@
 
 import { createUserSessionStore, supabase, useAuth } from '@rosie/core'
 import { mergeTaskSnapshot } from './taskProgress'
+import type { PlanningStatus } from './planning/status'
 import type { TaskInstance } from './types'
 import { saveCourseWithCatchup } from './courseEvents'
 import { builtInTemplates } from './defaults'
@@ -34,7 +35,9 @@ const tables = {
 } as const
 export type DataKey = keyof typeof tables
 type Row<K extends DataKey> = CourseDomainData[K][number]
-const empty: CourseDomainData = {
+type SessionData = CourseDomainData & { planning: PlanningStatus | null }
+const empty: SessionData = {
+  planning: null,
   courses: [],
   rules: [],
   exceptions: [],
@@ -77,7 +80,7 @@ async function loadRows<K extends DataKey>(key: K, userId: string): Promise<Row<
   }
   return rows
 }
-const store = createUserSessionStore<CourseDomainData>('independent_tasks', {
+const store = createUserSessionStore<SessionData>('independent_tasks', {
   empty,
   fetch: async (userId) => {
     const { error: initError } = await supabase.rpc('task_initialize', {
@@ -91,7 +94,13 @@ const store = createUserSessionStore<CourseDomainData>('independent_tasks', {
         .filter((key) => key !== 'rules' && key !== 'templates')
         .map(async (key) => [key, await loadRows(key, userId)] as const),
     )
-    const data: CourseDomainData = { ...empty, ...Object.fromEntries(entries) }
+    const { data: planning, error: planningError } = await supabase.rpc('task_planning_status')
+    if (planningError) throw planningError
+    const data: SessionData = {
+      ...empty,
+      ...Object.fromEntries(entries),
+      planning: planning as PlanningStatus,
+    }
     data.rules = data.course_rules.filter((rule) => rule.kind === 'timetabled') as typeof data.rules
     data.templates = data.pool_items
     const current = store.getSessionData(userId)?.tasks ?? []
@@ -107,7 +116,7 @@ const store = createUserSessionStore<CourseDomainData>('independent_tasks', {
   },
 })
 
-function reconcileAliases(data: CourseDomainData, changed: DataKey): CourseDomainData {
+function reconcileAliases(data: SessionData, changed: DataKey): SessionData {
   if (changed === 'templates') data.pool_items = data.templates as CourseDomainData['pool_items']
   if (changed === 'pool_items') data.templates = data.pool_items
   if (changed === 'rules') {
@@ -149,6 +158,7 @@ export function useTaskData() {
     store.patchSessionData(user.id, (prev) => {
       const updated = {
         ...prev,
+        planning: prev.planning ? { ...prev.planning, stale: true } : null,
         [key]: [...(prev[key] as Row<K>[]).filter((r) => r.id !== next.id), next],
       }
       if (key === 'templates' || key === 'pool_items' || key === 'rules' || key === 'course_rules')
@@ -164,6 +174,7 @@ export function useTaskData() {
     const next = data as TaskInstance
     store.patchSessionData(user.id, (prev) => ({
       ...prev,
+      planning: prev.planning ? { ...prev.planning, stale: true } : null,
       tasks: prev.tasks.some((t) => t.id === next.id)
         ? prev.tasks.map((t) => (t.id === next.id ? mergeTaskSnapshot(t, next) : t))
         : [...prev.tasks, next],
@@ -182,7 +193,11 @@ export function useTaskData() {
     const { error } = await supabase.from(tables[key]).delete().eq('user_id', user.id).eq('id', id)
     if (error) throw error
     store.patchSessionData(user.id, (prev) => {
-      const updated = { ...prev, [key]: prev[key].filter((r) => r.id !== id) }
+      const updated = {
+        ...prev,
+        planning: prev.planning ? { ...prev.planning, stale: true } : null,
+        [key]: prev[key].filter((r) => r.id !== id),
+      }
       return key === 'templates' || key === 'pool_items' ? reconcileAliases(updated, key) : updated
     })
   }
@@ -217,7 +232,44 @@ export function useTaskData() {
       return result.status === 'updated' ? id : null
     }, refresh)
   }
+  async function refreshPlanning() {
+    if (!user) throw new Error('请先登录')
+    const { data, error } = await supabase.rpc('task_planning_status')
+    if (error) throw error
+    store.patchSessionData(user.id, (prev) => ({ ...prev, planning: data as PlanningStatus }))
+  }
   return {
+    planning: state.data.planning,
+    refreshPlanning,
+    requestPlanning: async () => {
+      const { data } = await supabase.auth.getSession()
+      const response = await fetch('/api/tasks/planning', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${data.session?.access_token ?? ''}` },
+      })
+      if (!response.ok) throw new Error('规划计算暂不可用')
+      await refreshPlanning()
+    },
+    setPlanningSettings: async (tightRatio: number) => {
+      await rpc('task_set_planning_settings', { p_tight_ratio: tightRatio })
+      await refreshPlanning()
+    },
+    readPlanningAlert: async (batchKey: string, reason: string) => {
+      await rpc('task_read_planning_alert', { p_batch_key: batchKey, p_reason: reason })
+      await refreshPlanning()
+    },
+    acceptPlan: async (
+      revision: number,
+      allocations: import('./planning/types').TaskAllocation[],
+    ) => {
+      await rpc('task_accept_plan', { p_input_revision: revision, p_allocations: allocations })
+      await refresh()
+    },
+    setRecoveryDue: (taskId: string, due: string | null, revision: number) =>
+      execution('task_save_execution', {
+        p_task: { id: taskId, recovery_due_at: due },
+        p_expected_revision: revision,
+      }),
     ...state,
     user,
     execution,

@@ -344,3 +344,39 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
   27 ownership assignments/input, checking all objectives, today minima and headroom.
   Flow complexity O(F V E K), memory O(E K); counterfactual metrics rerun flow per batch.
   Worker/UI publication and scale benchmarking remain outside this pure module.
+
+## Planning snapshots and worker (Task13, local migration pending)
+
+- `task_planning_input` is a service-only STABLE SQL aggregate: every dependent owned
+  table, shared asset catalog, owner revision and shared epoch come from one MVCC view.
+  Client list reads are not planning snapshots. Worker uses the exact app input adapter
+  and pure two-policy solver. Shared assets increment a global epoch; all snapshots
+  compare that epoch as well as owner revision, without locking all owners on asset edits.
+- Lock order for publication/adoption is owner advisory228 → shared epoch SHARE → job
+  row (publication only). Claim uses only job SKIP LOCKED and never awaits an owner lock.
+  Leases last two minutes; renewal cannot revive an expired lease. Interrupted jobs are
+  reclaimable, failures back off (20s through capped 2560s). A slower-than-lease solver
+  loses publication; no production-scale performance guarantee is made.
+- Snapshots expire in at most one minute, earlier at capacity/release/deadline boundaries.
+  `task_planning_status` compares both revisions and server time. UI must also evaluate
+  `isPlanningStale(status, now)` and render stale/unknown rather than retain a green result.
+  `useTaskData` shares planning status/settings/alerts in its existing session store;
+  `refreshPlanning/requestPlanning/setPlanningSettings/readPlanningAlert/acceptPlan`
+  are the Task14 integration APIs. Reading an alert never resolves it.
+- Adoption accepts only server-published movable allocations for actual owner tasks;
+  forecast-only entries explicitly fail `forecast_only_allocation`. One transaction
+  checks revisions, expiry and current time, then the existing fixed-block triggers
+  validate capacity, task windows and overlap. No fabricated task IDs or partial adoption.
+- `setRecoveryDue(taskId,due|null,expectedRevision)` calls `task_save_execution`.
+  Future recovery targets are valid only for open overdue tasks; original due/progress
+  remain untouched and the existing history/revision/dirty protocol applies.
+- Background Cron is not installed by the migration. `private.task_install_planning_cron`
+  is a later authorized installation seam; it requires pg_cron/pg_net/Vault. Vault names
+  are `task_planning_url` (full HTTPS internal endpoint) and `task_planning_cron_secret`,
+  matching server-only `TASK_PLANNING_CRON_SECRET`. No secret is returned or logged.
+  Status distinguishes missing capability/configuration from configured-but-unverified
+  delivery. Actual HTTP execution and production deployment remain unverified.
+- Reproduce local SQL/real two-connection tests with
+  `node scripts/tmp/task13-planning-validation.mjs`; it initializes a disposable native
+  PG instance using the Task4 embedded-postgres dependencies, applies all24 migrations,
+  and cleans up with nonzero exit on failure. No env/remote database is used.
