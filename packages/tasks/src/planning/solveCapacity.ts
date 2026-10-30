@@ -238,3 +238,48 @@ export function computeTodayRequired(input: PlanningInput, batchKey: string | nu
   const p = prepareCapacity(input, 'allow_weekend')
   return feasiblePrepared(p) ? todayPrepared(p, batchKey) : null
 }
+
+/** Is some execution in each scope unavoidable by `through` (inclusive)?
+ * Keep every other demand feasible and all fixed reservations/commitments unchanged.
+ * The canonical solver uses whole minutes: deferring past the threshold moves selected
+ * releases to the first whole minute strictly after it. Null means unknown/infeasible
+ * baseline, invalid threshold, or no outstanding useful work in that scope.
+ * Global urgency is an independent counterfactual, never a sum of batch minima. */
+export function computeExecutionUrgency(
+  input: PlanningInput,
+  through: string,
+  policy: CapacityPolicy = 'allow_weekend',
+): { global: boolean | null; batches: Record<string, boolean | null> } {
+  const p = prepareCapacity(input, policy)
+  const threshold = Date.parse(through)
+  const known =
+    Number.isFinite(threshold) && threshold >= Date.parse(input.now) && feasiblePrepared(p)
+  const cutoff = (Math.floor(threshold / minute) + 1) * minute
+  const total = p.demands.reduce((n, d) => n + d.remaining_minutes, 0)
+  const check = (batch: string | null): boolean | null => {
+    const keys = new Set(
+      p.all
+        .filter((d) => d.remaining_minutes > 0 && (batch === null || d.batch_key === batch))
+        .map((d) => d.key),
+    )
+    if (!known || !keys.size) return null
+    // Useful fixed execution cannot be deferred; excess reservations still consume
+    // capacity but do not create an execution obligation of their own.
+    if (p.fixed.some((a) => keys.has(a.demand_key) && Date.parse(a.start) < cutoff)) return true
+    const demands = p.demands.map((d) =>
+      keys.has(d.key)
+        ? {
+            ...d,
+            release_at: iso(Math.max(Date.parse(d.release_at), cutoff)),
+          }
+        : d,
+    )
+    return runPrepared({ ...p, demands }).total !== total
+  }
+  return {
+    global: check(null),
+    batches: Object.fromEntries(
+      [...new Set(p.all.map((d) => d.batch_key))].map((key) => [key, check(key)]),
+    ),
+  }
+}

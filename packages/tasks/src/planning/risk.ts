@@ -1,3 +1,4 @@
+import { computeExecutionUrgency } from './solveCapacity'
 import { classifyPlanningIssue } from './planningIssues'
 import type {
   BatchMetrics,
@@ -73,17 +74,13 @@ export function buildPlanningRisks(
   input?: PlanningInput,
 ): Record<string, BatchRisk> {
   const now = Date.parse(result.computed_at)
-  const today = new Date(now + 8 * 3600000).toISOString().slice(0, 10)
-  const isNear = (required: number | null, cutoff = Infinity) => {
-    if (!required || !input) return false
-    const todayEnds = input.capacity
-      .filter(
-        (c) => new Date(Date.parse(c.start) + 8 * 3600000).toISOString().slice(0, 10) === today,
+  const urgency = input
+    ? computeExecutionUrgency(
+        input,
+        new Date(now + 3600000).toISOString(),
+        result.policy ?? 'allow_weekend',
       )
-      .filter((c) => Date.parse(c.start) < cutoff)
-      .map((c) => Math.min(Date.parse(c.end), cutoff))
-    return todayEnds.length > 0 && Math.max(...todayEnds) - required * 60000 - now <= 3600000
-  }
+    : null
   const risks = Object.fromEntries(
     Object.entries(result.batch_metrics).map(([key, metrics]) => {
       const keys = new Set([
@@ -109,16 +106,7 @@ export function buildPlanningRisks(
         ['weekday_feasible', 'tight', 'weekend_required'].includes(risk.status)
       )
         risk.status = 'incomplete'
-      const deadlines =
-        input?.demands.filter((d) => d.batch_key === key).map((d) => Date.parse(d.due_at)) ?? []
-      const commitments =
-        input?.undated_work
-          ?.filter((w) => w.key === key)
-          .flatMap((w) => w.commitment_blocks.map((b) => Date.parse(b.ends_at))) ?? []
-      risk.time_near = isNear(
-        risk.actionable_minutes,
-        Math.min(Infinity, ...deadlines, ...commitments),
-      )
+      risk.time_near = (risk.actionable_minutes ?? 0) > 0 && urgency?.batches[key] === true
       return [key, risk]
     }),
   )
@@ -129,7 +117,7 @@ export function buildPlanningRisks(
       actionable_minutes: result.today_required_minutes ?? null,
       unallocated_minutes: 0,
       weekend_minutes: 0,
-      time_near: isNear(result.today_required_minutes ?? null),
+      time_near: urgency?.global === true,
     }
   return risks
 }

@@ -4,7 +4,9 @@ import {
   classifyBatchRisk,
   shouldUpdateRiskAlert,
 } from '../../../../packages/tasks/src/planning/risk'
-import type { BatchMetrics } from '../../../../packages/tasks/src/planning/types'
+import { solveCapacity } from '../../../../packages/tasks/src/planning/solveCapacity'
+import { at, capacity, demand, input } from './fixtures/planning'
+import type { BatchMetrics, PlanningInput } from '../../../../packages/tasks/src/planning/types'
 const metrics: BatchMetrics = {
   remaining_minutes: 100,
   weekday_minutes: 100,
@@ -56,55 +58,47 @@ describe('planning risk', () => {
   })
 })
 
-it('uses the batch deadline for near warnings and keeps global today minimum distinct', () => {
-  const result = {
-    input_revision: 1,
-    computed_at: '2030-10-30T00:00:00Z',
-    horizon_end: '2030-11-30T00:00:00Z',
-    allocations: [],
-    batch_metrics: { batch: { ...metrics, today_required_minutes: 10 } },
-    conflict_groups: [],
-    issues: [],
-    complete: true,
-    today_required_minutes: 20,
-  }
-  const risks = buildPlanningRisks(
-    result,
-    { tight_ratio: 0.2 },
-    {
-      input_revision: 1,
-      now: result.computed_at,
-      horizon_end: result.horizon_end,
-      demands: [
-        {
-          key: 'task',
-          task_id: 'task',
-          course_id: null,
-          batch_key: 'batch',
-          origin: 'actual',
-          release_at: result.computed_at,
-          due_at: '2030-10-30T01:00:00Z',
-          remaining_minutes: 100,
-          priority: 0,
-          certainty: 'confirmed',
-          source_revision: 1,
-        },
-      ],
-      capacity: [
-        {
-          key: 'day',
-          start: result.computed_at,
-          end: '2030-10-30T10:00:00Z',
-          minutes: 600,
-          kind: 'regular',
-        },
-      ],
-      fixed_blocks: [],
-      previous_allocations: [],
-      configuration_issues: [],
-    },
+const day = '2030-10-30'
+function splitInput(minutes = 90) {
+  const i = input(
+    [demand('a', minutes, at(day, '09:00'), at(day, '19:00'))],
+    [capacity(day, '09:00', '10:00'), capacity(day, '18:00', '19:00')],
   )
-  expect(risks.batch.time_near).toBe(true)
-  expect(risks.batch.actionable_minutes).toBe(10)
-  expect(risks.__global_today__.actionable_minutes).toBe(20)
+  i.now = at(day, '08:30')
+  i.horizon_end = at('2030-10-31', '20:00')
+  return i
+}
+function risksFor(i: PlanningInput) {
+  return buildPlanningRisks(solveCapacity(i, 'allow_weekend'), { tight_ratio: 0.2 }, i)
+}
+it('warns exactly one hour before the latest feasible start across split windows', () => {
+  const i = splitInput()
+  const risks = risksFor(i)
+  expect(risks.a.actionable_minutes).toBe(90)
+  expect(risks.a.time_near).toBe(true)
+  expect(risks.__global_today__.time_near).toBe(true)
+  i.now = at(day, '08:29')
+  expect(risksFor(i).a.time_near).toBe(false)
+})
+it('preserves a competing task release and deadline in the batch counterfactual', () => {
+  const i = splitInput()
+  i.capacity[0] = capacity(day, '09:00', '11:00')
+  i.demands.push(demand('b', 60, at(day, '10:00'), at(day, '11:00')))
+  const risks = risksFor(i)
+  expect(risks.a.time_near).toBe(true) // latest09:30: b occupies10–11
+  expect(risks.b.time_near).toBe(false) // b may wait until10:00
+  expect(risks.__global_today__.time_near).toBe(true)
+})
+it('keeps interchangeable batch minima zero while the global obligation is near', () => {
+  const i = splitInput(60)
+  i.now = at(day, '08:00')
+  i.capacity = [capacity(day, '09:00', '10:00'), capacity('2030-10-31', '09:00', '10:00')]
+  i.demands[0].due_at = at('2030-10-31', '10:00')
+  i.demands.push({ ...i.demands[0], key: 'b', task_id: 'b', batch_key: 'b' })
+  const risks = risksFor(i)
+  expect(risks.a.actionable_minutes).toBe(0)
+  expect(risks.b.actionable_minutes).toBe(0)
+  expect(risks.a.time_near).toBe(false)
+  expect(risks.b.time_near).toBe(false)
+  expect(risks.__global_today__).toMatchObject({ actionable_minutes: 60, time_near: true })
 })
