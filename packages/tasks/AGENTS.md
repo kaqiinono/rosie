@@ -191,3 +191,9 @@ flags so `projectCourseEvents` does not forecast already processed work again.
   cursor advancement, including when automation has since been disabled.
 - Local native regression harness: `scripts/tmp/task4-lifecycle-validation.mjs`; setup and
   focused baseline/GREEN commands are in README. No hosted database or env file is needed.
+
+- `20261030011147_tasks_processed_preview_projection.sql` excludes `after_processed` events
+  from both worker preview projection and preview reconciliation before emission/temporary
+  advancement. An early completed timed event keeps scheduled clocks but is already reflected
+  in the live cursor; forecast must not count it a second time. SQL regression:
+  `supabase/tests/task-generation-processed-preview.sql`.

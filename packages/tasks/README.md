@@ -294,3 +294,15 @@ scheduled clocks/deadline policy; first same-day flexible assignment after a ski
 and cancellation-exception deletion for future timed previews and past flexible assignments.
 Restoration preserves source identity, partial/completed progress, original overdue deadlines
 and once-only cursor advancement even with automation now disabled.
+
+Processed-preview regression (early completion advances A→B before scheduled end):
+
+```sh
+node scripts/tmp/task4-lifecycle-validation.mjs --projection-baseline # skips only projection repair; intentional RED
+node scripts/tmp/task4-lifecycle-validation.mjs --projection          # both projection branches GREEN
+```
+
+The dedicated SQL fixture checks first B preview materialization and reconciliation of an
+existing B preview with 60% progress. Both must skip the already processed A event, retain its
+history and live cursor B, and avoid rewriting the existing preview identity/content/progress.
+The default runner includes this fixture; `--related` also checks affected earlier runtime suites.

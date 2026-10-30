@@ -18,10 +18,11 @@ create table storage.objects(id uuid primary key default gen_random_uuid(),bucke
 create function storage.foldername(name text) returns text[] language sql as $$select string_to_array(name,'/')$$;`);
 for (const name of (await fs.readdir(`${root}/supabase/migrations`)).filter(n=>n.includes('task') || n.includes('independent_tasks')).sort()) {
  if(name.includes('tasks_background_generation'))await db.exec(await fs.readFile(`${root}/supabase/tests/task-generation-legacy-seed.sql`,'utf8'));
+ if(process.argv.includes('--projection-baseline') && name.includes('tasks_processed_preview_projection')) continue;
  if(process.argv.includes('--baseline') && name.includes('tasks_event_lifecycle_repairs')) continue;
  await db.exec(await fs.readFile(`${root}/supabase/migrations/${name}`,'utf8')); console.log('Installed '+name);
 }
-for(const name of ['task-generation-early-completion.sql','task-generation-first-activation.sql','task-generation-exception-restore.sql']) {
+for(const name of (process.argv.includes('--projection') || process.argv.includes('--projection-baseline') ? ['task-generation-processed-preview.sql'] : ['task-generation-early-completion.sql','task-generation-first-activation.sql','task-generation-exception-restore.sql','task-generation-processed-preview.sql'])) {
  try { await db.exec(await fs.readFile(`${root}/supabase/tests/${name}`,'utf8')); console.log(name+' PASS'); }
  catch(e) { console.error(name+' FAIL: '+e.message+' '+e.where); await db.exec('rollback'); failures++; }
 }
