@@ -69,7 +69,7 @@ Server allowlist: English/Chinese/math subject trees under `/airosie`, owned by
 apps/web/src/lib/baidu-material-catalog.ts. No arbitrary drive-root input is accepted. POST
 `/api/materials/baidu/scan` creates a durable user checkpoint first (cursor0); repeat unchanged
 rootId/relativePath/recursive/subject plus sessionId/cursor to list one200-entry provider page.
-GET `/api/materials/baidu/scan/{id}` restores the owner's current-account checkpoint. Session data
+GET `/api/materials/baidu/scan/{id}` restores current-account metadata and a bounded review page, never the durable queue/inventory. Session data
 and credentials have no browser table privileges. Bounds are20000 entries,2000 queued folders and
 100000 offset per directory. Failure retains the previous checkpoint and all prior links/assets.
 A retry after a lost response can restore the latest revision with GET. Offset enumeration is not
@@ -94,3 +94,29 @@ Local fixture verification: `pnpm --filter web exec vitest run tests/materials` 
 `node scripts/tmp/task8-material-validation.mjs`. The latter installs the full predecessor task
 migration chain plus OAuth/lease and Task8 into disposable native PostgreSQL, checks real RLS and
 atomic batch-link rollback, and uses two actual connections for a switch racing scan publication.
+
+
+### Task8 review repair: bounded result transport and complete math stems
+
+Provider enumeration and result browsing have independent cursors. POST start creates revision0;
+DirectoryImport immediately performs the first continuation, keeping the checkpoint if listing fails.
+Subsequent POSTs use `cursor` (the current enumeration revision). Each POST response returns only the
+first result page. GET returns `sessionId`, revision/cursor/complete, fileCount/folderCount,
+resultOffset/nextResultOffset, files/folders, rootId/relativePath/recursive/subject. No `state` or directory
+queue is exposed. `GET ?offset=N&revision=R` reads further result pages without advancing enumeration;
+nonzero offsets require the current matching revision. A stale revision returns409. GET without a
+revision restores latest progress, and the UI's always-visible recovery action preserves reviewed
+choices for that session. Cross-page choices retain exact account/fs identity and can be confirmed
+atomically even while enumeration is partial. Browser rendering still uses20-row chunks.
+
+Each response page contains at most100 total entries and120KiB UTF-8 serialized page data, leaving8KiB
+for bounded recovery metadata. The complete GET JSON envelope has an explicit128KiB ceiling. Provider
+paths longer than4096 characters are rejected before checkpoint publication; a byte budget also covers
+long Unicode names/paths, so entry count alone is never used as the transport guarantee. Full durable
+inventory and SQL account/generation/revision publication guards are unchanged. No database migration
+was required for this transport repair; server-to-database checkpoint state remains accumulated.
+
+Math problem aliases now match the complete NFC/case-normalized filename stem (final extension
+removed), including full subquestion suffixes. No arbitrary trailing annotation is silently stripped.
+Real lesson12 `1-12-L2` and `1-12-L2-1` aliases remain different. Identical complete aliases projected
+from different question groups remain multiple candidates, never an automatic link.

@@ -132,3 +132,7 @@ relative paths stay visible; partial results show completion state and a resumab
 Each candidate uses a native range selector and defaults to no association, including exact matches.
 Bulk confirmation uses the existing atomic link API; stale account/session failures preserve selections
 and existing links. Course detail shows original folder paths and a transient association filter.
+
+Directory review pages retain selections across result batches and expose “恢复最新进度” while a
+scan is active. Starting a scan creates its checkpoint then reads the first provider page. Review
+paging is independent of scan continuation; a summary lists the cross-page choices before confirmation.

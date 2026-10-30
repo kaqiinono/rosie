@@ -26,3 +26,8 @@ never import tasks or subject packages. The application injects pickers and narr
 - Scan state lives server-side, not localStorage. Keep the scan number to resume after a reload.
   Partial enumeration never archives absent assets or removes links. Provider offset listing has no
   snapshot guarantee, so even completed enumeration cannot prove absence under concurrent moves.
+
+- Result transport is separate from scan enumeration: at most100 entries/120KiB page data,128KiB
+  full recovery envelope. GET offset pages require a matching revision; no state/queue is browser data.
+  Preserve reviewed exact file identities across pages/recovery; filename aliases require a complete
+  normalized stem so hyphenated subquestions never match their parent alias.

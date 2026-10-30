@@ -26,12 +26,16 @@ export function suggestCourseMaterialLinks(
 ): MatchSuggestion[] {
   return files.map((file) => {
     const text = file.path
+    // Provider aliases describe complete filenames: a hyphen introduces a distinct subquestion.
+    const stem = file.name
+      .replace(/\.[^.]+$/, '')
+      .normalize('NFC')
+      .trim()
+      .toLowerCase()
+    const fullStem = (value: string) => stem === value.normalize('NFC').trim().toLowerCase()
     let candidates: MatchCandidate[] = (snapshot.problems ?? [])
       .filter(
-        (p) =>
-          token(text, p.stable_key) ||
-          (p.aliases ?? []).some((a) => token(text, a)) ||
-          text.includes(p.label),
+        (p) => fullStem(p.stable_key) || (p.aliases ?? []).some(fullStem) || fullStem(p.label),
       )
       .map((p) => ({ label: p.label, scope: { kind: 'problems', problem_keys: [p.stable_key] } }))
     if (!candidates.length)

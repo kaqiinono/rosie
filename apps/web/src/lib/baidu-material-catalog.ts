@@ -1,4 +1,5 @@
 import 'server-only'
+import { materialScanPage } from './baidu-material-page'
 import { createAdminSupabase } from './api-auth'
 import { getBaiduAccountContext } from './baidu-token'
 import { exactBaiduId, parseBaiduJson } from './baidu-identity'
@@ -61,6 +62,11 @@ export type ScanPage = {
   folders: MaterialFile[]
   cursor: string | null
   complete: boolean
+  revision: number
+  resultOffset: number
+  nextResultOffset: number | null
+  fileCount: number
+  folderCount: number
 }
 type ProviderEntry = {
   fs_id: unknown
@@ -84,6 +90,7 @@ export async function advanceScan(
   for (const row of rows) {
     if (
       typeof row.path !== 'string' ||
+      row.path.length > 4096 ||
       /[\\\x00-\x1f]/.test(row.path) ||
       ['.', '..', ''].includes(row.path.split('/').at(-1)!) ||
       row.path.slice(0, row.path.lastIndexOf('/')) !== dir.path ||
@@ -181,7 +188,7 @@ export async function scanMaterialDirectory(input: ScanRequest, userId: string):
       .single()
     if (error) throw Error('scan_storage_error')
     id = data.id
-    return { sessionId: id!, files: [], folders: [], cursor: '0', complete: false }
+    return materialScanPage(id!, state, 0)
   }
   if (!state.complete)
     state = await advanceScan(state, account.accountId, input.recursive, async (dir, offset) => {
@@ -204,7 +211,7 @@ export async function scanMaterialDirectory(input: ScanRequest, userId: string):
         throw Error('baidu_list_failed')
       return body.list as ProviderEntry[]
     })
-  const { data, error } = await db.rpc('material_publish_scan', {
+  const { error } = await db.rpc('material_publish_scan', {
     p_id: id,
     p_user: userId,
     p_revision: revision,
@@ -213,12 +220,5 @@ export async function scanMaterialDirectory(input: ScanRequest, userId: string):
     p_state: state,
   })
   if (error) throw Error('scan_stale_or_account_changed')
-  const entries = data as MaterialFile[]
-  return {
-    sessionId: id!,
-    files: entries.filter((f) => !f.isdir),
-    folders: entries.filter((f) => f.isdir),
-    cursor: state.complete ? null : String(revision + 1),
-    complete: state.complete,
-  }
+  return materialScanPage(id!, state, revision + 1)
 }

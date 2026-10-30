@@ -18,6 +18,11 @@ type Page = {
   folders: MaterialFile[]
   cursor: string | null
   complete: boolean
+  revision: number
+  resultOffset: number
+  nextResultOffset: number | null
+  fileCount: number
+  folderCount: number
 }
 export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
   const initial =
@@ -38,6 +43,7 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
   const [choices, setChoices] = useState<Record<string, string>>({}),
     [resume, setResume] = useState(''),
     [limit, setLimit] = useState(20)
+  const [reviewedFiles, setReviewedFiles] = useState<Record<string, MaterialFile>>({})
   const course = courses.find((c) => c.id === courseId)
   const suggestions = suggestCourseMaterialLinks(
     page?.files ?? [],
@@ -80,6 +86,37 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
     const body = await response.json()
     if (!response.ok) throw Error(body.error ?? '读取失败，请重试')
     return body
+  }
+  function applyPage(result: Page) {
+    setPage(result)
+    setResume(result.sessionId)
+    setLimit(20)
+  }
+  async function recover(id: string) {
+    const result = await request('/api/materials/baidu/scan/' + encodeURIComponent(id))
+    setRoot(result.rootId)
+    setPath(result.relativePath)
+    setRecursive(result.recursive)
+    setSubject(result.subject)
+    if (page && page.sessionId !== result.sessionId) {
+      setChoices({})
+      setReviewedFiles({})
+    }
+    applyPage(result as Page)
+  }
+  async function browse(offset: number) {
+    if (!page) return
+    applyPage(
+      (await request(
+        '/api/materials/baidu/scan/' +
+          encodeURIComponent(page.sessionId) +
+          '?' +
+          new URLSearchParams({
+            offset: String(offset),
+            revision: String(page.revision),
+          }).toString(),
+      )) as Page,
+    )
   }
   async function work(fn: () => Promise<void>) {
     if (lock.current) return
@@ -164,6 +201,7 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
             onChange={(e) => {
               setCourseId(e.target.value)
               setChoices({})
+              setReviewedFiles({})
             }}
           >
             <option value="">请选择课程</option>
@@ -182,15 +220,25 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
             disabled={busy || page?.complete}
             onClick={() =>
               void work(async () => {
-                const result = (await request('/api/materials/baidu/scan', {
+                let result = (await request('/api/materials/baidu/scan', {
                   rootId: root,
                   relativePath: path,
                   recursive,
                   subject,
                   ...(page ? { sessionId: page.sessionId, cursor: page.cursor } : {}),
                 })) as Page
-                setPage(result)
-                setResume(result.sessionId)
+                applyPage(result)
+                if (!page && result.cursor === '0') {
+                  result = (await request('/api/materials/baidu/scan', {
+                    rootId: root,
+                    relativePath: path,
+                    recursive,
+                    subject,
+                    sessionId: result.sessionId,
+                    cursor: '0',
+                  })) as Page
+                  applyPage(result)
+                }
                 await api.refresh()
               })
             }
@@ -205,6 +253,7 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
               onClick={() => {
                 setPage(null)
                 setChoices({})
+                setReviewedFiles({})
                 setMessage('可重新选择目录；旧关联保留。')
               }}
             >
@@ -212,7 +261,16 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
             </button>
           )}
         </div>
-        {!page && (
+        {page ? (
+          <button
+            className={buttonClass}
+            disabled={busy}
+            type="button"
+            onClick={() => void work(() => recover(page.sessionId))}
+          >
+            恢复最新进度
+          </button>
+        ) : (
           <div className="space-y-2">
             <label className="block">
               恢复扫描编号
@@ -226,23 +284,7 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
               className={buttonClass}
               disabled={busy || !resume}
               type="button"
-              onClick={() =>
-                void work(async () => {
-                  const s = await request('/api/materials/baidu/scan/' + encodeURIComponent(resume))
-                  setRoot(s.root_id)
-                  setPath(s.relative_path)
-                  setRecursive(s.recursive)
-                  setSubject(s.subject)
-                  setPage({
-                    sessionId: s.id,
-                    files: s.state.entries.filter((f: { isdir: boolean }) => !f.isdir),
-                    folders: s.state.entries.filter((f: { isdir: boolean }) => f.isdir),
-                    cursor: s.state.complete ? null : String(s.revision),
-                    complete: s.state.complete,
-                  })
-                  setChoices({})
-                })
-              }
+              onClick={() => void work(() => recover(resume))}
             >
               恢复扫描
             </button>
@@ -251,10 +293,14 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
         {page && (
           <>
             <p role="status">
-              {page.complete ? '目录读取完成' : '目录尚未读完'} · {page.files.length} 份文件 ·{' '}
-              {page.folders.length} 个文件夹
+              {page.complete ? '目录读取完成' : '目录尚未读完'} · {page.fileCount} 份文件 ·{' '}
+              {page.folderCount} 个文件夹
             </p>
             <p className="text-xs break-all">扫描编号：{page.sessionId}</p>
+            <p className="text-sm">
+              当前结果批次：从第 {page.resultOffset + 1} 项起；本批 {page.files.length} 份文件、
+              {page.folders.length} 个文件夹。
+            </p>
             <details>
               <summary>已发现的文件夹</summary>
               {page.folders.map((f) => (
@@ -280,7 +326,10 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
                     disabled={busy || !course}
                     className={inputClass}
                     value={choices[s.file.fs_id] ?? ''}
-                    onChange={(e) => setChoices({ ...choices, [s.file.fs_id]: e.target.value })}
+                    onChange={(e) => {
+                      setChoices({ ...choices, [s.file.fs_id]: e.target.value })
+                      setReviewedFiles({ ...reviewedFiles, [s.file.fs_id]: s.file })
+                    }}
                   >
                     <option value="">暂不关联</option>
                     {options.map((o, i) => (
@@ -302,6 +351,48 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
                 加载更多文件
               </button>
             )}
+            <div className="flex flex-wrap gap-2">
+              {page.resultOffset > 0 && (
+                <button
+                  className={buttonClass}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void work(() => browse(0))}
+                >
+                  返回首批文件
+                </button>
+              )}
+              {page.nextResultOffset !== null && (
+                <button
+                  className={buttonClass}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void work(() => browse(page.nextResultOffset!))}
+                >
+                  查看下一批文件
+                </button>
+              )}
+            </div>
+            {Object.values(choices).some(Boolean) && (
+              <details>
+                <summary>已审核选择（跨批次保留）</summary>
+                {Object.entries(choices)
+                  .filter(([, scope]) => scope)
+                  .map(([id]) => (
+                    <p key={id} className="text-sm break-all">
+                      {reviewedFiles[id]?.name}
+                      <button
+                        className={buttonClass}
+                        type="button"
+                        disabled={busy}
+                        onClick={() => setChoices({ ...choices, [id]: '' })}
+                      >
+                        取消选择
+                      </button>
+                    </p>
+                  ))}
+              </details>
+            )}
             <button
               className={buttonClass}
               type="button"
@@ -317,25 +408,27 @@ export function DirectoryImport({ courses }: { courses: DirectoryCourse[] }) {
                   const fresh = await api.readyData()
                   await api.linkCourseMaterials(
                     courseId,
-                    suggestions
-                      .filter((s) => choices[s.file.fs_id])
-                      .map((s, i) => {
+                    Object.entries(choices)
+                      .filter(([, scope]) => scope)
+                      .map(([id, scope], i) => {
+                        const file = reviewedFiles[id]
                         const asset = fresh.assets.find(
                           (a) =>
-                            a.account_id === s.file.account_id &&
-                            a.fs_id === s.file.fs_id &&
+                            a.account_id === file.account_id &&
+                            a.fs_id === file.fs_id &&
                             a.version === 1,
                         )
                         if (!asset) throw Error('文件尚未就绪，请继续读取后重试')
                         return {
                           asset_id: asset.id,
-                          scope: JSON.parse(choices[s.file.fs_id]) as MaterialScope,
+                          scope: JSON.parse(scope) as MaterialScope,
                           role: 'general',
                           sort_order: i,
                         }
                       }),
                   )
                   setChoices({})
+                  setReviewedFiles({})
                   setMessage('已批量关联所选物料。')
                 })
               }
