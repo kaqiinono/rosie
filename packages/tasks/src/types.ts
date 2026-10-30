@@ -150,7 +150,7 @@ export type TaskInstance = OwnedRow & {
   course_id: string | null
   occurrence_id: string | null
   template_id: string | null
-  template_snapshot?: { item_source?: string }
+  template_snapshot?: { item_source?: string; trigger?: TaskTemplate['trigger'] }
   course_event_id?: string | null
   revision: number
   progress_mode: 'percentage' | 'items'

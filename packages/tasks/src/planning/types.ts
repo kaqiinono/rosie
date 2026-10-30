@@ -13,6 +13,8 @@ export type TaskDemand = {
   priority: number
   certainty: Certainty
   source_revision: number
+  original_due_at?: string | null
+  deadline_source?: 'original' | 'explicit_recovery' | 'suggested_recovery' | 'missing'
 }
 export type CapacityInterval = {
   key: string
@@ -49,6 +51,17 @@ export type BatchMetrics = {
   certainty: Certainty
 }
 export type ConflictGroup = { demand_keys: string[]; course_ids: string[]; missing_minutes: number }
+/** Undated work is never ordinary movable demand. Only explicitly saved blocks may be
+ * validated/credited as local commitments; uncovered minutes stay unknown. */
+export type UndatedWork = {
+  key: string
+  task_id: string | null
+  course_id: string | null
+  origin: 'actual' | 'forecast'
+  release_at: string
+  remaining_minutes: number
+  commitment_blocks: TaskTimeBlock[]
+}
 export type PlanningInput = {
   input_revision: number
   now: string
@@ -57,6 +70,7 @@ export type PlanningInput = {
   capacity: CapacityInterval[]
   fixed_blocks: TaskTimeBlock[]
   previous_allocations: TaskAllocation[]
+  undated_work?: UndatedWork[]
   configuration_issues: PlanningIssue[]
 }
 export type PlanningResult = {

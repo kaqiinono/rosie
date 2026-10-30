@@ -366,3 +366,30 @@ risk/configuration integration, through audited/versioned APIs.
 
 Additional focused verification includes `tests/tasks/execution-window.test.ts`; the temporary
 SQL harness now runs `task-fixed-execution-window.sql` after the full23-migration chain.
+
+### Shared forecast input
+
+Browser and worker callers use `apps/web/src/lib/task-planning-input.ts` with the same
+owner snapshot, `input_revision`, and explicit ISO `now`. The adapter takes readable shared
+material assets/links and calls the same pure resolver as formal generation; it performs no I/O.
+`@rosie/tasks/planning` contains `projectCourseTasks`, `mergeActualAndForecast`,
+`buildPlanningInput`, capacity/fixed functions and shared types without React/Supabase imports.
+
+Forecast source keys come directly from the event matcher. Actual rows, including completed
+or cancelled rows, replace their prediction. Remaining pending selection/material work keeps
+its estimate and issue. Manual-only configured courses report `manual_demand_unmodeled`;
+advance-only automation may simulate progress but never invents automatic homework.
+
+The rolling window is 28 days extended to known deadlines/next homework, capped at 180.
+Cross-boundary tasks produce diagnostics and are excluded from movable capacity competition;
+`horizon_end`/`coverage_end` describe coverage, never a promise about unmodeled future load.
+The SQL runtime preview cap (256) is unrelated to this pure projector's coverage.
+Undated work and its saved fixed blocks are separate `undated_work`; the allocator must
+validate fixed commitments while leaving uncovered work unknown, without inventing a due date.
+Fixed reservations have not been deducted by the input builder: apply them exactly once.
+
+The snapshot reader must include tasks/items/progress, courses/cursors/catalogs, event snapshots,
+rules/exceptions/occurrences, bindings/pool policies, availability, exams, blocks, material links/
+readiness and prior allocations under a consistent persisted planning version. Task13 owns
+transactional snapshot reads or read-before/read-after revision validation with bounded retry,
+and publication/adoption version checks. The structural adapter alone gives no read consistency.

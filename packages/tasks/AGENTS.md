@@ -282,3 +282,23 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
 - Fixed overlap detection validates/clips future spans before comparing; elapsed-only overlaps
   cannot suppress useful future credit. Cross-day moves retain the original ID and source
   clock defaults; all task/block ISO boundary comparisons use numeric instants.
+
+## Forecast planning (Task11)
+
+- `@rosie/tasks/planning` exports pure planning functions/types only; safe in browser/server.
+  `projectCourseTasks` reuses canonical event enumeration, matching, cursor and deadlines.
+  Always provide persisted events AND occurrences, owner ID and a fixed `now`.
+- `buildPlanningInput` combines actual remaining execution with forecast by exact source key;
+  actual zero/completed/cancelled rows suppress predictions too. Preserve original deadlines
+  and shared execution-window recovery source. Never mutate a real cursor while projecting.
+- Coverage starts at 28 days, extends through known deadlines and each course's next homework
+  deadline, and caps at 180 days. `forecast_boundary`/`outside_forecast_range`/missing metadata
+  are incomplete coverage, not zero workload. SQL runtime's 256 preview limit is separate;
+  the pure projection is not sliced to 256. Propagate stored runtime issues.
+- Undated remaining work lives in `PlanningInput.undated_work`, never ordinary movable demand.
+  `commitment_blocks` are explicit local commitments only; Task12 must validate their fixed
+  capacity/release/overlap and keep uncovered remaining minutes unknown. No default due is made.
+- App-owned `buildTaskPlanningInput` injects the canonical shared-material resolver using a
+  readable asset catalog and owned course links. Actual tasks retain immutable material state.
+  This pure adapter does not read DB revisions: Task13 owns a consistent snapshot/retry and
+  publication check against the persisted planning revision. Do not deduce safety from stale reads.
