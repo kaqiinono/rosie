@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { buildTaskBatchKey } from '../../../../packages/tasks/src/planning/batchKey'
 import fixtures from '../../../../supabase/tests/fixtures/course-runtime.json'
 import {
   projectCourseTasks,
@@ -430,4 +431,166 @@ it('keeps formally emitted and projected activities in the same phase batch', ()
   expect(buildPlanningInput(s, now).demands.find((d) => d.key === f.key)?.batch_key).toBe(
     f.batch_key,
   )
+})
+
+it('subtracts a class straddling horizon before exposing capacity to another course demand', () => {
+  const s = snapshot()
+  s.bindings = []
+  s.courses[0].auto_assign = false
+  s.rules = [
+    {
+      ...s.rules[0],
+      kind: 'timetabled',
+      weekday: 4,
+      start_time: '07:00',
+      end_time: '09:00',
+      valid_from: '2026-11-26',
+    },
+  ]
+  s.windows = [
+    {
+      id: 'w',
+      user_id: 'u',
+      on_date: '2026-11-26',
+      weekday: 4,
+      start_time: '07:00',
+      end_time: '10:00',
+    },
+  ]
+  s.tasks = [
+    actual('other-course', {
+      course_id: 'other',
+      release_at: '2026-11-25T23:00:00Z',
+      due_at: '2026-11-26T00:00:00Z',
+      completion_percent: 0,
+    }),
+  ]
+  const result = buildPlanningInput(s, now)
+  expect(result.horizon_end).toBe('2026-11-26T00:00:00.000Z')
+  const demand = result.demands.find((d) => d.key === 'other-course')!
+  expect(demand.remaining_minutes).toBe(20)
+  const legalMinutes = result.capacity.reduce(
+    (sum, c) =>
+      sum +
+      Math.max(
+        0,
+        Math.min(Date.parse(c.end), Date.parse(demand.due_at)) -
+          Math.max(Date.parse(c.start), Date.parse(demand.release_at)),
+      ) /
+        60000,
+    0,
+  )
+  expect(legalMinutes).toBe(0)
+  expect(result.capacity.filter((c) => c.start.startsWith('2026-11-25T23:'))).toEqual([])
+})
+
+it.each([
+  ['2026-10-30T09:00:00+00:00', '2026-11-06T08:00:00Z'],
+  ['2026-10-30T17:00:00+08:00', '2026-11-06T16:00:00.000+08:00'],
+])('keeps batch identity for equivalent stored ISO timestamps %s', (release, due) => {
+  const s = snapshot()
+  const f = projectCourseTasks({ ...s, now }).demands[0]
+  s.tasks = [
+    actual(f.key, {
+      template_snapshot: { trigger: 'after_class' },
+      release_at: release,
+      due_at: due,
+    }),
+  ]
+  expect(buildPlanningInput(s, now).demands.find((d) => d.key === f.key)?.batch_key).toBe(
+    f.batch_key,
+  )
+  expect(s.tasks[0].due_at).toBe(due)
+})
+
+it('marks empty real-item actual demand incomplete without explicit pending flag', () => {
+  const s = snapshot()
+  s.tasks = [
+    actual('empty-items', { progress_mode: 'items', items: [], selection_state: undefined }),
+  ]
+  const result = buildPlanningInput(s, now)
+  expect(result.configuration_issues).toContainEqual(
+    expect.objectContaining({ code: 'selection_pending', affected_keys: ['t', 'empty-items'] }),
+  )
+  expect(result.demands.find((d) => d.key === 'empty-items')).toMatchObject({
+    remaining_minutes: 20,
+    certainty: 'incomplete',
+  })
+})
+
+it('preserves undated actual pending diagnostics when replacing its forecast', () => {
+  const s = snapshot()
+  s.pool_items[0].progress_mode = 'items'
+  s.pool_items[0].material_selector = { kind: 'auto' }
+  const f = projectCourseTasks({ ...s, now }).demands[0]
+  s.tasks = [
+    actual(f.key, {
+      due_at: null,
+      progress_mode: 'items',
+      items: [],
+      selection_state: 'pending',
+      material_status: 'pending',
+    }),
+  ]
+  const result = buildPlanningInput(s, now)
+  expect(result.demands.some((d) => d.key === f.key)).toBe(false)
+  expect(result.undated_work?.filter((d) => d.key === f.key)).toMatchObject([
+    { origin: 'actual', remaining_minutes: 20 },
+  ])
+  expect(result.configuration_issues).toContainEqual(
+    expect.objectContaining({ code: 'missing_deadline', affected_keys: ['t'] }),
+  )
+  for (const code of ['material_pending', 'selection_pending']) {
+    expect(
+      result.configuration_issues.filter((i) => i.code === code && i.affected_keys.includes(f.key)),
+    ).toMatchObject([{ affected_keys: ['t', f.key] }])
+  }
+})
+
+it('retains pending diagnostics for unfinished actual work outside forecast range', () => {
+  const s = snapshot()
+  s.tasks = [
+    actual('far-pending', {
+      due_at: '2027-10-01T00:00:00Z',
+      progress_mode: 'items',
+      items: [],
+      material_status: 'pending',
+    }),
+  ]
+  const result = buildPlanningInput(s, now)
+  expect(result.demands.some((d) => d.key === 'far-pending')).toBe(false)
+  for (const code of ['outside_forecast_range', 'material_pending', 'selection_pending']) {
+    expect(
+      result.configuration_issues.some(
+        (i) => i.code === code && i.affected_keys.includes('far-pending'),
+      ),
+    ).toBe(true)
+  }
+})
+
+it('preserves null and original overdue deadline semantics in normalized batch identities', () => {
+  expect(JSON.parse(buildTaskBatchKey(null, 'after_class', now, null))).toEqual([
+    null,
+    'after_class',
+    now,
+    null,
+  ])
+  const s = snapshot()
+  s.tasks = [
+    actual('overdue-batch', {
+      due_at: '2026-10-28T20:00:00+08:00',
+      release_at: '2026-10-28T01:00:00Z',
+      recovery_due_at: '2026-10-30T12:00:00Z',
+      template_snapshot: { trigger: 'confirmed' },
+    }),
+  ]
+  const demand = buildPlanningInput(s, now).demands.find((d) => d.key === 'overdue-batch')!
+  expect(JSON.parse(demand.batch_key)).toEqual([
+    'c',
+    'after_class',
+    '2026-10-28T01:00:00.000Z',
+    '2026-10-28T12:00:00.000Z',
+  ])
+  expect(demand.original_due_at).toBe('2026-10-28T20:00:00+08:00')
+  expect(demand.due_at).toBe('2026-10-30T12:00:00Z')
 })

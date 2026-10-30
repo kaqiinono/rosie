@@ -10,6 +10,7 @@ import type { CourseException, CourseOccurrence, TaskCourse } from '../types'
 import type { MatchedActivity } from '../taskPool'
 import { localDate } from '../time'
 import { getTaskExecutionWindow } from './executionWindow'
+import { buildTaskBatchKey } from './batchKey'
 import type { PlanningIssue, TaskDemand, UndatedWork } from './types'
 
 const DAY = 86400000
@@ -136,7 +137,17 @@ export function projectCourseTasks(input: ForecastInput): ForecastResult {
     undated_work: UndatedWork[] = []
   const events: CourseEvent[] = []
   for (const { course, candidates, catalog, projection, windows } of groups) {
-    events.push(...candidates.filter((e) => Date.parse(e.release_at) <= horizon))
+    // Capacity follows class occupancy, independently of when its homework releases.
+    events.push(
+      ...candidates.filter(
+        (e) =>
+          Date.parse(e.release_at) <= horizon ||
+          (e.starts_at &&
+            e.ends_at &&
+            Date.parse(e.starts_at) < horizon &&
+            Date.parse(e.ends_at) > clock),
+      ),
+    )
     const activeBindings = input.bindings.filter(
       (b) => b.user_id === input.user_id && b.course_id === course.id && b.enabled,
     )
@@ -257,12 +268,7 @@ export function projectCourseTasks(input: ForecastInput): ForecastResult {
         key: activity.source_key,
         task_id: null,
         course_id: course.id,
-        batch_key: JSON.stringify([
-          course.id,
-          activity.trigger === 'confirmed' ? 'after_class' : activity.trigger,
-          window.release_at,
-          window.due_at,
-        ]),
+        batch_key: buildTaskBatchKey(course.id, activity.trigger, window.release_at, window.due_at),
         origin: 'forecast',
         release_at: window.release_at,
         due_at: execution.due_at!,

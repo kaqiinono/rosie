@@ -8,6 +8,7 @@ import type {
 import { getRemainingMinutes } from '../taskProgress'
 import { buildCapacityIntervals } from './availability'
 import { getTaskExecutionWindow } from './executionWindow'
+import { buildTaskBatchKey } from './batchKey'
 import { mergeActualAndForecast, projectCourseTasks, type ForecastInput } from './forecast'
 import type { PlanningInput, PlanningIssue, TaskAllocation, TaskDemand, UndatedWork } from './types'
 export type UserPlanningSnapshot = Omit<ForecastInput, 'now' | 'known_deadlines'> & {
@@ -36,6 +37,22 @@ export function buildPlanningInput(snapshot: UserPlanningSnapshot, now: string):
     undated: UndatedWork[] = []
   for (const task of owned) {
     const remaining = getRemainingMinutes(task)
+    const materialPending = remaining > 0 && task.material_status === 'pending'
+    const selectionPending =
+      remaining > 0 &&
+      (task.selection_state === 'pending' || (task.progress_mode === 'items' && !task.items.length))
+    if (materialPending)
+      issues.push({
+        code: 'material_pending',
+        affected_keys: [task.id, task.source_key],
+        detail: '暂缺物料，保留估计分钟',
+      })
+    if (selectionPending)
+      issues.push({
+        code: 'selection_pending',
+        affected_keys: [task.id, task.source_key],
+        detail: '待选题，保留估计分钟',
+      })
     const window = getTaskExecutionWindow(task, now)
     if (window.issue && remaining > 0) issues.push(window.issue)
     if (!window.due_at) {
@@ -59,33 +76,16 @@ export function buildPlanningInput(snapshot: UserPlanningSnapshot, now: string):
       })
       continue
     }
-    if (remaining > 0 && task.material_status === 'pending')
-      issues.push({
-        code: 'material_pending',
-        affected_keys: [task.id, task.source_key],
-        detail: '暂缺物料，保留估计分钟',
-      })
-    if (
-      remaining > 0 &&
-      (task.selection_state === 'pending' || (task.progress_mode === 'items' && !task.items.length))
-    )
-      issues.push({
-        code: 'selection_pending',
-        affected_keys: [task.id, task.source_key],
-        detail: '待选题，保留估计分钟',
-      })
     actual.push({
       key: task.source_key,
       task_id: task.id,
       course_id: task.course_id,
-      batch_key: JSON.stringify([
+      batch_key: buildTaskBatchKey(
         task.course_id,
-        task.template_snapshot?.trigger === 'confirmed'
-          ? 'after_class'
-          : (task.template_snapshot?.trigger ?? task.due_kind),
+        task.template_snapshot?.trigger ?? task.due_kind,
         window.release_at,
         task.due_at,
-      ]),
+      ),
       origin: 'actual',
       release_at: window.release_at,
       due_at: window.due_at,
@@ -93,10 +93,7 @@ export function buildPlanningInput(snapshot: UserPlanningSnapshot, now: string):
       deadline_source: window.deadline_source,
       remaining_minutes: remaining,
       priority: 0,
-      certainty:
-        window.issue || task.selection_state === 'pending' || task.material_status === 'pending'
-          ? 'incomplete'
-          : 'confirmed',
+      certainty: window.issue || selectionPending || materialPending ? 'incomplete' : 'confirmed',
       source_revision: task.revision,
     })
   }
