@@ -52,6 +52,19 @@ describe('shared material access and resolution', () => {
       ),
     ).toEqual({ status: 'selected', asset_ids: ['a'] })
   })
+  it('resolves course-less explicit shared assets and none without inventing auto links', () => {
+    expect(
+      resolveMaterials('u', null, { kind: 'assets', asset_ids: ['a'] }, null, [asset('a')], []),
+    ).toEqual({ status: 'selected', asset_ids: ['a'] })
+    expect(resolveMaterials('u', null, { kind: 'none' }, null, [], [])).toEqual({
+      status: 'not_required',
+      asset_ids: [],
+    })
+    expect(resolveMaterials('u', null, { kind: 'auto' }, null, [asset('a')], [link('a')])).toEqual({
+      status: 'pending',
+      asset_ids: [],
+    })
+  })
   it('distinguishes real problem namespaces and current teaching segment', () => {
     expect(
       scopeMatchesContent({ kind: 'problems', problem_keys: ['13:class:real1'] }, content),

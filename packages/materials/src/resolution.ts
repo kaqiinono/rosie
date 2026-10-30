@@ -43,7 +43,7 @@ export function scopeMatchesContent(
 /** Same policy as private.task_resolve_materials. Existing snapshots keep archived IDs; new selections require ready. */
 export function resolveMaterials(
   user: string,
-  course: string,
+  course: string | null,
   selector: AssetSelector,
   content: MaterialContent | null,
   assets: MaterialAsset[],

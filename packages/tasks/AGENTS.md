@@ -237,3 +237,8 @@ selectors use subject-aware pickers. Course details use immutable selected event
 Private recording tables/bucket remain unchanged. `/materials` owns shared asset management.
 Pending resolution updates run under user lock228, preserve old snapshots in task_progress_events,
 increment task/planning revisions, and retain selected/completed/cancelled asset history on archive/unlink.
+
+- Task7 review repair `20261030031333_tasks_material_resolution_repairs.sql` applies material
+  resolution to the same independent once/weekly emitter (course-less explicit assets/none; auto
+  stays pending). Event emitters write the exact effective selector on intentional revisions even
+  when template JSON is unchanged. Insertion fallback never rebases later progress/metadata edits.

@@ -17,19 +17,25 @@ async function loadRows(table: string, user?: string) {
   }
   throw Error('物料过多，无法完整读取。请联系管理员。')
 }
-const store = createUserSessionStore<{ assets: MaterialAsset[]; links: CourseMaterialLink[] }>(
-  'shared-materials',
-  {
-    empty: { assets: [], links: [] },
-    fetch: async (user) => {
-      const [assets, links] = await Promise.all([
-        loadRows('material_assets'),
-        loadRows('course_material_links', user),
-      ])
-      return { assets: assets as MaterialAsset[], links: links as CourseMaterialLink[] }
-    },
+type MaterialData = { assets: MaterialAsset[]; links: CourseMaterialLink[] }
+// The shared store intentionally keeps ready display data during background refresh.
+// Track every actual fetch (including remount retries) so all forecast consumers await
+// the same latest read, rather than interpreting stale display readiness as authority.
+const latestReads = new Map<string, Promise<MaterialData>>()
+const store = createUserSessionStore<MaterialData>('shared-materials', {
+  empty: { assets: [], links: [] },
+  fetch: (user) => {
+    const pending = Promise.all([
+      loadRows('material_assets'),
+      loadRows('course_material_links', user),
+    ]).then(([assets, links]) => ({
+      assets: assets as MaterialAsset[],
+      links: links as CourseMaterialLink[],
+    }))
+    latestReads.set(user, pending)
+    return pending
   },
-)
+})
 export function useMaterialData() {
   const { user } = useAuth()
   const state = store.useSessionData(user)
@@ -43,7 +49,18 @@ export function useMaterialData() {
     readyData: async () => {
       const userId = uid()
       await store.ensureLoaded(userId)
+      for (;;) {
+        const latest = latestReads.get(userId)
+        if (!latest) break
+        try {
+          await latest
+        } catch (error) {
+          if (latestReads.get(userId) === latest) throw error
+        }
+        if (latestReads.get(userId) === latest) break
+      }
       const snapshot = store.getSnapshot(userId)
+      if (snapshot.error) throw snapshot.error
       if (snapshot.status !== 'ready') throw snapshot.error ?? Error('物料尚未就绪')
       return snapshot.data
     },

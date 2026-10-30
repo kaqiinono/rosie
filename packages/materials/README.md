@@ -23,10 +23,13 @@ asset preview into the existing task/course UI. Subject is a default picker filt
   Link writes call this atomically. Revision increments, append-only old task snapshot history and planning
   revision triggers remain authoritative. Selected/completed/cancelled histories are never cleared on unlink/archive.
 - `task_instances.material_selector_snapshot` freezes the effective binding/pool selector at insertion or
-  template revision. Pending refresh uses this snapshot, never a later mutable binding.
+  intentional generator revision, including binding-only explicit event revisions. Pending refresh uses
+  this snapshot, never a later mutable binding or unrelated progress/metadata update. The insertion
+  trigger only supplies a fallback for legacy/manual callers; it does not rebase updates.
 - `private.task_resolve_materials(user,course,scope,selector,content)` retains Task4's canonical signature.
   None returns not_required, explicit ready IDs or auto links matching immutable target content return selected,
-  otherwise pending. No signed URL output. Scope is already resolved by the event matcher; content is the
+  otherwise pending. Independent once/weekly emission uses the same resolver; a null course supports
+  explicit shared assets or none, while auto remains pending without a course. No signed URL output. Scope is already resolved by the event matcher; content is the
   effective current/next target. Forecast Task11 uses injected `materials.resolve` with the same policy.
 
 `MaterialScope` is all/unit(book+unit)/lessons(lesson_keys)/segments(segment_keys)/problems(problem_keys).
@@ -44,3 +47,12 @@ They own provider preview/download/upload/scan. No Baidu transport is claimed by
 `node scripts/tmp/task7-material-validation.mjs` uses disposable native PostgreSQL with the full task migration
 chain plus the materials migration; dependencies are installed at `/private/tmp/task4-postgres` (see Tasks guide).
 No env or remote database is used. SQL tests roll back. The temporary harness is diagnostics, not a public CLI.
+
+
+Review repair migration `20261030031333_tasks_material_resolution_repairs.sql` is forward-only.
+The existing independent and event emitters write the exact effective selector with their material
+result, preserving source identities, revision/history behavior and user lock228. `readyData()` awaits
+the latest actual fetch promise shared by all hooks for the user (including automatic initial/retry
+reads), then rejects recorded errors even while the session store retains ready display data.
+Local focused regressions: `tests/materials/material-readiness.test.tsx`,
+`supabase/tests/material-independent-generation.sql`, `supabase/tests/material-selector-revision.sql`.

@@ -272,7 +272,7 @@ export type CatalogSnapshotResult =
 export type MaterialOption = { id: string; title: string; kind: string; preview_ref: string | null }
 /** The application supplies shared-material access. No material storage or subject dependency here. */
 export type TaskMaterialAdapter = {
-  resolve?: (courseId:string,scope:CourseScope,selector:import('./courseTypes').MaterialSelector,content:import('./courseTypes').CourseLessonSnapshot|null)=>Promise<{status:'pending'|'not_required'|'selected';asset_ids:string[]}>
+  resolve?: (courseId:string|null,scope:CourseScope,selector:import('./courseTypes').MaterialSelector,content:import('./courseTypes').CourseLessonSnapshot|null)=>Promise<{status:'pending'|'not_required'|'selected';asset_ids:string[]}>
   listForCourse: (courseId: string, scope: CourseScope) => Promise<MaterialOption[]>
   pickAssets: (subject: Subject, selectedIds: string[]) => Promise<MaterialOption[]>
 }

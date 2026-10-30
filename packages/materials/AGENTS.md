@@ -14,3 +14,9 @@ never import tasks or subject packages. The application injects pickers and narr
   Text/link are implemented; provider scanning/uploads/file proxy are follow-up Tasks8/9, not client credentials.
 - Use theme utilities, labeled native controls, local validation, explicit loading/error/empty states.
   Native select geometry is OS-owned. Search/filter/paging are transient inspection state, not persistent data.
+
+- Forecast `readyData` awaits the latest actual read across consumers and rejects refresh errors,
+  even when the session store deliberately keeps ready display data. Do not use display status alone.
+- Once/weekly tasks resolve explicit/none selectors with a null course through the same canonical
+  resolver. Generators explicitly snapshot effective selectors on intentional revision; triggers
+  must not rebase that policy from unrelated binding or progress changes.
