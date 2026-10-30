@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isPlanningStale } from '../../planning/status'
 import type { TaskAllocation } from '../../planning/types'
 import { Panel, Field, inputClass, minorClass, buttonClass, useTasks } from '../shared'
@@ -8,9 +8,22 @@ import CourseRiskList from './CourseRiskList'
 import CourseGantt from './CourseGantt'
 import AllocationDetails from './AllocationDetails'
 import type { GanttView } from './GanttAxis'
-import { allocationKey, planningDay, planningTime, riskLabels } from './presentation'
+import {
+  allocationKey,
+  planningDay,
+  planningTime,
+  riskLabels,
+  planningWork,
+  issueCourses,
+  usefulFixedMinutes,
+} from './presentation'
 
 export default function PlanningDashboard() {
+  const { api } = useTasks()
+  const snapshot = api.data.planning?.snapshot
+  return <PlanningDashboardContent key={`${snapshot?.input_revision}:${snapshot?.computed_at}`} />
+}
+function PlanningDashboardContent() {
   const { api, run, busy, notify } = useTasks()
   const status = api.data.planning
   const snapshot = status?.snapshot
@@ -31,10 +44,17 @@ export default function PlanningDashboard() {
       document.removeEventListener('visibilitychange', update)
     }
   }, [])
-  useEffect(() => {
-    setSelection([])
+  const detailTrigger = useRef<HTMLElement | null>(null)
+  const selectAllocation = (allocation: TaskAllocation) => {
+    detailTrigger.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null
+    setDetail(allocation)
+  }
+  const closeDetail = () => {
     setDetail(null)
-  }, [snapshot?.computed_at, snapshot?.input_revision, policy])
+    detailTrigger.current?.focus()
+  }
+  const work = planningWork(snapshot?.input.demands ?? [], snapshot?.input.undated_work)
   const stale = now === 0 || isPlanningStale(status, now)
   const result = snapshot?.result[policy]
   const names = Object.fromEntries(api.data.courses.map((c) => [c.id, c.name]))
@@ -130,6 +150,8 @@ export default function PlanningDashboard() {
               value={policy}
               onChange={(e) => {
                 setPolicy(e.target.value as typeof policy)
+                setSelection([])
+                setDetail(null)
                 setError('')
               }}
             >
@@ -157,6 +179,7 @@ export default function PlanningDashboard() {
           <CourseRiskList
             result={result}
             demands={snapshot.input.demands}
+            undated={snapshot.input.undated_work}
             tasks={api.data.tasks}
             courseNames={names}
             risks={policy === 'allow_weekend' ? snapshot.risks : undefined}
@@ -171,7 +194,16 @@ export default function PlanningDashboard() {
               <ul className="space-y-2 text-sm">
                 {result.issues.map((i, n) => (
                   <li key={n} className="break-words">
-                    {i.detail || '配置不完整，请检查可用时段、课程与任务。'}
+                    {i.detail || '配置不完整，请检查可用时段、课程与任务。'}{' '}
+                    {issueCourses(i, names, work).map((id) => (
+                      <a
+                        key={id}
+                        className="ml-2 text-emerald-800 underline"
+                        href={`/tasks/timetable?course=${encodeURIComponent(id)}`}
+                      >
+                        配置{names[id]}
+                      </a>
+                    ))}
                   </li>
                 ))}
               </ul>
@@ -193,19 +225,7 @@ export default function PlanningDashboard() {
                 {api.data.tasks.find((t) => t.id === b.task_id)?.title ?? '任务'} ·{' '}
                 {planningTime(b.starts_at)} — {planningTime(b.ends_at)} · 保留占用{' '}
                 {Math.round((Date.parse(b.ends_at) - Date.parse(b.starts_at)) / 60000)} 分钟 ·
-                本次有效工作{' '}
-                {result.allocations
-                  .filter(
-                    (a) =>
-                      a.fixed &&
-                      a.start >= b.starts_at &&
-                      a.end <= b.ends_at &&
-                      snapshot.input.demands.some(
-                        (d) => d.key === a.demand_key && d.task_id === b.task_id,
-                      ),
-                  )
-                  .reduce((n, a) => n + a.minutes, 0)}{' '}
-                分钟
+                本次有效工作 {usefulFixedMinutes(b, result.allocations, work)} 分钟
               </p>
             ))}
             <p className="text-sm">已完成或超出所需部分仍占用时段。请到时间安排手动移动或释放。</p>
@@ -233,17 +253,18 @@ export default function PlanningDashboard() {
             <CourseGantt
               result={result}
               demands={snapshot.input.demands}
+              undated={snapshot.input.undated_work}
               capacity={snapshot.input.capacity}
               view={view}
               courseNames={names}
               selectedBatch={batch}
-              onSelectAllocation={setDetail}
+              onSelectAllocation={selectAllocation}
             />
             {detail && (
               <AllocationDetails
                 allocation={detail}
-                demand={snapshot.input.demands.find((d) => d.key === detail.demand_key)}
-                onClose={() => setDetail(null)}
+                demand={work.find((d) => d.key === detail.demand_key)}
+                onClose={closeDetail}
               />
             )}
           </section>

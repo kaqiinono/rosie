@@ -1,16 +1,17 @@
 'use client'
 
-import type { PlanningResult, TaskDemand } from '../../planning/types'
+import type { PlanningResult, TaskDemand, UndatedWork } from '../../planning/types'
 import type { BatchRisk } from '../../planning/risk'
 import type { TaskInstance } from '../../types'
 import { getTaskCompletion } from '../../taskProgress'
 import { minorClass } from '../shared'
-import { planningTime, riskLabels, riskOrder } from './presentation'
+import { planningTime, riskLabels, riskOrder, planningWork, issueCourses } from './presentation'
 
 type Props = {
   result: PlanningResult
   onSelectBatch: (key: string) => void
   demands?: TaskDemand[]
+  undated?: UndatedWork[]
   tasks?: TaskInstance[]
   courseNames?: Record<string, string>
   risks?: Record<string, BatchRisk>
@@ -20,27 +21,55 @@ export default function CourseRiskList({
   result,
   onSelectBatch,
   demands = [],
+  undated = [],
   tasks = [],
   courseNames = {},
   risks = {},
   stale = false,
 }: Props) {
+  const work = planningWork(demands, undated)
+  const issueOnlyCourses = Object.entries(courseNames).filter(
+    ([id]) =>
+      !work.some((w) => w.course_id === id) &&
+      result.issues.some((i) => issueCourses(i, courseNames, work).includes(id)),
+  )
   const entries = Object.entries(result.batch_metrics).sort(([a, x], [b, y]) => {
     const severity =
       riskOrder[risks[a]?.status ?? x.status] - riskOrder[risks[b]?.status ?? y.status]
     const due = (key: string) =>
-      Math.min(...demands.filter((d) => d.batch_key === key).map((d) => Date.parse(d.due_at)))
+      Math.min(
+        ...work.filter((d) => d.batch_key === key && d.due_at).map((d) => Date.parse(d.due_at!)),
+      )
     return severity || due(a) - due(b) || a.localeCompare(b)
   })
   return (
     <div className="space-y-3">
+      {issueOnlyCourses.map(([id, name]) => (
+        <article key={id} className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <h3 className="font-bold">{name} · 信息不完整</h3>
+          {result.issues
+            .filter((i) => issueCourses(i, courseNames, work).includes(id))
+            .map((i, n) => (
+              <p key={n} className="text-sm">
+                {i.detail}
+              </p>
+            ))}
+          <p className="text-sm">尚无可计算任务批次；负荷未知，不能判断容量充足。</p>
+          <a
+            className="text-sm text-emerald-800 underline"
+            href={`/tasks/timetable?course=${encodeURIComponent(id)}`}
+          >
+            配置{name}
+          </a>
+        </article>
+      ))}
       {!entries.length && (
         <p className="text-sm text-slate-600">
           当前没有可计算批次。请检查课程、任务与七天可用时段配置；这不代表容量充足。
         </p>
       )}
       {entries.map(([key, m]) => {
-        const batch = demands.filter((d) => d.batch_key === key)
+        const batch = work.filter((d) => d.batch_key === key)
         const course = batch.find((d) => d.course_id)?.course_id
         const ids = new Set(batch.flatMap((d) => (d.task_id ? [d.task_id] : [])))
         const actual = tasks.filter(
@@ -59,7 +88,7 @@ export default function CourseRiskList({
           : !result.complete
             ? '信息不完整'
             : riskLabels[risks[key]?.status ?? m.status]
-        const due = batch.map((d) => d.due_at).sort()[0]
+        const due = batch.flatMap((d) => (d.due_at ? [d.due_at] : [])).sort()[0]
         const safe =
           !stale && result.complete && (risks[key]?.status ?? m.status) === 'weekday_feasible'
         return (

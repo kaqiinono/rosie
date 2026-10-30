@@ -1,16 +1,19 @@
 'use client'
+import { useEffect, useRef } from 'react'
 import type {
   PlanningResult,
   TaskDemand,
   CapacityInterval,
   TaskAllocation,
+  UndatedWork,
 } from '../../planning/types'
 import { minorClass } from '../shared'
 import GanttAxis, { type GanttView } from './GanttAxis'
-import { allocationKey, planningDay, planningTime } from './presentation'
+import { allocationKey, planningDay, planningTime, planningWork } from './presentation'
 type Props = {
   result: PlanningResult
   demands: TaskDemand[]
+  undated?: UndatedWork[]
   capacity: CapacityInterval[]
   view: GanttView
   onSelectAllocation: (allocation: TaskAllocation) => void
@@ -20,13 +23,40 @@ type Props = {
 export default function CourseGantt({
   result,
   demands,
+  undated = [],
   capacity,
   view,
   onSelectAllocation,
   courseNames = {},
   selectedBatch,
 }: Props) {
-  const courses = Array.from(new Set(demands.map((d) => d.course_id)))
+  const work = planningWork(demands, undated)
+  const scroller = useRef<HTMLDivElement>(null)
+  const selectedWork = work.filter((w) => w.batch_key === selectedBatch)
+  const allocationStarts = result.allocations
+    .filter((a) => selectedWork.some((w) => w.key === a.demand_key))
+    .map((a) => Date.parse(a.start))
+  const targetTime = Math.min(
+    ...(allocationStarts.length
+      ? allocationStarts
+      : selectedWork.map((w) =>
+          Date.parse(w.release_at) > Date.parse(result.computed_at)
+            ? Date.parse(w.release_at)
+            : Date.parse(w.due_at ?? result.computed_at),
+        )),
+  )
+  const targetDay = Number.isFinite(targetTime)
+    ? planningDay(new Date(targetTime).toISOString())
+    : null
+  useEffect(() => {
+    const root = scroller.current
+    if (!root || !targetDay) return
+    const target = root.querySelector<HTMLElement>(`[data-planning-day="${targetDay}"]`)
+    const first = root.querySelector<HTMLElement>('[data-planning-day]')
+    if (target && first)
+      root.scrollTo?.({ left: Math.max(0, target.offsetLeft - first.offsetLeft), behavior: 'auto' })
+  }, [targetDay, selectedBatch, view, result.computed_at])
+  const courses = Array.from(new Set(work.map((d) => d.course_id)))
   const start = planningDay(result.computed_at),
     end = planningDay(result.horizon_end)
   const days: string[] = []
@@ -39,7 +69,7 @@ export default function CourseGantt({
   const shown = result.allocations.filter(
     (a) =>
       !selectedBatch ||
-      demands.some((d) => d.key === a.demand_key && d.batch_key === selectedBatch) ||
+      work.some((d) => d.key === a.demand_key && d.batch_key === selectedBatch) ||
       a.demand_key === selectedBatch,
   )
   return (
@@ -49,7 +79,14 @@ export default function CourseGantt({
         正式建议：实线 · 未来预计：虚线 ·
         已固定：双线。已固定表示占用时间，不表示已完成。周末仅人工时段计容量。
       </p>
+      <button
+        className={minorClass}
+        onClick={() => scroller.current?.scrollTo?.({ left: 0, behavior: 'auto' })}
+      >
+        回到今天
+      </button>
       <div
+        ref={scroller}
         className="hidden overflow-x-auto rounded-xl border border-slate-200 md:block"
         tabIndex={0}
         aria-label="甘特图，可横向滚动"
@@ -60,7 +97,7 @@ export default function CourseGantt({
             <div key={batchKey} className="flex min-w-max border-b border-slate-200">
               <div className="sticky left-0 z-10 w-52 shrink-0 space-y-2 border-r border-slate-200 bg-white p-3 text-sm">
                 <h4 className="font-bold">
-                  {courseNames[demands.find((d) => d.batch_key === batchKey)?.course_id ?? ''] ??
+                  {courseNames[work.find((d) => d.batch_key === batchKey)?.course_id ?? ''] ??
                     '独立任务'}{' '}
                   · 批次
                 </h4>
@@ -82,6 +119,7 @@ export default function CourseGantt({
                 return (
                   <div
                     key={slot.key}
+                    data-planning-day={day}
                     className={`w-52 shrink-0 space-y-2 border-r border-slate-200 p-3 ${weekend ? 'bg-amber-50' : 'bg-white'}`}
                   >
                     <p className="font-semibold">
@@ -96,15 +134,13 @@ export default function CourseGantt({
                     {shown
                       .filter(
                         (a) =>
-                          (demands.some(
-                            (d) => d.key === a.demand_key && d.batch_key === batchKey,
-                          ) ||
+                          (work.some((d) => d.key === a.demand_key && d.batch_key === batchKey) ||
                             a.demand_key === batchKey) &&
                           Date.parse(a.start) < Date.parse(slot.end) &&
                           Date.parse(a.end) > Date.parse(slot.start),
                       )
                       .map((a) => {
-                        const d = demands.find((d) => d.key === a.demand_key)
+                        const d = work.find((d) => d.key === a.demand_key)
                         return (
                           <button
                             key={allocationKey(a)}
@@ -122,16 +158,17 @@ export default function CourseGantt({
                           </button>
                         )
                       })}
-                    {demands
+                    {work
                       .filter(
                         (d) =>
                           d.batch_key === batchKey &&
+                          d.due_at !== null &&
                           planningDay(d.due_at) === day &&
                           (!selectedBatch || selectedBatch === d.batch_key),
                       )
                       .map((d) => (
                         <p key={d.key} className="border-l-2 border-slate-700 pl-2 text-xs">
-                          截止点 · {planningTime(d.due_at)}
+                          截止点 · {d.due_at && planningTime(d.due_at)}
                         </p>
                       ))}
                   </div>
@@ -170,7 +207,7 @@ export default function CourseGantt({
           <summary className="cursor-pointer rounded py-2 font-semibold focus-visible:outline-2">
             {course ? (courseNames[course] ?? '课程') : '独立任务'} · 展开任务
           </summary>
-          {demands
+          {work
             .filter(
               (d) => d.course_id === course && (!selectedBatch || d.batch_key === selectedBatch),
             )
@@ -178,7 +215,8 @@ export default function CourseGantt({
               <details key={d.key} className="mt-2 rounded-lg bg-slate-50 p-3">
                 <summary className="cursor-pointer text-sm break-words focus-visible:outline-2">
                   {d.origin === 'forecast' ? '未来预计任务' : '正式任务'} · 可开始{' '}
-                  {planningTime(d.release_at)} · 截止 {planningTime(d.due_at)} · 剩余{' '}
+                  {planningTime(d.release_at)} ·{' '}
+                  {d.due_at ? `截止 ${planningTime(d.due_at)}` : '未设置截止，仅固定承诺'} · 剩余{' '}
                   {d.remaining_minutes} 分钟
                 </summary>
                 {d.task_id && (

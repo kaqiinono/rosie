@@ -35,3 +35,52 @@ describe('course risk view', () => {
     expect(screen.getByText(/不可相加/)).toBeInTheDocument()
   })
 })
+
+import { undatedScenario } from './planning-view-fixture'
+it('preserves course identity, actual completion and missing-deadline labels for solver fixed-only work', () => {
+  const s = undatedScenario()
+  expect(s.input.demands).toHaveLength(0)
+  expect(s.result.allow_weekend.allocations).toHaveLength(2)
+  expect(s.result.allow_weekend.batch_metrics['undated-partial'].unallocated_minutes).toBe(30)
+  expect(s.result.allow_weekend.batch_metrics['undated-full'].unallocated_minutes).toBe(0)
+  render(
+    <CourseRiskList
+      result={s.result.allow_weekend}
+      demands={s.input.demands}
+      {...{ undated: s.input.undated_work }}
+      tasks={s.tasks}
+      courseNames={{ math: '数学', english: '英语' }}
+      onSelectBatch={() => {}}
+    />,
+  )
+  expect(screen.getByRole('heading', { name: /数学/ })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: /英语/ })).toBeInTheDocument()
+  expect(screen.getAllByText(/未设置截止 · 仅固定承诺/)).toHaveLength(2)
+  expect(screen.getAllByText(/25%/)).toHaveLength(2)
+})
+it('identifies two issue-only courses without inventing metrics', () => {
+  render(
+    <CourseRiskList
+      result={{
+        ...result,
+        batch_metrics: {},
+        issues: ['manual-a', 'manual-b'].map((id) => ({
+          code: 'manual_demand_unmodeled',
+          affected_keys: [id, 'event'],
+          detail: '手动任务尚未建模',
+        })),
+      }}
+      courseNames={{ 'manual-a': '美术', 'manual-b': '音乐' }}
+      onSelectBatch={() => {}}
+    />,
+  )
+  expect(screen.getByRole('link', { name: '配置美术' })).toHaveAttribute(
+    'href',
+    '/tasks/timetable?course=manual-a',
+  )
+  expect(screen.getByRole('link', { name: '配置音乐' })).toHaveAttribute(
+    'href',
+    '/tasks/timetable?course=manual-b',
+  )
+  expect(screen.queryByText(/独立余量：/)).not.toBeInTheDocument()
+})

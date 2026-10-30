@@ -6,7 +6,7 @@ import type { TaskInstance } from '../../../../packages/tasks/src/types'
 import { TasksContext } from '../../../../packages/tasks/src/components/shared'
 import PlanningDashboard from '../../../../packages/tasks/src/components/planning/PlanningDashboard'
 import RecoveryTargetEditor from '../../../../packages/tasks/src/components/planning/RecoveryTargetEditor'
-import { input, result } from './planning-view-fixture'
+import { undatedScenario, input, result } from './planning-view-fixture'
 const task: TaskInstance = {
   id: 'task-1',
   title: '数学练习',
@@ -36,14 +36,18 @@ const accept = vi.fn(),
   recover = vi.fn(),
   read = vi.fn(),
   settings = vi.fn()
-function mount(child: React.ReactNode, expires = '2099-01-01T00:00:00Z') {
+function mount(
+  child: React.ReactNode,
+  expires = '2099-01-01T00:00:00Z',
+  scenario?: ReturnType<typeof undatedScenario>,
+) {
   const api = {
     data: {
       courses: [
         { id: 'math', name: '数学' },
         { id: 'english', name: '英语' },
       ],
-      tasks: [task],
+      tasks: scenario?.tasks ?? [task],
       planning: {
         stale: false,
         settings: { tight_ratio: 0.2 },
@@ -53,8 +57,8 @@ function mount(child: React.ReactNode, expires = '2099-01-01T00:00:00Z') {
           computed_at: input.now,
           horizon_end: input.horizon_end,
           next_recompute_at: expires,
-          input,
-          result: { allow_weekend: result, regular_only: result },
+          input: scenario?.input ?? input,
+          result: scenario?.result ?? { allow_weekend: result, regular_only: result },
           risks: {},
         },
         alerts: [
@@ -122,4 +126,27 @@ describe('planning interactions', () => {
     )
     expect(screen.getByText(/原截止/)).toHaveTextContent('仍标记逾期')
   })
+})
+
+it('credits useful fixed work for undated tasks when persisted timestamps use offsets', () => {
+  const s = undatedScenario()
+  mount(<PlanningDashboard />, undefined, s)
+  expect(
+    screen.getByText(/数学练习 · .*保留占用 30 分钟 · 本次有效工作 30 分钟/),
+  ).toBeInTheDocument()
+  expect(
+    screen.getByText(/英语听读 · .*保留占用 30 分钟 · 本次有效工作 30 分钟/),
+  ).toBeInTheDocument()
+})
+it('focuses keyboard-opened details and restores the allocation trigger', async () => {
+  HTMLElement.prototype.scrollIntoView = vi.fn()
+  mount(<PlanningDashboard />)
+  const trigger = screen
+    .getAllByRole('button')
+    .find((b) => b.textContent?.includes('正式建议') && b.textContent?.includes('50 分钟'))!
+  trigger.focus()
+  fireEvent.click(trigger)
+  expect(screen.getByRole('region', { name: '片段详情' })).toHaveFocus()
+  fireEvent.click(screen.getByRole('button', { name: '收起详情' }))
+  expect(trigger).toHaveFocus()
 })

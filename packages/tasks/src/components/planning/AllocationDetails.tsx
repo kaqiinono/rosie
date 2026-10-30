@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useRef } from 'react'
 import type { TaskAllocation, TaskDemand } from '../../planning/types'
 import { minorClass } from '../shared'
 import { planningTime } from './presentation'
@@ -8,11 +9,17 @@ export default function AllocationDetails({
   onClose,
 }: {
   allocation: TaskAllocation
-  demand?: TaskDemand
+  demand?: Pick<TaskDemand, 'origin' | 'task_id'>
   onClose: () => void
 }) {
+  const section = useRef<HTMLElement>(null)
+  useEffect(() => {
+    section.current?.focus()
+    section.current?.scrollIntoView?.({ block: 'nearest' })
+  }, [allocation])
   return (
     <section
+      ref={section}
       aria-label="片段详情"
       className="space-y-2 rounded-xl border-2 border-emerald-800 bg-white p-4"
       tabIndex={-1}
