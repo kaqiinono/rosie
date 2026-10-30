@@ -332,3 +332,20 @@ task_planning_input 单一MVCC聚合读取owner revision与shared epoch；应用
 - [x] 1472 runtime文件对照build副本无hash差异；production CSS7文件与browser fixture一致。
 - [x] 实际PlanningDashboard采纳与RecoveryTargetEditor按钮通过本地合成身份SQL adapter持久化；原截止保持。3课程15需求（12forecast）真实builder/solver同结果进入桌面/390px视图；零/缺物料/无截止/过期场景不假安全。
 - [ ] 远程list/dry-run/push、真实登录/provider、关闭网站托管Cron送达、生产规模性能与部署后验收：未授权未执行。
+
+## Final integration scope (2026-10-30)
+
+Planning freezes a nominal release cohort of at least28 days, extended for known actual deadlines
+and each course’s next homework deadline, capped at180 days. It then closes that cohort’s known
+crossing deadlines (also capped at180) and admits all otherwise eligible forecast work due by the
+final analysis end, including competing extension-period work. Admission does not recursively
+extend for later recurring releases. `release_cohort_end` and `horizon_end` record the two bounds.
+Later nonadmitted work produces visible advisory `forecast_boundary` notices; missing inputs and
+admitted deadlines beyond the cap remain incomplete. Headroom and risk describe only this finite
+modeled scope, never all future work.
+
+Actual selected material IDs stay frozen. The application adapter checks their current catalog
+availability; pending/missing/account-mismatched assets retain estimated work but make its certainty
+incomplete. The service snapshot also reports `current_available` using the verified current
+Baidu account, allowing archived-but-readable references while rejecting archived assets of an old
+account. Credential changes increment the shared planning epoch; no selection/history rewrite occurs.

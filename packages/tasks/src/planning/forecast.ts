@@ -10,6 +10,7 @@ import type { CourseException, CourseOccurrence, TaskCourse } from '../types'
 import type { MatchedActivity } from '../taskPool'
 import { localDate } from '../time'
 import { getTaskExecutionWindow } from './executionWindow'
+import { classifyPlanningIssue } from './planningIssues'
 import { buildTaskBatchKey } from './batchKey'
 import type { PlanningIssue, TaskDemand, UndatedWork } from './types'
 
@@ -37,6 +38,7 @@ export type ForecastResult = {
   undated_work: UndatedWork[]
   issues: PlanningIssue[]
   horizon_end: string
+  release_cohort_end: string
   coverage_end: string
   complete: boolean
   /** The runtime's separate preview cap is not the forecast's day coverage limit. */
@@ -133,6 +135,19 @@ export function projectCourseTasks(input: ForecastInput): ForecastResult {
       }
     return { course, candidates, catalog, projection, windows }
   })
+  // Freeze admission before closing deadlines: recurring release chains must not recurse.
+  const cohortEnd = horizon
+  for (const { course, windows } of groups) {
+    if (
+      !course.auto_assign ||
+      course.generation_state === 'paused' ||
+      course.generation_state === 'finished'
+    )
+      continue
+    for (const { window } of windows)
+      if (window.eligible && Date.parse(window.release_at) <= cohortEnd && window.due_at)
+        horizon = Math.max(horizon, Math.min(cap, Date.parse(window.due_at)))
+  }
   const demands: TaskDemand[] = [],
     undated_work: UndatedWork[] = []
   const events: CourseEvent[] = []
@@ -209,11 +224,36 @@ export function projectCourseTasks(input: ForecastInput): ForecastResult {
           )
       continue
     }
+    let boundaryNoted = false
     for (const { event, activity, window } of windows) {
       // Future lead-time previews can enter this window even when their class is later.
-      if (Date.parse(window.release_at) > horizon) continue
+      if (Date.parse(window.release_at) > horizon) {
+        if (window.eligible && !boundaryNoted) {
+          add(
+            'forecast_boundary',
+            [course.id],
+            '后续作业未纳入本次有限范围；容量结论仅适用于已建模任务',
+          )
+          boundaryNoted = true
+        }
+        continue
+      }
       if (!window.eligible) continue
       if (course.generation_state === 'paused' || course.generation_state === 'finished') continue
+      // Admit the nominal cohort plus all competing work due in the closed analysis window.
+      // Later releases with later deadlines are visible scope notices, not missing input.
+      if (
+        Date.parse(window.release_at) > cohortEnd &&
+        window.due_at &&
+        Date.parse(window.due_at) > horizon
+      ) {
+        add(
+          'forecast_boundary',
+          [course.id, event.event_key, activity.source_key],
+          '后续作业未纳入本次有限范围；容量结论仅适用于已建模任务',
+        )
+        continue
+      }
       for (const issue of window.issues)
         add(issue, [course.id, event.event_key, activity.source_key])
       const material = input.resolve_materials?.(course, activity) ?? {
@@ -249,7 +289,7 @@ export function projectCourseTasks(input: ForecastInput): ForecastResult {
         add(
           'forecast_boundary',
           [course.id, event.event_key, activity.source_key],
-          '作业截止跨出覆盖范围，保留边界不完整提示',
+          '后续作业未纳入本次有限范围；容量结论仅适用于已建模任务',
         )
         continue
       }
@@ -289,8 +329,9 @@ export function projectCourseTasks(input: ForecastInput): ForecastResult {
     undated_work,
     issues,
     horizon_end: new Date(horizon).toISOString(),
+    release_cohort_end: new Date(cohortEnd).toISOString(),
     coverage_end: new Date(horizon).toISOString(),
-    complete: issues.length === 0,
+    complete: issues.every((issue) => classifyPlanningIssue(issue) === 'advisory'),
     runtime_candidate_limit: 256,
     events,
   }

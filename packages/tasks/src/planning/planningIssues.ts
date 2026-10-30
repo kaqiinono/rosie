@@ -6,6 +6,7 @@ export function classifyPlanningIssue(
   issue: PlanningIssue,
 ): 'advisory' | 'hard_conflicts' | 'incomplete' {
   switch (issue.code) {
+    case 'forecast_boundary':
     case 'fixed_expired':
     case 'fixed_release_suggested':
       return 'advisory'

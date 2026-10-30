@@ -67,6 +67,7 @@ export type UndatedWork = {
 export type PlanningInput = {
   input_revision: number
   now: string
+  release_cohort_end?: string
   horizon_end: string
   demands: TaskDemand[]
   capacity: CapacityInterval[]
@@ -90,6 +91,7 @@ export type PlanningResult = {
   today_required_minutes?: number | null
   input_revision: number
   computed_at: string
+  release_cohort_end?: string
   horizon_end: string
   allocations: TaskAllocation[]
   batch_metrics: Record<string, BatchMetrics>
@@ -99,6 +101,7 @@ export type PlanningResult = {
 }
 export type AvailabilityInput = {
   now: string
+  release_cohort_end?: string
   horizon_end: string
   day_states: AvailabilityDayState[]
   windows: AvailabilityWindow[]

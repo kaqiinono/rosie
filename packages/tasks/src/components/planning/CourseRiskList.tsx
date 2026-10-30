@@ -44,6 +44,13 @@ export default function CourseRiskList({
   })
   return (
     <div className="space-y-3">
+      <p className="text-sm text-slate-600">
+        容量结论仅适用于本次已建模任务，分析截至 {planningTime(result.horizon_end)}
+        ；后续作业将在滚动计算时纳入。
+      </p>
+      {result.issues.filter((i) => i.code === 'forecast_boundary').length > 0 && (
+        <p className="text-sm text-slate-600">部分后续作业截止超出本次范围，尚未计入容量。</p>
+      )}
       {issueOnlyCourses.map(([id, name]) => (
         <article key={id} className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <h3 className="font-bold">{name} · 信息不完整</h3>

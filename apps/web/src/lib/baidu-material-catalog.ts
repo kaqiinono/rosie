@@ -1,4 +1,5 @@
 import 'server-only'
+import { materialFileType } from './material-file-type'
 import { materialScanPage } from './baidu-material-page'
 import { createAdminSupabase } from './api-auth'
 import { getBaiduAccountContext } from './baidu-token'
@@ -110,7 +111,7 @@ export async function advanceScan(
       fs_id,
       path: row.path,
       name: row.path.split('/').at(-1)!,
-      mime: 'application/octet-stream',
+      mime: materialFileType(row.path).mime,
       size:
         typeof row.size === 'number' && Number.isSafeInteger(row.size) && row.size >= 0
           ? row.size

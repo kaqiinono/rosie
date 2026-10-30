@@ -16,11 +16,25 @@ grant usage on schema public,auth,storage to authenticated,anon,service_role;
 create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
 create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);
 create function storage.foldername(name text) returns text[] language sql as $$select string_to_array(name,'/')$$;`);
-for (const name of (await fs.readdir(`${root}/supabase/migrations`)).filter(n=>n.includes('task') || n.includes('independent_tasks') || n.includes('shared_material') || n.includes('baidu_oauth') || n.includes('baidu_refresh_lease') || n.includes('materials_directory_scans') || n.includes('material_upload_sessions')).sort()) {
+for (const name of (await fs.readdir(`${root}/supabase/migrations`)).filter(n=>n.includes('task') || n.includes('independent_tasks') || n.includes('shared_material') || n.includes('baidu_oauth') || n.includes('baidu_refresh_lease') || n.includes('materials_directory_scans') || n.includes('materials_passive_scan_metadata') || n.includes('material_upload_sessions')).sort()) {
  if(name.includes('tasks_course_events_and_pool_bindings'))await db.exec(await fs.readFile(`${root}/scripts/tmp/task15-legacy-seed.sql`,'utf8'));
  if(name.includes('tasks_background_generation'))await db.exec(await fs.readFile(`${root}/supabase/tests/task-generation-legacy-seed.sql`,'utf8'));
  if(name.includes('task_availability_configuration')) await db.exec(`insert into auth.users(id) values('10101010-3333-4333-8333-333333333333'); insert into public.task_availability_windows(user_id,weekday,on_date,start_time,end_time) values('10101010-3333-4333-8333-333333333333',6,null,'09:00','10:00');`);
+ if(name.includes('materials_passive_scan_metadata')) await db.exec(`
+ insert into auth.users values('17171717-1717-4717-8717-171717171717');
+ insert into public.material_assets(subject,kind,source,account_id,fs_id,path,title,mime_type,size,created_by)
+ select 'english','file','baidu','777',v::text,'/airosie/english/old.'||ext,'old','application/octet-stream',1,'17171717-1717-4717-8717-171717171717' from (values(1,'mp3'),(2,'jpeg'),(3,'pdf'),(4,'svg')) t(v,ext);
+ insert into public.material_scan_sessions(user_id,account_id,account_generation,root_id,path,recursive,subject,state)
+ select '17171717-1717-4717-8717-171717171717','777',gen_random_uuid(),'english','/airosie/english',false,'english',jsonb_build_object('entries',jsonb_agg(jsonb_build_object('fs_id',fs_id,'path',path,'isdir',false))) from public.material_assets where account_id='777';
+ create temp table prior_scan_metadata as select id,to_jsonb(a)-'kind'-'mime_type' value from public.material_assets a where account_id='777';
+ `);
  await db.exec(await fs.readFile(`${root}/supabase/migrations/${name}`,'utf8'));
+ if(name.includes('materials_passive_scan_metadata')) {
+ await db.exec(`do $$ begin
+ if (select count(*) from public.material_assets where account_id='777' and kind<>'file')<>3 then raise exception 'metadata repair count'; end if;
+ if exists(select 1 from prior_scan_metadata p join public.material_assets a using(id) where p.value<>to_jsonb(a)-'kind'-'mime_type') then raise exception 'repair changed identity';end if;
+ end $$;`);console.log('Metadata backfill: 3 repaired / 1 unsafe unchanged; identities and all other fields preserved PASS');
+ }
  if(name.includes('task_availability_configuration')) await db.exec(`do $$begin if not exists(select 1 from public.task_availability_day_states where user_id='10101010-3333-4333-8333-333333333333' and weekday=6 and state='configured') then raise exception 'legacy backfill lost'; end if; end $$;`); console.log('Installed '+name);
 }
 
@@ -67,6 +81,7 @@ if((await client.query(publicationSql,[owner,ownerChangeClaim.lease_id,fresh.sha
 console.log('Real two-connection claim / material MVCC / interruption / publication / monotonic / owner-revision races PASS');
 }finally{await second.end()}
 await import('./task15-real-planning.mjs').then(m => m.validatePlanning(client, root));
+await import('./final-fix-integration.mjs').then(m => m.validateFinalFix(client, root));
 if(process.argv.includes('--serve')) await import('./task15-browser-server.mjs').then(m=>m.servePlanning(client,root));
 if(process.argv.includes('--intentional-failure')) throw Error('intentional fixture failure verifies nonzero after cleanup');
 } catch(e) { failures++; console.error(e.message,e.where); } finally {console.log(`Validation result: ${failures} failure(s)`);await db.close();process.exit(failures?1:0)}

@@ -124,7 +124,7 @@ describe('course task forecast', () => {
     expect(d.release_at).toBe('2026-10-30T09:00:00.000Z')
     expect(d.due_at).toBe('2026-11-06T08:00:00.000Z')
     expect(d.remaining_minutes).toBe(20)
-    expect(result.horizon_end).toBe('2026-11-26T00:00:00.000Z')
+    expect(result.horizon_end).toBe('2026-11-27T08:00:00.000Z')
   })
   it('formal source replaces forecast byte-for-byte including encoded nonASCII delimiters and completion', () => {
     const s = snapshot()
@@ -327,7 +327,7 @@ it('extends to each course next homework cutoff beyond 28 days', () => {
   s.rules[0].valid_from = '2026-12-01'
   expect(projectCourseTasks(s).horizon_end).toBe('2026-12-11T08:00:00.000Z')
 })
-it('never exposes movable forecast past covered capacity and marks boundary incompleteness', () => {
+it('never exposes movable forecast past covered capacity and marks advisory scope boundary', () => {
   const r = projectCourseTasks(input())
   expect(r.demands.every((d) => Date.parse(d.due_at) <= Date.parse(r.horizon_end))).toBe(true)
   expect(r.issues.some((i) => i.code === 'forecast_boundary')).toBe(true)
@@ -594,3 +594,96 @@ it('preserves null and original overdue deadline semantics in normalized batch i
   expect(demand.original_due_at).toBe('2026-10-28T20:00:00+08:00')
   expect(demand.due_at).toBe('2026-10-30T12:00:00Z')
 })
+
+// Whole-branch regressions exercise the canonical builder, global solver and risk inputs.
+import { solveCapacityPolicies, buildPlanningRisks } from '../../../../packages/tasks/src/planning'
+function configuredSnapshot() {
+  const s = snapshot()
+  s.pool_items[0].progress_mode = 'percentage'
+  s.pool_items[0].deadline = { kind: 'course_default', days: 1, time: '20:30', at: null }
+  s.day_states = Array.from({ length: 7 }, (_, weekday) => ({
+    id: `d${weekday}`,
+    user_id: 'u',
+    weekday,
+    on_date: null,
+    state: 'configured' as const,
+  }))
+  s.windows = Array.from({ length: 7 }, (_, weekday) => ({
+    id: `w${weekday}`,
+    user_id: 'u',
+    weekday,
+    on_date: null,
+    start_time: '18:00',
+    end_time: '20:00',
+  }))
+  return s
+}
+it('closed recurring cohort yields useful known metrics and includes extension competitors', () => {
+  const s = configuredSnapshot()
+  const i = buildPlanningInput(s, now)
+  const r = solveCapacityPolicies(i).allow_weekend
+  expect(i.horizon_end).toBe('2026-11-27T08:00:00.000Z')
+  expect(i.demands).toHaveLength(4)
+  expect(r.complete).toBe(true)
+  expect(r.today_required_minutes).not.toBeNull()
+  expect(Object.values(r.batch_metrics).every((m) => m.extra_capacity_minutes !== null)).toBe(true)
+  expect(
+    Object.values(buildPlanningRisks(r, { tight_ratio: 0.2 }, i)).every(
+      (m) => m.status !== 'incomplete',
+    ),
+  ).toBe(true)
+  s.courses.push({ ...s.courses[0], id: 'competitor' })
+  s.rules.push({
+    ...s.rules[0],
+    id: 'r2',
+    course_id: 'competitor',
+    weekday: 4,
+    valid_from: '2026-10-01',
+  })
+  s.bindings.push({ ...s.bindings[0], id: 'b2', course_id: 'competitor', pool_item_id: 'p2' })
+  s.pool_items.push({
+    ...s.pool_items[0],
+    id: 'p2',
+    deadline: { kind: 'same_day', days: 0, time: '20:30', at: null },
+  })
+  const competing = buildPlanningInput(s, now)
+  expect(competing.release_cohort_end).toBe('2026-11-26T00:00:00.000Z')
+  expect(
+    competing.demands.some(
+      (d) => d.course_id === 'competitor' && d.release_at === '2026-11-26T09:00:00.000Z',
+    ),
+  ).toBe(true)
+})
+it('admitted work beyond cap remains incomplete', () => {
+  const s = configuredSnapshot()
+  s.pool_items[0].deadline = {
+    kind: 'fixed',
+    days: 0,
+    time: '20:30',
+    at: '2027-12-01T00:00:00Z',
+  } as TaskPoolItem['deadline']
+  const i = buildPlanningInput(s, now)
+  expect(solveCapacityPolicies(i).allow_weekend.complete).toBe(false)
+})
+it.each(['account_mismatch', 'pending', 'missing', 'archived'] as const)(
+  'checks frozen actual current availability: %s',
+  (status) => {
+    const s = configuredSnapshot()
+    s.courses = []
+    s.rules = []
+    s.bindings = []
+    s.tasks = [actual('frozen', { material_status: 'selected', material_assets: ['asset'] })]
+    const assets = status === 'missing' ? [] : [{ id: 'asset', status }]
+    const i = buildTaskPlanningInput(
+      {
+        ...s,
+        material_assets: assets as Parameters<typeof buildTaskPlanningInput>[0]['material_assets'],
+        material_links: [],
+      },
+      now,
+    )
+    const r = solveCapacityPolicies(i).allow_weekend
+    expect(r.complete).toBe(status === 'archived')
+    expect(s.tasks[0].material_assets).toEqual(['asset'])
+  },
+)

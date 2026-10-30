@@ -47,10 +47,27 @@ from public.task_instances group by user_id;
 
 ## 本地验证与边界
 
-`node scripts/tmp/task15-acceptance-validation.mjs` 使用 `/private/tmp/task4-postgres/node_modules` embedded-postgres，127.0.0.1:55455，独立可销毁数据库；需本地已安装该依赖。完整安装 24 个相关迁移，执行 SQL 权限/兼容/进度/物料/窗口/租约/恢复/采用套件，真实 MVCC 快照经过应用 canonical builder/solver 并发布、读回、采用和恢复。`--intentional-failure` 应在清理连接与集群后退出 1。临时 harness 不读 env，不连接远程。
+`node scripts/tmp/task15-acceptance-validation.mjs` 使用 `/private/tmp/task4-postgres/node_modules` embedded-postgres，127.0.0.1:55455，独立可销毁数据库；需本地已安装该依赖。完整安装 25 个相关迁移，执行 SQL 权限/兼容/进度/物料/窗口/租约/恢复/采用套件，真实 MVCC 快照经过应用 canonical builder/solver 并发布、读回、采用和恢复。`--intentional-failure` 应在清理连接与集群后退出 1。临时 harness 不读 env，不连接远程。
 
 本地 builder/solver/SQL 结果可交给实际 PlanningDashboard 组件验证视图。合成身份直接设置 auth.uid，因此不证明真实登录、托管调度、真实百度权限与吞吐；小规模运行时间不代表生产负载。未定期、零容量、物料缺失、周末和过期方案必须保持同一结果贯穿风险与甘特图。历史 focused tests、最终命令和限制记录在 Task15 报告，最终上线仍需上述受控目标验收。
 
 最终本地gate（2026-10-30）：root lint/typecheck exit0（继承warnings保留）；完整web Vitest127文件897测试；独立env排除且独立依赖副本 `pnpm build` exit0，122静态页。1472 runtime文件hash逐一一致。真实浏览器关键采纳/恢复按钮通过合成身份本地SQL adapter完成持久化；3课程15需求/12forecast/28窗口计算约1393ms（仅builder、双策略与risks，排除模块加载/SQL），不是生产规模性能证明。
 
 Legacy迁移前合成seed统计：template1→binding1，confirmation1→event1，completed1保留100%/逐项done，private-material1保留且shared0。此数字仅测试库，不是远程用户统计。
+
+## Final integration scope (2026-10-30)
+
+Planning freezes a nominal release cohort of at least28 days, extended for known actual deadlines
+and each course’s next homework deadline, capped at180 days. It then closes that cohort’s known
+crossing deadlines (also capped at180) and admits all otherwise eligible forecast work due by the
+final analysis end, including competing extension-period work. Admission does not recursively
+extend for later recurring releases. `release_cohort_end` and `horizon_end` record the two bounds.
+Later nonadmitted work produces visible advisory `forecast_boundary` notices; missing inputs and
+admitted deadlines beyond the cap remain incomplete. Headroom and risk describe only this finite
+modeled scope, never all future work.
+
+Actual selected material IDs stay frozen. The application adapter checks their current catalog
+availability; pending/missing/account-mismatched assets retain estimated work but make its certainty
+incomplete. The service snapshot also reports `current_available` using the verified current
+Baidu account, allowing archived-but-readable references while rejecting archived assets of an old
+account. Credential changes increment the shared planning epoch; no selection/history rewrite occurs.

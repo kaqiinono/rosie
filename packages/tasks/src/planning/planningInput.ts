@@ -12,6 +12,7 @@ import { buildTaskBatchKey } from './batchKey'
 import { mergeActualAndForecast, projectCourseTasks, type ForecastInput } from './forecast'
 import type { PlanningInput, PlanningIssue, TaskAllocation, TaskDemand, UndatedWork } from './types'
 export type UserPlanningSnapshot = Omit<ForecastInput, 'now' | 'known_deadlines'> & {
+  actual_materials_available?: (assetIds: string[]) => boolean
   input_revision: number
   tasks: TaskInstance[]
   day_states: AvailabilityDayState[]
@@ -37,7 +38,12 @@ export function buildPlanningInput(snapshot: UserPlanningSnapshot, now: string):
     undated: UndatedWork[] = []
   for (const task of owned) {
     const remaining = getRemainingMinutes(task)
-    const materialPending = remaining > 0 && task.material_status === 'pending'
+    const materialPending =
+      remaining > 0 &&
+      (task.material_status === 'pending' ||
+        (task.material_status === 'selected' &&
+          (!task.material_assets?.length ||
+            snapshot.actual_materials_available?.(task.material_assets) !== true)))
     const selectionPending =
       remaining > 0 &&
       (task.selection_state === 'pending' || (task.progress_mode === 'items' && !task.items.length))
@@ -117,6 +123,7 @@ export function buildPlanningInput(snapshot: UserPlanningSnapshot, now: string):
     input_revision: snapshot.input_revision,
     now,
     horizon_end: forecast.horizon_end,
+    release_cohort_end: forecast.release_cohort_end,
     demands: mergeActualAndForecast(
       actual,
       forecast.demands.filter((d) => !actualKeys.has(d.key)),

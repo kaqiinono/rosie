@@ -21,3 +21,16 @@
 账户切换、授权失效显示 account_mismatch/unavailable；管理员重新授权后重新扫描/确认，不能沿用旧账户的 fs identity。扫描继续使用保存的会话/版本；上传恢复前重新验证原文件及 manifest，不可默默上传另一文件。归档资产不破坏旧引用，但不允许新选用。无权限/不存在均不泄漏他人链接。
 
 本地已覆盖扫描分页、恢复、原始分片、验证、流式与 SW 协议的合成 provider/SQL 测试。尚未运行真实网盘目录写入或上传，没有真实 app 权限、部署链路、吞吐与断网大文件证明；上线后须使用获授权测试目录演练并记录文件身份、hash、恢复与取消结果，严禁以本地 fixture 声称已安装或可用。
+
+## Passive scan metadata repair (2026-10-30)
+
+Forward migration `20261030130524_materials_passive_scan_metadata.sql` normalizes trusted provider
+path extensions for MP3/M4A/WAV/OGG, JPEG/PNG/GIF/WebP/AVIF, MP4/WebM/OGV and PDF. Service scan MIME,
+SQL publication kind/MIME, native preview and passive delivery agree. SVG/HTML and unknown formats
+remain generic attachments; provider/client MIME claims do not broaden the allowlist.
+Existing generic Baidu assets are repaired only when a saved scan entry proves account/fs_id/path
+provenance. No asset IDs, versions, paths, fs_ids, links, task snapshots or progress are replaced.
+The repair is idempotent; uploads and non-generic metadata are excluded. Run only through the normal
+reviewed migration rollout; no hosted migration was executed in local acceptance. The full local
+harness now installs25 related migrations; its final integration fixture checks typed publication,
+account-switch epoch invalidation and fresh stored results, plus archived reference readability.

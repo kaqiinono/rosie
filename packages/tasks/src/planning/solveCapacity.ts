@@ -196,6 +196,7 @@ export function solveCapacity(input: PlanningInput, policy: CapacityPolicy): Pla
     input_revision: input.input_revision,
     computed_at: input.now,
     horizon_end: input.horizon_end,
+    release_cohort_end: input.release_cohort_end,
     allocations,
     batch_metrics: metrics,
     conflict_groups: conflictGroups(p, allocations),
