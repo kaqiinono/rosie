@@ -306,3 +306,13 @@ The dedicated SQL fixture checks first B preview materialization and reconciliat
 existing B preview with 60% progress. Both must skip the already processed A event, retain its
 history and live cursor B, and avoid rewriting the existing preview identity/content/progress.
 The default runner includes this fixture; `--related` also checks affected earlier runtime suites.
+
+### Local execution-progress validation
+
+Task5 forward migration: `20261030012306_task_item_progress_and_revisions.sql`.
+Run `pnpm --filter web exec vitest run tests/tasks` for progress, controls, catalog and course tests.
+`node scripts/tmp/task5-progress-validation.mjs` installs the complete task migration chain into
+an isolated embedded PostgreSQL, runs owner-role SQL assertions and holds two actual connections
+on the same user lock while marking different real items. It uses the Task4 pinned temp dependencies
+under `/private/tmp/task4-postgres`, never loads env files, and stops/removes its database in finally.
+Do not run simultaneously with another Task4/5 native harness (shared port 55440/temp directory).

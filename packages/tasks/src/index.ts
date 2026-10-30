@@ -11,3 +11,5 @@ export { matchTaskPool, resolveActivityOverrides, scopeMatches } from './taskPoo
 export type { MatchedActivity, TaskPoolMatchContext, TaskPoolMatchIssue } from './taskPool'
 
 export * from './courseEvents'
+export { getTaskCompletion, getRemainingMinutes } from './taskProgress'
+export type { ProgressTask } from './taskProgress'

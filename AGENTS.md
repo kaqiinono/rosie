@@ -333,3 +333,8 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - Components: `PascalCase.tsx` (e.g. `FlashCard.tsx`)
 - Hooks and utilities: `camelCase.ts` (e.g. `useWordMastery.ts`, `english-helpers.ts`)
 - Shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `@rosie/core`
+
+Task execution progress is authoritative through owner-checked execution RPCs, with direct
+`task_instances` / `task_instance_items` browser DML revoked (Task5 local migration pending).
+Ordinary new tasks use manual percentage; real math items use atomic stable-key completion.
+See `packages/tasks/AGENTS.md` for returned revision/cache and planning-dirty contracts.

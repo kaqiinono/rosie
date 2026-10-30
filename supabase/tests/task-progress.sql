@@ -1,0 +1,39 @@
+begin;
+insert into auth.users(id) values('55555555-5555-5555-5555-555555555555'),('55555555-5555-5555-5555-555555555556');
+select set_config('request.jwt.claim.sub','55555555-5555-5555-5555-555555555555',true);
+set local role authenticated;
+do $$ declare t jsonb; tid uuid; rev int; n int; begin
+ t:=public.task_save_execution('{"title":"ordinary","subject":"other","estimated_minutes":60}',null); tid:=(t->>'id')::uuid;
+ t:=public.task_set_completion(tid,25,1);
+ if (t->>'completion_percent')::int<>25 or (t->>'revision')::int<>2 then raise exception 'percent_revision'; end if;
+ perform public.task_set_completion(tid,25,2);
+ if (select count(*) from public.task_progress_events where task_id=tid)<>1 then raise exception 'noop_history'; end if;
+ begin perform public.task_set_estimate(tid,20,1); raise exception 'missing_conflict'; exception when serialization_failure then null; end;
+ t:=public.task_save_execution(jsonb_build_object('id',tid,'items','[{"id":"a","label":"A"},{"id":"b","label":"B"}]'::jsonb,'progress_mode','items'),2);
+ t:=public.task_set_item_done(tid,'a',true);
+ t:=public.task_set_item_done(tid,'b',true);
+ if t->>'status'<>'completed' then raise exception 'item_completion'; end if;
+ t:=public.task_set_item_done(tid,'a',false);
+ if t->>'status'<>'active' then raise exception 'item_restore'; end if;
+ rev:=(t->>'revision')::int;
+ t:=public.task_save_execution(jsonb_build_object('id',tid,'title','renamed'),rev);
+ if not (t->'items' @> '[{"id":"b","done":true}]') then raise exception 'rename_reset'; end if;
+ -- Ordinary actual-content changes reset progress, while the old revision remains in history.
+ t:=public.task_save_execution('{"title":"reading","subject":"english","items":[{"id":"a","label":"old"}]}',null);
+ t:=public.task_set_completion((t->>'id')::uuid,60,1);
+ t:=public.task_save_execution(jsonb_build_object('id',t->>'id','items','[{"id":"a","label":"new"}]'::jsonb),2);
+ if (t->>'completion_percent')::int<>0 or not exists(select 1 from public.task_progress_events where task_id=(t->>'id')::uuid and payload->'task'->>'completion_percent'='60') then raise exception 'content_reset_history'; end if;
+ -- Math overlaps preserve completion by real identity, empty selection retains pending work.
+ t:=public.task_save_execution('{"title":"math","subject":"math","progress_mode":"items","items":[{"id":"2-1:homework:2-1-H1","label":"H1"},{"id":"2-1:homework:2-1-H2","label":"H2"}]}',null);
+ t:=public.task_set_item_done((t->>'id')::uuid,'2-1:homework:2-1-H1',true);
+ t:=public.task_save_execution(jsonb_build_object('id',t->>'id','items','[{"id":"2-1:homework:2-1-H1","label":"H1"},{"id":"2-1:homework:2-1-H3","label":"H3"}]'::jsonb),2);
+ if not (t->'items' @> '[{"id":"2-1:homework:2-1-H1","done":true}]') or (t->'items' @> '[{"id":"2-1:homework:2-1-H2"}]') then raise exception 'math_overlap'; end if;
+ t:=public.task_save_execution(jsonb_build_object('id',t->>'id','items','[]'::jsonb),3);
+ if t->>'selection_state'<>'pending' or t->>'status'='completed' or (t->>'estimated_minutes')::int<>20 then raise exception 'empty_math_pending'; end if;
+ t:=public.task_save_execution(jsonb_build_object('id',t->>'id','selection_state','no_homework'),4);
+ if t->>'status'<>'cancelled' or t->>'selection_state'<>'no_homework' then raise exception 'no_homework'; end if;
+ perform set_config('request.jwt.claim.sub','55555555-5555-5555-5555-555555555556',true);
+ begin perform public.task_set_item_done(tid,'a',true); raise exception 'missing_owner_check'; exception when insufficient_privilege then null; end;
+ if has_table_privilege('authenticated','public.task_instance_items','UPDATE') or has_table_privilege('authenticated','public.task_instances','UPDATE') then raise exception 'dml_bypass'; end if;
+end $$;
+rollback;

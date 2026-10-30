@@ -197,3 +197,27 @@ flags so `projectCourseEvents` does not forecast already processed work again.
   advancement. An early completed timed event keeps scheduled clocks but is already reflected
   in the live cursor; forecast must not count it a second time. SQL regression:
   `supabase/tests/task-generation-processed-preview.sql`.
+
+## Execution progress (Task 5, local migration pending)
+
+- Ordinary new activities/manual tasks default to `percentage`; explicit item activities remain `items`.
+  Existing checklist/completed history is preserved. New manual tasks require a subject; `other`
+  is explicit unclassified, while historical null subjects remain readable.
+- `taskProgress.ts` computes remaining work with integer numerators before ceil. Empty/pending
+  real-item sets retain full demand, cancelled/completed tasks retain none; elapsed time never completes work.
+- Browser task writes use owner-checked `task_save_execution`, `task_set_completion`,
+  `task_set_item_done`, `task_set_estimate`. Direct task/item DML is revoked. Percent/estimate/edit
+  require the displayed expected revision; different-item writes are atomic under user lock seed 228.
+  No-op retries add no revision/history. Mutations return the entire authoritative TaskInstance;
+  cache patches and background read reconciliation retain the highest task revision.
+- Append-only task_progress_events store prior snapshots and requested change under the prior revision.
+  task_user_planning_revisions increments on task insert/update, including event-runtime changes;
+  Task13 can consume this owner-readable dirty revision rather than inventing a client counter.
+- Math selections store stable lesson:group:real-ID keys. Overlap retains completion, empty selection
+  is pending with nonzero estimate, explicit no_homework cancels with an audited reason. Content
+  revisions for generated ordinary tasks remain owned by task_revise_event; manual ordinary edits
+  retain old snapshots and reset progress. Names/deadlines/estimates alone do not clear progress.
+- TasksHost loads authenticated verified replay matches through math-kit’s existing per-lesson
+  user store and injects the established ProblemVideoReplay component. Tasks imports no math module.
+- Local execution SQL and actual different-item two-connection lock contention:
+  `node scripts/tmp/task5-progress-validation.mjs` (same disposable dependencies as Task4).

@@ -13,7 +13,8 @@ interface CachedCatalog {
 const empty: CachedCatalog = { keys: new Set<string>(), syncedAt: null }
 const stores = new Map<string, UserSessionStore<CachedCatalog>>()
 const disabledStore = createUserSessionStore<CachedCatalog>('math_video_catalog:disabled', {
-  empty, fetch: async () => empty,
+  empty,
+  fetch: async () => empty,
 })
 
 function getCatalogStore(lessonKey: string): UserSessionStore<CachedCatalog> {
@@ -24,10 +25,15 @@ function getCatalogStore(lessonKey: string): UserSessionStore<CachedCatalog> {
     fetch: async (userId) => {
       const { data, error } = await supabase.auth.getSession()
       if (error || data.session?.user.id !== userId) throw new Error('video_session_missing')
-      const response = await fetch(`/api/baidu/video/catalog?lessonKey=${encodeURIComponent(lessonKey)}`, {
-        headers: { Authorization: `Bearer ${data.session.access_token}` },
-        credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20_000),
-      })
+      const response = await fetch(
+        `/api/baidu/video/catalog?lessonKey=${encodeURIComponent(lessonKey)}`,
+        {
+          headers: { Authorization: `Bearer ${data.session.access_token}` },
+          credentials: 'same-origin',
+          cache: 'no-store',
+          signal: AbortSignal.timeout(20_000),
+        },
+      )
       if (!response.ok) throw new Error('video_catalog_unavailable')
       const catalog = parseProblemVideoCatalog(await response.json(), lessonKey)
       return { keys: new Set(catalog.keys), syncedAt: catalog.syncedAt }
@@ -48,17 +54,45 @@ if (typeof window !== 'undefined') {
 export function replaceProblemVideoCatalog(userId: string, catalog: ProblemVideoCatalog): void {
   const catalogStore = getCatalogStore(catalog.lessonKey)
   catalogStore.invalidate(userId)
-  catalogStore.replaceSessionData(userId, { keys: new Set(catalog.keys), syncedAt: catalog.syncedAt })
+  catalogStore.replaceSessionData(userId, {
+    keys: new Set(catalog.keys),
+    syncedAt: catalog.syncedAt,
+  })
 }
 
 export function useProblemVideoCatalog(user: User | null, lessonKey: string | undefined) {
   const validLesson = lessonKey !== undefined && Boolean(lessonByKey(lessonKey))
   const catalogStore = validLesson ? getCatalogStore(lessonKey!) : disabledStore
   const { data, isLoading, error } = catalogStore.useSessionData(validLesson ? user : null)
-  const status = !user ? 'signed-out' : !validLesson ? 'unknown' : isLoading ? 'loading' : error ? 'error' : data.syncedAt ? 'ready' : 'unsynced'
+  const status = !user
+    ? 'signed-out'
+    : !validLesson
+      ? 'unknown'
+      : isLoading
+        ? 'loading'
+        : error
+          ? 'error'
+          : data.syncedAt
+            ? 'ready'
+            : 'unsynced'
   return {
-    status, syncedAt: data.syncedAt, count: data.keys.size,
+    status,
+    syncedAt: data.syncedAt,
+    count: data.keys.size,
     hasVideo: (key: string) => status === 'ready' && data.keys.has(key),
-    retry: () => user && validLesson ? catalogStore.ensureLoaded(user.id) : Promise.resolve(),
+    retry: () => (user && validLesson ? catalogStore.ensureLoaded(user.id) : Promise.resolve()),
   }
+}
+
+/** App adapters share the exact per-user/lesson cache with math replay controls. */
+export async function loadProblemVideoCatalog(
+  userId: string,
+  lessonKey: string,
+): Promise<ReadonlySet<string>> {
+  if (!lessonByKey(lessonKey)) return new Set()
+  const store = getCatalogStore(lessonKey)
+  await store.ensureLoaded(userId)
+  const snapshot = store.getSnapshot(userId)
+  if (snapshot.status !== 'ready' || !snapshot.data.syncedAt) return new Set()
+  return snapshot.data.keys
 }

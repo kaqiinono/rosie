@@ -105,3 +105,15 @@ Source changes reuse the loaded report and never trigger synchronization.
 ## Task pool (approved course-domain extension, 2026-10-29)
 
 The task pool reuses the existing tasks shell, emerald actions, slate borders, white panels and responsive two-column form. No new palette or typography. `components/CourseTaskBindings.tsx` owns reusable native scope/material selectors and controlled course-binding drafts. Catalog labels retain book/unit context; unresolved materials use explicit amber text. Old template URLs redirect to the pool; historical template identifiers remain stable. The established package UX contract owns native popup geometry and save/error behavior.
+
+## Task execution progress
+
+Task cards retain the existing white/slate/emerald surfaces and shared Field/button utilities.
+Ordinary activities show a numeric percentage editor and remaining minutes; item activities show
+real checkboxes. Pending math selections keep their estimate visible; explicit no-homework is a
+separate action. Math filters use native labeled lesson/group/tag selects, matching the existing
+course picker. Verified replay uses the application-owned shared math replay component. Validation
+stays visible next to progress controls; mutation errors remain in the shared task-page alert.
+Native select popups and date/datetime fields in execution forms remain browser/OS-owned, including
+calendar locale and popup geometry. Execution forms own validation (`noValidate`); multi-line
+content uses a fixed minimum height and resize-none to keep adjacent controls stable.

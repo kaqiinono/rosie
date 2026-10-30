@@ -86,3 +86,7 @@ borders, and footer tints: zero practices = amber; positive practice count = eme
 Pass `practiceCount` to `ProblemCardActions`; unknown counts use a neutral footer.
 Difficulty is neutral text. `tagStyles` still colors knowledge-point labels, and mastery
 growth icons retain their meaning without introducing extra card-border colors.
+
+`loadProblemVideoCatalog(userId,lessonKey)` is the imperative application-adapter reader of the
+same session store used by `useProblemVideoCatalog`; it never syncs Baidu or mutates practice.
+TasksHost uses its confirmed keys to inject the existing replay control into independent tasks.
