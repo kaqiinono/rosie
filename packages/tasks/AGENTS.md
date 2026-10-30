@@ -302,3 +302,41 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
   readable asset catalog and owned course links. Actual tasks retain immutable material state.
   This pure adapter does not read DB revisions: Task13 owns a consistent snapshot/retry and
   publication check against the persisted planning revision. Do not deduce safety from stale reads.
+
+## Capacity solver (Task12)
+
+- Pure `@rosie/tasks/planning` exports `solveCapacity(input, policy)`,
+  `solveCapacityPolicies(input)`, `computeBatchHeadroom`, `computeTodayRequired`.
+  Policies are `regular_only` and `allow_weekend`; recommendation is the latter's
+  globally minimum-reserve solution. Never greedily lock regular allocations first.
+- Flow slices only at window/release/deadline/prior-prediction boundaries (today boundary
+  for its counterfactual). Lexicographic vector costs avoid unsafe scalar weights.
+  Optimize total, earlier deadline then higher explicit priority, reserve, retained
+  prediction overlap, then earlier slice rank. Same-tier demands have equal protection.
+- `complete` means no incomplete modeling or hard fixed conflict; numeric shortage alone
+  does not make it false. `feasible` additionally requires zero modeled shortage.
+  Additive totals and `issue_groups` are always populated by this solver, optional in the
+  shared type for compatibility. Issue groups separate advisory release suggestions,
+  hard fixed conflicts, and incomplete modeling. Estimated demand retains its certainty.
+- Apply fixed blocks exactly once; keep accepted useful allocations and occupied excess
+  reservations. `regular_only` retains fixed weekend work and reports
+  `fixed_weekend_commitment` / adjustment_required; counterfactuals are unknown.
+  Undated commitments use `batch_key=work.key`, `fixed_only=true`, full remaining demand
+  and useful fixed allocations; uncovered minutes stay incomplete, never movable. A
+  matched missing_deadline issue is resolved only when all that work has valid fixed
+  coverage. Other missing-material/configuration issues remain.
+- Headroom is independent per batch and must not be summed. It adds work with that
+  batch's shared release/deadline while keeping all other work feasible. Heterogeneous
+  windows under one batch key return null. Today's true minimum is separately optimized
+  globally/per batch across all feasible schedules, including fixed useful minutes.
+  Public computeTodayRequired uses allow_weekend; result metrics use their own policy.
+  Unknown/infeasible/conflicting bases yield null; suggested today's allocation is not
+  the minimum. Today uses Asia/Shanghai even on a non-Shanghai host.
+- Conflict groups are conservative connected competition components containing a
+  shortage, not minimal Hall sets or claims every member must fail. Defaults use 20%
+  headroom for tight status; Task13 may apply user risk settings. Fixed-only batches
+  have null headroom because they have no movable deadline.
+- Bounded oracle: planning-counterfactual.test enumerates 1152 three-minute inputs and
+  27 ownership assignments/input, checking all objectives, today minima and headroom.
+  Flow complexity O(F V E K), memory O(E K); counterfactual metrics rerun flow per batch.
+  Worker/UI publication and scale benchmarking remain outside this pure module.

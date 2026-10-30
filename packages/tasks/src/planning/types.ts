@@ -40,6 +40,8 @@ export type BatchStatus =
   | 'incomplete'
   | 'completed'
 export type BatchMetrics = {
+  /** Undated work has only local fixed commitments, never a movable deadline. */
+  fixed_only?: boolean
   remaining_minutes: number
   weekday_minutes: number
   weekend_minutes: number
@@ -74,6 +76,18 @@ export type PlanningInput = {
   configuration_issues: PlanningIssue[]
 }
 export type PlanningResult = {
+  /** complete describes model integrity, feasible additionally requires zero shortage. */
+  policy?: 'regular_only' | 'allow_weekend'
+  issue_groups?: {
+    advisory: PlanningIssue[]
+    hard_conflicts: PlanningIssue[]
+    incomplete: PlanningIssue[]
+  }
+  feasible?: boolean
+  total_remaining_minutes?: number
+  total_unallocated_minutes?: number
+  total_weekend_minutes?: number
+  today_required_minutes?: number | null
   input_revision: number
   computed_at: string
   horizon_end: string
