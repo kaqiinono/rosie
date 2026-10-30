@@ -8,7 +8,7 @@ The package only depends on core. App `TaskMaterialsBridge` injects concrete pic
 asset preview into the existing task/course UI. Subject is a default picker filter, not access control.
 `CourseMaterialList` accepts a structural catalog projection and immutable current-event content.
 
-## Database contracts (local migration pending)
+## Database contracts (implemented locally; remote rollout pending)
 
 - `material_assets`: shared authenticated SELECT, no browser DML. Server Tasks8/9 can insert Baidu/builtin
   assets with service role; `account_id,fs_id,version` uniquely identify provider versions. Never store tokens.
@@ -39,7 +39,7 @@ are descriptive and do not suppress activity generation. Pending materials retai
 
 Tasks8/9 must populate canonical assets only after server verification, use account_mismatch/pending for
 unavailable transport, create new asset versions for replacements, and call owner refresh where appropriate.
-They own provider preview/download/upload/scan. No Baidu transport is claimed by this package.
+They own provider preview/download/upload/scan. Application-owned Baidu scan/upload/stream transport is implemented; live provider authorization and rollout remain unverified.
 
 ## Local verification
 
@@ -175,3 +175,7 @@ Course linking supports all/unit/lesson/segment/full problem keys and preserves 
 snapshots; never rebase task selectors after an unrelated link edit. No `/today` or subject progress
 writes. Remaining deployment checks: real app capability/root/collision behavior, uk/refresh/switch,
 upload-ID lifetime, quota, Range and redirects, native media codecs, sustained transfer and disconnects.
+
+## Rollout
+
+See `docs/baidu-materials.md` for actual routes/protocol/recovery and `docs/task-module-rollout.md` for mapping and operational switches. Existing private recordings/materials remain private. No migration publishes them. Local protocol/SQL/browser fixtures cannot establish live account permission, hosted scheduler delivery or deployment throughput.

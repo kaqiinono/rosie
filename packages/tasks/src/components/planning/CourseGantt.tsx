@@ -80,7 +80,7 @@ export default function CourseGantt({
         已固定：双线。已固定表示占用时间，不表示已完成。周末仅人工时段计容量。
       </p>
       <button
-        className={minorClass}
+        className={`${minorClass} hidden md:inline-flex`}
         onClick={() => scroller.current?.scrollTo?.({ left: 0, behavior: 'auto' })}
       >
         回到今天

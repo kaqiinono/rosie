@@ -1,0 +1,1 @@
+{"profile":"product-admin","sourceRoots":["packages/tasks/src"],"canonicalMap":"packages/tasks/UX-CONTRACT.md","ownership":{"Select/Listbox":"native","Date":"native"},"evidence":{"crudFullFlow":"apps/web/tests/tasks/course-task-bindings.test.tsx","failurePaths":"apps/web/tests/tasks/planning-worker.test.ts"}}

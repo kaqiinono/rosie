@@ -20,9 +20,9 @@
 任务表、RLS、事务函数及私有 task-audio bucket 已创建。
 
 新增 workspace 包仍需维护者按需手动执行 `pnpm install` 后使用。
-本次变更未运行安装、项目检查、测试或构建。
+本分支已执行本地安装、检查、完整测试与独立构建；实际最终结果见Task15验收记录，未执行远程上线。
 
-首次读取会在当前账号初始化六门示例课程和可编辑任务模板。
+首次读取会在当前账号初始化六门示例课程和可编辑任务池，课程通过显式绑定使用池项目。
 在周课表添加实际每周时段，在时间安排录入可用作业时间，再准备课程资料。
 
 已应用的历史迁移保留原样，其中推送订阅表、投递表及领取函数目前不再使用，
@@ -409,3 +409,9 @@ of `/api/internal/task-planning/recompute`. The private install function is inte
 not executed in the migration. A scheduler presence is not proof of successful delivery.
 `GET /api/tasks/planning` reports explicit staleness and background capability status;
 `POST` recomputes the authenticated owner only. Neither accepts a caller-selected user ID.
+
+## 最终交付与验证边界
+
+迁移/启用/停用/恢复清单与旧数据映射见 `docs/task-module-rollout.md`；中央共享物料协议见 `docs/baidu-materials.md`。旧 `/tasks/templates` 重定向任务池，旧确认RPC共用事件运行时；不另走旧确认发任务。legacy模板策略、确认JSON、完成百分比、逐项完成与私人录音保留；不明课程目录待配置。
+
+Task15 native harness运行完整24相关迁移与SQL套件；实际snapshot→应用adapter/builder→solver→原子publish→status→adoption/recovery持久化，含双连接租约竞争、共享epoch和中断回收。风险/Gantt使用同一结果；未配置不等于零容量，周末仅手工标记窗口，时间流逝不等于完成。完整web Vitest及root lint/typecheck和隔离精确源码build为最终gate。细节及限制以Task15报告为准；没有真实账户/托管Cron/provider吞吐证明。

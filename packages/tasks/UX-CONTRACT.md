@@ -11,7 +11,7 @@
 - Lifecycle: archive/restore by default; do not expose a direct hard-delete path for a course. Imports and snapshot restores preview scope and preserve learning records.
 - Feedback: existing TasksPage alert/status message with accessible live text; modal failures must also be visible in the modal.
 - Colors: use visible swatches with a selected checkmark, a custom color picker and live preview. Calendar blocks, course-card headers, details and image exports share a pastel presentation derived from the persisted color via coursePastelColor, with slate-800 text. Picker swatches retain the original base color. Course identity is stable; confirmation/cancellation/conflict is text plus an icon/badge. Cancelled lessons do not occupy busy lanes.
-- Notifications: station-only. No permission prompt, service-worker push, background scheduler or notification guarantee while closed.
+- Notifications: station-only. No permission prompt or service-worker push. Configured server Cron can generate while closed; configuration is distinct from verified delivery, with no notification guarantee.
 - Transfer: only timetable configuration, exams and exceptions; never upload private audio or export learning/task records as a share. Reject malformed/unimplemented ICS rules instead of silently changing schedules.
 - Accessibility: keyboard-accessible buttons/links, explicit labels, focus return, reduced motion; any drag enhancement has a form alternative.
 
@@ -65,3 +65,5 @@
 - Recovery editor writes only recovery_due_at with expected revision; original overdue deadline stays visible. Alerts explicitly distinguish read and resolved. Background configuration never promises delivery.
 - Undated work is separate presentation metadata, never a movable demand or invented deadline. Fixed-only rows retain their course/task identity, actual completion and original-task links; retained ledger uses instant-based containment for useful work. Courses with scoped issues but no modeled batch receive named configuration entries with no numerical capacity claim.
 - Selecting a batch positions the full desktop date horizon at its useful allocation or relevant release/target period; the keyboard-accessible Today action returns the same scroller to today. Allocation details focus/scroll into view and closing returns focus to the originating fragment. Snapshot identity owns transient selection through component keys; explicit policy transitions clear it.
+
+- Today action is desktop-only because it owns the desktop scroller; mobile daily/task lists retain their own navigation. CalendarSettings/ExamManager use app-owned validation under noValidate, constraint metadata, focused described errors, retained drafts and resize-none notes with initial multiline height.

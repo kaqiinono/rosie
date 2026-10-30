@@ -26,3 +26,16 @@ export function safeHref(value: string | null | undefined): string | null {
   if (value.startsWith('/') && !value.startsWith('//') && !value.includes('\\')) return value
   try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null } catch { return null }
 }
+
+/** App-owned validation keeps native constraints without browser validation bubbles. */
+export function validateTaskForm(form: HTMLFormElement, errorId: string): boolean {
+  form.querySelectorAll('[aria-invalid="true"]').forEach(field => {
+    field.removeAttribute('aria-invalid'); field.removeAttribute('aria-describedby')
+  })
+  if (form.checkValidity()) return true
+  const invalid = form.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(':invalid')
+  invalid?.setAttribute('aria-invalid', 'true')
+  invalid?.setAttribute('aria-describedby', errorId)
+  invalid?.focus()
+  return false
+}
