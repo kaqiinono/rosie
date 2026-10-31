@@ -8,7 +8,7 @@ The package only depends on core. App `TaskMaterialsBridge` injects concrete pic
 asset preview into the existing task/course UI. Subject is a default picker filter, not access control.
 `CourseMaterialList` accepts a structural catalog projection and immutable current-event content.
 
-## Database contracts (implemented locally; remote rollout pending)
+## Database contracts (migrations applied 2026-10-31)
 
 - `material_assets`: shared authenticated SELECT, no browser DML. Server Tasks8/9 can insert Baidu/builtin
   assets with service role; `account_id,fs_id,version` uniquely identify provider versions. Never store tokens.
@@ -49,7 +49,7 @@ chain plus the materials migration; dependencies are installed at `/private/tmp/
 No env or remote database is used. SQL tests roll back. The temporary harness is diagnostics, not a public CLI.
 
 
-Review repair migration `20261030031333_tasks_material_resolution_repairs.sql` is forward-only.
+Review repair migration `20261031020244_tasks_material_resolution_repairs.sql` is forward-only.
 The existing independent and event emitters write the exact effective selector with their material
 result, preserving source identities, revision/history behavior and user lock228. `readyData()` awaits
 the latest actual fetch promise shared by all hooks for the user (including automatic initial/retry
@@ -57,7 +57,7 @@ reads), then rejects recorded errors even while the session store retains ready 
 Local focused regressions: `tests/materials/material-readiness.test.tsx`,
 `supabase/tests/material-independent-generation.sql`, `supabase/tests/material-selector-revision.sql`.
 
-## Directory import (Task8, local migration pending)
+## Directory import (Task8, migration applied 2026-10-31)
 
 The shared library and course detail expose DirectoryImport with allowlisted root, relative path,
 subject, target course, recursive option, folder inventory, partial/completed status, and scan-number

@@ -1,6 +1,12 @@
 import 'server-only'
 
-export const BAIDU_STATE_COOKIE = 'rosie_baidu_oauth_state'
+export type BaiduOAuthTarget = 'personal' | 'shared'
+export const BAIDU_STATE_COOKIE = {
+  personal: 'rosie_baidu_personal_oauth_state',
+  shared: 'rosie_baidu_oauth_state',
+} as const
+// The single-use hash covers this prefix so a callback cannot switch targets.
+export const BAIDU_PERSONAL_STATE_PREFIX = 'p_'
 export const BAIDU_STATE_TTL_SECONDS = 600
 export const BAIDU_COOKIE_PATH = '/api/baidu/oauth'
 

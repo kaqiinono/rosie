@@ -82,10 +82,10 @@ function TaskCard({
       {task.material_status === 'pending' && (
         <p className="text-sm text-amber-800">待补物料 · 预计用时已保留</p>
       )}
-      <TaskProgressEditor key={task.revision} task={task} />
+      <TaskProgressEditor key={`progress-${task.revision}`} task={task} />
       {overdue && <RecoveryTargetEditor key={`recovery-${task.revision}`} task={task} now={now} />}
       {task.subject === 'math' && task.progress_mode === 'items' ? (
-        <MathTaskItems key={task.revision} task={task} />
+        <MathTaskItems key={`items-${task.revision}`} task={task} />
       ) : (
         <ul className="space-y-2">
           {task.items.map((item) => (

@@ -20,7 +20,7 @@
 任务表、RLS、事务函数及私有 task-audio bucket 已创建。
 
 新增 workspace 包仍需维护者按需手动执行 `pnpm install` 后使用。
-本分支已执行本地安装、检查、完整测试与独立构建；实际最终结果见Task15验收记录，未执行远程上线。
+本分支已执行本地安装、检查、完整测试与独立构建；实际最终结果见Task15验收记录。2026-10-31 已应用 20 个任务/物料迁移并安装任务生成 Cron；容量规划 HTTP Cron 与应用部署未执行，见 `docs/task-module-rollout.md`。
 
 首次读取会在当前账号初始化六门示例课程和可编辑任务池，课程通过显式绑定使用池项目。
 在周课表添加实际每周时段，在时间安排录入可用作业时间，再准备课程资料。
@@ -101,7 +101,7 @@ pnpm --filter web test -- tests/task-time.test.ts
 `context.next_lesson_snapshot` 用于 next 内容；缺失时不以当课替代，并向 `context.issues` 追加 `missing_next_lesson`。
 `context.completed_unit={book,unit}` 必须由调用方根据目录边界/单元完成状态验证；未传入时不匹配单元完成活动。
 显式 binding.scope_override 同时替代旧 lesson_filter，未覆盖时仍联合校验池范围与旧课次。
-本地新增迁移 `20261029054202_tasks_pool_initialize.sql` 补全初始化字段与新账号默认绑定，重复调用不恢复已停用/删除的绑定。
+本地新增迁移 `20261031015426_tasks_pool_initialize.sql` 补全初始化字段与新账号默认绑定，重复调用不恢复已停用/删除的绑定。
 
 
 ## 课程目录快照与本地物料盘点
@@ -131,7 +131,7 @@ Retry-After、超时及页预算；本任务未执行远端读取。`scan_comple
 
 `TaskMaterialAdapter.listForCourse(courseId,scope)` / `pickAssets(subject,selectedIds)` 返回窄 MaterialOption；
 客户端 `TasksHost` 的 `materialAdapter` seam 接入 Task 7。tasks 不导入物料/学科包，也不存另一套共享资产。
-本地增量迁移 `20261029065823_task_catalog_source_and_progression.sql` 将旧数学快照保守回填 segment，
+本地增量迁移 `20261031015452_task_catalog_source_and_progression.sql` 将旧数学快照保守回填 segment，
 其他科目 lesson；旧 JSON 未标记 lesson 结束时继续保守等待配置。
 验证：`pnpm --filter web exec vitest run tests/tasks/catalog-adapters.test.ts tests/tasks/catalog-inventory.test.ts tests/tasks/catalog-readiness.test.tsx`；
 SQL 断言：`supabase/tests/task-catalog-snapshot.sql`（仅授权的 disposable/local PostgreSQL）。
@@ -209,11 +209,11 @@ stale revisions, unchanged IDs, future conversion re-edit/history, and schedule-
 back its fixtures. No hosted migration or generation has been verified by this local test.
 
 
-## Task4 event-runtime handoff (authoritative for the local pending rollout)
+## Task4 event-runtime handoff (migrations applied 2026-10-31)
 
 This section supersedes the staged legacy-runtime statements in earlier Task2 handoff notes.
-The generated migration is `20261029095159_tasks_background_generation.sql`; do not deploy it
-independently from this application revision. No hosted migration or live Cron job was applied.
+The generated migration is `20261031020058_tasks_background_generation.sql`; do not deploy it
+independently from this application revision. It was applied on 2026-10-31; the generation Cron job has successful hosted run records.
 
 `task_runtime_status()` returns `cron_enabled/detail`; an absent pg_cron extension is explicitly
 reported as disabled, while `task_tick(auth.uid())` remains same-engine page catch-up. The private
@@ -266,7 +266,7 @@ rule events and forecasts, and request UUID dedupes makeup creation. Preserve st
 flags so `projectCourseEvents` does not forecast already processed work again.
 
 Task4 pre-review corrections require the follow-up migration
-`20261029145703_tasks_runtime_order_and_checkpoint_repairs.sql` after the initial runtime migration.
+`20261031020110_tasks_runtime_order_and_checkpoint_repairs.sql` after the initial runtime migration.
 Current-day checks with no unprocessed due event do not consume the day budget, so repeated
 catch-up converges even when there are more current courses than the batch size. The date stays
 open for later releases; `has_more` does not report static projection issues or empty current dates.
@@ -278,7 +278,7 @@ original deadlines while still allowing future relative deadlines to follow resc
 ### Event lifecycle repair validation (local only)
 
 The temporary regression runner `scripts/tmp/task4-lifecycle-validation.mjs` restores the full
-11-migration task baseline, including `20261029145703`, and applies the forward lifecycle repair.
+11-migration task baseline, including `20261031020110`, and applies the forward lifecycle repair.
 It creates a disposable native PostgreSQL18 cluster on loopback port 55440, with fixture-only
 auth/storage stubs; shutdown deletes its data directory. Do not run two copies concurrently.
 No `.env.local`, hosted database, Baidu service or real Cron execution is used.
@@ -309,7 +309,7 @@ The default runner includes this fixture; `--related` also checks affected earli
 
 ### Local execution-progress validation
 
-Task5 forward migration: `20261030012306_task_item_progress_and_revisions.sql`.
+Task5 forward migration: `20261031020217_task_item_progress_and_revisions.sql`.
 Run `pnpm --filter web exec vitest run tests/tasks` for progress, controls, catalog and course tests.
 `node scripts/tmp/task5-progress-validation.mjs` installs the complete task migration chain into
 an isolated embedded PostgreSQL, runs owner-role SQL assertions and holds two actual connections
@@ -334,7 +334,7 @@ Do not subtract their capacity again in the solver, or treat reservations as exe
 Conflicted blocks remain visible and reserve their union but do not credit demand. Manual
 moves revalidate the new arrangement, and failed moves retain the original row.
 
-The local-only `task_availability_configuration` migration adds owned day states and dirty
+The `task_availability_configuration` migration (applied 2026-10-31) adds owned day states and dirty
 revision triggers. Existing saved windows are preserved/backfilled; new account initialization
 creates no capacity. It extends the existing block guard without replacing execution RPCs.
 
@@ -403,7 +403,7 @@ alert/ownership SQL assertions, then tests actual independent-connection lease c
 material MVCC invalidation, interrupted-worker recovery and monotonic publication.
 No hosted services, production secrets or existing env files are read.
 
-The new planning migration is local only. Server-only `TASK_PLANNING_CRON_SECRET` must
+The planning migration was applied on 2026-10-31; its HTTP Cron remains uninstalled. Server-only `TASK_PLANNING_CRON_SECRET` must
 match Vault `task_planning_cron_secret`; Vault `task_planning_url` is the full HTTPS URL
 of `/api/internal/task-planning/recompute`. The private install function is intentionally
 not executed in the migration. A scheduler presence is not proof of successful delivery.

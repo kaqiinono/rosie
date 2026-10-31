@@ -55,6 +55,6 @@ references to old file paths should point to `legacy-migrations/`.
 
 ## 课程/任务池/共享物料与容量交付（2026-10-30）
 
-本分支本地实现，远程迁移、Cron、百度真实写入与部署尚未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
+2026-10-31：20 个任务/物料前向迁移已应用到关联 Supabase 项目，任务生成 Cron 已安装并有成功运行记录；容量规划 HTTP Cron、百度真实写入与应用部署未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
 
 最终本地验收使用 `node scripts/tmp/task15-acceptance-validation.mjs`（24个相关迁移、全部SQL fixtures、真实MVCC快照与canonical builder/solver发布/采用/恢复）；`--intentional-failure` 清理后应退出1。该临时工具使用独立本机 PostgreSQL，不读 env。`--serve` 提供127.0.0.1:3915的合成身份测试adapter，只供本地验收，不是生产Auth/API。运行时状态须区分未配置、过期与已配置但未证实送达。严禁依据本地测试宣称托管Cron已启用。

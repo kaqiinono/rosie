@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminSupabase, isAdminRequestUser } from '@/lib/api-auth'
 import {
   BAIDU_COOKIE_PATH,
+  BAIDU_PERSONAL_STATE_PREFIX,
   BAIDU_STATE_COOKIE,
   exchangeBaiduCode,
   getBaiduOAuthConfig,
@@ -16,22 +17,29 @@ export const dynamic = 'force-dynamic'
 
 type OAuthResult =
   | 'success'
+  | 'unauthorized'
   | 'invalid_state'
   | 'cancelled'
   | 'forbidden'
   | 'config_error'
   | 'storage_error'
   | 'exchange_failed'
+  | 'identity_failed'
 
 export async function GET(req: NextRequest) {
+  const state = req.nextUrl.searchParams.get('state') ?? ''
+  const personal = state.startsWith(BAIDU_PERSONAL_STATE_PREFIX)
+  const nonce = personal ? state.slice(BAIDU_PERSONAL_STATE_PREFIX.length) : state
+  const cookieName = BAIDU_STATE_COOKIE[personal ? 'personal' : 'shared']
+
   function finish(result: OAuthResult) {
-    const destination = new URL('/admin/sync', req.url)
+    const destination = new URL(personal ? '/setting' : '/admin/sync', req.url)
     destination.searchParams.set('baidu_oauth', result)
     destination.hash = 'baidu-oauth'
     const response = NextResponse.redirect(destination, 303)
     response.headers.set('Cache-Control', 'no-store')
     response.headers.set('Referrer-Policy', 'no-referrer')
-    response.cookies.set(BAIDU_STATE_COOKIE, '', {
+    response.cookies.set(cookieName, '', {
       httpOnly: true,
       secure: req.nextUrl.protocol === 'https:',
       sameSite: 'lax',
@@ -41,12 +49,11 @@ export async function GET(req: NextRequest) {
     return response
   }
 
-  const state = req.nextUrl.searchParams.get('state') ?? ''
-  const cookie = req.cookies.get(BAIDU_STATE_COOKIE)?.value ?? ''
+  const cookie = req.cookies.get(cookieName)?.value ?? ''
   if (
-    !/^[a-f0-9]{64}$/.test(state) ||
+    !/^[a-f0-9]{64}$/.test(nonce) ||
     !/^[a-f0-9]{64}$/.test(cookie) ||
-    !timingSafeEqual(Buffer.from(state), Buffer.from(cookie))
+    !timingSafeEqual(Buffer.from(nonce), Buffer.from(cookie))
   )
     return finish('invalid_state')
 
@@ -76,7 +83,8 @@ export async function GET(req: NextRequest) {
     if (!data || typeof data.initiated_by !== 'string') return finish('invalid_state')
     initiatedBy = data.initiated_by
     const { data: actor, error: actorError } = await admin.auth.admin.getUserById(initiatedBy)
-    if (actorError || !actor.user || !isAdminRequestUser(actor.user)) return finish('forbidden')
+    if (actorError || !actor.user) return finish('unauthorized')
+    if (!personal && !isAdminRequestUser(actor.user)) return finish('forbidden')
   } catch {
     return finish('storage_error')
   }
@@ -93,22 +101,30 @@ export async function GET(req: NextRequest) {
     return finish('exchange_failed')
   }
 
+  let accountId: string
   try {
-    const accountId = await verifyBaiduAccount(tokens.accessToken)
-    const { error } = await admin.rpc('baidu_store_verified_credentials', {
-      p_input: {
-        account_id: accountId,
-        app_key: config.appKey,
-        access_token: tokens.accessToken,
-        refresh_token: tokens.refreshToken,
-        expires_at: tokens.expiresAt,
-        scope: tokens.scope,
-        authorized_by: initiatedBy,
-        updated_at: new Date().toISOString(),
-        refresh_lock_id: null,
-        refresh_lock_until: null,
-      },
-    })
+    accountId = await verifyBaiduAccount(tokens.accessToken)
+  } catch {
+    return finish('identity_failed')
+  }
+
+  const credentials = {
+    account_id: accountId,
+    app_key: config.appKey,
+    access_token: tokens.accessToken,
+    refresh_token: tokens.refreshToken,
+    expires_at: tokens.expiresAt,
+    scope: tokens.scope,
+    updated_at: new Date().toISOString(),
+  }
+  try {
+    const { error } = personal
+      ? await admin.from('baidu_user_oauth_credentials').upsert(
+          { ...credentials, user_id: initiatedBy }, { onConflict: 'user_id' },
+        )
+      : await admin.rpc('baidu_store_verified_credentials', {
+          p_input: { ...credentials, authorized_by: initiatedBy },
+        })
     return finish(error ? 'storage_error' : 'success')
   } catch {
     return finish('storage_error')

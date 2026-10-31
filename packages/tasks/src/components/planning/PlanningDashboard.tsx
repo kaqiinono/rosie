@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { isPlanningStale } from '../../planning/status'
-import type { TaskAllocation } from '../../planning/types'
+import { getPlanningSnapshot, isPlanningStale, type TaskAllocation } from '../../planning'
 import { Panel, Field, inputClass, minorClass, buttonClass, useTasks } from '../shared'
 import CourseRiskList from './CourseRiskList'
 import CourseGantt from './CourseGantt'
@@ -20,13 +19,13 @@ import {
 
 export default function PlanningDashboard() {
   const { api } = useTasks()
-  const snapshot = api.data.planning?.snapshot
+  const snapshot = getPlanningSnapshot(api.data.planning)
   return <PlanningDashboardContent key={`${snapshot?.input_revision}:${snapshot?.computed_at}`} />
 }
 function PlanningDashboardContent() {
   const { api, run, busy, notify } = useTasks()
   const status = api.data.planning
-  const snapshot = status?.snapshot
+  const snapshot = getPlanningSnapshot(status)
   const [now, setNow] = useState(0)
   const [policy, setPolicy] = useState<'regular_only' | 'allow_weekend'>('allow_weekend')
   const [view, setView] = useState<GanttView>('dates')
@@ -64,7 +63,7 @@ function PlanningDashboardContent() {
   }
   async function adopt() {
     setError('')
-    if (!snapshot || !result || isPlanningStale(status, Date.now())) {
+    if (!snapshot || !result || isPlanningStale(status)) {
       setError('预测已过期，请重新计算后再采用')
       return
     }

@@ -26,7 +26,23 @@ export type PlanningStatus = {
   }[]
   background: { configured: boolean; capabilities_available: boolean; reason: string }
 }
+/** Older RPC responses may contain a row whose fields are all null. */
+export function getPlanningSnapshot(status: PlanningStatus | null): PlanningSnapshot | null {
+  const snapshot = status?.snapshot
+  if (
+    !snapshot?.input ||
+    !Array.isArray(snapshot.input.demands) ||
+    !snapshot.result?.regular_only ||
+    !snapshot.result.allow_weekend
+  ) {
+    return null
+  }
+  return snapshot
+}
+
 /** Always evaluate at render time too: a mounted page may outlive its server response. */
 export function isPlanningStale(status: PlanningStatus | null, now = Date.now()): boolean {
-  return !status?.snapshot || status.stale || Date.parse(status.snapshot.next_recompute_at) <= now
+  const snapshot = getPlanningSnapshot(status)
+  const expiresAt = Date.parse(snapshot?.next_recompute_at ?? '')
+  return !snapshot || status?.stale !== false || !Number.isFinite(expiresAt) || expiresAt <= now
 }

@@ -104,12 +104,13 @@ change, run `pnpm lint`/`pnpm typecheck` to catch type errors. Before merging UI
 
 ### Baidu Netdisk OAuth
 
-Administrator authorization is initiated from `/admin/sync`, linked by the “同步管理” card in
-the global settings panel (`/setting` or `/admin`),
-using authenticated `POST /api/baidu/oauth/start`; `GET /api/baidu/oauth/callback` consumes a
-single-use, ten-minute state and saves the primary account's credentials server-side. Configure
+Any signed-in user can bind a personal Netdisk account in `/setting` through
+`POST /api/baidu/oauth/personal/start`. The callback stores credentials by the verified
+initiator's user ID in `baidu_user_oauth_credentials`. Admins manage the shared course
+and materials account separately at `/admin/sync` through `POST /api/baidu/oauth/start`.
+Both flows use a ten-minute, single-use state whose hash binds the target and initiator. Configure
 `BAIDU_APP_KEY`, `BAIDU_SECRET_KEY`, `BAIDU_REDIRECT_URI` and the existing
-`SUPABASE_SERVICE_ROLE_KEY`. Tables `baidu_oauth_states` and `baidu_oauth_credentials` are
+`SUPABASE_SERVICE_ROLE_KEY`. The state table and both credential tables are
 service-role-only, with no browser grants or RLS policies. Textbook narration maps keys such as
 `5a-u3l1` to `/airosie/english/audio/5A/U3L1.mp3`. Authenticated audio-session POST establishes
 an HttpOnly cookie; each audio stream validates its Supabase session and supports Range requests,
@@ -212,8 +213,8 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 
 Global admin sub-pages include:
 
-- `/admin/sync` — Baidu authorization, per-lesson math replay synchronization and matching reports.
-  The settings/admin hubs contain only the entry card; OAuth callbacks return to this detail page.
+- `/admin/sync` — shared Baidu authorization, per-lesson math replay synchronization and matching reports.
+  Shared callbacks return here. Personal callbacks return to the user's Netdisk card in `/setting`.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/users` — account management plus per-user parent PIN reset. Parent PIN hashes live in
@@ -335,7 +336,7 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - Shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `@rosie/core`
 
 Task execution progress is authoritative through owner-checked execution RPCs, with direct
-`task_instances` / `task_instance_items` browser DML revoked (Task5 local migration pending).
+`task_instances` / `task_instance_items` browser DML revoked (Task5 migration applied 2026-10-31).
 Ordinary new tasks use manual percentage; real math items use atomic stable-key completion.
 See `packages/tasks/AGENTS.md` for returned revision/cache and planning-dirty contracts.
 
@@ -344,7 +345,7 @@ See `packages/tasks/AGENTS.md` for returned revision/cache and planning-dirty co
 `@rosie/materials` (core-only) owns `/materials`, shared authenticated assets, private course links,
 and app-injected picker/details previews. Tasks retains core/player-only dependencies; `TasksHost`
 injects materials via `TaskMaterialsBridge`. `/tasks/materials` retains private recordings. See
-`packages/materials/AGENTS.md` and README for local-only migration, scope/resolver and Tasks8/9 contracts.
+`packages/materials/AGENTS.md` and README for applied migrations, scope/resolver and Tasks8/9 contracts.
 
 Task planning shared contracts live in `packages/tasks/src/planning/types.ts`. Capacity is
 Shanghai-only manual recurring/date state plus windows; weekends are explicit reserve periods.
@@ -365,6 +366,6 @@ shared material epoch and bounded time expiry; see `packages/tasks/AGENTS.md`.
 
 ## 课程/任务池/共享物料与容量交付（2026-10-30）
 
-本分支本地实现，远程迁移、Cron、百度真实写入与部署尚未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
+2026-10-31：20 个任务/物料前向迁移已应用到关联 Supabase 项目，任务生成 Cron 已安装并有成功运行记录；容量规划 HTTP Cron、百度真实写入与应用部署未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
 
 最终本地验收使用 `node scripts/tmp/task15-acceptance-validation.mjs`（24个相关迁移、全部SQL fixtures、真实MVCC快照与canonical builder/solver发布/采用/恢复）；`--intentional-failure` 清理后应退出1。该临时工具使用独立本机 PostgreSQL，不读 env。`--serve` 提供127.0.0.1:3915的合成身份测试adapter，只供本地验收，不是生产Auth/API。运行时状态须区分未配置、过期与已配置但未证实送达。严禁依据本地测试宣称托管Cron已启用。

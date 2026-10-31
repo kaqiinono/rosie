@@ -1,6 +1,16 @@
 # 课程任务与容量规划：交付及上线操作
 
-2026-10-30：本分支为本地验收、待审查状态。远程数据库迁移、Cron 安装、百度实际扫描/上传、推送、合并和部署均未执行。下列远程操作必须由维护者另行授权；本文件不是执行记录。
+2026-10-31：经用户明确授权，20 个任务/物料前向迁移已通过 Supabase migration API 应用到关联项目 `yvukypevtqblhjdhkatb`。本地迁移文件名及引用已同步为托管历史版本，SQL 内容未改动。任务生成 Cron 随迁移安装；容量规划 HTTP Cron、百度实际扫描/上传、推送、合并和应用部署未执行。
+
+## 远程迁移记录（2026-10-31）
+
+- 后续补丁 `20261031021849_fix_task_planning_null_snapshot.sql` 已应用：无预测记录时 RPC 明确返回 `snapshot: null`，并刷新接口缓存。前端同时保护旧空字段快照，显示尚无预测且禁止采纳；未运行构建或测试。
+- 本次范围：`20261031015402_extend_task_course_subjects.sql` 至 `20261031020318_materials_passive_scan_metadata.sql`，共 20 个文件；无关的口算待执行迁移未应用。
+- `task_availability_day_states`、容量 RPC 和规划状态 RPC 已创建；该表启用 RLS，authenticated 有 SELECT 权限。已执行 `NOTIFY pgrst, 'reload schema'`。
+- 前后汇总：模板 28→28、旧课次 89→89、任务 6→6、已完成任务 2→2、私人材料 1→1。89 条旧课次全部映射，3 条确认保留，新增 47 条绑定；已完成任务均为 100%，共享物料为 0。
+- `tasks-background-generation` 已启用，核对时有 3 次 succeeded 运行记录、运行时错误日志为 0。此记录不代表容量规划 HTTP Cron 已配置，也不证明真实应用端到端流程通过。
+- 完整私人数据本地备份导出被自动审批拒绝，未执行；上述记录仅保存汇总信息，不是完整备份。
+- 本次未运行 build、lint、typecheck 或测试。安全顾问仍提示认证用户可调用 SECURITY DEFINER RPC、扩展位于 public 等信息；未以自动改权限的方式扩大本次迁移范围。
 
 ## 兼容与映射
 
@@ -27,7 +37,7 @@ from public.task_instances group by user_id;
 
 对未关联课程、目录 key 失效、孤立资源逐行导出待配置清单；禁止删除或用“全部适用”掩盖缺口。
 
-## 分阶段启用（尚未执行）
+## 分阶段启用流程（实际执行状态见上方记录）
 
 1. 备份目标数据、保存版本和映射统计。在独立目标先完整演练兼容读写；本地 recipe 见下节。不要用残缺迁移历史 reset。
 2. 明确授权后在仓库运行 `node scripts/supabase-migrations.mjs list`，再 `dry-run`。检查仅有本次已审查迁移及必要已知前置，才允许另行授权 `push`。不使用 `--include-all`。本次没有运行这些远程命令。

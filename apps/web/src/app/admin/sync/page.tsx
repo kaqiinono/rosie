@@ -1,5 +1,6 @@
 import { PageBreadcrumb } from '@rosie/ui'
 import BaiduOAuthConnect from '@/components/settings/BaiduOAuthConnect'
+import BaiduMathVideoManager from '@/components/settings/BaiduMathVideoManager'
 
 export default function SyncPage() {
   return (
@@ -13,7 +14,9 @@ export default function SyncPage() {
       <main className="mx-auto max-w-[860px] px-4 py-8 pb-24">
         <h1 className="text-2xl font-black text-text-primary">同步管理</h1>
         <p className="mt-1 text-sm text-text-secondary">管理百度网盘授权与数学回放清单。</p>
-        <BaiduOAuthConnect />
+        <BaiduOAuthConnect target="shared">
+          <BaiduMathVideoManager />
+        </BaiduOAuthConnect>
       </main>
     </div>
   )

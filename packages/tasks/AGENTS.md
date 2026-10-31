@@ -15,7 +15,7 @@ Routes are `/tasks/**`; `/today` and all subject progress remain independent.
 - Private audio is stored under `task-audio/<user id>/...`. Signed URLs must not enter
   shared service-worker caches. Playback repeats one clip until the learner moves on.
 - New UI uses global theme utilities. Its Tailwind scan source is registered in globals.css.
-- Event runtime migration is LOCAL ONLY. When deployed with pg_cron installed, the private
+- Event runtime migration was applied on 2026-10-31. With pg_cron installed, the private
   `tasks-background-generation` job runs every minute. `task_runtime_status()` reports
   whether scheduling actually exists; without the extension it explicitly reports disabled.
   The signed-in page's `task_tick` is same-engine catch-up, never a separate emitter.
@@ -40,7 +40,7 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
 - `20261023051528_tasks_classtable.sql` was applied to the linked project on
   2026-10-23 via the migration API; its filename matches hosted migration history.
 
-## Additive course-domain foundation (local migration pending)
+## Additive course-domain foundation (migration applied 2026-10-31)
 
 - `courseTypes.ts` defines course events, snapshots, bindings, pool items and the
   `CourseRule` union. Existing `TimetableRule` and `TaskData` stay source-compatible;
@@ -49,7 +49,7 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
 - `courseProgress.ts` normalizes course/rule input and derives stable event keys.
   Flexible defaults use one event per Shanghai date and course; extra events need
   an explicit identity. Timetabled events retain rule/date identities.
-- `20261029031259_tasks_course_events_and_pool_bindings.sql` is local only. Apply
+- `20261031015416_tasks_course_events_and_pool_bindings.sql` was applied on 2026-10-31
   together with event-aware runtime changes; old tick/save RPCs are unchanged in
   this foundation and cannot process flexible rules yet. Legacy course automation
   defaults off, and old occurrence/confirmation/template IDs remain readable.
@@ -94,7 +94,7 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
   Remote GET feeds require explicit opt-in and a page budget. Never catalog private task/story recordings.
 - `TaskMaterialAdapter` is an injected application seam. Shared-material storage belongs to Task 7; no materials dependency here.
 
-## Atomic course configuration (Task 2, local migration pending)
+## Atomic course configuration (Task 2, migration applied 2026-10-31)
 
 - `saveCourse(course, rules, effectiveFrom?)` remains the sole atomic course editor API.
   `CourseInput` now carries optional `catalog_snapshot` and controlled `bindings`; existing
@@ -123,7 +123,7 @@ Files: `types.ts` domain interfaces, `time.ts` interval math, `defaults.ts` temp
 - Disposable full task baseline assertions: `supabase/tests/task-atomic-course-configuration.sql`.
   Do not apply this migration remotely before the event runtime is integrated and reviewed.
 
-## Unified event runtime (Task 4, local migration pending)
+## Unified event runtime (Task 4, migration applied 2026-10-31)
 
 - `courseEvents.ts` owns pure candidate enumeration, snapshot projection, deadline/window
   resolution and bounded-save retry; `courseProgress.advanceCourseCursor` respects explicit
@@ -167,7 +167,7 @@ flags so `projectCourseEvents` does not forecast already processed work again.
 
 ### Task4 pre-review corrections
 
-- `20261029145703_tasks_runtime_order_and_checkpoint_repairs.sql` is a forward-only follow-up.
+- `20261031020110_tasks_runtime_order_and_checkpoint_repairs.sql` is a forward-only follow-up.
   `generation_date=today` remains open, but empty/already processed current dates consume no
   daily work budget. `has_more` means a remaining historical checkpoint or unprocessed due event,
   not a full numeric budget, empty today, or a static preview-projection issue.
@@ -181,7 +181,7 @@ flags so `projectCourseEvents` does not forecast already processed work again.
 
 ### Task4 event lifecycle repair
 
-- `20261030004949_tasks_event_lifecycle_repairs.sql` retains timed event clocks/release while
+- `20261031020204_tasks_event_lifecycle_repairs.sql` retains timed event clocks/release while
   explicit early completion emits the normal after-class task identity with task release now.
   Course/default deadlines retain their existing policies; scheduled-end processing cannot duplicate it.
 - First assignment activation reopens only skipped, incomplete current-date flexible events.
@@ -192,13 +192,13 @@ flags so `projectCourseEvents` does not forecast already processed work again.
 - Local native regression harness: `scripts/tmp/task4-lifecycle-validation.mjs`; setup and
   focused baseline/GREEN commands are in README. No hosted database or env file is needed.
 
-- `20261030011147_tasks_processed_preview_projection.sql` excludes `after_processed` events
+- `20261031020211_tasks_processed_preview_projection.sql` excludes `after_processed` events
   from both worker preview projection and preview reconciliation before emission/temporary
   advancement. An early completed timed event keeps scheduled clocks but is already reflected
   in the live cursor; forecast must not count it a second time. SQL regression:
   `supabase/tests/task-generation-processed-preview.sql`.
 
-## Execution progress (Task 5, local migration pending)
+## Execution progress (Task 5, migration applied 2026-10-31)
 
 - Ordinary new activities/manual tasks default to `percentage`; explicit item activities remain `items`.
   Existing checklist/completed history is preserved. New manual tasks require a subject; `other`
@@ -222,14 +222,14 @@ flags so `projectCourseEvents` does not forecast already processed work again.
 - Local execution SQL and actual different-item two-connection lock contention:
   `node scripts/tmp/task5-progress-validation.mjs` (same disposable dependencies as Task4).
 
-- Task5 repair migration `20261030020435_tasks_execution_snapshot_repairs.sql` normalizes
+- Task5 repair migration `20261031020224_tasks_execution_snapshot_repairs.sql` normalizes
   accepted item snapshots/order for percentage content replacements too. Metadata-only writes
   preserve legacy progress, including completed empty checklists; cancel/restore retains completion.
 - Refresh reconciliation retains current-only task rows as well as the highest revision for matching
   IDs: a task created after the task SELECT must survive remaining background table reads. Tasks
   cannot be deleted through the application, so removal must never be inferred from an older fetch.
 
-## Shared material integration (Task7, local migration pending)
+## Shared material integration (Task7, migration applied 2026-10-31)
 
 Application `TaskMaterialsBridge` injects renderMaterialPicker/renderCourseMaterials/renderTaskMaterials
 and `TaskMaterialAdapter.resolve`; tasks never imports materials. Actual CourseEditor binding and pool
@@ -238,12 +238,12 @@ Private recording tables/bucket remain unchanged. `/materials` owns shared asset
 Pending resolution updates run under user lock228, preserve old snapshots in task_progress_events,
 increment task/planning revisions, and retain selected/completed/cancelled asset history on archive/unlink.
 
-- Task7 review repair `20261030031333_tasks_material_resolution_repairs.sql` applies material
+- Task7 review repair `20261031020244_tasks_material_resolution_repairs.sql` applies material
   resolution to the same independent once/weekly emitter (course-less explicit assets/none; auto
   stays pending). Event emitters write the exact effective selector on intentional revisions even
   when template JSON is unchanged. Insertion fallback never rebases later progress/metadata edits.
 
-## Capacity and fixed arrangements (Task10, local migration pending)
+## Capacity and fixed arrangements (Task10, migration applied 2026-10-31)
 
 - `planning/types.ts` owns shared `TaskDemand`, `CapacityInterval`, `PlanningInput`,
   `TaskAllocation`, `PlanningResult`, `BatchMetrics`, and `PlanningIssue` contracts.
@@ -345,7 +345,7 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
   Flow complexity O(F V E K), memory O(E K); counterfactual metrics rerun flow per batch.
   Worker/UI publication and scale benchmarking remain outside this pure module.
 
-## Planning snapshots and worker (Task13, local migration pending)
+## Planning snapshots and worker (Task13, migration applied 2026-10-31)
 
 - `task_planning_input` is a service-only STABLE SQL aggregate: every dependent owned
   table, shared asset catalog, owner revision and shared epoch come from one MVCC view.
@@ -358,6 +358,8 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
   reclaimable, failures back off (20s through capped 2560s). A slower-than-lease solver
   loses publication; no production-scale performance guarantee is made.
 - Snapshots expire in at most one minute, earlier at capacity/release/deadline boundaries.
+  An absent row must serialize as `snapshot: null`; `getPlanningSnapshot` also rejects
+  legacy null-field objects before rendering or adoption (patch applied 2026-10-31).
   `task_planning_status` compares both revisions and server time. UI must also evaluate
   `isPlanningStale(status, now)` and render stale/unknown rather than retain a green result.
   `useTaskData` shares planning status/settings/alerts in its existing session store;
@@ -387,7 +389,7 @@ increment task/planning revisions, and retain selected/completed/cancelled asset
 
 ## 课程/任务池/共享物料与容量交付（2026-10-30）
 
-本分支本地实现，远程迁移、Cron、百度真实写入与部署尚未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
+2026-10-31：20 个任务/物料前向迁移已应用到关联 Supabase 项目，任务生成 Cron 已安装并有成功运行记录；容量规划 HTTP Cron、百度真实写入与应用部署未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
 
 最终本地验收使用 `node scripts/tmp/task15-acceptance-validation.mjs`（25个相关迁移、全部SQL fixtures、真实MVCC快照与canonical builder/solver发布/采用/恢复）；`--intentional-failure` 清理后应退出1。该临时工具使用独立本机 PostgreSQL，不读 env。`--serve` 提供127.0.0.1:3915的合成身份测试adapter，只供本地验收，不是生产Auth/API。运行时状态须区分未配置、过期与已配置但未证实送达。严禁依据本地测试宣称托管Cron已启用。
 

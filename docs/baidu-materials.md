@@ -24,7 +24,7 @@
 
 ## Passive scan metadata repair (2026-10-30)
 
-Forward migration `20261030130524_materials_passive_scan_metadata.sql` normalizes trusted provider
+Forward migration `20261031020318_materials_passive_scan_metadata.sql` normalizes trusted provider
 path extensions for MP3/M4A/WAV/OGG, JPEG/PNG/GIF/WebP/AVIF, MP4/WebM/OGV and PDF. Service scan MIME,
 SQL publication kind/MIME, native preview and passive delivery agree. SVG/HTML and unknown formats
 remain generic attachments; provider/client MIME claims do not broaden the allowlist.

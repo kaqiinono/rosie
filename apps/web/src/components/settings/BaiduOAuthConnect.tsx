@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { isAdminUser, supabase, useAuth } from '@rosie/core'
-import BaiduMathVideoManager from './BaiduMathVideoManager'
+import type { BaiduOAuthTarget } from '@/lib/baidu-oauth'
 
 const ERROR_MESSAGES: Record<string, string> = {
   unauthorized: '当前登录凭证未通过验证，请退出后重新登录。',
@@ -15,28 +15,32 @@ const ERROR_MESSAGES: Record<string, string> = {
   invalid_state: '本次授权已过期或失效，请重新点击授权百度网盘。',
   cancelled: '百度授权未完成，可以重新发起授权。',
   exchange_failed: '未能取得网盘授权，请确认应用权限和密钥后重新授权。',
+  identity_failed: '未能获取百度网盘账户信息，请重新授权。',
 }
 
-export default function BaiduOAuthConnect() {
+type Props = { target: BaiduOAuthTarget; children?: ReactNode }
+
+export default function BaiduOAuthConnect({ target, children }: Props) {
   const { user } = useAuth()
   const [pending, setPending] = useState(false)
   const pendingRef = useRef(false)
   const [message, setMessage] = useState('')
   const [success, setSuccess] = useState(false)
-  const admin = isAdminUser(user)
+  const personal = target === 'personal'
+  const canAuthorize = !!user && (personal || isAdminUser(user))
 
   useEffect(() => {
-    if (!admin) return
+    if (!canAuthorize) return
     const url = new URL(window.location.href)
     const result = url.searchParams.get('baidu_oauth')
     if (!result) return
     setSuccess(result === 'success')
-    setMessage(result === 'success' ? '百度网盘授权已保存。' : (
+    setMessage(result === 'success' ? (personal ? '你的百度网盘已绑定。' : '百度网盘授权已保存。') : (
       ERROR_MESSAGES[result] ?? '授权未完成，请重新发起授权。'
     ))
     url.searchParams.delete('baidu_oauth')
     window.history.replaceState(window.history.state, '', url.toString())
-  }, [admin])
+  }, [canAuthorize, personal])
 
   async function authorize() {
     if (pendingRef.current) return
@@ -46,8 +50,11 @@ export default function BaiduOAuthConnect() {
     setSuccess(false)
     try {
       const { data, error } = await supabase.auth.getSession()
-      if (error || !data.session) throw new Error(ERROR_MESSAGES.forbidden)
-      const response = await fetch('/api/baidu/oauth/start', {
+      if (error || !data.session || data.session.user.id !== user?.id) {
+        throw new Error(ERROR_MESSAGES.unauthorized)
+      }
+      const endpoint = personal ? '/api/baidu/oauth/personal/start' : '/api/baidu/oauth/start'
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { Authorization: `Bearer ${data.session.access_token}` },
         credentials: 'same-origin',
@@ -83,16 +90,18 @@ export default function BaiduOAuthConnect() {
     }
   }
 
-  if (!admin) return null
+  if (!canAuthorize) return null
 
   return (
-    <section id="baidu-oauth" aria-labelledby="baidu-oauth-title"
+    <section key={user?.id} id="baidu-oauth" aria-labelledby="baidu-oauth-title"
       className="mt-5 scroll-mt-20 rounded-3xl border border-blue-200 bg-white/85 p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 id="baidu-oauth-title" className="text-[16px] font-extrabold text-slate-800">百度网盘授权</h3>
+          <h3 id="baidu-oauth-title" className="text-[16px] font-extrabold text-slate-800">
+            {personal ? '我的百度网盘' : '共享百度网盘'}
+          </h3>
           <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
-            连接存放课文音频与数学视频的百度网盘账号。点击后前往百度登录并确认授权。
+            {personal ? '将你的百度网盘绑定到当前 Rosie 账户。' : '连接存放公共课文音频、数学视频和共享物料的网盘。'}
           </p>
         </div>
         <button type="button" onClick={() => void authorize()} disabled={pending} aria-busy={pending}
@@ -104,7 +113,7 @@ export default function BaiduOAuthConnect() {
         className={`mt-3 min-h-5 text-[13px] leading-relaxed ${success ? 'text-emerald-700' : 'text-red-700'}`}>
         {message}
       </p>
-      <BaiduMathVideoManager key={user?.id} />
+      {children}
     </section>
   )
 }

@@ -337,7 +337,7 @@ export default function SpellTiles({
                   className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] touch-manipulation select-none transition-[transform,background,border-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] ${letter && !answered && slotIdx >= lockedCount ? 'cursor-pointer active:scale-90 animate-pop-in' : ''} ${cls}`}
                 >
                   <span style={magicDemo ? { color: MAGIC_STAR_COLOR } : undefined} className={`transition-opacity duration-200 ${magicDemo?.fading ? 'opacity-0' : 'opacity-100'} `}>
-                    {letter === ' ' ? '␣' : letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
+                    {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
                   </span>
                 </div>
               )
