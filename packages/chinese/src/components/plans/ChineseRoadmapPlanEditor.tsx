@@ -157,11 +157,11 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
     }
   }, [isEdit, editPlanId, user, loadRunsForPlan])
 
-  const planRuns = editPlanId ? (runsByPlanId[editPlanId] ?? []) : []
   const selectedRuns = useMemo(() => {
     if (!selectedRunLessonKey) return []
+    const planRuns = editPlanId ? (runsByPlanId[editPlanId] ?? []) : []
     return planRuns.filter((run) => run.lessonKey === selectedRunLessonKey)
-  }, [planRuns, selectedRunLessonKey])
+  }, [editPlanId, runsByPlanId, selectedRunLessonKey])
 
   const canSubmit =
     !isSubmitting &&

@@ -1,5 +1,7 @@
 'use client'
 
+import { GrammarScanImage } from './GrammarScanImage'
+
 import { useCallback, useEffect, useState } from 'react'
 import type { GrammarPageImage } from '../types'
 import { grammarPageImageUrl } from '../types'
@@ -16,15 +18,13 @@ interface PagePreviewModalProps {
  * 原文图片预览弹窗 — 点击页码角标后弹出。
  * 展示 page 对应的 Storage 图片；若无匹配图片则显示提示。
  */
-export function PagePreviewModal({ page, images, onClose }: PagePreviewModalProps) {
+export function PagePreviewModal(props: PagePreviewModalProps) {
+  return <PagePreview key={props.page} {...props} />
+}
+
+function PagePreview({ page, images, onClose }: PagePreviewModalProps) {
   const [loaded, setLoaded] = useState(false)
   const [errored, setErrored] = useState(false)
-
-  // page 变化时重置加载状态
-  useEffect(() => {
-    setLoaded(false)
-    setErrored(false)
-  }, [page])
 
   // ESC 关闭
   useEffect(() => {
@@ -80,7 +80,7 @@ export function PagePreviewModal({ page, images, onClose }: PagePreviewModalProp
                 <div className="h-8 w-8 animate-spin rounded-full border-3 border-app-blue border-t-transparent" />
               </div>
             )}
-            <img
+            <GrammarScanImage
               src={imgUrl}
               alt={`原书 p.${page}`}
               className={`max-h-[70vh] w-auto rounded-xl object-contain transition-opacity ${loaded ? 'opacity-100' : 'opacity-0'}`}

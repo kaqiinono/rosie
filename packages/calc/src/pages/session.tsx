@@ -627,8 +627,6 @@ export default function CalcSessionPage() {
     startedAtIso,
     startedTsMs,
     drillTargetSignatures,
-    coinsTotal,
-    maxStreak,
   ])
 
   const pendingScopeKey = calcPendingScopeKey(mode, drillKey)
@@ -965,7 +963,6 @@ export default function CalcSessionPage() {
   useEffect(() => {
     if (!questions || idx >= questions.length) return
     if (clockBoundIdxRef.current === idx) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     bindQuestionClock(idx)
   }, [idx, questions, bindQuestionClock])
 
@@ -980,7 +977,6 @@ export default function CalcSessionPage() {
   useEffect(() => {
     if (!questions || idx >= questions.length) return
     if (questions[idx].isChallenge) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowChallengeBanner(true)
       playSfx('challenge', settings.soundEnabled)
       const t = setTimeout(() => setShowChallengeBanner(false), 1400)
@@ -1196,7 +1192,6 @@ export default function CalcSessionPage() {
     startedTsMs,
     startedAtIso,
     user,
-    mode,
     drillKey,
   ])
 

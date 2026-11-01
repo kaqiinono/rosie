@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useDraftQuery } from './useDraftQuery'
 import { fetchViewableDraftProblemIds } from '@rosie/math-kit/utils/math-scratch-db'
+
+const NO_DRAFTS = new Set<string>()
 
 /**
  * One batched presence load for a list of problem ids (plan page).
@@ -24,26 +27,10 @@ export function useViewableDraftIds(
     return unique.join('\0')
   }, [problemIds])
 
-  const [draftProblemIds, setDraftProblemIds] = useState<Set<string>>(() => new Set())
-  const [draftsReady, setDraftsReady] = useState(false)
-
-  useEffect(() => {
-    if (!userId || !key) {
-      setDraftProblemIds(new Set())
-      setDraftsReady(true)
-      return
-    }
-
-    let cancelled = false
-    void fetchViewableDraftProblemIds(userId, key.split('\0')).then((next) => {
-      if (cancelled) return
-      setDraftProblemIds(next)
-      setDraftsReady(true)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [userId, key, refreshKey])
-
-  return { draftProblemIds, draftsReady }
+  const load = useMemo(
+    () => userId && key ? () => fetchViewableDraftProblemIds(userId, key.split('\0')) : null,
+    [userId, key],
+  )
+  const ids = useDraftQuery(load, refreshKey)
+  return { draftProblemIds: ids ?? NO_DRAFTS, draftsReady: !load || ids !== undefined }
 }

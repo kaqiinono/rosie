@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import clsx from 'clsx'
 import type { AccumulationQuizItem } from '../../utils/chinese-accumulation-helpers'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'

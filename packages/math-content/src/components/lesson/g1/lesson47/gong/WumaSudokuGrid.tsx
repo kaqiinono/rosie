@@ -46,7 +46,6 @@ export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange, init
     if (initialState) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setValues(emptyValues(rowCount, colCount, givenGrid))
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setKnightFocus(null)
   }, [rowCount, colCount, givenGrid, initialState])
 

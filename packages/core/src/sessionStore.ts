@@ -55,6 +55,52 @@ function toUserKey(userId: string | null | undefined): string {
   return userId ?? EMPTY_USER_KEY
 }
 
+function useStoreSubscription<T>(
+  user: User | null,
+  subscribe: (userId: string | null, listener: () => void) => () => void,
+  getSnapshot: UserSessionStore<T>['getSnapshot'],
+  ensureLoaded: UserSessionStore<T>['ensureLoaded'],
+  emptyUserSnapshot: SessionSnapshot<T>,
+): {
+  data: T
+  isLoading: boolean
+  error: unknown | null
+} {
+  const userId = user?.id ?? null
+
+  const subscribeForUser = useCallback(
+    (onChange: () => void) => subscribe(userId, onChange),
+    [userId, subscribe],
+  )
+
+  const getSnapshotForUser = useCallback(
+    () => getSnapshot(userId),
+    [userId, getSnapshot],
+  )
+
+  const snapshot = useSyncExternalStore(
+    subscribeForUser,
+    getSnapshotForUser,
+    () => emptyUserSnapshot,
+  )
+
+  useEffect(() => {
+    // The rejection is already recorded as `status: 'error'` on the slot;
+    // swallow it here so a failed fetch isn't also an unhandled rejection.
+    if (userId) void ensureLoaded(userId).catch(() => undefined)
+  }, [userId, ensureLoaded])
+
+  const isLoading =
+    userId !== null &&
+    (snapshot.status === 'loading' || snapshot.status === 'idle')
+
+  return {
+    data: snapshot.data,
+    isLoading,
+    error: snapshot.error,
+  }
+}
+
 export function createUserSessionStore<T>(
   storeKey: string,
   options: {
@@ -243,44 +289,8 @@ export function createUserSessionStore<T>(
     }
   }
 
-  function useSessionData(user: User | null): {
-    data: T
-    isLoading: boolean
-    error: unknown | null
-  } {
-    const userId = user?.id ?? null
-
-    const subscribeForUser = useCallback(
-      (onChange: () => void) => subscribe(userId, onChange),
-      [userId, subscribe],
-    )
-
-    const getSnapshotForUser = useCallback(
-      () => getSnapshot(userId),
-      [userId, getSnapshot],
-    )
-
-    const snapshot = useSyncExternalStore(
-      subscribeForUser,
-      getSnapshotForUser,
-      () => emptyUserSnapshot,
-    )
-
-    useEffect(() => {
-      // The rejection is already recorded as `status: 'error'` on the slot;
-      // swallow it here so a failed fetch isn't also an unhandled rejection.
-      if (userId) void ensureLoaded(userId).catch(() => undefined)
-    }, [userId, ensureLoaded])
-
-    const isLoading =
-      userId !== null &&
-      (snapshot.status === 'loading' || snapshot.status === 'idle')
-
-    return {
-      data: snapshot.data,
-      isLoading,
-      error: snapshot.error,
-    }
+  function useSessionData(user: User | null) {
+    return useStoreSubscription(user, subscribe, getSnapshot, ensureLoaded, emptyUserSnapshot)
   }
 
   const store: UserSessionStore<T> = {

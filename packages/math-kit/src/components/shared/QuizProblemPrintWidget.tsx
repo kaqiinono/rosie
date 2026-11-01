@@ -96,7 +96,8 @@ function renderWidgetSource(problem: Problem, interactiveState: unknown | undefi
  */
 export default function QuizProblemPrintWidget({ problem, interactiveState }: Props) {
   const hostRef = useRef<HTMLDivElement>(null)
-  const [dataUrl, setDataUrl] = useState<string | null>(null)
+  const [raster, setRaster] = useState<{ problemId: string; state: Props['interactiveState']; url: string } | null>(null)
+  const dataUrl = raster?.problemId === problem.id && raster.state === interactiveState ? raster.url : null
   const answerMode = getProblemAnswerMode(problem)
   const needsRaster = answerMode === 'custom-widget' || answerMode === 'readonly-puzzle-numeric'
 
@@ -104,14 +105,13 @@ export default function QuizProblemPrintWidget({ problem, interactiveState }: Pr
     if (!needsRaster) return
 
     let cancelled = false
-    setDataUrl(null)
 
     void (async () => {
       await waitForLayout()
       if (cancelled || !hostRef.current) return
 
       const src = await rasterizeQuizWidget(hostRef.current)
-      if (!cancelled && src) setDataUrl(src)
+      if (!cancelled && src) setRaster({ problemId: problem.id, state: interactiveState, url: src })
     })()
 
     return () => {
@@ -134,6 +134,7 @@ export default function QuizProblemPrintWidget({ problem, interactiveState }: Pr
         {renderWidgetSource(problem, interactiveState)}
       </div>
       {dataUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- Print the browser-generated canvas data URL at its intrinsic size.
         <img
           src={dataUrl}
           alt=""

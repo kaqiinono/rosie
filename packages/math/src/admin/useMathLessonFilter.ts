@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { gradesInOrder, lessonsForGrade } from '@rosie/math-kit/utils/lesson-grade'
 import {
   aggregateSourceButtons,
@@ -34,7 +34,6 @@ export function useMathLessonFilter() {
   const [typeFilter, setTypeFilter] = useState<Set<string>>(() =>
     initialAxisFilter(initial.lessons, initial.saved?.typeFilter, aggregateTypeButtons),
   )
-  const skipLessonResetRef = useRef(true)
 
   const gradeLessonIds = useMemo(() => lessonsForGrade(selectedGrade), [selectedGrade])
 
@@ -49,27 +48,24 @@ export function useMathLessonFilter() {
 
   const selectedLessonSet = useMemo(
     () => new Set(selectedLessons),
-    [selectedLessonsKey, selectedLessons],
+    [selectedLessons],
   )
 
   const sourceBtns = useMemo(
     () => aggregateSourceButtons(selectedLessons),
-    [selectedLessonsKey, selectedLessons],
+    [selectedLessons],
   )
 
   const typeBtns = useMemo(
     () => aggregateTypeButtons(selectedLessons),
-    [selectedLessonsKey, selectedLessons],
+    [selectedLessons],
   )
 
-  useEffect(() => {
-    if (skipLessonResetRef.current) {
-      skipLessonResetRef.current = false
-      return
-    }
-    setSourceFilter(new Set(sourceBtns.map((b) => b.key)))
-    setTypeFilter(new Set(typeBtns.map((b) => b.key)))
-  }, [selectedLessonsKey, sourceBtns, typeBtns])
+  function selectLessons(lessons: string[]) {
+    setSelectedLessons(lessons)
+    setSourceFilter(new Set(aggregateSourceButtons(lessons).map((button) => button.key)))
+    setTypeFilter(new Set(aggregateTypeButtons(lessons).map((button) => button.key)))
+  }
 
   useEffect(() => {
     writeMathLessonFilter({
@@ -83,18 +79,16 @@ export function useMathLessonFilter() {
   function selectGrade(grade: number) {
     if (grade === selectedGrade) return
     setSelectedGrade(grade)
-    setSelectedLessons(lessonsForGrade(grade))
+    selectLessons(lessonsForGrade(grade))
   }
 
   function toggleLesson(id: string) {
-    setSelectedLessons((prev) =>
-      prev.includes(id) ? prev.filter((lessonId) => lessonId !== id) : [...prev, id],
-    )
+    selectLessons(selectedLessons.includes(id) ? selectedLessons.filter((value) => value !== id) : [...selectedLessons, id])
   }
 
   function toggleAllLessonsInGrade() {
     const allOn = gradeLessonIds.every((id) => selectedLessonSet.has(id))
-    setSelectedLessons(allOn ? [] : [...gradeLessonIds])
+    selectLessons(allOn ? [] : [...gradeLessonIds])
   }
 
   function toggleFilter(axis: 'source' | 'type', value: string) {

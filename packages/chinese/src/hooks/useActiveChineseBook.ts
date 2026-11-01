@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { usePathname } from 'next/navigation'
 import { isChineseBookSlug, type ChineseBookSlug } from '../utils/chinese-books'
 import { parseBookSlugFromPath } from '../utils/chinese-routes'
@@ -8,7 +8,8 @@ import { parseBookSlugFromPath } from '../utils/chinese-routes'
 const STORAGE_KEY = 'chinese_active_book'
 const DEFAULT_BOOK: ChineseBookSlug = 'g1b'
 
-type BookListener = (slug: ChineseBookSlug) => void
+type BookListener = () => void
+let lastBook: ChineseBookSlug | null = null
 const bookListeners = new Set<BookListener>()
 
 function readStoredBook(): ChineseBookSlug | null {
@@ -24,45 +25,29 @@ function readStoredBook(): ChineseBookSlug | null {
 
 /** Persist active book for legacy practice routes without a book slug in the path. */
 export function setActiveChineseBook(bookSlug: ChineseBookSlug): void {
+  lastBook = bookSlug
   try {
     sessionStorage.setItem(STORAGE_KEY, bookSlug)
   } catch {
     /* ignore */
   }
-  bookListeners.forEach((listener) => listener(bookSlug))
+  bookListeners.forEach((listener) => listener())
+}
+
+function subscribeBook(listener: BookListener) {
+  bookListeners.add(listener)
+  return () => { bookListeners.delete(listener) }
+}
+
+function storedBookSnapshot() {
+  return readStoredBook() ?? lastBook ?? DEFAULT_BOOK
 }
 
 export function useActiveChineseBook(): ChineseBookSlug {
-  const pathname = usePathname()
-  const [bookSlug, setBookSlug] = useState<ChineseBookSlug>(() => {
-    const fromPath =
-      typeof window !== 'undefined'
-        ? parseBookSlugFromPath(window.location.pathname)
-        : parseBookSlugFromPath(pathname)
-    return fromPath ?? readStoredBook() ?? DEFAULT_BOOK
-  })
-
+  const fromPath = parseBookSlugFromPath(usePathname())
+  const stored = useSyncExternalStore(subscribeBook, storedBookSnapshot, () => DEFAULT_BOOK)
   useEffect(() => {
-    bookListeners.add(setBookSlug)
-    return () => {
-      bookListeners.delete(setBookSlug)
-    }
-  }, [])
-
-  useEffect(() => {
-    const fromPath = parseBookSlugFromPath(pathname)
-    if (fromPath) {
-      setBookSlug(fromPath)
-      try {
-        sessionStorage.setItem(STORAGE_KEY, fromPath)
-      } catch {
-        /* ignore */
-      }
-      return
-    }
-    const stored = readStoredBook()
-    if (stored) setBookSlug(stored)
-  }, [pathname])
-
-  return bookSlug
+    if (fromPath) setActiveChineseBook(fromPath)
+  }, [fromPath])
+  return fromPath ?? stored
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
 import { findSeaLesson } from '@rosie/math/utils/sea-data'
 import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
@@ -46,9 +46,11 @@ export default function MathLessonSummariesPanel({ lessonIds, admin, onFlash }: 
 
   const [openIds, setOpenIds] = useState<Set<string>>(() => defaultOpenIds(sortedIds, withSummary))
 
-  useEffect(() => {
+  const [previousIds, setPreviousIds] = useState(sortedIdsKey)
+  if (previousIds !== sortedIdsKey) {
+    setPreviousIds(sortedIdsKey)
     setOpenIds(defaultOpenIds(sortedIds, withSummary))
-  }, [sortedIdsKey])
+  }
 
   function toggleOpen(id: string) {
     setOpenIds((prev) => {

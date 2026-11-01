@@ -157,7 +157,6 @@ export function WrongDraftViewButton({
 
 /** Open mistake scratch pad for a fresh retry (no copy from wrong attempt). */
 export function MistakeDraftButton({
-  problem,
   problems,
   problemIndex,
   onSolve,

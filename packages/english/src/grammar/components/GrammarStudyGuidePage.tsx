@@ -1,5 +1,7 @@
 'use client'
 
+import { GrammarScanImage } from './GrammarScanImage'
+
 import Link from 'next/link'
 import { useState } from 'react'
 import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
@@ -146,7 +148,7 @@ export default function GrammarStudyGuidePage({
           onClick={() => setLightbox(null)}
         >
           <div className="mx-4 max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
-            <img
+            <GrammarScanImage
               src={grammarPageImageUrl(lightbox.path)}
               alt={`插图（原书 p.${lightbox.page}）`}
               className="max-h-[88vh] w-auto rounded-xl object-contain"

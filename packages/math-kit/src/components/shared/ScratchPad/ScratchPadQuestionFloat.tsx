@@ -32,7 +32,6 @@ export default function ScratchPadQuestionFloat({
   onInsertFigure,
   expandedDefault = false,
   mistakeHint,
-  section = '',
   attemptRefreshKey = 0,
   showAnswerPanel = true,
   answerMode = 'practice',

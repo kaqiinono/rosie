@@ -181,7 +181,7 @@ export default function MathImageManagerPage({ user }: Props) {
       return lesson?.title ?? `第 ${selectedLessons[0]} 讲`
     }
     return `已选 ${selectedLessons.length} 讲`
-  }, [selectedLessons, selectedLessonsKey])
+  }, [selectedLessons])
 
   const summaryCount = useMemo(
     () =>
@@ -190,15 +190,17 @@ export default function MathImageManagerPage({ user }: Props) {
           .getNotes(lessonSummaryProblemId(id))
           .some((n) => !isRichBodyEmpty(n.bodyHtml)),
       ).length,
-    [selectedLessons, selectedLessonsKey, notesAdmin],
+    [selectedLessons, notesAdmin],
   )
 
   const hasSummary = summaryCount > 0
 
-  useEffect(() => {
+  const [coveredLessons, setCoveredLessons] = useState(selectedLessonsKey)
+  if (coveredLessons !== selectedLessonsKey) {
+    setCoveredLessons(selectedLessonsKey)
     setImageCoverage(DEFAULT_IMAGE_COVERAGE)
     setNotesCoverage(DEFAULT_NOTES_COVERAGE)
-  }, [selectedLessonsKey])
+  }
 
   const { findImage } = admin
 
@@ -218,7 +220,6 @@ export default function MathImageManagerPage({ user }: Props) {
     )
   }, [
     selectedLessons,
-    selectedLessonsKey,
     sourceFilter,
     typeFilter,
     imageCoverage,
@@ -228,11 +229,9 @@ export default function MathImageManagerPage({ user }: Props) {
     filter,
   ])
 
-  useEffect(() => {
-    if (selectedProblem && !problemItems.some((item) => item.problem.id === selectedProblem.id)) {
-      setSelectedProblem(null)
-    }
-  }, [problemItems, selectedProblem])
+  if (selectedProblem && !problemItems.some((item) => item.problem.id === selectedProblem.id)) {
+    setSelectedProblem(null)
+  }
 
   function toggleImageCoverage(key: ImageCoverageKey) {
     setImageCoverage((prev) => ({ ...prev, [key]: !prev[key] }))

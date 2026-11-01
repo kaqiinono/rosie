@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { CSSProperties, RefObject } from 'react'
 import type {
@@ -373,12 +373,14 @@ export default function VerticalDigitPuzzlePanel({
   const [graded, setGraded] = useState(false)
   const [locked, setLocked] = useState(false)
 
-  useEffect(() => {
+  const [previous, setPrevious] = useState({ spec, readonly, initialFills })
+  if (previous.spec !== spec || previous.readonly !== readonly || previous.initialFills !== initialFills) {
+    setPrevious({ spec, readonly, initialFills })
     setFills(initialFills ?? {})
     setGraded(false)
     setLocked(false)
     setActive(!readonly && blanks.length > 0 ? { rowKey: blanks[0].rowKey, col: blanks[0].col } : null)
-  }, [spec, blanks, readonly, initialFills])
+  }
 
   const complete = readonly || allBlanksFilled(spec, fills)
 

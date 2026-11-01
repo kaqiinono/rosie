@@ -103,30 +103,6 @@ export function allBlanksFilled(spec: VerticalDigitPuzzleSpec, fills: VerticalPu
   return listPuzzleBlanks(spec).every((b) => fills[b.id] !== undefined)
 }
 
-function getRowFromSpec(
-  spec: VerticalDigitPuzzleSpec,
-  rowKeyStr: string,
-): VerticalPuzzleCell[] | null {
-  if (rowKeyStr.startsWith('blk')) {
-    const m = rowKeyStr.match(/^blk(\d+)_(op\d+|result)$/)
-    if (!m) return null
-    const block = spec.blocks?.[Number(m[1])]
-    if (!block) return null
-    if (m[2] === 'result') return block.result
-    const ri = Number(m[2].slice(2))
-    return block.operands[ri] ?? null
-  }
-
-  if (rowKeyStr.startsWith('op')) {
-    const ri = Number(rowKeyStr.slice(2))
-    return spec.operands[ri] ?? null
-  }
-  if (rowKeyStr === 'result') return spec.result
-  if (rowKeyStr === 'sub') return spec.chainSubtract ?? null
-  if (rowKeyStr === 'final') return spec.chainResult ?? null
-  return null
-}
-
 function resolveDigit(
   cell: VerticalPuzzleCell,
   rowKeyStr: string,

@@ -3,7 +3,6 @@ import { LESSONS, routeForLesson, type LessonEntry } from '@rosie/math-kit/utils
 import {
   LEGACY_ID_SET,
   LEGACY_TO_LESSON_KEY,
-  LESSON_KEY_TO_LEGACY,
   legacyIdForLessonKey,
   legacyPrefixFromProblemId,
   migrateProblemIdForAudit,

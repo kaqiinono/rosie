@@ -14,7 +14,6 @@ import NumericAnswerPanel from '@rosie/math-kit/components/shared/NumericAnswerP
 import { injectFigureGridCallbacks } from '@rosie/math-kit/components/shared/injectFigureSubmit'
 import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
-import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import DifficultyStars from '@rosie/math-kit/components/shared/DifficultyStars'
 import LessonProblemDetailHeader from '@rosie/math-kit/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math-kit/components/shared/LessonProblemNavBar'

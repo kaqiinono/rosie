@@ -20,7 +20,7 @@ function cellKey(r: number, c: number): string {
   return `${r},${c}`
 }
 
-function isConnected(cells: { r: number; c: number }[], rows: number, cols: number): boolean {
+function isConnected(cells: { r: number; c: number }[]): boolean {
   if (cells.length === 0) return false
   const set = new Set(cells.map(({ r, c }) => cellKey(r, c)))
   const stack = [cells[0]]
@@ -73,7 +73,7 @@ export function validateShulian(
         if (owner(r, c) === n) cells.push({ r, c })
       }
     }
-    if (!isConnected(cells, rows, cols)) {
+    if (!isConnected(cells)) {
       return { ok: false, message: `数字 ${n} 的路径未连成一片，请检查是否交叉或断开` }
     }
   }
@@ -148,10 +148,6 @@ export function validateShufang(
   }
 
   return { ok: true, message: '✓ 完全正确！划分方式正确！' }
-}
-
-function parseGrid(values: string[][], size: number): number[][] | null {
-  return parseRectGrid(values, size, size, size)
 }
 
 function parseRectGrid(

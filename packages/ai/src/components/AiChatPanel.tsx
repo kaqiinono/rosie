@@ -6,7 +6,6 @@ import type {
   AgentBlock,
   AgentAction,
   AgentResponse,
-  AiSubject,
   TeachingSessionState,
   ChatContext,
 } from '../types'
@@ -90,7 +89,6 @@ export default function AiChatPanel({
   const [actionLoading, setActionLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [teachingSession, setTeachingSession] = useState<TeachingSessionState | null>(null)
-  const [latestSubject, setLatestSubject] = useState<AiSubject | null>(null)
 
   useEffect(() => {
     const storedConversationId = sessionStorage.getItem(STORAGE_KEYS.AI_CONVERSATION_ID)
@@ -249,8 +247,6 @@ export default function AiChatPanel({
               : m,
           ),
         )
-        const subject = envelope?.sources?.find((source) => source.subject)?.subject
-        if (subject) setLatestSubject(subject)
       } catch (err) {
         setError(err instanceof Error ? err.message : '发送失败')
         setMessages((prev) => prev.filter((m) => m.id !== assistantId))
@@ -260,27 +256,6 @@ export default function AiChatPanel({
     },
     [context, conversationId, loading, teachingSession?.id, teachingSession?.status],
   )
-
-  const startTeaching = async () => {
-    if (!latestSubject || !conversationId || actionLoading) return
-    setError(null)
-    setActionLoading(true)
-    try {
-      const token = await getAccessToken()
-      const res = await fetch('/api/ai/teaching-sessions', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: latestSubject, conversationId }),
-      })
-      const payload = (await res.json()) as { session?: TeachingSessionState; error?: string }
-      if (!res.ok || !payload.session) throw new Error(payload.error ?? '无法开始引导学习')
-      setTeachingSession(payload.session)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '无法开始引导学习')
-    } finally {
-      setActionLoading(false)
-    }
-  }
 
   const advanceTeaching = async (
     action: TeachingSessionAction,
@@ -464,23 +439,6 @@ export default function AiChatPanel({
           {error}
         </p>
       ) : null}
-
-      {/* {!teachingSession && latestSubject && conversationId ? (
-        <div className="mx-2 mb-3 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 p-4 ring-1 ring-amber-200/80">
-          <p className="text-sm font-semibold text-amber-900">想一步一步学会吗？</p>
-          <p className="mt-1 text-xs text-amber-700">
-            开启后，提示和作答会被明确记录在本次学习会话中。
-          </p>
-          <button
-            type="button"
-            disabled={actionLoading || loading}
-            onClick={() => void startTeaching()}
-            className="mt-2 rounded-xl bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-          >
-            开始引导学习
-          </button>
-        </div>
-      ) : null} */}
 
       {teachingSession ? (
         <div className="mx-2 mb-3 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 p-4 ring-1 ring-sky-100">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useChineseContext } from '../context/ChineseContext'
 import {
@@ -18,7 +18,6 @@ import {
 import {
   readCharsFilter,
   resolveCharsFilter,
-  writeCharsCardPreview,
   writeCharsFilter,
 } from '../utils/chinese-chars-filter-storage'
 import { getChineseBook } from '../utils/chinese-books'
@@ -33,16 +32,38 @@ import { chineseRoute } from '../utils/chinese-routes'
 import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
 
 export default function ChineseCharsPage() {
+  const context = useChineseContext()
+  const { isCharDataLoading, charDataError, isCharDataReady } = context
+  if (isCharDataLoading && !isCharDataReady) {
+    return <p className="p-6 text-center text-sm text-amber-900/50">加载字库中…</p>
+  }
+
+  if (!isCharDataReady) {
+    return (
+      <div className="mx-auto max-w-lg p-6 text-center text-sm text-stone-600">
+        <p>字库尚未加载。请在 Supabase 执行灌库脚本。</p>
+        {charDataError && <p className="mt-2 text-rose-600">{charDataError}</p>}
+      </div>
+    )
+  }
+
+  const catalogKey = JSON.stringify([context.bookSlug, ...context.lessons.map((lesson) => [lesson.lessonKey, lesson.unit])])
+  return <CharsLibrary key={catalogKey} context={context} />
+}
+
+function CharsLibrary({ context }: { context: ReturnType<typeof useChineseContext> }) {
   const router = useRouter()
-  const { lessons, lessonGroups, charByKey, isCharDataLoading, charDataError, isCharDataReady, bookSlug } =
-    useChineseContext()
+  const { bookSlug, lessons, lessonGroups, charByKey } = context
   const book = getChineseBook(bookSlug)
 
-  const [selUnits, setSelUnits] = useState<Set<number>>(new Set())
-  const [selLessons, setSelLessons] = useState<Set<string>>(new Set())
-  const skipPersistRef = useRef(true)
+  const [initial] = useState(() => {
+    const saved = readCharsFilter(bookSlug)
+    return { ...resolveCharsFilter(saved, lessons), cardPreview: saved?.cardPreview !== false }
+  })
+  const [selUnits, setSelUnits] = useState(initial.units)
+  const [selLessons, setSelLessons] = useState(initial.lessons)
   const [selDisplayType, setSelDisplayType] = useState<'library' | 'cards' | 'all'>('library')
-  const [cardPreviewEnabled, setCardPreviewEnabled] = useState(true)
+  const [cardPreviewEnabled, setCardPreviewEnabled] = useState(initial.cardPreview)
   const [quizTypes, setQuizTypes] = useState<Set<CharQuizType>>(() =>
     normalizeQuizTypes(new Set(ALL_CHAR_QUIZ_TYPES)),
   )
@@ -92,26 +113,8 @@ export default function ChineseCharsPage() {
   }, [filtered, charByKey, quizTypes, lessons, bookSlug, teacherOnly])
 
   useEffect(() => {
-    if (!isCharDataReady || lessons.length === 0) return
-
-    skipPersistRef.current = true
-    const saved = readCharsFilter(bookSlug)
-    const resolved = resolveCharsFilter(saved, lessons)
-    setSelUnits(resolved.units)
-    setSelLessons(resolved.lessons)
-    setCardPreviewEnabled(saved?.cardPreview !== false)
-    if (!saved) {
-      writeCharsFilter(bookSlug, resolved.units, resolved.lessons, true)
-    }
-  }, [isCharDataReady, lessons, bookSlug])
-
-  useEffect(() => {
-    if (skipPersistRef.current) {
-      skipPersistRef.current = false
-      return
-    }
-    writeCharsFilter(bookSlug, selUnits, selLessons)
-  }, [bookSlug, selUnits, selLessons])
+    writeCharsFilter(bookSlug, selUnits, selLessons, cardPreviewEnabled)
+  }, [bookSlug, selUnits, selLessons, cardPreviewEnabled])
 
   const toggleUnit = useCallback((unit: number) => {
     setSelUnits((prev) => {
@@ -162,12 +165,8 @@ export default function ChineseCharsPage() {
   }, [])
 
   const toggleCardPreview = useCallback(() => {
-    setCardPreviewEnabled((prev) => {
-      const next = !prev
-      writeCharsCardPreview(bookSlug, next)
-      return next
-    })
-  }, [bookSlug])
+    setCardPreviewEnabled((prev) => !prev)
+  }, [])
 
   const toggleTeacherOnly = useCallback(() => {
     setTeacherOnly((prev) => !prev)
@@ -232,19 +231,6 @@ export default function ChineseCharsPage() {
   )
 
   const canPrint = cards.length > 0 || wordCards.length > 0
-
-  if (isCharDataLoading && !isCharDataReady) {
-    return <p className="p-6 text-center text-sm text-amber-900/50">加载字库中…</p>
-  }
-
-  if (!isCharDataReady) {
-    return (
-      <div className="mx-auto max-w-lg p-6 text-center text-sm text-stone-600">
-        <p>字库尚未加载。请在 Supabase 执行灌库脚本。</p>
-        {charDataError && <p className="mt-2 text-rose-600">{charDataError}</p>}
-      </div>
-    )
-  }
 
   return (
     <>

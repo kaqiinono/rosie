@@ -79,7 +79,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         <p className="text-[13px] leading-relaxed text-purple-800">
           第18讲 · 一年级目标班
           <br />
-          掌握和倍、差倍两大模型，用"份数"思路解决一切倍数关系问题！
+          掌握和倍、差倍两大模型，用&quot;份数&quot;思路解决一切倍数关系问题！
         </p>
       </div>
 

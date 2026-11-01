@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image'
+import { useHydrated } from '@rosie/core'
 import { useEffect, useState } from 'react'
 
 const HOP_LEFT = '/brand/rosie-fun-hop-left.png'
@@ -20,12 +22,12 @@ function ScurryFigure() {
       <div className="absolute inset-0 flex items-start justify-center">
         <div className="rosieload-scurry">
           <div className={`rosieload-bounce relative ${FIGURE_SIZE}`}>
-            <img
+            <Image fill sizes="(min-width: 1024px) 176px, (min-width: 768px) 144px, 112px" loading="eager"
               src={HOP_RIGHT}
               alt="Rosie 向右跳"
               className={`rosieload-face-right absolute inset-0 h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.25)]`}
             />
-            <img
+            <Image fill sizes="(min-width: 1024px) 176px, (min-width: 768px) 144px, 112px" loading="eager"
               src={HOP_LEFT}
               alt="Rosie 向左跳"
               className={`rosieload-face-left absolute inset-0 h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.25)]`}
@@ -42,12 +44,12 @@ function ScurryFigure() {
 function CalmFigure() {
   return (
     <div className={`relative ${FIGURE_SIZE}`}>
-      <img
+      <Image fill sizes="(min-width: 1024px) 176px, (min-width: 768px) 144px, 112px" loading="eager"
         src={MASCOT}
         alt="Rosie 站立"
         className="absolute inset-0 h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,0.25)]"
       />
-      <img
+      <Image fill sizes="(min-width: 1024px) 176px, (min-width: 768px) 144px, 112px" loading="eager"
         src={MASCOT_BLINK}
         alt=""
         aria-hidden
@@ -94,16 +96,12 @@ function RoundSpinLoading() {
 }
 
 export default function LoadingOverlay({ visible }: { visible: boolean }) {
-  const [variant, setVariant] = useState<LoadingVariant>('roundspin')
+  return visible ? <LoadingAnimation /> : null
+}
 
-  // 每次导航开始随机抽一种表演，避免 SSR/水合阶段的随机性
-  useEffect(() => {
-    if (visible) {
-      setVariant(Math.random() < 0.5 ? 'scurry' : 'roundspin')
-    }
-  }, [visible])
-
-  if (!visible) return null
+function LoadingAnimation() {
+  const hydrated = useHydrated()
+  const [variant] = useState<LoadingVariant>(() => Math.random() < 0.5 ? 'scurry' : 'roundspin')
 
   return (
     <div
@@ -111,7 +109,7 @@ export default function LoadingOverlay({ visible }: { visible: boolean }) {
       aria-live="polite"
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-3 bg-black/30 backdrop-blur-sm"
     >
-      {variant === 'scurry' ? <ScurryLoading /> : <RoundSpinLoading />}
+      {hydrated && variant === 'scurry' ? <ScurryLoading /> : <RoundSpinLoading />}
     </div>
   )
 }

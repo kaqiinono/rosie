@@ -75,7 +75,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         <div className="pointer-events-none absolute -top-2.5 -right-2.5 rotate-[15deg] text-[90px] opacity-[0.12]">
           ➕
         </div>
-        <h1 className="mb-1.5 text-2xl font-extrabold text-sky-900">"和"与"差"的故事 ➕</h1>
+        <h1 className="mb-1.5 text-2xl font-extrabold text-sky-900">&quot;和&quot;与&quot;差&quot;的故事 ➕</h1>
         <p className="text-[13px] leading-relaxed text-sky-800">
           第15讲 · 一年级目标班
           <br />

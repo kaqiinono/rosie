@@ -62,7 +62,7 @@ export default function CharWriter({
       writerRef.current?.cancelQuiz()
       writerRef.current?.hideCharacter()
       writerRef.current = null
-      if (targetRef.current) targetRef.current.innerHTML = ''
+      el.innerHTML = ''
     }
   }, [char, mode, size])
 

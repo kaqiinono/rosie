@@ -135,6 +135,27 @@ export function ensureBookCatalog(
   return promise
 }
 
+const EMPTY_LESSONS: ChineseLessonRow[] = []
+const EMPTY_GROUPS: LessonCharGroup[] = []
+
+export function useBookCatalog(user: User | null, book: ChineseBookSlug | null) {
+  const { data, isLoading, error } = chineseRoadmapCatalogStore.useSessionData(user)
+  const userId = user?.id
+  const catalog = book ? data[book] : undefined
+  const [failure, setFailure] = useState<{ request: object; error: unknown } | null>(null)
+  const request = useMemo(() => ({ userId, book, catalog }), [userId, book, catalog])
+  useEffect(() => {
+    if (!request.userId || !request.book || request.catalog) return
+    let cancelled = false
+    void ensureBookCatalog(request.userId, request.book).catch((error: unknown) => {
+      if (!cancelled) setFailure({ request, error })
+    })
+    return () => { cancelled = true }
+  }, [request])
+  const loadError = error ?? (failure?.request === request ? failure.error : null)
+  return { catalog, error: loadError, isLoading: !!book && (isLoading || (!!userId && !catalog && !loadError)) }
+}
+
 export type ChineseRoadmapProgress = {
   bookSlug: ChineseBookSlug
   bookLabel: string
@@ -161,39 +182,18 @@ export function useChineseRoadmapProgress(user?: User | null): ChineseRoadmapPro
   const bookSlug = useActiveChineseBook()
   const bookMeta = getChineseBook(bookSlug)
   const { masteryMap: rawMastery, isLoading: masteryLoading } = useCharMastery(resolvedUser)
-  const { data: catalogCache, isLoading: cacheSlotLoading } =
-    chineseRoadmapCatalogStore.useSessionData(resolvedUser)
-  const [bookFetchError, setBookFetchError] = useState(false)
-
-  const catalog = catalogCache[bookSlug]
-  const bookLoading = !!resolvedUser && !catalog && !bookFetchError
-
-  useEffect(() => {
-    if (!resolvedUser) return
-    if (catalogCache[bookSlug]) {
-      setBookFetchError(false)
-      return
-    }
-    let cancelled = false
-    setBookFetchError(false)
-    void ensureBookCatalog(resolvedUser.id, bookSlug).catch(() => {
-      if (!cancelled) setBookFetchError(true)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [resolvedUser, bookSlug, catalogCache])
+  const { catalog, isLoading: bookLoading } = useBookCatalog(resolvedUser, bookSlug)
 
   const masteryMap = useMemo(
     () => normalizeMasteryMapForBook(rawMastery, bookSlug),
     [rawMastery, bookSlug],
   )
 
-  const lessons = catalog?.lessons ?? []
-  const lessonGroups = catalog?.lessonGroups ?? []
+  const lessons = catalog?.lessons ?? EMPTY_LESSONS
+  const lessonGroups = catalog?.lessonGroups ?? EMPTY_GROUPS
   // Ready once the active-book catalog has been fetched (even if empty).
   const isCharDataReady = !!catalog && lessons.length > 0
-  const isCharDataLoading = masteryLoading || cacheSlotLoading || bookLoading
+  const isCharDataLoading = masteryLoading || bookLoading
 
   const roadmap = useMemo(
     () => (isCharDataReady ? buildChineseRoadmap(lessons, lessonGroups, masteryMap, bookSlug) : null),

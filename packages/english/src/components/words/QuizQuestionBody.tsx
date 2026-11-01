@@ -115,7 +115,7 @@ function QuestionBody({
     setMagicRun((value) => value + 1)
   }
 
-  const retryHintMC = useMemo(() => pickMessage(RETRY_MC_MESSAGES), [questionKey])
+  const [retryHintMC] = useState(() => pickMessage(RETRY_MC_MESSAGES))
 
   const passage = findPassage(question.word.stage, question.word.unit, question.word.lesson)
   const passageSentence = passage ? findSentenceForWord(passage, question.word) : null

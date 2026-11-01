@@ -100,7 +100,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         <div className="text-text-secondary mb-3 text-[13px] leading-relaxed">
           <strong className="text-text-primary">核心思路：</strong>
           列出所有可能 → 去重 / 找规律 → 用最少操作达到目标。本讲题目共同特点是
-          <strong>"组合 + 操作 + 策略"</strong>，没有现成公式套，重点训练有序枚举与策略选择。
+          <strong>&quot;组合 + 操作 + 策略&quot;</strong>，没有现成公式套，重点训练有序枚举与策略选择。
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {PROBLEM_TYPES.map((t) => {
@@ -130,7 +130,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
           <span className="text-xs leading-relaxed text-rose-800">
             万能口诀：
             <strong>
-              能枚举的全枚举去重；分账先求单价；换水扣"换购比-1"；绳子香两端点燃时间减半；天平找异物分三等分；综合策略找模型
+              能枚举的全枚举去重；分账先求单价；换水扣&quot;换购比-1&quot;；绳子香两端点燃时间减半；天平找异物分三等分；综合策略找模型
               / 对称 / 必胜态。
             </strong>
           </span>

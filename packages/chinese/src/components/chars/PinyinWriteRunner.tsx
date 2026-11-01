@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import type { PinyinWriteQuizItem } from '../../utils/chinese-pinyin-write-helpers'
 import CharWriter from './CharWriter'
@@ -22,7 +22,12 @@ interface PinyinWriteRunnerProps {
   onComplete: (correct: boolean) => void
 }
 
-export default function PinyinWriteRunner({
+export default function PinyinWriteRunner(props: PinyinWriteRunnerProps) {
+  const { id, word, pinyin } = props.item
+  return <WriteItem key={JSON.stringify([id, word, pinyin])} {...props} />
+}
+
+function WriteItem({
   item,
   onComplete,
 }: PinyinWriteRunnerProps) {
@@ -39,13 +44,6 @@ export default function PinyinWriteRunner({
   const [writerAttempts, setWriterAttempts] = useState<number[]>(() => segments.map(() => 0))
   const [showWrongSummary, setShowWrongSummary] = useState(false)
   const finishedRef = useRef(false)
-
-  useEffect(() => {
-    finishedRef.current = false
-    setCharMistakes(segments.map(() => null))
-    setWriterAttempts(segments.map(() => 0))
-    setShowWrongSummary(false)
-  }, [item.id, segments])
 
   const handleCharComplete = useCallback(
     (index: number, totalMistakes: number) => {

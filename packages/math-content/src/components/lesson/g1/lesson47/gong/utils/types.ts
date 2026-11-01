@@ -17,9 +17,9 @@ export interface CoordGridProps {
   initialState?: unknown;
 }
 
-export interface ShulianProps extends CoordGridProps {}
+export type ShulianProps = CoordGridProps;
 
-export interface ShufangProps extends CoordGridProps {}
+export type ShufangProps = CoordGridProps;
 
 export interface BridgeIsland {
   /** 1-indexed row */
@@ -29,9 +29,8 @@ export interface BridgeIsland {
   bridges: number;
 }
 
-export interface ShuqiaoProps extends CoordGridProps {
-  /** 坐标值 [行, 列, 桥数]，行列从 1 开始；检查答案时验证每个岛连线数与数字一致 */
-}
+/** 坐标值 [行, 列, 桥数]，行列从 1 开始；检查答案时验证每个岛连线数与数字一致 */
+export type ShuqiaoProps = CoordGridProps;
 
 export type InequalityOp = "<" | ">" | null;
 
@@ -56,9 +55,9 @@ export interface BudengSudokuProps extends SudokuGridProps {
   vIneq?: IneqCoord[];
 }
 
-export interface ChangguiSudokuProps extends SudokuGridProps {}
+export type ChangguiSudokuProps = SudokuGridProps;
 
-export interface DuijiaoxianSudokuProps extends SudokuGridProps {}
+export type DuijiaoxianSudokuProps = SudokuGridProps;
 
 /** [行, 竖线号] 第 row 行从左往右第 line 根竖线描粗（1=左外框，2..colCount=内部，colCount+1=右外框） */
 export type HLineCoord = [number, number];
@@ -76,7 +75,7 @@ export interface JuchiSudokuProps extends SudokuGridProps {
   vLine?: VLineCoord[];
 }
 
-export interface WumaSudokuProps extends SudokuGridProps {}
+export type WumaSudokuProps = SudokuGridProps;
 
 /** 窗口起始坐标 [行, 列]，从 1 开始 */
 export type ChuangkouWindowPos = readonly [number, number];

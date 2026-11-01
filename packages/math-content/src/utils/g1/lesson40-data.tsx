@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import type { ProblemSet } from '@rosie/core'
 
 export const LESSON_TIP =
@@ -80,8 +81,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 1,
       text: '把边长分别是 <strong>5</strong>、<strong>4</strong>、<strong>3</strong>、<strong>2</strong> 厘米的 4 个正方形按从大到小的顺序排成一行，排成的图形周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/pretest1.png"
+          width={623}
+          height={246}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -105,8 +110,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 2,
       text: '一张长为 <strong>10</strong> 厘米、宽为 <strong>5</strong> 厘米的长方形纸片，横着剪了 <strong>2</strong> 刀，竖着剪了 <strong>3</strong> 刀，请问剪完后得到的所有长方形的周长之和是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/pretest2.png"
+          width={899}
+          height={580}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -129,8 +138,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 2,
       text: '把一个大长方形分成 <strong>12</strong> 个小正方形，已知每个小正方形的周长为 <strong>8</strong> 厘米，求大长方形的周长。',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/pretest3.png"
+          width={1266}
+          height={994}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -153,8 +166,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '平移法', difficulty: 2,
       text: '下图是由 <strong>15</strong> 个长为 <strong>10</strong> 厘米、宽为 <strong>4</strong> 厘米的小长方形组合而成的阶梯图形，求这个图形的周长。',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/pretest4.png"
+          width={1768}
+          height={804}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -177,8 +194,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 2,
       text: '如图所示，相邻的两条线段互相垂直，求这个多边形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/pretest5.png"
+          width={1250}
+          height={1514}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -205,8 +226,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 2,
       text: '用 <strong>3</strong> 个长 <strong>4</strong> 厘米、宽 <strong>2</strong> 厘米的长方形拼成一个大长方形，请问拼成的大长方形的周长有多少种不同的可能？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lesson1.png"
+          width={712}
+          height={522}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -246,8 +271,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 2,
       text: '如图所示，用 <strong>4</strong> 个相同的长为 <strong>9</strong> 厘米的小长方形拼成一个大长方形，请问大长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lesson2.png"
+          width={682}
+          height={866}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -271,8 +300,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '如图所示，用 <strong>4</strong> 个相同的宽为 <strong>5</strong> 厘米的小长方形拼成一个大长方形，请问大长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lessonPr2.png"
+          width={894}
+          height={468}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -295,8 +328,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 2,
       text: '一张长为 <strong>7</strong> 厘米、宽为 <strong>3</strong> 厘米的长方形纸片，横着剪了 <strong>1</strong> 刀，竖着剪了 <strong>2</strong> 刀，请问剪完后得到的所有长方形的周长之和是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lesson3.png"
+          width={1348}
+          height={996}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -319,8 +356,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 3,
       text: '纳纳将一张边长为 <strong>8</strong> 厘米的正方形纸片横着剪了 <strong>1</strong> 刀，竖着剪了 <strong>1</strong> 刀，请问剪完后得到的所有长方形的周长之和是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lessonPr3.png"
+          width={1280}
+          height={1288}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -343,8 +384,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '平移法', difficulty: 2,
       text: '六一儿童节快要到了，一年级一班准备了一些礼品盒，每个礼品盒长 <strong>20</strong> 厘米，高 <strong>10</strong> 厘米，摆成如图所示的阶梯形，请问整个图形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lesson4.png"
+          width={1488}
+          height={1098}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -367,8 +412,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '平移法', difficulty: 3,
       text: '用 <strong>20</strong> 个边长为 <strong>4</strong> 厘米的等边三角形拼接成一个大的平行四边形，请问大平行四边形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lessonPr4.png"
+          width={1682}
+          height={360}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -392,8 +441,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '平移法', difficulty: 2,
       text: '下图是某个小区的平面图（单位：米），约约每天早上会沿着小区晨跑 <strong>2</strong> 圈，请问约约每天跑多少米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lesson5.png"
+          width={1630}
+          height={1080}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -434,8 +487,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 2,
       text: '如图所示，这个多边形任意相邻的两条边都互相垂直，求这个多边形的周长是多少？（单位：厘米）',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lesson6.png"
+          width={1406}
+          height={1178}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -459,8 +516,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 3,
       text: '如下图，两个多边形任意相邻的两条边都互相垂直，分别求两个多边形的周长。（单位：厘米）',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/lessonPr6.png"
+          width={1772}
+          height={664}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -485,8 +546,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '用 <strong>4</strong> 个长 <strong>6</strong> 厘米、宽 <strong>2</strong> 厘米的长方形拼成一个大长方形，请问拼成的大长方形的周长有多少种不同的可能？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/homework1.png"
+          width={1958}
+          height={852}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -509,8 +574,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '如图所示，用 <strong>5</strong> 个相同的长为 <strong>12</strong> 厘米的小长方形拼成一个大长方形，请问大长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/homework2.png"
+          width={1680}
+          height={1492}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -534,8 +603,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 3,
       text: '一个长为 <strong>20</strong> 厘米、宽为 <strong>10</strong> 厘米的长方形纸片，被横着剪了 <strong>2</strong> 刀，竖着剪了 <strong>3</strong> 刀，剪完后所形成的所有长方形的周长总和是多少？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/homework3.png"
+          width={1886}
+          height={1126}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -558,8 +631,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '平移法', difficulty: 3,
       text: '下图是一面砖墙的平面图，每块砖长 <strong>8</strong> 厘米，高 <strong>4</strong> 厘米，一共摆了 <strong>6</strong> 层，请问摆好后的图形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/homework4.png"
+          width={1818}
+          height={1044}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -582,8 +659,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 3,
       text: '如图是一个玩具的侧面图，任意相邻的两条边都互相垂直，图中最短线段（共 <strong>15</strong> 条）的长度都是 <strong>3</strong> 厘米，请问这个玩具侧面图的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/homework5.png"
+          width={1090}
+          height={1378}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -606,8 +687,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 3,
       text: '如图所示，这个多边形任意相邻的两条边都互相垂直，求这个多边形的周长是多少？（单位：厘米）',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/homework6.png"
+          width={1680}
+          height={1438}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -633,8 +718,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '<strong>12</strong> 个边长为 <strong>2</strong> 厘米的正方形，可以拼出多少种不同周长的长方形？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook1.png"
+          width={1192}
+          height={1300}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -658,8 +747,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '用 <strong>5</strong> 个长为 <strong>2</strong> 厘米、宽为 <strong>1</strong> 厘米的长方形拼成一个大长方形，在所有可能的拼法中，大长方形周长最小是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook2.png"
+          width={1286}
+          height={860}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -683,8 +776,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '如图所示，一个正方形被分成了三个相同的长方形。如果这个正方形的周长是 <strong>12</strong> 厘米，那么其中一个长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook3.png"
+          width={1310}
+          height={1414}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -706,8 +803,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 3,
       text: '如图，用 <strong>8</strong> 个相同的小长方形拼成一个大长方形，已知大长方形的周长是 <strong>28</strong> 厘米，那么小长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook4.png"
+          width={1452}
+          height={1158}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -730,8 +831,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 3,
       text: '一个周长为 <strong>22</strong> 厘米的正方形，沿着水平方向和竖直方向各剪一刀，请问剪完后形成的 4 个小长方形的周长之和是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook5.png"
+          width={1216}
+          height={1190}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -755,8 +860,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 3,
       text: '一张长为 <strong>20</strong> 厘米、宽为 <strong>10</strong> 厘米的长方形纸片，被横着剪了 <strong>3</strong> 刀，竖着剪了 <strong>4</strong> 刀，剪完后所形成的所有长方形的周长总和是多少？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook6.png"
+          width={2268}
+          height={1336}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -779,8 +888,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 3,
       text: '在一个长为 <strong>8</strong> 厘米、宽为 <strong>6</strong> 厘米的长方形纸片上剪去一个边长为 <strong>3</strong> 厘米的正方形：①剪去的正方形在右上角；②剪去的正方形在右边中间（不含角）。两种情况下剩下图形的周长分别是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook7.png"
+          width={1059}
+          height={404}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -804,8 +917,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '平移法', difficulty: 3,
       text: '把 <strong>4</strong> 个长为 <strong>3</strong> 厘米、宽为 <strong>1</strong> 厘米的长方形摆成如下图形，则图形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook8.png"
+          width={964}
+          height={874}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -829,8 +946,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 3,
       text: '请求出下面图形的周长。（单位：厘米）',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook9.png"
+          width={1158}
+          height={800}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -853,8 +974,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '标向法', difficulty: 4,
       text: '如下图所示，图形的边长已由字母标出，如果想求出这个图形的周长，最少需要知道几条边的长度？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook10.png"
+          width={1258}
+          height={910}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -877,8 +1002,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 5,
       text: '如图，用一个边长是 <strong>4</strong> 厘米的小正方形和 <strong>4</strong> 个相同的长方形，一起拼成一个边长是 <strong>10</strong> 厘米的大正方形，那么小长方形的长和宽分别是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook11.png"
+          width={798}
+          height={852}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -902,8 +1031,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 5,
       text: '下面的大正方形是由 <strong>8</strong> 个相同的小长方形和 <strong>1</strong> 个小正方形拼成的，已知大正方形的周长为 <strong>400</strong>，小正方形的周长为 <strong>160</strong>，求每个小长方形的周长是多少？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/workbook12.png"
+          width={810}
+          height={890}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -930,8 +1063,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 4,
       text: '下图是由 <strong>8</strong> 个相同的小长方形拼成的大长方形，已知小长方形的长是 <strong>9</strong> 厘米，宽是 <strong>3</strong> 厘米，那么拼成的大长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/supplement1.png"
+          width={1154}
+          height={784}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -955,8 +1092,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '拼图法', difficulty: 4,
       text: '一个长方形被平均分成了 <strong>5</strong> 个小正方形，已知每个小正方形的周长是 <strong>13</strong> 厘米，那么大长方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/supplement2.png"
+          width={1594}
+          height={440}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />
@@ -980,8 +1121,12 @@ export const PROBLEMS: ProblemSet = {
       tagLabel: '剪切法', difficulty: 4,
       text: '用 <strong>6</strong> 个大小相同的正方形拼成如图所示的图形后，周长比原来 6 个正方形周长的和少了 <strong>20</strong> 厘米，那么原来一个正方形的周长是多少厘米？',
       figureNode: (
-        <img
+        <Image
+          loading="eager"
           src="/img/math/lesson40/supplement3.png"
+          width={1250}
+          height={738}
+          sizes="(max-width: 640px) 100vw, 384px"
           alt="题图"
           className="w-full max-w-sm rounded-lg"
         />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
@@ -10,8 +10,6 @@ import {
   countFilteredPlanProblems,
   MATH_PLAN_SECTIONS,
   addPlanDays,
-  getOccupiedPlanDates,
-  suggestAvailablePlanRange,
   getLessonTagStats,
   getLessonSectionStats,
   planEndDate,
@@ -53,7 +51,7 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   const { practiceCount } = useMathPracticeStats(user)
   
   const today = todayStr()
-    const [selectedLessons, setSelectedLessons] = useState<Set<string>>(
+  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(
     () => new Set([MATH_PLAN_LESSONS.slice(-1)[0]?.id ?? '1-37']),
   )
   const [sectionFilters, setSectionFilters] = useState<Record<string, string[]>>({})
@@ -81,18 +79,6 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
   )
   const previewDays = useMemo(() => countPlanDays(planStartDate, planEndDateStr), [planStartDate, planEndDateStr])
   const previewProblemsPerDay = previewDays > 0 ? Math.max(1, Math.ceil(previewTotal / previewDays)) : 0
-
-  const applySuggestedDateRange = useCallback(
-    (fromDate: string) => {
-      const occupied = getOccupiedPlanDates(allPlans, editingPlanStart ?? undefined)
-      const suggested = suggestAvailablePlanRange(occupied, fromDate, 7)
-      if (suggested) {
-        setPlanStartDate(suggested.start)
-        setPlanEndDateStr(suggested.end)
-      }
-    },
-    [allPlans, editingPlanStart],
-  )
 
   const syncTagsForLesson = useCallback(
     (lessonId: string, sections: string[]) => {
@@ -152,26 +138,6 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
       return { ...prev, [lessonId]: next.length > 0 ? next : current }
     })
   }, [problemSets, sectionFilters, practiceCount])
-
-  const loadPlanIntoForm = useCallback(
-    (plan: MathWeeklyPlan) => {
-      const ids = plan.lessonIds ?? [plan.lessonId]
-      setSelectedLessons(new Set(ids))
-      setSectionFilters(plan.sectionFilters ?? Object.fromEntries(
-        ids.map(id => [id, defaultSectionsForLesson(problemSets[id])]),
-      ))
-      setTagFilters(plan.tagFilters ?? {})
-      for (const id of ids) {
-        const sections = plan.sectionFilters?.[id] ?? defaultSectionsForLesson(problemSets[id])
-        if (!plan.tagFilters?.[id]) syncTagsForLesson(id, sections)
-      }
-      setPlanStartDate(plan.weekStart)
-      setPlanEndDateStr(planEndDate(plan))
-      setPlanName(plan.name ?? '')
-      setEditingPlanStart(plan.weekStart)
-    },
-    [problemSets, syncTagsForLesson],
-  )
 
   const handleCreatePlan = useCallback(async () => {
     if (selectedLessonIds.length === 0 || previewDays <= 0 || previewTotal <= 0) return
@@ -260,16 +226,29 @@ export default function MathWeeklyPlanEditor({ problemSets, editWeekStart }: Pro
     })
   }, [priorProblemMap])
 
-  useEffect(() => {
-    if (!editWeekStart || isLoading) return
-    const plan = allPlans.find((p) => p.weekStart === editWeekStart)
-    if (plan) loadPlanIntoForm(plan)
-  }, [editWeekStart, isLoading, allPlans, loadPlanIntoForm])
-
-  useEffect(() => {
-    if (editWeekStart || isLoading || allPlans.length > 0) return
-    applySuggestedDateRange(today)
-  }, [editWeekStart, isLoading, allPlans.length, today, applySuggestedDateRange])
+  const sourcePlan = editWeekStart && !isLoading
+    ? allPlans.find((plan) => plan.weekStart === editWeekStart)
+    : undefined
+  const [loadedPlan, setLoadedPlan] = useState<MathWeeklyPlan>()
+  if (sourcePlan !== loadedPlan) {
+    setLoadedPlan(sourcePlan)
+    if (sourcePlan) {
+      const ids = sourcePlan.lessonIds ?? [sourcePlan.lessonId]
+      setSelectedLessons(new Set(ids))
+      setSectionFilters(sourcePlan.sectionFilters ?? Object.fromEntries(
+        ids.map(id => [id, defaultSectionsForLesson(problemSets[id])]),
+      ))
+      setTagFilters(sourcePlan.tagFilters ?? {})
+      for (const id of ids) {
+        const sections = sourcePlan.sectionFilters?.[id] ?? defaultSectionsForLesson(problemSets[id])
+        if (!sourcePlan.tagFilters?.[id]) syncTagsForLesson(id, sections)
+      }
+      setPlanStartDate(sourcePlan.weekStart)
+      setPlanEndDateStr(planEndDate(sourcePlan))
+      setPlanName(sourcePlan.name ?? '')
+      setEditingPlanStart(sourcePlan.weekStart)
+    }
+  }
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
   if (isLoading) {

@@ -21,7 +21,11 @@ type Props = {
   sharedDirty?: boolean
 }
 
-export default function MathLessonSummaryEditModal({
+export default function MathLessonSummaryEditModal(props: Props) {
+  return props.open ? <OpenSummaryModal key={props.lessonId} {...props} /> : null
+}
+
+function OpenSummaryModal({
   open,
   lessonId,
   lessonTitle,
@@ -34,10 +38,6 @@ export default function MathLessonSummaryEditModal({
   sharedDirty = false,
 }: Props) {
   const [modalDirty, setModalDirty] = useState(false)
-
-  useEffect(() => {
-    if (!open) setModalDirty(false)
-  }, [open, lessonId])
 
   const requestClose = useCallback(() => {
     if ((modalDirty || sharedDirty) && !window.confirm('有未保存的修改，确定关闭？')) return

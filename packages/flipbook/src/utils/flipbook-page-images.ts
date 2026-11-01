@@ -1,7 +1,6 @@
 import { FLIPBOOK_MAX_PAGES } from './flipbook-types'
 import {
   FLIPBOOK_CLOUD_PAGE_BASENAME_RE,
-  FLIPBOOK_FLAT_IMAGE_GROUP,
   flipbookBasename,
   flipbookPageImageGroupKey,
   flipbookStemFromImageGroupKey,

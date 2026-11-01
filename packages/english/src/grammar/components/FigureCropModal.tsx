@@ -1,6 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { GrammarScanImage } from './GrammarScanImage'
+
+import { useMemo, useCallback, useEffect, useRef, useState } from 'react'
 
 interface Rect {
   x: number
@@ -48,7 +50,7 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
     return () => window.removeEventListener('keydown', handler)
   }, [onClose, saving])
 
-  const sel: Rect | null =
+  const sel = useMemo<Rect | null>(() =>
     start && end
       ? {
           x: Math.min(start.x, end.x),
@@ -56,7 +58,7 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
           w: Math.abs(end.x - start.x),
           h: Math.abs(end.y - start.y),
         }
-      : null
+      : null, [start, end])
   const selValid = sel !== null && sel.w >= MIN_SELECT && sel.h >= MIN_SELECT
   const busy = saving || exporting
 
@@ -174,7 +176,7 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
             >
-              <img
+              <GrammarScanImage
                 ref={imgRef}
                 src={imageUrl}
                 alt="裁切底图"

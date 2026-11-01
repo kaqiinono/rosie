@@ -1,7 +1,6 @@
 // P4 · 添加或去掉一条线使图形能一笔画
 // Fig1: 三角形+内部线段（4个奇点，添/删1条线→能）
 // Fig2: 圆形+交叉线（4个奇点，添/删1条线→能）
-const stroke = '#d97706'
 
 export default function PretestFig4() {
   return (

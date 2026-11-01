@@ -563,7 +563,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
   const { plans, isLoading: plansLoading, loadProgress } = useAdaptiveWordPlan(user)
 
   const [rows, setRows] = useState<AdaptivePlanWordProgress[]>([])
-  const [isLoadingRows, setIsLoadingRows] = useState(true)
+  const [loadedRequest, setLoadedRequest] = useState<object | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState(0)
   const [practiceLogs, setPracticeLogs] = useState<AdaptivePracticeSessionLog[]>([])
@@ -571,6 +571,8 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
   const today = todayStr()
   const plan = useMemo(() => plans.find((p) => p.id === planId) ?? null, [plans, planId])
 
+  const request = useMemo(() => ({ plan, user, refreshToken }), [plan, user, refreshToken])
+  const isLoadingRows = loadedRequest !== request
   const reload = useCallback(() => {
     setRefreshToken((t) => t + 1)
   }, [])
@@ -587,20 +589,19 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     if (plansLoading || !plan) return
 
     let cancelled = false
-    setIsLoadingRows(true)
-    setLoadError(null)
 
     void loadProgress(plan.id)
       .then((loaded) => {
         if (cancelled) return
+        setLoadError(null)
         setRows(loaded)
-        setIsLoadingRows(false)
+        setLoadedRequest(request)
       })
       .catch((err) => {
         if (cancelled) return
         console.error('[adaptive_word_plan] preview load failed', err)
         setLoadError(err instanceof Error ? err.message : '加载进度失败')
-        setIsLoadingRows(false)
+        setLoadedRequest(request)
       })
 
     if (user) {
@@ -616,7 +617,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     return () => {
       cancelled = true
     }
-  }, [loadProgress, plan, plansLoading, refreshToken, user])
+  }, [loadProgress, plan, plansLoading, request, user])
 
   const simulation: SimulateAdaptivePlanResult | null = useMemo(() => {
     if (!plan || rows.length === 0) return null

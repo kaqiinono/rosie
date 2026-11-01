@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import type { Problem, ProblemSet } from '@rosie/core'
 import LessonFig8Grid from '@rosie/math-content/components/lesson/g2/lesson5/Figure/LessonFig8Grid'
 import LessonFig8Triangle from '@rosie/math-content/components/lesson/g2/lesson5/Figure/LessonFig8Triangle'
@@ -406,8 +407,12 @@ const LESSON: Problem[] = [
     difficulty: 4,
     text: '观察下图中的规律，请按照这种规律，填出空格中未填完的图形。',
     figureNode: (
-      <img
+      <Image
+        loading="eager"
         src="/img/math/53-L22.png"
+        width={1006}
+        height={216}
+        sizes="(max-width: 640px) 100vw, 672px"
         alt="例题11 图形轮换"
         className="mx-auto w-full max-w-2xl rounded-lg"
       />
@@ -796,8 +801,12 @@ const SUPPLEMENT: Problem[] = [
     difficulty: 4,
     text: '下面的各组图形中的数都有各自的规律，先把规律找出来，再把空缺的数填上。（① 三三角形组）',
     figureNode: (
-      <img
+      <Image
+        loading="eager"
         src="/img/math/53-S3.png"
+        width={786}
+        height={532}
+        sizes="(max-width: 640px) 100vw, 672px"
         alt="附加题3 图形组规律"
         className="mx-auto w-full max-w-2xl rounded-lg"
       />
@@ -816,8 +825,12 @@ const SUPPLEMENT: Problem[] = [
     difficulty: 4,
     text: '下面的各组图形中的数都有各自的规律，先把规律找出来，再把空缺的数填上。（② 大圆三小圆组）',
     figureNode: (
-      <img
+      <Image
+        loading="eager"
         src="/img/math/53-S3.png"
+        width={786}
+        height={532}
+        sizes="(max-width: 640px) 100vw, 672px"
         alt="附加题3 图形组规律"
         className="mx-auto w-full max-w-2xl rounded-lg"
       />
@@ -836,8 +849,12 @@ const SUPPLEMENT: Problem[] = [
     difficulty: 4,
     text: '下面的各组图形中的数都有各自的规律，先把规律找出来，再把空缺的数填上。（③ 四象限圆，先求第3个圆右下角）',
     figureNode: (
-      <img
+      <Image
+        loading="eager"
         src="/img/math/53-S3.png"
+        width={786}
+        height={532}
+        sizes="(max-width: 640px) 100vw, 672px"
         alt="附加题3 图形组规律"
         className="mx-auto w-full max-w-2xl rounded-lg"
       />
@@ -927,8 +944,12 @@ const SUPPLEMENT: Problem[] = [
     difficulty: 4,
     text: '从所给的四个选项中，选择最合适的一个填入问号处，使之呈现一定的规律性。',
     figureNode: (
-      <img
+      <Image
+        loading="eager"
         src="/img/math/53-S10.png"
+        width={492}
+        height={302}
+        sizes="(max-width: 640px) 100vw, 492px"
         alt="附加题6-2 图形规律选择题"
         className="mx-auto w-full max-w-lg rounded-lg"
       />

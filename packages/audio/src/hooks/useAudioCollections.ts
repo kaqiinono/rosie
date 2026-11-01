@@ -10,7 +10,6 @@ import { readingPassages } from '@rosie/english'
 import { READING_AUDIO_BUCKET } from '@rosie/english'
 import { FLIPBOOK_BUCKET } from '@rosie/flipbook'
 import {
-  AUDIO_MEDIA_BUCKET,
   trackKey,
   type AddPlaylistItemInput,
   type AudioCollection,

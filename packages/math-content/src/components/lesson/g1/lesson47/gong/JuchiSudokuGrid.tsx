@@ -1,18 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSudokuValues } from './useSudokuValues'
+
+import { useCallback, useMemo } from 'react'
 import { buildJuchiLineSets, getJuchiCellBorderStyle } from './utils/juchi'
 import type { JuchiSudokuProps } from './utils/types'
-import { coordsToGrid, readValuesDraft, resolveGridSize } from './utils'
+import { coordsToGrid, resolveGridSize } from './utils'
 import { ActionButton } from './shared'
-
-function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]): string[][] {
-  return Array.from({ length: rowCount }, (_, r) =>
-    Array.from({ length: colCount }, (_, c) =>
-      givenGrid[r][c] > 0 ? String(givenGrid[r][c]) : '',
-    ),
-  )
-}
 
 export function JuchiSudokuGrid({
   rows,
@@ -35,15 +29,7 @@ export function JuchiSudokuGrid({
   )
   const cellClass = rowCount <= 4 ? 'gong-cell' : 'gong-cell gong-cell-sm'
 
-  const [values, setValues] = useState<string[][]>(() => {
-    const draft = readValuesDraft(initialState)
-    return draft ?? emptyValues(rowCount, colCount, givenGrid)
-  })
-
-  useEffect(() => {
-    if (initialState) return
-    setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid, initialState])
+  const { values, setValues, givenValues } = useSudokuValues(givenGrid, initialState)
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)
@@ -60,7 +46,7 @@ export function JuchiSudokuGrid({
   }, [values, onSubmit])
 
   const reset = () => {
-    const next = emptyValues(rowCount, colCount, givenGrid)
+    const next = givenValues()
     setValues(next)
     onStateChange?.({ values: next })
   }

@@ -1,6 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSudokuValues } from './useSudokuValues'
+
+import { useCallback, useMemo } from 'react'
 import type { ChuangkouSudokuProps } from './utils/types'
 import {
   coordsToGrid,
@@ -8,20 +10,11 @@ import {
   isSudokuBoxBorderBottom,
   isSudokuBoxBorderRight,
   parseChuangkouWindows,
-  readValuesDraft,
   resolveChuangkouWindow,
   resolveGridSize,
   sudokuBoxSize,
 } from './utils'
 import { ActionButton } from './shared'
-
-function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]): string[][] {
-  return Array.from({ length: rowCount }, (_, r) =>
-    Array.from({ length: colCount }, (_, c) =>
-      givenGrid[r][c] > 0 ? String(givenGrid[r][c]) : '',
-    ),
-  )
-}
 
 export function ChuangkouSudokuGrid({ rows, cells = [], window, onSubmit, onStateChange, initialState }: ChuangkouSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
@@ -37,15 +30,7 @@ export function ChuangkouSudokuGrid({ rows, cells = [], window, onSubmit, onStat
     [rowCount, colCount, cells],
   )
 
-  const [values, setValues] = useState<string[][]>(() => {
-    const draft = readValuesDraft(initialState)
-    return draft ?? emptyValues(rowCount, colCount, givenGrid)
-  })
-
-  useEffect(() => {
-    if (initialState) return
-    setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid, initialState])
+  const { values, setValues, givenValues } = useSudokuValues(givenGrid, initialState)
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)
@@ -62,7 +47,7 @@ export function ChuangkouSudokuGrid({ rows, cells = [], window, onSubmit, onStat
   }, [values, onSubmit])
 
   const reset = () => {
-    const next = emptyValues(rowCount, colCount, givenGrid)
+    const next = givenValues()
     setValues(next)
     onStateChange?.({ values: next })
   }

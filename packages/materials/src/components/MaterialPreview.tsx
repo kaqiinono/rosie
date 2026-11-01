@@ -78,6 +78,7 @@ export function MaterialPreview({ asset }: { asset: MaterialAsset }) {
           {content.content_url && (
             <div className="space-y-2">
               {asset.kind === 'image' ? (
+                // eslint-disable-next-line @next/next/no-img-element -- The private image request requires the current browser session cookie.
                 <img src={content.content_url} alt={asset.title} className="max-h-96 max-w-full" />
               ) : asset.kind === 'audio' ? (
                 <audio controls src={content.content_url} />

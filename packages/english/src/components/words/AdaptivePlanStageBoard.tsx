@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
 import { findWordByKey } from '../../utils/english-helpers'
 import {
@@ -155,13 +155,11 @@ export default function AdaptivePlanStageBoard({
   const rangeStart = panelRows.length === 0 ? 0 : (safePage - 1) * pageSize + 1
   const rangeEnd = Math.min(safePage * pageSize, panelRows.length)
 
-  useEffect(() => {
+  const [previousRows, setPreviousRows] = useState(rows)
+  if (previousRows !== rows) {
+    setPreviousRows(rows)
     setPage(1)
-  }, [rows])
-
-  useEffect(() => {
-    if (page > totalPages) setPage(totalPages)
-  }, [page, totalPages])
+  }
 
   const tableBody = (
     <div className="border-t border-[var(--wm-border)]">
@@ -238,7 +236,7 @@ export default function AdaptivePlanStageBoard({
             <button
               type="button"
               disabled={safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => setPage(Math.max(1, safePage - 1))}
               className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#a78bfa] hover:text-[#c4b5fd]"
             >
               ← 上一页
@@ -249,7 +247,7 @@ export default function AdaptivePlanStageBoard({
             <button
               type="button"
               disabled={safePage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() => setPage(Math.min(totalPages, safePage + 1))}
               className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#a78bfa] hover:text-[#c4b5fd]"
             >
               下一页 →

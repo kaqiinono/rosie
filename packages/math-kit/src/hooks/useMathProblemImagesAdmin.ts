@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import type { MathImageKind } from '@rosie/math-kit/constants'
 import { lessonIdFromProblemId } from '@rosie/math-kit/constants'
@@ -23,26 +23,36 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
   const lessonIds = normalizeLessonIds(lessonId)
   const lessonIdsKey = lessonIds.join(',')
 
-  const [images, setImages] = useState<MathProblemImage[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [loadedImages, setImages] = useState<MathProblemImage[]>([])
+  const [loadedKey, setLoadedKey] = useState<string | null>(null)
+  const request = useRef(0)
+  const isLoading = !!lessonIdsKey && loadedKey !== lessonIdsKey
   const [isUploading, setIsUploading] = useState(false)
 
-  const reload = useCallback(async () => {
+  const fetchImages = useCallback((signal?: AbortSignal) => {
+    const version = ++request.current
     const ids = lessonIdsKey ? lessonIdsKey.split(',') : []
-    if (ids.length === 0) {
-      setImages([])
-      return
-    }
-    setIsLoading(true)
-    const rows = await Promise.all(ids.map(fetchLessonProblemImages))
-    setImages(rows.flat())
-    setIsLoading(false)
+    return Promise.all(ids.map(fetchLessonProblemImages)).then((rows) => {
+      if (!signal?.aborted && version === request.current) {
+        setImages(rows.flat())
+        setLoadedKey(lessonIdsKey)
+      }
+    })
   }, [lessonIdsKey])
 
-  useEffect(() => {
-    void reload()
-  }, [reload])
+  const reload = useCallback(() => {
+    setLoadedKey(null)
+    return fetchImages()
+  }, [fetchImages])
 
+  useEffect(() => {
+    const controller = new AbortController()
+    void fetchImages(controller.signal)
+    return () => controller.abort()
+  }, [fetchImages])
+
+  const images = useMemo(() => lessonIdsKey && loadedKey === lessonIdsKey ? loadedImages : [],
+    [lessonIdsKey, loadedKey, loadedImages])
   const getImageUrl = useCallback((storagePath: string) => getMathImagePublicUrl(storagePath), [])
 
   const findImage = useCallback(
@@ -78,7 +88,7 @@ export function useMathProblemImagesAdmin(user: User | null, lessonId: string | 
       invalidateLessonImageCache(targetLessonId)
       return { error: null }
     },
-    [user, lessonIdsKey, lessonIds.length],
+    [user, lessonIds.length],
   )
 
   const removeImage = useCallback(

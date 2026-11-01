@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { WordEntry, WordMasteryInfo, WordMasteryMap } from '@rosie/core'
 import { wordKey } from '../../utils/english-helpers'
 import { ensureStageInit, isGraduated, MASTERY_ICON, getWordMasteryLevel } from '@rosie/core'
@@ -99,13 +99,11 @@ export default function MasteryStatusPanel({
   const rangeStart = rows.length === 0 ? 0 : (safePage - 1) * pageSize + 1
   const rangeEnd = Math.min(safePage * pageSize, rows.length)
 
-  useEffect(() => {
+  const [previousRows, setPreviousRows] = useState(rows)
+  if (previousRows !== rows) {
+    setPreviousRows(rows)
     setPage(1)
-  }, [rows])
-
-  useEffect(() => {
-    if (page > totalPages) setPage(totalPages)
-  }, [page, totalPages])
+  }
 
   const hardCount = rows.filter(
     (r): r is Extract<PanelRow, { unpracticed: false }> =>
@@ -241,7 +239,7 @@ export default function MasteryStatusPanel({
             <button
               type="button"
               disabled={safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => setPage(Math.max(1, safePage - 1))}
               className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#93c5fd] hover:text-[#93c5fd]"
             >
               ← 上一页
@@ -252,7 +250,7 @@ export default function MasteryStatusPanel({
             <button
               type="button"
               disabled={safePage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() => setPage(Math.min(totalPages, safePage + 1))}
               className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#93c5fd] hover:text-[#93c5fd]"
             >
               下一页 →

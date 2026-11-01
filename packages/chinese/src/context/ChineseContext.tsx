@@ -77,14 +77,10 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
   } = useChineseWrong(user)
   const {
     chars,
-    charByKey,
     lessons,
-    lessonChars,
     lessonGroups,
-    getCharProfile,
     isLoading: isCharDataLoading,
     error: charDataError,
-    isReady: isCharDataReady,
   } = useChineseCharData(user)
   const {
     weeklyPlan,
@@ -117,11 +113,6 @@ export function ChineseProvider({ children }: { children: React.ReactNode }) {
       (c) => c.grade === bookFilter.grade && c.semester === bookFilter.semester,
     )
   }, [chars, bookFilter])
-
-  const filteredLessonChars = useMemo(
-    () => lessonChars.filter((lc) => filteredLessonKeys.has(lc.lessonKey)),
-    [lessonChars, filteredLessonKeys],
-  )
 
   const filteredLessonGroups = useMemo(
     () =>

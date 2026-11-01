@@ -23,14 +23,13 @@ import {
   formatPlanLessonLabel,
   lessonChipTag,
 } from '../../utils/english-helpers'
-import { getWordMasteryLevel, MASTERY_ICON, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
+import { getWordMasteryLevel, MASTERY_ICON } from '@rosie/core'
 import { findPassage, findSentenceForWord } from '../../utils/reading-data'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'
 import type { QuizCommitInfo } from './useQuizRunner'
 import { useRescueQueue } from '../../hooks/useRescueQueue'
 import MonsterEatScene from './MonsterEatScene'
-import RescueListBadge from './RescueListBadge'
 import RescueReviewCarousel from './RescueReviewCarousel'
 import RescueCompletionView from './RescueCompletionView'
 import MasteryStatusPanel from './MasteryStatusPanel'
@@ -40,7 +39,6 @@ import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useImmersive } from '@rosie/core'
 import {
-  clearLocalPending,
   usePracticePendingLifecycle,
   type PracticePendingEnvelope,
 } from '@rosie/core'
@@ -501,7 +499,7 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
       quizResultBuffer,
     })
     setIsImmersive(true)
-  }, [plan.id, plan.pendingSession, vocab])
+  }, [plan.id, plan.pendingSession, vocab, setIsImmersive])
 
   const startQuiz = useCallback(() => {
     const seed = Date.now()
@@ -714,22 +712,12 @@ export default function WeeklyPlanSession({ initialPlan, vocab, onBack, autoStar
   if (phase === 'week-view') {
     const today = todayStr()
     const kindMap = classifyPlanWords(plan, vocab)
-    const lastDay = plan.days[plan.days.length - 1]
-    const isLastDay = lastDay?.date === today
 
     // Progress bar data
     const allConsolidateKeys = [...kindMap.entries()]
       .filter(([, k]) => k === 'consolidate')
       .map(([key]) => key)
     const consolidateTotal = allConsolidateKeys.length
-    const consolidateDone = allConsolidateKeys.filter(k => {
-      const m = masteryMap[k]
-      return m !== undefined && (m.stage ?? 0) >= CONSOLIDATE_PASS_STAGE
-    }).length
-
-    // Sunday fallback: unmastered consolidate words
-    const unmasteredConsolidate = consolidateTotal - consolidateDone
-
     const pendingSessionSnap = pickBestPendingSnapshot(plan.id, plan.pendingSession)
     const hasPendingResume = pendingSessionSnap !== null
     const pendingDate = pendingSessionSnap?.selectedDate ?? selectedDate

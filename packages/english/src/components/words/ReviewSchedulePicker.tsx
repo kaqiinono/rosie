@@ -17,7 +17,7 @@ type ReviewSchedulePickerProps = {
   savingLabel?: string
 }
 
-function chipClass(active: boolean, disabled: boolean): string {
+function chipClass(active: boolean): string {
   const base =
     'h-8 min-w-8 cursor-pointer rounded-full border-[1.5px] px-2 text-[.8rem] font-extrabold transition-all disabled:cursor-wait disabled:opacity-60'
   if (active) {
@@ -62,7 +62,7 @@ export default function ReviewSchedulePicker({
               type="button"
               disabled={disabled}
               onClick={() => onReviewCapChange(n)}
-              className={chipClass(reviewCap === n, disabled)}
+              className={chipClass(reviewCap === n)}
             >
               {n}
             </button>
@@ -90,7 +90,7 @@ export default function ReviewSchedulePicker({
               type="button"
               disabled={disabled}
               onClick={() => onBacklogFuseChange(n)}
-              className={chipClass(backlogFuse === n, disabled)}
+              className={chipClass(backlogFuse === n)}
             >
               {n}
             </button>

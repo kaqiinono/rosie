@@ -1,5 +1,7 @@
 'use client'
 
+import { GrammarScanImage } from './GrammarScanImage'
+
 import type { GrammarFigure } from '../types'
 import { grammarPageImageUrl } from '../types'
 
@@ -21,7 +23,7 @@ export function FigureCard({ figure, isAdmin, onPreview, onRecrop, onRemove }: F
         onClick={() => onPreview(figure)}
         className="block overflow-hidden rounded-xl ring-1 ring-border-light transition-shadow hover:shadow-md"
       >
-        <img src={url} alt={`插图（原书 p.${figure.page}）`} className="max-h-64 w-auto max-w-full" />
+        <GrammarScanImage loading="lazy" src={url} alt={`插图（原书 p.${figure.page}）`} className="max-h-64 w-auto max-w-full" />
       </button>
       {isAdmin && (
         <div className="absolute top-1 right-1 flex gap-1 opacity-80">

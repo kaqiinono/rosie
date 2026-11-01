@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import type { TaskInstance, Subject } from '../types'
 import { SUBJECTS } from '../types'
@@ -153,6 +154,17 @@ function TaskCard({
 }
 
 export default function TaskList() {
+  return <Suspense><TaskListFromURL /></Suspense>
+}
+
+function TaskListFromURL() {
+  const params = useSearchParams()
+  const course = params.get('course') ?? ''
+  const task = params.get('task')
+  return <FilteredTasks key={JSON.stringify([course, task])} course={course} task={task} />
+}
+
+function FilteredTasks({ course, task }: { course: string; task: string | null }) {
   const { api, run, busy } = useTasks()
   const [now, setNow] = useState(0)
   useEffect(() => {
@@ -162,17 +174,11 @@ export default function TaskList() {
     return () => clearInterval(timer)
   }, [])
   const [subject, setSubject] = useState<Subject | ''>('')
-  const [history, setHistory] = useState(false)
+  const [history, setHistory] = useState(task !== null)
   const [todayOnly, setTodayOnly] = useState(false)
   const [audioId, setAudioId] = useState('')
-  const [courseFilter, setCourseFilter] = useState(''),
-    [taskFilter, setTaskFilter] = useState('')
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    setCourseFilter(params.get('course') ?? '')
-    setTaskFilter(params.get('task') ?? '')
-    if (params.has('task')) setHistory(true)
-  }, [])
+  const [courseFilter, setCourseFilter] = useState(course)
+  const [taskFilter, setTaskFilter] = useState(task ?? '')
   const tasks = api.data.tasks
     .filter(
       (t) =>

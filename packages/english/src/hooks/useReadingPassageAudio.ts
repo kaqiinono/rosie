@@ -12,7 +12,7 @@ import { useBaiduReadingAudio } from './useBaiduReadingAudio'
  * lookup completes. Never lists the storage bucket, never scans all passages.
  */
 export function useReadingPassageAudio(user: User | null, passageKey: string) {
-  const baidu = useBaiduReadingAudio(user)
+  const { hasAudio } = useBaiduReadingAudio(user)
   const [revision, setRevision] = useState<{ key: string; updatedAt: string } | null>(null)
   const updatedAt = revision?.key === passageKey ? revision.updatedAt : null
 
@@ -41,8 +41,8 @@ export function useReadingPassageAudio(user: User | null, passageKey: string) {
   }, [user, passageKey])
 
   return useMemo(() => {
-    if (baidu.hasAudio(passageKey)) return baiduReadingAudioUrl(passageKey)
+    if (hasAudio(passageKey)) return baiduReadingAudioUrl(passageKey)
     if (!baseUrl) return null
     return updatedAt ? `${baseUrl}?v=${encodeURIComponent(updatedAt)}` : baseUrl
-  }, [baidu.hasAudio, passageKey, baseUrl, updatedAt])
+  }, [hasAudio, passageKey, baseUrl, updatedAt])
 }

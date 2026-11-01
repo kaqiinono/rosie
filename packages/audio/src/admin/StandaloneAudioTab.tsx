@@ -21,7 +21,6 @@ type Props = {
 export default function StandaloneAudioTab({
   assets,
   isLoading,
-  getAssetUrl,
   onPlayAsset,
   onUpload,
   onDelete,

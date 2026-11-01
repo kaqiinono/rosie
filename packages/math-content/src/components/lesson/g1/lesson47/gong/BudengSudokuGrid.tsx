@@ -1,6 +1,8 @@
 'use client'
 
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { useSudokuValues } from './useSudokuValues'
+
+import { Fragment, useCallback, useMemo } from 'react'
 import { GONG_COLORS } from './utils/constants'
 import { buildBudengIneqMaps, resolveBudengGridSize } from './utils/budeng'
 import type { BudengSudokuProps, InequalityOp } from './utils/types'
@@ -8,7 +10,6 @@ import {
   coordsToGrid,
   isRectBoxBorderBottom,
   isRectBoxBorderRight,
-  readValuesDraft,
   resolveSudokuBoxDimensions,
 } from './utils'
 import { ActionButton } from './shared'
@@ -49,14 +50,6 @@ function getBoxBorderClasses(
     .join(' ')
 }
 
-function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]): string[][] {
-  return Array.from({ length: rowCount }, (_, r) =>
-    Array.from({ length: colCount }, (_, c) =>
-      givenGrid[r][c] > 0 ? String(givenGrid[r][c]) : '',
-    ),
-  )
-}
-
 export function BudengSudokuGrid({
   rows,
   hIneq = [],
@@ -82,15 +75,7 @@ export function BudengSudokuGrid({
     [rowCount, colCount, cells],
   )
 
-  const [values, setValues] = useState<string[][]>(() => {
-    const draft = readValuesDraft(initialState)
-    return draft ?? emptyValues(rowCount, colCount, givenGrid)
-  })
-
-  useEffect(() => {
-    if (initialState) return
-    setValues(emptyValues(rowCount, colCount, givenGrid))
-  }, [rowCount, colCount, givenGrid, initialState])
+  const { values, setValues, givenValues } = useSudokuValues(givenGrid, initialState)
 
   const setCell = (r: number, c: number, raw: string) => {
     const v = raw.replace(digitPattern, '').slice(0, 1)
@@ -107,7 +92,7 @@ export function BudengSudokuGrid({
   }, [values, onSubmit])
 
   const reset = () => {
-    const next = emptyValues(rowCount, colCount, givenGrid)
+    const next = givenValues()
     setValues(next)
     onStateChange?.({ values: next })
   }

@@ -213,10 +213,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
     return filterProblemPool(raw, sourceFilter, typeFilter)
   }, [
     quizDraft,
-    selectedLessonsKey,
     selectedLessons,
-    sourceFilterKey,
-    typeFilterKey,
     sourceFilter,
     typeFilter,
   ])
@@ -251,7 +248,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
         )
       })
       .sort((a, b) => Number(a.lessonId) - Number(b.lessonId))
-  }, [selectedLessonsKey, selectedLessons, searchQuery])
+  }, [selectedLessons, searchQuery])
 
   const sessionMatchedAnalysisIds = useMemo(() => {
     const ids = new Set<string>()

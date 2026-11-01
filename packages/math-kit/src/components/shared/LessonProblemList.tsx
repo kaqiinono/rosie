@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { Problem } from '@rosie/core'
 import { getMasteryLevel, MASTERY_ICON } from '@rosie/core'
 import ExpandedProblemCard, { type ProblemDetailInlineComponent } from '@rosie/math-kit/components/shared/ExpandedProblemCard'
@@ -59,9 +59,11 @@ export default function LessonProblemList({
   const alltestBase = lessonBasePath ?? basePath.replace(/\/[^/]+$/, '')
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
 
-  useEffect(() => {
+  const [previousExpanded, setPreviousExpanded] = useState(showExpanded)
+  if (previousExpanded !== showExpanded) {
+    setPreviousExpanded(showExpanded)
     if (showExpanded) setCollapsedIds(new Set())
-  }, [showExpanded])
+  }
 
   const toggleCard = useCallback((id: string) => {
     setCollapsedIds((prev) => {

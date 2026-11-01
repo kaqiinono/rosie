@@ -33,12 +33,14 @@ export function useProblemAnswer(
   /** The settle below is async; without this a double-tap files two attempts. */
   const submittingRef = useRef(false)
 
-  useEffect(() => {
+  const [previousProblemId, setPreviousProblemId] = useState(problem.id)
+  if (previousProblemId !== problem.id) {
+    setPreviousProblemId(problem.id)
     setAnswer('')
     setFeedback(null)
     setHasAttempted(false)
-    submittingRef.current = false
-  }, [problem.id])
+  }
+  useEffect(() => { submittingRef.current = false }, [problem.id])
 
   const persistAttempt = useCallback(
     async (correct: boolean, answerSnapshot: unknown) => {

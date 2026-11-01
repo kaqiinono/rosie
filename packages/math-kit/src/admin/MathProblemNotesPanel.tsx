@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
 import { lessonIdFromProblemId } from '@rosie/math-kit/constants'
@@ -109,10 +109,6 @@ function NoteRow({
   const [editing, setEditing] = useState(false)
   const [bodyHtml, setBodyHtml] = useState(note.bodyHtml)
 
-  useEffect(() => {
-    if (!editing) setBodyHtml(note.bodyHtml)
-  }, [note, editing])
-
   const handleSave = async () => {
     const toSave = sanitizeRichHtml(bodyHtml)
     if (isRichBodyEmpty(toSave)) {
@@ -157,7 +153,7 @@ function NoteRow({
       <div className="mt-2 flex flex-wrap gap-1.5">
         <button
           type="button"
-          onClick={() => setEditing(true)}
+          onClick={() => { setBodyHtml(note.bodyHtml); setEditing(true) }}
           className="rounded-lg border border-violet-200 px-2 py-1 text-[10px] font-semibold text-violet-700 hover:bg-violet-50"
         >
           编辑

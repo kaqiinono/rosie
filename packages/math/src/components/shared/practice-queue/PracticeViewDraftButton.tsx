@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useDraftQuery } from '@rosie/math-kit/hooks/useDraftQuery'
 import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
 import ScratchPadSession from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadSession'
@@ -64,37 +65,19 @@ export default function PracticeViewDraftButton({
   const { user } = useAuth()
   const fromAttempt = Boolean(attemptIdProp)
   const batched = hasDraftProp !== undefined
-  const [hasDraftLocal, setHasDraftLocal] = useState(false)
-  const [checking, setChecking] = useState(!batched && !fromAttempt)
   const [open, setOpen] = useState(false)
   const [soloRefresh, setSoloRefresh] = useState(0)
   const [viewAttemptId, setViewAttemptId] = useState<string | null>(null)
 
-  const hasDraft = fromAttempt ? true : batched ? hasDraftProp : hasDraftLocal
-
   const userId = user?.id
-
-  useEffect(() => {
-    if (batched || fromAttempt) {
-      setChecking(false)
-      return
-    }
-    if (!userId || !problemId) {
-      setHasDraftLocal(false)
-      setChecking(false)
-      return
-    }
-    let cancelled = false
-    setChecking(true)
-    void problemHasViewableDraft(userId, problemId).then((ok) => {
-      if (cancelled) return
-      setHasDraftLocal(ok)
-      setChecking(false)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [batched, fromAttempt, userId, problemId, refreshKey, soloRefresh])
+  const loadDraft = useMemo(() =>
+    !batched && !fromAttempt && userId && problemId
+      ? () => problemHasViewableDraft(userId, problemId)
+      : null,
+    [batched, fromAttempt, userId, problemId],
+  )
+  const draftFound = useDraftQuery(loadDraft, JSON.stringify([refreshKey, soloRefresh]))
+  const hasDraft = fromAttempt || (hasDraftProp ?? draftFound)
 
   function handleClose() {
     setOpen(false)
@@ -115,7 +98,7 @@ export default function PracticeViewDraftButton({
     })
   }
 
-  if (!user || !problemId || !problem || checking || !hasDraft) return null
+  if (!user || !problemId || !problem || !hasDraft) return null
 
   return (
     <>

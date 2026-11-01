@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDraftQuery } from '../../../hooks/useDraftQuery'
 import { useAuth } from '@rosie/core'
 import type { MathPracticeAttemptRow } from '@rosie/math-kit/hooks/math-scratch-types'
 import { fetchPracticeAttemptsForProblem, fetchAttemptCanvas } from '@rosie/math-kit/utils/math-scratch-db'
@@ -24,19 +25,12 @@ export default function PracticeAttemptTimeline({
   onViewDraft,
 }: PracticeAttemptTimelineProps) {
   const { user } = useAuth()
-  const [attempts, setAttempts] = useState<MathPracticeAttemptRow[]>([])
   const [previewId, setPreviewId] = useState<string | null>(null)
-
   const userId = user?.id
-  useEffect(() => {
-    if (!userId) {
-      setAttempts([])
-      return
-    }
-    void fetchPracticeAttemptsForProblem(userId, problemId).then(setAttempts)
-  }, [userId, problemId, refreshKey])
+  const load = useMemo(() => userId ? () => fetchPracticeAttemptsForProblem(userId, problemId) : null, [userId, problemId])
+  const attempts = useDraftQuery(load, refreshKey)
 
-  if (attempts.length === 0) return null
+  if (!attempts?.length) return null
 
   const previewAttempt = previewId ? attempts.find((a) => a.id === previewId) : null
 

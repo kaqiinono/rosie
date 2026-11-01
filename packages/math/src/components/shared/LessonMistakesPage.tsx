@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
+import { useDraftQuery } from '@rosie/math-kit/hooks/useDraftQuery'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
 import { useAuth } from '@rosie/core'
@@ -123,7 +124,6 @@ export default function LessonMistakesPage({
   const { user } = useAuth()
   const startPractice = useStartPracticeQueue()
   const lessonId = lessonKeyFromHref(basePath) ?? ''
-  const [draftProblemIds, setDraftProblemIds] = useState<Set<string>>(() => new Set())
 
   const problemMap = buildProblemMap(problems)
   const wrongList = [...wrongIds]
@@ -154,19 +154,12 @@ export default function LessonMistakesPage({
 
   const wrongIdsKey = useMemo(() => [...wrongIds].sort().join('\0'), [wrongIds])
 
-  useEffect(() => {
-    if (!user || wrongIds.size === 0) {
-      setDraftProblemIds(new Set())
-      return
-    }
-    let cancelled = false
-    void fetchWrongDraftProblemIds(user.id, [...wrongIds]).then((ids) => {
-      if (!cancelled) setDraftProblemIds(ids)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [user, wrongIdsKey, wrongIds])
+  const userId = user?.id
+  const loadDrafts = useMemo(
+    () => userId && wrongIdsKey ? () => fetchWrongDraftProblemIds(userId, wrongIdsKey.split('\0')) : null,
+    [userId, wrongIdsKey],
+  )
+  const draftProblemIds = useDraftQuery(loadDrafts)
 
   return (
     <div>
@@ -227,7 +220,7 @@ export default function LessonMistakesPage({
               practiceCount={practiceCount}
               correctCount={correctCount}
               tagStyle={tagStyle}
-              hasDraft={draftProblemIds.has(item.p.id)}
+              hasDraft={draftProblemIds?.has(item.p.id) ?? false}
               onPractice={() => beginPractice(item.p.id)}
             />
           ))}

@@ -29,11 +29,16 @@ export function useAdaptiveTodayProgress(user: User | null): {
   const { plans, isLoading: plansLoading, loadProgress } = useAdaptiveWordPlan(user)
   const activePlan = useMemo(() => plans.find((plan) => plan.status === 'active') ?? null, [plans])
 
-  const [rows, setRows] = useState<AdaptivePlanWordProgress[] | null>(null)
-  const [daily, setDaily] = useState<AdaptiveDailyProgress | null>(null)
-  const [rowsLoading, setRowsLoading] = useState(false)
+  const [progress, setProgress] = useState<{
+    request: object
+    rows: AdaptivePlanWordProgress[]
+    daily: AdaptiveDailyProgress | null
+  } | null>(null)
   const [reloadToken, setReloadToken] = useState(0)
   const today = todayStr()
+  const request = useMemo(() => ({ activePlan, today, reloadToken }), [activePlan, today, reloadToken])
+  const rows = progress?.request === request ? progress.rows : null
+  const daily = progress?.request === request ? progress.daily : null
 
   const reload = useCallback(() => {
     setReloadToken((t) => t + 1)
@@ -54,15 +59,8 @@ export function useAdaptiveTodayProgress(user: User | null): {
   }, [reload])
 
   useEffect(() => {
-    if (!activePlan) {
-      setRows(null)
-      setDaily(null)
-      setRowsLoading(false)
-      return
-    }
-
+    if (!activePlan) return
     let cancelled = false
-    setRowsLoading(true)
 
     void Promise.all([
       loadProgress(activePlan.id),
@@ -78,10 +76,8 @@ export function useAdaptiveTodayProgress(user: User | null): {
     ])
       .then(([loaded, dailyResult]) => {
         if (cancelled) return
-        setRows(loaded)
         const row = dailyResult.data
-        setDaily(
-          row
+        const daily: AdaptiveDailyProgress | null = row
             ? {
                 planId: row.plan_id as string,
                 practiceDate: row.practice_date as string,
@@ -92,21 +88,18 @@ export function useAdaptiveTodayProgress(user: User | null): {
                 allDone: row.all_done as boolean,
                 completedAt: row.completed_at as string | null,
               }
-            : null,
-        )
-        setRowsLoading(false)
+            : null
+        setProgress({ request, rows: loaded, daily })
       })
       .catch(() => {
         if (cancelled) return
-        setRows([])
-        setDaily(null)
-        setRowsLoading(false)
+        setProgress({ request, rows: [], daily: null })
       })
 
     return () => {
       cancelled = true
     }
-  }, [activePlan, loadProgress, reloadToken, today])
+  }, [request, activePlan, loadProgress, today])
 
   const summary = useMemo(() => {
     if (!activePlan || rows == null) return null
@@ -119,6 +112,6 @@ export function useAdaptiveTodayProgress(user: User | null): {
   return {
     activePlan,
     summary,
-    isLoading: plansLoading || (!!activePlan && (rowsLoading || rows == null)),
+    isLoading: plansLoading || (!!activePlan && rows == null),
   }
 }

@@ -100,7 +100,7 @@ function MultiplicationVertical({
     return { result, totalCols, numPartials, partials, resultRow }
   }, [a, b])
 
-  const { result, totalCols, numPartials, partials, resultRow } = layout
+  const { totalCols, numPartials, partials, resultRow } = layout
   const resultRowIdx = numPartials // result row sits after the partial rows
   // A single partial that already equals the result needs no separate sum row.
   const hasSumRow = numPartials > 1

@@ -45,14 +45,7 @@ export default function MathLessonSummaryEditor({
   const [showPreview, setShowPreview] = useState(false)
 
   const isControlled = controlledBodyHtml !== undefined && onBodyHtmlChange !== undefined
-  const bodyHtml = isControlled ? controlledBodyHtml : internalBodyHtml
-
-  useEffect(() => {
-    if (dirty) return
-    const next = existing?.bodyHtml ?? '<p></p>'
-    if (isControlled) onBodyHtmlChange!(next)
-    else setInternalBodyHtml(next)
-  }, [existing, dirty, isControlled, onBodyHtmlChange])
+  const bodyHtml = isControlled ? controlledBodyHtml : dirty ? internalBodyHtml : (existing?.bodyHtml ?? '<p></p>')
 
   useEffect(() => {
     onDirtyChange?.(dirty)

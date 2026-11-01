@@ -13,30 +13,18 @@ export function useLessonNotes(lessonId: string | undefined): {
   byProblem: { problemId: string; notes: MathProblemNote[] }[]
   isLoading: boolean
 } {
-  const [notes, setNotes] = useState<MathProblemNote[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-
+  const [loaded, setLoaded] = useState<{ lesson: string; notes: MathProblemNote[] } | null>(null)
   useEffect(() => {
-    if (!lessonId) {
-      setNotes([])
-      return
-    }
-
+    if (!lessonId) return
     let cancelled = false
-    void (async () => {
-      setIsLoading(true)
-      const rows = await loadLessonNotes(lessonId)
-      if (!cancelled) {
-        setNotes(rows)
-        setIsLoading(false)
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
+    void loadLessonNotes(lessonId).then((notes) => {
+      if (!cancelled) setLoaded({ lesson: lessonId, notes })
+    })
+    return () => { cancelled = true }
   }, [lessonId])
 
+  const notes = loaded?.lesson === lessonId ? (loaded?.notes ?? []) : []
+  const isLoading = !!lessonId && loaded?.lesson !== lessonId
   return {
     notes,
     byProblem: groupNotesByProblem(notes),

@@ -104,7 +104,7 @@ export default function PassageView({
     [lessonWords],
   )
 
-  const glossary = passage.glossary ?? []
+  const glossary = useMemo(() => passage.glossary ?? [], [passage.glossary])
   const glossaryRegex = useMemo(() => buildGlossaryRegex(glossary), [glossary])
   const sourceStages = useMemo(
     () => [...new Set(lessonWords.map((word) => word.stage?.trim() || '未分级'))],

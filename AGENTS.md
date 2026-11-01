@@ -80,6 +80,12 @@ classes, module-scoped CSS vars, single-module keyframes) lives inside its own p
 
 All commands run from the repo root; Turborepo fans them out across workspaces.
 
+The web dev server writes to `apps/web/.next-dev`. Production build and preview share
+`apps/web/.next`, so compiling while the dev server is open keeps their artifacts separate.
+`pnpm dev` and `pnpm fresh` load the optional, gitignored `apps/web/.env.proxy.local`
+at Node startup. For local HTTPS proxy access on Node 24, set `NODE_USE_ENV_PROXY=1`,
+`HTTPS_PROXY`, and `NO_PROXY` there. Restart the dev server after changing this file.
+
 ```bash
 pnpm install                              # install all workspaces
 pnpm dev                                  # dev server (turbo → web, Turbopack)

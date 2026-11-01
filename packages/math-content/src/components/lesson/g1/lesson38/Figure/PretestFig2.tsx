@@ -1,7 +1,6 @@
 // P2 · 判断两个图形能否一笔画，并标出起点终点
 // Fig1: 2×2方格+对角线（多奇点，不能一笔画）
 // Fig2: 左箭头+矩形（2个奇点，能一笔画，起终点在凹角处）
-const stroke = '#d97706'
 
 export default function PretestFig2() {
   return (

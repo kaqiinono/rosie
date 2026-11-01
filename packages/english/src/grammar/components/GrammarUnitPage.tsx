@@ -1,5 +1,7 @@
 'use client'
 
+import { GrammarScanImage } from './GrammarScanImage'
+
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
@@ -660,7 +662,8 @@ function GrammarUnitPageInner({
                       <span className="text-text-muted text-xs font-bold">
                         p.{img.page} {img.type === 'lesson' ? '讲解页' : '练习页'}
                       </span>
-                      <img
+                      <GrammarScanImage
+                        loading="lazy"
                         src={grammarPageImageUrl(img.path)}
                         alt={`原书 p.${img.page}`}
                         className="ring-border-light w-full rounded-xl ring-1"
@@ -755,7 +758,7 @@ function GrammarUnitPageInner({
           onClick={() => setLightbox(null)}
         >
           <div className="mx-4 max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
-            <img
+            <GrammarScanImage
               src={grammarPageImageUrl(lightbox.path)}
               alt={`插图（原书 p.${lightbox.page}）`}
               className="max-h-[88vh] w-auto rounded-xl object-contain"

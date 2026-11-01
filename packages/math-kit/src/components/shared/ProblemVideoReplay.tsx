@@ -31,8 +31,6 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
 
   useEffect(() => {
     const controller = new AbortController()
-    setReady(false)
-    setError('')
     void (async () => {
       try {
         const { data, error: sessionError } = await supabase.auth.getSession()
@@ -74,7 +72,7 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
       {error ? (
         <div className="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center">
           <p role="alert" className="text-sm text-text-secondary">{error}</p>
-          <button type="button" onClick={() => setAttempt((value) => value + 1)} className="min-h-11 rounded-lg bg-app-blue px-4 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-app-blue">重试</button>
+          <button type="button" onClick={() => { setReady(false); setError(''); setAttempt((value) => value + 1) }} className="min-h-11 rounded-lg bg-app-blue px-4 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-app-blue">重试</button>
         </div>
       ) : ready ? (
         <video
@@ -111,7 +109,7 @@ export default function ProblemVideoReplay({ problem }: Props) {
         <ProblemActionIcon name="play" />
         回放
       </button>
-      {open && <ReplayDialog problem={problem} videoKey={videoKey} onClose={() => setOpen(false)} />}
+      {open && <ReplayDialog key={videoKey} problem={problem} videoKey={videoKey} onClose={() => setOpen(false)} />}
     </>
   )
 }

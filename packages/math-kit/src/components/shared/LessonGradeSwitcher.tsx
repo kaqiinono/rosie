@@ -36,11 +36,7 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
   }, [])
 
   useLayoutEffect(() => {
-    if (!open) {
-      setDropdownPos(null)
-      return
-    }
-    updateDropdownPos()
+    if (!open) return
     window.addEventListener('resize', updateDropdownPos)
     window.addEventListener('scroll', updateDropdownPos, true)
     return () => {
@@ -49,9 +45,11 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
     }
   }, [open, updateDropdownPos])
 
-  useEffect(() => {
+  const [previousPath, setPreviousPath] = useState(pathname)
+  if (previousPath !== pathname) {
+    setPreviousPath(pathname)
     setOpen(false)
-  }, [pathname])
+  }
 
   useEffect(() => {
     if (!open) return
@@ -76,7 +74,10 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="切换年级"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (!open) updateDropdownPos()
+          setOpen(!open)
+        }}
         className={`${LESSON_HEADER_MORE_BTN} ${activeColor}`}
       >
         <span className="max-w-[4.5rem] truncate sm:max-w-none">{currentLabel}</span>

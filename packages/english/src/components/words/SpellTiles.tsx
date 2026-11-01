@@ -287,7 +287,7 @@ export default function SpellTiles({
     return () => clearTimeout(t)
   }, [attempt, retryFeedback, lockedCount, onRetryAcknowledged])
 
-  const retryHintSpell = useMemo(() => pickMessage(RETRY_SPELL_MESSAGES), [word])
+  const [retryHintSpell] = useState(() => pickMessage(RETRY_SPELL_MESSAGES))
 
   return (
     <div inert={!!magicDemo} className="flex w-full flex-col gap-3">

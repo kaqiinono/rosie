@@ -1,5 +1,5 @@
 import type { WordEntry, WordMasteryMap, WeeklyPlanDay, WeeklyPlan, QuizType, QuizQuestion } from '@rosie/core'
-import { getWordMasteryLevel, ensureStageInit, isGraduated, MASTERY_THRESHOLD, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
+import { getWordMasteryLevel, ensureStageInit, isGraduated, CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 import { parseWordFormsCell } from './word-forms'
 
 /**

@@ -87,7 +87,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         <p className="text-[13px] leading-relaxed text-teal-800">
           第46讲 · 一年级目标班
           <br />
-          学会用"抽屉原理"和"最不利原则"解决各种"至少……才能保证"的难题！
+          学会用&quot;抽屉原理&quot;和&quot;最不利原则&quot;解决各种&quot;至少……才能保证&quot;的难题！
         </p>
       </div>
 

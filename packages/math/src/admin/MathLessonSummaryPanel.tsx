@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
 import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import MathLessonSummaryEditor from '@rosie/math/admin/MathLessonSummaryEditor'
@@ -26,13 +26,10 @@ export default function MathLessonSummaryPanel({
 }: Props) {
   const existing = admin.getNotes(lessonSummaryProblemId(lessonId))[0] ?? null
 
-  const [bodyHtml, setBodyHtml] = useState(existing?.bodyHtml ?? '<p></p>')
-  const [dirty, setDirty] = useState(false)
+  const [draftHtml, setDraftHtml] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
 
-  useEffect(() => {
-    if (!dirty) setBodyHtml(existing?.bodyHtml ?? '<p></p>')
-  }, [existing, dirty])
+  const bodyHtml = draftHtml ?? existing?.bodyHtml ?? '<p></p>'
 
   return (
     <>
@@ -53,8 +50,8 @@ export default function MathLessonSummaryPanel({
           admin={admin}
           onFlash={onFlash}
           bodyHtml={bodyHtml}
-          onBodyHtmlChange={setBodyHtml}
-          onDirtyChange={setDirty}
+          onBodyHtmlChange={setDraftHtml}
+          onSaveSuccess={() => setDraftHtml(null)}
           onOpenModal={() => setModalOpen(true)}
         />
       </div>
@@ -66,11 +63,11 @@ export default function MathLessonSummaryPanel({
         admin={admin}
         onFlash={onFlash}
         bodyHtml={bodyHtml}
-        onBodyHtmlChange={setBodyHtml}
-        sharedDirty={dirty}
+        onBodyHtmlChange={setDraftHtml}
+        sharedDirty={draftHtml !== null}
         onClose={() => setModalOpen(false)}
         onSaveSuccess={() => {
-          setDirty(false)
+          setDraftHtml(null)
           setModalOpen(false)
         }}
       />

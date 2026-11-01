@@ -132,7 +132,6 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
   }, [])
 
   useLayoutEffect(() => {
-    recompute()
     const nav = navRef.current
     if (!nav) return
 
@@ -142,22 +141,23 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
   }, [recompute])
 
   useLayoutEffect(() => {
-    if (!moreOpen) {
-      setDropdownPos(null)
-      return
-    }
-    updateDropdownPos()
+    if (!moreOpen) return
+    const observer = new ResizeObserver(updateDropdownPos)
+    if (navRef.current) observer.observe(navRef.current)
     window.addEventListener('resize', updateDropdownPos)
     window.addEventListener('scroll', updateDropdownPos, true)
     return () => {
+      observer.disconnect()
       window.removeEventListener('resize', updateDropdownPos)
       window.removeEventListener('scroll', updateDropdownPos, true)
     }
   }, [moreOpen, updateDropdownPos, visibleCount])
 
-  useEffect(() => {
+  const [previousPath, setPreviousPath] = useState(pathname)
+  if (previousPath !== pathname) {
+    setPreviousPath(pathname)
     setMoreOpen(false)
-  }, [pathname])
+  }
 
   useEffect(() => {
     if (!moreOpen) return
@@ -197,7 +197,10 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
             type="button"
             aria-expanded={moreOpen}
             aria-haspopup="menu"
-            onClick={() => setMoreOpen((open) => !open)}
+            onClick={() => {
+              if (!moreOpen) updateDropdownPos()
+              setMoreOpen(!moreOpen)
+            }}
             className={`${LESSON_HEADER_MORE_BTN} ${
               overflowHasActive
                 ? `${activeColor} border-gray-300 font-bold shadow-sm`

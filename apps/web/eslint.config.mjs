@@ -5,7 +5,7 @@ import prettierConfig from 'eslint-config-prettier'
 
 /** @type {import('eslint').Linter.Config[]} */
 const config = [
-  { ignores: ['.next/**', 'node_modules/**', 'public/**'] },
+  { ignores: ['.next/**', '.next-dev/**', 'node_modules/**', 'public/**'] },
 
   ...nextConfig,
   ...nextCoreWebVitals,

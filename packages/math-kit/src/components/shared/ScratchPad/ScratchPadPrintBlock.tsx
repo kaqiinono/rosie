@@ -76,6 +76,7 @@ export default function ScratchPadPrintBlock({ objects }: ScratchPadPrintBlockPr
     <>
       <canvas ref={canvasRef} className="hidden" aria-hidden />
       {dataUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- Print the browser-generated canvas data URL at its intrinsic size.
         <img
           src={dataUrl}
           alt="作答草稿"

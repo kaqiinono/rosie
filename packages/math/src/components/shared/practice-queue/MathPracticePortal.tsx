@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
+import { useHydrated } from '@rosie/core'
 import { createPortal } from 'react-dom'
 import type { PracticeQueueItem, PracticeQueuePhase } from '@rosie/math-kit/utils/practice-queue-types'
 import type { PracticeQueueStartOpts } from '@rosie/math-kit/utils/practice-queue-types'
@@ -48,7 +49,7 @@ export default function MathPracticePortal({
   onSetImmersive,
   checkRemaining,
 }: Props) {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useHydrated()
   const current = items[currentIndex]
   const currentIdentity = current
     ? current.planAssignment?.assignmentId ?? current.problem.id
@@ -56,10 +57,6 @@ export default function MathPracticePortal({
   const total = items.length
   const progressPct = total > 0 ? Math.min(100, ((currentIndex + 1) / total) * 100) : 0
   const [deferMessage, setDeferMessage] = useState<string | null>(null)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const handleWrong = useCallback(() => {
     onAnswerWrong()

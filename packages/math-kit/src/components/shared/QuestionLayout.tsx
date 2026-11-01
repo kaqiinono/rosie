@@ -120,9 +120,12 @@ export default function QuestionLayout({
   const [answerActionsClaimCount, setAnswerActionsClaimCount] = useState(0)
   const answerActionsClaimed = answerActionsClaimCount > 0
 
-  useEffect(() => {
-    setSolutionOpen(effectiveSolutionAvailable ? defaultSolutionOpen : false)
-  }, [defaultSolutionOpen, effectiveSolutionAvailable])
+  const [defaults, setDefaults] = useState({ defaultSolutionOpen, effectiveSolutionAvailable })
+  if (defaults.defaultSolutionOpen !== defaultSolutionOpen ||
+      defaults.effectiveSolutionAvailable !== effectiveSolutionAvailable) {
+    setDefaults({ defaultSolutionOpen, effectiveSolutionAvailable })
+    setSolutionOpen(defaultSolutionOpen && effectiveSolutionAvailable)
+  }
 
   useEffect(() => {
     const el = solutionRef.current

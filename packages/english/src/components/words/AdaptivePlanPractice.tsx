@@ -94,8 +94,11 @@ export default function AdaptivePlanPractice() {
   const { user } = useAuth()
   const { vocab } = useWordsContext()
   const { plans, isLoading, loadProgressForPlans } = useAdaptiveWordPlan(user)
-  const [dayByPlanId, setDayByPlanId] = useState<Record<string, PlanDaySnapshot>>({})
-  const [rowsByPlanId, setRowsByPlanId] = useState<Record<string, AdaptivePlanWordProgress[]>>({})
+  const [progress, setProgress] = useState<{
+    plans: object
+    days: Record<string, PlanDaySnapshot>
+    rows: Record<string, AdaptivePlanWordProgress[]>
+  } | null>(null)
 
   const sortedPlans = useMemo(
     () =>
@@ -113,13 +116,10 @@ export default function AdaptivePlanPractice() {
     [sortedPlans],
   )
 
+  const dayByPlanId = progress?.plans === activePlans ? progress.days : {}
+  const rowsByPlanId = progress?.plans === activePlans ? progress.rows : {}
   useEffect(() => {
-    if (activePlans.length === 0) {
-      setDayByPlanId({})
-      setRowsByPlanId({})
-      return
-    }
-
+    if (activePlans.length === 0) return
     let cancelled = false
     const today = todayStr()
 
@@ -140,8 +140,7 @@ export default function AdaptivePlanPractice() {
             } satisfies PlanDaySnapshot,
           ] as const
         })
-        setDayByPlanId(Object.fromEntries(entries))
-        setRowsByPlanId(rowsByPlanId)
+        setProgress({ plans: activePlans, days: Object.fromEntries(entries), rows: rowsByPlanId })
       })
       .catch((err) => {
         console.error('[adaptive_word_plan] practice list progress load failed', err)

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useDraftQuery } from '../../hooks/useDraftQuery'
 import Link from 'next/link'
 import clsx from 'clsx'
 import type { Problem, ProblemSet } from '@rosie/core'
@@ -91,25 +92,14 @@ function DraftPreview({ attempt }: { attempt: MathPracticeAttemptRow }) {
 
 export default function LessonDraftsPage({ basePath, lessonId, problems }: Props) {
   const { user } = useAuth()
-  const [attempts, setAttempts] = useState<MathPracticeAttemptRow[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [previewId, setPreviewId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!user) {
-      setAttempts([])
-      setIsLoading(false)
-      return
-    }
-    setIsLoading(true)
-    void fetchLessonDraftAttempts(user.id, lessonId).then((rows) => {
-      setAttempts(rows)
-      setIsLoading(false)
-    })
-  }, [user, lessonId])
+  const userId = user?.id
+  const load = useMemo(() => userId ? () => fetchLessonDraftAttempts(userId, lessonId) : null, [userId, lessonId])
+  const attempts = useDraftQuery(load)
+  const isLoading = !!load && !attempts
 
   const entries = useMemo(
-    () => buildDraftEntries(attempts, lessonId, basePath, problems),
+    () => buildDraftEntries(attempts ?? [], lessonId, basePath, problems),
     [attempts, lessonId, basePath, problems],
   )
 

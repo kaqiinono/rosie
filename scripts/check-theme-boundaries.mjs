@@ -19,7 +19,7 @@ async function sourceFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true })
   const files = []
   for (const entry of entries) {
-    if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '.next') continue
+    if (['node_modules', 'dist', '.next', '.next-dev'].includes(entry.name)) continue
     const path = resolve(directory, entry.name)
     if (entry.isDirectory()) files.push(...(await sourceFiles(path)))
     else if (SOURCE_EXTENSIONS.has(extname(entry.name))) files.push(path)

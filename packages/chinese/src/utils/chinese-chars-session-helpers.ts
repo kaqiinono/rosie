@@ -12,7 +12,7 @@ import {
   type PhraseQuizItem,
 } from './chinese-phrase-helpers'
 import { getLessonPassage } from './chinese-lesson-passage-helpers'
-import { charKey, lessonKeysMatch, shuffle } from './chinese-helpers'
+import { charKey, lessonKeysMatch } from './chinese-helpers'
 import { buildLessonDisplayMap, sortLessonsPedagogically } from './chinese-lesson-display'
 import {
   buildPassageQuizItems,

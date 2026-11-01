@@ -1,10 +1,16 @@
+import Image from 'next/image'
+
 // Two figures that cannot be one-stroke; modify by adding/removing one line
 // Fig1: Rectangle + X inside (4 odd vertices → remove 1 line to fix)
 // Fig2: Three tangent circles with connecting edge (modify to fix)
 function HomeworkFig5() {
   return (
-    <img
+    <Image
+      loading="eager"
       src="/img/math/lesson38/homework5.png"
+      width={1054}
+      height={427}
+      sizes="(max-width: 640px) 100vw, 768px"
       alt="例1 图示"
       className="mx-auto h-auto max-h-60 w-auto max-w-full object-contain"
     />

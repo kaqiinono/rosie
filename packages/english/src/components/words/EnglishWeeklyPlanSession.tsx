@@ -176,8 +176,11 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     loadProgressForPlans,
   } = useAdaptiveWordPlan(user)
   const [showOldReview, setShowOldReview] = useState(false)
-  const [dayByPlanId, setDayByPlanId] = useState<Record<string, PlanDaySnapshot>>({})
-  const [rowsByPlanId, setRowsByPlanId] = useState<Record<string, AdaptivePlanWordProgress[]>>({})
+  const [progress, setProgress] = useState<{
+    plans: object
+    days: Record<string, PlanDaySnapshot>
+    rows: Record<string, AdaptivePlanWordProgress[]>
+  } | null>(null)
 
   const stageWordKeys = useMemo(() => new Set(vocab.map(wordKey)), [vocab])
   const stageLessonKeys = useMemo(
@@ -285,13 +288,10 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
     [visibleAdaptivePlans],
   )
 
+  const dayByPlanId = progress?.plans === activeAdaptiveIds ? progress.days : {}
+  const rowsByPlanId = progress?.plans === activeAdaptiveIds ? progress.rows : {}
   useEffect(() => {
-    if (activeAdaptiveIds.length === 0) {
-      setDayByPlanId({})
-      setRowsByPlanId({})
-      return
-    }
-
+    if (activeAdaptiveIds.length === 0) return
     let cancelled = false
     const today = todayStr()
     const activePlans = visibleAdaptivePlans.filter((p) => p.status === 'active')
@@ -312,8 +312,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
             } satisfies PlanDaySnapshot,
           ] as const
         })
-        setDayByPlanId(Object.fromEntries(entries))
-        setRowsByPlanId(rowsMap)
+        setProgress({ plans: activeAdaptiveIds, days: Object.fromEntries(entries), rows: rowsMap })
       })
       .catch((err) => {
         console.error('[adaptive_word_plan] practice list progress load failed', err)

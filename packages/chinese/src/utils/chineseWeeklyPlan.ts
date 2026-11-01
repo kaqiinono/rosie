@@ -54,7 +54,6 @@ export function buildChineseWeeklyPlan(
 ): ChineseWeeklyPlan {
   const start = weekStart ?? getWeekStart(undefined, weekStartDay)
   const lessonIdx = Math.max(0, lessonGroups.findIndex((g) => g.lessonKey === lessonKey))
-  const defaultLessonKey = lessonGroups[0]?.lessonKey ?? lessonKey
 
   const recognizeQueue: string[] = []
   const writeQueue: string[] = []

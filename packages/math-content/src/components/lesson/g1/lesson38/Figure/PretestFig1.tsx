@@ -2,7 +2,6 @@
 // Fig1: 交叉矩形（4个奇点，不能）
 // Fig2: 双山峰（2个奇点，能）
 // Fig3: 圆形分四扇（4个奇点，不能）
-const stroke = '#0891b2'
 
 export default function PretestFig1() {
   return (

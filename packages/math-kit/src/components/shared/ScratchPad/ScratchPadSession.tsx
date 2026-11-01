@@ -54,10 +54,21 @@ function resolveItems(
   return (problems ?? []).map((problem) => ({ problem, section }))
 }
 
-export default function ScratchPadSession({
-  problems,
-  items: itemsProp,
-  initialIndex = 0,
+export default function ScratchPadSession(props: ScratchPadSessionProps) {
+  const { user } = useAuth()
+  const items = resolveItems(props.problems, props.items, props.section ?? 'lesson')
+  const [internalIndex, setIndex] = useState(props.initialIndex ?? 0)
+  const index = props.controlledIndex ?? internalIndex
+  const item = items[index]
+  const key = JSON.stringify([user?.id, item?.problem.id, item?.section, props.paperId,
+    props.viewAttemptId, props.mode, props.blankCanvasOnLoad])
+  return <ScratchPadItem key={key} {...props} items={items} index={index} setIndex={setIndex} />
+}
+
+function ScratchPadItem({
+  items,
+  index,
+  setIndex,
   controlledIndex,
   section = 'lesson',
   mode = 'practice',
@@ -75,23 +86,17 @@ export default function ScratchPadSession({
   onWrong,
   onResolved,
   onAnswerCorrect,
-}: ScratchPadSessionProps) {
+}: ScratchPadSessionProps & { items: ScratchItem[]; index: number; setIndex: (index: number) => void }) {
   const { user } = useAuth()
-  const items = resolveItems(problems, itemsProp, section)
   const queueControlled = controlledIndex !== undefined
-  const [internalIndex, setInternalIndex] = useState(initialIndex)
-  const index = queueControlled ? controlledIndex : internalIndex
-
   const [objects, setObjects] = useState<ScratchObject[]>([])
   const [answerDraft, setAnswerDraft] = useState<unknown>(null)
   const [showCanvas, setShowCanvas] = useState(showCanvasInitial)
   const [attemptRefresh, setAttemptRefresh] = useState(0)
-  const [loading, setLoading] = useState(!blankCanvasOnLoad)
-  const [activeAttemptId, setActiveAttemptId] = useState<string | null>(attemptIdProp)
+  const [loadedAttempt, setLoadedAttempt] = useState<string | null>()
   const persistTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const objectsRef = useRef<ScratchObject[]>([])
   const activeAttemptIdRef = useRef<string | null>(attemptIdProp)
-  const prevProblemIdRef = useRef<string | undefined>(undefined)
   const answerDraftRef = useRef<unknown>(null)
 
   const item = items[index]
@@ -99,88 +104,67 @@ export default function ScratchPadSession({
   const itemSection = item?.section ?? section
   const readOnly = mode === 'readonly'
 
-  const resetBlank = useCallback(() => {
-    objectsRef.current = []
-    setObjects([])
-    setAnswerDraft(null)
-    answerDraftRef.current = null
-    setShowCanvas(showCanvasInitial)
-    setLoading(false)
-  }, [showCanvasInitial])
-
   const userId = user?.id
   const problemId = problem?.id
+  const needsLoad = !!problemId && !!userId && !blankCanvasOnLoad && (!readOnly || !!viewAttemptId || !!attemptIdProp)
+  const loading = needsLoad && loadedAttempt !== attemptIdProp
 
   useEffect(() => {
-    activeAttemptIdRef.current = activeAttemptId
-  }, [activeAttemptId])
-
-  useEffect(() => {
-    if (attemptIdProp !== undefined && attemptIdProp !== null) {
-      setActiveAttemptId(attemptIdProp)
-      activeAttemptIdRef.current = attemptIdProp
-    }
+    if (attemptIdProp) activeAttemptIdRef.current = attemptIdProp
   }, [attemptIdProp])
 
   useEffect(() => {
-    if (!problemId) return
-    if (blankCanvasOnLoad) {
-      resetBlank()
-      return
-    }
-    if (prevProblemIdRef.current !== undefined && prevProblemIdRef.current !== problemId) {
-      activeAttemptIdRef.current = null
-      if (attemptIdProp == null) setActiveAttemptId(null)
-    }
-    prevProblemIdRef.current = problemId
-    setLoading(true)
+    if (!needsLoad || !userId || !problemId) return
+    let cancelled = false
     void (async () => {
-      if (!userId) {
-        resetBlank()
-        return
-      }
-
       if (viewAttemptId && readOnly) {
         const [loaded, attempt] = await Promise.all([
           fetchAttemptCanvas(viewAttemptId),
           fetchPracticeAttempt(viewAttemptId),
         ])
+        if (cancelled) return
         objectsRef.current = loaded
         setObjects(loaded)
         setAnswerDraft(attempt?.answerSnapshot ?? null)
         answerDraftRef.current = attempt?.answerSnapshot ?? null
         setShowCanvas(loaded.length > 0)
-        setLoading(false)
+        setLoadedAttempt(attemptIdProp)
         return
       }
 
       const controlledId = attemptIdProp ?? activeAttemptIdRef.current
       if (controlledId) {
         const attempt = await fetchPracticeAttempt(controlledId)
+        if (cancelled) return
         if (attempt && attempt.problemId === problemId && (attempt.status === 'in_progress' || readOnly)) {
           const loaded = attempt.objects.length > 0 ? attempt.objects : await fetchAttemptCanvas(controlledId)
+          if (cancelled) return
           objectsRef.current = loaded
           setObjects(loaded)
           setAnswerDraft(attempt.answerSnapshot)
           answerDraftRef.current = attempt.answerSnapshot
           setShowCanvas(true)
-          setLoading(false)
+          setLoadedAttempt(attemptIdProp)
           return
         }
         if (attempt && attempt.problemId !== problemId) {
           activeAttemptIdRef.current = null
-          setActiveAttemptId(null)
         }
       }
 
       if (readOnly) {
-        resetBlank()
+        objectsRef.current = []
+        answerDraftRef.current = null
+        setObjects([])
+        setAnswerDraft(null)
+        setShowCanvas(showCanvasInitial)
+        setLoadedAttempt(attemptIdProp)
         return
       }
 
       const attempt = await ensureInProgressAttempt(userId, problemId, itemSection, paperId)
+      if (cancelled) return
       activeAttemptIdRef.current = attempt.id
-      setActiveAttemptId(attempt.id)
       onAttemptId?.(attempt.id)
       const loaded = attempt.objects.length > 0 ? attempt.objects : []
       objectsRef.current = loaded
@@ -188,18 +172,19 @@ export default function ScratchPadSession({
       setAnswerDraft(attempt.answerSnapshot)
       answerDraftRef.current = attempt.answerSnapshot
       setShowCanvas(true)
-      setLoading(false)
+      setLoadedAttempt(attemptIdProp)
     })()
+    return () => { cancelled = true }
   }, [
     problemId,
     userId,
     paperId,
-    blankCanvasOnLoad,
+    needsLoad,
     viewAttemptId,
     readOnly,
     itemSection,
     attemptIdProp,
-    resetBlank,
+    showCanvasInitial,
     onAttemptId,
   ])
 
@@ -208,7 +193,6 @@ export default function ScratchPadSession({
     if (activeAttemptIdRef.current) return activeAttemptIdRef.current
     const attempt = await ensureInProgressAttempt(userId, problemId, itemSection, paperId)
     activeAttemptIdRef.current = attempt.id
-    setActiveAttemptId(attempt.id)
     onAttemptId?.(attempt.id)
     return attempt.id
   }, [userId, problemId, readOnly, itemSection, paperId, onAttemptId])
@@ -249,9 +233,9 @@ export default function ScratchPadSession({
   const flushAndGo = useCallback(
     (nextIndex: number) => {
       flushCurrent()
-      if (!queueControlled) setInternalIndex(nextIndex)
+      if (!queueControlled) setIndex(nextIndex)
     },
-    [flushCurrent, queueControlled],
+    [flushCurrent, queueControlled, setIndex],
   )
 
   const handleObjectsChange = useCallback(
@@ -288,7 +272,6 @@ export default function ScratchPadSession({
         attemptId,
       })
       activeAttemptIdRef.current = null
-      setActiveAttemptId(null)
       setAttemptRefresh((n) => n + 1)
       if (correct) {
         await onSolve?.(problem.id)
