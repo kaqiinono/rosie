@@ -29,7 +29,10 @@ export default createFilterPanel(
       srcBadge: 'bg-amber-100 text-amber-800',
       accentClass: 'text-amber-700',
     },
-    sourceBtns: [{ key: 'lesson', label: '📖 课堂' }],
+    sourceBtns: [
+    { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后巩固' },
+  ],
     typeBtns: PROBLEM_TYPES.map((type) => ({ key: type.tag, label: `${type.icon} ${type.label}` })),
     tagColors: TAG_STYLE,
   },

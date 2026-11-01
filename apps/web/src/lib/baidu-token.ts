@@ -1,5 +1,5 @@
 import 'server-only'
-import { exactBaiduId } from './baidu-identity'
+import { exactBaiduId, verifyBaiduAccount } from './baidu-identity'
 import { randomUUID } from 'node:crypto'
 import { createAdminSupabase } from './api-auth'
 import { getBaiduOAuthConfig, refreshBaiduTokens } from './baidu-oauth'
@@ -16,26 +16,33 @@ interface CredentialRow {
   refresh_lock_until: string | null
 }
 
-let inflight: Promise<string> | null = null
+type BaiduAccountContext = { accountId: string; generation: string; accessToken: string }
+
+let inflight: Promise<BaiduAccountContext> | null = null
 
 /** Single-flight locally; the database lease also serializes separate server instances. */
-export function getBaiduAccessToken(): Promise<string> {
+export function getBaiduAccountContext(): Promise<BaiduAccountContext> {
   if (!inflight) {
-    inflight = loadAccessToken().finally(() => {
+    inflight = loadAccountContext().finally(() => {
       inflight = null
     })
   }
   return inflight
 }
 
-async function loadAccessToken(): Promise<string> {
+export async function getBaiduAccessToken(): Promise<string> {
+  return (await getBaiduAccountContext()).accessToken
+}
+
+async function loadAccountContext(): Promise<BaiduAccountContext> {
   const config = getBaiduOAuthConfig()
   const admin = createAdminSupabase()
+  let refreshedToken: string | undefined
   for (let attempt = 0; attempt < 25; attempt += 1) {
     const { data, error } = await admin
       .from('baidu_oauth_credentials')
       .select(
-        'access_token, refresh_token, expires_at, updated_at, app_key, refresh_lock_id, refresh_lock_until',
+        'account_id, account_generation, access_token, refresh_token, expires_at, updated_at, app_key, refresh_lock_id, refresh_lock_until',
       )
       .eq('id', 'primary')
       .maybeSingle()
@@ -50,7 +57,35 @@ async function loadAccessToken(): Promise<string> {
       await new Promise<void>((resolve) => setTimeout(resolve, 800))
       continue
     }
-    if (Date.parse(row.expires_at) > Date.now() + 120_000) return row.access_token
+    if (Date.parse(row.expires_at) > Date.now() + 120_000) {
+      const accessToken = row.access_token
+      if (row.account_id !== null && row.account_generation !== null) {
+        return { accountId: exactBaiduId(row.account_id), generation: row.account_generation, accessToken }
+      }
+      // Pre-identity credentials can identify their owner without a new OAuth grant.
+      let accountId: string | undefined
+      try {
+        accountId = await verifyBaiduAccount(accessToken)
+      } catch (error) {
+        if (!(error instanceof Error) || error.message !== 'baidu_access_token_rejected') throw error
+        if (accessToken === refreshedToken) throw new Error('baidu_reauthorize')
+        // The provider rejected the stored token before its local expiry. Use the lease below.
+      }
+      if (accountId !== undefined) {
+        if (row.account_id !== null && row.account_id !== accountId) throw new Error('baidu_account_changed')
+        const generation = randomUUID()
+        const { data: repaired, error: repairError } = await admin.from('baidu_oauth_credentials')
+          .update({ account_id: accountId, account_generation: generation, updated_at: new Date().toISOString() })
+          .eq('id', 'primary')
+          .eq('updated_at', row.updated_at)
+          .is(row.account_id === null ? 'account_id' : 'account_generation', null)
+          .is('refresh_lock_id', null)
+          .select('id').maybeSingle()
+        if (repairError) throw new Error('baidu_storage_error')
+        if (repaired) return { accountId, generation, accessToken }
+        continue // A refresh, another repair, or an explicit authorization won the race.
+      }
+    }
 
     const leaseId = randomUUID()
     const { data: claimed, error: claimError } = await admin
@@ -87,25 +122,9 @@ async function loadAccessToken(): Promise<string> {
       .select('id')
       .maybeSingle()
     if (saveError) throw new Error('baidu_storage_error')
-    if (saved) return tokens.accessToken
-    // A new administrator authorization won the race; reread its credentials.
+    if (saved) refreshedToken = tokens.accessToken
+    // Reread the winner, including any identity still missing after a legacy refresh.
   }
   throw new Error('baidu_refresh_busy')
 }
 
-/** Task9 must capture this context before provider work and guard publication with both fields. */
-export async function getBaiduAccountContext() {
-  const accessToken = await getBaiduAccessToken()
-  const { data, error } = await createAdminSupabase()
-    .from('baidu_oauth_credentials')
-    .select('account_id,account_generation,access_token')
-    .eq('id', 'primary')
-    .maybeSingle()
-  if (error || !data || data.access_token !== accessToken || !data.account_generation)
-    throw Error('baidu_account_changed')
-  return {
-    accountId: exactBaiduId(data.account_id),
-    generation: String(data.account_generation),
-    accessToken,
-  }
-}

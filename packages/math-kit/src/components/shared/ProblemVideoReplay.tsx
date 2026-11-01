@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom'
 import { supabase, useAuth, type Problem } from '@rosie/core'
 import { useProblemVideoCatalog } from '../../hooks/useProblemVideoCatalog'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
-import { problemVideoKey } from '../../utils/problem-video'
 import { lessonKeyFromProblemId } from '../../utils/lesson-registry'
 import ProblemActionIcon from './ProblemActionIcon'
 
@@ -42,11 +41,13 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
         const response = await fetch('/api/baidu/video/session', {
           method: 'POST', credentials: 'same-origin', cache: 'no-store',
           headers: { Authorization: `Bearer ${data.session.access_token}` },
-          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15_000)]),
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(60_000)]),
         })
         if (controller.signal.aborted) return
         if (!response.ok) {
-          setError(response.status === 401 ? '登录已过期，请重新登录后播放。' : '暂时无法打开回放，请稍后重试。')
+          if (response.status === 409) setError('请联系管理员重新授权课程使用的共享百度网盘。')
+          else if (response.status === 401) setError('Rosie 登录已过期，请重新登录后播放。')
+          else setError('暂时无法打开回放，请稍后重试。')
           return
         }
         setReady(true)
@@ -80,7 +81,7 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
           controls autoPlay playsInline preload="metadata"
           aria-label={`${problemCardDisplayId(problem)} 视频回放`}
           src={`/api/baidu/video/${encodeURIComponent(videoKey)}`}
-          onError={() => setError('视频暂时无法播放，请确认网盘中已上传对应视频、百度授权有效，并检查网络。')}
+          onError={() => setError('暂时无法读取或播放这个视频，请重试。')}
           className="aspect-video max-h-[70dvh] w-full bg-black"
         />
       ) : <p role="status" className="flex min-h-48 items-center justify-center p-6 text-sm text-text-secondary">正在打开回放…</p>}
@@ -93,8 +94,8 @@ export default function ProblemVideoReplay({ problem }: Props) {
   const { user } = useAuth()
   const { hasVideo } = useProblemVideoCatalog(user, lessonKeyFromProblemId(problem.id))
   const [open, setOpen] = useState(false)
-  const videoKey = problemVideoKey(problem)
-  if (!videoKey || !hasVideo(videoKey)) return null
+  const videoKey = problem.id
+  if (!hasVideo(videoKey)) return null
 
   return (
     <>

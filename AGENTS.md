@@ -35,7 +35,7 @@ packages/
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
   chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一下 / 二上 / 二下）
   ai/        @rosie/ai — RAG 知识库 + Rosie Agent（/ai、ingest、STT）
-  tasks/     @rosie/tasks — 独立任务管理、周课表、课程确认、时间安排与提醒（不接入 /today）
+  tasks/     @rosie/tasks — 课程表、排课与课前提醒
 ```
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
@@ -121,18 +121,19 @@ service-role-only, with no browser grants or RLS policies. Textbook narration ma
 `5a-u3l1` to `/airosie/english/audio/5A/U3L1.mp3`. Authenticated audio-session POST establishes
 an HttpOnly cookie; each audio stream validates its Supabase session and supports Range requests,
 with public Storage fallback. Token refresh uses a database lease and compare-and-set persistence;
-ambiguous refresh failures require administrator reauthorization. Proxy audio is excluded from SW
+legacy shared credentials acquire their missing account identity on first use through Baidu
+identity verification and a version-guarded update. Math replay checks this at session creation.
+Ambiguous refresh failures require administrator reauthorization. Proxy audio is excluded from SW
 caching. See `docs/baidu-oauth.md` for migrations, setup and manual verification.
 
-Math replay visibility uses service-role-only `math_video_lesson_catalog` snapshots keyed by
-lessonKey. Explicit admin `POST /api/baidu/video/catalog/sync` takes `{ lessonKey, force? }`:
-reuse a saved lesson unless force is true; otherwise search `/airosie/math/ny/` for its filename
-prefix. Incomplete searches fail without replacing data or falling back to full-directory scans.
-Catalog and admin report GET require `?lessonKey=...`; the former returns lessonKey/keys/time,
-the latter compares saved paths against only the selected lesson's current question bank.
-`useProblemVideoCatalog` uses stable per-lesson user session stores and shared Sets; only
-confirmed matches render replay buttons. Uploads, deletions, or changing the authorized Baidu
-account require manually resyncing affected lessons. See `docs/baidu-oauth.md` for both migrations.
+Each math lesson may publish one authorized Baidu directory. In `/admin/sync`, choosing a bookmarked directory
+loads its direct MP4 inventory. Admins can refresh it after changing files. Saving the whole lesson atomically publishes its
+real problem IDs and exact Baidu file IDs. Each file is unique per shared account across lessons.
+Student replay controls read only published IDs. The authenticated media route resolves
+the binding and checks the live file's parent directory before streaming. Migration
+`20261101033221_manual_math_replay_bindings.sql` preserves unique legacy mappings from the old
+lesson catalog and the frozen question-bank index. Requires the directory bookmarks migration first.
+See `packages/math-kit/AGENTS.md` and `docs/baidu-oauth.md`.
 
 Required for Supabase auth and cloud sync:
 
@@ -219,7 +220,8 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 
 Global admin sub-pages include:
 
-- `/admin/sync` — shared Baidu authorization, per-lesson math replay synchronization and matching reports.
+- `/admin/sync` — shared Baidu authorization, account-scoped directory bookmarks and read-only file browsing,
+  per-lesson math replay synchronization and matching reports. Directory APIs require an administrator.
   Shared callbacks return here. Personal callbacks return to the user's Netdisk card in `/setting`.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
@@ -251,9 +253,7 @@ module, **read that package's AGENTS.md** (scoped, up to date) instead of relyin
 
 Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils), `@rosie/ui`,
 `@rosie/rewards` (stars/wallet/vouchers), `@rosie/player` (playback engine + `PlayerDock`).
-`@rosie/tasks` only depends on core/player; `/tasks/**` uses application-owned catalog adapters
-to read subject catalogs. It never synchronizes existing subject progress or `/today`.
-See `packages/tasks/AGENTS.md` and `packages/tasks/README.md` for its migration and station-only task generation.
+`@rosie/tasks` reads owner-scoped timetable data through core. See `packages/tasks/AGENTS.md`.
 Adding a new math lesson is a guided flow — see `.Codex/skills/add-lesson` + `docs/add-new-lesson.md`.
 
 ### Data Flow
@@ -340,38 +340,3 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - Components: `PascalCase.tsx` (e.g. `FlashCard.tsx`)
 - Hooks and utilities: `camelCase.ts` (e.g. `useWordMastery.ts`, `english-helpers.ts`)
 - Shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `@rosie/core`
-
-Task execution progress is authoritative through owner-checked execution RPCs, with direct
-`task_instances` / `task_instance_items` browser DML revoked (Task5 migration applied 2026-10-31).
-Ordinary new tasks use manual percentage; real math items use atomic stable-key completion.
-See `packages/tasks/AGENTS.md` for returned revision/cache and planning-dirty contracts.
-
-### Shared materials
-
-`@rosie/materials` (core-only) owns `/materials`, shared authenticated assets, private course links,
-and app-injected picker/details previews. Tasks retains core/player-only dependencies; `TasksHost`
-injects materials via `TaskMaterialsBridge`. `/tasks/materials` retains private recordings. See
-`packages/materials/AGENTS.md` and README for applied migrations, scope/resolver and Tasks8/9 contracts.
-
-Task planning shared contracts live in `packages/tasks/src/planning/types.ts`. Capacity is
-Shanghai-only manual recurring/date state plus windows; weekends are explicit reserve periods.
-Fixed arrangements reserve capacity separately from useful remaining work and execution progress.
-Availability/block/exam/schedule edits increment the Task5 server planning revision for Task13;
-see `packages/tasks/AGENTS.md`. New forward migrations remain local until explicitly authorized.
-Execution-window recovery policy is shared by tasks pure `getTaskExecutionWindow` and SQL
-`task_effective_execution_window`: retain original due metadata, use future explicit recovery
-or read-only Shanghai-today23:59 suggestion for overdue work. Undated fixed commitments remain
-block-local; their uncovered remainder never becomes unlimited dated solver demand.
-
-Task planning background recomputation uses server-only `TASK_PLANNING_CRON_SECRET`
-and Vault `task_planning_cron_secret` / `task_planning_url` through an explicitly installed
-pg_cron + pg_net job. The Task13 migration does not install or configure live scheduling.
-Owner-authenticated `/api/tasks/planning` and the secret-authenticated internal recompute
-route consume the same pure planning adapter/solver. Snapshot status checks owner revision,
-shared material epoch and bounded time expiry; see `packages/tasks/AGENTS.md`.
-
-## 课程/任务池/共享物料与容量交付（2026-10-30）
-
-2026-10-31：20 个任务/物料前向迁移已应用到关联 Supabase 项目，任务生成 Cron 已安装并有成功运行记录；容量规划 HTTP Cron、百度真实写入与应用部署未执行。上线、映射统计、停用和恢复清单见 `docs/task-module-rollout.md`，物料权限与传输见 `docs/baidu-materials.md`。任务不回写原学科进度或 `/today`；tasks 仅依赖 core/player，materials 仅依赖 core，应用层桥接目录/物料。旧个人材料和录音不会自动共享。
-
-最终本地验收使用 `node scripts/tmp/task15-acceptance-validation.mjs`（24个相关迁移、全部SQL fixtures、真实MVCC快照与canonical builder/solver发布/采用/恢复）；`--intentional-failure` 清理后应退出1。该临时工具使用独立本机 PostgreSQL，不读 env。`--serve` 提供127.0.0.1:3915的合成身份测试adapter，只供本地验收，不是生产Auth/API。运行时状态须区分未配置、过期与已配置但未证实送达。严禁依据本地测试宣称托管Cron已启用。

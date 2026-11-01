@@ -50,6 +50,11 @@ if (typeof window !== 'undefined') {
   })
 }
 
+/** Several lessons can share the directory that was just rescanned. */
+export function invalidateProblemVideoCatalogs(userId: string): void {
+  for (const store of stores.values()) store.invalidate(userId)
+}
+
 /** Cancel older inflight reads before publishing a freshly synchronized snapshot. */
 export function replaceProblemVideoCatalog(userId: string, catalog: ProblemVideoCatalog): void {
   const catalogStore = getCatalogStore(catalog.lessonKey)

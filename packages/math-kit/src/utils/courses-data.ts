@@ -9,7 +9,7 @@ const RAW_COURSES: CourseCardData[] = [
     description: '找到物品与分配对象，转化两种分配方案，用总差÷单位差解决盈盈、盈亏、亏亏问题。',
     icon: '⚖️',
     lectureNum: '第 12 讲',
-    tags: ['三个不变量', '盈亏·方案转化', '24 道互动题'],
+    tags: ['三个不变量', '盈亏·方案转化', '47 道互动题'],
     variant: 'amber',
   },
   {

@@ -1,54 +1,23 @@
-export type VideoProblemStatus = 'matched' | 'missing' | 'unknown' | 'conflict' | 'invalid_key'
-
-export interface VideoProblemReportRow {
-  problemId: string
-  displayId: string | null
-  label: string
-  title: string
-  grade: number | null
+export const VIDEO_SOURCES = ['lesson', 'homework', 'pretest', 'supplement', 'workbook'] as const
+export type VideoSource = typeof VIDEO_SOURCES[number]
+export type VideoProblem = { id: string; label: string; title: string; source: VideoSource }
+export type VideoBinding = { problemId: string; fileId: string | null; name: string; available: boolean }
+export interface MathVideoEditor {
   lessonKey: string
-  lessonLabel: string
-  section: string
-  sectionLabel: string
-  href: string
-  key: string | null
-  matchBy: 'displayId' | 'id'
-  expectedFilename: string | null
-  expectedPath: string | null
-  hasVideo: boolean | null
-  status: VideoProblemStatus
-  reason: string
-  conflictingIds: string[]
-}
-
-export interface VideoFileReportRow {
-  path: string
-  filename: string
-  key: string | null
-  parsedQuestionNumber: string | null
-  grade: number | null
-  lessonKey: string | null
-  status: 'orphan' | 'invalid_file'
-  reason: string
-}
-
-export interface MathVideoReport {
-  lessonKey: string
+  generation: string
+  directories: { id: string; path: string }[]
+  directoryId: string | null
+  selectedId: string | null
+  revision: string | null
+  savedAt: string | null
+  version: string | null
   syncedAt: string | null
-  directory: string
-  summary: {
-    files: number
-    matchedFiles: number
-    videoKeys: number
-    problems: number
-    matched: number
-    missing: number
-    unknown: number
-    conflictKeys: number
-    invalidProblems: number
-    orphanFiles: number
-    invalidFiles: number
-  }
-  problems: VideoProblemReportRow[]
-  files: VideoFileReportRow[]
+  files: Record<string, string>
+  occupied: Record<string, { lessonKey: string; problemId: string }>
+  reviewNames: string[]
+  bindings: VideoBinding[]
+  problems: VideoProblem[]
+}
+export function bindingValue(binding: VideoBinding): string {
+  return binding.fileId ?? 'legacy:' + binding.name
 }

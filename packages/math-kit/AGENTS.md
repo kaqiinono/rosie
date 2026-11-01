@@ -61,19 +61,12 @@ Question labels use `utils/problem-display-id.ts`: prefer legacy-only Problem.di
 favorite, and optional expansion. Expanded cards suppress the nested detail footer via
 `ExternalProblemActions`. List draft actions receive a per-card `ProblemScratchProvider`
 with the correct problem index and source section. `ProblemVideoReplay` is the shared
-Baidu video entry. `utils/problem-video.ts` resolves
-`{lessonKey}-{displayId}` when a nonempty displayId exists, otherwise the full real problem ID.
-The app owns `/api/baidu/video/**` and maps these keys to `/airosie/math/ny/{key}.mp4`.
-`useProblemVideoCatalog(user, lessonKey)` reads each lesson's persisted catalog once through
-stable per-lesson `createUserSessionStore` instances and shares a Set across its cards.
-Only confirmed matches render replay; missing, unsynced,
-loading, and failed catalog reads render no button or placeholder. These states remain
-distinct internally. The app's `/admin/sync` selects grade/lesson for both Baidu filename search
-and question comparison. Existing snapshots are reused; explicit resync atomically replaces only
-that lesson's `math_video_lesson_catalog` row and updates its current-user store. It never searches
-from question components or periodically. Sign-out invalidates all lesson stores. A page refresh
-loads changes made by another administrator session. The app owns report aggregation via
-the existing math question catalog; math-kit must not import the math aggregator.
+Baidu video entry. Visibility and stream requests use the real `problem.id` throughout lessons and practice.
+`useProblemVideoCatalog` shares one per-user/lesson session store. Only available published
+bindings show replay. Saving a lesson replaces the local catalog; refresh to read another
+administrator's changes. The app owns directory snapshots, publication and media resolution.
+Selecting an authorized directory loads its direct MP4 files. The admin assigns videos and saves
+all source groups together. Student components never scan Baidu. Sign-out invalidates the session stores.
 Card action controls use their `toolbar` variants and the shared `ProblemActionIcon`
 SVG family; replay always occupies the rightmost footer column. Default control variants
 remain available for other surfaces. Keep the analysis marker non-interactive.
@@ -89,4 +82,3 @@ growth icons retain their meaning without introducing extra card-border colors.
 
 `loadProblemVideoCatalog(userId,lessonKey)` is the imperative application-adapter reader of the
 same session store used by `useProblemVideoCatalog`; it never syncs Baidu or mutates practice.
-TasksHost uses its confirmed keys to inject the existing replay control into independent tasks.

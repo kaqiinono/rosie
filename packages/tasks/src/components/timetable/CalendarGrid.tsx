@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import type { TaskCourse, TaskExam, TimetableOccurrence, TimetablePreferences } from '../../types'
+import { Fragment, useEffect, useRef, useState } from 'react'
+import type { TimetableCourse, TimetableOccurrence, TimetablePreferences } from '../../types'
 import { atTime, dateAfter, localDate } from '../../time'
 import { layoutOccurrences } from '../../timetable'
 import { weekdays } from '../shared'
-import { clockTime, courseColor, statusLabel } from './presentation'
+import { clockTime, courseColor } from './presentation'
 
-export default function CalendarGrid({ days, occurrences, courses, exams, preferences, onSelect, onAdd }: { days: string[]; occurrences: TimetableOccurrence[]; courses: TaskCourse[]; exams: TaskExam[]; preferences: TimetablePreferences; onSelect: (row: TimetableOccurrence) => void; onAdd: (date: string, time: string) => void }) {
+export default function CalendarGrid({ days, occurrences, courses, preferences, onSelect, onAdd }: { days: string[]; occurrences: TimetableOccurrence[]; courses: TimetableCourse[]; preferences: TimetablePreferences; onSelect: (row: TimetableOccurrence) => void; onAdd: (date: string, time: string) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const firstDay = days[0]
   useEffect(() => {
@@ -54,7 +54,6 @@ export default function CalendarGrid({ days, occurrences, courses, exams, prefer
             <span className={`text-xs font-medium ${today === date ? 'text-emerald-800' : 'text-slate-500'}`}>{twoWeeks && index >= days.length / 2 && '下'}{weekdays[new Date(`${date}T12:00:00Z`).getUTCDay()]}{today === date && <span className="sr-only"> · 今天</span>}</span>
             <span className={`flex size-8 items-center justify-center rounded-full text-lg font-semibold tabular-nums ${today === date ? 'bg-emerald-800 text-white' : 'text-slate-700'}`}><span className="sr-only">{Number(date.slice(5, 7))}月</span>{Number(date.slice(8))}<span className="sr-only">日</span></span>
           </div>
-          {exams.filter(exam => localDate(new Date(exam.starts_at)) === date).map(exam => <p key={exam.id} title={`${exam.title} ${clockTime(exam.starts_at)}`} className="mt-2 truncate rounded-md bg-amber-50 px-1.5 py-1 text-[11px] font-medium text-amber-800">考试 · {exam.title}</p>)}
         </div>)}
       </div>
       <div ref={timelineRef} className="grid" style={grid}>
@@ -68,15 +67,22 @@ export default function CalendarGrid({ days, occurrences, courses, exams, prefer
               const course = courses.find(c => c.id === occurrence.course_id), color = courseColor(course)
               const start = Math.max(firstHour * 60, minutesOn(occurrence.starts_at, date)), end = Math.min(lastHour * 60, minutesOn(occurrence.ends_at, date))
               const blockHeight = Math.max(20, (end - start) / 60 * hourHeight - 4)
-              const label = [course?.name ?? '课程', `${clockTime(occurrence.starts_at, preferences.hour12)}–${clockTime(occurrence.ends_at, preferences.hour12)}`, preferences.show_location && course?.location, preferences.show_teacher && course?.teacher, statusLabel[occurrence.status], columns > 1 && '时间重叠'].filter(Boolean).join(' · ')
-              return <button key={occurrence.id} type="button" onClick={() => onSelect(occurrence)} aria-label={label} title={label} className={`absolute z-10 scroll-mt-32 cursor-pointer overflow-hidden rounded-lg border border-black/5 text-left shadow-sm transition-[filter,box-shadow] hover:brightness-95 hover:shadow-md active:brightness-90 focus-visible:z-20 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-emerald-900 motion-reduce:transition-none ${blockHeight < 48 ? 'px-1 py-px sm:px-2' : 'px-1 py-1.5 sm:px-2.5'}`} style={{ top: (start / 60 - firstHour) * hourHeight + 2, height: blockHeight, left: `calc(${column / columns * 100}% + 3px)`, width: `calc(${100 / columns}% - 6px)`, backgroundColor: color.background, color: color.text }}>
-                <span className="flex h-full flex-col gap-0.5 overflow-hidden">
-                  <strong className="block shrink-0 truncate text-[13px] leading-4">{course?.name ?? '课程'}</strong>
-                  {blockHeight >= 88 && preferences.show_location && course?.location && <span className="block truncate text-[11px] leading-4">{course.location}</span>}
-                  {blockHeight >= 108 && preferences.show_teacher && course?.teacher && <span className="block truncate text-[11px] leading-4">{course.teacher}</span>}
-                  {blockHeight >= 68 && <span className="mt-auto block shrink-0 truncate text-[10px] font-medium leading-4">{statusLabel[occurrence.status]}{columns > 1 && ' · ⚠ 重叠'}</span>}
-                </span>
-              </button>
+              const startTime = clockTime(occurrence.starts_at, preferences.hour12)
+              const label = [course?.name ?? '课程', `${startTime}–${clockTime(occurrence.ends_at, preferences.hour12)}`, preferences.show_location && course?.location, preferences.show_teacher && course?.teacher, columns > 1 && '时间重叠'].filter(Boolean).join(' · ')
+              const cardTop = (start / 60 - firstHour) * hourHeight + 2
+              const horizontalPadding = blockHeight < 48 ? 'px-1 sm:px-2' : 'px-1 sm:px-2.5'
+              const lane = { left: `calc(${column / columns * 100}% + 3px)`, width: `calc(${100 / columns}% - 6px)` }
+              return <Fragment key={occurrence.id}>
+                <time dateTime={occurrence.starts_at} style={{ ...lane, top: cardTop - 16, height: 12, lineHeight: '12px' }} className={`pointer-events-none absolute z-20 truncate border-x border-transparent text-[10px] font-normal tabular-nums text-slate-500 ${horizontalPadding}`}>{startTime}</time>
+                <button type="button" onClick={() => onSelect(occurrence)} aria-label={label} title={label} className={`absolute z-10 scroll-mt-32 focus-visible:z-20 cursor-pointer rounded-lg border border-black/5 text-left shadow-sm transition-[filter,box-shadow] hover:brightness-95 hover:shadow-md active:brightness-90 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-emerald-900 motion-reduce:transition-none ${horizontalPadding} ${blockHeight < 48 ? 'py-px' : 'py-1.5'}`} style={{ ...lane, top: cardTop, height: blockHeight, backgroundColor: color.background, color: color.text }}>
+                  <span className="flex h-full flex-col overflow-hidden">
+                    <strong className="min-w-0 truncate text-[13px] leading-[14px]">{course?.name ?? '课程'}</strong>
+                    {blockHeight >= 88 && preferences.show_location && course?.location && <span className="block truncate text-[11px] leading-4">{course.location}</span>}
+                    {blockHeight >= 108 && preferences.show_teacher && course?.teacher && <span className="block truncate text-[11px] leading-4">{course.teacher}</span>}
+                    {blockHeight >= 68 && columns > 1 && <span className="mt-auto block shrink-0 truncate text-[10px] font-medium leading-4">⚠ 重叠</span>}
+                  </span>
+                </button>
+              </Fragment>
             })}
             {today === date && nowMinute >= firstHour * 60 && nowMinute <= lastHour * 60 && <div aria-label={`当前时间 ${clockTime(now.toISOString(), preferences.hour12)}`} className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-rose-500" style={{ top: (nowMinute / 60 - firstHour) * hourHeight }}><span className="absolute -left-1 -top-[5px] size-2 rounded-full bg-rose-500 ring-2 ring-white" /></div>}
           </div>

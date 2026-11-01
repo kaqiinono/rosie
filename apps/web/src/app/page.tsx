@@ -10,13 +10,13 @@ import type { ModuleCardData } from '@rosie/core'
 
 const baseModules: ModuleCardData[] = [
   {
-    href: '/tasks',
-    title: '任务管理',
-    description: '确认课程、规划作业时间，让每一项任务都有安排。',
-    tag: 'TASKS',
+    href: '/tasks/timetable',
+    title: '课程表',
+    description: '查看上课时间、地点与调课安排。',
+    tag: 'TIMETABLE',
     variant: 'today',
-    stats: ['每周课表', '作业安排', '到期提醒'],
-    enterText: '打开我的任务',
+    stats: ['每周课表', '课程详情', '日期筛选'],
+    enterText: '打开课程表',
     icon: '🗓️',
   },
   {

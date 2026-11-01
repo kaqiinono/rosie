@@ -1,13 +1,3 @@
-import type {
-  CourseCatalogSnapshot,
-  CourseConfiguration,
-  CourseScope,
-  TeachingSegment,
-  CourseRule,
-  NormalizedCourseRuleInput,
-  CourseTaskBinding,
-} from './courseTypes'
-
 export type Subject =
   | 'chinese'
   | 'english'
@@ -31,23 +21,23 @@ export const SUBJECTS: Record<Subject, string> = {
   swimming: '游泳',
   other: '未分类',
 }
-export type TaskStatus = 'pending' | 'active' | 'completed' | 'cancelled'
-export type TaskMode = 'checklist' | 'reading' | 'audio'
 export type OwnedRow = { id: string; user_id: string }
-export type TaskCourse = OwnedRow &
-  CourseConfiguration & {
-    name: string
-    subject: Subject
-    created_at: string
-    calendar_id?: string | null
-    teacher?: string
-    location?: string
-    credits?: number | null
-    notes?: string
-    color?: string
-    reminder_minutes?: number | null
-    archived_at?: string | null
-  }
+export type TimetableCourse = OwnedRow & {
+  credits?: number | null
+  reminder_minutes?: number | null
+  effective_from?: string | null
+  rules_revision?: number
+  course_type?: 'timetabled' | 'flexible'
+  name: string
+  subject: Subject
+  created_at: string
+  calendar_id?: string | null
+  teacher?: string
+  location?: string
+  notes?: string
+  color?: string
+  archived_at?: string | null
+}
 export type TimetableRule = OwnedRow & {
   course_id: string
   weekday: number
@@ -68,269 +58,22 @@ export type CourseException = OwnedRow & {
   starts_at: string | null
   ends_at: string | null
 }
-export type CatalogResource = {
-  kind:
-    | 'passage'
-    | 'vocabulary'
-    | 'recognize'
-    | 'write'
-    | 'poem'
-    | 'accumulation'
-    | 'dictation'
-    | 'grammar'
-    | 'writing'
-    | 'audio'
-    | 'replay'
-    | 'problems'
-  status: 'available' | 'missing' | 'unverified'
-  ref?: string
-  count?: number
-}
-export type LessonRef = {
-  key: string
-  title: string
-  book: string
-  unit: string
-  kind: string
-  href?: string
-  lesson?: number
-  resources?: CatalogResource[]
-}
-export type CourseConfirmation = {
-  lesson: LessonRef
-  next_lesson: LessonRef | null
-  class_items: ChecklistItem[]
-  homework_items: ChecklistItem[]
-}
 export type CourseOccurrence = OwnedRow & {
   course_id: string
   rule_id: string
   original_date: string
   starts_at: string
   ends_at: string
-  status: 'scheduled' | 'confirmed' | 'cancelled'
-  confirmation: CourseConfirmation | null
+  status: 'scheduled' | 'cancelled'
 }
-export type ReminderRule = { anchor: 'course_start' | 'course_end' | 'deadline'; minutes: number }
-export type TaskTemplate = OwnedRow & {
-  name: string
-  subject: Subject | null
-  course_id: string | null
-  enabled: boolean
-  mode: TaskMode
-  trigger: 'before_class' | 'after_class' | 'confirmed' | 'unit_completed' | 'weekly' | 'once'
-  target: 'current' | 'next' | 'unit'
-  checklist: string[]
-  estimated_minutes: number
-  deadline: {
-    kind: 'course_default' | 'same_day' | 'days_after' | 'next_class' | 'fixed'
-    time: string
-    days: number
-    at: string | null
-  }
-  reminders: ReminderRule[]
-  trigger_minutes: number
-  weekdays: number[]
-  scheduled_at: string | null
-  lesson_filter: number | null
-  material_kind: 'general' | 'reading' | 'dictation' | 'recitation'
-  item_source: 'template' | 'class' | 'homework'
-  created_at: string
-}
-export type ChecklistItem = {
-  id: string
-  label: string
-  done: boolean
-  cancelled?: boolean
-  href?: string
-}
-export type TaskInstance = OwnedRow & {
-  title: string
-  subject: Subject | null
-  course_id: string | null
-  occurrence_id: string | null
-  template_id: string | null
-  template_snapshot?: { item_source?: string; trigger?: TaskTemplate['trigger'] }
-  course_event_id?: string | null
-  revision: number
-  progress_mode: 'percentage' | 'items'
-  completion_percent: number
-  selection_state?: 'ready' | 'pending' | 'no_homework'
-  material_status?: 'pending' | 'selected' | 'not_required'
-  material_assets?: string[]
-  material_selector_snapshot?: import('./courseTypes').MaterialSelector
-  content_snapshot?: import('./courseTypes').CourseLessonSnapshot | null
-  source_key: string
-  status: TaskStatus
-  mode: TaskMode
-  items: ChecklistItem[]
-  lesson: LessonRef | null
-  due_at: string | null
-  due_kind: string
-  due_occurrence_id: string | null
-  estimated_minutes: number
-  material_kind: string
-  created_at: string
-  release_at?: string | null
-  recovery_due_at?: string | null
-}
-export type AvailabilityWindow = OwnedRow & {
-  weekday: number
-  on_date: string | null
-  start_time: string
-  end_time: string
-  unavailable?: boolean
-}
-export type AvailabilityDayState = OwnedRow & {
-  weekday: number | null
-  on_date: string | null
-  state: 'unconfigured' | 'zero' | 'configured'
-}
-export type TaskTimeBlock = OwnedRow & { task_id: string; starts_at: string; ends_at: string }
-export type TaskMaterial = OwnedRow & {
-  course_id: string
-  lesson_key: string
-  kind: string
-  title: string
-  href: string | null
-  audio: { path: string; label: string }[]
-}
-export type TaskProgress = OwnedRow & { course_id: string; lesson: LessonRef }
-export type UnitScope = OwnedRow & {
-  course_id: string
-  book: string
-  unit: string
-  lessons: LessonRef[]
-  emitted: boolean
-}
-export type TaskReminder = OwnedRow & {
-  task_id: string | null
-  occurrence_id: string | null
-  source_key: string
-  title: string
-  remind_at: string
-  status: string
-  read_at: string | null
-  exam_id?: string | null
-  expires_at?: string | null
-}
-export type TaskData = {
-  courses: TaskCourse[]
-  rules: TimetableRule[]
-  exceptions: CourseException[]
-  occurrences: CourseOccurrence[]
-  templates: TaskTemplate[]
-  tasks: TaskInstance[]
-  day_states: AvailabilityDayState[]
-  windows: AvailabilityWindow[]
-  blocks: TaskTimeBlock[]
-  materials: TaskMaterial[]
-  progress: TaskProgress[]
-  scopes: UnitScope[]
-  reminders: TaskReminder[]
-  calendars: TaskCalendar[]
-  exams: TaskExam[]
-  preferences: TaskPreference[]
-  snapshots: TaskSnapshot[]
-}
-export type ProblemGroup = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
-/** key retains the existing group:id picker API; stable_key is the formal cross-lesson identity. */
-export type ProblemOption = {
-  key: string
-  stable_key: string
-  id: string
-  lesson_key: string
-  group: ProblemGroup
-  displayId: string
-  order: number
-  tags: string[]
-  title: string
-  href?: string
-  replay_ref?: string
-}
-export type CatalogReadiness = {
-  status: 'loading' | 'ready' | 'error'
-  complete: boolean
-  error: string | null
-}
-/** Filtering retains authoritative source order; these arrays never reorder the source. */
-export type CatalogSelection = {
-  book?: string
-  units?: string[]
-  lesson_keys?: string[]
-  segment_keys?: string[]
-}
-export type CatalogLesson = LessonRef & { order: number }
-export type CatalogSnapshotRequest = OwnedRow & {
-  subject: Subject
-  created_at: string
-  source: 'builtin' | 'manual'
-  progression_mode: 'lesson' | 'segment'
-  selection?: CatalogSelection
-  teaching_segments?: TeachingSegment[]
-  manual_lessons?: CatalogLesson[]
-}
-export type CatalogConfigurationIssue = {
-  code: 'missing_teaching_segments' | 'unclosed_teaching_segments'
-  lesson_keys: string[]
-}
-export type CatalogSnapshotResult =
-  | { status: 'ready'; snapshot: CourseCatalogSnapshot; issues: CatalogConfigurationIssue[] }
-  | { status: 'unavailable'; readiness: CatalogReadiness; code: string }
-export type MaterialOption = { id: string; title: string; kind: string; preview_ref: string | null }
-/** The application supplies shared-material access. No material storage or subject dependency here. */
-export type TaskMaterialAdapter = {
-  resolve?: (
-    courseId: string | null,
-    scope: CourseScope,
-    selector: import('./courseTypes').MaterialSelector,
-    content: import('./courseTypes').CourseLessonSnapshot | null,
-  ) => Promise<{ status: 'pending' | 'not_required' | 'selected'; asset_ids: string[] }>
-  listForCourse: (courseId: string, scope: CourseScope) => Promise<MaterialOption[]>
-  pickAssets: (subject: Subject, selectedIds: string[]) => Promise<MaterialOption[]>
-}
-export type TaskCatalogAdapter = {
-  chinese: LessonRef[]
-  math: LessonRef[]
-  english: LessonRef[]
-  renderProblemReplay?: (problem: ProblemOption) => import('react').ReactNode
-  loadMathProblems: (key: string) => Promise<ProblemOption[]>
-  readiness?: Partial<Record<Subject, CatalogReadiness>>
-  readinessFor?: (subject: Subject, selection?: CatalogSelection) => CatalogReadiness
-  prepareSnapshot?: (request: CatalogSnapshotRequest) => Promise<CatalogSnapshotResult>
-  renderMaterialPicker?: (props: {
-    subject: Subject
-    value: import('./courseTypes').MaterialSelector
-    onChange: (value: import('./courseTypes').MaterialSelector) => void
-    disabled?: boolean
-  }) => import('react').ReactNode
-  renderCourseMaterials?: (props: {
-    course: TaskCourse
-    content: import('./courseTypes').CourseLessonSnapshot | null
-    snapshot?: CourseCatalogSnapshot
-  }) => import('react').ReactNode
-  renderTaskMaterials?: (ids: string[]) => import('react').ReactNode
-  materials?: TaskMaterialAdapter
-}
-export type TasksSection = 'tasks' | 'schedule' | 'timetable' | 'pool' | 'templates' | 'materials'
-
-export type TaskCalendar = OwnedRow & {
+export type TimetableCalendar = OwnedRow & {
   name: string
   starts_on: string
   ends_on: string | null
   created_at: string
 }
-export type TaskExam = OwnedRow & {
-  calendar_id: string | null
-  course_id: string | null
-  title: string
-  starts_at: string
-  ends_at: string
-  location: string
-  notes: string
-  reminder_minutes: number | null
-}
 export type TimetablePreferences = {
+  default_reminder_minutes: number | null
   week_start: 0 | 1
   show_weekends: boolean
   start_hour: number
@@ -339,42 +82,20 @@ export type TimetablePreferences = {
   hour12: boolean
   show_teacher: boolean
   show_location: boolean
-  default_reminder_minutes: number | null
 }
-export type TaskPreference = OwnedRow & { settings: TimetablePreferences }
-export type CourseInput = Pick<TaskCourse, 'name' | 'subject'> &
-  Partial<Omit<TaskCourse, 'user_id' | 'created_at' | 'name' | 'subject'>> & {
-    cursor_intent?: 'resume' | 'set'
-    expected_cursor_revision?: number
-    catalog_snapshot?: CourseCatalogSnapshot | null
-    bindings?: (Pick<
-      CourseTaskBinding,
-      | 'pool_item_id'
-      | 'enabled'
-      | 'scope_override'
-      | 'estimated_minutes_override'
-      | 'material_override'
-    > & { id?: string })[]
-  }
-export type RuleInput =
-  | NormalizedCourseRuleInput
-  | (Omit<TimetableRule, 'id' | 'user_id' | 'course_id'> & { id?: string; kind?: 'timetabled' })
-export type TimetableSnapshotPayload = {
-  version: 1 | 2
-  calendars: Omit<TaskCalendar, 'user_id'>[]
-  courses: (Omit<TaskCourse, 'user_id' | keyof CourseConfiguration> &
-    Pick<CourseConfiguration, 'course_type' | 'effective_from'>)[]
-  rules: (
-    | Omit<CourseRule, 'user_id'>
-    | (Omit<TimetableRule, 'user_id'> & { kind?: 'timetabled' })
-  )[]
-  exams: Omit<TaskExam, 'user_id'>[]
-  exceptions?: Omit<CourseException, 'user_id'>[]
-  settings?: TimetablePreferences
+type RuleShape = Omit<TimetableRule, 'id' | 'user_id' | 'course_id' | 'start_time' | 'end_time'>
+export type RuleInput = RuleShape & { id?: string } & (
+  { kind?: 'timetabled'; start_time: string; end_time: string } |
+  { kind: 'flexible'; start_time: null; end_time: null }
+)
+export type CourseRule = OwnedRow & { course_id: string } & RuleInput
+export type TimetableData = {
+  courses: TimetableCourse[]
+  rules: CourseRule[]
+  exceptions: CourseException[]
+  preferences: (OwnedRow & { settings: TimetablePreferences })[]
+  calendars: TimetableCalendar[]
 }
-export type TaskSnapshot = OwnedRow & {
-  name: string
-  payload: TimetableSnapshotPayload
-  created_at: string
-}
-export type TimetableOccurrence = CourseOccurrence & { preview: boolean }
+export type TimetableOccurrence = CourseOccurrence
+
+export type CourseInput = Omit<TimetableCourse, keyof OwnedRow | 'created_at' | 'archived_at'> & { id?: string }

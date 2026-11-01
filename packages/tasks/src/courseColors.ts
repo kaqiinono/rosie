@@ -1,4 +1,4 @@
-import type { TaskCourse } from './types'
+import type { TimetableCourse } from './types'
 
 export function colorAppearance(value: string) {
   const channels = [1, 3, 5].map(offset => parseInt(value.slice(offset, offset + 2), 16) / 255)
@@ -16,14 +16,14 @@ export const COURSE_COLORS = [
   ['#7c3aed', '藤紫'], ['#e11d48', '莓红'], ['#d97706', '麦黄'], ['#0891b2', '青蓝'],
 ].map(([value, label]) => ({ ...colorAppearance(value), label }))
 
-export function courseColor(course?: Pick<TaskCourse, 'id' | 'color'>) {
+export function courseColor(course?: Pick<TimetableCourse, 'id' | 'color'>) {
   const selected = COURSE_COLORS.find(color => color.value === course?.color?.toLowerCase())
   if (selected) return selected
   if (course?.color && /^#[0-9a-fA-F]{6}$/.test(course.color)) return { ...colorAppearance(course.color), label: '自定义' }
   return COURSE_COLORS[(course?.id ?? '').split('').reduce((sum, c) => sum + c.charCodeAt(0), 0) % COURSE_COLORS.length]
 }
 
-export function coursePastelColor(course?: Pick<TaskCourse, 'id' | 'color'>) {
+export function coursePastelColor(course?: Pick<TimetableCourse, 'id' | 'color'>) {
   const color = courseColor(course)
   const background = '#' + [1, 3, 5].map(offset => {
     const channel = parseInt(color.value.slice(offset, offset + 2), 16)

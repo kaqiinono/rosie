@@ -21,6 +21,9 @@ export async function verifyBaiduAccount(accessToken: string): Promise<string> {
     signal: AbortSignal.timeout(15000),
   })
   const body = parseBaiduJson(await response.text())
+  if ([-6, 110, 111].includes(Number(body.errno ?? body.error_code))) {
+    throw Error('baidu_access_token_rejected')
+  }
   if (!response.ok || body.errno !== 0) throw Error('baidu_identity_unavailable')
   return exactBaiduId(body.uk)
 }

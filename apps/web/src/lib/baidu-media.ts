@@ -1,4 +1,5 @@
 import 'server-only'
+import { exactBaiduId, parseBaiduJson } from './baidu-identity'
 import { getBaiduAccountContext, getBaiduAccessToken } from './baidu-token'
 
 interface NetdiskFile {
@@ -16,12 +17,12 @@ const pendingDirectories = new Map<string, Promise<NetdiskFile[]>>()
 async function baiduJson(
   path: string,
   parameters: Record<string, string>,
-  allowMissing = true,
+  accessToken?: string,
 ): Promise<Record<string, unknown>> {
   const url = new URL(path, 'https://pan.baidu.com')
   url.search = new URLSearchParams({
     ...parameters,
-    access_token: await getBaiduAccessToken(),
+    access_token: accessToken ?? await getBaiduAccessToken(),
   }).toString()
   const response = await fetch(url, {
     cache: 'no-store',
@@ -29,10 +30,10 @@ async function baiduJson(
     signal: AbortSignal.timeout(15_000),
     headers: { 'User-Agent': 'pan.baidu.com' },
   })
-  const body: unknown = await response.json()
+  const body: unknown = parseBaiduJson(await response.text())
   if (!response.ok || !body || typeof body !== 'object') throw new Error('baidu_unavailable')
   const result = body as Record<string, unknown>
-  if (result.errno === -9 && allowMissing) return { errno: 0, list: [] }
+  if (result.errno === -9) return { errno: 0, list: [] }
   if (result.errno !== 0) throw new Error('baidu_api_error')
   return result
 }
@@ -84,54 +85,6 @@ export async function listBaiduDirectory(directory: string): Promise<NetdiskFile
   return promise
 }
 
-/** Keyword search is scoped remotely, then exact prefix/path checks remove fuzzy matches.
- * Never turn a truncated search into a complete catalog or fall back to a full listing. */
-export async function searchBaiduFilesByPrefix(
-  directory: string,
-  prefix: string,
-): Promise<NetdiskFile[]> {
-  const result = await baiduJson(
-    '/rest/2.0/xpan/file',
-    {
-      method: 'search',
-      dir: directory,
-      key: prefix,
-      recursion: '0',
-      num: '500',
-      web: '0',
-    },
-    false,
-  )
-  if (!Array.isArray(result.list)) throw new Error('baidu_invalid_response')
-  if ((result.has_more !== 0 && result.has_more !== false) || result.list.length >= 500) {
-    throw new Error('baidu_search_incomplete')
-  }
-  const files: NetdiskFile[] = []
-  const seenPaths = new Set<string>()
-  for (const item of result.list) {
-    if (!item || typeof item !== 'object') throw new Error('baidu_invalid_response')
-    const file = item as Record<string, unknown>
-    if (file.isdir === 1) continue
-    if (
-      file.isdir !== 0 ||
-      typeof file.path !== 'string' ||
-      typeof file.fs_id !== 'number' ||
-      !Number.isSafeInteger(file.fs_id) ||
-      file.fs_id <= 0
-    )
-      throw new Error('baidu_invalid_response')
-    if (
-      file.path.slice(0, file.path.lastIndexOf('/')) !== directory ||
-      !file.path.slice(directory.length + 1).startsWith(prefix)
-    )
-      continue
-    if (seenPaths.has(file.path)) throw new Error('baidu_search_incomplete')
-    seenPaths.add(file.path)
-    files.push({ path: file.path, fs_id: file.fs_id, isdir: 0 })
-  }
-  return files
-}
-
 function safeDownloadUrl(value: string): URL {
   const url = new URL(value)
   const allowed = ['baidu.com', 'baidupcs.com'].some(
@@ -158,17 +111,25 @@ export async function fetchBaiduMedia(
   const directory = path.slice(0, path.lastIndexOf('/'))
   const file = (await listBaiduDirectory(directory)).find((item) => item.path === path)
   if (!file) return null
+  return fetchBaiduFileById(String(file.fs_id), directory, range, signal, kind, await getBaiduAccessToken(), path)
+}
+
+/** The metadata and download use the same account token. A move outside the bound directory invalidates playback. */
+export async function fetchBaiduFileById(
+  fsId: string, directory: string, range: string | null, signal: AbortSignal,
+  kind: 'audio' | 'video', token: string, expectedPath?: string,
+): Promise<Response | null> {
+  const id = exactBaiduId(fsId)
   const metadata = await baiduJson('/rest/2.0/xpan/multimedia', {
-    method: 'filemetas',
-    fsids: JSON.stringify([file.fs_id]),
-    dlink: '1',
-  })
-  const entry: unknown = Array.isArray(metadata.list) ? metadata.list[0] : null
-  if (!entry || typeof entry !== 'object') return null
-  const info = entry as Record<string, unknown>
-  if (info.path !== path || typeof info.dlink !== 'string') return null
+    method: 'filemetas', fsids: `[${id}]`, dlink: '1',
+  }, token)
+  const info = Array.isArray(metadata.list) ? metadata.list[0] : null
+  const prefix = directory === '/' ? '/' : directory + '/'
+  if (!info || exactBaiduId(info.fs_id) !== id || info.isdir === 1 || typeof info.path !== 'string' ||
+      !info.path.startsWith(prefix) || info.path.slice(prefix.length).includes('/') ||
+      (expectedPath && info.path !== expectedPath) || (kind === 'video' && !/\.mp4$/i.test(info.path)) ||
+      typeof info.dlink !== 'string') return null
   let download = safeDownloadUrl(info.dlink)
-  const token = await getBaiduAccessToken()
   const headers = new Headers({ 'User-Agent': 'pan.baidu.com', 'Accept-Encoding': 'identity' })
   if (range) headers.set('Range', range)
   const downloadSignal = AbortSignal.any([signal, AbortSignal.timeout(120_000)])

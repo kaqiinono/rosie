@@ -1,14 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import type { CourseInput, RuleInput, TaskCourse } from '../../types'
-import type { CourseRule } from '../../courseTypes'
-import CourseTaskBindings, { type CourseTaskBindingDraft } from '../CourseTaskBindings'
-import CourseLearningSettings from './CourseLearningSettings'
+import type { CourseInput, RuleInput, TimetableCourse } from '../../types'
+import type { CourseRule } from '../../types'
 import { SUBJECTS } from '../../types'
 import { dateAfter, localDate } from '../../time'
 import { DEFAULT_TIMETABLE_PREFERENCES, previewCourseDates, previewOccurrences } from '../../timetable'
-import { Field, useTasks, weekdays } from '../shared'
+import { Field, useTimetable, weekdays } from '../shared'
 import TimetableDialog from './TimetableDialog'
 import CourseTimeWheel from './CourseTimeWheel'
 import { COURSE_COLORS, clockTime, courseColor } from './presentation'
@@ -36,7 +34,7 @@ function CourseIcon({ kind }: { kind: 'book' | 'subject' | 'note' | 'cycle' | 's
 }
 const minutesOf = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5))
 const timeOf = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`
-function newSlot(date: string, time?: string): Slot { const startTime = time ?? '08:00'; const start = minutesOf(startTime) + 45 < 1440 ? startTime : '08:00'; return { key: crypto.randomUUID(), days: [time ? new Date(`${date}T12:00:00Z`).getUTCDay() : 1], start, end: timeOf(minutesOf(start) + 45), from: date, until: '', recurrence: 'weekly', interval: 1, anchor: date, weeks: '' } }
+function newSlot(date: string, time?: string): Slot { const startTime = time ?? '08:00'; const start = minutesOf(startTime) + 45 < 1440 ? startTime : '08:00'; return { key: crypto.randomUUID(), days: [new Date(`${date}T12:00:00Z`).getUTCDay()], start, end: timeOf(minutesOf(start) + 45), from: date, until: '', recurrence: 'weekly', interval: 1, anchor: date, weeks: '' } }
 function slotFromRule(rule: CourseRule): Slot { return { key: rule.id, days: [rule.weekday], start: rule.start_time?.slice(0, 5) ?? '08:00', end: rule.end_time?.slice(0, 5) ?? '08:45', from: rule.valid_from, until: rule.valid_until ?? '', recurrence: rule.recurrence ?? 'weekly', interval: rule.interval_weeks ?? 1, anchor: rule.anchor_date ?? rule.valid_from, weeks: (rule.teaching_weeks ?? []).join(',') } }
 function parseWeeks(value: string): number[] | null {
   const tokens = value.trim().split(/[,，、\s]+/).filter(Boolean), result = new Set<number>()
@@ -50,18 +48,16 @@ function parseWeeks(value: string): number[] | null {
   }
   return [...result].sort((a, b) => a - b)
 }
-export default function CourseEditor({ course, duplicate = false, date, time, calendarId, onClose }: { course?: TaskCourse; duplicate?: boolean; date: string; time?: string; calendarId?: string; onClose: () => void }) {
-  const { api, notify, catalog } = useTasks()
+export default function CourseEditor({ course, duplicate = false, date, time, calendarId, onClose }: { course?: TimetableCourse; duplicate?: boolean; date: string; time?: string; calendarId?: string; onClose: () => void }) {
+  const { api, notify } = useTimetable()
+  const [createId] = useState(() => crypto.randomUUID())
   const initialEffective = course?.effective_from && course.effective_from > localDate() ? course.effective_from : date < localDate() ? localDate() : date
-  const [draft, setDraft] = useState<CourseInput>(() => ({ generation_state: duplicate ? 'active' : course?.generation_state, default_deadline: course?.default_deadline ?? null, course_type: course?.course_type ?? 'timetabled', auto_assign: course?.auto_assign ?? false, auto_advance: course?.auto_advance ?? false, cursor: course?.cursor ?? null, catalog_snapshot_id: course?.catalog_snapshot_id ?? null, rules_revision: duplicate ? undefined : course?.rules_revision, name: course ? `${course.name}${duplicate ? '（副本）' : ''}` : '', subject: course?.subject ?? 'other', calendar_id: course?.calendar_id ?? calendarId ?? null, teacher: course?.teacher ?? '', location: course?.location ?? '', credits: course?.credits ?? null, notes: course?.notes ?? '', color: courseColor(course).value, reminder_minutes: course?.reminder_minutes === undefined ? (api.data.preferences[0]?.settings ?? DEFAULT_TIMETABLE_PREFERENCES).default_reminder_minutes : course.reminder_minutes }))
+  const [draft, setDraft] = useState<CourseInput>(() => ({ course_type: course?.course_type ?? 'timetabled', rules_revision: duplicate ? undefined : course?.rules_revision, name: course ? `${course.name}${duplicate ? '（副本）' : ''}` : '', subject: course?.subject ?? 'other', calendar_id: course?.calendar_id ?? calendarId ?? null, teacher: course?.teacher ?? '', location: course?.location ?? '', credits: course?.credits ?? null, notes: course?.notes ?? '', color: courseColor(course).value, reminder_minutes: course?.reminder_minutes === undefined ? (api.data.preferences[0]?.settings ?? DEFAULT_TIMETABLE_PREFERENCES).default_reminder_minutes : course.reminder_minutes }))
   const [effective, setEffective] = useState(initialEffective)
   const [slots, setSlots] = useState<Slot[]>(() => {
-    const rules = course ? api.data.course_rules.filter(r => r.course_id === course.id && (!r.disabled_from || r.disabled_from > initialEffective) && (!r.valid_until || r.valid_until >= localDate()) && (r.recurrence !== 'once' || (r.anchor_date || r.valid_from) >= localDate())) : []
-    return rules.map(slotFromRule)
+    const rules = course ? api.data.rules.filter(r => r.course_id === course.id && (!r.disabled_from || r.disabled_from > initialEffective) && (!r.valid_until || r.valid_until >= localDate()) && (r.recurrence !== 'once' || (r.anchor_date || r.valid_from) >= localDate())) : []
+    return course ? rules.map(slotFromRule) : [newSlot(date, time)]
   })
-  const [bindings, setBindings] = useState<CourseTaskBindingDraft[]>(() => api.data.bindings.filter(b => b.course_id === course?.id).map(b => ({ pool_item_id: b.pool_item_id, enabled: b.enabled, scope_override: b.scope_override, estimated_minutes_override: b.estimated_minutes_override, material_override: b.material_override, ...(duplicate ? {} : { id: b.id }) })))
-  const [learningError, setLearningError] = useState('')
-  const snapshot = draft.catalog_snapshot ?? api.data.catalog_snapshots.find(s => s.id === draft.catalog_snapshot_id)
   const flexible = draft.course_type === 'flexible'
   const [activeSlot, setActiveSlot] = useState<string | null>(null)
   const [periodStart, setPeriodStart] = useState(slots[0]?.from ?? '')
@@ -69,8 +65,7 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
   const [cycle, setCycle] = useState<Slot['recurrence']>(slots[0]?.recurrence ?? 'weekly')
   const [periodInterval, setPeriodInterval] = useState(slots[0]?.interval ?? 1)
   const [dirty, setDirty] = useState(false), [discard, setDiscard] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('')
-  const [cursorEdited, setCursorEdited] = useState(false)
-  const edit = (patch: Partial<CourseInput>) => { if ('cursor' in patch || 'catalog_snapshot' in patch) setCursorEdited(true); setDraft(prev => ({ ...prev, ...patch })); setDirty(true) }
+  const edit = (patch: Partial<CourseInput>) => { setDraft(prev => ({ ...prev, ...patch })); setDirty(true) }
   const update = (key: string, patch: Partial<Slot>) => { setSlots(prev => prev.map(slot => slot.key === key ? { ...slot, ...patch } : slot)); setDirty(true) }
   const updateTime = (slot: Slot, start: number, duration = minutesOf(slot.end) - minutesOf(slot.start)) => update(slot.key, { start: timeOf(start), end: timeOf(start + Math.min(duration, 1439 - start)) })
   const addSlot = () => { const slot = { ...newSlot(periodStart || date, time), until: periodEnd, recurrence: cycle, interval: periodInterval, weeks: slots[0]?.weeks ?? '' }; setSlots(prev => [...prev, slot]); if (!flexible) setActiveSlot(slot.key); setDirty(true) }
@@ -88,19 +83,19 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
       if (editing && slot.until && slot.until < effective) continue
       if (slot.recurrence === 'once' && slot.anchor < (editing ? effective : from)) return { error: '单次上课日期不能早于生效日期。', rules }
       const days = slot.recurrence === 'once' ? [new Date(`${slot.anchor}T12:00:00Z`).getUTCDay()] : slot.days
-      const originalRule = editing ? api.data.course_rules.find(rule => rule.id === slot.key) : undefined
+      const originalRule = editing ? api.data.rules.find(rule => rule.id === slot.key) : undefined
       const retainedDay = originalRule && days.includes(originalRule.weekday) ? originalRule.weekday : days[0]
       for (const weekday of days) rules.push({ ...(originalRule && weekday === retainedDay ? { id: slot.key } : {}), weekday, ...(flexible ? { kind: 'flexible' as const, start_time: null, end_time: null } : { kind: 'timetabled' as const, start_time: slot.start, end_time: slot.end }), valid_from: from, valid_until: slot.until || null, recurrence: slot.recurrence, interval_weeks: slot.interval, anchor_date: slot.anchor, teaching_weeks: weeks })
     }
     const keys = rules.map(rule => `${rule.weekday}:${rule.start_time}:${rule.end_time}:${rule.valid_from}:${rule.valid_until}:${rule.recurrence}:${rule.anchor_date}:${rule.interval_weeks}:${rule.teaching_weeks?.join(',')}`)
     if (new Set(keys).size !== keys.length) return { error: '存在完全重复的星期和时段，请移除重复项。', rules }
     return { error: rules.length ? '' : '至少保留一个有效上课时段。', rules }
-  }, [slots, effective, editing, api.data.course_rules, flexible])
+  }, [slots, effective, editing, api.data.rules, flexible])
   const previewFrom = editing ? effective : slots.reduce((first, slot) => slot.from < first ? slot.from : first, slots[0]?.from ?? date)
   const preview = useMemo(() => {
     if (validation.error) return { rows: [], conflicts: new Set<string>() }
     const courseId = 'draft-course'
-    const rows = previewOccurrences({ courses: [{ ...draft, id: courseId, user_id: '', created_at: '' }], rules: validation.rules.map((rule, i) => ({ ...rule, valid_from: editing && rule.valid_from < effective ? effective : rule.valid_from, id: `draft-${i}`, user_id: '', course_id: courseId })), exceptions: [], occurrences: [] }, previewFrom, dateAfter(previewFrom, 55))
+    const rows = previewOccurrences({ courses: [{ ...draft, id: courseId, user_id: '', created_at: '' }], rules: validation.rules.map((rule, i) => ({ ...rule, valid_from: editing && rule.valid_from < effective ? effective : rule.valid_from, id: `draft-${i}`, user_id: '', course_id: courseId })), exceptions: [] }, previewFrom, dateAfter(previewFrom, 55))
     const others = previewOccurrences(api.data, previewFrom, dateAfter(previewFrom, 55)).filter(row => row.status !== 'cancelled' && (!editing || row.course_id !== course?.id))
     const conflicts = new Set(rows.filter(row => [...others, ...rows].some(other => other.id !== row.id && +new Date(row.starts_at) < +new Date(other.ends_at) && +new Date(other.starts_at) < +new Date(row.ends_at))).map(row => row.id))
     return { rows, conflicts }
@@ -120,16 +115,14 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
       e.preventDefault(); if (saving) return
       const invalid = e.currentTarget.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input:invalid, select:invalid, textarea:invalid')
       if (!e.currentTarget.checkValidity()) { invalid?.setAttribute('aria-invalid', 'true'); invalid?.setAttribute('aria-describedby', 'course-save-error'); invalid?.focus(); setError('请检查必填项、日期范围和输入长度。'); return }
-      if (learningError) { setError(learningError); return }
-      if (draft.auto_advance && (!snapshot || !draft.cursor || !snapshot.ordered_lessons.some(l => l.key === draft.cursor?.lesson_key) || (snapshot.progression_mode === 'segment' && !snapshot.teaching_segments.some(s => s.key === draft.cursor?.segment_key && s.lesson_key === draft.cursor?.lesson_key)))) { setError('开启自动安排前，请准备目录并选择有效的下一次内容。'); return }
       if (!draft.name.trim() || validation.error) { setError(validation.error || '请输入课程名称。'); return }
       setSaving(true); setError('')
-      try { const payload = { ...draft, bindings, name: draft.name.trim(), ...(editing ? { id: course.id } : {}) }; if (editing && !cursorEdited) delete payload.cursor; else if (editing) payload.expected_cursor_revision = course.cursor_revision ?? 1; await api.saveCourse(payload, validation.rules, editing ? effective : undefined); notify('课程与时段已保存'); onClose() } catch (cause) { setError(cause instanceof Error && ['stale_course_revision', 'stale_cursor_revision'].includes(cause.message) ? '课程已被其他操作更新。请保留当前修改，关闭并重新打开课程后重试。' : cause instanceof Error ? cause.message : '保存失败，请重试。') } finally { setSaving(false) }
+      try { const payload = { ...draft, name: draft.name.trim(), ...(editing ? { id: course.id } : { create_id: createId }) }; await api.saveCourse(payload, validation.rules, editing ? effective : undefined); notify('课程与时段已保存'); onClose() } catch (cause) { setError(cause instanceof Error && cause.message === 'stale_course_revision' ? '课程已被其他操作更新。请保留当前修改，关闭并重新打开课程后重试。' : cause instanceof Error ? cause.message : '保存失败，请重试。') } finally { setSaving(false) }
     }}>
       <header className="sticky top-0 z-20 grid min-h-20 grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
         <button type="button" disabled={saving} onClick={close} className={`${courseSecondaryButtonClass} justify-self-start`}>取消</button>
         <h2 className="text-center text-lg font-semibold text-slate-900 sm:text-xl">{editing ? '编辑课程' : duplicate ? '复制课程' : '添加课程'}</h2>
-        <button type="submit" disabled={saving || !!learningError || !!validation.error || !draft.name.trim()} className={`${courseButtonClass} min-w-20 justify-self-end`}>{saving ? '保存中' : '保存'}</button>
+        <button type="submit" disabled={saving || !!validation.error || !draft.name.trim()} className={`${courseButtonClass} min-w-20 justify-self-end`}>{saving ? '保存中' : '保存'}</button>
       </header>
 
       <fieldset disabled={saving} className="min-w-0 space-y-6 p-4 disabled:opacity-60 sm:p-6">
@@ -142,7 +135,7 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
             </label>
             <label className={`${rowClass} ${courseFieldFocusClass}`}>
               <span className={iconClass}><CourseIcon kind="subject" /></span>
-              <span className="min-w-0 flex-1 py-3 pr-4"><span className={fieldLabelClass}>科目<span className="ml-2 font-normal">可选</span></span><select className={`${valueClass} cursor-pointer`} value={draft.subject} onChange={e => { edit({ subject: e.target.value as CourseInput['subject'], catalog_snapshot_id: null, catalog_snapshot: null, cursor: null }); setLearningError('') }}>{subjectOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></span>
+              <span className="min-w-0 flex-1 py-3 pr-4"><span className={fieldLabelClass}>科目<span className="ml-2 font-normal">可选</span></span><select className={`${valueClass} cursor-pointer`} value={draft.subject} onChange={e => { edit({ subject: e.target.value as CourseInput['subject'] }) }}>{subjectOptions.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></span>
             </label>
             <label className={`${rowClass} ${courseFieldFocusClass}`}>
               <span className={iconClass}><CourseIcon kind="note" /></span>
@@ -193,8 +186,6 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
           {preview.conflicts.size > 0 && <p role="status" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">未来 8 周有 {preview.conflicts.size} 次上课时间重叠，请检查。</p>}
         </section>
 
-        <CourseLearningSettings key={draft.subject} value={draft} snapshot={snapshot ?? undefined} onChange={edit} onPendingChange={message => { setLearningError(message); if (message) setDirty(true) }} />
-        <CourseTaskBindings items={api.data.pool_items.filter(item => item.subject === null || item.subject === draft.subject || bindings.some(b => b.pool_item_id === item.id))} value={bindings} onChange={value => { setBindings(value); setDirty(true) }} lessons={snapshot?.ordered_lessons} segments={snapshot?.teaching_segments} disabled={saving} renderMaterialPicker={catalog.renderMaterialPicker ? props => catalog.renderMaterialPicker!({...props,subject:draft.subject}) : undefined} />
         <section aria-label="课程颜色" className="space-y-2">
           <h3 className="px-1 text-sm font-semibold text-slate-700">课程颜色</h3>
           <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-3">
@@ -207,7 +198,7 @@ export default function CourseEditor({ course, duplicate = false, date, time, ca
           <Field label="所属课表 / 学期"><select className={courseInputClass} value={draft.calendar_id ?? ''} onChange={e => edit({ calendar_id: e.target.value || null })}><option value="">未分组</option>{api.data.calendars.map(calendar => <option key={calendar.id} value={calendar.id}>{calendar.name}</option>)}</select></Field>
           <Field label="教师"><input className={courseInputClass} maxLength={120} value={draft.teacher ?? ''} onChange={e => edit({ teacher: e.target.value })} /></Field>
           <Field label="地点"><input className={courseInputClass} maxLength={200} value={draft.location ?? ''} onChange={e => edit({ location: e.target.value })} /></Field>
-          {!flexible && reminderOn && <Field label="提醒时间"><select className={courseInputClass} value={draft.reminder_minutes ?? 10} onChange={e => edit({ reminder_minutes: Number(e.target.value) })}>{[0, 5, 10, 15, 30, 60, 1440].map(minutes => <option key={minutes} value={minutes}>{minutes === 0 ? '开始时' : minutes === 1440 ? '提前一天' : '提前 ' + minutes + ' 分钟'}</option>)}</select></Field>}
+          {!flexible && reminderOn && <Field label="提醒时间"><select className={courseInputClass} value={draft.reminder_minutes ?? 10} onChange={e => edit({ reminder_minutes: Number(e.target.value) })}>{Array.from(new Set([0, 5, 10, 15, 30, 60, 1440, draft.reminder_minutes ?? 10])).sort((a, b) => a - b).map(minutes => <option key={minutes} value={minutes}>{minutes === 0 ? '开始时' : minutes === 1440 ? '提前一天' : '提前 ' + minutes + ' 分钟'}</option>)}</select></Field>}
           {editing && <Field label="排课规则生效日"><input type="date" required min={localDate()} className={courseInputClass} value={effective} onChange={e => { setEffective(e.target.value); setDirty(true) }} /></Field>}
         </div></details>
         {flexible && slots.length > 0 && <details className="rounded-2xl border border-slate-200 bg-white text-sm"><summary className={`${courseFocusClass} cursor-pointer p-4`}>未来 8 周学习日 · {flexibleDates.length} 天</summary><ul className="grid max-h-48 gap-2 overflow-auto p-4 sm:grid-cols-2">{flexibleDates.map(day => <li key={day}>{day} · {weekdays[new Date(`${day}T00:00:00Z`).getUTCDay()]} · 无固定时刻</li>)}</ul></details>}

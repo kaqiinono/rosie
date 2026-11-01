@@ -1,22 +1,20 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import type { TaskCourse, TimetableOccurrence } from '../types'
+import type { TimetableCourse, TimetableOccurrence } from '../types'
 import { SUBJECTS } from '../types'
 import { dateAfter, localDate } from '../time'
 import { DEFAULT_TIMETABLE_PREFERENCES, previewOccurrences, recurrenceLabel, timetableStats } from '../timetable'
-import { Field, inputClass, buttonClass, minorClass, useTasks, weekdays } from './shared'
+import { Field, inputClass, buttonClass, minorClass, useTimetable, weekdays } from './shared'
 import CalendarGrid from './timetable/CalendarGrid'
 import MonthCalendar from './timetable/MonthCalendar'
 import CourseEditor from './timetable/CourseEditor'
 import CourseDetails from './timetable/CourseDetails'
 import CalendarSettings from './timetable/CalendarSettings'
-import TimetableTools from './timetable/TimetableTools'
-import ExamManager from './timetable/ExamManager'
 import { clockTime, courseColor, statusLabel } from './timetable/presentation'
 
 type View = 'day' | 'week' | 'month' | 'agenda' | 'courses'
-type Editor = { course?: TaskCourse; duplicate?: boolean; date: string; time?: string }
+type Editor = { course?: TimetableCourse; duplicate?: boolean; date: string; time?: string }
 const cardActionClass = 'flex min-h-11 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg px-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-600 disabled:cursor-not-allowed disabled:opacity-40'
 
 function CourseActionIcon({ action }: { action: 'view' | 'edit' | 'copy' | 'archive' | 'restore' }) {
@@ -31,14 +29,13 @@ function CourseActionIcon({ action }: { action: 'view' | 'edit' | 'copy' | 'arch
 }
 
 export default function Timetable() {
-  const { api } = useTasks()
+  const { api } = useTimetable()
   const preferences = { ...DEFAULT_TIMETABLE_PREFERENCES, ...api.data.preferences[0]?.settings }
   const [date, setDate] = useState(localDate), [view, setView] = useState<View>('day')
   const [calendar, setCalendar] = useState(''), [subject, setSubject] = useState(''), [query, setQuery] = useState(''), [courseFilter, setCourseFilter] = useState('')
   const [archived, setArchived] = useState(false), [showCancelled, setShowCancelled] = useState(true)
-  const [editor, setEditor] = useState<Editor | null>(null), [selection, setSelection] = useState<{ course: TaskCourse; occurrence?: TimetableOccurrence; initialAction?: 'detail' | 'archive' } | null>(null)
+  const [editor, setEditor] = useState<Editor | null>(null), [selection, setSelection] = useState<{ course: TimetableCourse; occurrence?: TimetableOccurrence; initialAction?: 'detail' | 'archive' } | null>(null)
   const [showFilters, setShowFilters] = useState(false)
-  const [showTools, setShowTools] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search), requested = params.get('date')
@@ -57,12 +54,12 @@ export default function Timetable() {
   const courseIds = new Set(courses.map(course => course.id)), allRows = previewOccurrences(api.data, from, to).filter(row => courseIds.has(row.course_id))
   const rows = allRows.filter(row => showCancelled || row.status !== 'cancelled'), stats = timetableStats(view === 'month' ? allRows.filter(row => localDate(new Date(row.starts_at)).startsWith(date.slice(0, 7))) : allRows)
   const days = view === 'day' ? [date] : Array.from({ length: view === 'week' ? 14 : 7 }, (_, i) => dateAfter(week, i)).filter(day => preferences.show_weekends || ![0, 6].includes(new Date(`${day}T12:00:00Z`).getUTCDay()))
-  const exams = api.data.exams.filter(exam => (!calendar || exam.calendar_id === calendar) && (!courseFilter || exam.course_id === courseFilter))
   const choose = (occurrence: TimetableOccurrence) => { const course = api.data.courses.find(c => c.id === occurrence.course_id); if (course) setSelection({ course, occurrence }) }
   const step = view === 'day' ? 1 : view === 'agenda' ? 28 : 7
   const navigate = (direction: number) => {
     if (view === 'month') {
-      const target = new Date(Date.UTC(Number(date.slice(0, 4)), Number(date.slice(5, 7)) - 1 + direction, 1))
+      const target = new Date(Date.UTC(Number(date.slice(0, 4)), Number(date.slice(5, 7)) + direction, 0))
+      target.setUTCDate(Math.min(Number(date.slice(8)), target.getUTCDate()))
       setDate(target.toISOString().slice(0, 10))
     } else setDate(dateAfter(date, direction * step))
   }
@@ -75,6 +72,7 @@ export default function Timetable() {
       : view === 'day' ? `${shortDate(date)} · ${weekdays[weekday]}`
         : `${shortDate(from)} — ${from.slice(0, 4) !== to.slice(0, 4) ? to.slice(0, 4) + '年' : ''}${shortDate(to)}`
   const agendaDays = Array.from(new Set(rows.map(row => localDate(new Date(row.starts_at)))))
+  const periodLabel = view === 'month' ? `${date.slice(0, 4)}年${rangeTitle}` : rangeTitle
   const resetFilters = () => { setCalendar(''); setSubject(''); setCourseFilter(''); setArchived(false); setShowCancelled(true) }
 
   return <div className="space-y-5">
@@ -101,7 +99,22 @@ export default function Timetable() {
                 <button type="button" onClick={() => setDate(today)} className="min-h-10 cursor-pointer rounded-lg px-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 active:bg-slate-200 focus-visible:outline-2 focus-visible:outline-emerald-700">今天</button>
                 <button type="button" aria-label="下一时段" onClick={() => navigate(1)} className="flex h-10 w-8 cursor-pointer items-center justify-center rounded-lg text-lg text-slate-600 hover:bg-slate-100 active:bg-slate-200 focus-visible:outline-2 focus-visible:outline-emerald-700">›</button>
               </div>
-              <label className="w-[136px] min-w-0"><span className="sr-only">跳转日期</span><input type="date" value={date} onChange={e => { if (e.target.value) setDate(e.target.value) }} className={`${inputClass} min-h-11 tabular-nums`} /></label>
+              {view === 'day' ? (
+                <label className="w-[136px] min-w-0"><span className="sr-only">跳转日期</span><input type="date" value={date} onChange={e => { if (e.target.value) setDate(e.target.value) }} className={`${inputClass} min-h-11 tabular-nums`} /></label>
+              ) : (
+                <details key={view} className="relative min-w-0">
+                  <summary className={`${minorClass} flex min-h-11 items-center gap-2 tabular-nums`}>
+                    {periodLabel}<span aria-hidden="true">▾</span><span className="sr-only">选择跳转日期</span>
+                  </summary>
+                  <label className="absolute left-0 top-full z-30 mt-1 block rounded-xl border border-slate-200 bg-white p-2 shadow-md">
+                    <span className="sr-only">跳转日期</span>
+                    <input type="date" value={date} className={`${inputClass} min-h-11 tabular-nums`} onChange={e => {
+                      if (!e.target.value) return
+                      setDate(e.target.value)
+                    }} />
+                  </label>
+                </details>
+              )}
             </>}
           </div>
           <div className="flex max-w-full items-center gap-0.5 overflow-x-auto rounded-xl bg-slate-100 p-1" role="group" aria-label="课表视图">
@@ -116,10 +129,7 @@ export default function Timetable() {
           <button type="button" aria-expanded={showFilters} aria-controls="timetable-filters" onClick={() => setShowFilters(value => !value)} className={`${minorClass} flex min-h-11 shrink-0 items-center gap-2`}>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="size-4"><path d="M4 7h16M7 12h10M10 17h4" /></svg>筛选{filterCount > 0 && <span className="flex size-5 items-center justify-center rounded-full bg-emerald-800 text-[11px] text-white">{filterCount}</span>}<span aria-hidden="true" className="text-slate-400">{showFilters ? '−' : '+'}</span>
           </button>
-          <button type="button" aria-expanded={showTools} aria-controls="timetable-tools" onClick={() => setShowTools(value => !value)} className={`${minorClass} flex min-h-11 shrink-0 items-center gap-1.5`}><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-4"><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></svg>更多</button>
-        </div>
-        <div id="timetable-tools" hidden={!showTools}>
-          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 p-2"><CalendarSettings calendarId={calendar} onCalendarChange={setCalendar} /><TimetableTools calendarId={calendar} onCalendarChange={setCalendar} /></div>
+          <CalendarSettings calendarId={calendar} onCalendarChange={setCalendar} />
         </div>
         <div id="timetable-filters" hidden={!showFilters}>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -148,10 +158,10 @@ export default function Timetable() {
       </div>}
 
       {view === 'day' || view === 'week' ? <>
-        <CalendarGrid days={days} occurrences={rows} courses={api.data.courses} exams={exams} preferences={preferences} onSelect={choose} onAdd={(day, time) => setEditor({ date: day, time })} />
+        <CalendarGrid days={days} occurrences={rows} courses={api.data.courses} preferences={preferences} onSelect={choose} onAdd={(day, time) => setEditor({ date: day, time })} />
         {!allRows.length && <div className="border-t border-slate-100 px-4 py-6 text-center"><p className="text-sm font-semibold text-slate-700">这段时间没有匹配课程</p><p className="mt-1 text-xs text-slate-500">调整筛选，或添加一门课程开始安排。</p><button type="button" onClick={() => setEditor({ date })} className={`${minorClass} mt-3`}>新建课程</button></div>}
         {showCancelled && rows.some(row => row.status === 'cancelled') && <div className="border-t border-slate-100 bg-slate-50/60 p-4"><h3 className="mb-2 text-xs font-semibold text-slate-500">停课记录</h3><div className="flex flex-wrap gap-2">{rows.filter(row => row.status === 'cancelled').map(row => <button type="button" key={row.id} className={minorClass} onClick={() => choose(row)}>{courses.find(c => c.id === row.course_id)?.name} · {localDate(new Date(row.starts_at))} {clockTime(row.starts_at, preferences.hour12)}</button>)}</div></div>}
-      </> : view === 'month' ? <MonthCalendar month={date.slice(0, 7)} from={monthFrom} to={monthTo} courses={api.data.courses} occurrences={rows} exams={exams} onSelect={choose} onDay={day => { setDate(day); setView('day') }} onAdd={day => setEditor({ date: day })} /> : view === 'agenda' ? <div className="border-t border-slate-200">
+      </> : view === 'month' ? <MonthCalendar hour12={preferences.hour12} month={date.slice(0, 7)} from={monthFrom} to={monthTo} courses={api.data.courses} occurrences={rows} onSelect={choose} onDay={day => { setDate(day); setView('day') }} onAdd={day => setEditor({ date: day })} /> : view === 'agenda' ? <div className="border-t border-slate-200">
         {agendaDays.map(day => <section key={day} aria-label={`${shortDate(day)}日程`} className="border-b border-slate-100 last:border-b-0">
           <h3 className="flex items-center gap-2 bg-slate-50/80 px-4 py-3 text-sm font-semibold text-slate-600 sm:px-6"><span className={day === today ? 'text-emerald-800' : ''}>{shortDate(day)}</span><span className="font-normal text-slate-500">{weekdays[new Date(`${day}T12:00:00Z`).getUTCDay()]}</span>{day === today && <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[11px] text-emerald-800">今天</span>}</h3>
           <div className="divide-y divide-slate-100">{rows.filter(row => localDate(new Date(row.starts_at)) === day).map(row => {
@@ -160,7 +170,7 @@ export default function Timetable() {
               <span className="w-20 shrink-0 tabular-nums"><span className="block text-sm font-semibold text-slate-800">{clockTime(row.starts_at, preferences.hour12)}</span><span className="mt-1 block text-xs text-slate-500">{clockTime(row.ends_at, preferences.hour12)}</span></span>
               <span className="h-10 w-1 shrink-0 rounded-full" style={{ backgroundColor: color.border }} />
               <span className="min-w-0 flex-1"><strong className={`block truncate text-sm text-slate-800 ${row.status === 'cancelled' ? 'line-through' : ''}`}>{course?.name}</strong><span className="mt-1 block truncate text-xs text-slate-500">{[preferences.show_location && course?.location, preferences.show_teacher && course?.teacher].filter(Boolean).join(' · ')}</span></span>
-              <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] ${row.status === 'confirmed' ? 'bg-emerald-50 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>{statusLabel[row.status]}</span><span aria-hidden="true" className="hidden text-slate-400 sm:block">›</span>
+              <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] bg-slate-100 text-slate-600`}>{statusLabel[row.status]}</span><span aria-hidden="true" className="hidden text-slate-400 sm:block">›</span>
             </button>
           })}</div>
         </section>)}
@@ -168,10 +178,13 @@ export default function Timetable() {
       </div> : <div className="grid gap-4 border-t border-slate-200 bg-slate-50/50 p-4 sm:grid-cols-2 sm:p-6 xl:grid-cols-3">
         {courses.map(course => {
           const color = courseColor(course)
+          const activeRules = api.data.rules
+            .filter(r => r.course_id === course.id && (!r.disabled_from || r.disabled_from > today) && (!r.valid_until || r.valid_until >= today))
+            .sort((a, b) => (b.weekday || 7) - (a.weekday || 7) || (b.start_time ?? '').localeCompare(a.start_time ?? ''))
           return <article key={course.id} className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-[border-color,box-shadow] hover:border-slate-300 hover:shadow-sm motion-reduce:transition-none">
             <button type="button" onClick={() => setSelection({ course })} className="flex w-full min-w-0 flex-1 cursor-pointer flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-700">
             <div className="min-h-28 w-full shrink-0 px-5 py-4 text-slate-800" style={{ backgroundColor: color.background }}><div className="mb-3 flex min-h-6 items-center justify-between gap-2 text-xs"><span className="rounded-md bg-white/65 px-2 py-1 font-medium text-slate-600">{SUBJECTS[course.subject]}</span>{course.archived_at && <span className="rounded-md bg-white/65 px-2 py-1 text-slate-600">已归档</span>}</div><strong className="block truncate text-base font-semibold">{course.name}</strong></div>
-            <div className="flex w-full flex-1 flex-col gap-4 p-5"><p className="truncate text-xs text-slate-500">{[course.teacher, course.location].filter(Boolean).join(' · ') || '教师与地点未填写'}</p><div className="space-y-2">{api.data.course_rules.filter(r => r.course_id === course.id && (!r.disabled_from || r.disabled_from > today) && (!r.valid_until || r.valid_until >= today)).map(rule => <p key={rule.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs"><span className="font-medium tabular-nums text-slate-700">{weekdays[rule.weekday]} {rule.kind === 'flexible' ? '自由课程' : `${rule.start_time.slice(0, 5)}–${rule.end_time.slice(0, 5)}`}</span><span className="text-slate-500">{recurrenceLabel(rule)}</span></p>)}</div></div>
+            <div className="flex w-full flex-1 flex-col gap-4 p-5"><p className="truncate text-xs text-slate-500">{[course.teacher, course.location].filter(Boolean).join(' · ') || '教师与地点未填写'}</p><div className="space-y-2">{activeRules.map(rule => <p key={rule.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs"><span className="font-medium tabular-nums text-slate-700">{weekdays[rule.weekday]} {rule.kind === 'flexible' ? '自由课程' : `${rule.start_time.slice(0, 5)}–${rule.end_time.slice(0, 5)}`}</span><span className="text-slate-500">{recurrenceLabel(rule)}</span></p>)}</div></div>
             </button>
             <footer aria-label={`${course.name}操作`} className="grid grid-cols-4 gap-1 border-t border-slate-100 p-2">
               <button type="button" aria-label={`查看${course.name}`} onClick={() => setSelection({ course })} className={`${cardActionClass} text-emerald-800 hover:bg-emerald-50 active:bg-emerald-100`}><CourseActionIcon action="view" />查看</button>
@@ -185,8 +198,7 @@ export default function Timetable() {
       </div>}
       {view !== 'courses' && view !== 'agenda' && <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-4 py-3 text-[11px] text-slate-500 sm:px-6"><span>{view === 'month' ? '点击日期查看当天 · 点击 ＋ 添加课程' : view === 'week' ? '向右滑动查看下周 · 点击课程查看详情 · 点击空白时段添加课程' : '点击课程查看详情 · 点击空白时段添加课程'}</span><span className="flex items-center gap-1.5"><span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-700" />{view === 'week' ? '周课表' : view === 'day' ? '日课表' : '月课表'}</span></footer>}
     </section>
-    <ExamManager calendarId={calendar} courseId={courseFilter || undefined} />
     {editor && <CourseEditor {...editor} calendarId={calendar || undefined} onClose={() => setEditor(null)} />}
-    {selection && <CourseDetails key={selection.occurrence?.id ?? selection.course.id} {...selection} onSelectOccurrence={choose} onClose={() => setSelection(null)} onEdit={duplicate => { setEditor({ course: selection.course, duplicate, date: selection.occurrence?.original_date ?? date }); setSelection(null) }} />}
+    {selection && <CourseDetails key={selection.occurrence?.id ?? selection.course.id} {...selection} onClose={() => setSelection(null)} onEdit={duplicate => { setEditor({ course: selection.course, duplicate, date: selection.occurrence?.original_date ?? date }); setSelection(null) }} />}
   </div>
 }

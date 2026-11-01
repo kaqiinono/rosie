@@ -1,6 +1,7 @@
+import { lessonKeyFromProblemId } from '@rosie/math-kit/utils/lesson-registry'
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/api-auth'
-import { BAIDU_VIDEO_COOKIE, baiduMathVideoPath, fetchBaiduMathVideo } from '@/lib/baidu-math-video'
+import { BAIDU_VIDEO_COOKIE, fetchBaiduMathVideo } from '@/lib/baidu-math-video'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -11,7 +12,7 @@ function failure(error: string, status: number) {
 
 export async function GET(req: NextRequest, context: { params: Promise<{ key: string }> }) {
   const { key } = await context.params
-  if (!baiduMathVideoPath(key)) return failure('not_found', 404)
+  if (!lessonKeyFromProblemId(key)) return failure('not_found', 404)
   const token = req.cookies.get(BAIDU_VIDEO_COOKIE)?.value
   if (!token) return failure('unauthorized', 401)
   const user = await getUserFromRequest(new Request(req.url, {

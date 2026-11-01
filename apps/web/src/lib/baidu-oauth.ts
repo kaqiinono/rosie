@@ -82,12 +82,15 @@ async function requestBaiduTokens(
     signal: AbortSignal.timeout(15_000),
   })
   const payload: unknown = await response.json()
-  if (!response.ok || !payload || typeof payload !== 'object') {
+  if (!payload || typeof payload !== 'object') {
     throw new Error('exchange_failed')
   }
   const data = payload as Record<string, unknown>
+  if (parameters.grant_type === 'refresh_token' && ['invalid_grant', 'expired_token', 'invalid_token'].includes(String(data.error))) {
+    throw new Error('baidu_reauthorize')
+  }
   if (
-    data.error ||
+    !response.ok || data.error ||
     typeof data.access_token !== 'string' || !data.access_token.trim() ||
     typeof data.refresh_token !== 'string' || !data.refresh_token.trim() ||
     typeof data.expires_in !== 'number' || !Number.isFinite(data.expires_in) ||

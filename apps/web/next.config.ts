@@ -12,7 +12,7 @@ function getRosiePackages(): string[] {
     return Object.keys(deps).filter((name) => name.startsWith('@rosie/'))
   } catch {
     // Fallback to hardcoded list if dynamic detection fails
-    return ['@rosie/core', '@rosie/rewards', '@rosie/player', '@rosie/ui', '@rosie/calc', '@rosie/math-kit', '@rosie/math-content', '@rosie/math', '@rosie/english', '@rosie/flipbook', '@rosie/audio', '@rosie/chinese', '@rosie/tasks', '@rosie/materials']
+    return ['@rosie/core', '@rosie/rewards', '@rosie/player', '@rosie/ui', '@rosie/calc', '@rosie/math-kit', '@rosie/math-content', '@rosie/math', '@rosie/english', '@rosie/flipbook', '@rosie/audio', '@rosie/chinese', '@rosie/tasks']
   }
 }
 
@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
   transpilePackages: getRosiePackages(),
 
   redirects: async () => [
+    { source: '/tasks/:retired(schedule|pool|templates|materials)', destination: '/tasks/timetable', permanent: true },
     { source: '/admin/calc', destination: '/setting/calc', permanent: false },
     { source: '/admin/awards', destination: '/setting/awards', permanent: false },
     { source: '/admin/plans/:path*', destination: '/setting/plans/:path*', permanent: false },

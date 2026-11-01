@@ -16,7 +16,7 @@ precacheAndRoute([
 
 // Private content must bypass every destination cache, including image/PDF navigations.
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/api/materials/'),
+  ({ url }) => url.pathname.startsWith('/api/baidu/sync/'),
   new NetworkOnly(),
 )
 
@@ -62,8 +62,6 @@ registerRoute(
 registerRoute(
   ({ url, request }) =>
     !url.pathname.startsWith('/api/baidu/audio/') &&
-    !url.pathname.startsWith('/api/materials/') &&
-    !url.pathname.includes('/storage/v1/object/sign/task-audio/') &&
     !url.pathname.includes('/storage/v1/object/sign/chinese-reading-recordings/') &&
     (request.destination === 'audio' ||
       /\.(mp3|m4a|wav|aac|ogg|webm)(\?|$)/i.test(url.pathname + url.search)),

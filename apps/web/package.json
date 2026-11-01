@@ -38,8 +38,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-pageflip": "^2.0.3",
-    "xlsx": "^0.18.5",
-    "@rosie/materials": "workspace:*"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

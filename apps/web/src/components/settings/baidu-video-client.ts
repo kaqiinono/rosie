@@ -1,35 +1,32 @@
 'use client'
 
 import { supabase } from '@rosie/core'
+import type { MathVideoEditor } from '@/lib/baidu-math-video-report-types'
 
-export async function requestBaiduVideoData(
-  action: 'sync' | 'report', userId: string, lessonKey: string, signal: AbortSignal, force = false,
-): Promise<unknown> {
+type Read = { action: 'read'; lessonKey: string; directoryId?: string }
+type Mutation = {
+  lessonKey: string; directoryId: string | null; generation: string; version: string | null
+} & ({ action: 'sync' } | { action: 'save'; revision: string | null; picks: Record<string,string> })
+export type VideoRequest = Read | Mutation
+
+export async function requestBaiduVideoData(userId: string, input: VideoRequest, signal: AbortSignal): Promise<MathVideoEditor> {
   const { data, error } = await supabase.auth.getSession()
-  if (error || data.session?.user.id !== userId) throw new Error('登录已过期，请重新登录。')
-  const query = action === 'report' ? `?lessonKey=${encodeURIComponent(lessonKey)}` : ''
-  const response = await fetch(`/api/baidu/video/catalog/${action}${query}`, {
-    method: action === 'sync' ? 'POST' : 'GET',
-    headers: { Authorization: `Bearer ${data.session.access_token}`, ...(action === 'sync' ? { 'Content-Type': 'application/json' } : {}) },
-    body: action === 'sync' ? JSON.stringify({ lessonKey, force }) : undefined,
+  if (error || data.session?.user.id !== userId) throw Error('登录已过期，请重新登录。')
+  const query = new URLSearchParams({ lessonKey: input.lessonKey })
+  if (input.directoryId) query.set('directoryId', input.directoryId)
+  const route = input.action === 'sync' ? 'sync' : 'report'
+  const response = await fetch('/api/baidu/video/catalog/' + route + '?' + query, {
+    method: input.action === 'read' ? 'GET' : input.action === 'sync' ? 'POST' : 'PUT',
+    headers: { Authorization: 'Bearer ' + data.session.access_token, 'Content-Type': 'application/json' },
+    body: input.action === 'read' ? undefined : JSON.stringify(input),
     credentials: 'same-origin', cache: 'no-store',
-    signal: AbortSignal.any([signal, AbortSignal.timeout(action === 'sync' ? 300_000 : 30_000)]),
+    signal: AbortSignal.any([signal, AbortSignal.timeout(input.action === 'sync' ? 300_000 : 30_000)]),
   })
-  if (response.status === 401) throw new Error('登录已过期，请重新登录。')
-  if (response.status === 403) throw new Error('需要管理员权限。')
-  if (response.status === 400) throw new Error('年级或讲次无效，请重新选择。')
-  if (response.status === 502 && action === 'sync') throw new Error('网盘搜索结果不完整，未替换本讲旧清单。请检查本讲文件数量或稍后重试。')
-  if (!response.ok) throw new Error(action === 'sync'
-    ? '同步失败，旧清单未被本次失败替换。请检查百度授权、目录与数据库迁移后重试。'
-    : '报告读取失败，请检查数据库迁移和网络后重试。')
-  return response.json()
-}
-
-export function videoSyncTime(value: string): string {
-  return new Intl.DateTimeFormat('zh-CN', {
-    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
-  }).format(new Date(value))
+  const result = await response.json()
+  if (!response.ok) throw Error(typeof result?.error === 'string' ? result.error : '请求失败，请重试。')
+  if (result?.lessonKey !== input.lessonKey || !Array.isArray(result.bindings) || !Array.isArray(result.problems))
+    throw Error('读取结果异常，请重新读取。')
+  return result as MathVideoEditor
 }
 
 export const VIDEO_SECONDARY_BUTTON = 'inline-flex min-h-11 items-center justify-center rounded-xl border border-border-light bg-surface px-3 py-2 text-sm font-semibold text-text-primary hover:bg-surface-dim focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-blue disabled:cursor-not-allowed disabled:opacity-50'

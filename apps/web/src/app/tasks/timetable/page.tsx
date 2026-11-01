@@ -1,2 +1,3 @@
-import TasksHost from '@/components/tasks/TasksHost'
-export default function Page() { return <TasksHost section="timetable" /> }
+import { TimetablePage } from '@rosie/tasks'
+
+export default function Page() { return <TimetablePage /> }
