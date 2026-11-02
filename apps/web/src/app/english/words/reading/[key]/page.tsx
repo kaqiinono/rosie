@@ -19,7 +19,7 @@ import { wordKey } from '@rosie/english'
 import type { MasteryLevel } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import type { WordEntry, WeekDayProgress } from '@rosie/core'
-import { PassageView } from '@rosie/english'
+import { ListeningDrawer, listeningClipsFor, PassageView } from '@rosie/english'
 import { WordPopup } from '@rosie/english'
 import { ParagraphRecallQuiz } from '@rosie/english'
 import { UncoveredWordsReview } from '@rosie/english'
@@ -38,6 +38,10 @@ const HOUHAI_STAGES = new Set(['4A', '5A'])
 
 export default function ReadingPassagePage({ params }: { params: Promise<{ key: string }> }) {
   const { key } = use(params)
+  return <ReadingPassageDetail key={key} passageKey={key} />
+}
+
+function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
   const { masteryMap, recordRecallAttempt } = useWordsContext()
   const { user } = useAuth()
   const { vocab: fullVocab } = useWordData(user)
@@ -45,13 +49,59 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
   const audioUrl = useReadingPassageAudio(user, key)
   const player = usePlaylistPlayer()
   const { stop } = player
-  useEffect(() => { stop() }, [key, stop])
+  const [loadingNarration, setLoadingNarration] = useState(false)
+  useEffect(() => stop, [stop])
   const narrationActive = player.current?.refLink === `/english/words/reading/${key}`
   const narrationPlaying = narrationActive && player.isPlaying && !player.isPaused
   const searchParams = useSearchParams()
   const focusWord = searchParams.get('focus')
 
   const passage = findPassageByKey(key)
+  const clips = useMemo(() => listeningClipsFor(passage), [passage])
+  const [listening, setListening] = useState<{ key: string; index: number; open: boolean } | null>(null)
+  const listeningOpen = listening?.key === key && listening.open
+  const clipIndex = listening?.key === key ? listening.index : 0
+  const target = listeningOpen ? clips[clipIndex]?.target : undefined
+  const selectClip = (index: number) => {
+    if (loadingNarration) {
+      stop()
+      setLoadingNarration(false)
+    } else {
+      player.audioRef.current?.pause()
+    }
+    setListening({ key, index, open: true })
+  }
+  const closeListening = () => setListening({ key, index: clipIndex, open: false })
+  const clipButton = (cue: string) => {
+    const index = clips.findIndex(clip => clip.target === cue)
+    if (index < 0) return null
+    return (
+      <button type="button" aria-label={`听记第 ${index + 1} 段`} title="听记练习"
+        className={`inline-flex size-8 items-center justify-center align-middle hover:text-orange-600 ${target === cue ? 'text-orange-600' : 'text-slate-400'}`}
+        onClick={() => selectClip(index)}>
+        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 16v-4a9 9 0 0 1 18 0v4"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/>
+        </svg>
+      </button>
+    )
+  }
+  useEffect(() => {
+    if (!target) return
+    const follow = () => {
+      const node = document.querySelector(`[data-narration-cue="${target}"]`)
+      const drawer = document.getElementById('reading-listening-drawer')
+      if (!node || !drawer) return
+      const rect = node.getBoundingClientRect()
+      const bottom = drawer.getBoundingClientRect().top - 12
+      const top = 80
+      if (rect.top < top || rect.bottom > bottom) {
+        window.scrollBy({ top: rect.top - top - Math.max(0, (bottom - top - rect.height) / 2), behavior: 'instant' })
+      }
+    }
+    follow()
+    window.addEventListener('resize', follow)
+    return () => window.removeEventListener('resize', follow)
+  }, [target, clipIndex])
   const [stripSelected, setStripSelected] = useState<WordEntry | null>(null)
   /** Two reading modes per design 2C. Defaults to 专注模式 (distraction-free reading). */
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
@@ -287,11 +337,20 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           )}
         </div>
 
-        <div className="flex items-start justify-between gap-3">
-          <h1 className="font-fredoka min-w-0 flex-1 text-2xl font-bold text-gray-900 sm:text-3xl">
-            {passage.title}
-          </h1>
-          <div className="flex shrink-0 items-center gap-2">
+        <h1 className="font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">
+          <span data-narration-cue="title" className={target === 'title' ? 'rounded bg-amber-100 text-[1.08em]' : undefined}>{passage.title}</span>{clipButton('title')}
+        </h1>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
+            {LEGEND.map((l) => (
+              <div key={l.level} className="flex items-center gap-1.5">
+                <span className={`inline-block h-2 w-2 rounded-full ${l.dot}`} />
+                <span>{l.label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
+            {clips.length > 0 && <button onClick={() => selectClip(clipIndex)} className="inline-flex min-h-11 items-center rounded-full bg-white px-3 text-xs font-bold text-orange-800 ring-1 ring-orange-200">🎧 听记</button>}
             <button
               type="button"
               onClick={() => window.open(`/english/words/reading/${passage.key}/print`, '_blank')}
@@ -328,41 +387,51 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
             </button>
             <button
               type="button"
-              disabled={!audioUrl}
-              aria-label={!audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '播放朗读'}
+              disabled={loadingNarration}
+              aria-busy={loadingNarration}
+              aria-label={loadingNarration ? '正在加载朗读' : !audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '播放朗读'}
               aria-pressed={narrationPlaying}
               title={!audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'}
-              onClick={() => {
-                if (!audioUrl) return
+              onClick={async () => {
+                setListening(null)
+                if (!audioUrl) {
+                  window.alert('未找到本课朗读音频')
+                  return
+                }
                 if (narrationActive && player.isPlaying) {
                   player.togglePause()
                 } else {
-                  player.play([{
-                    url: audioUrl,
-                    label: passage.title,
-                    refLink: `/english/words/reading/${key}`,
-                    mediaType: 'audio',
-                    source: null,
-                  }])
+                  setLoadingNarration(true)
+                  try {
+                    const started = await player.playWhenReady({
+                      url: audioUrl,
+                      label: passage.title,
+                      refLink: `/english/words/reading/${key}`,
+                      mediaType: 'audio',
+                      source: null,
+                    })
+                    if (started) setLoadingNarration(false)
+                  } catch {
+                    const networkError = player.audioRef.current?.error?.code === 2 || !navigator.onLine
+                    stop()
+                    setLoadingNarration(false)
+                    window.alert(networkError ? '网络连接失败，请重试' : '音频暂时无法播放，请重试')
+                  }
                 }
               }}
-              className={`mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] ring-1 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:cursor-not-allowed disabled:opacity-40 ${
+              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] ring-1 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:cursor-not-allowed disabled:opacity-40 ${
                 narrationPlaying
                   ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white shadow-sm ring-orange-300'
                   : 'cursor-pointer bg-white/90 text-orange-700 ring-orange-200 hover:bg-white'
               }`}
             >
-              <span aria-hidden>{narrationPlaying ? '⏸' : '🔊'}</span>
+              {loadingNarration ? (
+                <span aria-hidden className="size-5 animate-spin rounded-full border-2 border-orange-200 border-t-orange-700 motion-reduce:animate-none" />
+              ) : (
+                <span aria-hidden>{narrationPlaying ? '⏸' : '🔊'}</span>
+              )}
             </button>
           </div>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
-          {LEGEND.map((l) => (
-            <div key={l.level} className="flex items-center gap-1.5">
-              <span className={`inline-block h-2 w-2 rounded-full ${l.dot}`} />
-              <span>{l.label}</span>
-            </div>
-          ))}
         </div>
       </div>
 
@@ -392,6 +461,9 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
           lessonWords={visibleWords}
           masteryMap={masteryMap}
           focusWord={focusWord}
+          listeningTarget={target}
+          renderClipButton={clips.length ? clipButton : undefined}
+          narrationRef={narrationActive && !listeningOpen && (listening?.key !== key || narrationPlaying) ? player.audioRef : undefined}
           recallOutcomes={recallOutcomes}
           recallCounts={recallCounts}
           mode={readingMode}
@@ -427,7 +499,9 @@ export default function ReadingPassagePage({ params }: { params: Promise<{ key: 
         onEntryChange={setStripSelected}
         onClose={() => setStripSelected(null)}
       />
-      <PlayerDock player={player} theme="light" showProgress />
+      <div hidden={listeningOpen}><PlayerDock player={player} theme="light" showProgress /></div>
+      {listeningOpen && <ListeningDrawer passageKey={key} clips={clips} index={clipIndex} select={selectClip} close={closeListening} />}
+
     </main>
   )
 }

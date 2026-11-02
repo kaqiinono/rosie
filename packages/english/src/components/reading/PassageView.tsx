@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type RefObject, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '../../utils/reading-data'
 import type { StorySentence } from '../../utils/story-types'
@@ -35,6 +35,9 @@ interface PassageViewProps {
   /** Optional render slot injected at the end of each paragraph (e.g. recall quiz). */
   renderParagraphFooter?: (paragraphIndex: number) => ReactNode
   /** Optional sentence anchors for continuous Story reading/bookmarks. */
+  listeningTarget?: string
+  renderClipButton?: (cue: string) => ReactNode
+  narrationRef?: RefObject<HTMLVideoElement | null>
   sentenceGroups?: StorySentence[][]
 }
 
@@ -91,6 +94,9 @@ export default function PassageView({
   recallCounts,
   mode = 'learn',
   renderParagraphFooter,
+  listeningTarget,
+  renderClipButton,
+  narrationRef,
   sentenceGroups,
 }: PassageViewProps) {
   const levelClass = mode === 'focus' ? LEVEL_CLASS_FOCUS : LEVEL_CLASS
@@ -98,6 +104,44 @@ export default function PassageView({
   const [selectedMatch, setSelectedMatch] = useState<WordFormMatch | null>(null)
   const [glossarySelected, setGlossarySelected] = useState<GlossaryWord | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const [activeCue, setActiveCue] = useState('')
+  useEffect(() => {
+    const media = narrationRef?.current
+    const cues = passage.narrationCues
+    if (!media || !cues) {
+      setActiveCue('')
+      return
+    }
+    const sync = () => {
+      const time = media.currentTime
+      for (const [paragraph, intervals] of cues.entries()) {
+        const sentence = intervals.findIndex(([start, end]) => time >= start && time < end)
+        if (sentence >= 0) {
+          setActiveCue(`${paragraph}-${sentence}`)
+          return
+        }
+      }
+      setActiveCue('')
+    }
+    sync()
+    media.addEventListener('timeupdate', sync)
+    media.addEventListener('seeking', sync)
+    return () => {
+      media.removeEventListener('timeupdate', sync)
+      media.removeEventListener('seeking', sync)
+    }
+  }, [narrationRef, passage])
+
+  useEffect(() => {
+    if (!activeCue) return
+    const sentence = containerRef.current?.querySelector(`[data-narration-cue="${activeCue}"]`)
+    if (!sentence) return
+    const rect = sentence.getBoundingClientRect()
+    if (rect.top < 80 || rect.bottom > window.innerHeight - 150) {
+      sentence.scrollIntoView({ block: 'center', behavior: 'instant' })
+    }
+  }, [activeCue])
 
   const regex = useMemo(
     () => buildEntryMatchRegex(lessonWords),
@@ -179,12 +223,11 @@ export default function PassageView({
     return out
   }
 
-  const renderParagraph = (text: string, paragraphIndex: number): ReactNode => {
+  const renderParagraph = (text: string, paragraphIndex: number, occurrenceMap = new Map<string, number>()): ReactNode => {
     if (!regex) return renderGlossary(text, `p${paragraphIndex}`)
     // Reset regex state (it has /g flag in some constructions)
     const re = new RegExp(regex.source, regex.flags)
     const parts: ReactNode[] = []
-    const occurrenceMap = new Map<string, number>() // lowercased word → next occurrence index
     let lastIndex = 0
     let m: RegExpExecArray | null
 
@@ -259,6 +302,24 @@ export default function PassageView({
     return parts
   }
 
+  const renderTextbookParagraph = (text: string, index: number) => {
+    const cues = passage.narrationCues?.[index]
+    if (!cues && !renderClipButton) return renderParagraph(text, index)
+    const sentences = text.split(/(?<=[.!?])\s+/)
+    if (!renderClipButton && sentences.length !== cues?.length) return renderParagraph(text, index)
+    const occurrences = new Map<string, number>()
+    return sentences.map((sentence, i) => {
+      const cue = `${index}-${i}`
+      return (
+        <span key={cue} data-narration-cue={cue} className={cue === listeningTarget
+          ? 'rounded bg-amber-200 box-decoration-clone text-[1.08em] ring-1 ring-amber-400'
+          : cue === activeCue ? 'rounded bg-amber-100 box-decoration-clone text-[1.08em]' : undefined}>
+          {renderParagraph(sentence, index, occurrences)}{renderClipButton?.(cue)}{' '}
+        </span>
+      )
+    })
+  }
+
   return (
     <div ref={containerRef} className="font-nunito">
       {sourceStages.length > 1 && (
@@ -280,7 +341,7 @@ export default function PassageView({
           <div key={i}>
             {passage.paragraphTitles?.[i] && (
               <h2 className="font-fredoka mb-2 text-base font-black tracking-wide text-app-blue-dark sm:text-lg">
-                {passage.paragraphTitles[i]}
+                <span data-narration-cue={`heading-${i}`} className={listeningTarget === `heading-${i}` ? 'rounded bg-amber-100 text-[1.08em]' : undefined}>{passage.paragraphTitles[i]}</span>{renderClipButton?.(`heading-${i}`)}
               </h2>
             )}
             <p className="break-words">
@@ -297,7 +358,7 @@ export default function PassageView({
                       {renderParagraph(sentence.text, i * 1000 + sentence.index)}{' '}
                     </span>
                   ))
-                : renderParagraph(p, i)}
+                : renderTextbookParagraph(p, i)}
             </p>
             {renderParagraphFooter && (
               <div className="mt-4">{renderParagraphFooter(i)}</div>

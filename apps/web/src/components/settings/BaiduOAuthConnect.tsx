@@ -42,7 +42,7 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
     window.history.replaceState(window.history.state, '', url.toString())
   }, [canAuthorize, personal])
 
-  async function authorize() {
+  async function authorize(forceLogin = false) {
     if (pendingRef.current) return
     pendingRef.current = true
     setPending(true)
@@ -74,6 +74,7 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
         destination.pathname !== '/oauth/2.0/authorize') {
         throw new Error('授权地址无效，请重试。')
       }
+      if (forceLogin) destination.searchParams.set('force_login', '1')
       window.location.assign(destination.toString())
     } catch (error) {
       if (error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
@@ -95,7 +96,7 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
   return (
     <section key={user?.id} id="baidu-oauth" aria-labelledby="baidu-oauth-title"
       className="mt-5 scroll-mt-20 rounded-3xl border border-blue-200 bg-white/85 p-5 shadow-sm">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h3 id="baidu-oauth-title" className="text-[16px] font-extrabold text-slate-800">
             {personal ? '我的百度网盘' : '共享百度网盘'}
@@ -104,10 +105,16 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
             {personal ? '将你的百度网盘绑定到当前 Rosie 账户。' : '连接存放公共课文音频、数学视频和共享物料的网盘。'}
           </p>
         </div>
-        <button type="button" onClick={() => void authorize()} disabled={pending} aria-busy={pending}
-          className="min-h-11 min-w-40 shrink-0 rounded-xl bg-blue-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-wait disabled:opacity-60">
-          {pending ? '正在前往百度…' : '授权百度网盘'}
-        </button>
+        <div className="grid grid-cols-2 gap-2 lg:shrink-0">
+          <button type="button" onClick={() => void authorize()} disabled={pending} aria-busy={pending}
+            className="min-h-11 min-w-0 rounded-xl bg-blue-600 px-2 sm:px-5 py-2 text-sm font-bold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-wait disabled:opacity-60">
+            {pending ? '正在前往百度…' : '授权百度网盘'}
+          </button>
+          <button type="button" onClick={() => void authorize(true)} disabled={pending}
+            className="min-h-11 min-w-0 rounded-xl border border-blue-200 px-2 sm:px-4 py-2 text-sm font-semibold text-app-blue-dark hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60">
+            重新登录百度并授权
+          </button>
+        </div>
       </div>
       <p role="status" aria-live="polite" aria-atomic="true"
         className={`mt-3 min-h-5 text-[13px] leading-relaxed ${success ? 'text-emerald-700' : 'text-red-700'}`}>

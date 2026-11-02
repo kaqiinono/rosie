@@ -6,7 +6,11 @@ export const BAIDU_AUDIO_COOKIE = 'rosie_reading_audio_session'
 export const BAIDU_AUDIO_COOKIE_PATH = '/api/baidu/audio'
 const STAGES = ['4A', '5A'] as const
 
-export function baiduReadingPath(key: string): string | null {
+export function baiduReadingPath(key: string, clip: string | null = null): string | null {
+  if (clip !== null) {
+    return key === '5a-u3l2' && /^(?:0[1-9]|1[0-9]|2[0-8])$/.test(clip)
+      ? `${ROOT}/5A/listening/U3L2/U3L2-${clip}.mp3` : null
+  }
   const match = /^(4a|5a)-u([1-9]\d?)l([1-9]\d?)$/.exec(key)
   return match ? `${ROOT}/${match[1].toUpperCase()}/U${match[2]}L${match[3]}.mp3` : null
 }
@@ -24,7 +28,7 @@ export async function listBaiduReadingKeys(): Promise<string[]> {
   return results.flat()
 }
 
-export async function fetchBaiduReadingAudio(key: string, range: string | null, signal: AbortSignal): Promise<Response | null> {
-  const path = baiduReadingPath(key)
+export async function fetchBaiduReadingAudio(key: string, range: string | null, signal: AbortSignal, clip: string | null = null): Promise<Response | null> {
+  const path = baiduReadingPath(key, clip)
   return path ? fetchBaiduMedia(path, range, signal, 'audio') : null
 }

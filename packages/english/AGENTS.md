@@ -242,3 +242,8 @@ audio and flipbook modules consume it from `@rosie/english`.
 pnpm --filter @rosie/english typecheck
 pnpm --filter @rosie/english lint
 ```
+
+5A U3L2 listening practice maps 28 numbered MP3s to the title, headings and sentence anchors
+in `utils/listening-clips.ts`. A sentence can have multiple clause recordings. The reading
+detail drawer streams `/api/baidu/audio/5a-u3l2?clip=01` through the existing authenticated
+Baidu audio session. Clip streams use the shared account's `5A/listening/U3L2` directory.

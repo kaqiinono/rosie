@@ -20,6 +20,7 @@ export interface PlaylistPlayer {
   loopMode: LoopMode
   loopCount: LoopCount
   play: (tracks: PlayerTrack[], startIndex?: number) => void
+  playWhenReady: (track: PlayerTrack) => Promise<boolean>
   enqueue: (tracks: PlayerTrack[]) => void
   togglePause: () => void
   prev: () => void
@@ -81,6 +82,29 @@ export function usePlaylistPlayer(): PlaylistPlayer {
     [playAt],
   )
 
+  const pendingStart = useRef(0)
+  const playWhenReady = useCallback(async (track: PlayerTrack) => {
+    const el = audioRef.current
+    if (!el) throw new Error('Media element unavailable')
+    const attempt = ++pendingStart.current
+    el.src = track.url
+    try {
+      await el.play()
+    } catch (error) {
+      if (attempt !== pendingStart.current) return false
+      throw error
+    }
+    if (attempt !== pendingStart.current) return false
+    const tracks = [track]
+    loopsDoneRef.current = 0
+    queueRef.current = tracks
+    setQueue(tracks)
+    setIndex(0)
+    setIsPlaying(true)
+    setIsPaused(false)
+    return true
+  }, [])
+
   const enqueue = useCallback(
     (tracks: PlayerTrack[]) => {
       const existing = queueRef.current
@@ -102,6 +126,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
   )
 
   const stop = useCallback(() => {
+    pendingStart.current++
     const el = audioRef.current
     if (el) {
       el.pause()
@@ -232,6 +257,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
     loopMode,
     loopCount,
     play,
+    playWhenReady,
     enqueue,
     togglePause,
     prev,

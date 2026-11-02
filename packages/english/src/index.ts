@@ -163,3 +163,5 @@ export {
 } from './grammar/grammar-toc'
 export { GRAMMAR_INDEX } from './grammar/grammar-index'
 export * from './grammar/types'
+export { default as ListeningDrawer } from './components/reading/ListeningDrawer'
+export { listeningClipsFor } from './utils/listening-clips'

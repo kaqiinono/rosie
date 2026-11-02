@@ -11,7 +11,8 @@ function failure(error: string, status: number) {
 
 export async function GET(req: NextRequest, context: { params: Promise<{ key: string }> }) {
   const { key } = await context.params
-  if (!baiduReadingPath(key)) return failure('not_found', 404)
+  const clip = req.nextUrl.searchParams.get('clip')
+  if (!baiduReadingPath(key, clip)) return failure('not_found', 404)
   const token = req.cookies.get(BAIDU_AUDIO_COOKIE)?.value
   if (!token) return failure('unauthorized', 401)
   const user = await getUserFromRequest(new Request(req.url, {
@@ -23,10 +24,11 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
 
   let upstream: Response | null = null
   try {
-    upstream = await fetchBaiduReadingAudio(key, range, req.signal)
+    upstream = await fetchBaiduReadingAudio(key, range, req.signal, clip)
   } catch {
     // Missing authorization, revoked tokens and upstream failures keep Storage usable.
   }
+  if (!upstream && clip !== null) return failure('clip_unavailable', 503)
   if (!upstream) {
     const origin = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!origin) return failure('audio_unavailable', 503)

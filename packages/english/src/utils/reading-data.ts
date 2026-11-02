@@ -32,6 +32,8 @@ export interface ReadingPassage {
   title: string
   /** Optional heading aligned by index with `paragraphs` (e.g. diary dates). */
   paragraphTitles?: string[]
+  /** Narration intervals in seconds, grouped by paragraph and sentence. */
+  narrationCues?: [number, number][][]
   paragraphs: string[]
   glossary?: GlossaryWord[]
   learningSections?: ReadingLearningSection[]
@@ -2264,6 +2266,14 @@ export const readingPassages: ReadingPassage[] = [
     "unit": "Unit 3",
     "lesson": "Lesson 2",
     "title": "Nature’s Creative Creatures",
+    "narrationCues": [
+      [[7.71, 15.24], [15.80, 18.63]],
+      [[22.98, 33.11]],
+      [[33.93, 37.37], [37.97, 41.29], [42.13, 46.81], [47.38, 50.98]],
+      [[54.73, 57.16], [57.71, 61.92], [62.62, 67.49], [68.06, 71.71], [72.28, 76.51], [77.06, 80.77]],
+      [[84.49, 87.32], [87.82, 95.17], [95.97, 102.64], [103.25, 105.29], [105.97, 112.19], [112.85, 117.63]],
+      [[120.23, 123.79], [124.23, 128.56]]
+    ],
     "paragraphs": [
       "You’ve probably learnt a lot about animals, but we bet you haven’t been studying animals as unusual as these. Here are three unusual creatures found in nature.",
       "This unusual Australian animal seems to have parts from other, more common species: a duck’s bill, a body covered with fur, and a beaver-like tail.",

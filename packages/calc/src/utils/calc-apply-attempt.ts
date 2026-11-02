@@ -57,6 +57,7 @@ export function defaultProblemState(signature: string, level: CalcLevel): CalcPr
     level,
     proficiency: 0,
     attemptCount: 0,
+    needsRemediation: false,
     appearanceCount: 0,
     recentResults: [],
     status: 'active',
