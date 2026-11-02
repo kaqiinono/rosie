@@ -3,7 +3,7 @@ import { exactBaiduId, parseBaiduJson } from './baidu-identity'
 import { getBaiduAccountContext, getBaiduAccessToken } from './baidu-token'
 
 interface NetdiskFile {
-  fs_id: number
+  fs_id: string
   path: string
   isdir: number
 }
@@ -34,6 +34,7 @@ async function baiduJson(
   if (!response.ok || !body || typeof body !== 'object') throw new Error('baidu_unavailable')
   const result = body as Record<string, unknown>
   if (result.errno === -9) return { errno: 0, list: [] }
+  if ([-6, 110, 111].includes(Number(result.errno ?? result.error_code))) throw Error('baidu_reauthorize')
   if (result.errno !== 0) throw new Error('baidu_api_error')
   return result
 }
@@ -61,12 +62,9 @@ export async function listBaiduDirectory(directory: string): Promise<NetdiskFile
         const file = item as Record<string, unknown>
         if (
           typeof file.path === 'string' &&
-          typeof file.fs_id === 'number' &&
-          Number.isSafeInteger(file.fs_id) &&
-          file.fs_id > 0 &&
           file.isdir === 0
         ) {
-          files.push({ path: file.path, fs_id: file.fs_id, isdir: 0 })
+          files.push({ path: file.path, fs_id: exactBaiduId(file.fs_id), isdir: 0 })
         }
       }
       if (result.list.length < 1000) {
@@ -111,7 +109,7 @@ export async function fetchBaiduMedia(
   const directory = path.slice(0, path.lastIndexOf('/'))
   const file = (await listBaiduDirectory(directory)).find((item) => item.path === path)
   if (!file) return null
-  return fetchBaiduFileById(String(file.fs_id), directory, range, signal, kind, await getBaiduAccessToken(), path)
+  return fetchBaiduFileById(file.fs_id, directory, range, signal, kind, await getBaiduAccessToken(), path)
 }
 
 /** The metadata and download use the same account token. A move outside the bound directory invalidates playback. */
@@ -127,8 +125,8 @@ export async function fetchBaiduFileById(
   const prefix = directory === '/' ? '/' : directory + '/'
   if (!info || exactBaiduId(info.fs_id) !== id || info.isdir === 1 || typeof info.path !== 'string' ||
       !info.path.startsWith(prefix) || info.path.slice(prefix.length).includes('/') ||
-      (expectedPath && info.path !== expectedPath) || (kind === 'video' && !/\.mp4$/i.test(info.path)) ||
-      typeof info.dlink !== 'string') return null
+      (expectedPath && info.path !== expectedPath) || (kind === 'video' && !/\.mp4$/i.test(info.path))) return null
+  if (typeof info.dlink !== 'string') throw Error('baidu_download_failed')
   let download = safeDownloadUrl(info.dlink)
   const headers = new Headers({ 'User-Agent': 'pan.baidu.com', 'Accept-Encoding': 'identity' })
   if (range) headers.set('Range', range)

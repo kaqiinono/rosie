@@ -25,7 +25,12 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
   let upstream: Response | null
   try {
     upstream = await fetchBaiduMathVideo(key, range, req.signal)
-  } catch {
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === 'baidu_reauthorize') return failure('baidu_reauthorize', 409)
+      if (['replay_file_not_found', 'baidu_directory_missing'].includes(error.message))
+        return failure('not_found', 404)
+    }
     return failure('video_unavailable', 503)
   }
   if (!upstream) return failure('not_found', 404)

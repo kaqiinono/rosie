@@ -16,6 +16,35 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
   const [ready, setReady] = useState(false)
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
+  const [playbackFailed, setPlaybackFailed] = useState(false)
+  const streamUrl = `/api/baidu/video/${encodeURIComponent(videoKey)}`
+
+  useEffect(() => {
+    if (!playbackFailed) return
+    const controller = new AbortController()
+    // Native video errors hide the HTTP status. Probe one byte only after a failure.
+    void (async () => {
+      try {
+        const response = await fetch(streamUrl, {
+          headers: { Range: 'bytes=0-0' }, cache: 'no-store',
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30_000)]),
+        })
+        await response.body?.cancel()
+        if (controller.signal.aborted) return
+        const messages: Record<number, string> = {
+          401: '播放会话已失效，请重试。若仍失败，请重新登录 Rosie。',
+          404: '找不到这道题绑定的视频，请管理员在网盘同步页核对目录和文件绑定。',
+          409: '请管理员在网盘同步页重新授权共享百度网盘。',
+        }
+        setError(messages[response.status] ?? (response.ok
+          ? '已能读取视频，请重试。若仍无法播放，请检查视频编码。'
+          : '暂时无法读取网盘视频，请稍后重试。'))
+      } catch {
+        if (!controller.signal.aborted) setError('读取回放失败，请检查网络后重试。')
+      }
+    })()
+    return () => controller.abort()
+  }, [playbackFailed, streamUrl])
 
   useEffect(() => {
     const element = dialog.current
@@ -73,15 +102,15 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
       {error ? (
         <div className="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center">
           <p role="alert" className="text-sm text-text-secondary">{error}</p>
-          <button type="button" onClick={() => { setReady(false); setError(''); setAttempt((value) => value + 1) }} className="min-h-11 rounded-lg bg-app-blue px-4 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-app-blue">重试</button>
+          <button type="button" onClick={() => { setPlaybackFailed(false); setReady(false); setError(''); setAttempt((value) => value + 1) }} className="min-h-11 rounded-lg bg-app-blue px-4 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-app-blue">重试</button>
         </div>
-      ) : ready ? (
+      ) : ready && !playbackFailed ? (
         <video
           key={attempt}
           controls autoPlay playsInline preload="metadata"
           aria-label={`${problemCardDisplayId(problem)} 视频回放`}
-          src={`/api/baidu/video/${encodeURIComponent(videoKey)}`}
-          onError={() => setError('暂时无法读取或播放这个视频，请重试。')}
+          src={streamUrl}
+          onError={() => setPlaybackFailed(true)}
           className="aspect-video max-h-[70dvh] w-full bg-black"
         />
       ) : <p role="status" className="flex min-h-48 items-center justify-center p-6 text-sm text-text-secondary">正在打开回放…</p>}

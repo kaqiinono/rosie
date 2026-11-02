@@ -32,14 +32,14 @@ export async function GET(req: NextRequest) {
   const nonce = personal ? state.slice(BAIDU_PERSONAL_STATE_PREFIX.length) : state
   const cookieName = BAIDU_STATE_COOKIE[personal ? 'personal' : 'shared']
 
-  function finish(result: OAuthResult) {
+  function finish(result: OAuthResult, clearCookie = true) {
     const destination = new URL(personal ? '/setting' : '/admin/sync', req.url)
     destination.searchParams.set('baidu_oauth', result)
     destination.hash = 'baidu-oauth'
     const response = NextResponse.redirect(destination, 303)
     response.headers.set('Cache-Control', 'no-store')
     response.headers.set('Referrer-Policy', 'no-referrer')
-    response.cookies.set(cookieName, '', {
+    if (clearCookie) response.cookies.set(cookieName, '', {
       httpOnly: true,
       secure: req.nextUrl.protocol === 'https:',
       sameSite: 'lax',
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
     !/^[a-f0-9]{64}$/.test(cookie) ||
     !timingSafeEqual(Buffer.from(nonce), Buffer.from(cookie))
   )
-    return finish('invalid_state')
+    return finish('invalid_state', false)
 
   let config: BaiduOAuthConfig
   try {
