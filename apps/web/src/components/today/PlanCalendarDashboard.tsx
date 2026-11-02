@@ -46,7 +46,6 @@ export default function PlanCalendarDashboard() {
           share one aligned axis (previously the 960px dashboard looked skewed). */}
       <TodayDashboard
         date={selected}
-        showAllCards
         containerClassName="mx-auto max-w-[640px] px-4 pb-12"
       />
     </>

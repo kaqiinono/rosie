@@ -222,13 +222,10 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
 export default function TodayDashboard({
   date,
   containerClassName,
-  showAllCards = false,
 }: {
   date?: string
   /** Override the outer column (e.g. match the plan-calendar page's 640px column). */
   containerClassName?: string
-  /** Always render all 4 subject cards even when a subject has no plan. */
-  showAllCards?: boolean
 }) {
   const { user } = useAuth()
   const [resetToast, setResetToast] = useState<string | null>(null)
@@ -236,6 +233,7 @@ export default function TodayDashboard({
   const {
     activePlan: activeAdaptive,
     summary: adaptiveToday,
+    isLoading: adaptiveLoading,
   } = useAdaptiveTodayProgress(user)
   const { weeklyPlan: mathPlan, isLoading: mathLoading } = useMathWeeklyPlan(user)
   const { vocab } = useWordData(user)
@@ -405,14 +403,13 @@ export default function TodayDashboard({
           ? '本关完成 🎉'
           : (chinese.currentNode?.lessonTitle ?? '当前关卡')
 
-  const isLoading =
-    englishLoading ||
-    mathLoading ||
-    (!isActualToday && !!activeAdaptive && adaptiveHistoryLoading) ||
-    chinesePlanLoading ||
-    (chinese.isCharDataLoading && !chinese.isCharDataReady)
-
-  if (isLoading) return <LoadingState />
+  const loadingHistory = !isActualToday && !!activeAdaptive && adaptiveHistoryLoading
+  const subjectLoading = {
+    calc: calcDaily.isLoading,
+    english: englishLoading || (isActualToday && adaptiveLoading) || loadingHistory,
+    math: mathLoading,
+    chinese: chinesePlanLoading || (chinese.isCharDataLoading && !chinese.isCharDataReady),
+  }
 
   const hasMath = mathPlan && mathProblems.length > 0
   const hasEnglish = !!(englishPlan && newWordKeys.length > 0) || !!overviewAdaptive
@@ -425,7 +422,7 @@ export default function TodayDashboard({
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
   const calcAccuracy = calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
-  // Active adaptive wins over weekly (same as homepage overview).
+  // Active adaptive wins over weekly.
   // Done today → detail/hub; incomplete → practice.
   const englishHref = overviewAdaptive
     ? adaptiveToday?.allDone
@@ -501,52 +498,32 @@ export default function TodayDashboard({
     },
   })
 
-  // Hide subject cards when no plan/data — same filter as useTodayPlanOverview.
-  // The plan-calendar page opts out (showAllCards) so the 4-column grid stays
-  // stable across dates; subjects without a plan get a muted subtitle instead
-  // of a misleading "0 个词待练".
-  const NO_PLAN_SUBTITLE: Record<string, string> = {
-    english: '暂无英语计划',
-    math: '暂无数学计划',
-    chinese: '暂无语文计划',
-  }
-  const subjectHasPlan: Record<string, boolean> = {
+  const subjectHasPlan = {
     calc: true,
     english: hasEnglish,
     math: !!hasMath,
     chinese: hasChinese,
   }
-  const overviewCards = showAllCards
-    ? allOverviewCards.map((c) =>
-        subjectHasPlan[c.key]
-          ? c
-          : { ...c, subtitle: NO_PLAN_SUBTITLE[c.key] ?? '暂无计划', pct: 0 },
-      )
-    : allOverviewCards.filter((c) => subjectHasPlan[c.key])
+  const overviewCards = allOverviewCards.map((card) => {
+    if (subjectLoading[card.key]) {
+      return {
+        ...card,
+        href: subjectHasPlan[card.key] ? card.href : null,
+        done: null,
+        total: null,
+        subtitle: '正在读取进度…',
+        pct: 0,
+      }
+    }
+    if (subjectHasPlan[card.key]) return card
+    const hasWeeklyPlan = (card.key === 'english' && englishPlan) || (card.key === 'math' && mathPlan)
+    const subtitle = hasWeeklyPlan ? '当天没有安排练习' : '暂无计划'
+    return { ...card, href: null, done: '', total: null, subtitle, pct: 0 }
+  })
 
-  return (
-    <div className={containerClassName ?? 'mx-auto max-w-[960px] px-4 pb-12 sm:px-6'}>
-
-      {/* Stats cards row — calc is always present */}
-      {overviewCards.length > 0 && (
-        <>
-          {resetToast && (
-            <div
-              className="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] font-bold text-amber-900"
-              role="status"
-            >
-              {resetToast}
-            </div>
-          )}
-          <TodayPlanOverviewCards
-            cards={overviewCards}
-            allowReset={isActualToday}
-            onResetToast={setResetToast}
-            className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4"
-          />
-        </>
-      )}
-
+  const loadingDetails = englishLoading || mathLoading || subjectLoading.chinese || loadingHistory
+  const details = loadingDetails ? <LoadingState /> : (
+    <>
       {/* English weekly section — shown only when a weekly plan has words today */}
       {hasWeeklyEnglish && (
       <section className="mb-8">
@@ -857,6 +834,24 @@ export default function TodayDashboard({
           </div>
         )}
       </section>
+    </>
+  )
+
+  return (
+    <div className={containerClassName ?? 'mx-auto max-w-[960px] px-4 pb-12 sm:px-6'}>
+      {resetToast && (
+        <div role="status" className="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900">
+          {resetToast}
+        </div>
+      )}
+      <TodayPlanOverviewCards
+        cards={overviewCards}
+        linkable={date === undefined}
+        allowReset={isActualToday}
+        onResetToast={setResetToast}
+        className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4"
+      />
+      {details}
     </div>
   )
 }

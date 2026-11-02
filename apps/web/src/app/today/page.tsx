@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import TodayDashboard from '@/components/today/TodayDashboard'
+import TodayProgressBackup from '@/components/today/TodayProgressBackup'
 
 function todayLabel() {
   const d = new Date()
@@ -105,6 +106,7 @@ export default function TodayPage() {
       </div>
 
       <div className="relative pt-5">
+        <TodayProgressBackup />
         <TodayDashboard />
       </div>
     </div>

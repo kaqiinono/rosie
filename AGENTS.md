@@ -285,7 +285,9 @@ Both math and English share a weekly plan system with the same Thursday-start we
 
 - `WeeklyPlan` / `MathWeeklyPlan` — stored in Supabase (`weekly_plans` / `math_weekly_plans` tables); each plan includes `weekStartDay` and `newWordsPerDay`/`problemsPerDay` as dedicated integer columns
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
-- `/today` — unified dashboard showing both English and math daily tasks
+- The home menu links to `/today` without fetching daily plans. Opening `/today` loads the four
+  subject progress cards (口算、英语、数学、语文), practice links and progress backup. The separate
+  home learning overview loads only when expanded.
 
 ### PWA
 
