@@ -82,6 +82,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['today', 'records'], label: '练习记录' },
   { pattern: ['today', 'report'], label: '练习报告' },
   { pattern: ['vouchers'], label: '兑换券' },
+  { pattern: ['setting', 'draw-pools'], label: '奖惩管理' },
   { pattern: ['setting'], label: '设置' },
   { pattern: ['setting', 'calc'], label: '口算策略' },
   { pattern: ['setting', 'calc', 'new'], label: '新增策略' },

@@ -1,0 +1,13 @@
+@media (prefers-reduced-motion: no-preference) {
+  .rosie-draw-reveal {
+    animation: rosie-draw-flip .7s ease-out both;
+    backface-visibility: hidden;
+  }
+  @keyframes rosie-draw-flip {
+    0% { transform: perspective(600px) rotateY(180deg) translateX(-12px) rotate(-6deg); }
+    24% { transform: perspective(600px) rotateY(105deg) translateX(12px) rotate(6deg); }
+    42% { transform: perspective(600px) rotateY(94deg) translateX(-8px) rotate(-4deg); }
+    75% { transform: perspective(600px) rotateY(-10deg) scale(1.03); filter: brightness(1.22); }
+    100% { transform: perspective(600px) rotateY(0); }
+  }
+}

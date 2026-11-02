@@ -3,6 +3,7 @@
 import { NavigationLink, OrbBackground } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useGreeting } from '@/hooks/useGreeting'
+import { DrawCard } from '@rosie/rewards'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
 
 const modules = [
@@ -74,6 +75,7 @@ export default function HomePage() {
           ))}
         </nav>
 
+        {user && <DrawCard key={user.id} userId={user.id} />}
         <HomeStatsPanel />
 
         <div className="text-text-muted text-xs">

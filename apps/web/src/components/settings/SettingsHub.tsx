@@ -17,6 +17,11 @@ interface SettingTool {
 
 const PERSONAL_TOOLS: SettingTool[] = [
   {
+    href: '/setting/draw-pools', emoji: '🃏', title: '奖惩管理',
+    description: '添加或移除首页可抽取的奖励和惩罚。',
+    from: 'rgba(251,191,36,0.16)', to: 'rgba(139,92,246,0.12)', ring: 'rgba(139,92,246,0.28)',
+  },
+  {
     href: '/setting/awards', emoji: '🎁', title: '星星与奖券',
     description: '调整当前账户的三色星星余额、赠送兑换券并查看今日操作日志。',
     from: 'rgba(251,191,36,0.16)', to: 'rgba(244,63,94,0.10)', ring: 'rgba(245,158,11,0.30)',
