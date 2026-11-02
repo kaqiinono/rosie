@@ -33,6 +33,8 @@ export interface ReadingPassage {
   /** Optional heading aligned by index with `paragraphs` (e.g. diary dates). */
   paragraphTitles?: string[]
   /** Narration intervals in seconds, grouped by paragraph and sentence. */
+  /** Additional listening boundaries immediately before these phrases, by paragraph. */
+  listeningBreaks?: Record<number, string[]>
   narrationCues?: [number, number][][]
   paragraphs: string[]
   glossary?: GlossaryWord[]
@@ -2266,16 +2268,17 @@ export const readingPassages: ReadingPassage[] = [
     "unit": "Unit 3",
     "lesson": "Lesson 2",
     "title": "Nature’s Creative Creatures",
+    "listeningBreaks": { "0": ["but we bet"], "1": ["a duck’s bill"] },
     "narrationCues": [
-      [[7.71, 15.24], [15.80, 18.63]],
-      [[22.98, 33.11]],
+      [[7.71, 11.10], [11.10, 15.24], [15.80, 18.63]],
+      [[22.98, 28.35], [28.74, 33.11]],
       [[33.93, 37.37], [37.97, 41.29], [42.13, 46.81], [47.38, 50.98]],
       [[54.73, 57.16], [57.71, 61.92], [62.62, 67.49], [68.06, 71.71], [72.28, 76.51], [77.06, 80.77]],
       [[84.49, 87.32], [87.82, 95.17], [95.97, 102.64], [103.25, 105.29], [105.97, 112.19], [112.85, 117.63]],
       [[120.23, 123.79], [124.23, 128.56]]
     ],
     "paragraphs": [
-      "You’ve probably learnt a lot about animals, but we bet you haven’t been studying animals as unusual as these. Here are three unusual creatures found in nature.",
+      "You’ve probably already learnt a lot about animals, but we bet you haven’t been studying animals as unusual as these. Here are three unusual creatures found in nature.",
       "This unusual Australian animal seems to have parts from other, more common species: a duck’s bill, a body covered with fur, and a beaver-like tail.",
       "The platypus is a good swimmer, but it also lives on land. Its webbed feet change when it’s on land to help it run. The platypus is a mammal – mothers nurse their babies for about four months. But what’s unusual about this mammal is that it lays eggs!",
       "The short-horned lizard lives in North America. It’s got horns on its head and back, and a body covered in scales. What makes the short-horned lizard different from other reptiles is how it defends itself. It can blow its body up so it looks like a spiked balloon. If that doesn’t work, it shoots blood from its eyes to trick predators. It can shoot the blood from 1 m (3 ft) away!",

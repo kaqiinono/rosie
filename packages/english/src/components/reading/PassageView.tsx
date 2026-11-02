@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type RefObject, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '../../utils/reading-data'
+import { readingSegments } from '../../utils/listening-clips'
 import type { StorySentence } from '../../utils/story-types'
 import {
   buildEntryMatchRegex,
@@ -305,7 +306,7 @@ export default function PassageView({
   const renderTextbookParagraph = (text: string, index: number) => {
     const cues = passage.narrationCues?.[index]
     if (!cues && !renderClipButton) return renderParagraph(text, index)
-    const sentences = text.split(/(?<=[.!?])\s+/)
+    const sentences = readingSegments(passage, index)
     if (!renderClipButton && sentences.length !== cues?.length) return renderParagraph(text, index)
     const occurrences = new Map<string, number>()
     return sentences.map((sentence, i) => {

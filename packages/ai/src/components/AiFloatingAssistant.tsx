@@ -364,7 +364,7 @@ export default function AiFloatingAssistant({
         onPointerMove={handleLauncherPointerMove}
         onPointerUp={finishLauncherDrag}
         onPointerCancel={cancelLauncherDrag}
-        className={`group fixed right-4 bottom-24 z-50 flex min-h-14 touch-none items-center gap-2 rounded-full bg-gradient-to-br from-violet-500 to-sky-500 p-2.5 text-white shadow-[0_10px_30px_rgba(59,130,246,0.35)] ring-2 ring-white/80 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 md:right-6 md:bottom-6 ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
+        className={`group [body:has(#reading-listening-drawer)_&]:hidden fixed right-4 bottom-24 z-50 flex min-h-14 touch-none items-center gap-2 rounded-full bg-gradient-to-br from-violet-500 to-sky-500 p-2.5 text-white shadow-[0_10px_30px_rgba(59,130,246,0.35)] ring-2 ring-white/80 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 md:right-6 md:bottom-6 ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
       >
         <span
           aria-hidden="true"
