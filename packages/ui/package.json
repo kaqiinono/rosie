@@ -17,6 +17,7 @@
   "dependencies": {
     "@rosie/core": "workspace:*",
     "@rosie/rewards": "workspace:*",
+    "clsx": "2.1.1",
     "lucide-react": "^0.468.0",
     "@radix-ui/react-dialog": "^1.1.6"
   },
@@ -30,6 +31,7 @@
     "@types/react-dom": "^19.0.4",
     "next": "^15.2.4",
     "react": "^19.0.0",
+    "tailwindcss": "^4.0.17",
     "typescript": "^5.8.2"
   }
 }

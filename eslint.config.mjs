@@ -40,6 +40,23 @@ const config = [
     },
   },
 
+  {
+    files: ['packages/ui/src/shadcn/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'warn',
+        ...['Literal', 'TemplateElement'].map((node) => {
+          const value = node === 'Literal' ? 'value' : 'value.raw'
+          const color = /#[\da-f]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\(|\b(?:bg|text|border|ring|fill|stroke|outline)-(?:white|black|(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d{2,3})\b/i
+          return {
+            selector: `${node}[${value}=${color}]`,
+            message: '请使用 sc 语义颜色，例如 bg-sc-muted。',
+          }
+        }),
+      ],
+    },
+  },
+
   // Must be last — disables ESLint formatting rules that conflict with Prettier
   prettierConfig,
 ]
