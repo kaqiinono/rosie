@@ -25,7 +25,8 @@
     "clsx": "^2.1.1",
     "dompurify": "^3.4.11",
     "html-to-image": "^1.11.13",
-    "pdfjs-dist": "^4.10.38"
+    "pdfjs-dist": "^4.10.38",
+    "lucide-react": "^0.468.0"
   },
   "peerDependencies": {
     "next": "^15.2.4",

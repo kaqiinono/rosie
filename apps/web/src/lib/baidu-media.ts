@@ -115,7 +115,7 @@ export async function fetchBaiduMedia(
 /** The metadata and download use the same account token. A move outside the bound directory invalidates playback. */
 export async function fetchBaiduFileById(
   fsId: string, directory: string, range: string | null, signal: AbortSignal,
-  kind: 'audio' | 'video', token: string, expectedPath?: string,
+  kind: 'audio' | 'video' | 'material', token: string, expectedPath?: string,
 ): Promise<Response | null> {
   const id = exactBaiduId(fsId)
   const metadata = await baiduJson('/rest/2.0/xpan/multimedia', {
@@ -151,7 +151,7 @@ export async function fetchBaiduFileById(
     if (
       ![200, 206].includes(response.status) ||
       !(
-        contentType.startsWith(`${kind}/`) ||
+        kind === 'material' || contentType.startsWith(`${kind}/`) ||
         ['application/octet-stream', 'binary/octet-stream'].includes(contentType)
       )
     ) {

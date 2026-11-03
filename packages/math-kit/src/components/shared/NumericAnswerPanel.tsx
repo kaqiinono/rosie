@@ -35,8 +35,12 @@ export default function NumericAnswerPanel({
     pendingCheck?.problemId === problem.id &&
     pendingCheck.feedbackAtStart === feedback
 
+  const questions = [problem, ...(problem.additionalQuestions ?? [])]
+  const values = answer.split('|')
+  const incomplete = questions.length > 1 && questions.some((_, index) => !values[index]?.trim())
+
   const handleCheck = () => {
-    if (isChecking || isCorrect) return
+    if (isChecking || isCorrect || incomplete) return
     // Empty input is rejected synchronously and should not enter a loading state.
     if (answer.trim() !== '') {
       setPendingCheck({ problemId: problem.id, feedbackAtStart: feedback })
@@ -52,30 +56,37 @@ export default function NumericAnswerPanel({
         <div className="h-px flex-1 bg-border-light" />
       </div>
       <div className="mb-3 rounded-lg border border-dashed border-border-light bg-[#f9fafb] p-3.5">
-        <div className="text-[13px] text-text-secondary">{problem.finalQ}</div>
-        <div className="mt-3 grid grid-cols-1 gap-2.5 min-[420px]:grid-cols-[126px_minmax(0,1fr)] min-[420px]:items-start">
-          <div className="flex min-w-0 items-center gap-2">
+        {questions.map((question, index) => (
+          <div key={question.finalQ} className="mb-3">
+            <div className="text-[13px] text-text-secondary">{question.finalQ}</div>
+
+          <div className="mt-2 flex max-w-40 items-center gap-2">
             <input
               type="number"
-              aria-label={problem.finalQ || '答案'}
+              aria-label={question.finalQ || '答案'}
               className="h-11 min-w-0 flex-1 rounded-xl border border-border-light bg-white px-3 text-center text-base font-semibold text-text-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none transition-[border-color,box-shadow] focus:border-violet-400 focus:ring-3 focus:ring-violet-100"
               placeholder="？"
-              value={answer}
+              value={values[index] ?? ''}
               disabled={isChecking || isCorrect}
-              onChange={(e) => onAnswerChange(e.target.value)}
+              onChange={(e) => onAnswerChange(questions.map((_, i) =>
+                i === index ? e.target.value : values[i] ?? '',
+              ).join('|'))}
               onKeyDown={(e) => e.key === 'Enter' && handleCheck()}
             />
-            {problem.finalUnit ? (
+            {question.finalUnit ? (
               <span className="shrink-0 text-sm font-medium text-text-secondary">
-                {problem.finalUnit}
+                {question.finalUnit}
               </span>
             ) : null}
           </div>
+          </div>
+        ))}
+        <div>
           <div className="grid min-w-0 grid-cols-2 gap-2 [&_.ql-toggle-btn]:h-11 [&_.ql-toggle-btn]:w-full [&_.ql-toggle-btn]:justify-center [&>button]:h-11 [&>button]:w-full [&>button]:justify-center">
             {isCorrect ? contextToggle : (
               <button
                 type="button"
-                disabled={isChecking}
+                disabled={isChecking || incomplete}
                 aria-busy={isChecking}
                 onClick={handleCheck}
                 className={`inline-flex cursor-pointer items-center rounded-xl px-4 text-[13px] font-semibold text-white transition-all active:translate-y-px disabled:cursor-wait disabled:opacity-80 ${isChecking ? 'col-span-2' : ''} ${buttonClassName}`}

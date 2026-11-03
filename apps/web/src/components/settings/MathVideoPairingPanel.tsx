@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { bindingValue, type MathVideoEditor, type VideoProblem } from '@/lib/baidu-math-video-report-types'
 import { VIDEO_SECONDARY_BUTTON } from './baidu-video-client'
+import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
 import MathVideoFilePicker from './MathVideoFilePicker'
 
 type Props = {
@@ -28,7 +29,9 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
   const dialog = useRef<HTMLDialogElement>(null)
   const list = useRef<HTMLUListElement>(null)
   const selectedRow = useRef<HTMLLIElement>(null)
-  const active = problems.find(p => p.id === selectedId) ?? problems.find(p => !picks[p.id]) ?? problems[0]
+  const wholeLesson = { id: lessonReplayKey(editor.lessonKey), label: '整讲回放', title: '完整课堂视频' }
+  const targets = [wholeLesson, ...problems]
+  const active = targets.find(p => p.id === selectedId) ?? problems.find(p => !picks[p.id]) ?? problems[0] ?? wholeLesson
   const bindings = new Map(editor.bindings.map(b => [b.problemId, b]))
 
   useEffect(() => {
@@ -49,8 +52,8 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
   function assign(fileId: string) {
     if (!active || busy || !editor.version || picks[active.id] === fileId) return
     choose(active.id, fileId)
-    const index = problems.findIndex(p => p.id === active.id)
-    const remaining = [...problems.slice(index + 1), ...problems.slice(0, index)]
+    const index = targets.findIndex(p => p.id === active.id)
+    const remaining = [...targets.slice(index + 1), ...targets.slice(0, index)].filter(p => p.id !== wholeLesson.id)
     const next = remaining.find(p => !picks[p.id])
     setSelectedId(next?.id ?? active.id)
     if (!next && dialog.current?.open) dialog.current.close()
@@ -58,7 +61,7 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
 
   const videoList = <>
       <p aria-live="polite" className="mb-2 break-words text-sm font-semibold text-app-blue-dark">
-        {active ? '当前题目：' + active.label + ' · ' + active.title : '请先选择题目'}
+        {active ? '当前匹配：' + active.label + ' · ' + active.title : '请先选择题目'}
       </p>
       <MathVideoFilePicker editor={editor} picks={picks} problemId={active?.id ?? ''}
         disabled={busy || !active || !editor.version} choose={assign} />
@@ -66,9 +69,9 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
 
   return <div className="grid items-start gap-3 sm:grid-cols-2">
     <section aria-label="题目列表" className="min-w-0 rounded-xl border border-border-light p-3">
-      <h5 className="mb-2 text-sm font-bold">题目（{problems.length}）</h5>
+      <h5 className="mb-2 text-sm font-bold">整讲回放与题目（{problems.length} 题）</h5>
       <ul ref={list} className="max-h-96 divide-y divide-border-light overflow-y-auto">
-        {problems.map(p => {
+        {targets.map(p => {
           const file = picks[p.id]
           const old = bindings.get(p.id)
           const name = file && (editor.files[file] ?? (old && bindingValue(old) === file ? old.name : file))

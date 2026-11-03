@@ -29,6 +29,20 @@ export function checkProblemAnswer(
     return { ok: false, message: '' }
   }
 
+  if (problem.additionalQuestions?.length) {
+    const questions = [problem, ...problem.additionalQuestions]
+    const answers = typeof input === 'string' ? input.split('|') : []
+    if (answers.length !== questions.length || answers.some(value => !value.trim())) {
+      return { ok: false, message: '' }
+    }
+    const wrong = questions.flatMap((question, index) =>
+      Number(answers[index]) === question.finalAns ? [] : [index + 1],
+    )
+    return wrong.length
+      ? { ok: false, message: `请再检查第 ${wrong.join('、')} 小问。` }
+      : { ok: true, message: CORRECT_MESSAGE }
+  }
+
   const v = Number(input)
   if (v === problem.finalAns) {
     return { ok: true, message: CORRECT_MESSAGE }

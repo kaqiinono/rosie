@@ -342,3 +342,9 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - Components: `PascalCase.tsx` (e.g. `FlashCard.tsx`)
 - Hooks and utilities: `camelCase.ts` (e.g. `useWordMastery.ts`, `english-helpers.ts`)
 - Shared constants (including `STORAGE_KEYS`) and utility helpers (including `todayStr`) live in `@rosie/core`
+
+### 受控 UI 组件
+
+- 业务页及业务包新增或修改控件时，先查阅 [受控组件入口清单](packages/ui/AGENTS.md#受控组件入口清单)。命中适用场景时必须从指定入口导入，通过公开属性选择变体、尺寸和状态。
+- 调用处可安排控件在页面中的位置与外部间距。禁止通过 `className`、`style`、父级选择器或事件拦截覆盖受控组件的外观，以及悬停、按下、焦点、禁用、加载等交互状态。
+- 组件能力不足时，先说明具体使用场景、现有接口的限制和建议扩展的接口，等待用户确认后再实施。确认前禁止在业务页复制组件、直接使用底层原语或临时覆盖样式绕过限制。

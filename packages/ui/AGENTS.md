@@ -22,3 +22,12 @@ stars HUD) + npm. Never a subject module.
 **Notes:** interactive components need `'use client'` at the top (the barrel is pulled into
 server components like `app/layout.tsx`). Barrel: `import { CandyButton } from '@rosie/ui'`
 (named exports — default-exported components are re-exported as named).
+
+## 受控组件入口清单
+
+| 适用场景 | 指定入口 | 使用约定 |
+| --- | --- | --- |
+| 业务弹窗 | `import { AppDialog } from '@rosie/ui'` | 列表和表单使用默认的 `standard`，媒体预览使用 `preview`。弹窗外壳、标题排版、关闭按钮和焦点行为由共享组件维护。业务侧提供标题文字、可选图标、触发元素和内容。 |
+| 链接样式操作按钮 | `LinkButton` from `@rosie/ui` | 页面内操作传入 `onClick`，原生下载链接传入 `href` 和 `download`。 |
+
+新增受控组件或扩展已登记组件的适用范围时，同步更新本清单。

@@ -109,6 +109,7 @@ export interface Problem {
   finalQ: string
   finalUnit: string
   finalAns: number
+  additionalQuestions?: Array<{ finalQ: string; finalUnit: string; finalAns: number }>
   /** 数值题答错时的自定义提示；无 checkAnswer 时生效 */
   wrongHint?: string
   /** 交互题校验：传入宫格 state，返回对错与提示 */

@@ -1,5 +1,6 @@
 'use client'
 
+import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g2/lesson9-data'
@@ -28,7 +29,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
     <div>
       <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-100 p-6">
         <div className="pointer-events-none absolute -top-3 -right-2 text-[90px] opacity-10">✖️</div>
-        <h1 className="mb-1.5 text-2xl font-extrabold text-amber-900">乘除法巧算 ✨</h1>
+        <LessonHomeTitle lessonKey="2-9" className="text-2xl font-extrabold text-amber-900">乘除法巧算 ✨</LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-amber-800">二年级目标班 · 第9讲<br />从基础变形到数字规律：先认结构，再选口诀，最后验算。</p>
       </div>
       <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">

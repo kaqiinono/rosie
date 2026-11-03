@@ -1,5 +1,6 @@
 'use client'
 
+import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
 import { useState } from 'react'
 import type { MathVideoEditor } from '@/lib/baidu-math-video-report-types'
 import { VIDEO_SECONDARY_BUTTON } from './baidu-video-client'
@@ -7,6 +8,7 @@ import { VIDEO_SECONDARY_BUTTON } from './baidu-video-client'
 export default function MathVideoReport({ editor }: { editor: MathVideoEditor }) {
   const [open, setOpen] = useState(false)
   const labels = new Map(editor.problems.map(p => [p.id, p.label + ' · ' + p.title]))
+  labels.set(lessonReplayKey(editor.lessonKey), '整讲回放')
   const byProblem = new Map(editor.bindings.map(b => [b.problemId, b]))
   const groups: [string, string[]][] = [
     ['已绑定', editor.bindings.filter(b => b.available).map(b => (labels.get(b.problemId) ?? b.problemId) + ' → ' + b.name)],

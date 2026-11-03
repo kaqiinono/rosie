@@ -1,5 +1,6 @@
 'use client'
 
+import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
 import { useMemo, useState } from 'react'
 import type { MathVideoEditor } from '@/lib/baidu-math-video-report-types'
 import { VIDEO_SECONDARY_BUTTON } from './baidu-video-client'
@@ -10,6 +11,7 @@ export default function MathVideoFilePicker({ editor, picks, problemId, disabled
   const [page, setPage] = useState(0)
   const used = new Map(Object.entries(picks).map(([problem, file]) => [file, problem]))
   const labels = new Map(editor.problems.map(p => [p.id, p.label]))
+  labels.set(lessonReplayKey(editor.lessonKey), '整讲回放')
   const files = useMemo(() => {
     const collator = new Intl.Collator('zh-CN', { numeric: true })
     return Object.entries(editor.files).sort((a, b) => collator.compare(a[1], b[1]))

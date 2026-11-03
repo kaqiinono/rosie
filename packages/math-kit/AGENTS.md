@@ -82,3 +82,5 @@ growth icons retain their meaning without introducing extra card-border colors.
 
 `loadProblemVideoCatalog(userId,lessonKey)` is the imperative application-adapter reader of the
 same session store used by `useProblemVideoCatalog`; it never syncs Baidu or mutates practice.
+
+A whole-lesson replay uses the reserved binding key returned by `lessonReplayKey`. It is published alongside the question clips but is selected manually outside the question bank and opens from the lesson homepage.

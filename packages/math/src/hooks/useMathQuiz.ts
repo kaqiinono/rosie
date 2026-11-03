@@ -15,7 +15,7 @@ export type QuizProblemItem = {
 }
 
 export type QuizAnswerRecord = {
-  userAnswer: number | null
+  userAnswer: number | string | null
   correct: boolean | null
   /** Draft-only: serialized interactive grid state */
   interactiveState?: unknown

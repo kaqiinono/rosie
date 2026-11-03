@@ -72,7 +72,7 @@ export default function EnglishQuickLinkGrid() {
   }, [user])
 
   return (
-    <div className="grid grid-cols-2 items-stretch gap-4 min-[501px]:gap-5 min-[768px]:grid-cols-3">
+    <div className="grid grid-cols-2 gap-2 min-[500px]:grid-cols-3 md:grid-cols-4">
       {STATIC_LINKS.map(link => (
         <EnglishQuickLinkCard key={link.href} {...link} />
       ))}
@@ -102,10 +102,10 @@ export default function EnglishQuickLinkGrid() {
         badge={hardCount > 0 ? String(hardCount) : undefined}
       />
       <EnglishQuickLinkCard
-        href="/admin/words"
+        href="/english/library"
         icon="🗂️"
-        label="词库管理"
-        description="增删改查 · 批量导入 · AI 填充"
+        label="词库"
+        description="按单词或中英文释义检索词库"
         gradient="linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%)"
         border="rgba(245,158,11,.35)"
         shadow="0 4px 20px rgba(245,158,11,.12)"

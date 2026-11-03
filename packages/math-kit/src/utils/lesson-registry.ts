@@ -113,6 +113,11 @@ export function problemIdForLesson(lessonKey: string, suffix: string): string {
 }
 
 /** 讲次总结 sentinel：`2-1__SUMMARY` */
+/** Reserved binding for the complete lesson recording, outside the question bank. */
+export function lessonReplayKey(lessonKey: string): string {
+  return lessonKey + '-full-replay'
+}
+
 export function lessonSummaryProblemId(lessonKey: string): string {
   return `${lessonKey}__SUMMARY`
 }

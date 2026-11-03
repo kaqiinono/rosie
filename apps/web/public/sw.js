@@ -16,7 +16,7 @@ precacheAndRoute([
 
 // Private content must bypass every destination cache, including image/PDF navigations.
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/api/baidu/sync/'),
+  ({ url }) => url.pathname.startsWith('/api/baidu/sync/') || url.pathname === '/api/baidu/video/materials',
   new NetworkOnly(),
 )
 

@@ -1,5 +1,6 @@
 'use client'
 
+import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g1/lesson40-data'
@@ -83,7 +84,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         <div className="pointer-events-none absolute -top-2.5 -right-2.5 rotate-[15deg] text-[90px] opacity-[0.12]">
           📐
         </div>
-        <h1 className="mb-1.5 text-2xl font-extrabold text-green-900">周长问题 📐</h1>
+        <LessonHomeTitle lessonKey="1-40" className="text-2xl font-extrabold text-green-900">周长问题 📐</LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-green-800">
           第40讲 · 一年级目标班
           <br />

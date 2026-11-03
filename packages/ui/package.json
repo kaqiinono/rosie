@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "@rosie/core": "workspace:*",
-    "@rosie/rewards": "workspace:*"
+    "@rosie/rewards": "workspace:*",
+    "lucide-react": "^0.468.0",
+    "@radix-ui/react-dialog": "^1.1.6"
   },
   "peerDependencies": {
     "next": "^15.2.4",

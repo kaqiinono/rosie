@@ -5,12 +5,12 @@ import { createPortal } from 'react-dom'
 import { supabase, useAuth, type Problem } from '@rosie/core'
 import { useProblemVideoCatalog } from '../../hooks/useProblemVideoCatalog'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
-import { lessonKeyFromProblemId } from '../../utils/lesson-registry'
+import { lessonReplayKey, lessonKeyFromProblemId } from '../../utils/lesson-registry'
 import ProblemActionIcon from './ProblemActionIcon'
 
 type Props = { problem: Pick<Problem, 'id' | 'displayId' | 'title'> }
 
-function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string; onClose: () => void }) {
+function ReplayDialog({ title, videoKey, onClose }: { title: string; videoKey: string; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const [ready, setReady] = useState(false)
@@ -33,7 +33,7 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
         if (controller.signal.aborted) return
         const messages: Record<number, string> = {
           401: '播放会话已失效，请重试。若仍失败，请重新登录 Rosie。',
-          404: '找不到这道题绑定的视频，请管理员在网盘同步页核对目录和文件绑定。',
+          404: '找不到绑定的视频，请管理员在网盘同步页核对目录和文件绑定。',
           409: '请管理员在网盘同步页重新授权共享百度网盘。',
         }
         setError(messages[response.status] ?? (response.ok
@@ -96,7 +96,7 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
       className="fixed inset-0 m-auto w-[calc(100%_-_2rem)] max-w-3xl max-h-[90dvh] overflow-y-auto rounded-2xl border border-border-light bg-surface p-0 text-text-primary shadow-2xl backdrop:bg-black/60"
     >
       <div className="flex items-center justify-between gap-3 border-b border-border-light px-4 py-2">
-        <h2 id={titleId} className="min-w-0 text-sm font-bold">{problemCardDisplayId(problem)} · {problem.title} · 视频回放</h2>
+        <h2 id={titleId} className="min-w-0 text-sm font-bold">{title}</h2>
         <button type="button" autoFocus onClick={onClose} aria-label="关闭视频回放" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl hover:bg-surface-dim focus-visible:outline-2 focus-visible:outline-app-blue">×</button>
       </div>
       {error ? (
@@ -108,7 +108,7 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
         <video
           key={attempt}
           controls autoPlay playsInline preload="metadata"
-          aria-label={`${problemCardDisplayId(problem)} 视频回放`}
+          aria-label={title}
           src={streamUrl}
           onError={() => setPlaybackFailed(true)}
           className="aspect-video max-h-[70dvh] w-full bg-black"
@@ -122,24 +122,33 @@ function ReplayDialog({ problem, videoKey, onClose }: Props & { videoKey: string
 export default function ProblemVideoReplay({ problem }: Props) {
   const { user } = useAuth()
   const { hasVideo } = useProblemVideoCatalog(user, lessonKeyFromProblemId(problem.id))
+  if (!hasVideo(problem.id)) return null
+  return <ReplayButton videoKey={problem.id} label="回放" title={`${problemCardDisplayId(problem)} · ${problem.title} · 视频回放`} />
+}
+
+export function LessonVideoReplay({ lessonKey }: { lessonKey: string }) {
+  return <ReplayButton videoKey={lessonReplayKey(lessonKey)} featured label="本讲回放" title={`第 ${lessonKey.split('-')[1]} 讲 · 完整回放`} />
+}
+
+function ReplayButton({ videoKey, label, title, featured = false }: { featured?: boolean; videoKey: string; label: string; title: string }) {
   const [open, setOpen] = useState(false)
-  const videoKey = problem.id
-  if (!hasVideo(videoKey)) return null
 
   return (
     <>
       <button
         type="button"
-        aria-label={`播放 ${problemCardDisplayId(problem)} 视频回放`}
+        aria-label={`播放 ${title}`}
         aria-haspopup="dialog"
         title="播放视频回放"
         onClick={(event) => { event.preventDefault(); event.stopPropagation(); setOpen(true) }}
-        className="inline-flex h-[30px] shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-lg px-2 text-xs font-semibold text-app-blue-dark transition-colors hover:bg-sky-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-blue motion-reduce:transition-none"
+        className={featured
+          ? "inline-flex min-h-11 items-center gap-2 rounded-xl bg-indigo-700 px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-indigo-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-700"
+          : "inline-flex h-[30px] shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-lg px-2 text-xs font-semibold text-app-blue-dark transition-colors hover:bg-sky-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-blue motion-reduce:transition-none"}
       >
         <ProblemActionIcon name="play" />
-        回放
+        {label}
       </button>
-      {open && <ReplayDialog key={videoKey} problem={problem} videoKey={videoKey} onClose={() => setOpen(false)} />}
+      {open && <ReplayDialog key={videoKey} title={title} videoKey={videoKey} onClose={() => setOpen(false)} />}
     </>
   )
 }

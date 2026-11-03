@@ -21,3 +21,6 @@ export { default as CandyButton } from './CandyButton'
 export * from './CandyButton'
 export { default as JellyButton } from './JellyButton'
 export * from './JellyButton'
+export { AppDialog } from './AppDialog'
+
+export { LinkButton } from './LinkButton'

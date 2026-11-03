@@ -105,13 +105,16 @@ function formatUserAnswer(problem: Problem, record: QuizAnswerRecord | undefined
     return record.interactiveState != null ? '' : '（未作答）'
   }
   if (record.userAnswer == null) return '（未作答）'
-  return `${record.userAnswer}${problem.finalUnit ?? ''}`
+  const values = String(record.userAnswer).split('|')
+  return [problem, ...(problem.additionalQuestions ?? [])].map((q, i) =>
+    values[i] ? values[i] + q.finalUnit : '（未作答）',
+  ).join('、')
 }
 
 function formatCorrectAnswer(problem: Problem): string | null {
   const mode = getProblemAnswerMode(problem)
   if (mode === 'custom-widget') return null
-  return `${problem.finalAns}${problem.finalUnit ?? ''}`
+  return [problem, ...(problem.additionalQuestions ?? [])].map(q => q.finalAns + q.finalUnit).join('、')
 }
 
 function hasCustomPrintWidget(problem: Problem): boolean {
@@ -237,6 +240,9 @@ export function QuizPaperPrintSheet({
                       {problem.finalUnit ? ` ${problem.finalUnit}` : ''}
                     </p>
                   )}
+                  {problem.additionalQuestions?.length && [problem, ...problem.additionalQuestions].map(q => (
+                    <p key={q.finalQ} className="mt-3 text-sm">{q.finalQ} ________________ {q.finalUnit}</p>
+                  ))}
                   {!customWidget && <div className="solution-space" aria-hidden="true" />}
                 </>
               )}

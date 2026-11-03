@@ -26,8 +26,8 @@ trigger: /add-lesson
 | `/admin/math` 题型筛选为空 | 缺 `sea-data.ts` 项，或 `PROBLEM_TYPES[].tag` 与题目 `tag` 不一致 |
 | 计划/组卷选不到讲 | plan / quiz / MathWeeklyPractice 键不是 **lessonKey** |
 | 综合题库缺少某个来源 | `FilterPanel` 的 `sourceBtns` 或 `lesson-source-btns.ts` 未同步该非空模块 |
-| 草稿纸答题区空白 / 无竖式 | 自定义答题组件未按 [`custom-answer-widget.md`](../../../docs/add-new-lesson/custom-answer-widget.md) 挂 `verticalPuzzle` 或 `figureNode` + `checkAnswer` |
-| 分模块无「开始练习」 | 缺 `lesson-module-registry` 注册或 `PROBLEMS` 键与 Sidebar 不一致；分模块连刷由 `SectionListPage` 自动提供，见 [`practice-queue.md`](../../../docs/add-new-lesson/practice-queue.md) |
+| 草稿纸答题区空白 / 无竖式 | 自定义答题组件未按 [`components.md`](../../../docs/add-new-lesson/components.md) 挂 `verticalPuzzle` 或 `figureNode` + `checkAnswer` |
+| 分模块无「开始练习」 | 缺 `lesson-module-registry` 注册或 `PROBLEMS` 键与 Sidebar 不一致；分模块连刷由 `SectionListPage` 自动提供，见 [`routes.md`](../../../docs/add-new-lesson/routes.md) |
 
 **年级列表数据流：** `courses-data.ts` → `lessonKeyFromHref(href)`（依赖 registry）→ `gradeOf(lessonKey)`。**registry + courses-data 都要改。**
 
@@ -113,7 +113,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 1. 解析 md 中的相对链接并确认文件存在；用户直接提供 PDF 时，以该文件为源。
 2. 用 `pdfinfo` 确认页数，再用 `pdftotext -layout` 做初步提取。
 3. **必须**用 `pdftoppm -png` 渲染所有相关页并逐页视觉核对；扫描件、手写批注、公式或图形不得只依赖文本提取。
-4. 同时提取题干与题解。多小题拆成独立题目；先记录教材题号及所属例题/练一练，再按 `data.md` 的映射规则生成真实 ID，保留原题编号到 `title`。
+4. 同时提取题干与题解。同一题干的多个设问只录一条 Problem，保留完整题干与题解；第一问填 finalQ/finalAns/finalUnit，其余按教材顺序填 additionalQuestions（每项同样包含这三个字段）。只有题干和条件各自独立的小题才拆条；先记录教材题号及所属例题/练一练，再按 `data.md` 的映射规则生成真实 ID，保留原题编号到 `title`。
 5. PDF 编号跳号时不得擅自补题；记录“源文件编号跳号”，但保证所有实际出现的题目都录入。
 6. 把核对后的逐题清单和题解回填到 `docs/math/lessons/{lessonKey}.md`，使 md 成为可审阅的文本底稿，再生成代码。
 7. 录入前报告每个模块题数和总数；纯数值、图形、竖式谜分别判断是否需要 figure/custom answer widget。
@@ -124,7 +124,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 1. HEIC → PNG（`sips`）
 2. 抄题写入 `docs/math/lessons/{lessonKey}.md`
-3. 整理教材题号、练一练归属与拆分层级的映射；拆分小题使用字母，规则见 `data.md`。
+3. 整理教材题号、练一练归属与拆分层级的映射；共用题干的多个设问使用一个整题 ID；独立拆条的小题才使用字母，规则见 `data.md`。
 
 **录入前整理（已有会话确认直接沿用；仅缺失或矛盾的信息询问用户）：**
 
@@ -136,7 +136,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 6. 本次录入哪些模块
 7. 总题数清单
 
-有交互组件或竖式数字谜时读 [`figures.md`](../../../docs/add-new-lesson/figures.md) 与 [`custom-answer-widget.md`](../../../docs/add-new-lesson/custom-answer-widget.md)。
+有交互组件或竖式数字谜时读 [`figures.md`](../../../docs/add-new-lesson/figures.md) 与 [`components.md`](../../../docs/add-new-lesson/components.md)。
 
 ---
 
@@ -148,8 +148,8 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 | 2 | [`components.md`](../../../docs/add-new-lesson/components.md) | `lesson/g{grade}/lesson{seq}/` 共 8 个 wrapper |
 | 3 | [`registration.md`](../../../docs/add-new-lesson/registration.md) | registry + module-registry + 全部入口 |
 | 4 | [`figures.md`](../../../docs/add-new-lesson/figures.md) | 宫格 / 图形组件目录 |
-| 5 | [`custom-answer-widget.md`](../../../docs/add-new-lesson/custom-answer-widget.md) | **答题区自定义组件**（竖式谜、宫格）数据 + ProblemDetail + 草稿纸 |
-| — | [`practice-queue.md`](../../../docs/add-new-lesson/practice-queue.md) | **只读** — 连续练习已由共享层提供，新讲次无需额外代码 |
+| 5 | [`components.md`](../../../docs/add-new-lesson/components.md) | **答题区自定义组件**（竖式谜、宫格）数据 + ProblemDetail + 草稿纸 |
+| — | [`routes.md`](../../../docs/add-new-lesson/routes.md) | **只读** — 连续练习已由共享层提供，新讲次无需额外代码 |
 
 **不再执行：** `apps/web/src/app/math/ny/N/**` 静态路由。见 [`routes.md`](../../../docs/add-new-lesson/routes.md)。
 
@@ -161,13 +161,13 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 - **综合题库** — 各讲 `FilterPanel`（`createFilterPanel`）筛选后「开始练习」
 - **错题本** — `LessonMistakesPage`「一键练习」
 
-统一走 `PracticeQueueProvider` + `MathPracticePortal`。**禁止**在新讲次接入 `ProblemPracticeSession`。详见 [`practice-queue.md`](../../../docs/add-new-lesson/practice-queue.md)。
+统一走 `PracticeQueueProvider` + `MathPracticePortal`。**禁止**在新讲次接入 `ProblemPracticeSession`。详见 [`routes.md`](../../../docs/add-new-lesson/routes.md)。
 
 ### 组件模板
 
 复制**同年级上一讲**目录，改 `BASE` / `lessonKey` / 色系 / Provider 名。生成新题前清除骨架中的旧题内容、旧真实 ID 和旧 `displayId`；兼容字段不得复制到新课。
 
-**含答题区自定义组件时：** `ProblemDetail` 必须跟题型对齐（宫格 → 模板 A `1-47`；竖式谜 → 模板 B `2-7`）。草稿纸由 `ScratchPadCustomAnswerWidget` 自动接入，**勿**在讲次目录里再写草稿专用答题 UI。见 [`custom-answer-widget.md`](../../../docs/add-new-lesson/custom-answer-widget.md)。
+**含答题区自定义组件时：** `ProblemDetail` 必须跟题型对齐（宫格 → 模板 A `1-47`；竖式谜 → 模板 B `2-7`）。草稿纸由 `ScratchPadCustomAnswerWidget` 自动接入，**勿**在讲次目录里再写草稿专用答题 UI。见 [`components.md`](../../../docs/add-new-lesson/components.md)。
 
 ### 仅部分模块时
 
@@ -181,7 +181,7 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 `RAW_COURSES`，不会从 registry、SEA 或题目数据自动生成。每新增讲次必须添加一条卡片，至少包含：
 
 ```ts
-{
+const course = {
   href: '/math/ny/2/8',
   title: '…',
   description: '…',
@@ -205,6 +205,8 @@ import { createLessonProvider } from '@rosie/math-kit/components/shared/createLe
 
 ---
 
+写入题库前，将本次提取结果与本讲已有题逐题对照，忽略排版空白，核对教材归属、题干条件、图表与设问。相同原题只保留一条，已有设问不重复追加，遗漏设问补入原记录并保留原 ID；仅题型相似或数字、条件不同的题分别保留。
+
 ## 第三步：交付与用户手动验收
 
 所有 build / test / lint / typecheck、环境验证、启动服务、依赖安装、审计脚本和浏览器验证均由用户手动触发；代理不得自动执行。完成代码和完整注册后给出精简状态及待确认项，不以未运行的检查声称通过。
@@ -224,7 +226,7 @@ pnpm build
 - 讲次综合题库：逐个确认每个非空模块均在「来源筛选」中出现，单选后题数等于该模块题数
 - 分模块 **开始练习**、综合题库 **开始练习**、错题 **一键练习**（顶栏进度 + 答对自动下一题）
 - 可选：`/admin/math-lesson-id-audit` 源码脏数据为 0
-- **有 custom-widget 题：** 详情页作答 + 草稿纸浮层答题区与「加入画布」（见 `custom-answer-widget.md`）
+- **有 custom-widget 题：** 详情页作答 + 草稿纸浮层答题区与「加入画布」（见 `components.md`）
 
 ---
 

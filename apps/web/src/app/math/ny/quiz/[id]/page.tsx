@@ -277,7 +277,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
         if (raw.trim() !== '') {
           const parsed = parseFloat(raw)
           record = {
-            userAnswer: Number.isFinite(parsed) ? parsed : null,
+            userAnswer: problem.additionalQuestions?.length ? raw : Number.isFinite(parsed) ? parsed : null,
             correct: existing?.correct ?? null,
           }
         }
@@ -365,7 +365,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
       }
 
       const raw = answers[item.problemId] ?? ''
-      const userAnswer = raw === '' ? null : parseFloat(raw)
+      const userAnswer = raw === '' ? null : problem.additionalQuestions?.length ? raw : parseFloat(raw)
       const result = checkProblemAnswer(problem, userAnswer)
       const correct = result.ok
       newResults[item.problemId] = correct
@@ -823,6 +823,31 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                         {problem.finalUnit ? ` ${problem.finalUnit}` : ''}
                       </p>
                     )}
+                  </div>
+                ) : problem.additionalQuestions?.length ? (
+                  <div className="grid gap-3 rounded-xl bg-slate-50 p-3">
+                    {[problem, ...problem.additionalQuestions].map((question, index, questions) => (
+                      <label key={question.finalQ} className="flex flex-wrap items-center gap-2 text-sm">
+                        {question.finalQ}
+                        <input
+                          type="number"
+                          disabled={submitted}
+                          className="w-24 rounded-lg border border-slate-300 bg-white p-2"
+                          value={ans.split('|')[index] ?? ''}
+                          onChange={(event) => {
+                            const value = event.target.value
+                            setAnswers(prev => ({
+                              ...prev,
+                              [item.problemId]: questions.map((_, i) =>
+                                i === index ? value : (prev[item.problemId] ?? '').split('|')[i] ?? '',
+                              ).join('|'),
+                            }))
+                          }}
+                        />
+                        {question.finalUnit}
+                        {submitted && <span>正确答案：{question.finalAns}{question.finalUnit}</span>}
+                      </label>
+                    ))}
                   </div>
                 ) : (
                   <div

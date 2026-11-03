@@ -1,5 +1,6 @@
 'use client'
 
+import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g2/lesson3-data'
@@ -75,7 +76,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         <div className="pointer-events-none absolute -top-2.5 -right-2.5 rotate-[15deg] text-[90px] opacity-[0.12]">
           ⚖️
         </div>
-        <h1 className="mb-1.5 text-2xl font-extrabold text-emerald-900">等量代换与归一问题 ⚖️</h1>
+        <LessonHomeTitle lessonKey="2-3" className="text-2xl font-extrabold text-emerald-900">等量代换与归一问题 ⚖️</LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-emerald-800">
           第51讲 · 二年级目标班 · 第3讲
           <br />

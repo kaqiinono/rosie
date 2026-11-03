@@ -1,5 +1,6 @@
 'use client'
 
+import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isAdminUser, useAuth, SOURCE_LABELS } from '@rosie/core'
 import { SelectControl } from '@rosie/ui'
@@ -29,6 +30,8 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
   const [sources, setSources] = useState<VideoSource[]>(['lesson'])
   const [questionSearch, setQuestionSearch] = useState('')
   const [batchIssues, setBatchIssues] = useState<Record<string, string>>({})
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -40,15 +43,17 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
     if (pending.current) return
     const controller = new AbortController()
     pending.current = controller
+    setSaving(input.action === 'save'); setSaveError('')
     setBusy(true); setError(''); setMessage('')
     try {
       const next = await requestBaiduVideoData(userId, input, controller.signal)
       if (!controller.signal.aborted) await apply(next, controller.signal)
     } catch (cause) {
+      if (!controller.signal.aborted && input.action === 'save') setSaveError(cause instanceof Error ? cause.message : '请重新读取后重试。')
       if (!controller.signal.aborted) setError(cause instanceof Error && cause.name === 'Error'
         ? cause.message : '请求未完成，请重新读取后重试。')
     } finally {
-      if (pending.current === controller) { pending.current = null; setBusy(false) }
+      if (pending.current === controller) { pending.current = null; setBusy(false); setSaving(false) }
     }
   }, [userId])
 
@@ -71,6 +76,8 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
   const visibleProblems = editor?.problems.filter(p => sources.includes(p.source) &&
     [p.id, p.label, p.title].some(value => value.toLowerCase().includes(query))) ?? []
   const bankIds = new Set(editor?.problems.map(p => p.id))
+  const fullKey = lessonReplayKey(lessonKey)
+  bankIds.add(fullKey)
   const retired = editor?.bindings.filter(b => !bankIds.has(b.problemId) && picks[b.problemId]) ?? []
   const changingDirectory = editor && editor.directoryId !== editor.selectedId
   const dirty = Boolean(changingDirectory || (editor && (Object.keys(picks).length !== editor.bindings.length ||
@@ -221,7 +228,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
           <li key={p.id} className="break-all">{p.label} · {p.title} — {batchIssues[p.id]}</li>
         )}</ul>
       </details>}
-      <p className="mb-2 text-sm text-text-secondary">选中题目后点视频即可配对，完成后自动选中下一道未绑定题。</p>
+      <p className="mb-2 text-sm text-text-secondary">选择整讲回放或题目，再从同一列表选择视频。</p>
       <MathVideoPairingPanel key={lessonKey + ':' + editor.selectedId} editor={editor} problems={visibleProblems}
         picks={picks} busy={busy} choose={choose} />
       {retired.map(b => <p key={b.problemId} className="mt-2 flex flex-wrap items-center gap-2 text-sm">
@@ -229,7 +236,17 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         <button type="button" disabled={busy} onClick={() => choose(b.problemId,null)} className={button}>解绑</button>
       </p>)}
       {dirty && <p className="mt-3 text-sm text-text-secondary">有尚未保存的修改。{changingDirectory && '更换目录将解除原目录的 ' + editor.bindings.length + ' 条绑定。'}</p>}
-      <button type="button" onClick={save} disabled={busy || !dirty || Boolean(editor.selectedId && !editor.version)} className={primary + ' mt-3'}>保存本讲绑定</button>
+      <button type="button" onClick={save} disabled={busy || !dirty || Boolean(editor.selectedId && !editor.version)} className={primary + ' mt-3'}>{saving ? '正在保存…' : '保存本讲绑定'}</button>
+      <div aria-live="polite" className="mt-2 rounded-xl bg-surface-dim p-3 text-sm">
+        {saveError && <p role="alert" className="text-red-700">保存未确认：{saveError}</p>}
+        <p className="font-semibold">{saving ? '正在提交本讲绑定…' : dirty ? '当前修改尚未保存' : editor.savedAt ? '✓ 本讲绑定已保存' : '本讲尚未保存绑定'}</p>
+        {editor.savedAt && <p className="mt-1 break-all text-text-secondary">
+          最近保存：{new Date(editor.savedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ·
+          目录：{editor.directories.find(d => d.id === editor.directoryId)?.path ?? '未绑定'} ·
+          题目绑定 {editor.bindings.filter(b => b.problemId !== fullKey).length} 个 ·
+          整讲回放：{published.get(fullKey)?.name ?? '未绑定'}
+        </p>}
+      </div>
       <MathVideoReport editor={editor} />
     </>}
   </section>

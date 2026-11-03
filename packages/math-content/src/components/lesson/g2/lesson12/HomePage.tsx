@@ -1,5 +1,6 @@
 'use client'
 
+import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { Problem, ProblemSet } from '@rosie/core'
 import LessonSummary from '@rosie/math-kit/components/shared/LessonSummary'
@@ -25,7 +26,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
   return (
     <div>
       <div className="mb-5 rounded-[14px] bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-100 p-6">
-        <h1 className="mb-1.5 text-2xl font-extrabold text-amber-900">盈亏问题初步 ⚖️</h1>
+        <LessonHomeTitle lessonKey="2-12" className="text-2xl font-extrabold text-amber-900">盈亏问题初步 ⚖️</LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-amber-800">
           二年级目标班 · 第12讲
           <br />
