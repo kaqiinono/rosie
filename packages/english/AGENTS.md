@@ -33,7 +33,10 @@ audio, flipbook).
   Textbook detail narration uses `usePlaylistPlayer` + `PlayerDock` with `showProgress`, sharing
   the list player's pause/loop controls and adding seek support. Changing passages stops the old queue.
   The reading shelf groups textbook stages `4A` and `5A` under the top-level **厚海** collection;
-  learners choose the collection, then the volume, then a passage. 厚海 passage highlighting
+  learners choose the collection, then the volume, then a passage. The 厚海 shelf
+  uses a single account-wide current lesson stored in Auth user metadata `reading_current_lesson`;
+  its card is highlighted and the volume list rotates ascending Unit/Lesson order from that lesson,
+  wrapping to the first lesson at the end. Playback-all follows the displayed order. Passage highlighting
   matches vocabulary across all 厚海 volumes (currently 4A + 5A), while recall exercises remain
   scoped to the passage's own lesson. Story highlighting continues to match the full word library.
   When a passage contains matches from multiple word libraries, `PassageView` includes a source

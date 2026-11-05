@@ -32,4 +32,7 @@ Agent rule: `.cursor/rules/session-store-data-fetch.mdc`. Design:
 
 Barrel: `import { … } from '@rosie/core'`. Internal cross-file imports are relative.
 
+`AuthProvider` preserves user object identity on token refresh but accepts `USER_UPDATED`
+events so account metadata changes remain visible across page navigation.
+
 `Problem.displayId?: string` is display-only compatibility for existing math classroom questions. New lessons omit it and use correctly numbered real IDs. Keep all persistence, routes, references and ordering based on real IDs.

@@ -9,7 +9,6 @@ import { useWeeklyPlan } from '@rosie/english'
 import { useReadingPassageMedia, useBaiduReadingAudio, baiduReadingAudioUrl } from '@rosie/english'
 import { usePlaylistPlayer } from '@rosie/player'
 import { useWordsContext } from '@rosie/english'
-import { ReadingAudioUploadButton } from '@rosie/english'
 import { PlayerDock } from '@rosie/player'
 import { parseFocusLessonKey, readingPassages } from '@rosie/english'
 import { READING_AUDIO_BUCKET, readingPassageAudioPath } from '@rosie/english'
@@ -23,7 +22,7 @@ export default function ReadingIndexPage() {
   const { weeklyPlan, isLoading } = useWeeklyPlan(user)
   const { vocab, masteryMap, selStage, setSelStage } = useWordsContext()
   const searchParams = useSearchParams()
-  const { hasAudio, uploadPassageAudio } = useReadingPassageMedia(user)
+  const { hasAudio } = useReadingPassageMedia(user)
   const { hasAudio: hasBaiduAudio } = useBaiduReadingAudio(user)
   const hasPlayableAudio = useCallback(
     (key: string) => hasBaiduAudio(key) || hasAudio(key),
@@ -50,6 +49,27 @@ export default function ReadingIndexPage() {
 
   // 选中集（用于"播放选中"）。切教材后 audiobookKeys 会变，下面 selectedKeys 自动丢掉跨册项。
   const [queueKeys, setQueueKeys] = useState<string[]>([])
+  const [savingCurrentLesson, setSavingCurrentLesson] = useState(false)
+  const [currentLessonError, setCurrentLessonError] = useState<string | null>(null)
+  const currentLessonKey = typeof user?.user_metadata?.reading_current_lesson === 'string'
+    ? user.user_metadata.reading_current_lesson
+    : null
+
+  const markCurrentLesson = async (key: string) => {
+    if (!user || savingCurrentLesson || key === currentLessonKey) return
+    setSavingCurrentLesson(true)
+    setCurrentLessonError(null)
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { reading_current_lesson: key },
+      })
+      if (error) throw error
+    } catch {
+      setCurrentLessonError('当前课保存失败，请重试。')
+    } finally {
+      setSavingCurrentLesson(false)
+    }
+  }
 
   const focusKey = weeklyPlan?.focusLessonKey ?? null
   const parsedFocus = useMemo(() => (focusKey ? parseFocusLessonKey(focusKey) : null), [focusKey])
@@ -63,10 +83,14 @@ export default function ReadingIndexPage() {
   const cards = useMemo(() => {
     const num = (s: string) => parseInt(s.match(/\d+/)?.[0] ?? '0', 10)
     const sorted = [...stagePassages].sort((a, b) => {
-      if (a.unit !== b.unit) return num(b.unit) - num(a.unit)
-      return num(b.lesson) - num(a.lesson)
+      if (a.unit !== b.unit) return num(a.unit) - num(b.unit)
+      return num(a.lesson) - num(b.lesson)
     })
-    return sorted.map((p) => {
+    const currentIndex = sorted.findIndex((p) => p.key === currentLessonKey)
+    const ordered = currentIndex >= 0
+      ? [...sorted.slice(currentIndex), ...sorted.slice(0, currentIndex)]
+      : sorted
+    return ordered.map((p) => {
       const lessonWords = vocab.filter((w) => w.unit === p.unit && w.lesson === p.lesson)
       const mastered = lessonWords.reduce((n, w) => {
         const info = masteryMap[wordKey(w)]
@@ -86,7 +110,7 @@ export default function ReadingIndexPage() {
         isFocus,
       }
     })
-  }, [stagePassages, vocab, masteryMap, parsedFocus])
+  }, [stagePassages, vocab, masteryMap, parsedFocus, currentLessonKey])
 
   // 直接从 reading 自己的课文构建播放曲目（reading_passage_media / 'reading' bucket），
   // 按 passage key 建索引。不依赖 audio 模块的收藏夹聚合，连播留在 reading 自己范围内。
@@ -110,8 +134,8 @@ export default function ReadingIndexPage() {
   }, [stagePassages, hasPlayableAudio, hasBaiduAudio])
 
   const audiobookKeys = useMemo(
-    () => stagePassages.filter((p) => hasPlayableAudio(p.key)).map((p) => p.key),
-    [stagePassages, hasPlayableAudio],
+    () => cards.filter(({ passage }) => hasPlayableAudio(passage.key)).map(({ passage }) => passage.key),
+    [cards, hasPlayableAudio],
   )
 
   // Drop selection that belongs to another textbook after a stage switch.
@@ -229,6 +253,7 @@ export default function ReadingIndexPage() {
         </div>
       </div>
       {isLoading && <div className="mb-3 text-[11px] text-[var(--wm-text-dim)]">载入多日计划…</div>}
+      {currentLessonError && <p role="alert" className="mb-3 text-sm text-red-600">{currentLessonError}</p>}
 
       {cards.length === 0 ? (
         <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-gray-200">
@@ -252,12 +277,15 @@ export default function ReadingIndexPage() {
                 <li
                   key={p.key}
                   className={clsx(
-                    'rounded-2xl bg-white p-4 ring-1 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(245,158,11,.18)] sm:p-5',
-                    isPlayingInQueue
-                      ? 'shadow-[0_6px_20px_rgba(245,158,11,.25)] ring-2 ring-orange-400'
-                      : 'ring-gray-200 hover:ring-orange-300',
+                    'flex items-stretch gap-3 rounded-2xl p-4 ring-1 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(245,158,11,.18)] sm:p-5',
+                    p.key === currentLessonKey
+                      ? 'bg-sky-50 ring-2 ring-sky-500 shadow-md'
+                      : isPlayingInQueue
+                        ? 'bg-white shadow-[0_6px_20px_rgba(245,158,11,.25)] ring-2 ring-orange-400'
+                        : 'bg-white ring-gray-200 hover:ring-orange-300',
                   )}
                 >
+                  <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap items-center gap-1.5">
                     <Link
                       href={`/english/words/reading/${p.key}`}
@@ -277,10 +305,9 @@ export default function ReadingIndexPage() {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-stretch justify-between gap-3">
                     <Link
                       href={`/english/words/reading/${p.key}`}
-                      className="group min-w-0 flex-1 no-underline"
+                      className="group block min-w-0 no-underline"
                     >
                       <h2 className="font-fredoka text-lg font-bold text-gray-900 group-hover:text-orange-700 xl:text-xl">
                         {p.title}
@@ -297,15 +324,12 @@ export default function ReadingIndexPage() {
                         {glossaryCount > 0 && <span>📒 {glossaryCount} 难点词</span>}
                       </div>
                     </Link>
+                  </div>
                     <div
                       className={clsx(
-                        'relative flex shrink-0 flex-col items-end justify-between gap-1.5 self-stretch py-0.5 pl-3',
+                        'relative flex shrink-0 flex-col items-center justify-between gap-1.5 self-stretch py-0.5 pl-3',
                         'before:absolute before:inset-y-1 before:left-0 before:w-px',
                         'before:bg-gradient-to-b before:from-transparent before:via-orange-200/70 before:to-transparent',
-                        // 多列网格下卡片变窄，只有 xl（三列，单卡约 400px）才横排操作按钮，
-                        // 否则标题会被挤到换行过多。
-                        'xl:flex-row xl:items-center xl:justify-end xl:self-auto xl:py-0 xl:pl-0',
-                        'xl:before:hidden',
                       )}
                     >
                       {passageHasAudio && (
@@ -315,12 +339,29 @@ export default function ReadingIndexPage() {
                           onClick={() => toggleQueueMember(p.key)}
                         />
                       )}
-                      <ReadingAudioUploadButton
-                        passageKey={p.key}
-                        hasAudio={hasAudio(p.key)}
-                        onUpload={uploadPassageAudio}
-                        size="sm"
-                      />
+                      <div className="flex flex-col items-center gap-1.5">
+                        {user && (
+                          <button
+                            type="button"
+                            aria-label={p.key === currentLessonKey ? '当前课' : '设为当前课'}
+                            aria-pressed={p.key === currentLessonKey}
+                            aria-busy={savingCurrentLesson}
+                            title={savingCurrentLesson ? '保存中…' : p.key === currentLessonKey ? '当前课' : '设为当前课'}
+                            disabled={savingCurrentLesson}
+                            onClick={() => { void markCurrentLesson(p.key) }}
+                            className={clsx(
+                              'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:cursor-wait disabled:opacity-50',
+                              p.key === currentLessonKey
+                                ? 'bg-sky-600 text-white ring-sky-600 hover:bg-sky-700'
+                                : 'bg-white/90 text-orange-700 ring-orange-200 hover:bg-orange-50',
+                            )}
+                          >
+                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill={p.key === currentLessonKey ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4V4Z" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                       {passageHasAudio && track && (
                         <button
                           type="button"
@@ -338,7 +379,6 @@ export default function ReadingIndexPage() {
                         </button>
                       )}
                     </div>
-                  </div>
                 </li>
               )
             },

@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const next = session?.user ?? null
       // Preserve the same User object reference when the id is unchanged (e.g.
       // TOKEN_REFRESHED) to avoid re-triggering [user]-dependent effects.
-      setUser(prev => (prev?.id === next?.id ? prev : next))
+      setUser(prev => (prev?.id === next?.id && _event !== 'USER_UPDATED' ? prev : next))
       setLoading(false)
     })
 
