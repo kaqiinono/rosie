@@ -603,8 +603,73 @@ const HOMEWORK: Problem[] = [
   },
 ]
 
+const PRETEST: Problem[] = [
+  {
+    "id": "2-12-P1",
+    "title": "课前测1 · 分苹果",
+    "tag": "mixed",
+    "tagLabel": "盈亏问题",
+    "difficulty": 2,
+    "text": "幼儿园老师给几组小朋友分苹果，每组分7个，少3个；每组分6个，则多4个，苹果有______个，小朋友共______组。",
+    "analysis": [
+      "两种方案相差3+4=7个，每组相差7−6=1个，因此有7÷1=7组。",
+      "苹果数=7×6+4=46个；验算：7×7−3=46个。"
+    ],
+    "type": "none",
+    "finalQ": "苹果有多少个？",
+    "finalAns": 46,
+    "finalUnit": "个",
+    "additionalQuestions": [
+      {
+        "finalQ": "小朋友共多少组？",
+        "finalAns": 7,
+        "finalUnit": "组"
+      }
+    ]
+  },
+  {
+    "id": "2-12-P2",
+    "title": "课前测2 · 发练习本",
+    "tag": "surplus",
+    "tagLabel": "盈盈问题",
+    "difficulty": 2,
+    "text": "有一批练习本发给学生，如果每人5本，则多70本，如果每人7本，则多10本，那么这个班有多少学生，多少练习本呢？",
+    "analysis": [
+      "两次都剩余，总差=70−10=60本，每人相差7−5=2本。",
+      "学生人数=60÷2=30人，练习本数=30×5+70=220本；验算：30×7+10=220本。"
+    ],
+    "type": "none",
+    "finalQ": "这个班有多少学生？",
+    "finalAns": 30,
+    "finalUnit": "人",
+    "additionalQuestions": [
+      {
+        "finalQ": "共有多少练习本？",
+        "finalAns": 220,
+        "finalUnit": "本"
+      }
+    ]
+  },
+  {
+    "id": "2-12-P3",
+    "title": "课前测3 · 发糖",
+    "tag": "shortage",
+    "tagLabel": "亏亏问题",
+    "difficulty": 2,
+    "text": "幼儿园给获奖的小朋友发糖，如果每人发6块就少12块，如果每人发9块就少24块，总共有多少块糖呢？",
+    "analysis": [
+      "两次都不足，总差=24−12=12块，每人相差9−6=3块，小朋友有12÷3=4人。",
+      "糖共有4×6−12=12块；验算：4×9−24=12块。"
+    ],
+    "type": "none",
+    "finalQ": "总共有多少块糖？",
+    "finalAns": 12,
+    "finalUnit": "块"
+  }
+]
+
 export const PROBLEMS: ProblemSet = {
-  pretest: [],
+  pretest: PRETEST,
   lesson: LESSON,
   homework: HOMEWORK,
   workbook: [],

@@ -96,7 +96,7 @@ export default function ListeningDrawer({ passageKey, clips, index, select, clos
           <audio key={passageKey + '-' + i} ref={active ? audio : undefined}
             src={'/api/baidu/audio/' + passageKey + '?clip=' + number}
             preload={active || startedClip === currentKey ? 'auto' : 'none'}
-            loop={active && loop && !single}
+            loop={active && loop}
             onLoadedMetadata={active && single ? e => { e.currentTarget.currentTime = clips[i].singleRead[0] } : undefined}
             onPlay={active && single ? e => {
               const el = e.currentTarget

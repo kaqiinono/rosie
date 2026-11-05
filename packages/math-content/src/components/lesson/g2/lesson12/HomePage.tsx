@@ -78,6 +78,13 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
       </section>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Link
+          href={`${BASE}/pretest`}
+          className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
+        >
+          <div className="mb-1 text-sm font-bold">📝 课前测</div>
+          <p className="text-text-muted text-xs">{problems.pretest.length} 道题 · 盈盈、盈亏、亏亏</p>
+        </Link>
+        <Link
           href={`${BASE}/lesson`}
           className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
         >

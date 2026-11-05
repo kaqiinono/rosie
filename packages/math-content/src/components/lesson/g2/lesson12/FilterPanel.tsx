@@ -30,9 +30,10 @@ export default createFilterPanel(
       accentClass: 'text-amber-700',
     },
     sourceBtns: [
-    { key: 'lesson', label: '📖 课堂' },
-    { key: 'homework', label: '✏️ 课后巩固' },
-  ],
+      { key: 'pretest', label: '📝 课前测' },
+      { key: 'lesson', label: '📖 课堂' },
+      { key: 'homework', label: '✏️ 课后巩固' },
+    ],
     typeBtns: PROBLEM_TYPES.map((type) => ({ key: type.tag, label: `${type.icon} ${type.label}` })),
     tagColors: TAG_STYLE,
   },

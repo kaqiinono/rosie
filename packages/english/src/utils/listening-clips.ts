@@ -39,6 +39,39 @@ const u3l2: [string, string, [number, number]][] = [
   ['5-1', '雄性鸭嘴兽有毒，被它刺伤可能会致命。', [1.77, 6.48]],
 ]
 
+// One complete sentence per recording, in source order. Times are clip-local.
+const u3l3: [string, string, [number, number]][] = [
+  ['0-0', '这周末能来到冰岛，我真是太兴奋了。', [0.12, 3.113]],
+  ['0-1', '今天早上，我们坐上了前往南部海岸的巴士，去欣赏冰岛的一些自然美景。', [0.12, 5.909]],
+  ['0-2', '我们打算明天晚上试着去看北极光。', [0.12, 3.044]],
+  ['0-3', '即使看不到极光，我也已经在旅途中见到了一些最令人惊叹的景色。', [0.12, 5.724]],
+  ['1-0', '今天我们在一座国家公园停留，探索了一个冰洞。', [0.12, 4.17]],
+  ['1-1', '人们叫它“水晶洞”，因为洞里的冰像水晶一样清澈。', [0.12, 4.952]],
+  ['1-2', '探索冰洞可能很危险，所以我们跟着一位向导前往。', [0.12, 4.535]],
+  ['1-3', '我们必须穿上特殊的靴子——那是我穿过的最不舒服的靴子——但这一切都值得。', [0.12, 6.518]],
+  ['2-0', '今天我们探索了杰古沙龙冰河湖。', [0.12, 4.508]],
+  ['2-1', '这是一个由冰川融水形成的大湖，也是我去过的最冷的湖！', [0.12, 6.002]],
+  ['2-2', '我可一点也不想下水游泳。', [0.12, 2.328]],
+  ['2-3', '我们还看到了瀑布和一片黑沙滩。', [0.12, 3.48]],
+  ['2-4', '它和我们家附近的海滩完全不一样。', [0.12, 2.37]],
+  ['2-5', '向导说它叫“钻石海滩”，因为黑色的沙子像钻石一样闪闪发亮。', [0.12, 5.869]],
+  ['3-0', '晚上，我们出去寻找北极光。', [0.12, 3.351]],
+  ['3-1', '当太阳与地球大气层中的某些气体相遇时，就会出现北极光。', [0.12, 4.091]],
+  ['3-2', '很难知道极光什么时候会出现。', [0.12, 2.238]],
+  ['3-3', '不过我们很幸运，第一晚就看到了极光。', [0.12, 3.502]],
+  ['3-4', '极光有绿色和紫色。', [0.08, 2.12]],
+  ['3-5', '那真是不可思议——一场大自然的灯光秀。', [0.08, 3.747]],
+  ['3-6', '我这辈子从没见过比这更令人惊叹的景象！', [0.12, 2.724]],
+  ['4-0', '遗憾的是，我们明天就要离开了。', [0.12, 2.474]],
+  ['4-1', '时间过得太快了，但这个周末会比其他任何周末都更让我难忘。', [0.12, 5.067]],
+  ['4-2', '真是太棒了！', [0.12, 1.249]],
+]
+
+const clipsByPassage: Record<string, [string, string, [number, number]][]> = {
+  '5a-u3l2': u3l2,
+  '5a-u3l3': u3l3,
+}
+
 export function readingSegments(passage: ReadingPassage, index: number): string[] {
   let text = passage.paragraphs[index]
   for (const phrase of passage.listeningBreaks?.[index] ?? []) {
@@ -48,8 +81,10 @@ export function readingSegments(passage: ReadingPassage, index: number): string[
 }
 
 export function listeningClipsFor(passage: ReadingPassage | undefined): ListeningClip[] {
-  if (passage?.key !== '5a-u3l2') return []
-  return u3l2.map(([target, chinese, singleRead]) => {
+  if (!passage) return []
+  const clips = clipsByPassage[passage.key]
+  if (!clips) return []
+  return clips.map(([target, chinese, singleRead]) => {
     const [paragraph, sentence] = target.split('-')
     const english = target === 'title' ? passage.title
       : paragraph === 'heading' ? passage.paragraphTitles![Number(sentence)]

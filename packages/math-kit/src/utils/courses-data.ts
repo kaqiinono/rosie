@@ -4,12 +4,21 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/13',
+    title: '抽屉原理初步与植树问题',
+    description: '分类枚举与最不利原则，结合树数、间隔数和两端情况解决植树及楼梯问题。',
+    icon: '🌳',
+    lectureNum: '第 13 讲',
+    tags: ['抽屉原理', '植树与间隔', '14 道互动题'],
+    variant: 'amber',
+  },
+  {
     href: '/math/ny/2/12',
     title: '盈亏问题初步',
     description: '找到物品与分配对象，转化两种分配方案，用总差÷单位差解决盈盈、盈亏、亏亏问题。',
     icon: '⚖️',
     lectureNum: '第 12 讲',
-    tags: ['三个不变量', '盈亏·方案转化', '47 道互动题'],
+    tags: ['三个不变量', '盈亏·方案转化', '36 道互动题'],
     variant: 'amber',
   },
   {

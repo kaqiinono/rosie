@@ -250,3 +250,8 @@ pnpm --filter @rosie/english lint
 in `utils/listening-clips.ts`. A sentence can have multiple clause recordings. The reading
 detail drawer streams `/api/baidu/audio/5a-u3l2?clip=01` through the existing authenticated
 Baidu audio session. Clip streams use the shared account's `5A/listening/U3L2` directory.
+
+5A U3L3 maps 24 single-sentence MP3s under `5A/listening/U3L3` to matching
+`narrationCues` and listening anchors. Exercise instructions and spoken dates stay in the
+full recording only. Clip-local `singleRead` times exclude the surrounding silence;
+the drawer also loops single-reading files when they end before the three-second wait.

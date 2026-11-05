@@ -292,6 +292,16 @@ export const MATH_PLAN_LESSONS = [
     desc: '盈盈·盈亏·亏亏·方案转化',
   },
   {
+    id: '2-13',
+    label: '第13讲 · 抽屉原理初步与植树问题',
+    short: '抽屉与植树',
+    emoji: '🌳',
+    color: 'rgba(217,119,6,1)',
+    bg: 'rgba(217,119,6,.08)',
+    border: 'rgba(217,119,6,.3)',
+    desc: '抽屉原理·最不利原则·植树间隔',
+  },
+  {
     id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',

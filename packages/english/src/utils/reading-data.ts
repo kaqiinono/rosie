@@ -2798,11 +2798,18 @@ export const readingPassages: ReadingPassage[] = [
     "unit": "Unit 3",
     "lesson": "Lesson 3",
     "title": "Amelie’s Iceland Journal",
+    "narrationCues": [
+      [[16.056, 19.049], [19.501, 25.29], [25.939, 28.863], [29.294, 34.898]],
+      [[35.76, 39.81], [40.63, 45.462], [46.243, 50.658], [51.245, 57.643]],
+      [[61.358, 65.746], [66.163, 72.045], [72.429, 74.637], [75.307, 78.667], [79.057, 81.307], [82.042, 87.791]],
+      [[88.809, 92.04], [92.577, 96.548], [97.2, 99.318], [99.677, 103.059], [103.728, 105.768], [105.945, 109.612], [110.161, 112.765]],
+      [[113.685, 116.039], [116.378, 121.325], [121.772, 122.901]]
+    ],
     "paragraphs": [
       "I’m so excited to be in Iceland this weekend. This morning, we got on a bus to the southern coast, to see some of Iceland’s natural beauty. We’re going to try to see the Northern Lights tomorrow night. Even if we don’t see them, I’ve already seen some of the most amazing sights on the journey.",
       "We stopped in a national park today and explored an ice cave. They call it the ‘Crystal Cave’ because the ice is as clear as crystal. Exploring ice caves can be dangerous, so we went with a guide. We had to wear special boots – the least comfortable boots I’ve ever worn – but it was worth it.",
       "Today we explored the Jökulsárlón glacier lagoon. It’s a large lake made from melted glaciers, and the coldest lake I’ve ever visited! I did NOT want to go swimming. We also saw waterfalls and a black sand beach. It was nothing like the beaches near us. The guide said it was called ‘Diamond Beach’, because the black sand shines like diamonds.",
-      "At night, we went out to look for the Northern Lights. They occur when the Sun’s energy meets certain gases in the Earth’s atmosphere. It’s hard to know when they’ll appear. But we got lucky and saw them our first night. They were green and purple. It was incredible – a light show by nature. I’ve never seen anything more amazing in my life!",
+      "At night, we went out to look for the Northern Lights. They occur when the Sun meets certain gases in the Earth’s atmosphere. It’s hard to know when they’ll appear. But we got lucky and saw them the first night. They were green and purple. It was incredible – a light show by nature. I’ve never seen anything more amazing in my life!",
       "Sadly, we’re leaving tomorrow. It went too fast, but I’ll remember this weekend better than any other. It was amazing!"
     ],
     "learningSections": [

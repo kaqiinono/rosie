@@ -173,32 +173,24 @@ export default function ReadingIndexPage() {
           </h1>
           <p className="mt-2 text-sm text-[var(--wm-text-dim)]">选择一个分辑进入课文列表</p>
         </div>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:max-w-3xl">
+        <ul className="flex flex-wrap gap-3">
           {houhaiStages.map((stage) => {
             const passageCount = readingPassages.filter((passage) => passage.stage === stage).length
             return (
               <li key={stage}>
                 <Link
                   href={`/english/words/reading?collection=houhai&volume=${encodeURIComponent(stage)}`}
-                  className="group block min-h-40 rounded-3xl bg-gradient-to-br from-sky-100 via-indigo-50 to-white p-6 no-underline shadow-sm ring-1 ring-sky-200 transition hover:-translate-y-1 hover:shadow-lg"
+                  className="group inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-br from-sky-100 via-indigo-50 to-white px-3 py-2 no-underline shadow-sm ring-1 ring-sky-200 transition hover:-translate-y-0.5 hover:shadow-md"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-extrabold tracking-wider text-sky-700 uppercase">
-                        厚海分辑
-                      </p>
-                      <h2 className="font-fredoka mt-2 text-3xl font-black text-slate-900">
-                        {stage}
-                      </h2>
-                      <p className="mt-3 text-sm font-bold text-slate-500">{passageCount} 篇课文</p>
-                    </div>
-                    <span
-                      aria-hidden
-                      className="text-4xl transition-transform group-hover:translate-x-1"
-                    >
-                      →
-                    </span>
-                  </div>
+                  <h2 className="font-fredoka text-base font-black text-slate-900">{stage}</h2>
+                  <span aria-hidden className="text-slate-400">·</span>
+                  <p className="text-sm font-bold text-slate-500">{passageCount} 篇课文</p>
+                  <span
+                    aria-hidden
+                    className="text-lg text-sky-700 transition-transform group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
                 </Link>
               </li>
             )
