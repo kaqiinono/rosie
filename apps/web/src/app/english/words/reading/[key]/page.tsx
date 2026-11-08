@@ -62,17 +62,25 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
   const passage = findPassageByKey(key)
   const clips = useMemo(() => listeningClipsFor(passage), [passage])
   const [listening, setListening] = useState<{ key: string; index: number; open: boolean } | null>(null)
+  const [listeningCollapsed, setListeningCollapsed] = useState(false)
+  const [listeningPaused, setListeningPaused] = useState(false)
+  const [selectedClips, setSelectedClips] = useState<number[]>([])
+  const showClip = useCallback((index: number) => {
+    setListening({ key, index, open: true })
+    setSelectedClips(current => current.includes(index) ? current : [index])
+  }, [key])
   const listeningOpen = listening?.key === key && listening.open
   const clipIndex = listening?.key === key ? listening.index : 0
   const target = listeningOpen ? clips[clipIndex]?.target : undefined
   const selectClip = (index: number) => {
+    if (!listeningOpen) setListeningCollapsed(false)
     if (loadingNarration) {
       stop()
       setLoadingNarration(false)
     } else {
       player.audioRef.current?.pause()
     }
-    setListening({ key, index, open: true })
+    showClip(index)
   }
   const closeListening = () => setListening({ key, index: clipIndex, open: false })
   const clipButton = (cue: string) => {
@@ -89,11 +97,11 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
     )
   }
   useEffect(() => {
-    if (!target) return
+    const drawer = document.getElementById('reading-listening-drawer')
+    if (!target || !drawer) return
     const follow = () => {
       const node = document.querySelector(`[data-narration-cue="${target}"]`)
-      const drawer = document.getElementById('reading-listening-drawer')
-      if (!node || !drawer) return
+      if (!node) return
       const rect = node.getBoundingClientRect()
       const bottom = drawer.getBoundingClientRect().top - 12
       const top = 80
@@ -103,7 +111,12 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
     }
     follow()
     window.addEventListener('resize', follow)
-    return () => window.removeEventListener('resize', follow)
+    const observer = new ResizeObserver(follow)
+    observer.observe(drawer)
+    return () => {
+      window.removeEventListener('resize', follow)
+      observer.disconnect()
+    }
   }, [target, clipIndex])
   const [stripSelected, setStripSelected] = useState<WordEntry | null>(null)
   /** Two reading modes per design 2C. Defaults to 专注模式 (distraction-free reading). */
@@ -468,6 +481,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
           masteryMap={masteryMap}
           focusWord={focusWord}
           listeningTarget={target}
+          listeningCollapsed={listeningCollapsed}
           renderClipButton={clips.length ? clipButton : undefined}
           narrationRef={narrationActive && !listeningOpen && (listening?.key !== key || narrationPlaying) ? player.audioRef : undefined}
           recallOutcomes={recallOutcomes}
@@ -506,7 +520,9 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
         onClose={() => setStripSelected(null)}
       />
       <div hidden={listeningOpen}><PlayerDock player={player} theme="light" showProgress /></div>
-      {listeningOpen && <ListeningDrawer passageKey={key} clips={clips} index={clipIndex} select={selectClip} close={closeListening} />}
+      {listeningOpen && <ListeningDrawer passageKey={key} clips={clips} index={clipIndex} select={showClip} close={closeListening}
+        collapsed={listeningCollapsed} setCollapsed={setListeningCollapsed}
+        paused={listeningPaused} setPaused={setListeningPaused} selected={selectedClips} setSelected={setSelectedClips} />}
 
     </main>
   )

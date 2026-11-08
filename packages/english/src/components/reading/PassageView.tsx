@@ -37,6 +37,7 @@ interface PassageViewProps {
   renderParagraphFooter?: (paragraphIndex: number) => ReactNode
   /** Optional sentence anchors for continuous Story reading/bookmarks. */
   listeningTarget?: string
+  listeningCollapsed?: boolean
   renderClipButton?: (cue: string) => ReactNode
   narrationRef?: RefObject<HTMLVideoElement | null>
   sentenceGroups?: StorySentence[][]
@@ -96,10 +97,14 @@ export default function PassageView({
   mode = 'learn',
   renderParagraphFooter,
   listeningTarget,
+  listeningCollapsed = false,
   renderClipButton,
   narrationRef,
   sentenceGroups,
 }: PassageViewProps) {
+  const listeningHighlight = listeningCollapsed
+    ? 'box-decoration-clone rounded-sm bg-[#fde68a]'
+    : 'box-decoration-clone rounded-sm bg-amber-50'
   const levelClass = mode === 'focus' ? LEVEL_CLASS_FOCUS : LEVEL_CLASS
   const [selected, setSelected] = useState<WordEntry | null>(null)
   const [selectedMatch, setSelectedMatch] = useState<WordFormMatch | null>(null)
@@ -313,7 +318,7 @@ export default function PassageView({
       const cue = `${index}-${i}`
       return (
         <span key={cue} data-narration-cue={cue} className={cue === listeningTarget
-          ? 'rounded bg-amber-200 box-decoration-clone text-[1.08em] ring-1 ring-amber-400'
+          ? listeningHighlight
           : cue === activeCue ? 'rounded bg-amber-100 box-decoration-clone text-[1.08em]' : undefined}>
           {renderParagraph(sentence, index, occurrences)}{renderClipButton?.(cue)}{' '}
         </span>
@@ -342,7 +347,7 @@ export default function PassageView({
           <div key={i}>
             {passage.paragraphTitles?.[i] && (
               <h2 className="font-fredoka mb-2 text-base font-black tracking-wide text-app-blue-dark sm:text-lg">
-                <span data-narration-cue={`heading-${i}`} className={listeningTarget === `heading-${i}` ? 'rounded bg-amber-100 text-[1.08em]' : undefined}>{passage.paragraphTitles[i]}</span>{renderClipButton?.(`heading-${i}`)}
+                <span data-narration-cue={`heading-${i}`} className={listeningTarget === `heading-${i}` ? listeningHighlight : undefined}>{passage.paragraphTitles[i]}</span>{renderClipButton?.(`heading-${i}`)}
               </h2>
             )}
             <p className="break-words">
