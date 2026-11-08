@@ -1,3 +1,4 @@
+import { baiduAuthErrorCode } from '@rosie/core'
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/api-auth'
 import { baiduReadingPath, BAIDU_AUDIO_COOKIE, fetchBaiduReadingAudio } from '@/lib/baidu-reading-audio'
@@ -23,15 +24,18 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
   if (range && !/^bytes=(?:\d+-\d*|-\d+)$/.test(range)) return failure('invalid_range', 416)
 
   let upstream: Response | null = null
+  let authError: string | null = null
+  const unavailable = (status = 503) => failure(authError ?? 'audio_unavailable', authError ? 409 : status)
   try {
     upstream = await fetchBaiduReadingAudio(key, range, req.signal, clip)
-  } catch {
-    // Missing authorization, revoked tokens and upstream failures keep Storage usable.
+  } catch (error) {
+    authError = baiduAuthErrorCode(error)
+    // Preserve Storage fallback; report authorization only if fallback also fails.
   }
-  if (!upstream && clip !== null) return failure('clip_unavailable', 503)
+  if (!upstream && clip !== null) return authError ? unavailable() : failure('clip_unavailable', 503)
   if (!upstream) {
     const origin = process.env.NEXT_PUBLIC_SUPABASE_URL
-    if (!origin) return failure('audio_unavailable', 503)
+    if (!origin) return unavailable()
     const url = new URL(`/storage/v1/object/public/reading/passages/${encodeURIComponent(key)}/narration.mp3`, origin)
     try {
       upstream = await fetch(url, {
@@ -40,12 +44,12 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
         signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
       })
     } catch {
-      return failure('audio_unavailable', 503)
+      return unavailable()
     }
   }
   if (![200, 206, 416].includes(upstream.status)) {
     await upstream.body?.cancel()
-    return failure('audio_unavailable', upstream.status === 404 ? 404 : 503)
+    return unavailable(upstream.status === 404 ? 404 : 503)
   }
   const headers = new Headers({
     'Cache-Control': 'private, no-store',

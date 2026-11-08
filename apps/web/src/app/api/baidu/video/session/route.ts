@@ -1,3 +1,4 @@
+import { baiduAuthErrorCode } from '@rosie/core'
 import { NextRequest, NextResponse } from 'next/server'
 import { getBearerToken, getUserFromRequest } from '@/lib/api-auth'
 import { BAIDU_VIDEO_COOKIE, BAIDU_VIDEO_COOKIE_PATH } from '@/lib/baidu-math-video'
@@ -16,9 +17,9 @@ export async function POST(req: NextRequest) {
   try {
     await getBaiduAccountContext()
   } catch (error) {
-    const reauthorize = error instanceof Error && error.message === 'baidu_reauthorize'
-    return NextResponse.json({ error: reauthorize ? 'baidu_reauthorize' : 'video_unavailable' }, {
-      status: reauthorize ? 409 : 503, headers: { 'Cache-Control': 'private, no-store' },
+    const code = baiduAuthErrorCode(error)
+    return NextResponse.json({ error: code ?? 'video_unavailable' }, {
+      status: code ? 409 : 503, headers: { 'Cache-Control': 'private, no-store' },
     })
   }
   const response = new NextResponse(null, { status: 204, headers: { 'Cache-Control': 'private, no-store' } })

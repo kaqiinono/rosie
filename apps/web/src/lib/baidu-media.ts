@@ -31,11 +31,11 @@ async function baiduJson(
     headers: { 'User-Agent': 'pan.baidu.com' },
   })
   const body: unknown = parseBaiduJson(await response.text())
-  if (!response.ok || !body || typeof body !== 'object') throw new Error('baidu_unavailable')
+  if (!body || typeof body !== 'object') throw new Error('baidu_unavailable')
   const result = body as Record<string, unknown>
   if (result.errno === -9) return { errno: 0, list: [] }
   if ([-6, 110, 111].includes(Number(result.errno ?? result.error_code))) throw Error('baidu_reauthorize')
-  if (result.errno !== 0) throw new Error('baidu_api_error')
+  if (!response.ok || result.errno !== 0) throw new Error('baidu_api_error')
   return result
 }
 
@@ -148,6 +148,16 @@ export async function fetchBaiduFileById(
     }
     if (response.status === 416) return response
     const contentType = response.headers.get('content-type')?.split(';')[0].trim() ?? ''
+    // Provider auth errors can arrive as JSON instead of media bytes.
+    if ((contentType === 'application/json' || contentType.endsWith('+json')) &&
+        (kind !== 'material' || ![200, 206].includes(response.status))) {
+      const body: unknown = await response.json().catch(() => null)
+      if (body && typeof body === 'object') {
+        const result = body as Record<string, unknown>
+        if ([-6, 110, 111].includes(Number(result.errno ?? result.error_code))) throw Error('baidu_reauthorize')
+      }
+      throw Error('baidu_download_failed')
+    }
     if (
       ![200, 206].includes(response.status) ||
       !(

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useBaiduMediaError } from '@rosie/core'
 import type { ListeningClip } from '../../utils/listening-clips'
 
 // Keep three seconds of the recorded writing pause after the first reading.
@@ -30,6 +31,7 @@ export default function ListeningDrawer({ passageKey, clips, index, select, clos
   const clip = clips[index]
   const [startedClip, setStartedClip] = useState('')
   const currentKey = passageKey + '-' + index
+  const mediaError = useBaiduMediaError(audio, currentKey)
   useEffect(() => {
     const el = audio.current
     if (!el) return
@@ -87,7 +89,7 @@ export default function ListeningDrawer({ passageKey, clips, index, select, clos
       <div hidden={choosing} className="my-2 min-h-16 overflow-y-auto py-4 sm:py-6">
         <p lang="en" className="text-2xl leading-snug font-semibold text-slate-900 sm:text-3xl">{clip.english}</p>
         {translate && <p className="mt-2 text-slate-600">{clip.chinese}</p>}
-        {state === 'error' && <p role="alert">这段音频暂时无法播放，请重试。</p>}
+        {state === 'error' && <p role="alert">{mediaError || '这段音频暂时无法播放，请重试。'}</p>}
       </div>
       {[index, index + 1].filter(i => i < clips.length).map(i => {
         const active = i === index

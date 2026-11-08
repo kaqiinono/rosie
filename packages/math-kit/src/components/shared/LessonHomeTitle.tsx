@@ -2,10 +2,10 @@
 
 import type { ReactNode } from 'react'
 import LessonMaterials from './LessonMaterials'
-import { LessonVideoReplay } from './ProblemVideoReplay'
+import { LessonSummaryVideos, LessonVideoReplay } from './ProblemVideoReplay'
 
-export default function LessonHomeTitle({ lessonKey, className, children }: {
-  lessonKey: string; className: string; children: ReactNode
+export default function LessonHomeTitle({ lessonKey, className, children, summaryInContent = false }: {
+  lessonKey: string; className: string; children: ReactNode; summaryInContent?: boolean
 }) {
   return (
     <div className="relative mb-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
@@ -14,6 +14,7 @@ export default function LessonHomeTitle({ lessonKey, className, children }: {
         <LessonVideoReplay lessonKey={lessonKey} />
         <LessonMaterials lessonKey={lessonKey} />
       </div>
+      {!summaryInContent && <LessonSummaryVideos lessonKey={lessonKey} />}
     </div>
   )
 }

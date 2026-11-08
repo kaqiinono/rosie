@@ -1,3 +1,4 @@
+import { baiduAuthErrorCode, BAIDU_AUTH_MESSAGES } from '@rosie/core'
 import { NextResponse } from 'next/server'
 import { createAdminSupabase, getUserFromRequest, isAdminRequestUser } from '@/lib/api-auth'
 import { readBaiduDirectoryPage } from '@/lib/baidu-directory-page'
@@ -96,13 +97,11 @@ async function manageDirectories(request: Request) {
       next: rows.length > pageSize ? start + pageSize : null,
     } satisfies SyncDirectoryPage, { headers })
   } catch (error) {
+    const authCode = baiduAuthErrorCode(error)
+    if (authCode) return failure(BAIDU_AUTH_MESSAGES[authCode], 409)
     switch (error instanceof Error ? error.message : '') {
       case 'baidu_account_changed':
         return failure('共享网盘授权已变更，请重新读取路径列表。', 409)
-      case 'baidu_reauthorize':
-      case 'exchange_failed':
-      case 'baidu_invalid_identity':
-        return failure('请先在上方授权共享百度网盘，再重新读取。', 409)
       case 'baidu_directory_missing':
         return failure('目录不存在或当前网盘无法访问，请核对路径。', 404)
       case 'baidu_storage_error':

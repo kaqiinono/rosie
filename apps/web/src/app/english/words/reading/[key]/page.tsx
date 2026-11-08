@@ -4,9 +4,9 @@ import { use, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useWordsContext } from '@rosie/english'
-import { useAuth } from '@rosie/core'
+import { useAuth, useBaiduMediaError } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
-import { useReadingPassageAudio } from '@rosie/english'
+import { useReadingPassageAudio, useBaiduReadingAudioError } from '@rosie/english'
 import { useWordData } from '@rosie/english'
 import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import {
@@ -48,8 +48,11 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
   const { weeklyPlan, updateDayProgress } = useWeeklyPlan(user)
   const audioUrl = useReadingPassageAudio(user, key)
   const player = usePlaylistPlayer()
+  const playbackError = useBaiduMediaError(player.audioRef)
+  const baiduError = useBaiduReadingAudioError(user)
   const { stop } = player
   const [loadingNarration, setLoadingNarration] = useState(false)
+  const [narrationError, setNarrationError] = useState('')
   useEffect(() => stop, [stop])
   const narrationActive = player.current?.refLink === `/english/words/reading/${key}`
   const narrationPlaying = narrationActive && player.isPlaying && !player.isPaused
@@ -394,6 +397,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
               title={!audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'}
               onClick={async () => {
                 setListening(null)
+                setNarrationError('')
                 if (!audioUrl) {
                   window.alert('未找到本课朗读音频')
                   return
@@ -415,7 +419,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
                     const networkError = player.audioRef.current?.error?.code === 2 || !navigator.onLine
                     stop()
                     setLoadingNarration(false)
-                    window.alert(networkError ? '网络连接失败，请重试' : '音频暂时无法播放，请重试')
+                    setNarrationError(networkError ? '网络连接失败，请重试。' : '音频暂时无法播放，请重试。')
                   }
                 }
               }}
@@ -434,6 +438,8 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
           </div>
         </div>
       </div>
+
+      {(playbackError || narrationError || (/^(4a|5a)-/.test(key) && baiduError)) && <p role="alert" className="my-3 text-sm text-red-700">{playbackError || narrationError || baiduError}</p>}
 
       {/* 阅读前测 · 由标题卡内「📋 前测」芯片触发,关闭后页面回归纯粹 */}
       <PreReadingRecall

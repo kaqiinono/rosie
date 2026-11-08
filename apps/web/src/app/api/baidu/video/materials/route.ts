@@ -1,3 +1,4 @@
+import { baiduAuthErrorCode } from '@rosie/core'
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/api-auth'
 import { getBaiduAccountContext } from '@/lib/baidu-token'
@@ -54,5 +55,8 @@ export async function GET(req: NextRequest) {
       return [{ name, id: exactBaiduId(row.fs_id), directory: row.isdir === 1 }]
     })
     return NextResponse.json({ files, next: rows.length === 100 ? start + 100 : null }, { headers })
-  } catch { return fail(503) }
+  } catch (error) {
+    const code = baiduAuthErrorCode(error)
+    return NextResponse.json({ error: code ?? 'materials_unavailable' }, { status: code ? 409 : 503, headers })
+  }
 }

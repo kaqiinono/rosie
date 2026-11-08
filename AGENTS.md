@@ -110,10 +110,12 @@ change, run `pnpm lint`/`pnpm typecheck` to catch type errors. Before merging UI
 
 ### Baidu Netdisk OAuth
 
-Any signed-in user can bind a personal Netdisk account in `/setting` through
-`POST /api/baidu/oauth/personal/start`. The callback stores credentials by the verified
-initiator's user ID in `baidu_user_oauth_credentials`. Admins manage the shared course
-and materials account separately at `/admin/sync` through `POST /api/baidu/oauth/start`.
+`/setting` does not show personal Netdisk authorization. Signed-in users access shared
+course resources without binding a Baidu account. The existing personal API
+`POST /api/baidu/oauth/personal/start` and its credentials remain available in the backend;
+the callback stores credentials by the verified initiator's user ID in
+`baidu_user_oauth_credentials`. Admins manage the shared course and materials account
+at `/admin/sync` through `POST /api/baidu/oauth/start`.
 Both flows use a ten-minute, single-use state whose hash binds the target and initiator. Configure
 `BAIDU_APP_KEY`, `BAIDU_SECRET_KEY`, `BAIDU_REDIRECT_URI` and the existing
 `SUPABASE_SERVICE_ROLE_KEY`. The state table and both credential tables are
@@ -125,6 +127,12 @@ legacy shared credentials acquire their missing account identity on first use th
 identity verification and a version-guarded update. Math replay checks this at session creation.
 Ambiguous refresh failures require administrator reauthorization. Proxy audio is excluded from SW
 caching. See `docs/baidu-oauth.md` for migrations, setup and manual verification.
+
+The shared authorization card shows stored expiry and the last explicit online check.
+Admin-only GET `/api/baidu/oauth/status` reads metadata; POST checks the live Baidu account
+and uses the existing refresh lease when needed. Neither returns tokens. Resource failures
+distinguish missing authorization, rejected authorization, uncertain refresh, and temporary
+unavailability. Core owns their public error messages and same-origin media probes.
 
 Each math lesson may publish one authorized Baidu directory. In `/admin/sync`, choosing a bookmarked directory
 loads its direct MP4 inventory. Admins can refresh it after changing files. Saving the whole lesson atomically publishes its
@@ -222,7 +230,7 @@ Global admin sub-pages include:
 
 - `/admin/sync` — shared Baidu authorization, account-scoped directory bookmarks and read-only file browsing,
   per-lesson math replay synchronization and matching reports. Directory APIs require an administrator.
-  Shared callbacks return here. Personal callbacks return to the user's Netdisk card in `/setting`.
+  Shared callbacks return here. Legacy personal callbacks still return to `/setting`, which no longer displays a Netdisk card.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/users` — account management plus per-user parent PIN reset. Parent PIN hashes live in

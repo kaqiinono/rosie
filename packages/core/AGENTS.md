@@ -32,6 +32,11 @@ Agent rule: `.cursor/rules/session-store-data-fetch.mdc`. Design:
 
 Barrel: `import { … } from '@rosie/core'`. Internal cross-file imports are relative.
 
+`baiduErrors` contains the shared public authorization error codes/messages and a same-origin
+one-byte media probe. `useBaiduMediaError` attaches error listeners to a caller-owned media ref;
+it cancels obsolete probes on source changes and unmount. These helpers serve English and math
+without importing either subject or the player. No credential storage belongs in these helpers.
+
 `AuthProvider` preserves user object identity on token refresh but accepts `USER_UPDATED`
 events so account metadata changes remain visible across page navigation.
 

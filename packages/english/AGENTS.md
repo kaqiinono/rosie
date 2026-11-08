@@ -30,6 +30,10 @@ audio, flipbook).
   stream only for discovered keys. The app-owned server proxy validates login on each request,
   handles token refresh/Range and falls back to the original Storage MP3. Uploads still belong
   to the reading bucket. Story narration retains its existing behavior.
+  `useBaiduReadingAudio` also exposes discovery errors for the reading pages. Native narration
+  and listening failures use core's same-origin media probe to distinguish revoked shared
+  authorization, missing authorization, uncertain renewal, and transient failures. The audio
+  proxy retains Storage fallback; a working fallback is never blocked by a Baidu error.
   Textbook detail narration uses `usePlaylistPlayer` + `PlayerDock` with `showProgress`, sharing
   the list player's pause/loop controls and adding seek support. Changing passages stops the old queue.
   The reading shelf groups textbook stages `4A` and `5A` under the top-level **厚海** collection;

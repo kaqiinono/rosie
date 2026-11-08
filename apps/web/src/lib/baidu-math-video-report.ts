@@ -1,4 +1,4 @@
-import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
 import 'server-only'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
 import { problemCardDisplayId } from '@rosie/math-kit/utils/problem-display-id'
@@ -30,7 +30,7 @@ function databaseFailure(error: { code: string; message: string }): never {
 export async function readVideoEditor(lessonKey: string, directoryId: string | null) {
   const { data, error } = await createAdminSupabase().rpc('math_replay_editor', { p_lesson: lessonKey, p_directory: directoryId })
   if (error) databaseFailure(error)
-  if (!data) throw Error('baidu_reauthorize')
+  if (!data) throw Error('baidu_not_authorized')
   const state = data as Omit<MathVideoEditor, 'lessonKey' | 'problems'>
   if (directoryId && state.selectedId !== directoryId) throw Error('directory_changed')
   return { ...state, lessonKey, problems: lessonProblems(lessonKey) }
@@ -77,7 +77,7 @@ export async function publishVideoBindings(lessonKey: string, directoryId: strin
   ids.add(lessonReplayKey(lessonKey))
   const used = new Set<string>()
   for (const [problemId, fileId] of Object.entries(picks)) {
-    if (!ids.has(problemId) || typeof fileId !== 'string' || !fileId || used.has(fileId)) throw Error('invalid_picks')
+    if ((!ids.has(problemId) && !summaryReplayOrder(lessonKey, problemId)) || typeof fileId !== 'string' || !fileId || used.has(fileId)) throw Error('invalid_picks')
     used.add(fileId)
   }
   const { error } = await createAdminSupabase().rpc('math_replay_publish', {

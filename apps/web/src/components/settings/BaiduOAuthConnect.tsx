@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { isAdminUser, supabase, useAuth } from '@rosie/core'
 import type { BaiduOAuthTarget } from '@/lib/baidu-oauth'
+import BaiduOAuthStatus from './BaiduOAuthStatus'
 
 const ERROR_MESSAGES: Record<string, string> = {
   unauthorized: '当前登录凭证未通过验证，请退出后重新登录。',
@@ -120,6 +121,7 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
         className={`mt-3 min-h-5 text-[13px] leading-relaxed ${success ? 'text-emerald-700' : 'text-red-700'}`}>
         {message}
       </p>
+      {!personal && <BaiduOAuthStatus key={user?.id} />}
       {children}
     </section>
   )

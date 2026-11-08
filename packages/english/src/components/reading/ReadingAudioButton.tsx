@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
+import { useBaiduMediaError } from '@rosie/core'
 
 type ReadingAudioButtonProps = {
   /** Public Storage URL or authenticated same-origin reading-audio stream. */
@@ -29,6 +30,7 @@ export default function ReadingAudioButton({
   const [buffering, setBuffering] = useState(false)
   const [failed, setFailed] = useState(false)
   const disabled = !src
+  const mediaError = useBaiduMediaError(audioRef, src ?? '')
 
   const isListCoordination = mode === 'loop' && onActivate !== undefined && passageKey !== undefined
 
@@ -105,7 +107,7 @@ export default function ReadingAudioButton({
                 ? '暂停朗读'
                 : '播放朗读'
         }
-        title={disabled ? '请先上传音频' : failed ? '音频暂时无法播放，请重试或联系管理员检查音频授权' : mode === 'loop' ? '循环朗读' : '朗读一遍'}
+        title={disabled ? '请先上传音频' : failed ? mediaError || '音频暂时无法播放，请重试。' : mode === 'loop' ? '循环朗读' : '朗读一遍'}
         onClick={toggle}
         className={clsx(
           'inline-flex shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95',
@@ -129,6 +131,7 @@ export default function ReadingAudioButton({
           '🔊'
         )}
       </button>
+      {failed && mediaError && <span role="alert" className="text-sm text-red-700">{mediaError}</span>}
     </>
   )
 }

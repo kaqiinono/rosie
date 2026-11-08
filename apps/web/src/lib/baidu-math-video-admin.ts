@@ -1,3 +1,4 @@
+import { baiduAuthErrorCode, BAIDU_AUTH_MESSAGES } from '@rosie/core'
 import 'server-only'
 import { NextResponse } from 'next/server'
 import { getUserFromRequest, isAdminRequestUser } from './api-auth'
@@ -46,7 +47,8 @@ export async function mathVideoAdmin(req: Request) {
     if (Object.hasOwn(conflicts, code)) return failure(conflicts[code]!, 409)
     if (code === 'replay_schema_unavailable') return failure('数学回放绑定接口尚未就绪，请确认已应用回放迁移 20261101033221，再重新读取。', 503)
     if (code === 'invalid_picks') return failure('请核对题目与视频，每个视频只能绑定一道题。', 400)
-    if (code === 'baidu_reauthorize') return failure('请先授权共享网盘。', 409)
+    const authCode = baiduAuthErrorCode(err)
+    if (authCode) return failure(BAIDU_AUTH_MESSAGES[authCode], 409)
     if (code === 'baidu_directory_missing') return failure('在当前网盘中找不到这个目录。', 404)
     if (code === 'scan_incomplete') return failure('文件列表不完整，本次没有替换已保存的清单。', 502)
     return failure('未能确认操作结果，请重新读取后重试。', 503)

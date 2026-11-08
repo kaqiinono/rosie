@@ -1,3 +1,4 @@
+import { baiduAuthErrorCode } from '@rosie/core'
 import { lessonKeyFromProblemId } from '@rosie/math-kit/utils/lesson-registry'
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/api-auth'
@@ -26,8 +27,9 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
   try {
     upstream = await fetchBaiduMathVideo(key, range, req.signal)
   } catch (error) {
+    const code = baiduAuthErrorCode(error)
+    if (code) return failure(code, 409)
     if (error instanceof Error) {
-      if (error.message === 'baidu_reauthorize') return failure('baidu_reauthorize', 409)
       if (['replay_file_not_found', 'baidu_directory_missing'].includes(error.message))
         return failure('not_found', 404)
     }

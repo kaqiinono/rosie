@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { isAdminUser, useAuth } from '@rosie/core'
 import { PageBreadcrumb } from '@rosie/ui'
-import BaiduOAuthConnect from './BaiduOAuthConnect'
 
 interface SettingTool {
   href: string
@@ -83,7 +82,6 @@ export default function SettingsHub() {
           <h1 className="text-[22px] font-black text-slate-800">个人配置</h1>
           <p className="mb-5 mt-1 text-[13px] text-slate-500">仅修改当前登录账户的学习与使用配置</p>
           <ToolGrid tools={PERSONAL_TOOLS} />
-          <BaiduOAuthConnect key={user?.id} target="personal" />
         </section>
         {admin && <section><div className="mb-5"><h2 className="text-[22px] font-black text-slate-800">全局配置</h2><p className="mt-1 text-[13px] text-slate-500">管理员专用 · 管理全局内容和账户</p></div><AdminSettingsCards /></section>}
       </main>

@@ -1,6 +1,6 @@
 'use client'
 
-import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isAdminUser, useAuth, SOURCE_LABELS } from '@rosie/core'
 import { SelectControl } from '@rosie/ui'
@@ -62,6 +62,9 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
     setEditor(next)
     setPicks(savedPicks(next))
     replaceProblemVideoCatalog(userId, {
+      summaryNames: Object.fromEntries(next.bindings
+        .filter(b => b.available && summaryReplayOrder(next.lessonKey, b.problemId))
+        .map(b => [b.problemId, b.name])),
       lessonKey: next.lessonKey, keys: next.bindings.filter(b => b.available).map(b => b.problemId), syncedAt: next.savedAt,
     })
   }, [userId])
@@ -78,7 +81,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
   const bankIds = new Set(editor?.problems.map(p => p.id))
   const fullKey = lessonReplayKey(lessonKey)
   bankIds.add(fullKey)
-  const retired = editor?.bindings.filter(b => !bankIds.has(b.problemId) && picks[b.problemId]) ?? []
+  const retired = editor?.bindings.filter(b => !bankIds.has(b.problemId) && !summaryReplayOrder(lessonKey, b.problemId) && picks[b.problemId]) ?? []
   const changingDirectory = editor && editor.directoryId !== editor.selectedId
   const dirty = Boolean(changingDirectory || (editor && (Object.keys(picks).length !== editor.bindings.length ||
     editor.bindings.some(b => picks[b.problemId] !== bindingValue(b)))))
@@ -228,7 +231,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
           <li key={p.id} className="break-all">{p.label} · {p.title} — {batchIssues[p.id]}</li>
         )}</ul>
       </details>}
-      <p className="mb-2 text-sm text-text-secondary">选择整讲回放或题目，再从同一列表选择视频。</p>
+      <p className="mb-2 text-sm text-text-secondary">选择整讲回放、本讲总结视频或题目，再从视频列表添加文件。</p>
       <MathVideoPairingPanel key={lessonKey + ':' + editor.selectedId} editor={editor} problems={visibleProblems}
         picks={picks} busy={busy} choose={choose} />
       {retired.map(b => <p key={b.problemId} className="mt-2 flex flex-wrap items-center gap-2 text-sm">
@@ -243,7 +246,8 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         {editor.savedAt && <p className="mt-1 break-all text-text-secondary">
           最近保存：{new Date(editor.savedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })} ·
           目录：{editor.directories.find(d => d.id === editor.directoryId)?.path ?? '未绑定'} ·
-          题目绑定 {editor.bindings.filter(b => b.problemId !== fullKey).length} 个 ·
+          题目绑定 {editor.bindings.filter(b => b.problemId !== fullKey && !summaryReplayOrder(lessonKey, b.problemId)).length} 个 ·
+          总结视频 {editor.bindings.filter(b => summaryReplayOrder(lessonKey, b.problemId)).length} 个 ·
           整讲回放：{published.get(fullKey)?.name ?? '未绑定'}
         </p>}
       </div>

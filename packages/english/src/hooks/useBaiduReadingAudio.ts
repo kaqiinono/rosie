@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, supabase } from '@rosie/core'
+import { createUserSessionStore, supabase, baiduResponseMessage } from '@rosie/core'
 
 let postedSession: { token: string; validUntil: number } | null = null
 
@@ -21,7 +21,7 @@ const audioKeysStore = createUserSessionStore<string[]>('baidu_reading_audio_key
         headers: { Authorization: `Bearer ${session.access_token}` },
         signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
       })
-      if (!response.ok) throw new Error('baidu_audio_unavailable')
+      if (!response.ok) throw new Error(await baiduResponseMessage(response, '网盘音频暂时不可用，仍可使用已有备用音频。'))
       const body: unknown = await response.json()
       if (controller.signal.aborted) throw new Error('audio_session_cancelled')
       if (!body || typeof body !== 'object') throw new Error('invalid_audio_manifest')
@@ -41,8 +41,13 @@ const audioKeysStore = createUserSessionStore<string[]>('baidu_reading_audio_key
 
 /** Session-store dedupe; remounts reuse the manifest. Periodic/token refreshes
  * renew the HttpOnly media cookie without putting credentials in audio URLs. */
+export function useBaiduReadingAudioError(user: User | null) {
+  const { error } = audioKeysStore.useSessionData(user)
+  return error instanceof Error ? error.message : ''
+}
+
 export function useBaiduReadingAudio(user: User | null) {
-  const { data: keys } = audioKeysStore.useSessionData(user)
+  const { data: keys, error } = audioKeysStore.useSessionData(user)
   const userId = user?.id
   useEffect(() => {
     if (!userId) return
@@ -78,5 +83,5 @@ export function useBaiduReadingAudio(user: User | null) {
     }
   }, [userId])
   const hasAudio = useCallback((key: string) => Boolean(userId) && keys.includes(key), [keys, userId])
-  return { hasAudio }
+  return { hasAudio, error: error instanceof Error ? error.message : '' }
 }

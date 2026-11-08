@@ -119,6 +119,23 @@ export function lessonReplayKey(lessonKey: string): string {
   return lessonKey + '-full-replay'
 }
 
+/** Ordered replay bindings share the lesson publication with the full recording. */
+export function summaryReplayKey(lessonKey: string, order: number): string {
+  return lessonKey + '-summary-' + order
+}
+
+export function summaryReplayOrder(lessonKey: string, key: string): number {
+  const prefix = lessonKey + '-summary-'
+  if (!key.startsWith(prefix)) return 0
+  const suffix = key.slice(prefix.length)
+  return /^[1-9][0-9]{0,14}$/.test(suffix) ? Number(suffix) : 0
+}
+
+export function orderedSummaryKeys(lessonKey: string, keys: string[]): string[] {
+  return keys.filter(key => summaryReplayOrder(lessonKey, key))
+    .sort((a, b) => summaryReplayOrder(lessonKey, a) - summaryReplayOrder(lessonKey, b))
+}
+
 export function lessonSummaryProblemId(lessonKey: string): string {
   return `${lessonKey}__SUMMARY`
 }

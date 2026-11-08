@@ -84,3 +84,10 @@ growth icons retain their meaning without introducing extra card-border colors.
 same session store used by `useProblemVideoCatalog`; it never syncs Baidu or mutates practice.
 
 A whole-lesson replay uses the reserved binding key returned by `lessonReplayKey`. It is published alongside the question clips but is selected manually outside the question bank and opens from the lesson homepage.
+
+Summary videos use ordered `<lessonKey>-summary-<position>` bindings in the same publication. The catalog includes current filenames for available summary clips. Lesson homepages with a dedicated recap card render `LessonSummaryVideos` there and set `summaryInContent` on `LessonHomeTitle`. Other lessons show the clips in the title card.
+
+Replay and `LessonMaterials` use core's `baiduResponseMessage` / `probeBaiduMedia` helpers.
+Authorization errors are identified by public JSON error codes, never by HTTP 409 alone.
+Materials probe a single byte before preview/download; native image/audio/video preview failures
+probe again for a readable error. Closing or switching files cancels obsolete probes.

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
-import { useAuth, supabase } from '@rosie/core'
+import { useAuth, supabase, useBaiduMediaError } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
 import { useReadingPassageMedia, useBaiduReadingAudio, baiduReadingAudioUrl } from '@rosie/english'
 import { usePlaylistPlayer } from '@rosie/player'
@@ -23,12 +23,13 @@ export default function ReadingIndexPage() {
   const { vocab, masteryMap, selStage, setSelStage } = useWordsContext()
   const searchParams = useSearchParams()
   const { hasAudio } = useReadingPassageMedia(user)
-  const { hasAudio: hasBaiduAudio } = useBaiduReadingAudio(user)
+  const { hasAudio: hasBaiduAudio, error: baiduError } = useBaiduReadingAudio(user)
   const hasPlayableAudio = useCallback(
     (key: string) => hasBaiduAudio(key) || hasAudio(key),
     [hasBaiduAudio, hasAudio],
   )
   const player = usePlaylistPlayer()
+  const playbackError = useBaiduMediaError(player.audioRef)
   const collection = searchParams.get('collection') === 'story' ? 'story' : 'houhai'
   const houhaiStages = useMemo(
     () =>
@@ -378,6 +379,7 @@ export default function ReadingIndexPage() {
         </ul>
       )}
 
+      {collection === 'houhai' && (playbackError || baiduError) && <p role="alert" className="mb-24 text-sm text-red-700">{playbackError || baiduError}</p>}
       <PlayerDock player={player} theme="light" />
     </main>
   )

@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useId, useRef, useState } from 'react'
+import { LinkButton } from '@rosie/ui'
 import { createPortal } from 'react-dom'
-import { supabase, useAuth, type Problem } from '@rosie/core'
+import { supabase, useAuth, probeBaiduMedia, baiduResponseMessage, type Problem } from '@rosie/core'
 import { useProblemVideoCatalog } from '../../hooks/useProblemVideoCatalog'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
-import { lessonReplayKey, lessonKeyFromProblemId } from '../../utils/lesson-registry'
+import { lessonReplayKey, lessonKeyFromProblemId, orderedSummaryKeys } from '../../utils/lesson-registry'
 import ProblemActionIcon from './ProblemActionIcon'
 
 type Props = { problem: Pick<Problem, 'id' | 'displayId' | 'title'> }
@@ -25,20 +26,8 @@ function ReplayDialog({ title, videoKey, onClose }: { title: string; videoKey: s
     // Native video errors hide the HTTP status. Probe one byte only after a failure.
     void (async () => {
       try {
-        const response = await fetch(streamUrl, {
-          headers: { Range: 'bytes=0-0' }, cache: 'no-store',
-          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30_000)]),
-        })
-        await response.body?.cancel()
-        if (controller.signal.aborted) return
-        const messages: Record<number, string> = {
-          401: '播放会话已失效，请重试。若仍失败，请重新登录 Rosie。',
-          404: '找不到绑定的视频，请管理员在网盘同步页核对目录和文件绑定。',
-          409: '请管理员在网盘同步页重新授权共享百度网盘。',
-        }
-        setError(messages[response.status] ?? (response.ok
-          ? '已能读取视频，请重试。若仍无法播放，请检查视频编码。'
-          : '暂时无法读取网盘视频，请稍后重试。'))
+        const message = await probeBaiduMedia(streamUrl, controller.signal)
+        if (!controller.signal.aborted) setError(message ?? '已能读取视频，请重试。若仍无法播放，请检查视频编码。')
       } catch {
         if (!controller.signal.aborted) setError('读取回放失败，请检查网络后重试。')
       }
@@ -74,9 +63,8 @@ function ReplayDialog({ title, videoKey, onClose }: { title: string; videoKey: s
         })
         if (controller.signal.aborted) return
         if (!response.ok) {
-          if (response.status === 409) setError('请联系管理员重新授权课程使用的共享百度网盘。')
-          else if (response.status === 401) setError('Rosie 登录已过期，请重新登录后播放。')
-          else setError('暂时无法打开回放，请稍后重试。')
+          const message = await baiduResponseMessage(response, '暂时无法打开回放，请稍后重试。')
+          if (!controller.signal.aborted) setError(message)
           return
         }
         setReady(true)
@@ -128,6 +116,29 @@ export default function ProblemVideoReplay({ problem }: Props) {
 
 export function LessonVideoReplay({ lessonKey }: { lessonKey: string }) {
   return <ReplayButton videoKey={lessonReplayKey(lessonKey)} featured label="本讲回放" title={`第 ${lessonKey.split('-')[1]} 讲 · 完整回放`} />
+}
+
+export function LessonSummaryVideos({ lessonKey }: { lessonKey: string }) {
+  const { user } = useAuth()
+  const { status, summaryNames } = useProblemVideoCatalog(user, lessonKey)
+  const [playing, setPlaying] = useState<string | null>(null)
+  const keys = orderedSummaryKeys(lessonKey, Object.keys(summaryNames))
+  if (status !== 'ready' || !keys.length) return null
+
+  return <section aria-label="本讲总结视频" className="mt-3 w-full min-w-0">
+    <h3 className="text-sm font-semibold">本讲总结视频</h3>
+    <ol>
+      {keys.map(key => <li key={key}>
+        <LinkButton onClick={() => setPlaying(key)}>
+          <ProblemActionIcon name="play" />
+          <span className="break-all text-left">{summaryNames[key]}</span>
+        </LinkButton>
+      </li>)}
+    </ol>
+    {playing && summaryNames[playing] && (
+      <ReplayDialog key={playing} title={summaryNames[playing]} videoKey={playing} onClose={() => setPlaying(null)} />
+    )}
+  </section>
 }
 
 function ReplayButton({ videoKey, label, title, featured = false }: { featured?: boolean; videoKey: string; label: string; title: string }) {

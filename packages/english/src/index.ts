@@ -25,7 +25,7 @@ export type { AdaptiveTodayProgressSummary } from './hooks/useAdaptiveTodayProgr
 export { useRescueQueue } from './hooks/useRescueQueue'
 export { useReadingPassageMedia } from './hooks/useReadingPassageMedia'
 export { useReadingPassageAudio } from './hooks/useReadingPassageAudio'
-export { useBaiduReadingAudio } from './hooks/useBaiduReadingAudio'
+export { useBaiduReadingAudio, useBaiduReadingAudioError } from './hooks/useBaiduReadingAudio'
 export { useStoryReadingProgress } from './hooks/useStoryReadingProgress'
 export { useStoryRecordings, storyRecordingsStore } from './hooks/useStoryRecordings'
 

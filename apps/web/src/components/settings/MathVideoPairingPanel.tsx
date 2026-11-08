@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { bindingValue, type MathVideoEditor, type VideoProblem } from '@/lib/baidu-math-video-report-types'
 import { VIDEO_SECONDARY_BUTTON } from './baidu-video-client'
-import { lessonReplayKey } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, orderedSummaryKeys, summaryReplayKey, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
 import MathVideoFilePicker from './MathVideoFilePicker'
 
 type Props = {
@@ -30,7 +30,9 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
   const list = useRef<HTMLUListElement>(null)
   const selectedRow = useRef<HTMLLIElement>(null)
   const wholeLesson = { id: lessonReplayKey(editor.lessonKey), label: '整讲回放', title: '完整课堂视频' }
-  const targets = [wholeLesson, ...problems]
+  const summary = { id: 'summary', label: '本讲总结视频', title: '可连续添加多个视频' }
+  const summaryKeys = orderedSummaryKeys(editor.lessonKey, Object.keys(picks))
+  const targets = [wholeLesson, summary, ...problems]
   const active = targets.find(p => p.id === selectedId) ?? problems.find(p => !picks[p.id]) ?? problems[0] ?? wholeLesson
   const bindings = new Map(editor.bindings.map(b => [b.problemId, b]))
 
@@ -51,9 +53,15 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
 
   function assign(fileId: string) {
     if (!active || busy || !editor.version || picks[active.id] === fileId) return
+    if (active.id === summary.id) {
+      const last = summaryKeys[summaryKeys.length - 1]
+      const order = last ? summaryReplayOrder(editor.lessonKey, last) + 1 : 1
+      choose(summaryReplayKey(editor.lessonKey, order), fileId)
+      return
+    }
     choose(active.id, fileId)
     const index = targets.findIndex(p => p.id === active.id)
-    const remaining = [...targets.slice(index + 1), ...targets.slice(0, index)].filter(p => p.id !== wholeLesson.id)
+    const remaining = [...targets.slice(index + 1), ...targets.slice(0, index)].filter(p => p.id !== wholeLesson.id && p.id !== summary.id)
     const next = remaining.find(p => !picks[p.id])
     setSelectedId(next?.id ?? active.id)
     if (!next && dialog.current?.open) dialog.current.close()
@@ -69,13 +77,31 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
 
   return <div className="grid items-start gap-3 sm:grid-cols-2">
     <section aria-label="题目列表" className="min-w-0 rounded-xl border border-border-light p-3">
-      <h5 className="mb-2 text-sm font-bold">整讲回放与题目（{problems.length} 题）</h5>
+      <h5 className="mb-2 text-sm font-bold">讲次视频与题目（{problems.length} 题）</h5>
       <ul ref={list} className="max-h-96 divide-y divide-border-light overflow-y-auto">
         {targets.map(p => {
           const file = picks[p.id]
           const old = bindings.get(p.id)
           const name = file && (editor.files[file] ?? (old && bindingValue(old) === file ? old.name : file))
           const selected = p.id === active?.id
+          if (p.id === summary.id) {
+            return <li key={p.id} ref={selected ? selectedRow : undefined} className="py-1">
+              <button type="button" disabled={busy} aria-pressed={selected} onClick={() => selectProblem(p.id)}
+                className={'min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm ' + (selected ? 'bg-blue-50 ring-1 ring-inset ring-app-blue' : '')}>
+                <span className="block font-semibold">{p.label}</span>
+                <span className="text-xs text-text-secondary">{summaryKeys.length ? '已绑定 ' + summaryKeys.length + ' 个' : '未绑定'} · 可多选</span>
+              </button>
+              <ol>{summaryKeys.map(key => {
+                const id = picks[key]!
+                const filename = editor.files[id] ?? bindings.get(key)?.name ?? id
+                return <li key={key} className="flex items-center gap-1 px-2 py-1">
+                  <span className="min-w-0 flex-1 break-all text-xs">{filename}{editor.version && !editor.files[id] && '（文件缺失）'}</span>
+                  <button type="button" disabled={busy} aria-label={'解绑 ' + filename}
+                    className={VIDEO_SECONDARY_BUTTON} onClick={() => choose(key, null)}>解绑</button>
+                </li>
+              })}</ol>
+            </li>
+          }
           return <li key={p.id} ref={selected ? selectedRow : undefined}
             className={'flex items-center gap-1 rounded-lg px-1 ' + (selected ? 'bg-blue-50 ring-1 ring-inset ring-app-blue' : '')}>
             <button type="button" aria-pressed={selected} disabled={busy} onClick={() => selectProblem(p.id)}
