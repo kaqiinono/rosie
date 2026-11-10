@@ -1,6 +1,7 @@
 'use client'
 
 import { createFilterPanel } from '@rosie/math-kit/components/shared/FilterPanel'
+import { LESSON_SOURCE_BTNS } from '@rosie/math-kit/utils/lesson-source-btns'
 import { PROBLEM_TYPES, TAG_STYLE } from '../../../../utils/g2/lesson13-data'
 import ProblemDetail from './ProblemDetail'
 
@@ -29,9 +30,7 @@ export default createFilterPanel(
       srcBadge: 'bg-amber-100 text-amber-800',
       accentClass: 'text-amber-700',
     },
-    sourceBtns: [
-      { key: 'lesson', label: '📖 课堂' },
-    ],
+    sourceBtns: LESSON_SOURCE_BTNS['2-13'],
     typeBtns: PROBLEM_TYPES.map((type) => ({ key: type.tag, label: `${type.icon} ${type.label}` })),
     tagColors: TAG_STYLE,
   },

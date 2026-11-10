@@ -9,7 +9,7 @@ const RAW_COURSES: CourseCardData[] = [
     description: '分类枚举与最不利原则，结合树数、间隔数和两端情况解决植树及楼梯问题。',
     icon: '🌳',
     lectureNum: '第 13 讲',
-    tags: ['抽屉原理', '植树与间隔', '14 道互动题'],
+    tags: ['抽屉原理', '植树与间隔', '26 道互动题'],
     variant: 'amber',
   },
   {

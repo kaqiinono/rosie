@@ -35,6 +35,8 @@ so content must not import back (enforced by `scripts/check-package-cycles.mjs`)
 
 ## Adding a lesson
 
+按教材或作业文档录题时，默认录入文档中出现的所有题目类别。即使请求只提到「课后巩固」，同一文档里的附加题等也要按原分类一并录入，并同步各模块入口和来源筛选。只有用户明确要求「只录某类」或排除某类时才缩小范围。
+
 Lesson files now live here (not in `@rosie/math`). After creating them, register the lesson in the
 TOP package's aggregators: `packages/math/src/utils/lesson-module-registry.ts` and `sea-data.ts`.
 See `docs/add-new-lesson/` + the `add-lesson` skill (both must reflect this two-package flow).

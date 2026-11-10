@@ -89,6 +89,20 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
           </p>
         </Link>
         <Link
+          href={`${BASE}/homework`}
+          className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
+        >
+          <div className="mb-1 text-sm font-bold">✏️ 课后巩固</div>
+          <p className="text-text-muted text-xs">共 {problems.homework.length} 题</p>
+        </Link>
+        <Link
+          href={`${BASE}/supplement`}
+          className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
+        >
+          <div className="mb-1 text-sm font-bold">📒 附加题</div>
+          <p className="text-text-muted text-xs">共 {problems.supplement?.length ?? 0} 题</p>
+        </Link>
+        <Link
           href={`${BASE}/alltest`}
           className="rounded-[14px] border-2 border-amber-300 bg-white p-4 no-underline"
         >
