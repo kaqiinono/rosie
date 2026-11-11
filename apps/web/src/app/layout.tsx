@@ -1,3 +1,4 @@
+import { Theme } from '@rosie/ui/themes'
 import type { Metadata, Viewport } from 'next'
 import { ServiceWorkerRegistrar } from '@rosie/ui'
 import AiFloatingAssistantHost from '@/components/AiFloatingAssistantHost'
@@ -39,21 +40,30 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className="min-h-screen font-sans text-text-primary antialiased">
-        <AuthProvider>
-          <BaiduAudioSessionCleanup />
-          <ImmersiveProvider>
-            <ServiceWorkerRegistrar />
-            <AuthGuard>
-              <StarHudProvider>
-                <TopRightBar />
-                {children}
-                <AiFloatingAssistantHost />
-                <StarBurstOverlay />
-              </StarHudProvider>
-            </AuthGuard>
-          </ImmersiveProvider>
-        </AuthProvider>
+      <body className="text-text-primary min-h-screen font-sans antialiased">
+        <Theme
+          appearance="light"
+          accentColor="amber"
+          grayColor="sand"
+          radius="full"
+          panelBackground="solid"
+          hasBackground={false}
+        >
+          <AuthProvider>
+            <BaiduAudioSessionCleanup />
+            <ImmersiveProvider>
+              <ServiceWorkerRegistrar />
+              <AuthGuard>
+                <StarHudProvider>
+                  <TopRightBar />
+                  {children}
+                  <AiFloatingAssistantHost />
+                  <StarBurstOverlay />
+                </StarHudProvider>
+              </AuthGuard>
+            </ImmersiveProvider>
+          </AuthProvider>
+        </Theme>
       </body>
     </html>
   )

@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@rosie/core": "workspace:*"
+    "@rosie/core": "workspace:*",
+    "@rosie/ui": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.0.0",

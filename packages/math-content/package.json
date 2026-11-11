@@ -12,6 +12,7 @@
   "dependencies": {
     "@rosie/core": "workspace:*",
     "@rosie/math-kit": "workspace:*",
+    "@rosie/ui": "workspace:*",
     "@supabase/supabase-js": "^2.99.2",
     "clsx": "^2.1.1"
   },

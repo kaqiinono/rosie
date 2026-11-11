@@ -36,66 +36,54 @@ import { FC, ReactNode, CSSProperties } from 'react'
 
 export interface JellyPreset {
   id: string
-  /** 按钮态完整 className：渐变 + 边框 + 立体下沉阴影 + 文字色。供 JellyButton 使用。 */
+  /** 按钮态完整 className：纯色 + 同色深边 + 平底边 + 文字色。供 JellyButton 使用。 */
   className: string
-  /** 大砖展示态 className：渐变 + 边框 + 浅一档阴影。供 JellyTile size="big" 使用。 */
+  /** 大砖展示态 className：纯色 + 边框 + 浅一档底边。供 JellyTile size="big" 使用。 */
   tileBigClassName?: string
-  /** 行内 mini-chip className：渐变 + 边框（无阴影）。供 JellyTile size="inline" 使用。 */
+  /** 行内 mini-chip className：纯色 + 边框（无阴影）。供 JellyTile size="inline" 使用。 */
   tileInlineClassName?: string
 }
 
 export const JELLY_PRESETS = {
   grape: {
     id: 'grape',
-    className:
-      'border-[#7c3aed]/70 bg-gradient-to-b from-[#c4b5fd] via-[#a78bfa] to-[#7c3aed] text-white shadow-[0_5px_0_#5b21b6,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(124,58,237,.55)] [text-shadow:0_2px_0_rgba(76,29,149,.6)]',
-    tileBigClassName:
-      'from-[#c4b5fd] via-[#a78bfa] to-[#7c3aed] border-[#6d28d9]/60 shadow-[0_4px_0_#5b21b6,inset_0_2px_0_rgba(255,255,255,.4)]',
-    tileInlineClassName: 'from-[#c4b5fd] to-[#7c3aed] border-[#6d28d9]/60',
+    className: 'border-violet-800 bg-violet-600 text-white shadow-[0_5px_0_#4c1d95]',
+    tileBigClassName: 'bg-violet-600 border-violet-800 shadow-[0_4px_0_#4c1d95]',
+    tileInlineClassName: 'bg-violet-600 border-violet-800',
   },
   tangerine: {
     id: 'tangerine',
-    className:
-      'border-[#ea580c]/70 bg-gradient-to-b from-[#fed7aa] via-[#fb923c] to-[#ea580c] text-white shadow-[0_5px_0_#c2410c,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(234,88,12,.55)] [text-shadow:0_2px_0_rgba(124,45,18,.6)]',
-    tileBigClassName:
-      'from-[#fed7aa] via-[#fb923c] to-[#ea580c] border-[#c2410c]/60 shadow-[0_4px_0_#9a3412,inset_0_2px_0_rgba(255,255,255,.4)]',
-    tileInlineClassName: 'from-[#fed7aa] to-[#ea580c] border-[#c2410c]/60',
+    className: 'border-orange-800 bg-orange-600 text-white shadow-[0_5px_0_#7c2d12]',
+    tileBigClassName: 'bg-orange-600 border-orange-800 shadow-[0_4px_0_#7c2d12]',
+    tileInlineClassName: 'bg-orange-600 border-orange-800',
   },
   strawberry: {
     id: 'strawberry',
-    className:
-      'border-[#be185d]/70 bg-gradient-to-b from-[#fbcfe8] via-[#f472b6] to-[#db2777] text-white shadow-[0_5px_0_#9d174d,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(190,24,93,.55)] [text-shadow:0_2px_0_rgba(131,24,67,.6)]',
-    tileBigClassName:
-      'from-[#fbcfe8] via-[#f472b6] to-[#db2777] border-[#be185d]/60 shadow-[0_4px_0_#9d174d,inset_0_2px_0_rgba(255,255,255,.4)]',
-    tileInlineClassName: 'from-[#fbcfe8] to-[#db2777] border-[#be185d]/60',
+    className: 'border-pink-800 bg-pink-600 text-white shadow-[0_5px_0_#831843]',
+    tileBigClassName: 'bg-pink-600 border-pink-800 shadow-[0_4px_0_#831843]',
+    tileInlineClassName: 'bg-pink-600 border-pink-800',
   },
   blueberry: {
     id: 'blueberry',
-    className:
-      'border-[#0369a1]/70 bg-gradient-to-b from-[#bae6fd] via-[#38bdf8] to-[#0284c7] text-white shadow-[0_5px_0_#075985,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(3,105,161,.55)] [text-shadow:0_2px_0_rgba(7,89,133,.6)]',
-    tileBigClassName:
-      'from-[#bae6fd] via-[#38bdf8] to-[#0284c7] border-[#0369a1]/60 shadow-[0_4px_0_#075985,inset_0_2px_0_rgba(255,255,255,.4)]',
-    tileInlineClassName: 'from-[#bae6fd] to-[#0284c7] border-[#0369a1]/60',
+    className: 'border-sky-800 bg-sky-600 text-white shadow-[0_5px_0_#0c4a6e]',
+    tileBigClassName: 'bg-sky-600 border-sky-800 shadow-[0_4px_0_#0c4a6e]',
+    tileInlineClassName: 'bg-sky-600 border-sky-800',
   },
   mint: {
     id: 'mint',
-    className:
-      'border-[#059669]/70 bg-gradient-to-b from-[#a7f3d0] via-[#34d399] to-[#059669] text-white shadow-[0_5px_0_#065f46,inset_0_2px_0_rgba(255,255,255,.45),inset_0_-2px_0_rgba(0,0,0,.18),0_8px_18px_-6px_rgba(5,150,105,.55)] [text-shadow:0_2px_0_rgba(6,78,59,.6)]',
-    tileBigClassName:
-      'from-[#a7f3d0] via-[#34d399] to-[#059669] border-[#047857]/60 shadow-[0_4px_0_#065f46,inset_0_2px_0_rgba(255,255,255,.4)]',
-    tileInlineClassName: 'from-[#a7f3d0] to-[#059669] border-[#047857]/60',
+    className: 'border-emerald-800 bg-emerald-600 text-white shadow-[0_5px_0_#064e3b]',
+    tileBigClassName: 'bg-emerald-600 border-emerald-800 shadow-[0_4px_0_#064e3b]',
+    tileInlineClassName: 'bg-emerald-600 border-emerald-800',
   },
   cyan: {
     id: 'cyan',
-    className:
-      'border-[#0e7490]/70 bg-gradient-to-b from-[#a5f3fc] via-[#67e8f9] to-[#06b6d4] text-cyan-900 shadow-[0_5px_0_#155e75,inset_0_2px_0_rgba(255,255,255,.6),inset_0_-2px_0_rgba(0,0,0,.12),0_8px_18px_-6px_rgba(6,182,212,.55)] [text-shadow:0_2px_0_rgba(8,51,68,.3)]',
+    className: 'border-cyan-600 bg-cyan-300 text-cyan-950 shadow-[0_5px_0_#155e75]',
     // cyan / honey 暂未给 tile 配色（亮底深字与 JellyTile 默认白字结构不兼容），
     // 若要用作砖块需另设 tileBigClassName / tileInlineClassName。
   },
   honey: {
     id: 'honey',
-    className:
-      'border-amber-700/50 bg-gradient-to-b from-[#fde68a] via-[#f59e0b] to-[#d97706] text-amber-950 shadow-[0_5px_0_#92400e,inset_0_2px_0_rgba(255,255,255,.5),inset_0_-2px_0_rgba(0,0,0,.1),0_10px_22px_-6px_rgba(217,119,6,.45)] [text-shadow:0_1px_0_rgba(120,53,15,.3)]',
+    className: 'border-amber-600 bg-amber-300 text-amber-950 shadow-[0_5px_0_#92400e]',
   },
 } satisfies Record<string, JellyPreset>
 
@@ -139,22 +127,22 @@ export const JELLY_BASE_CLASSES =
   '[-webkit-tap-highlight-color:transparent] [transform:translateZ(0)] ' +
   'transition-[transform,box-shadow,filter] duration-[90ms] ease-out ' +
   'will-change-transform animate-pop-in cursor-pointer ' +
-  'active:translate-y-[5px] active:shadow-[0_0_0_transparent,inset_0_2px_4px_rgba(0,0,0,.25)] active:brightness-95 ' +
-  '[@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-110 ' +
+  'active:translate-y-[5px] active:shadow-none ' +
+  '[@media(hover:hover)]:hover:-translate-y-1 ' +
   'disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:active:translate-y-0'
 
 // JellyTile 结构类（不含配色，配色来自 preset.tileBigClassName / tileInlineClassName）
 const TILE_BIG_STRUCTURE =
-  'font-fredoka animate-pop-in flex h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(2.5rem,8vw,3.25rem)] items-center justify-center rounded-2xl border-2 bg-gradient-to-b text-[clamp(1.2rem,4vw,1.6rem)] font-black text-white lowercase [text-shadow:0_2px_0_rgba(0,0,0,.25)]'
+  'font-fredoka animate-pop-in flex h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(2.5rem,8vw,3.25rem)] items-center justify-center rounded-2xl border-2 text-[clamp(1.2rem,4vw,1.6rem)] font-black text-white lowercase'
 
 const TILE_INLINE_STRUCTURE =
-  'font-fredoka animate-pop-in inline-flex h-[1.55em] w-[1.2em] items-center justify-center rounded-md border bg-gradient-to-b text-[.85em] leading-none font-black text-white lowercase'
+  'font-fredoka animate-pop-in inline-flex h-[1.55em] w-[1.2em] items-center justify-center rounded-md border text-[.85em] leading-none font-black text-white lowercase'
 
 const MYSTERY_BIG_STRUCTURE =
-  'font-fredoka animate-bounce-slow flex h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(2.5rem,8vw,3.25rem)] items-center justify-center rounded-2xl border-[2px] border-dashed border-sky-300 bg-gradient-to-br from-sky-50 to-indigo-50 text-[clamp(1.05rem,3.8vw,1.4rem)]'
+  'font-fredoka animate-bounce-slow flex h-[clamp(2.5rem,8vw,3.25rem)] w-[clamp(2.5rem,8vw,3.25rem)] items-center justify-center rounded-2xl border-[2px] border-dashed border-sky-300 bg-sky-50 text-[clamp(1.05rem,3.8vw,1.4rem)]'
 
 const MYSTERY_INLINE_STRUCTURE =
-  'font-fredoka animate-bounce-slow inline-flex h-[1.55em] w-[1.2em] items-center justify-center rounded-md border border-dashed border-sky-300 bg-white/70 text-[.85em] leading-none'
+  'font-fredoka animate-bounce-slow inline-flex h-[1.55em] w-[1.2em] items-center justify-center rounded-md border border-dashed border-sky-300 bg-sky-50 text-[.85em] leading-none'
 
 // ─── JellyButton ─────────────────────────────────────────────────────────────
 

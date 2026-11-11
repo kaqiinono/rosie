@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@rosie/ui/themes.css" layer(components);
 
 /* Monorepo: the subject modules live in sibling workspace packages, which Tailwind v4's
    automatic content detection does NOT scan. Without these, utility classes used only in
@@ -57,7 +58,8 @@
 }
 
 @theme {
-  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  /* 圆体优先：Safari 的 ui-rounded、macOS/iOS 圆体-简、Windows 幼圆；缺失时回落到常规黑体。 */
+  --font-sans: ui-rounded, "Yuanti SC", "YouYuan", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --font-nunito: "Nunito", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
   --font-fredoka: "Nunito", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
 
@@ -84,11 +86,25 @@
   --color-app-orange-light: #ffedd5;
 
   --color-surface: #ffffff;
-  --color-surface-dim: #f8fafc;
-  --color-border-light: #e5e7eb;
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
-  --color-text-muted: #94a3b8;
+  --color-surface-dim: #fff6e5;
+  --color-border-light: #ece4d8;
+  --color-text-primary: #2f2619;
+  --color-text-secondary: #75674f;
+  --color-text-muted: #a2937a;
+
+  /* 暖灰：整站写死的 slate-* 一律映射为偏暖的灰褐，和暖奶油底色、sand 灰阶协调。
+     业务代码继续写 slate-*，不需要逐个文件替换。 */
+  --color-slate-50: #fffaf0;
+  --color-slate-100: #fbf3e4;
+  --color-slate-200: #efe4d2;
+  --color-slate-300: #dccfb8;
+  --color-slate-400: #b3a58c;
+  --color-slate-500: #85775f;
+  --color-slate-600: #66594a;
+  --color-slate-700: #4d4236;
+  --color-slate-800: #342b21;
+  --color-slate-900: #251e16;
+  --color-slate-950: #17120c;
 
   /* Border-radius scale — use these when creating new components */
   --radius-sm: 8px;    /* pill badges, small chips */
@@ -118,6 +134,20 @@
   --animate-player-glow: player-glow 2.4s ease-in-out infinite;
 }
 
+/* 「软糖贴纸」视觉令牌，规范见 docs/visual-guidelines.md。
+   用 inline：值引用 .radix-themes 作用域里的 --kid-* / --accent-*，在使用处才解析。
+   shadow-sticker* = 平的底边（无模糊），取代旧的柔和模糊投影。 */
+@theme inline {
+  --shadow-sticker-sm: 0 2px 0 var(--kid-edge);
+  --shadow-sticker: 0 4px 0 var(--kid-edge);
+  --shadow-sticker-lg: 0 6px 0 var(--kid-edge);
+  --shadow-sticker-accent: 0 4px 0 var(--accent-7);
+  --shadow-sticker-pressed: 0 1px 0 var(--kid-edge);
+  --color-kid-paper: #fffaf0;
+  --color-kid-line: var(--kid-line);
+  --color-kid-line-strong: var(--kid-line-strong);
+}
+
 @keyframes eq {
   0%, 100% { transform: scaleY(0.28); }
   20% { transform: scaleY(0.9); }
@@ -128,18 +158,10 @@
 
 @keyframes player-glow {
   0%, 100% {
-    box-shadow:
-      0 6px 18px -4px rgba(245, 158, 11, 0.55),
-      0 0 0 1px rgba(245, 158, 11, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.45),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+    box-shadow: 0 4px 0 #b45309, 0 0 0 0 rgba(245, 158, 11, 0.5);
   }
   50% {
-    box-shadow:
-      0 10px 26px -4px rgba(245, 158, 11, 0.75),
-      0 0 0 1px rgba(251, 191, 36, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-      inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+    box-shadow: 0 4px 0 #b45309, 0 0 0 6px rgba(245, 158, 11, 0.35);
   }
 }
 
@@ -169,7 +191,8 @@
   .rosieload-blink,
   .rosieload-turn-body,
   .rosieload-turn-shadow,
-  .rosieload-round-turn-sprite {
+  .rosieload-round-turn-sprite,
+  .rosieload-confetti {
     animation: none;
   }
 
@@ -245,6 +268,16 @@
   animation: rosieload-turn-frames 1.75s steps(7, end) infinite;
 }
 
+/* LoadingOverlay 背景撒花：纯色小花 / 星星 / 圆点缓慢飘动 + 轻微旋转，延迟与时长由行内变量控制 */
+@keyframes rosieload-confetti {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1) }
+  50% { transform: translateY(-14px) rotate(24deg) scale(1.15) }
+}
+
+.rosieload-confetti {
+  animation: rosieload-confetti var(--confetti-dur, 3.6s) ease-in-out var(--confetti-delay, 0s) infinite;
+}
+
 @keyframes bounce-slow {
   0%, 100% { transform: translateY(0) }
   50% { transform: translateY(-8px) }
@@ -304,6 +337,8 @@
 
 @layer base {
   * { -webkit-tap-highlight-color: transparent; }
+  /* 暖奶油纸张底色：白色卡片落在上面自然分层，整站不再是冷白。 */
+  body { background-color: #fffaf0; }
 }
 
 @utility scrollbar-none {

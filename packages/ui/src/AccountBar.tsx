@@ -10,7 +10,7 @@ type AccountBarProps = {
 }
 
 const HEADER_ICON_BTN =
-  'inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-gray-200/90 bg-white text-text-muted transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-9 sm:w-9'
+  'inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border-2 border-kid-line bg-white text-text-muted transition-colors hover:border-kid-line-strong hover:bg-gray-50 sm:h-9 sm:w-9'
 
 export default function AccountBar({ variant = 'default' }: AccountBarProps) {
   const { user, signOut, loading } = useAuth()
@@ -23,7 +23,7 @@ export default function AccountBar({ variant = 'default' }: AccountBarProps) {
       return (
         <Link
           href="/auth"
-          className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-gray-200/90 bg-white px-2.5 text-[11px] font-semibold text-text-secondary no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-9 sm:px-3 sm:text-[12px]"
+          className="border-kid-line text-text-secondary hover:border-kid-line-strong inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border-2 bg-white px-2.5 text-[11px] font-semibold no-underline transition-colors hover:bg-gray-50 sm:h-9 sm:px-3 sm:text-[12px]"
           title="登录"
         >
           <svg
@@ -51,10 +51,10 @@ export default function AccountBar({ variant = 'default' }: AccountBarProps) {
       <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
         <Link
           href="/setting"
-          className="inline-flex h-8 max-w-[9rem] items-center gap-1.5 rounded-lg border border-gray-200/90 bg-white px-2 text-[11px] font-semibold text-text-secondary no-underline transition-colors hover:border-gray-300 hover:bg-gray-50 sm:h-9 sm:max-w-[10rem] sm:px-2.5 sm:text-[12px]"
+          className="border-kid-line text-text-secondary hover:border-kid-line-strong inline-flex h-8 max-w-[9rem] items-center gap-1.5 rounded-lg border-2 bg-white px-2 text-[11px] font-semibold no-underline transition-colors hover:bg-gray-50 sm:h-9 sm:max-w-[10rem] sm:px-2.5 sm:text-[12px]"
           title={`${username} — 配置`}
         >
-          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-gray-100 text-[10px] font-bold text-text-secondary sm:h-[22px] sm:w-[22px] sm:text-[11px]">
+          <span className="text-text-secondary flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-gray-100 text-[10px] font-bold sm:h-[22px] sm:w-[22px] sm:text-[11px]">
             {initial}
           </span>
           <span className="hidden truncate sm:inline">{username}</span>

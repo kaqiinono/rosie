@@ -71,7 +71,7 @@ export default function AnalysisImage({ src, alt = '题解图', onLoad }: Analys
           aria-modal="true"
           aria-label={alt}
           onClick={close}
-          className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -83,7 +83,7 @@ export default function AnalysisImage({ src, alt = '题解图', onLoad }: Analys
               transform: rotated ? 'rotate(90deg)' : 'rotate(0deg)',
               transition: 'transform 0.3s ease, max-width 0.3s ease, max-height 0.3s ease',
             }}
-            className="cursor-default rounded-lg bg-white object-contain shadow-2xl"
+            className="shadow-sticker-lg cursor-default rounded-lg bg-white object-contain"
           />
           <div
             onClick={(event) => event.stopPropagation()}
@@ -92,7 +92,7 @@ export default function AnalysisImage({ src, alt = '题解图', onLoad }: Analys
             <button
               type="button"
               onClick={() => setRotated((value) => !value)}
-              className="flex h-10 items-center gap-1.5 rounded-full bg-white/95 px-3.5 text-sm font-semibold text-gray-700 shadow-lg"
+              className="shadow-sticker flex h-10 items-center gap-1.5 rounded-full bg-white px-3.5 text-sm font-semibold text-gray-700"
               aria-label="旋转 90°"
             >
               ↻ <span>旋转</span>
@@ -100,7 +100,7 @@ export default function AnalysisImage({ src, alt = '题解图', onLoad }: Analys
             <button
               type="button"
               onClick={close}
-              className="flex size-10 items-center justify-center rounded-full bg-white/95 text-xl font-bold text-gray-700 shadow-lg"
+              className="shadow-sticker flex size-10 items-center justify-center rounded-full bg-white text-xl font-bold text-gray-700"
               aria-label="关闭"
             >
               ×

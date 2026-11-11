@@ -15,8 +15,11 @@ export interface BreadcrumbRoute {
 }
 
 export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
-  { pattern: ['tasks'], label: '课程表' },
-  { pattern: ['tasks', 'timetable'], label: '周课表' },
+  { pattern: ['time-tree'], label: '生命树' },
+  { pattern: ['setting', 'time-tree'], label: '生命树设置' },
+  { pattern: ['tasks'], label: '课程安排' },
+  { pattern: ['tasks', 'timetable'], label: '课程表' },
+  { pattern: ['tasks', 'homework'], label: '作业管理' },
   { pattern: ['chinese'], label: '语文' },
   {
     pattern: ['chinese', '[bookSlug]'],
@@ -53,10 +56,37 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['english', 'library'], label: '词库' },
   { pattern: ['english', 'words', 'reading'], label: '阅读' },
   { pattern: ['english', 'words', 'reading', 'story'], label: 'Story' },
-  { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]'], label: '{seriesSlug}', labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House' } } },
-  { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]'], label: '{volumeSlug}', labelMap: { volumeSlug: { 'dinosaurs-before-dark': 'Dinosaurs Before Dark', 'the-knight-at-dawn': 'The Knight at Dawn' } } },
-  { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]', 'full'], label: '整辑阅读' },
-  { pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]', '[chapterKey]'], label: '章节' },
+  {
+    pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]'],
+    label: '{seriesSlug}',
+    labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House' } },
+  },
+  {
+    pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]'],
+    label: '{volumeSlug}',
+    labelMap: {
+      volumeSlug: {
+        'dinosaurs-before-dark': 'Dinosaurs Before Dark',
+        'the-knight-at-dawn': 'The Knight at Dawn',
+      },
+    },
+  },
+  {
+    pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]', 'full'],
+    label: '整辑阅读',
+  },
+  {
+    pattern: [
+      'english',
+      'words',
+      'reading',
+      'story',
+      '[seriesSlug]',
+      '[volumeSlug]',
+      '[chapterKey]',
+    ],
+    label: '章节',
+  },
   { pattern: ['english', 'grammar'], label: '语法' },
   {
     pattern: ['english', 'grammar', '[book]'],
@@ -132,7 +162,8 @@ function fillLabel(route: BreadcrumbRoute, segments: string[]): string {
  * 末项为当前页。无匹配路由时返回 null（组件兜底渲染返回按钮）。
  */
 export function buildBreadcrumb(pathname: string): BreadcrumbItem[] | null {
-  const normalized = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+  const normalized =
+    pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
   const segments = normalized.split('/').filter(Boolean)
   const current = findRoute(segments)
   if (!current) return null

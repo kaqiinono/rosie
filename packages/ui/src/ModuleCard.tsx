@@ -6,48 +6,48 @@ import type { ModuleCardData } from '@rosie/core'
 
 const variantStyles = {
   math: {
-    accent: 'bg-gradient-to-r from-math-from to-math-to',
-    iconBg: 'bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-500/15 dark:to-indigo-500/15',
-    tag: 'text-indigo-800 bg-indigo-100 dark:bg-indigo-500/15 dark:text-indigo-300',
-    statDot: 'bg-math-from',
-    enter: 'bg-gradient-to-br from-blue-50 to-indigo-50 text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-300',
-    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-math-from group-hover:to-math-to group-hover:text-white',
-    deco: 'bg-math-from',
+    accent: 'bg-indigo-500',
+    iconBg: 'bg-indigo-100',
+    tag: 'bg-indigo-100 text-indigo-800',
+    statDot: 'bg-indigo-500',
+    enter: 'bg-indigo-100 text-indigo-800',
+    enterHover: 'group-hover:bg-indigo-500 group-hover:text-white',
+    deco: 'bg-indigo-500',
   },
   english: {
-    accent: 'bg-gradient-to-r from-eng-from to-eng-to',
-    iconBg: 'bg-gradient-to-br from-emerald-100 to-cyan-100 dark:from-emerald-500/15 dark:to-cyan-500/15',
-    tag: 'text-emerald-800 bg-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300',
-    statDot: 'bg-eng-from',
-    enter: 'bg-gradient-to-br from-emerald-50 to-cyan-50 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300',
-    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-eng-from group-hover:to-eng-to group-hover:text-white',
-    deco: 'bg-eng-from',
+    accent: 'bg-emerald-600',
+    iconBg: 'bg-emerald-100',
+    tag: 'bg-emerald-100 text-emerald-800',
+    statDot: 'bg-emerald-600',
+    enter: 'bg-emerald-100 text-emerald-800',
+    enterHover: 'group-hover:bg-emerald-600 group-hover:text-white',
+    deco: 'bg-emerald-600',
   },
   reading: {
-    accent: 'bg-gradient-to-r from-orange-400 to-rose-400',
-    iconBg: 'bg-gradient-to-br from-orange-100 to-rose-100 dark:from-orange-500/15 dark:to-rose-500/15',
-    tag: 'text-orange-800 bg-orange-100 dark:bg-orange-500/15 dark:text-orange-300',
-    statDot: 'bg-orange-400',
-    enter: 'bg-gradient-to-br from-orange-50 to-rose-50 text-orange-800 dark:bg-orange-500/10 dark:text-orange-300',
-    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-orange-400 group-hover:to-rose-400 group-hover:text-white',
-    deco: 'bg-orange-400',
+    accent: 'bg-orange-600',
+    iconBg: 'bg-orange-100',
+    tag: 'bg-orange-100 text-orange-800',
+    statDot: 'bg-orange-600',
+    enter: 'bg-orange-100 text-orange-800',
+    enterHover: 'group-hover:bg-orange-600 group-hover:text-white',
+    deco: 'bg-orange-600',
   },
   today: {
-    accent: 'bg-gradient-to-r from-amber-400 to-orange-400',
-    iconBg: 'bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-500/15 dark:to-orange-500/15',
-    tag: 'text-amber-800 bg-amber-100 dark:bg-amber-500/15 dark:text-amber-300',
-    statDot: 'bg-amber-400',
-    enter: 'bg-gradient-to-br from-amber-50 to-orange-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300',
-    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-amber-400 group-hover:to-orange-400 group-hover:text-white',
-    deco: 'bg-amber-400',
+    accent: 'bg-amber-500',
+    iconBg: 'bg-amber-100',
+    tag: 'bg-amber-100 text-amber-800',
+    statDot: 'bg-amber-500',
+    enter: 'bg-amber-100 text-amber-800',
+    enterHover: 'group-hover:bg-amber-400 group-hover:text-amber-950',
+    deco: 'bg-amber-500',
   },
   calc: {
-    accent: 'bg-gradient-to-r from-violet-500 to-fuchsia-500',
-    iconBg: 'bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-500/15 dark:to-fuchsia-500/15',
-    tag: 'text-violet-800 bg-violet-100 dark:bg-violet-500/15 dark:text-violet-300',
+    accent: 'bg-violet-500',
+    iconBg: 'bg-violet-100',
+    tag: 'bg-violet-100 text-violet-800',
     statDot: 'bg-violet-500',
-    enter: 'bg-gradient-to-br from-violet-50 to-fuchsia-50 text-violet-800 dark:bg-violet-500/10 dark:text-violet-300',
-    enterHover: 'group-hover:bg-gradient-to-br group-hover:from-violet-500 group-hover:to-fuchsia-500 group-hover:text-white',
+    enter: 'bg-violet-100 text-violet-800',
+    enterHover: 'group-hover:bg-violet-500 group-hover:text-white',
     deco: 'bg-violet-500',
   },
 }
@@ -58,32 +58,36 @@ export default function ModuleCard({ data }: { data: ModuleCardData }) {
   return (
     <NavigationLink
       href={data.href}
-      className="group relative block overflow-hidden rounded-[20px] border border-white/80 bg-white text-left shadow-[0_4px_24px_rgba(15,23,42,.06),0_1px_3px_rgba(15,23,42,.04)] transition-all duration-300 ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-1.5 hover:scale-[1.01] hover:shadow-[0_20px_50px_rgba(15,23,42,.1),0_4px_12px_rgba(15,23,42,.06)] dark:bg-slate-800 dark:border-white/6 dark:shadow-[0_4px_24px_rgba(0,0,0,.2)] dark:hover:shadow-[0_20px_50px_rgba(0,0,0,.35)]"
+      className="group border-kid-line shadow-sticker ease-spring hover:border-kid-line-strong hover:shadow-sticker-lg relative block overflow-hidden rounded-3xl border-2 bg-white text-left transition-all duration-300 hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     >
       <div className={`h-[5px] transition-all duration-300 group-hover:h-1.5 ${s.accent}`} />
 
-      <div className={`absolute -top-8 -right-5 h-30 w-30 rounded-full opacity-[0.07] ${s.deco}`} />
+      <div className={`absolute -top-8 -right-5 h-30 w-30 rounded-full opacity-10 ${s.deco}`} />
 
       <div className="relative flex flex-col gap-3.5 p-6">
         <div className="flex items-center justify-between">
-          <div className={`flex h-[54px] w-[54px] items-center justify-center rounded-2xl text-[28px] transition-transform duration-300 group-hover:scale-108 group-hover:-rotate-4 ${s.iconBg}`}>
+          <div
+            className={`flex h-[54px] w-[54px] items-center justify-center rounded-2xl text-[28px] transition-transform duration-300 group-hover:scale-108 group-hover:-rotate-4 ${s.iconBg}`}
+          >
             {data.icon}
           </div>
-          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold tracking-wider uppercase ${s.tag}`}>
+          <span
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-extrabold tracking-wider uppercase ${s.tag}`}
+          >
             {data.tag}
           </span>
         </div>
 
         <div className="flex flex-col gap-1">
-          <div className="text-[22px] font-extrabold leading-tight">{data.title}</div>
-          <p className="text-sm text-text-secondary leading-relaxed">{data.description}</p>
+          <div className="text-[22px] leading-tight font-extrabold">{data.title}</div>
+          <p className="text-text-secondary text-sm leading-relaxed">{data.description}</p>
         </div>
 
         <div className="flex flex-wrap gap-1.5">
           {data.stats.map((stat) => (
             <span
               key={stat}
-              className="flex items-center gap-1 rounded-lg border border-slate-100 bg-slate-50 px-2.5 py-1 text-xs font-bold text-text-secondary dark:bg-slate-900 dark:border-white/6"
+              className="border-kid-line bg-kid-paper text-text-secondary flex items-center gap-1 rounded-full border-2 px-2.5 py-1 text-xs font-bold"
             >
               <span className={`h-1.5 w-1.5 rounded-full ${s.statDot}`} />
               {stat}
@@ -91,7 +95,9 @@ export default function ModuleCard({ data }: { data: ModuleCardData }) {
           ))}
         </div>
 
-        <div className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 ${s.enter} ${s.enterHover}`}>
+        <div
+          className={`flex items-center justify-between rounded-full px-4 py-3 text-sm font-bold transition-all duration-200 ${s.enter} ${s.enterHover}`}
+        >
           {data.enterText}
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:bg-white/25">
             <ArrowIcon />

@@ -16,7 +16,7 @@ export type SolutionPanelVariant =
 
 const VARIANTS: Record<SolutionPanelVariant, { box: string; heading: string; item: string }> = {
   yellow: {
-    box: 'border-[#fde68a] bg-gradient-to-br from-[#fffbeb] to-yellow-light',
+    box: 'border-[#fde68a] bg-[#fffbeb]',
     heading: 'text-yellow-dark',
     item: 'text-[#92400e]',
   },
@@ -26,52 +26,52 @@ const VARIANTS: Record<SolutionPanelVariant, { box: string; heading: string; ite
     item: 'text-orange-900',
   },
   sky: {
-    box: 'border-[#bae6fd] bg-gradient-to-br from-[#f0f9ff] to-[#e0f2fe]',
+    box: 'border-[#bae6fd] bg-[#f0f9ff]',
     heading: 'text-sky-700',
     item: 'text-sky-900',
   },
   green: {
-    box: 'border-green-200 bg-gradient-to-br from-green-50 to-[#dcfce7]',
+    box: 'border-green-200 bg-green-50',
     heading: 'text-green-700',
     item: 'text-green-900',
   },
   purple: {
-    box: 'border-purple-200 bg-gradient-to-br from-purple-50 to-[#ede9fe]',
+    box: 'border-purple-200 bg-purple-50',
     heading: 'text-purple-700',
     item: 'text-purple-900',
   },
   violet: {
-    box: 'border-violet-200 bg-gradient-to-br from-violet-50 to-[#ede9fe]',
+    box: 'border-violet-200 bg-violet-50',
     heading: 'text-violet-700',
     item: 'text-violet-900',
   },
   rose: {
-    box: 'border-rose-200 bg-gradient-to-br from-rose-50 to-[#ffe4e6]',
+    box: 'border-rose-200 bg-rose-50',
     heading: 'text-rose-700',
     item: 'text-rose-900',
   },
   teal: {
-    box: 'border-teal-200 bg-gradient-to-br from-teal-50 to-[#ccfbf1]',
+    box: 'border-teal-200 bg-teal-50',
     heading: 'text-teal-700',
     item: 'text-teal-900',
   },
   fuchsia: {
-    box: 'border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 to-[#fae8ff]',
+    box: 'border-fuchsia-200 bg-fuchsia-50',
     heading: 'text-fuchsia-700',
     item: 'text-fuchsia-900',
   },
   amber: {
-    box: 'border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-50',
+    box: 'border-amber-200 bg-amber-50',
     heading: 'text-amber-700',
     item: 'text-amber-900',
   },
   cyan: {
-    box: 'border-cyan-200 bg-gradient-to-br from-cyan-50 to-[#cffafe]',
+    box: 'border-cyan-200 bg-cyan-50',
     heading: 'text-cyan-700',
     item: 'text-cyan-900',
   },
   indigo: {
-    box: 'border-indigo-200 bg-gradient-to-br from-indigo-50 to-[#e0e7ff]',
+    box: 'border-indigo-200 bg-indigo-50',
     heading: 'text-indigo-700',
     item: 'text-indigo-900',
   },
@@ -98,7 +98,9 @@ export default function ProblemSolutionView({
 }: ProblemSolutionViewProps) {
   const styles = VARIANTS[variant]
   return (
-    <div className={['rounded-lg border p-3.5', styles.box, className].filter(Boolean).join(' ')}>
+    <div
+      className={['rounded-2xl border-2 p-3.5', styles.box, className].filter(Boolean).join(' ')}
+    >
       <div
         className={['mb-1.5 flex items-center gap-1 text-xs font-bold', styles.heading].join(' ')}
       >

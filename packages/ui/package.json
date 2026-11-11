@@ -6,6 +6,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./themes": "./src/themes.ts",
+    "./themes.css": "./src/themes.css",
     "./AnalysisImage": "./src/AnalysisImage.tsx",
     "./ProblemSolutionView": "./src/ProblemSolutionView.tsx",
     "./breadcrumb-map": "./src/breadcrumb-map.ts"
@@ -19,7 +21,7 @@
     "@rosie/rewards": "workspace:*",
     "clsx": "2.1.1",
     "lucide-react": "^0.468.0",
-    "@radix-ui/react-dialog": "^1.1.6"
+    "@radix-ui/themes": "^3.2.1"
   },
   "peerDependencies": {
     "next": "^15.2.4",
