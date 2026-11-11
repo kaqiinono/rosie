@@ -121,7 +121,7 @@ export default function FlipbookShelfPage() {
           type="button"
           disabled={audiobookIds.length === 0}
           onClick={() => playIds(hasSelection ? selectedIds : audiobookIds)}
-          className="rounded-full bg-gradient-to-br from-orange-400 to-amber-500 px-4 py-2 text-[13px] font-bold text-white shadow-md transition active:scale-95 disabled:opacity-50"
+          className="rounded-full bg-amber-700 px-4 py-2 text-[13px] font-bold text-white shadow-sticker transition active:scale-95 disabled:opacity-50"
         >
           ▶{' '}
           {audiobookIds.length === 0
@@ -246,8 +246,8 @@ function ShelfBookRow({
           className={clsx(
             'w-1 shrink-0 transition-opacity',
             isPlaying
-              ? 'bg-gradient-to-b from-orange-300 via-orange-400 to-orange-500'
-              : 'bg-gradient-to-b from-orange-300/70 via-orange-400/50 to-orange-500/20',
+              ? 'bg-orange-300 '
+              : 'bg-orange-300/70 ',
           )}
         />
 
@@ -256,7 +256,7 @@ function ShelfBookRow({
             aria-hidden
             className={clsx(
               'grid h-12 w-12 shrink-0 place-items-center rounded-xl',
-              'bg-gradient-to-br from-orange-300/15 to-orange-500/[0.04]',
+              'bg-orange-300/15  /[0.04]',
               'ring-1 ring-orange-200/15 ring-inset',
             )}
           >

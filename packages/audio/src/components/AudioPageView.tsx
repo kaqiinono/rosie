@@ -9,6 +9,7 @@ import { usePlaylistPlayer } from '@rosie/player'
 import { PlayerDock } from '@rosie/player'
 import CollectionPills from './CollectionPills'
 import { trackKey, type AudioCollection, type AudioCollectionKind } from '@rosie/player'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 const KIND_ICON: Record<AudioCollectionKind, string> = {
   favorites: '❤️',
@@ -65,28 +66,19 @@ export default function AudioPageView({ user }: Props) {
         {col.collections.map((c) => {
           const isSel = selected?.id === c.id
           return (
-            <button
+            <Button
               key={c.id}
               type="button"
               onClick={() => setSelectedId(c.id)}
-              className={clsx(
-                'flex items-center gap-1.5 rounded-2xl px-3 py-2 ring-1 transition',
-                isSel
-                  ? 'bg-orange-400/20 text-orange-100 ring-orange-300/60'
-                  : 'bg-white/[0.06] text-white/70 ring-white/10 hover:bg-white/[0.1]',
-              )}
+              variant={isSel ? 'solid' : 'soft'}
+              color={isSel ? 'orange' : 'gray'}
+              size="2"
+              radius="full"
             >
               <span className="text-[15px]">{KIND_ICON[c.kind]}</span>
-              <span className="text-[13px] font-bold">{c.name}</span>
-              <span
-                className={clsx(
-                  'rounded-full px-1.5 py-0.5 font-mono text-[10px]',
-                  isSel ? 'bg-orange-300/20 text-orange-100' : 'bg-black/25 text-white/55',
-                )}
-              >
-                {c.tracks.length}
-              </span>
-            </button>
+              <span>{c.name}</span>
+              <span className="font-mono text-[10px] opacity-70">{c.tracks.length}</span>
+            </Button>
           )
         })}
       </div>
@@ -99,22 +91,26 @@ export default function AudioPageView({ user }: Props) {
           </span>
           <span className="shrink-0 text-[12px] text-white/40">{selected.tracks.length} 首</span>
           <div className="ml-auto flex shrink-0 gap-2">
-            <button
+            <Button
               type="button"
               disabled={selected.tracks.length === 0}
               onClick={() => player.play(selected.tracks)}
-              className="rounded-full bg-gradient-to-br from-orange-400 to-amber-500 px-3.5 py-2 text-[13px] font-bold text-white shadow-md transition active:scale-95 disabled:opacity-40"
+              variant="solid"
+              color="amber"
+              size="2"
             >
               ▶ 播放全部
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               disabled={selected.tracks.length === 0}
               onClick={() => player.enqueue(selected.tracks)}
-              className="rounded-full bg-white/10 px-3 py-2 text-[13px] font-bold text-white/85 ring-1 ring-white/15 transition active:scale-95 hover:bg-white/15 disabled:opacity-40"
+              variant="outline"
+              color="gray"
+              size="2"
             >
               ＋ 加入
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -153,11 +149,13 @@ export default function AudioPageView({ user }: Props) {
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-orange-300/15 to-orange-500/[0.04] text-[18px] ring-1 ring-orange-200/15">
+                  <div className="/[0.04] grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-orange-300/15 text-[18px] ring-1 ring-orange-200/15">
                     {track.mediaType === 'video' ? '🎬' : '🎵'}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[15px] font-semibold text-white">{track.label}</div>
+                    <div className="truncate text-[15px] font-semibold text-white">
+                      {track.label}
+                    </div>
                     {track.refLink && (
                       <Link
                         href={track.refLink}
@@ -168,34 +166,39 @@ export default function AudioPageView({ user }: Props) {
                     )}
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">
-                    <button
+                    <IconButton
                       type="button"
                       aria-label="播放"
                       title="播放"
                       onClick={() => player.play([track])}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-orange-600 shadow-md ring-1 ring-orange-200/60 transition active:scale-90"
+                      variant="outline"
+                      color="orange"
+                      size="2"
+                      className="w-10"
                     >
                       ▶
-                    </button>
-                    <button
+                    </IconButton>
+                    <IconButton
                       type="button"
                       aria-label="加入播放列表"
                       title="加入播放列表"
                       onClick={() => player.enqueue([track])}
-                      className={clsx(
-                        'flex h-10 w-10 items-center justify-center rounded-full text-[16px] ring-1 transition active:scale-90',
-                        inQueue
-                          ? 'bg-orange-400/20 text-orange-300 ring-orange-300/40'
-                          : 'bg-white/10 text-white/70 ring-white/15 hover:text-orange-300',
-                      )}
+                      variant={inQueue ? 'solid' : 'soft'}
+                      color={inQueue ? 'orange' : 'gray'}
+                      size="2"
+                      className="w-10"
                     >
                       {inQueue ? '✓' : '＋'}
-                    </button>
+                    </IconButton>
                   </div>
                 </div>
                 {pills.length > 0 && (
                   <div className="mt-2 pl-14">
-                    <CollectionPills entries={pills} onRemove={(item) => void col.removeItem(item)} theme="dark" />
+                    <CollectionPills
+                      entries={pills}
+                      onRemove={(item) => void col.removeItem(item)}
+                      theme="dark"
+                    />
                   </div>
                 )}
               </li>

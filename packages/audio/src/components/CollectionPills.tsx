@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import type { CollectionMembership } from '../hooks/useAudioCollections'
 import type { AudioPlaylistItem } from '@rosie/player'
+import { IconButton } from '@rosie/ui/themes'
 
 type Props = {
   entries: CollectionMembership[] // 来自 collections.membership(bucket, path)
@@ -27,7 +28,7 @@ export default function CollectionPills({ entries, onRemove, theme = 'dark' }: P
           )}
         >
           {e.kind === 'favorites' ? '❤️' : '🎵'} {e.collectionName}
-          <button
+          <IconButton
             type="button"
             aria-label={`从「${e.collectionName}」移除`}
             onClick={(ev) => {
@@ -35,10 +36,13 @@ export default function CollectionPills({ entries, onRemove, theme = 'dark' }: P
               ev.stopPropagation()
               onRemove(e.item)
             }}
-            className="ml-0.5 inline-flex h-3.5 w-3.5 items-center justify-center rounded-full opacity-70 hover:bg-black/10 hover:opacity-100"
+            variant="ghost"
+            color="gray"
+            size="2"
+            className="ml-0.5 w-3.5"
           >
             ×
-          </button>
+          </IconButton>
         </span>
       ))}
     </div>

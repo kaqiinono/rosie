@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import CollectionPills from '../components/CollectionPills'
 import type { CollectionMembership } from '../hooks/useAudioCollections'
 import { AUDIO_MEDIA_BUCKET, type AudioAsset, type AudioPlaylistItem } from '@rosie/player'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 type Props = {
   assets: AudioAsset[]
@@ -33,7 +34,9 @@ export default function StandaloneAudioTab({
   const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number } | null>(
+    null,
+  )
   const [oversizedNames, setOversizedNames] = useState<string[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editLabel, setEditLabel] = useState('')
@@ -83,22 +86,20 @@ export default function StandaloneAudioTab({
           className="hidden"
           onChange={handleFiles}
         />
-        <button
+        <Button
           type="button"
           disabled={uploadProgress !== null}
+          loading={uploadProgress !== null}
           onClick={() => inputRef.current?.click()}
-          className="cursor-pointer rounded-xl px-5 py-2.5 text-[13px] font-extrabold text-white shadow-md transition hover:-translate-y-px hover:shadow-lg disabled:opacity-50"
-          style={{ background: 'linear-gradient(135deg,#f59e0b,#b45309)', boxShadow: '0 4px 12px rgba(245,158,11,0.35)' }}
+          variant="solid"
+          color="amber"
+          size="3"
+          radius="full"
         >
-          {uploadProgress !== null ? (
-            <span className="flex items-center gap-2">
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              {uploadProgress.current}/{uploadProgress.total} 上传中…
-            </span>
-          ) : (
-            '+ 批量上传媒体'
-          )}
-        </button>
+          {uploadProgress !== null
+            ? `${uploadProgress.current}/${uploadProgress.total} 上传中…`
+            : '+ 批量上传媒体'}
+        </Button>
         <span className="text-[11px] text-slate-400">
           支持音频 & 视频，可多选，单文件最大 {MAX_FILE_MB} MB
         </span>
@@ -122,13 +123,16 @@ export default function StandaloneAudioTab({
               ))}
             </div>
           </div>
-          <button
+          <IconButton
             type="button"
             onClick={() => setOversizedNames([])}
-            className="shrink-0 text-[12px] text-red-300 hover:text-red-500"
+            variant="ghost"
+            color="red"
+            size="1"
+            className="shrink-0"
           >
             ✕
-          </button>
+          </IconButton>
         </div>
       )}
 
@@ -147,19 +151,17 @@ export default function StandaloneAudioTab({
         return (
           <div
             key={a.id}
-            className="group rounded-2xl bg-white px-4 py-3.5 transition-all hover:shadow-md"
+            className="group hover:shadow-sticker rounded-2xl bg-white px-4 py-3.5 transition-all"
             style={{
               borderLeft: `3px solid ${isVideo ? '#6366f1' : '#f59e0b'}`,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04)',
+              boxShadow: '0 3px 0 rgba(0,0,0,.3), 0 3px 0 rgba(0,0,0,.3)',
             }}
           >
             <div className="flex items-center gap-3">
               <div
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[15px]"
                 style={{
-                  background: isVideo
-                    ? 'linear-gradient(135deg,rgba(99,102,241,0.15),rgba(79,70,229,0.08))'
-                    : 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(180,83,9,0.08))',
+                  background: isVideo ? 'rgba(99,102,241,0.15)' : 'rgba(245,158,11,0.15)',
                 }}
               >
                 {isVideo ? '🎬' : '🎵'}
@@ -167,7 +169,7 @@ export default function StandaloneAudioTab({
 
               <div className="min-w-0 flex-1">
                 {isEditing ? (
-                  <input
+                  <TextField.Root
                     autoFocus
                     value={editLabel}
                     onChange={(e) => setEditLabel(e.target.value)}
@@ -176,20 +178,23 @@ export default function StandaloneAudioTab({
                       if (e.key === 'Enter') void commitRename(a.id)
                       if (e.key === 'Escape') setEditingId(null)
                     }}
-                    className="w-full rounded-lg border border-amber-400 bg-amber-50/50 px-2 py-0.5 text-[13px] font-extrabold focus:outline-none focus:ring-1 focus:ring-amber-400"
+                    size="1"
+                    className="w-full"
                   />
                 ) : (
-                  <button
+                  <Button
                     type="button"
-                    className="cursor-text text-left text-[13px] font-extrabold text-slate-800 hover:text-amber-700"
                     title="点击编辑名称"
                     onClick={() => {
                       setEditingId(a.id)
                       setEditLabel(a.label)
                     }}
+                    variant="ghost"
+                    color="gray"
+                    size="2"
                   >
                     {a.label}
-                  </button>
+                  </Button>
                 )}
                 <div className="mt-0.5">
                   <span
@@ -205,41 +210,41 @@ export default function StandaloneAudioTab({
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <button
+                <IconButton
                   type="button"
                   onClick={() => onPlayAsset(a)}
-                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[13px] text-white transition hover:scale-110"
-                  style={{
-                    background: isVideo
-                      ? 'linear-gradient(135deg,#6366f1,#4f46e5)'
-                      : 'linear-gradient(135deg,#f59e0b,#b45309)',
-                    boxShadow: isVideo
-                      ? '0 2px 8px rgba(99,102,241,0.35)'
-                      : '0 2px 8px rgba(245,158,11,0.35)',
-                  }}
+                  variant="solid"
+                  color={isVideo ? 'indigo' : 'amber'}
+                  size="2"
+                  radius="full"
                   title="播放"
+                  aria-label="播放"
                 >
                   ▶
-                </button>
-                <button
+                </IconButton>
+                <Button
                   type="button"
                   onClick={() => onAddAssetToCollection(a)}
-                  className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-amber-700 transition hover:bg-amber-50"
-                  style={{ border: '1.5px solid rgba(245,158,11,0.35)' }}
+                  variant="outline"
+                  color="amber"
+                  size="1"
+                  radius="full"
                   title="加入收藏夹"
                 >
                   + 加入收藏夹
-                </button>
-                <button
+                </Button>
+                <IconButton
                   type="button"
                   onClick={async () => {
                     if (window.confirm(`确定删除「${a.label}」？`)) await onDelete(a)
                   }}
-                  className="cursor-pointer rounded-full p-1 text-[12px] text-slate-300 transition hover:bg-red-50 hover:text-red-500"
                   title="删除"
+                  variant="ghost"
+                  color="gray"
+                  size="1"
                 >
                   ✕
-                </button>
+                </IconButton>
               </div>
             </div>
 

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { AudioCollection, AudioCollectionKind } from '@rosie/player'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 type Props = {
   collections: AudioCollection[]
@@ -57,7 +58,7 @@ export default function PlaylistSidebar({
       </div>
 
       {creating ? (
-        <input
+        <TextField.Root
           autoFocus
           value={creatingName}
           onChange={(e) => setCreatingName(e.target.value)}
@@ -70,44 +71,39 @@ export default function PlaylistSidebar({
             }
           }}
           placeholder="收藏夹名称…"
-          className="w-full rounded-xl border border-amber-400 bg-amber-50/50 px-3 py-2 text-[12px] font-bold focus:outline-none focus:ring-2 focus:ring-amber-300"
+          size="1"
+          className="w-full"
         />
       ) : (
-        <button
+        <Button
           type="button"
           onClick={() => setCreating(true)}
-          className="cursor-pointer rounded-xl py-2 text-[12px] font-bold text-amber-700 transition hover:bg-amber-50"
-          style={{ border: '1.5px dashed rgba(245,158,11,0.4)' }}
+          variant="outline"
+          color="amber"
+          size="2"
+          radius="full"
+          className="w-full"
         >
           + 新建收藏夹
-        </button>
+        </Button>
       )}
 
       <div className="flex flex-col gap-1.5 overflow-y-auto">
         {/* 独立媒体库（非收藏夹，管理 audio_assets） */}
-        {showLibrary && <button
-          type="button"
-          onClick={() => onSelect('library')}
-          className="flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-left transition-all"
-          style={
-            selectedId === 'library'
-              ? {
-                  background: 'linear-gradient(135deg,rgba(99,102,241,0.14),rgba(79,70,229,0.06))',
-                  border: '1.5px solid rgba(99,102,241,0.4)',
-                  boxShadow: '0 2px 8px rgba(99,102,241,0.12)',
-                }
-              : {
-                  background: 'rgba(255,255,255,0.85)',
-                  border: '1.5px solid rgba(15,23,42,0.06)',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-                }
-          }
-        >
-          <span className="shrink-0 text-[13px]">🎬</span>
-          <span className="min-w-0 flex-1 truncate text-[12px] font-extrabold text-slate-800">
-            独立媒体库
-          </span>
-        </button>}
+        {showLibrary && (
+          <Button
+            type="button"
+            onClick={() => onSelect('library')}
+            variant={selectedId === 'library' ? 'solid' : 'soft'}
+            color="indigo"
+            size="2"
+            radius="full"
+            className="w-full justify-start"
+          >
+            <span className="shrink-0 text-[13px]">🎬</span>
+            <span className="min-w-0 flex-1 truncate text-left">独立媒体库</span>
+          </Button>
+        )}
 
         {showLibrary && <div className="my-0.5 h-px bg-slate-200/70" />}
 
@@ -121,14 +117,14 @@ export default function PlaylistSidebar({
               style={
                 isSelected
                   ? {
-                      background: 'linear-gradient(135deg,rgba(245,158,11,0.12),rgba(180,83,9,0.06))',
+                      background: 'rgba(245,158,11,0.12)',
                       border: '1.5px solid rgba(245,158,11,0.4)',
-                      boxShadow: '0 2px 8px rgba(245,158,11,0.12)',
+                      boxShadow: '0 3px 0 rgba(245,158,11,.3)',
                     }
                   : {
                       background: 'rgba(255,255,255,0.85)',
                       border: '1.5px solid rgba(15,23,42,0.06)',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                      boxShadow: '0 3px 0 rgba(0,0,0,.3)',
                     }
               }
               onClick={() => onSelect(c.id)}
@@ -136,7 +132,7 @@ export default function PlaylistSidebar({
               <div className="flex items-center gap-1.5">
                 <span className="shrink-0 text-[13px]">{KIND_ICON[c.kind]}</span>
                 {isRenaming ? (
-                  <input
+                  <TextField.Root
                     autoFocus
                     value={renameVal}
                     onChange={(e) => setRenameVal(e.target.value)}
@@ -151,8 +147,9 @@ export default function PlaylistSidebar({
                       }
                       if (e.key === 'Escape') setRenamingId(null)
                     }}
-                    className="min-w-0 flex-1 rounded border border-amber-400 px-1 text-[12px] font-extrabold focus:outline-none"
                     onClick={(e) => e.stopPropagation()}
+                    size="1"
+                    className="min-w-0 flex-1"
                   />
                 ) : (
                   <span
@@ -178,40 +175,49 @@ export default function PlaylistSidebar({
                   {c.tracks.length}
                 </span>
 
-                <button
+                <IconButton
                   type="button"
                   title="播放收藏夹"
                   onClick={(e) => {
                     e.stopPropagation()
                     onPlay(c)
                   }}
-                  className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-[10px] text-amber-600 transition hover:bg-amber-100 hover:text-amber-800"
+                  variant="ghost"
+                  color="amber"
+                  size="1"
+                  className="w-5 shrink-0"
                 >
                   ▶
-                </button>
-                <button
+                </IconButton>
+                <IconButton
                   type="button"
                   title="加入播放列表"
                   onClick={(e) => {
                     e.stopPropagation()
                     onEnqueue(c)
                   }}
-                  className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-[12px] text-amber-600 transition hover:bg-amber-100 hover:text-amber-800"
+                  variant="ghost"
+                  color="amber"
+                  size="1"
+                  className="w-5 shrink-0"
                 >
                   ＋
-                </button>
+                </IconButton>
                 {c.removable && (
-                  <button
+                  <IconButton
                     type="button"
                     title="删除收藏夹"
                     onClick={(e) => {
                       e.stopPropagation()
                       void onDelete(c)
                     }}
-                    className="flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full text-[10px] text-slate-300 transition hover:bg-red-50 hover:text-red-500"
+                    variant="ghost"
+                    color="gray"
+                    size="1"
+                    className="w-5 shrink-0"
                   >
                     ✕
-                  </button>
+                  </IconButton>
                 )}
               </div>
             </div>

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { PageBreadcrumb } from '@rosie/ui'
+import { PageBreadcrumb, StickerCard } from '@rosie/ui'
+import { Badge, Button } from '@rosie/ui/themes'
 import type { User } from '@supabase/supabase-js'
 import { useAudioAssets } from '../hooks/useAudioAssets'
 import { useAudioCollections } from '../hooks/useAudioCollections'
@@ -27,7 +28,13 @@ type Props = {
 }
 
 function assetToTrack(asset: AudioAsset, url: string): PlayerTrack {
-  return { url, label: asset.label, refLink: null, mediaType: asset.mediaType, source: assetToInput(asset) }
+  return {
+    url,
+    label: asset.label,
+    refLink: null,
+    mediaType: asset.mediaType,
+    source: assetToInput(asset),
+  }
 }
 
 function assetToInput(asset: AudioAsset): AddPlaylistItemInput {
@@ -51,7 +58,9 @@ function resolvePlaylistId(c: AudioCollection, favoriteId: string | null): strin
 
 export default function AudioManagerPage({ user, scope = 'all' }: Props) {
   // 'library' = 独立媒体库；其余为收藏夹 id
-  const [selectedId, setSelectedId] = useState<string>(scope === 'collections' ? 'favorites' : 'library')
+  const [selectedId, setSelectedId] = useState<string>(
+    scope === 'collections' ? 'favorites' : 'library',
+  )
   const [flash, setFlash] = useState<string | null>(null)
   const [pendingAsset, setPendingAsset] = useState<AudioAsset | null>(null)
 
@@ -65,11 +74,12 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
   }
 
   const isLibrary = scope === 'library' || selectedId === 'library'
-  const selected = isLibrary ? null : col.collections.find((c) => c.id === selectedId) ?? null
+  const selected = isLibrary ? null : (col.collections.find((c) => c.id === selectedId) ?? null)
 
   const current = player.current
-  const currentKey =
-    current?.source ? trackKey(current.source.storageBucket, current.source.storagePath) : null
+  const currentKey = current?.source
+    ? trackKey(current.source.storageBucket, current.source.storagePath)
+    : null
   const currentIsFavorite = currentKey !== null && col.favoriteKeySet.has(currentKey)
 
   // 选中收藏夹视图里某曲目对应的 item（虚拟收藏夹不可移除）
@@ -101,7 +111,7 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
         <Link
           href="/auth"
           className="rounded-full px-4 py-2 text-[13px] font-bold text-white"
-          style={{ background: 'linear-gradient(135deg,#6366f1,#4f46e5)' }}
+          style={{ background: '#6366f1' }}
         >
           去登录
         </Link>
@@ -112,16 +122,13 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
   const addTargets = col.collections.filter((c) => c.acceptsItems)
 
   return (
-    <div
-      className="min-h-screen pb-28"
-      style={{ background: 'linear-gradient(160deg,#fffbeb 0%,#fdf4ff 40%,#eff6ff 100%)' }}
-    >
+    <div className="min-h-screen pb-28" style={{ background: '#fdf4ff' }}>
       <header
-        className="sticky top-0 z-30 backdrop-blur"
+        className="sticky top-0 z-30"
         style={{
           background: 'rgba(255,255,255,0.9)',
           borderBottom: '1px solid rgba(245,158,11,0.15)',
-          boxShadow: '0 1px 12px rgba(0,0,0,0.04)',
+          boxShadow: '0 3px 0 rgba(0,0,0,.3)',
         }}
       >
         <div className="mx-auto flex h-14 max-w-[960px] items-center gap-3 px-4">
@@ -137,7 +144,10 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
           {flash && (
             <div
               className="ml-auto animate-pulse rounded-full px-3 py-1 text-[12px] font-extrabold text-emerald-700"
-              style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.35)' }}
+              style={{
+                background: 'rgba(16,185,129,0.1)',
+                border: '1px solid rgba(16,185,129,0.35)',
+              }}
             >
               ✓ {flash}
             </div>
@@ -146,42 +156,44 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
       </header>
 
       <main className="mx-auto flex max-w-[960px] flex-col gap-4 px-4 py-6 md:flex-row md:gap-5">
-        {scope !== 'library' && <PlaylistSidebar
-          collections={col.collections}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          onCreate={async (name) => {
-            await col.createPlaylist(name)
-            showFlash(`已创建「${name}」`)
-          }}
-          onRename={async (c, name) => {
-            const plId = resolvePlaylistId(c, col.favoriteId)
-            if (plId) await col.renamePlaylist(plId, name)
-          }}
-          onDelete={async (c) => {
-            const plId = resolvePlaylistId(c, col.favoriteId)
-            if (!plId) return
-            if (!window.confirm(`确定删除收藏夹「${c.name}」？`)) return
-            await col.deletePlaylist(plId)
-            if (selectedId === c.id) setSelectedId('library')
-          }}
-          onPlay={(c) => {
-            if (c.tracks.length === 0) {
-              showFlash('收藏夹为空')
-              return
-            }
-            player.play(c.tracks)
-          }}
-          onEnqueue={(c) => {
-            if (c.tracks.length === 0) {
-              showFlash('收藏夹为空')
-              return
-            }
-            player.enqueue(c.tracks)
-            showFlash(`已加入播放列表（${c.tracks.length}）`)
-          }}
-          showLibrary={scope === 'all'}
-        />}
+        {scope !== 'library' && (
+          <PlaylistSidebar
+            collections={col.collections}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            onCreate={async (name) => {
+              await col.createPlaylist(name)
+              showFlash(`已创建「${name}」`)
+            }}
+            onRename={async (c, name) => {
+              const plId = resolvePlaylistId(c, col.favoriteId)
+              if (plId) await col.renamePlaylist(plId, name)
+            }}
+            onDelete={async (c) => {
+              const plId = resolvePlaylistId(c, col.favoriteId)
+              if (!plId) return
+              if (!window.confirm(`确定删除收藏夹「${c.name}」？`)) return
+              await col.deletePlaylist(plId)
+              if (selectedId === c.id) setSelectedId('library')
+            }}
+            onPlay={(c) => {
+              if (c.tracks.length === 0) {
+                showFlash('收藏夹为空')
+                return
+              }
+              player.play(c.tracks)
+            }}
+            onEnqueue={(c) => {
+              if (c.tracks.length === 0) {
+                showFlash('收藏夹为空')
+                return
+              }
+              player.enqueue(c.tracks)
+              showFlash(`已加入播放列表（${c.tracks.length}）`)
+            }}
+            showLibrary={scope === 'all'}
+          />
+        )}
 
         <div className="min-w-0 flex-1">
           {isLibrary ? (
@@ -249,11 +261,12 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
       {pendingAsset && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-          style={{ background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)' }}
+          style={{ background: 'rgba(15,23,42,0.4)' }}
           onClick={() => setPendingAsset(null)}
         >
-          <div
-            className="w-full max-w-xs rounded-3xl bg-white p-5 shadow-2xl"
+          <StickerCard
+            elevation="lg"
+            className="w-full max-w-xs"
             style={{ border: '1.5px solid rgba(245,158,11,0.2)' }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -266,25 +279,25 @@ export default function AudioManagerPage({ user, scope = 'all' }: Props) {
             </div>
             <div className="max-h-[50vh] space-y-1 overflow-y-auto">
               {addTargets.map((c) => (
-                <button
+                <Button
                   key={c.id}
                   type="button"
                   onClick={() => void confirmAddToCollection(c)}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-left transition hover:bg-amber-50"
-                  style={{ border: '1px solid rgba(15,23,42,0.06)' }}
+                  variant="soft"
+                  color="amber"
+                  size="2"
+                  radius="full"
+                  className="w-full justify-start"
                 >
                   <span className="shrink-0">{c.kind === 'favorites' ? '❤️' : '🎵'}</span>
-                  <span className="flex-1 truncate text-[13px] font-bold text-slate-700">{c.name}</span>
-                  <span
-                    className="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold text-amber-700"
-                    style={{ background: 'rgba(245,158,11,0.1)' }}
-                  >
+                  <span className="min-w-0 flex-1 truncate text-left">{c.name}</span>
+                  <Badge variant="solid" color="amber" radius="full" className="shrink-0">
                     {c.tracks.length} 首
-                  </span>
-                </button>
+                  </Badge>
+                </Button>
               ))}
             </div>
-          </div>
+          </StickerCard>
         </div>
       )}
 
