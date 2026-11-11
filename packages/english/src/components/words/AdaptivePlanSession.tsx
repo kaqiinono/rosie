@@ -55,6 +55,7 @@ import QuizQuestionBody from './QuizQuestionBody'
 import StudyPhase from './StudyPhase'
 import TodayWordDetailModal from './TodayWordDetailModal'
 import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
+import { Button } from '@rosie/ui/themes'
 
 type AdaptivePlanSessionProps = {
   planId: string
@@ -109,8 +110,7 @@ type SettleErrorInfo = {
 }
 
 function describeSettleError(error: unknown): SettleErrorInfo {
-  const record =
-    error && typeof error === 'object' ? (error as Record<string, unknown>) : null
+  const record = error && typeof error === 'object' ? (error as Record<string, unknown>) : null
   const message =
     error instanceof Error
       ? error.message
@@ -165,7 +165,11 @@ function pendingReinforcementOutcomes(results: SessionOutcome[]): SessionOutcome
   const latest = new Map<string, SessionOutcome>()
   for (const result of results) latest.set(result.wordKey, result)
   return [...latest.values()].filter(
-    (result) => !result.correct || result.usedRetry === true || result.usedHelp === true || (result.usedHelpCount ?? 0) > 0,
+    (result) =>
+      !result.correct ||
+      result.usedRetry === true ||
+      result.usedHelp === true ||
+      (result.usedHelpCount ?? 0) > 0,
   )
 }
 
@@ -457,14 +461,26 @@ export default function AdaptivePlanSession({
     setQuizSlots(restoredSlots)
     setCurQ(Math.min(snap.curQ, Math.max(0, restoredSlots.length - 1)))
     setScore(snap.score)
-    const outcomes = snap.phase === 'review' ? snap.reviewOutcomes
-      : snap.phase === 'boss' ? snap.bossFirstPassOutcomes
-      : snap.phase === 'boss_sink' ? snap.bossSinkOutcomes : snap.finalOutcomes
-    const legacyHelp = Object.fromEntries((snap.curQ > 0 ? outcomes.slice(-snap.curQ) : [])
-      .filter((outcome) => outcome.usedHelp || (outcome.usedHelpCount ?? 0) > 0)
-      .map((outcome) => [outcome.wordKey, 1]))
-    setHelpClicks(Object.fromEntries(Object.entries(snap.helpClicks ?? legacyHelp)
-      .filter(([, count]) => count > 0).map(([key]) => [key, 1])))
+    const outcomes =
+      snap.phase === 'review'
+        ? snap.reviewOutcomes
+        : snap.phase === 'boss'
+          ? snap.bossFirstPassOutcomes
+          : snap.phase === 'boss_sink'
+            ? snap.bossSinkOutcomes
+            : snap.finalOutcomes
+    const legacyHelp = Object.fromEntries(
+      (snap.curQ > 0 ? outcomes.slice(-snap.curQ) : [])
+        .filter((outcome) => outcome.usedHelp || (outcome.usedHelpCount ?? 0) > 0)
+        .map((outcome) => [outcome.wordKey, 1]),
+    )
+    setHelpClicks(
+      Object.fromEntries(
+        Object.entries(snap.helpClicks ?? legacyHelp)
+          .filter(([, count]) => count > 0)
+          .map(([key]) => [key, 1]),
+      ),
+    )
     setActivationApplied(snap.activationApplied)
     setNewStudyDone(snap.newStudyDone)
     setRestoredActivateKeys(snap.roundActivateKeys)
@@ -768,7 +784,16 @@ export default function AdaptivePlanSession({
     }
     // Intentionally omit plan/vocab/setIsImmersive: committing those mid-load
     // used to cancel this effect and leave isLoadingRows stuck true.
-  }, [autoStart, loadProgress, plansLoading, restoreSnapshot, sourcePlan, today, updatePlan, user?.id])
+  }, [
+    autoStart,
+    loadProgress,
+    plansLoading,
+    restoreSnapshot,
+    sourcePlan,
+    today,
+    updatePlan,
+    user?.id,
+  ])
 
   // The progress rows and pending snapshot can resolve before the plan-scoped
   // vocabulary request. Keep that snapshot and apply it as soon as vocab is
@@ -818,17 +843,15 @@ export default function AdaptivePlanSession({
         const box = resolveFamiliarityBox(row, masteryMap[key])
         const choiceType: 'A' | 'B' = choiceIndex % 2 === 0 ? 'A' : 'B'
         if (box === 2 || box === 3) choiceIndex += 1
-        const types =
-          opts?.boss
-            ? bossQuizTypesForWord(row, masteryMap[key], 1)
-            : quizTypesForWord(row, masteryMap[key], { choiceType })
+        const types = opts?.boss
+          ? bossQuizTypesForWord(row, masteryMap[key], 1)
+          : quizTypesForWord(row, masteryMap[key], { choiceType })
         groups.push({
           slots: types.map((type) => ({ key, type })),
           cursor: 0,
           // Stage 1 tests both recognition directions with a small gap; Stage 2
           // pairs choice+writing immediately; Stage 3 delays the writing check.
-          minGap:
-            opts?.boss ? 0 : box === 1 ? 2 : box === 3 ? 3 : 0,
+          minGap: opts?.boss ? 0 : box === 1 ? 2 : box === 3 ? 3 : 0,
           forcePair: types.length > 1 && box === 2,
           lastPick: -100,
         })
@@ -903,13 +926,19 @@ export default function AdaptivePlanSession({
   const startFinalQuiz = useCallback(
     (keys: string[], slots?: QuizSlot[]) => {
       finalPassWrongKeysRef.current = new Set()
-      const assisted = new Set(pendingReinforcementOutcomes(reviewOutcomesRef.current)
-        .filter((outcome) => outcome.usedHelp || (outcome.usedHelpCount ?? 0) > 0)
-        .map((outcome) => outcome.wordKey))
-      setQuizSlots(slots ?? [
-        ...buildSlots(keys.filter((key) => !assisted.has(key))),
-        ...uniqueKeys(keys).filter((key) => assisted.has(key)).map((key): QuizSlot => ({ key, type: 'C', reinforcement: true })),
-      ])
+      const assisted = new Set(
+        pendingReinforcementOutcomes(reviewOutcomesRef.current)
+          .filter((outcome) => outcome.usedHelp || (outcome.usedHelpCount ?? 0) > 0)
+          .map((outcome) => outcome.wordKey),
+      )
+      setQuizSlots(
+        slots ?? [
+          ...buildSlots(keys.filter((key) => !assisted.has(key))),
+          ...uniqueKeys(keys)
+            .filter((key) => assisted.has(key))
+            .map((key): QuizSlot => ({ key, type: 'C', reinforcement: true })),
+        ],
+      )
       setCurQ(0)
       setScore(0)
       setHelpClicks({})
@@ -944,16 +973,23 @@ export default function AdaptivePlanSession({
       pendingReinforcementOutcomes(outcomes).flatMap((outcome) => {
         const entry = findWordByKey(vocab, outcome.wordKey)
         if (!entry) return []
-        const type = outcome.usedHelp === true || (outcome.usedHelpCount ?? 0) > 0 ? 'C' : (outcome.quizType ?? 'A')
-        return [{
-          key: outcome.wordKey,
-          type,
-          reinforcement: true,
-          // A fully missed spelling word gets the same gentle half-letter
-          // bridge used by the standalone/weekly rescue flow.
-          revealedHalf:
-            !outcome.usedHelp && !(outcome.usedHelpCount ?? 0) && !outcome.correct && type === 'C' ? Math.ceil(entry.word.length / 2) : undefined,
-        }]
+        const type =
+          outcome.usedHelp === true || (outcome.usedHelpCount ?? 0) > 0
+            ? 'C'
+            : (outcome.quizType ?? 'A')
+        return [
+          {
+            key: outcome.wordKey,
+            type,
+            reinforcement: true,
+            // A fully missed spelling word gets the same gentle half-letter
+            // bridge used by the standalone/weekly rescue flow.
+            revealedHalf:
+              !outcome.usedHelp && !(outcome.usedHelpCount ?? 0) && !outcome.correct && type === 'C'
+                ? Math.ceil(entry.word.length / 2)
+                : undefined,
+          },
+        ]
       }),
     [vocab],
   )
@@ -1349,9 +1385,9 @@ export default function AdaptivePlanSession({
       return
     }
 
-    const reviewReinforcementKeys = pendingReinforcementOutcomes(
-      reviewOutcomesRef.current,
-    ).map((outcome) => outcome.wordKey)
+    const reviewReinforcementKeys = pendingReinforcementOutcomes(reviewOutcomesRef.current).map(
+      (outcome) => outcome.wordKey,
+    )
     const finalKeys = uniqueKeys([...activateKeys, ...reviewReinforcementKeys])
     if (finalKeys.length === 0) {
       // An all-correct review-only round has no wrong words to send into the
@@ -1511,9 +1547,7 @@ export default function AdaptivePlanSession({
     const slot = quizSlots[curQ]
     if (!slot) return null
     const entry = findWordByKey(vocab, slot.key)
-    return entry
-      ? { word: entry, type: slot.type, revealedHalf: slot.revealedHalf }
-      : null
+    return entry ? { word: entry, type: slot.type, revealedHalf: slot.revealedHalf } : null
   }, [curQ, quizSlots, vocab])
 
   // Recover a race that already entered quiz/final with empty slots (vocab was
@@ -1707,20 +1741,12 @@ export default function AdaptivePlanSession({
               网络似乎不太顺畅，计划数据还没回来。
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={retryLoad}
-                className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
-              >
+              <Button type="button" onClick={retryLoad} variant="outline" color="gray" size="2">
                 重新加载
-              </button>
-              <button
-                type="button"
-                onClick={onBack}
-                className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-              >
+              </Button>
+              <Button type="button" onClick={onBack} variant="outline" color="gray" size="2">
                 ← 返回
-              </button>
+              </Button>
             </div>
           </>
         )}
@@ -1736,13 +1762,9 @@ export default function AdaptivePlanSession({
         <div className="text-[.75rem] text-[var(--wm-text-dim)]">
           新计划第一批本应有「本批新词」。若进度表为空，新词不会出现。
         </div>
-        <button
-          type="button"
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
-        >
+        <Button type="button" onClick={onBack} variant="outline" color="gray" size="2">
           ← 返回
-        </button>
+        </Button>
       </div>
     )
   }
@@ -1754,12 +1776,9 @@ export default function AdaptivePlanSession({
         <div className="max-w-[420px] text-center text-[12px] font-bold text-[var(--wm-text-dim)]">
           家长可在管理后台点「恢复」后继续练习。同一时间只能有一个进行中的自适应计划。
         </div>
-        <button
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-        >
+        <Button onClick={onBack} variant="outline" color="gray" size="2">
           ← 返回
-        </button>
+        </Button>
       </div>
     )
   }
@@ -1777,19 +1796,12 @@ export default function AdaptivePlanSession({
           </div>
         )}
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={retryLoad}
-            className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
-          >
+          <Button type="button" onClick={retryLoad} variant="outline" color="gray" size="2">
             重试
-          </button>
-          <button
-            onClick={onBack}
-            className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-          >
+          </Button>
+          <Button onClick={onBack} variant="outline" color="gray" size="2">
             ← 返回
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -1819,7 +1831,7 @@ export default function AdaptivePlanSession({
             />
           </svg>
           <div className="font-fredoka text-2xl text-[#bfdbfe]">正在保存本轮结果</div>
-          <div className="mt-2 text-sm font-bold leading-relaxed text-[var(--wm-text-dim)]">
+          <div className="mt-2 text-sm leading-relaxed font-bold text-[var(--wm-text-dim)]">
             正在同步答题记录、单词箱位和今日进度，请稍候，不要关闭页面。
           </div>
         </div>
@@ -1848,7 +1860,7 @@ export default function AdaptivePlanSession({
             </svg>
             <div className="min-w-0">
               <h2 className="font-fredoka text-2xl text-[#fca5a5]">本轮结果尚未保存</h2>
-              <p className="mt-1 text-sm font-bold leading-relaxed text-[#fecaca]">
+              <p className="mt-1 text-sm leading-relaxed font-bold text-[#fecaca]">
                 {settleError?.reason ?? '服务器未能完成本轮结算。'}
               </p>
             </div>
@@ -1856,7 +1868,7 @@ export default function AdaptivePlanSession({
 
           <div className="rounded-2xl border border-white/[.08] bg-black/10 p-4">
             <div className="text-sm font-extrabold text-[var(--wm-text)]">请这样处理</div>
-            <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm font-bold leading-relaxed text-[var(--wm-text-dim)]">
+            <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed font-bold text-[var(--wm-text-dim)]">
               <li>确认网络正常；如登录已过期，请重新登录。</li>
               <li>点击“重新保存”，等待出现绿色完成总结后再返回。</li>
               <li>暂时离开也不会丢失答题缓存；之后进入同一计划可以继续处理。</li>
@@ -1866,28 +1878,29 @@ export default function AdaptivePlanSession({
           {settleError?.detail && (
             <details className="mt-3 rounded-xl border border-white/[.06] px-3 py-2 text-[.72rem] text-[var(--wm-text-dim)]">
               <summary className="cursor-pointer font-bold text-[#fca5a5]">查看技术原因</summary>
-              <div className="mt-2 [overflow-wrap:anywhere] leading-relaxed">{settleError.detail}</div>
+              <div className="mt-2 leading-relaxed [overflow-wrap:anywhere]">
+                {settleError.detail}
+              </div>
             </details>
           )}
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-            <button
+            <Button
               type="button"
               onClick={() => {
                 if (settleFailed === 'boss') void settleBossSession()
                 else void settleSession()
               }}
-              className="font-nunito min-h-11 flex-1 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#f97316] to-[#ef4444] px-6 py-3 text-sm font-extrabold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fb923c]"
+              variant="solid"
+              color="orange"
+              size="3"
+              className="flex-1"
             >
               重新保存
-            </button>
-            <button
-              type="button"
-              onClick={onBack}
-              className="font-nunito min-h-11 cursor-pointer rounded-xl border border-white/[.14] bg-transparent px-6 py-3 text-sm font-extrabold text-[var(--wm-text-dim)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fca5a5]"
-            >
+            </Button>
+            <Button type="button" onClick={onBack} variant="outline" color="gray" size="3">
               稍后再处理
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -1898,12 +1911,9 @@ export default function AdaptivePlanSession({
     return (
       <div className="mx-auto max-w-[980px] px-4 py-8">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <button
-            onClick={onBack}
-            className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-          >
+          <Button onClick={onBack} variant="outline" color="gray" size="2">
             ← 返回
-          </button>
+          </Button>
         </div>
         <div className="rounded-[22px] border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] p-8">
           <div className="font-fredoka mb-3 text-center text-3xl text-[#fbbf24]">Boss 验收</div>
@@ -1920,17 +1930,20 @@ export default function AdaptivePlanSession({
               <div className="mt-1 text-xs font-extrabold text-[var(--wm-text-dim)]">连续受阻</div>
             </div>
           </div>
-          <button
+          <Button
             onClick={beginSession}
             disabled={settling || task.bossKeys.length === 0}
-            className="font-nunito w-full cursor-pointer rounded-[14px] border-0 bg-gradient-to-br from-[#f59e0b] to-[#ef4444] px-6 py-3.5 text-base font-extrabold text-white shadow-[0_4px_18px_rgba(245,158,11,.28)] disabled:cursor-not-allowed disabled:opacity-60"
+            variant="solid"
+            color="amber"
+            size="3"
+            className="w-full"
           >
             {settling
               ? '保存中…'
               : task.bossKeys.length === 0
                 ? '暂无 Boss 题'
                 : '开始 Boss 挑战 →'}
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -1943,9 +1956,8 @@ export default function AdaptivePlanSession({
       return (
         <div className="mx-auto max-w-[560px] px-4 py-16 text-center">
           <div className="mb-3 text-sm font-bold text-[var(--wm-text-dim)]">正在准备新词…</div>
-          <button
+          <Button
             type="button"
-            className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
             onClick={() => {
               const reviewReinforcementKeys = pendingReinforcementOutcomes(
                 reviewOutcomesRef.current,
@@ -1957,9 +1969,12 @@ export default function AdaptivePlanSession({
               }
               startFinalQuiz(keys)
             }}
+            variant="outline"
+            color="gray"
+            size="2"
           >
             跳过认读，直接闯关 →
-          </button>
+          </Button>
         </div>
       )
     }
@@ -1975,9 +1990,8 @@ export default function AdaptivePlanSession({
         isImmersive={isImmersive}
         onExitImmersive={() => void flushCloudNow().then(() => setIsImmersive(false))}
         compactImmersiveControls
-        progressGradientClasses="from-[#60a5fa] via-[#a78bfa] to-[#f0abfc]"
-        nextButtonGradientClasses="from-[#2563eb] to-[#a855f7]"
-        nextButtonShadowClass="shadow-[0_3px_12px_rgba(96,165,250,.35)]"
+        progressColorClass="bg-[#a78bfa]"
+        nextButtonColor="blue"
         wordBadge={
           <span className="rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.16)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[#93c5fd] uppercase">
             {activateKeys.includes(wordKey(entry)) ? '新学' : '复习'}
@@ -2020,16 +2034,18 @@ export default function AdaptivePlanSession({
     return (
       <div className="mx-auto max-w-[560px] px-4 py-16 text-center">
         <div className="mb-3 text-sm font-bold text-[var(--wm-text-dim)]">题目准备中…</div>
-        <button
+        <Button
           type="button"
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
           onClick={() => {
             void backToHub()
             sessionStartedRef.current = false
           }}
+          variant="outline"
+          color="gray"
+          size="2"
         >
           ← 返回计划首页
-        </button>
+        </Button>
       </div>
     )
   }
@@ -2059,28 +2075,37 @@ export default function AdaptivePlanSession({
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-3 flex flex-wrap items-center gap-3 py-2">
-          <button
+          <Button
             onClick={() => void backToHub()}
-            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
+            variant="outline"
+            color="gray"
+            size="2"
+            className="shrink-0"
           >
             ← 回到计划
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => void stashSession()}
             disabled={isStashing || isRestarting}
-            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60"
+            variant="soft"
+            color="amber"
+            size="2"
+            className="shrink-0"
           >
             {isStashing ? '暂存中…' : '💾 暂存'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => void restartCardPreview()}
             disabled={isRestarting || isStashing || previewEntries.length === 0}
-            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(96,165,250,.45)] bg-[rgba(96,165,250,.12)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[#93c5fd] transition-all hover:bg-[rgba(96,165,250,.2)] disabled:cursor-wait disabled:opacity-60"
+            variant="soft"
+            color="blue"
+            size="2"
+            className="shrink-0"
           >
             {isRestarting ? '重置中…' : '↻ 重来'}
-          </button>
+          </Button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">{title}</div>
           <div className="ml-auto text-[.78rem] font-bold text-[var(--wm-text-dim)]">
             {phase === 'boss' || phase === 'boss_sink' ? (
@@ -2233,24 +2258,22 @@ export default function AdaptivePlanSession({
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             {settleFailed == null && canContinue && (
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setRoundSummary(null)
                   setPhase('hub')
                 }}
-                className="font-nunito cursor-pointer rounded-[12px] border-0 bg-gradient-to-br from-[#2563eb] to-[#a855f7] px-6 py-3 text-sm font-extrabold text-white"
+                variant="solid"
+                color="violet"
+                size="3"
               >
                 {task.mode === 'boss' ? '继续 Boss 挑战 →' : '开始下一批主线 →'}
-              </button>
+              </Button>
             )}
-            <button
-              type="button"
-              onClick={onBack}
-              className="font-nunito cursor-pointer rounded-[12px] border border-[rgba(74,222,128,.4)] bg-transparent px-6 py-3 text-sm font-extrabold text-[#86efac]"
-            >
+            <Button type="button" onClick={onBack} variant="outline" color="gray" size="3">
               返回单词页
-            </button>
+            </Button>
           </div>
         </div>
         <div className="mt-4">
@@ -2263,12 +2286,9 @@ export default function AdaptivePlanSession({
   return (
     <div className="mx-auto max-w-[1120px] px-4 py-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <button
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-        >
+        <Button onClick={onBack} variant="outline" color="gray" size="2">
           ← 返回
-        </button>
+        </Button>
         <div className="flex flex-wrap items-center gap-2">
           <Link
             href={`/english/words/adaptive/${planId}/preview`}
@@ -2289,9 +2309,7 @@ export default function AdaptivePlanSession({
           </div>
         )}
         <div className="mb-5">
-          <div className="font-fredoka bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
-            {plan.title}
-          </div>
+          <div className="font-fredoka text-3xl text-[#60a5fa]">{plan.title}</div>
           <div className="mt-1 text-sm font-bold text-[var(--wm-text-dim)]">
             连续主线：阶段推进 → 新学（每批 {plan.newWordsPerDay} 个新词）→ 闯关；
             完成后可立即进入下一批
@@ -2332,19 +2350,17 @@ export default function AdaptivePlanSession({
                     const key = wordKey(entry)
                     const isNew = activateKeys.includes(key)
                     return (
-                      <button
+                      <Button
                         type="button"
                         key={key}
                         onClick={() => setSelectedTodayWord(entry)}
                         aria-label={`查看${isNew ? '新学' : '复习'}单词 ${entry.word} 的卡片`}
-                        className={`inline-flex cursor-pointer items-center rounded-lg border px-2.5 py-1.5 text-left text-[.78rem] font-extrabold transition hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2 ${
-                          isNew
-                            ? 'border-[rgba(96,165,250,.42)] bg-[rgba(96,165,250,.13)] text-[#bfdbfe] shadow-[inset_3px_0_0_#60a5fa] hover:bg-[rgba(96,165,250,.2)] focus-visible:outline-[#60a5fa]'
-                            : 'border-[rgba(192,132,252,.42)] bg-[rgba(192,132,252,.13)] text-[#e9d5ff] shadow-[inset_3px_0_0_#c084fc] hover:bg-[rgba(192,132,252,.2)] focus-visible:outline-[#c084fc]'
-                        }`}
+                        variant="outline"
+                        color="gray"
+                        size="2"
                       >
                         {entry.word}
-                      </button>
+                      </Button>
                     )
                   })}
                   {todayStudyEntries.length === 0 && (
@@ -2383,13 +2399,16 @@ export default function AdaptivePlanSession({
           </div>
         </div>
 
-        <button
+        <Button
           onClick={beginSession}
           disabled={settling}
-          className="font-nunito mt-6 w-full cursor-pointer rounded-[14px] border-0 bg-gradient-to-br from-[#2563eb] to-[#a855f7] px-6 py-3.5 text-base font-extrabold text-white shadow-[0_4px_18px_rgba(96,165,250,.28)] disabled:cursor-wait disabled:opacity-60"
+          variant="solid"
+          color="violet"
+          size="3"
+          className="mt-6 w-full"
         >
           {settling ? '保存中…' : '开始本轮练习 →'}
-        </button>
+        </Button>
       </div>
 
       <AdaptivePlanStageBoard rows={rows} vocab={vocab} panelTitle="词汇学习状态" />

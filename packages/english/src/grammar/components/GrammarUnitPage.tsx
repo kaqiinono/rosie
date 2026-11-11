@@ -37,6 +37,7 @@ import {
 import { saveGrammarTable } from '../grammar-table-mutations'
 import { saveGrammarExercises } from '../grammar-exercise-mutations'
 import { saveGrammarLesson } from '../grammar-lesson-mutations'
+import { Button } from '@rosie/ui/themes'
 
 type Tab = 'lesson' | 'exercise' | 'original'
 
@@ -113,13 +114,7 @@ function UnitPageSkeleton() {
   )
 }
 
-function GrammarUnitPageInner({
-  unitNumber,
-  book,
-}: {
-  unitNumber: number
-  book: GrammarBookId
-}) {
+function GrammarUnitPageInner({ unitNumber, book }: { unitNumber: number; book: GrammarBookId }) {
   const { user } = useAuth()
   const { unit, isLoading, notFound } = useGrammarUnit(unitNumber, book)
   const { entries: overviewEntries } = useGrammarOverview(user, book)
@@ -132,7 +127,9 @@ function GrammarUnitPageInner({
   useEffect(() => {
     if (!unit || autoTabRef.current === unitNumber) return
     autoTabRef.current = unitNumber
-    setTab(unit.category === 'supplementary' || unit.category === 'study_guide' ? 'exercise' : 'lesson')
+    setTab(
+      unit.category === 'supplementary' || unit.category === 'study_guide' ? 'exercise' : 'lesson',
+    )
   }, [unit, unitNumber])
 
   // 锚定到本单元的补充练习/学习指导条目（迁移 0028 未应用时字段缺失，区域自动隐藏）
@@ -163,7 +160,9 @@ function GrammarUnitPageInner({
     unitNumber: number
     groupIndex: number
   } | null>(null)
-  const [suppOverrides, setSuppOverrides] = useState<Map<number, GrammarUnitDetail>>(() => new Map())
+  const [suppOverrides, setSuppOverrides] = useState<Map<number, GrammarUnitDetail>>(
+    () => new Map(),
+  )
 
   const handlePageClick = useCallback((page: number) => {
     setPreviewPage(page)
@@ -356,7 +355,7 @@ function GrammarUnitPageInner({
           <p className="text-text-secondary text-sm">内容还在提取中，先去看看其他单元吧</p>
           <Link
             href={`/english/grammar/${book}`}
-            className="from-app-blue rounded-full bg-gradient-to-r to-sky-500 px-6 py-2 text-sm font-bold text-white shadow-md shadow-sky-200 transition-transform active:scale-95"
+            className="shadow-sticker rounded-full bg-sky-600 px-6 py-2 text-sm font-bold text-white transition-transform active:scale-95"
           >
             返回语法地图
           </Link>
@@ -396,14 +395,16 @@ function GrammarUnitPageInner({
                 </span>
               )}
               {(detail.suppEntries?.length ?? 0) > 0 && (
-                <button
+                <Button
                   type="button"
                   onClick={() => setTab('exercise')}
-                  className="bg-app-purple-light text-app-purple-dark inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-transform active:scale-95"
                   title={`锚定本单元的补充练习（${detail.suppEntries?.length} 条）`}
+                  variant="soft"
+                  color="purple"
+                  size="1"
                 >
                   ✏️ 有补充练习
-                </button>
+                </Button>
               )}
               {(detail.studyGuideUnits?.length ?? 0) > 0 && (
                 <Link
@@ -439,7 +440,7 @@ function GrammarUnitPageInner({
             )}
           </header>
 
-          <div className="sticky top-16 z-30 mx-auto flex rounded-full bg-surface/95 p-1 shadow-lg ring-1 ring-border-light backdrop-blur-md sm:top-3">
+          <div className="bg-surface/95 shadow-sticker ring-border-light sticky top-16 z-30 mx-auto flex rounded-full p-1 ring-1 sm:top-3">
             {(
               [
                 { id: 'lesson', label: '📖 讲解' },
@@ -447,29 +448,30 @@ function GrammarUnitPageInner({
                 { id: 'original', label: '📄 原文' },
               ] as { id: Tab; label: string }[]
             ).map((t) => (
-              <button
+              <Button
                 key={t.id}
                 onClick={() => setTab(t.id)}
-                className={`rounded-full px-4 py-1.5 text-sm font-bold transition-all sm:px-6 ${
-                  tab === t.id
-                    ? 'from-app-blue bg-gradient-to-r to-sky-500 text-white shadow-md shadow-sky-200'
-                    : 'text-text-secondary'
-                }`}
+                variant={tab === t.id ? 'solid' : 'ghost'}
+                color={tab === t.id ? 'sky' : 'gray'}
+                size="2"
               >
                 {t.label}
-              </button>
+              </Button>
             ))}
             {isAdmin && tab !== 'original' && (
               <>
-                <span className="mx-1 my-1 w-px bg-border-light" aria-hidden="true" />
-                <button
+                <span className="bg-border-light mx-1 my-1 w-px" aria-hidden="true" />
+                <Button
                   type="button"
                   onClick={() => {
                     if (tab === 'lesson') setLessonEditing(true)
                     if (tab === 'exercise') setExerciseEditGroup(0)
                   }}
                   aria-label={tab === 'lesson' ? '管理讲解' : '管理练习'}
-                  className="group flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-black text-app-purple-dark transition-colors hover:bg-app-purple-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-purple sm:px-4 sm:text-sm"
+                  variant="ghost"
+                  color="purple"
+                  size="1"
+                  className="sm:text-sm"
                 >
                   <span
                     className="transition-transform group-hover:rotate-45 motion-reduce:transform-none"
@@ -478,14 +480,14 @@ function GrammarUnitPageInner({
                     ⚙
                   </span>
                   <span>{tab === 'lesson' ? '管理讲解' : '管理练习'}</span>
-                </button>
+                </Button>
               </>
             )}
           </div>
 
           <main
             key={tab}
-            className="animate-fade-up bg-surface/90 ring-border-light rounded-2xl p-4 shadow-sm ring-1 backdrop-blur-sm sm:p-6"
+            className="animate-fade-up bg-surface/90 ring-border-light shadow-sticker-sm rounded-2xl p-4 ring-1 sm:p-6"
           >
             {tab === 'lesson' ? (
               <>
@@ -529,129 +531,130 @@ function GrammarUnitPageInner({
                   />
                 )}
                 <div className={exerciseEditGroup != null ? 'hidden' : 'contents'}>
-                <ExerciseView
-                  groups={detail.exercises}
-                  isAdmin={isAdmin}
-                  pageImages={detail.pageImages}
-                  onGroupResult={handleGroupResult}
-                  onPageClick={handlePageClick}
-                  onStartCrop={isAdmin ? handleStartCrop : undefined}
-                  onEditGroup={isAdmin ? setExerciseEditGroup : undefined}
-                  onPreviewFigure={setLightbox}
-                  onRemoveFigure={
-                    isAdmin ? (idx) => setPendingDelete({ kind: 'group', idx }) : undefined
-                  }
-                />
-                {reportedSummary && (
-                  <div
-                    className={`mt-4 rounded-xl p-3 text-center text-sm font-bold ${
-                      reportedSummary.split('/')[0] === reportedSummary.split('/')[1]
-                        ? 'bg-app-green-light text-app-green-dark'
-                        : 'bg-surface-dim text-text-secondary'
-                    }`}
-                  >
-                    本单元练习 {reportedSummary}
-                    {reportedSummary.split('/')[0] === reportedSummary.split('/')[1]
-                      ? ' · 全部答对，已标记掌握 🎉'
-                      : ' · 加油，再试一次就能全部答对！'}
-                  </div>
-                )}
+                  <ExerciseView
+                    groups={detail.exercises}
+                    isAdmin={isAdmin}
+                    pageImages={detail.pageImages}
+                    onGroupResult={handleGroupResult}
+                    onPageClick={handlePageClick}
+                    onStartCrop={isAdmin ? handleStartCrop : undefined}
+                    onEditGroup={isAdmin ? setExerciseEditGroup : undefined}
+                    onPreviewFigure={setLightbox}
+                    onRemoveFigure={
+                      isAdmin ? (idx) => setPendingDelete({ kind: 'group', idx }) : undefined
+                    }
+                  />
+                  {reportedSummary && (
+                    <div
+                      className={`mt-4 rounded-xl p-3 text-center text-sm font-bold ${
+                        reportedSummary.split('/')[0] === reportedSummary.split('/')[1]
+                          ? 'bg-app-green-light text-app-green-dark'
+                          : 'bg-surface-dim text-text-secondary'
+                      }`}
+                    >
+                      本单元练习 {reportedSummary}
+                      {reportedSummary.split('/')[0] === reportedSummary.split('/')[1]
+                        ? ' · 全部答对，已标记掌握 🎉'
+                        : ' · 加油，再试一次就能全部答对！'}
+                    </div>
+                  )}
 
-                {/* 补充练习区域：仅展示锚定到本单元的条目（最大单元锚定规则在回写侧完成） */}
-                {(detail.suppEntries?.length ?? 0) > 0 && (
-                  <section className="mt-8 flex flex-col gap-4">
-                    <h2 className="text-text-primary flex items-center gap-2 text-base font-black">
-                      <span className="inline-block h-4 w-1 rounded-full bg-gradient-to-b from-app-purple to-pink-500" />
-                      ✏️ 补充练习
-                    </h2>
-                    {(detail.suppEntries ?? []).map((n) => {
-                      const supp = suppOverrides.get(n) ?? suppUnits.get(n)
-                      if (!supp || supp.exercises.length === 0) return null
-                      return (
-                        <div key={n} className="flex flex-col gap-2">
-                          {suppExerciseEdit?.unitNumber === n && (
-                            <GrammarExerciseEditorModal
+                  {/* 补充练习区域：仅展示锚定到本单元的条目（最大单元锚定规则在回写侧完成） */}
+                  {(detail.suppEntries?.length ?? 0) > 0 && (
+                    <section className="mt-8 flex flex-col gap-4">
+                      <h2 className="text-text-primary flex items-center gap-2 text-base font-black">
+                        <span className="bg-app-purple inline-block h-4 w-1 rounded-full" />
+                        ✏️ 补充练习
+                      </h2>
+                      {(detail.suppEntries ?? []).map((n) => {
+                        const supp = suppOverrides.get(n) ?? suppUnits.get(n)
+                        if (!supp || supp.exercises.length === 0) return null
+                        return (
+                          <div key={n} className="flex flex-col gap-2">
+                            {suppExerciseEdit?.unitNumber === n && (
+                              <GrammarExerciseEditorModal
+                                groups={supp.exercises}
+                                initialGroupIndex={suppExerciseEdit.groupIndex}
+                                pageImages={supp.pageImages}
+                                onSave={handleSaveSupplementaryExercises}
+                                onClose={() => setSuppExerciseEdit(null)}
+                              />
+                            )}
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="text-text-secondary text-sm font-bold">
+                                补充练习 · {supp.title}
+                              </span>
+                              {supp.units?.map((u) => (
+                                <Link
+                                  key={u}
+                                  href={`/english/grammar/${book}/${u}`}
+                                  className="bg-surface text-app-blue ring-border-light hover:bg-app-blue-light rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 transition-colors"
+                                >
+                                  Unit {u}
+                                </Link>
+                              ))}
+                            </div>
+                            <ExerciseView
                               groups={supp.exercises}
-                              initialGroupIndex={suppExerciseEdit.groupIndex}
+                              isAdmin={isAdmin}
                               pageImages={supp.pageImages}
-                              onSave={handleSaveSupplementaryExercises}
-                              onClose={() => setSuppExerciseEdit(null)}
+                              onGroupResult={NOOP_GROUP_RESULT}
+                              onEditGroup={
+                                isAdmin
+                                  ? (groupIndex) =>
+                                      setSuppExerciseEdit({ unitNumber: n, groupIndex })
+                                  : undefined
+                              }
+                              onPreviewFigure={setLightbox}
                             />
-                          )}
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <span className="text-text-secondary text-sm font-bold">
-                              补充练习 · {supp.title}
-                            </span>
-                            {supp.units?.map((u) => (
-                              <Link
-                                key={u}
-                                href={`/english/grammar/${book}/${u}`}
-                                className="bg-surface text-app-blue ring-border-light hover:bg-app-blue-light rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 transition-colors"
-                              >
-                                Unit {u}
-                              </Link>
-                            ))}
                           </div>
-                          <ExerciseView
-                            groups={supp.exercises}
-                            isAdmin={isAdmin}
-                            pageImages={supp.pageImages}
-                            onGroupResult={NOOP_GROUP_RESULT}
-                            onEditGroup={
-                              isAdmin
-                                ? (groupIndex) => setSuppExerciseEdit({ unitNumber: n, groupIndex })
-                                : undefined
-                            }
-                            onPreviewFigure={setLightbox}
-                          />
-                        </div>
-                      )
-                    })}
-                  </section>
-                )}
+                        )
+                      })}
+                    </section>
+                  )}
 
-                {/* 学习指导区域：studyUnits 含本单元的全部题目，附出处链接 */}
-                {(detail.studyGuideUnits?.length ?? 0) > 0 && (
-                  <section className="mt-8 flex flex-col gap-4">
-                    <h2 className="text-text-primary flex items-center gap-2 text-base font-black">
-                      <span className="inline-block h-4 w-1 rounded-full bg-gradient-to-b from-sky-500 to-teal-500" />
-                      🧭 学习指导
-                    </h2>
-                    {(detail.studyGuideUnits ?? []).map((n) => {
-                      const guide = guideUnits.get(n)
-                      if (!guide) return null
-                      const groups = guide.exercises
-                        .map((g) => ({
-                          ...g,
-                          items: g.items.filter((it) => it.studyUnits?.includes(unitNumber)),
-                        }))
-                        .filter((g) => g.items.length > 0)
-                      if (groups.length === 0) return null
-                      return (
-                        <div key={n} className="flex flex-col gap-2">
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <span className="text-text-secondary text-sm font-bold">
-                              {guide.title}
-                            </span>
-                            <Link
-                              href={`/english/grammar/${book}/study-guide#guide-${n}`}
-                              className="text-text-muted hover:text-app-blue text-[11px] font-bold underline-offset-2 hover:underline"
-                            >
-                              在总览中查看 →
-                            </Link>
+                  {/* 学习指导区域：studyUnits 含本单元的全部题目，附出处链接 */}
+                  {(detail.studyGuideUnits?.length ?? 0) > 0 && (
+                    <section className="mt-8 flex flex-col gap-4">
+                      <h2 className="text-text-primary flex items-center gap-2 text-base font-black">
+                        <span className="inline-block h-4 w-1 rounded-full bg-sky-500" />
+                        🧭 学习指导
+                      </h2>
+                      {(detail.studyGuideUnits ?? []).map((n) => {
+                        const guide = guideUnits.get(n)
+                        if (!guide) return null
+                        const groups = guide.exercises
+                          .map((g) => ({
+                            ...g,
+                            items: g.items.filter((it) => it.studyUnits?.includes(unitNumber)),
+                          }))
+                          .filter((g) => g.items.length > 0)
+                        if (groups.length === 0) return null
+                        return (
+                          <div key={n} className="flex flex-col gap-2">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="text-text-secondary text-sm font-bold">
+                                {guide.title}
+                              </span>
+                              <Link
+                                href={`/english/grammar/${book}/study-guide#guide-${n}`}
+                                className="text-text-muted hover:text-app-blue text-[11px] font-bold underline-offset-2 hover:underline"
+                              >
+                                在总览中查看 →
+                              </Link>
+                            </div>
+                            <ExerciseView
+                              groups={groups}
+                              isAdmin={false}
+                              pageImages={guide.pageImages}
+                              onGroupResult={NOOP_GROUP_RESULT}
+                              onPreviewFigure={setLightbox}
+                            />
                           </div>
-                          <ExerciseView
-                            groups={groups}
-                            isAdmin={false}
-                            pageImages={guide.pageImages}
-                            onGroupResult={NOOP_GROUP_RESULT}
-                            onPreviewFigure={setLightbox}
-                          />
-                        </div>
-                      )
-                    })}
-                  </section>
-                )}
+                        )
+                      })}
+                    </section>
+                  )}
                 </div>
               </>
             ) : (
@@ -682,38 +685,42 @@ function GrammarUnitPageInner({
 
           <nav
             aria-label="语法单元切换"
-            className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-40 mx-auto grid max-w-3xl grid-cols-2 gap-2 rounded-2xl bg-surface/95 p-2 text-left shadow-xl ring-1 ring-border-light backdrop-blur-md sm:gap-3"
+            className="bg-surface/95 shadow-sticker-lg ring-border-light fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 z-40 mx-auto grid max-w-3xl grid-cols-2 gap-2 rounded-2xl p-2 text-left ring-1 sm:gap-3"
           >
             {previousUnit ? (
               <Link
                 href={`/english/grammar/${book}/${previousUnit.unitNumber}`}
-                className="group min-h-12 rounded-xl bg-surface-dim/60 px-3 py-2 transition-colors hover:bg-app-blue-light sm:px-4"
+                className="group bg-surface-dim/60 hover:bg-app-blue-light min-h-12 rounded-xl px-3 py-2 transition-colors sm:px-4"
               >
-                <span className="block text-xs font-bold text-text-muted">← 上一单元</span>
-                <span className="mt-0.5 block truncate text-sm font-bold text-text-primary group-hover:text-app-blue-dark">
+                <span className="text-text-muted block text-xs font-bold">← 上一单元</span>
+                <span className="text-text-primary group-hover:text-app-blue-dark mt-0.5 block truncate text-sm font-bold">
                   Unit {previousUnit.unitNumber} · {previousUnit.title}
                 </span>
               </Link>
             ) : (
-              <span className="min-h-12 rounded-xl bg-surface-dim px-3 py-2 opacity-45 sm:px-4">
-                <span className="block text-xs font-bold text-text-muted">← 上一单元</span>
-                <span className="mt-0.5 block text-sm font-bold text-text-muted">已经是第一个单元</span>
+              <span className="bg-surface-dim min-h-12 rounded-xl px-3 py-2 opacity-45 sm:px-4">
+                <span className="text-text-muted block text-xs font-bold">← 上一单元</span>
+                <span className="text-text-muted mt-0.5 block text-sm font-bold">
+                  已经是第一个单元
+                </span>
               </span>
             )}
             {nextUnit ? (
               <Link
                 href={`/english/grammar/${book}/${nextUnit.unitNumber}`}
-                className="group min-h-12 rounded-xl bg-surface-dim/60 px-3 py-2 text-right transition-colors hover:bg-app-blue-light sm:px-4"
+                className="group bg-surface-dim/60 hover:bg-app-blue-light min-h-12 rounded-xl px-3 py-2 text-right transition-colors sm:px-4"
               >
-                <span className="block text-xs font-bold text-text-muted">下一单元 →</span>
-                <span className="mt-0.5 block truncate text-sm font-bold text-text-primary group-hover:text-app-blue-dark">
+                <span className="text-text-muted block text-xs font-bold">下一单元 →</span>
+                <span className="text-text-primary group-hover:text-app-blue-dark mt-0.5 block truncate text-sm font-bold">
                   Unit {nextUnit.unitNumber} · {nextUnit.title}
                 </span>
               </Link>
             ) : (
-              <span className="min-h-12 rounded-xl bg-surface-dim px-3 py-2 text-right opacity-45 sm:px-4">
-                <span className="block text-xs font-bold text-text-muted">下一单元 →</span>
-                <span className="mt-0.5 block text-sm font-bold text-text-muted">已经是最后一个单元</span>
+              <span className="bg-surface-dim min-h-12 rounded-xl px-3 py-2 text-right opacity-45 sm:px-4">
+                <span className="text-text-muted block text-xs font-bold">下一单元 →</span>
+                <span className="text-text-muted mt-0.5 block text-sm font-bold">
+                  已经是最后一个单元
+                </span>
               </span>
             )}
           </nav>
@@ -730,7 +737,11 @@ function GrammarUnitPageInner({
         detail.lesson.sections[tableEdit.sectionIdx]?.blocks[tableEdit.blockIdx]?.type ===
           'grammar_table' && (
           <GrammarTableEditorModal
-            table={detail.lesson.sections[tableEdit.sectionIdx].blocks[tableEdit.blockIdx] as GrammarTableBlock}
+            table={
+              detail.lesson.sections[tableEdit.sectionIdx].blocks[
+                tableEdit.blockIdx
+              ] as GrammarTableBlock
+            }
             onSave={handleSaveTable}
             onClose={() => setTableEdit(null)}
           />
@@ -754,7 +765,7 @@ function GrammarUnitPageInner({
 
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
           onClick={() => setLightbox(null)}
         >
           <div className="mx-4 max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>
@@ -769,11 +780,11 @@ function GrammarUnitPageInner({
 
       {pendingDelete !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
           onClick={() => setPendingDelete(null)}
         >
           <div
-            className="bg-surface ring-border-light mx-4 w-full max-w-xs rounded-2xl p-5 shadow-2xl ring-1"
+            className="bg-surface ring-border-light shadow-sticker-lg mx-4 w-full max-w-xs rounded-2xl p-5 ring-1"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-text-primary text-sm font-bold">删除这张插图？</p>
@@ -781,18 +792,22 @@ function GrammarUnitPageInner({
               删除后这里将不再显示插图，可之后重新裁切。
             </p>
             <div className="mt-4 flex justify-end gap-2">
-              <button
+              <Button
                 onClick={() => setPendingDelete(null)}
-                className="text-text-secondary ring-border-light hover:bg-surface-dim rounded-full px-4 py-1.5 text-sm font-bold ring-1"
+                variant="outline"
+                color="gray"
+                size="2"
               >
                 取消
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => void handleConfirmDelete()}
-                className="bg-app-red rounded-full px-4 py-1.5 text-sm font-bold text-white"
+                variant="solid"
+                color="red"
+                size="2"
               >
                 删除
-              </button>
+              </Button>
             </div>
           </div>
         </div>

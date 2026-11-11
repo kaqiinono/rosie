@@ -4,6 +4,7 @@ import { GrammarScanImage } from './GrammarScanImage'
 
 import type { GrammarFigure } from '../types'
 import { grammarPageImageUrl } from '../types'
+import { Button } from '@rosie/ui/themes'
 
 interface FigureCardProps {
   figure: GrammarFigure
@@ -18,34 +19,45 @@ export function FigureCard({ figure, isAdmin, onPreview, onRecrop, onRemove }: F
   const url = grammarPageImageUrl(figure.path)
   return (
     <div className="group relative self-start">
-      <button
+      <Button
         type="button"
         onClick={() => onPreview(figure)}
-        className="block overflow-hidden rounded-xl ring-1 ring-border-light transition-shadow hover:shadow-md"
+        variant="outline"
+        color="gray"
+        size="2"
       >
-        <GrammarScanImage loading="lazy" src={url} alt={`插图（原书 p.${figure.page}）`} className="max-h-64 w-auto max-w-full" />
-      </button>
+        <GrammarScanImage
+          loading="lazy"
+          src={url}
+          alt={`插图（原书 p.${figure.page}）`}
+          className="max-h-64 w-auto max-w-full"
+        />
+      </Button>
       {isAdmin && (
         <div className="absolute top-1 right-1 flex gap-1 opacity-80">
           {onRecrop && (
-            <button
+            <Button
               type="button"
               onClick={onRecrop}
               title="重新裁切"
-              className="rounded-md bg-surface px-1.5 py-0.5 text-[11px] font-bold text-text-secondary shadow ring-1 ring-border-light hover:bg-surface-dim"
+              variant="outline"
+              color="gray"
+              size="1"
             >
               ✂️ 重裁
-            </button>
+            </Button>
           )}
           {onRemove && (
-            <button
+            <Button
               type="button"
               onClick={onRemove}
               title="删除插图"
-              className="rounded-md bg-surface px-1.5 py-0.5 text-[11px] font-bold text-app-red shadow ring-1 ring-border-light hover:bg-app-red-light"
+              variant="outline"
+              color="red"
+              size="1"
             >
               ✕ 删除
-            </button>
+            </Button>
           )}
         </div>
       )}

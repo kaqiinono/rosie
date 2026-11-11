@@ -5,6 +5,7 @@ import type { WordEntry } from '@rosie/core'
 import type { ReadingPassage } from '../../utils/reading-data'
 import { wordKey } from '../../utils/english-helpers'
 import RecallQuizStack from './RecallQuizStack'
+import { Button } from '@rosie/ui/themes'
 
 interface Props {
   passage: ReadingPassage
@@ -52,7 +53,7 @@ export default function UncoveredWordsReview({
   }
 
   return (
-    <div className="mt-6 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 p-4 ring-1 ring-amber-200">
+    <div className="mt-6 rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-200">
       <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="text-base">📝</span>
@@ -60,7 +61,7 @@ export default function UncoveredWordsReview({
             {round === 1 ? '补考 · 还没回想过的词' : `第 ${round} 轮回想 · 继续巩固`}
           </h3>
         </div>
-        <span className="rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200">
+        <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200">
           {pending.length}
         </span>
       </div>
@@ -69,7 +70,7 @@ export default function UncoveredWordsReview({
         {pending.map((w) => (
           <span
             key={wordKey(w)}
-            className="inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-[12px] font-bold text-amber-900 ring-1 ring-amber-300"
+            className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-[12px] font-bold text-amber-900 ring-1 ring-amber-300"
           >
             {w.word}
           </span>
@@ -77,9 +78,9 @@ export default function UncoveredWordsReview({
       </div>
 
       {!expanded && (
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           onClick={handleExpand}
-          className="group flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 px-4 py-3 text-white shadow-[0_4px_14px_rgba(245,158,11,.3)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(245,158,11,.45)] active:scale-[0.99]"
+          className="group shadow-sticker-sm hover:shadow-sticker-sm flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-orange-600 px-4 py-3 text-white transition hover:-translate-y-0.5 active:scale-[0.99]"
         >
           <span className="flex items-center gap-2 text-[14px] font-extrabold">
             <span className="text-base">▼</span>
@@ -99,12 +100,9 @@ export default function UncoveredWordsReview({
             tone="amber"
           />
           <div className="mt-2 flex justify-end">
-            <button
-              onClick={handleCollapse}
-              className="cursor-pointer rounded-full bg-white/70 px-3 py-1 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200 hover:bg-white"
-            >
+            <Button onClick={handleCollapse} variant="outline" color="amber" size="1">
               收起
-            </button>
+            </Button>
           </div>
         </>
       )}

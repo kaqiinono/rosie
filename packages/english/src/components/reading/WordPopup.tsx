@@ -1,5 +1,6 @@
 'use client'
 
+import { AppDialog } from '@rosie/ui'
 import { useEffect } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import type { ReadingPassage } from '../../utils/reading-data'
@@ -18,6 +19,7 @@ import {
   type MasteryLevel,
 } from '@rosie/core'
 import SpeakButton from '../words/SpeakButton'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface WordPopupProps {
   entry: WordEntry | null
@@ -44,10 +46,10 @@ const LEVEL_BAR_COLOR: Record<MasteryLevel, string> = {
 }
 
 const LEVEL_ACCENT_BG: Record<MasteryLevel, string> = {
-  0: 'from-amber-300 to-orange-400',
-  1: 'from-sky-300 to-blue-400',
-  2: 'from-violet-300 to-purple-400',
-  3: 'from-emerald-300 to-green-400',
+  0: 'bg-amber-400',
+  1: 'bg-sky-400',
+  2: 'bg-violet-400',
+  3: 'bg-emerald-400',
 }
 
 function highlightSentence(sentence: string, entry: WordEntry) {
@@ -108,51 +110,57 @@ export default function WordPopup({
 
   const found = findSentenceForWord(passage, entry)
   const sentenceMatch = found?.sentence.match(buildEntryRegex(entry))?.[0]
-  const effectiveMatch = matchedForm ?? (sentenceMatch ? resolveWordFormMatch(sentenceMatch, [entry]) : null)
+  const effectiveMatch =
+    matchedForm ?? (sentenceMatch ? resolveWordFormMatch(sentenceMatch, [entry]) : null)
   const isInflected = effectiveMatch && effectiveMatch.source !== 'base'
 
   return (
-    <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center"
-      onClick={onClose}
+    <AppDialog
+      open
+      chrome="none"
+      title="单词详情"
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
     >
-      <div
-        className="font-nunito relative max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto rounded-t-2xl bg-white shadow-2xl animate-[slide-up_.2s_cubic-bezier(.4,0,.2,1)] sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className={`h-1.5 w-full bg-gradient-to-r ${LEVEL_ACCENT_BG[level]}`} />
+      <div className="font-nunito relative">
+        <div className={`h-1.5 w-full ${LEVEL_ACCENT_BG[level]}`} />
 
-        <button
+        <IconButton
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200 hover:text-gray-700"
           aria-label="关闭"
+          variant="soft"
+          color="gray"
+          size="1"
+          className="absolute top-3 right-3 z-10 w-8"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
-        </button>
+        </IconButton>
 
-        <div className="px-5 pt-5 pb-2 pr-14">
+        <div className="px-5 pt-5 pr-14 pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-2xl font-extrabold text-gray-900">{entry.word}</h3>
             {MASTERY_ICON[level] && (
               <span
-                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-600 ring-1 ring-gray-200"
+                className="ring-kid-line inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-600 ring-1"
                 title={LEVEL_LABEL[level]}
               >
                 <span className="text-[13px] leading-none">{MASTERY_ICON[level]}</span>
                 <span>{LEVEL_LABEL[level]}</span>
               </span>
             )}
-            <SpeakButton
-              word={entry.word}
-              size="text-[1.2rem]"
-              className="h-9 w-9 bg-amber-100 text-amber-700 hover:bg-amber-200 hover:scale-110"
-            />
+            <SpeakButton entry={entry} word={entry.word} size="2" />
           </div>
-          {entry.ipa && (
-            <div className="mt-0.5 text-sm italic text-gray-500">{entry.ipa}</div>
-          )}
+          {entry.ipa && <div className="mt-0.5 text-sm text-gray-500 italic">{entry.ipa}</div>}
           {isInflected && (
             <div className="mt-2 rounded-lg bg-indigo-50 px-3 py-2 text-sm text-indigo-800 ring-1 ring-indigo-200">
               <span className="font-extrabold">{effectiveMatch.matchedText}</span>
@@ -170,7 +178,7 @@ export default function WordPopup({
             <span className="rounded-full bg-sky-50 px-2.5 py-1 text-sky-700 ring-1 ring-sky-200">
               所属词库 · {entry.stage ?? '未分级'}
             </span>
-            <span className="rounded-full bg-slate-50 px-2.5 py-1 text-slate-600 ring-1 ring-slate-200">
+            <span className="ring-kid-line rounded-full bg-slate-50 px-2.5 py-1 text-slate-600 ring-1">
               {entry.unit} · {entry.lesson}
             </span>
             {passage.stage === 'story' && (
@@ -181,17 +189,17 @@ export default function WordPopup({
           </div>
 
           <div>
-            <div className="mb-1 text-[11px] font-bold tracking-wider text-gray-400 uppercase">释义</div>
+            <div className="mb-1 text-[11px] font-bold tracking-wider text-gray-400 uppercase">
+              释义
+            </div>
             <p className="text-[15px] leading-relaxed text-gray-800">{entry.explanation}</p>
             {entry.chineseDef && (
-              <p className="mt-0.5 text-[12px] leading-snug text-gray-500">
-                {entry.chineseDef}
-              </p>
+              <p className="mt-0.5 text-[12px] leading-snug text-gray-500">{entry.chineseDef}</p>
             )}
           </div>
 
           {found && (
-            <div className="rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 p-3 ring-1 ring-amber-200/60">
+            <div className="rounded-xl bg-amber-50 p-3 ring-1 ring-amber-200/60">
               <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-amber-700 uppercase">
                 <span>📖</span> 课文原句
               </div>
@@ -203,7 +211,9 @@ export default function WordPopup({
 
           {entry.example && !found && (
             <div className="rounded-xl bg-gray-50 p-3">
-              <div className="mb-1 text-[11px] font-bold tracking-wider text-gray-500 uppercase">例句</div>
+              <div className="mb-1 text-[11px] font-bold tracking-wider text-gray-500 uppercase">
+                例句
+              </div>
               <p className="text-[14px] leading-relaxed text-gray-700 italic">{entry.example}</p>
             </div>
           )}
@@ -232,39 +242,38 @@ export default function WordPopup({
         </div>
 
         {currentIndex >= 0 && entries.length > 1 && (
-          <div className="sticky bottom-0 grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t border-gray-100 bg-white/95 px-5 py-3 backdrop-blur-sm">
-            <button
+          <div className="border-kid-line sticky bottom-0 grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t bg-white px-5 py-3">
+            <Button
               type="button"
               disabled={!canGoPrevious}
               onClick={() => onEntryChange?.(entries[currentIndex - 1])}
-              className="min-h-11 justify-self-start rounded-full px-3 text-sm font-bold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
               aria-label="上一张单词卡"
+              variant="ghost"
+              color="sky"
+              size="3"
+              className="justify-self-start"
             >
               ← 上一张
-            </button>
-            <span className="text-xs font-bold tabular-nums text-gray-500" aria-live="polite">
+            </Button>
+            <span className="text-xs font-bold text-gray-500 tabular-nums" aria-live="polite">
               {currentIndex + 1} / {entries.length}
             </span>
-            <button
+            <Button
               type="button"
               disabled={!canGoNext}
               onClick={() => onEntryChange?.(entries[currentIndex + 1])}
-              className="min-h-11 justify-self-end rounded-full px-3 text-sm font-bold text-sky-700 transition hover:bg-sky-50 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
               aria-label="下一张单词卡"
+              variant="ghost"
+              color="sky"
+              size="3"
+              className="justify-self-end"
             >
               下一张 →
-            </button>
+            </Button>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes slide-up {
-          from { transform: translateY(20px); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}</style>
-    </div>
+    </AppDialog>
   )
 }
 

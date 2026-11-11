@@ -17,7 +17,12 @@ function wordCount(batch: SimDaySnapshot): number {
   return new Set([...batch.newWordKeys, ...batch.reviewWordKeys, ...batch.bossWordKeys]).size
 }
 
-export default function AdaptivePlanPreviewCalendar({ days, today, selectedDate, onSelectDate }: Props) {
+export default function AdaptivePlanPreviewCalendar({
+  days,
+  today,
+  selectedDate,
+  onSelectDate,
+}: Props) {
   void today
   const selected = useMemo(
     () => days.find((batch) => batch.date === selectedDate) ?? null,
@@ -26,7 +31,7 @@ export default function AdaptivePlanPreviewCalendar({ days, today, selectedDate,
 
   return (
     <div className="rounded-[16px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] p-4">
-      <div className="mb-3 text-[.68rem] font-bold leading-relaxed text-[var(--wm-text-dim)]">
+      <div className="mb-3 text-[.68rem] leading-relaxed font-bold text-[var(--wm-text-dim)]">
         每一格代表完成一个批次；批次可以跨天完成，同一天也可再加练一批。
       </div>
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-7">
@@ -34,6 +39,7 @@ export default function AdaptivePlanPreviewCalendar({ days, today, selectedDate,
           const active = selectedDate === batch.date
           const boss = batch.mode === 'boss'
           return (
+            // native-ok: 批次日历格子，多行块状内容（批次/模式/词数）并按 Boss/普通着色
             <button
               key={`${batch.dayIndex}-${batch.date}`}
               type="button"
@@ -44,8 +50,12 @@ export default function AdaptivePlanPreviewCalendar({ days, today, selectedDate,
                   : 'border-[rgba(96,165,250,.3)] bg-[rgba(96,165,250,.07)]'
               } ${active ? 'ring-2 ring-[#c4b5fd]' : ''}`}
             >
-              <div className="text-[.72rem] font-extrabold text-[var(--wm-text)]">批次 {batch.dayIndex}</div>
-              <div className={`mt-1 text-[.62rem] font-extrabold ${boss ? 'text-[#fbbf24]' : 'text-[#93c5fd]'}`}>
+              <div className="text-[.72rem] font-extrabold text-[var(--wm-text)]">
+                批次 {batch.dayIndex}
+              </div>
+              <div
+                className={`mt-1 text-[.62rem] font-extrabold ${boss ? 'text-[#fbbf24]' : 'text-[#93c5fd]'}`}
+              >
                 {MODE_LABELS[batch.mode]}
               </div>
               <div className="mt-1 text-[.6rem] font-bold text-[var(--wm-text-dim)]">
@@ -59,11 +69,14 @@ export default function AdaptivePlanPreviewCalendar({ days, today, selectedDate,
       {selected && (
         <div className="mt-4 rounded-xl border border-[rgba(139,92,246,.3)] bg-[rgba(139,92,246,.06)] px-3 py-2.5 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
           <span className="font-extrabold text-[#c4b5fd]">批次 {selected.dayIndex}</span>
-          <span className="mx-2 text-white/25">·</span>{MODE_LABELS[selected.mode]}
+          <span className="mx-2 text-white/25">·</span>
+          {MODE_LABELS[selected.mode]}
           <span className="mx-2 text-white/25">·</span>新词 {selected.newWordKeys.length}
           <span className="mx-2 text-white/25">·</span>阶段推进 {selected.reviewWordKeys.length}
           {selected.bossWordKeys.length > 0 && (
-            <><span className="mx-2 text-white/25">·</span>Boss {selected.bossWordKeys.length}</>
+            <>
+              <span className="mx-2 text-white/25">·</span>Boss {selected.bossWordKeys.length}
+            </>
           )}
         </div>
       )}

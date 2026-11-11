@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import type { WordEntry, WordMasteryInfo, WordMasteryMap } from '@rosie/core'
 import { wordKey } from '../../utils/english-helpers'
 import { ensureStageInit, isGraduated, MASTERY_ICON, getWordMasteryLevel } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
 
 const DEFAULT_PAGE_SIZE = 20
 
@@ -26,7 +27,10 @@ interface MasteryStatusPanelProps {
   pageSize?: number
 }
 
-function formatDue(nextReviewDate: string | undefined, today: string): { label: string; urgent: 'today' | 'tomorrow' | 'future' | 'none' } {
+function formatDue(
+  nextReviewDate: string | undefined,
+  today: string,
+): { label: string; urgent: 'today' | 'tomorrow' | 'future' | 'none' } {
   if (!nextReviewDate) return { label: '—', urgent: 'none' }
   const diff = Math.floor((Date.parse(nextReviewDate) - Date.parse(today)) / 86400000)
   if (diff <= 0) return { label: '今天', urgent: 'today' }
@@ -67,7 +71,9 @@ export default function MasteryStatusPanel({
         }
         const m = ensureStageInit(raw, today)
         const graduated = isGraduated(m)
-        const due = graduated ? { label: '已毕业', urgent: 'none' as const } : formatDue(m.nextReviewDate, today)
+        const due = graduated
+          ? { label: '已毕业', urgent: 'none' as const }
+          : formatDue(m.nextReviewDate, today)
         return { w, unpracticed: false as const, m, graduated, due }
       })
     }
@@ -78,7 +84,9 @@ export default function MasteryStatusPanel({
         const raw = masteryMap[key]!
         const m = ensureStageInit(raw, today)
         const graduated = isGraduated(m)
-        const due = graduated ? { label: '已毕业', urgent: 'none' as const } : formatDue(m.nextReviewDate, today)
+        const due = graduated
+          ? { label: '已毕业', urgent: 'none' as const }
+          : formatDue(m.nextReviewDate, today)
         return { w, unpracticed: false as const, m, graduated, due }
       })
       .sort((a, b) => {
@@ -109,7 +117,9 @@ export default function MasteryStatusPanel({
     (r): r is Extract<PanelRow, { unpracticed: false }> =>
       !r.unpracticed && r.m.isHard === true && !r.graduated,
   ).length
-  const graduatedCount = rows.filter((r): r is Extract<PanelRow, { unpracticed: false }> => !r.unpracticed && r.graduated).length
+  const graduatedCount = rows.filter(
+    (r): r is Extract<PanelRow, { unpracticed: false }> => !r.unpracticed && r.graduated,
+  ).length
   const practicedCount = rows.filter((r) => !r.unpracticed).length
   const pendingInScopeCount = rows.length - practicedCount
 
@@ -136,12 +146,24 @@ export default function MasteryStatusPanel({
         <table className="w-full border-collapse text-[12px]">
           <thead>
             <tr className="bg-[var(--wm-surface)]">
-              <th className="px-4 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">单词</th>
-              <th className="px-3 py-2 text-left text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">课程</th>
-              <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">阶段</th>
-              <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">下次复习</th>
-              <th className="px-3 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">复习记录</th>
-              <th className="px-4 py-2 text-center text-[10px] font-bold text-[var(--wm-text-dim)] tracking-wider">状态</th>
+              <th className="px-4 py-2 text-left text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
+                单词
+              </th>
+              <th className="px-3 py-2 text-left text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
+                课程
+              </th>
+              <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
+                阶段
+              </th>
+              <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
+                下次复习
+              </th>
+              <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
+                复习记录
+              </th>
+              <th className="px-4 py-2 text-center text-[10px] font-bold tracking-wider text-[var(--wm-text-dim)]">
+                状态
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -155,9 +177,15 @@ export default function MasteryStatusPanel({
                       {w.unit.replace(/\D+(\d+)/, 'U$1')} {w.lesson.replace(/\D+(\d+)/, 'L$1')}
                     </td>
                     <td className="px-3 py-2 text-center text-[var(--wm-text-dim)]">—</td>
-                    <td className="px-3 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">—</td>
-                    <td className="px-3 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">—</td>
-                    <td className="px-4 py-2 text-center text-[var(--wm-text-dim)] text-[10px]">未练习</td>
+                    <td className="px-3 py-2 text-center text-[10px] text-[var(--wm-text-dim)]">
+                      —
+                    </td>
+                    <td className="px-3 py-2 text-center text-[10px] text-[var(--wm-text-dim)]">
+                      —
+                    </td>
+                    <td className="px-4 py-2 text-center text-[10px] text-[var(--wm-text-dim)]">
+                      未练习
+                    </td>
                   </tr>
                 )
               }
@@ -169,7 +197,10 @@ export default function MasteryStatusPanel({
                   className="border-t border-[var(--wm-border)]"
                   style={{ opacity: graduated ? 0.6 : 1 }}
                 >
-                  <td className="px-4 py-2 font-bold" style={{ color: graduated ? '#4ade80' : 'var(--wm-text)' }}>
+                  <td
+                    className="px-4 py-2 font-bold"
+                    style={{ color: graduated ? '#4ade80' : 'var(--wm-text)' }}
+                  >
                     {w.word}
                   </td>
                   <td className="px-3 py-2 text-[11px] text-[var(--wm-text-dim)]">
@@ -180,20 +211,26 @@ export default function MasteryStatusPanel({
                   </td>
                   <td className="px-3 py-2 text-center">
                     {due.urgent === 'today' && (
-                      <span className="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
+                      <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-bold text-red-400">
+                        {due.label}
+                      </span>
                     )}
                     {due.urgent === 'tomorrow' && (
-                      <span className="bg-orange-500/20 text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded-full">{due.label}</span>
+                      <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-[10px] font-bold text-orange-400">
+                        {due.label}
+                      </span>
                     )}
                     {due.urgent === 'future' && (
-                      <span className="text-[var(--wm-text-dim)] text-[10px] font-bold">{due.label}</span>
+                      <span className="text-[10px] font-bold text-[var(--wm-text-dim)]">
+                        {due.label}
+                      </span>
                     )}
                     {due.urgent === 'none' && (
-                      <span className="text-green-400 text-[10px] font-bold">{due.label}</span>
+                      <span className="text-[10px] font-bold text-green-400">{due.label}</span>
                     )}
                   </td>
                   <td className="px-3 py-2">
-                    <div className="flex items-center justify-center gap-0.5 flex-wrap">
+                    <div className="flex flex-wrap items-center justify-center gap-0.5">
                       {(m.reviewHistory ?? []).slice(-12).map((r, i) => (
                         <span
                           key={i}
@@ -202,15 +239,15 @@ export default function MasteryStatusPanel({
                         />
                       ))}
                       {!m.reviewHistory?.length && (
-                        <span className="text-[var(--wm-text-dim)] text-[10px]">—</span>
+                        <span className="text-[10px] text-[var(--wm-text-dim)]">—</span>
                       )}
                     </div>
                   </td>
                   <td className="px-4 py-2 text-center">
                     {graduated ? (
-                      <span className="text-green-400 text-[10px] font-bold">✓ 毕业</span>
+                      <span className="text-[10px] font-bold text-green-400">✓ 毕业</span>
                     ) : m.isHard ? (
-                      <span className="text-red-400 text-[10px] font-bold">🔥 难</span>
+                      <span className="text-[10px] font-bold text-red-400">🔥 难</span>
                     ) : (
                       <span className="text-[var(--wm-text-dim)]">—</span>
                     )}
@@ -220,7 +257,10 @@ export default function MasteryStatusPanel({
             })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-[var(--wm-text-dim)] text-[12px]">
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-[12px] text-[var(--wm-text-dim)]"
+                >
                   {orderedWordsInScope !== undefined
                     ? '多日计划暂无分配单词'
                     : '还没有练习过的词 — 完成一次练习后这里会显示数据'}
@@ -236,25 +276,29 @@ export default function MasteryStatusPanel({
             第 {rangeStart}–{rangeEnd} 词 · 共 {rows.length} 词
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
               disabled={safePage <= 1}
               onClick={() => setPage(Math.max(1, safePage - 1))}
-              className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#93c5fd] hover:text-[#93c5fd]"
+              variant="outline"
+              color="gray"
+              size="1"
             >
               ← 上一页
-            </button>
+            </Button>
             <span className="min-w-[4.5rem] text-center text-[11px] font-extrabold text-[var(--wm-text)]">
               {safePage} / {totalPages}
             </span>
-            <button
+            <Button
               type="button"
               disabled={safePage >= totalPages}
               onClick={() => setPage(Math.min(totalPages, safePage + 1))}
-              className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#93c5fd] hover:text-[#93c5fd]"
+              variant="outline"
+              color="gray"
+              size="1"
             >
               下一页 →
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -272,7 +316,10 @@ export default function MasteryStatusPanel({
       </span>
       <span className="text-[var(--wm-border)]">·</span>
       <span>
-        待练 <strong className={pendingInScopeCount > 0 ? 'text-[#fbbf24]' : 'text-[var(--wm-text)]'}>{pendingInScopeCount}</strong>
+        待练{' '}
+        <strong className={pendingInScopeCount > 0 ? 'text-[#fbbf24]' : 'text-[var(--wm-text)]'}>
+          {pendingInScopeCount}
+        </strong>
       </span>
       {(dueTodayCount > 0 || dueTomorrowCount > 0) && (
         <>
@@ -316,7 +363,12 @@ export default function MasteryStatusPanel({
       </span>
       <span className="text-[var(--wm-border)]">·</span>
       <span>
-        词库未练 <strong className={vocabNeverPracticedCount > 0 ? 'text-[#fbbf24]' : 'text-[var(--wm-text)]'}>{vocabNeverPracticedCount}</strong>
+        词库未练{' '}
+        <strong
+          className={vocabNeverPracticedCount > 0 ? 'text-[#fbbf24]' : 'text-[var(--wm-text)]'}
+        >
+          {vocabNeverPracticedCount}
+        </strong>
       </span>
       {(dueTodayCount > 0 || dueTomorrowCount > 0) && (
         <>
@@ -367,7 +419,9 @@ export default function MasteryStatusPanel({
       <div className="flex w-full min-w-0 items-start justify-between gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span className="shrink-0 text-[15px]">📊</span>
-          <span className="font-nunito text-[13px] font-bold text-[var(--wm-text)]">{panelTitle}</span>
+          <span className="font-nunito text-[13px] font-bold text-[var(--wm-text)]">
+            {panelTitle}
+          </span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {hardCount > 0 && (
@@ -406,7 +460,7 @@ export default function MasteryStatusPanel({
         {layout === 'alwaysOpen' ? (
           <div className="w-full bg-[var(--wm-surface)] px-4 py-3 text-left">{headerInner}</div>
         ) : (
-          <button
+          <button // native-ok: 整块可点击的折叠头（内含多行内容），Radix Button 是 inline-flex 居中，不适用
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="w-full cursor-pointer border-0 bg-[var(--wm-surface)] px-4 py-3 text-left transition-colors hover:bg-[var(--wm-surface2)]"

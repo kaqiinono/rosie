@@ -6,7 +6,7 @@ interface DoneSummaryProps {
   score: number
   total: number
   /** Full Tailwind gradient classes for the score number, e.g. "from-[#d97706] to-[#f59e0b]". */
-  scoreGradientClasses: string
+  scoreColorClass: string
   /** Optional star reward line above the detail line. */
   starsEarned?: number
   detailLine: ReactNode
@@ -18,7 +18,7 @@ interface DoneSummaryProps {
 export default function DoneSummary({
   score,
   total,
-  scoreGradientClasses,
+  scoreColorClass,
   starsEarned,
   detailLine,
   masteredCount,
@@ -32,9 +32,7 @@ export default function DoneSummary({
   return (
     <div className="mx-auto max-w-[500px] px-5 py-10 text-center">
       <div className="mb-3.5 text-[3.5rem]">{emoji}</div>
-      <div
-        className={`font-fredoka mb-1.5 bg-gradient-to-br bg-clip-text text-[3rem] text-transparent ${scoreGradientClasses}`}
-      >
+      <div className={`font-fredoka mb-1.5 text-[3rem] ${scoreColorClass}`}>
         {score} / {total}
       </div>
       <div className="mb-2.5 text-[.9rem] font-bold text-[var(--wm-text-dim)]">{msg}</div>

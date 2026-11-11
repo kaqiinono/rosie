@@ -1,6 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useState, type ClipboardEvent as ReactClipboardEvent, type SyntheticEvent } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ClipboardEvent as ReactClipboardEvent,
+  type SyntheticEvent,
+} from 'react'
 import type {
   GrammarTableBlock,
   GrammarTableDisplayType,
@@ -9,6 +15,8 @@ import type {
   GrammarTableTextStyle,
 } from '../types'
 import { GrammarTableView } from './LessonView'
+import { FormSelect } from '@rosie/ui'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 interface GrammarTableEditorModalProps {
   table: GrammarTableBlock
@@ -58,7 +66,7 @@ function toggleMarkStyle(
   if (active) return cleaned
   const target = cleaned.find((mark) => mark.start === start && mark.end === end)
   return target
-    ? cleaned.map((mark) => mark === target ? { ...mark, styles: [...mark.styles, style] } : mark)
+    ? cleaned.map((mark) => (mark === target ? { ...mark, styles: [...mark.styles, style] } : mark))
     : [...cleaned, { start, end, styles: [style] }]
 }
 
@@ -66,9 +74,7 @@ function encodeTsv(rows: string[][]): string {
   return rows
     .map((row) =>
       row
-        .map((cell) =>
-          /[\t\r\n"]/.test(cell) ? `"${cell.replaceAll('"', '""')}"` : cell,
-        )
+        .map((cell) => (/[\t\r\n"]/.test(cell) ? `"${cell.replaceAll('"', '""')}"` : cell))
         .join('\t'),
     )
     .join('\n')
@@ -110,9 +116,7 @@ function rectangularTable(table: GrammarTableBlock): GrammarTableBlock {
   return {
     ...table,
     headers: Array.from({ length: columns }, (_, index) => table.headers[index] ?? ''),
-    rows: table.rows.map((row) =>
-      Array.from({ length: columns }, (_, index) => row[index] ?? ''),
-    ),
+    rows: table.rows.map((row) => Array.from({ length: columns }, (_, index) => row[index] ?? '')),
   }
 }
 
@@ -135,8 +139,10 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       right: Math.max(selectionAnchor.column, selectionEnd.column),
     }
   }, [selectionAnchor, selectionEnd])
-  const multiCellSelection = selectionBounds !== null &&
-    (selectionBounds.top !== selectionBounds.bottom || selectionBounds.left !== selectionBounds.right)
+  const multiCellSelection =
+    selectionBounds !== null &&
+    (selectionBounds.top !== selectionBounds.bottom ||
+      selectionBounds.left !== selectionBounds.right)
   const bodyCellSelected = selectedCell !== null && selectedCell.row >= 0
   const selectedMerge = selectedCell
     ? draft.merges?.find(
@@ -192,7 +198,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
     for (let row = selectionBounds.top; row <= selectionBounds.bottom; row += 1) {
       const values: string[] = []
       for (let column = selectionBounds.left; column <= selectionBounds.right; column += 1) {
-        values.push(row === -1 ? draft.headers[column] ?? '' : draft.rows[row]?.[column] ?? '')
+        values.push(row === -1 ? (draft.headers[column] ?? '') : (draft.rows[row]?.[column] ?? ''))
       }
       copied.push(values)
     }
@@ -219,8 +225,10 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
     setDraft((current) => {
       const columns = Math.max(current.headers.length, requiredColumns)
       const headers = Array.from({ length: columns }, (_, column) => current.headers[column] ?? '')
-      const rows = Array.from({ length: Math.max(current.rows.length, requiredBodyRows) }, (_, row) =>
-        Array.from({ length: columns }, (__, column) => current.rows[row]?.[column] ?? ''),
+      const rows = Array.from(
+        { length: Math.max(current.rows.length, requiredBodyRows) },
+        (_, row) =>
+          Array.from({ length: columns }, (__, column) => current.rows[row]?.[column] ?? ''),
       )
       if (start.row === -1) {
         pasted[0].forEach((value, column) => {
@@ -236,9 +244,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       return { ...current, headers, rows, textMarks: {} }
     })
 
-    const pastedBottom = start.row === -1
-      ? pasted.length - 2
-      : start.row + pasted.length - 1
+    const pastedBottom = start.row === -1 ? pasted.length - 2 : start.row + pasted.length - 1
     const nextEnd = {
       row: Math.max(start.row, pastedBottom),
       column: start.column + pastedColumns - 1,
@@ -252,7 +258,9 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
     setDraft((current) => ({
       ...current,
       headers: current.headers.map((cell, index) => (index === columnIndex ? value : cell)),
-      textMarks: Object.fromEntries(Object.entries(current.textMarks ?? {}).filter(([key]) => key !== `header:${columnIndex}`)),
+      textMarks: Object.fromEntries(
+        Object.entries(current.textMarks ?? {}).filter(([key]) => key !== `header:${columnIndex}`),
+      ),
     }))
   }
 
@@ -260,15 +268,20 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
     setDraft((current) => ({
       ...current,
       rows: current.rows.map((row, ri) =>
-        ri === rowIndex
-          ? row.map((cell, ci) => (ci === columnIndex ? value : cell))
-          : row,
+        ri === rowIndex ? row.map((cell, ci) => (ci === columnIndex ? value : cell)) : row,
       ),
-      textMarks: Object.fromEntries(Object.entries(current.textMarks ?? {}).filter(([key]) => key !== `body:${rowIndex}:${columnIndex}`)),
+      textMarks: Object.fromEntries(
+        Object.entries(current.textMarks ?? {}).filter(
+          ([key]) => key !== `body:${rowIndex}:${columnIndex}`,
+        ),
+      ),
     }))
   }
 
-  const rememberTextSelection = (target: string, event: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const rememberTextSelection = (
+    target: string,
+    event: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const element = event.currentTarget
     const start = element.selectionStart ?? 0
     const end = element.selectionEnd ?? start
@@ -302,22 +315,29 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
 
   const isTextStyleActive = (style: GrammarTableTextStyle): boolean => {
     if (!textSelection) return false
-    return draft.textMarks?.[textSelection.target]?.some(
-      (mark) => mark.start === textSelection.start && mark.end === textSelection.end && mark.styles.includes(style),
-    ) === true
+    return (
+      draft.textMarks?.[textSelection.target]?.some(
+        (mark) =>
+          mark.start === textSelection.start &&
+          mark.end === textSelection.end &&
+          mark.styles.includes(style),
+      ) === true
+    )
   }
 
   const setDisplayType = (displayType: GrammarTableDisplayType) => {
-    setDraft((current) => displayType === 'timeline'
-      ? {
-          ...current,
-          displayType,
-          headers: ['过去', '现在', '将来'],
-          rows: [['', '', '']],
-          merges: [],
-          textMarks: {},
-        }
-      : { ...current, displayType })
+    setDraft((current) =>
+      displayType === 'timeline'
+        ? {
+            ...current,
+            displayType,
+            headers: ['过去', '现在', '将来'],
+            rows: [['', '', '']],
+            merges: [],
+            textMarks: {},
+          }
+        : { ...current, displayType },
+    )
     setSelectedCell(null)
     setSelectionAnchor(null)
     setSelectionEnd(null)
@@ -370,7 +390,8 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       if (
         next.row + next.rowSpan > current.rows.length ||
         next.column + next.colSpan > current.headers.length
-      ) return current
+      )
+        return current
 
       const overlaps = merges.some(
         (merge) =>
@@ -384,9 +405,10 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
       let rows = current.rows
       if (direction === 'down') {
         const addedRowIndex = next.row + next.rowSpan - 1
-        const additions = current.rows[addedRowIndex]
-          ?.slice(next.column, next.column + next.colSpan)
-          .filter((cell) => cell.trim() !== '') ?? []
+        const additions =
+          current.rows[addedRowIndex]
+            ?.slice(next.column, next.column + next.colSpan)
+            .filter((cell) => cell.trim() !== '') ?? []
         if (additions.length > 0) {
           const anchor = current.rows[next.row]?.[next.column] ?? ''
           const seen = new Set<string>()
@@ -401,9 +423,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
             .join('\n')
           rows = current.rows.map((row, rowIndex) =>
             rowIndex === next.row
-              ? row.map((cell, columnIndex) =>
-                  columnIndex === next.column ? combined : cell,
-                )
+              ? row.map((cell, columnIndex) => (columnIndex === next.column ? combined : cell))
               : row,
           )
         }
@@ -432,7 +452,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
             selectedCell.column >= merge.column &&
             selectedCell.column < merge.column + merge.colSpan
           ),
-        ),
+      ),
       textMarks: {},
     }))
   }
@@ -500,7 +520,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
 
   return (
     <div
-      className="fixed inset-0 z-60 flex items-center justify-center bg-black/65 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-60 flex items-center justify-center bg-black/65 p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="grammar-table-editor-title"
@@ -508,79 +528,102 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
         if (event.target === event.currentTarget && !saving) onClose()
       }}
     >
-      <div className="flex max-h-[94dvh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl ring-1 ring-border-light">
-        <header className="flex items-center justify-between gap-3 border-b border-border-light px-4 py-3 sm:px-5">
+      <div className="bg-surface shadow-sticker-lg ring-border-light flex max-h-[94dvh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl ring-1">
+        <header className="border-border-light flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-5">
           <div>
-            <h2 id="grammar-table-editor-title" className="font-black text-text-primary">
+            <h2 id="grammar-table-editor-title" className="text-text-primary font-black">
               编辑语法表格
             </h2>
-            <p className="text-xs text-text-muted">Shift 点击选择区域 · ⌘/Ctrl+C、V 复制粘贴</p>
+            <p className="text-text-muted text-xs">Shift 点击选择区域 · ⌘/Ctrl+C、V 复制粘贴</p>
           </div>
-          <button
+          <IconButton
             type="button"
             onClick={onClose}
             disabled={saving}
             aria-label="关闭表格编辑器"
-            className="min-h-11 min-w-11 rounded-full text-lg font-bold text-text-secondary transition-colors hover:bg-surface-dim disabled:opacity-40"
+            variant="ghost"
+            color="gray"
+            size="3"
           >
             ×
-          </button>
+          </IconButton>
         </header>
 
         <div className="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="flex min-w-0 flex-col gap-3 border-b border-border-light p-4 lg:border-r lg:border-b-0 sm:p-5">
+          <div className="border-border-light flex min-w-0 flex-col gap-3 border-b p-4 sm:p-5 lg:border-r lg:border-b-0">
             <div className="flex flex-wrap items-center gap-2">
-              <label className="flex items-center gap-2 text-xs font-bold text-text-secondary">
+              <label className="text-text-secondary flex items-center gap-2 text-xs font-bold">
                 <span className="shrink-0">表格类型</span>
-                <select
+                <FormSelect
+                  size="2"
                   value={draft.displayType ?? 'standard'}
-                  onChange={(event) => setDisplayType(event.target.value as GrammarTableDisplayType)}
-                  className="min-h-10 rounded-lg bg-surface px-3 text-sm font-bold text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue"
-                >
-                  <option value="standard">普通表格</option>
-                  <option value="timeline">时间轴</option>
-                </select>
+                  ariaLabel="表格类型"
+                  onValueChange={(next) => setDisplayType(next as GrammarTableDisplayType)}
+                  options={[
+                    { value: 'standard', label: '普通表格' },
+                    { value: 'timeline', label: '时间轴' },
+                  ]}
+                />
               </label>
-              <label className="flex min-w-[260px] flex-1 items-center gap-2 text-xs font-bold text-text-secondary">
+              <label className="text-text-secondary flex min-w-[260px] flex-1 items-center gap-2 text-xs font-bold">
                 <span className="shrink-0">表格标题</span>
-              <input
-                value={draft.title}
-                onSelect={(event) => rememberTextSelection('title', event)}
-                onChange={(event) => setDraft((current) => ({
-                  ...current,
-                  title: event.target.value,
-                  textMarks: Object.fromEntries(Object.entries(current.textMarks ?? {}).filter(([key]) => key !== 'title')),
-                }))}
-                  className="min-h-10 min-w-0 flex-1 rounded-lg bg-surface px-3 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue"
-                placeholder="可留空"
-              />
+                <TextField.Root
+                  value={draft.title}
+                  onSelect={(event) => rememberTextSelection('title', event)}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      title: event.target.value,
+                      textMarks: Object.fromEntries(
+                        Object.entries(current.textMarks ?? {}).filter(([key]) => key !== 'title'),
+                      ),
+                    }))
+                  }
+                  placeholder="可留空"
+                  size="2"
+                  className="min-w-0 flex-1"
+                />
               </label>
-              <span className="shrink-0 rounded-lg bg-app-blue-light/50 px-3 py-2 text-xs font-bold text-app-blue-dark">
+              <span className="bg-app-blue-light/50 text-app-blue-dark shrink-0 rounded-lg px-3 py-2 text-xs font-bold">
                 {multiCellSelection && selectionBounds
                   ? `已选 ${selectionBounds.bottom - selectionBounds.top + 1} × ${selectionBounds.right - selectionBounds.left + 1}`
                   : selectedCell
-                  ? selectedCell.row < 0
-                    ? `表头 · 第 ${selectedCell.column + 1} 列`
-                    : `第 ${selectedCell.row + 1} 行 · 第 ${selectedCell.column + 1} 列`
-                  : '未选择单元格'}
+                    ? selectedCell.row < 0
+                      ? `表头 · 第 ${selectedCell.column + 1} 列`
+                      : `第 ${selectedCell.row + 1} 行 · 第 ${selectedCell.column + 1} 列`
+                    : '未选择单元格'}
               </span>
             </div>
 
             {draft.displayType === 'timeline' && (
-              <p className="rounded-lg bg-app-blue-light/45 px-3 py-2 text-xs font-semibold text-app-blue-dark">
-                时间轴固定使用“过去 / 现在 / 将来”三段布局，切换到该类型会自动设置表头并清空正文单元格。
+              <p className="bg-app-blue-light/45 text-app-blue-dark rounded-lg px-3 py-2 text-xs font-semibold">
+                时间轴固定使用“过去 / 现在 /
+                将来”三段布局，切换到该类型会自动设置表头并清空正文单元格。
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-surface-dim p-1.5 ring-1 ring-border-light" aria-label="文字格式工具栏">
-              <span className="px-1.5 text-xs font-bold text-text-muted">
+            <div
+              className="bg-surface-dim ring-border-light flex flex-wrap items-center gap-1.5 rounded-lg p-1.5 ring-1"
+              aria-label="文字格式工具栏"
+            >
+              <span className="text-text-muted px-1.5 text-xs font-bold">
                 {textSelection ? '已选文字' : '请先选中文字'}
               </span>
-              {TEXT_STYLE_BUTTONS.map(({ style, label, title }) => (
+              {TEXT_STYLE_BUTTONS.map(({ style, label, title }) =>
                 (() => {
                   const active = isTextStyleActive(style)
-                  const swatchClass = style === 'text-blue' ? 'bg-app-blue' : style === 'text-red' ? 'bg-app-red' : style === 'text-green' ? 'bg-app-green' : style === 'highlight' ? 'bg-amber-300' : ''
+                  const swatchClass =
+                    style === 'text-blue'
+                      ? 'bg-app-blue'
+                      : style === 'text-red'
+                        ? 'bg-app-red'
+                        : style === 'text-green'
+                          ? 'bg-app-green'
+                          : style === 'highlight'
+                            ? 'bg-amber-300'
+                            : ''
                   return (
+                    // native-ok: 富文本工具栏按钮，依赖 onMouseDown 阻止默认行为以保留单元格文字选区，且为色块/样式预览
                     <button
                       key={style}
                       type="button"
@@ -590,84 +633,116 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                       disabled={!textSelection}
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={() => applyTextStyle(style)}
-                      className={`min-h-9 min-w-9 cursor-pointer rounded-md px-2 text-xs font-bold text-text-secondary ring-1 transition-colors hover:bg-app-blue-light disabled:cursor-not-allowed disabled:opacity-35 ${active ? 'bg-app-blue-light ring-2 ring-app-blue' : 'bg-surface ring-border-light'} ${style === 'italic' ? 'italic' : ''} ${style === 'underline' ? 'underline' : ''}`}
+                      className={`text-text-secondary hover:bg-app-blue-light min-h-9 min-w-9 cursor-pointer rounded-md px-2 text-xs font-bold ring-1 transition-colors disabled:cursor-not-allowed disabled:opacity-35 ${active ? 'bg-app-blue-light ring-app-blue ring-2' : 'bg-surface ring-border-light'} ${style === 'italic' ? 'italic' : ''} ${style === 'underline' ? 'underline' : ''}`}
                     >
-                      {swatchClass ? <span aria-hidden="true" className={`mx-auto block h-4 w-4 rounded ${swatchClass} ring-1 ring-black/10`} /> : label}
+                      {swatchClass ? (
+                        <span
+                          aria-hidden="true"
+                          className={`mx-auto block h-4 w-4 rounded ${swatchClass} ring-1 ring-black/10`}
+                        />
+                      ) : (
+                        label
+                      )}
                     </button>
                   )
-                })()
-              ))}
-              <button
+                })(),
+              )}
+              <Button
                 type="button"
                 disabled={!textSelection}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={clearTextStyles}
-                className="min-h-9 cursor-pointer rounded-md px-2.5 text-xs font-bold text-app-red ring-1 ring-app-red/20 transition-colors hover:bg-app-red-light/40 disabled:cursor-not-allowed disabled:opacity-35"
+                variant="outline"
+                color="red"
+                size="1"
               >
                 清除格式
-              </button>
+              </Button>
             </div>
 
             <div className="overflow-x-auto pb-2">
-              <div className="mb-3 flex min-w-max items-center gap-1.5 rounded-lg bg-surface-dim p-1.5 ring-1 ring-border-light">
-                      <button
-                        type="button"
-                        onClick={insertRowBelow}
-                        disabled={!selectedCell}
-                  className="min-h-8 rounded-md bg-surface px-2.5 text-xs font-bold whitespace-nowrap text-text-secondary disabled:opacity-35"
-                      >
+              <div className="bg-surface-dim ring-border-light mb-3 flex min-w-max items-center gap-1.5 rounded-lg p-1.5 ring-1">
+                <Button
+                  type="button"
+                  onClick={insertRowBelow}
+                  disabled={!selectedCell}
+                  variant="outline"
+                  color="gray"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
                   ＋ 行
-                      </button>
-                      <button
-                        type="button"
-                        onClick={insertColumnRight}
-                        disabled={!selectedCell}
-                  className="min-h-8 rounded-md bg-surface px-2.5 text-xs font-bold whitespace-nowrap text-text-secondary disabled:opacity-35"
-                      >
+                </Button>
+                <Button
+                  type="button"
+                  onClick={insertColumnRight}
+                  disabled={!selectedCell}
+                  variant="outline"
+                  color="gray"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
                   ＋ 列
-                      </button>
-                <span className="mx-0.5 h-5 w-px bg-border-light" />
-                      <button
-                        type="button"
-                        onClick={() => mergeSelected('right')}
-                        disabled={!bodyCellSelected}
-                  className="min-h-8 rounded-md bg-app-blue-light/50 px-2.5 text-xs font-bold whitespace-nowrap text-app-blue disabled:opacity-35"
-                      >
+                </Button>
+                <span className="bg-border-light mx-0.5 h-5 w-px" />
+                <Button
+                  type="button"
+                  onClick={() => mergeSelected('right')}
+                  disabled={!bodyCellSelected}
+                  variant="soft"
+                  color="blue"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
                   合并 →
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => mergeSelected('down')}
-                        disabled={!bodyCellSelected}
-                  className="min-h-8 rounded-md bg-app-blue-light/50 px-2.5 text-xs font-bold whitespace-nowrap text-app-blue disabled:opacity-35"
-                      >
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => mergeSelected('down')}
+                  disabled={!bodyCellSelected}
+                  variant="soft"
+                  color="blue"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
                   合并 ↓
-                      </button>
-                      <button
-                        type="button"
-                        onClick={unmergeSelected}
-                        disabled={!bodyCellSelected || (!selectedMerge && draft.merges !== undefined)}
-                  className="min-h-8 rounded-md bg-surface px-2.5 text-xs font-bold whitespace-nowrap text-text-secondary disabled:opacity-35"
-                      >
-                        取消合并
-                      </button>
-                <span className="mx-0.5 h-5 w-px bg-border-light" />
-                      <button
-                        type="button"
-                        onClick={() => selectedCell && selectedCell.row >= 0 && removeRow(selectedCell.row)}
-                        disabled={!bodyCellSelected}
-                  className="min-h-8 rounded-md bg-app-red-light/35 px-2.5 text-xs font-bold whitespace-nowrap text-app-red disabled:opacity-35"
-                      >
+                </Button>
+                <Button
+                  type="button"
+                  onClick={unmergeSelected}
+                  disabled={!bodyCellSelected || (!selectedMerge && draft.merges !== undefined)}
+                  variant="outline"
+                  color="gray"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
+                  取消合并
+                </Button>
+                <span className="bg-border-light mx-0.5 h-5 w-px" />
+                <Button
+                  type="button"
+                  onClick={() =>
+                    selectedCell && selectedCell.row >= 0 && removeRow(selectedCell.row)
+                  }
+                  disabled={!bodyCellSelected}
+                  variant="soft"
+                  color="red"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
                   删行
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => selectedCell && removeColumn(selectedCell.column)}
-                        disabled={!selectedCell || columnCount <= 1}
-                  className="min-h-8 rounded-md bg-app-red-light/35 px-2.5 text-xs font-bold whitespace-nowrap text-app-red disabled:opacity-35"
-                      >
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => selectedCell && removeColumn(selectedCell.column)}
+                  disabled={!selectedCell || columnCount <= 1}
+                  variant="soft"
+                  color="red"
+                  size="1"
+                  className="whitespace-nowrap"
+                >
                   删列
-                      </button>
+                </Button>
               </div>
               <div
                 className="min-w-max space-y-2"
@@ -675,9 +750,12 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                 onPaste={handleGridPaste}
               >
                 <div className="flex items-stretch gap-2">
-                  <span className="flex w-12 shrink-0 items-center justify-center text-xs font-bold text-text-muted">表头</span>
+                  <span className="text-text-muted flex w-12 shrink-0 items-center justify-center text-xs font-bold">
+                    表头
+                  </span>
                   {draft.headers.map((header, columnIndex) => (
                     <div key={columnIndex} className="w-36 min-w-0 shrink-0">
+                      {/* native-ok: 类电子表格的自定义单元格，需要选区高亮 ring 与 onSelect 选区记录 */}
                       <textarea
                         value={header}
                         onFocus={() => setSelectedCell({ row: -1, column: columnIndex })}
@@ -687,12 +765,12 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                         onChange={(event) => setHeader(columnIndex, event.target.value)}
                         onSelect={(event) => rememberTextSelection(`header:${columnIndex}`, event)}
                         aria-label={`第 ${columnIndex + 1} 列表头`}
-                        className={`block min-h-16 w-full max-w-full resize-y rounded-lg bg-app-blue-light/50 p-2 text-sm font-bold text-text-primary outline-none ring-1 focus:ring-2 focus:ring-app-blue ${
+                        className={`bg-app-blue-light/50 text-text-primary focus:ring-app-blue block min-h-16 w-full max-w-full resize-y rounded-lg p-2 text-sm font-bold ring-1 outline-none focus:ring-2 ${
                           selectedCell?.row === -1 && selectedCell.column === columnIndex
-                            ? 'ring-2 ring-app-blue'
+                            ? 'ring-app-blue ring-2'
                             : isInSelection(-1, columnIndex)
-                              ? 'ring-2 ring-app-blue/40'
-                            : 'ring-border-light'
+                              ? 'ring-app-blue/40 ring-2'
+                              : 'ring-border-light'
                         }`}
                       />
                     </div>
@@ -701,7 +779,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
 
                 {draft.rows.map((row, rowIndex) => (
                   <div key={rowIndex} className="flex items-stretch gap-2">
-                    <span className="flex w-12 shrink-0 items-center justify-center text-xs font-bold text-text-muted">
+                    <span className="text-text-muted flex w-12 shrink-0 items-center justify-center text-xs font-bold">
                       第 {rowIndex + 1} 行
                     </span>
                     {row.map((cell, columnIndex) => {
@@ -714,6 +792,7 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                       )
                       return (
                         <div key={columnIndex} className="relative w-36 min-w-0 shrink-0">
+                          {/* native-ok: 类电子表格的自定义单元格，需要选区高亮 ring 与 onSelect 选区记录 */}
                           <textarea
                             value={cell}
                             onFocus={() => setSelectedCell({ row: rowIndex, column: columnIndex })}
@@ -721,18 +800,20 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                               selectCell({ row: rowIndex, column: columnIndex }, event.shiftKey)
                             }
                             onChange={(event) => setCell(rowIndex, columnIndex, event.target.value)}
-                            onSelect={(event) => rememberTextSelection(`body:${rowIndex}:${columnIndex}`, event)}
+                            onSelect={(event) =>
+                              rememberTextSelection(`body:${rowIndex}:${columnIndex}`, event)
+                            }
                             aria-label={`第 ${rowIndex + 1} 行第 ${columnIndex + 1} 列`}
-                            className={`block min-h-16 w-full max-w-full resize-y rounded-lg bg-surface p-2 text-sm text-text-primary outline-none ring-1 focus:ring-2 focus:ring-app-blue ${
+                            className={`bg-surface text-text-primary focus:ring-app-blue block min-h-16 w-full max-w-full resize-y rounded-lg p-2 text-sm ring-1 outline-none focus:ring-2 ${
                               selectedCell?.row === rowIndex && selectedCell.column === columnIndex
-                                ? 'ring-2 ring-app-blue'
+                                ? 'ring-app-blue ring-2'
                                 : isInSelection(rowIndex, columnIndex)
-                                  ? 'bg-app-blue-light/35 ring-2 ring-app-blue/40'
-                                : 'ring-border-light'
+                                  ? 'bg-app-blue-light/35 ring-app-blue/40 ring-2'
+                                  : 'ring-border-light'
                             }`}
                           />
                           {inMerge && (
-                            <span className="pointer-events-none absolute right-1 bottom-1 rounded bg-app-purple-light px-1.5 py-0.5 text-[9px] font-bold text-app-purple-dark">
+                            <span className="bg-app-purple-light text-app-purple-dark pointer-events-none absolute right-1 bottom-1 rounded px-1.5 py-0.5 text-[9px] font-bold">
                               合并区
                             </span>
                           )}
@@ -743,14 +824,13 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
                 ))}
               </div>
             </div>
-
           </div>
 
-          <aside className="min-w-0 bg-surface-dim/45 p-4 sm:p-5">
+          <aside className="bg-surface-dim/45 min-w-0 p-4 sm:p-5">
             <div className="sticky top-0">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-black text-text-primary">实时效果</h3>
-                <span className="rounded-full bg-app-green-light px-2.5 py-1 text-[11px] font-bold text-app-green-dark">
+                <h3 className="text-text-primary text-sm font-black">实时效果</h3>
+                <span className="bg-app-green-light text-app-green-dark rounded-full px-2.5 py-1 text-[11px] font-bold">
                   自动更新
                 </span>
               </div>
@@ -759,24 +839,32 @@ export function GrammarTableEditorModal({ table, onSave, onClose }: GrammarTable
           </aside>
         </div>
 
-        <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-border-light px-4 py-3 sm:px-5">
-          {error && <p role="alert" className="mr-auto text-sm font-bold text-app-red">{error}</p>}
-          <button
+        <footer className="border-border-light flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3 sm:px-5">
+          {error && (
+            <p role="alert" className="text-app-red mr-auto text-sm font-bold">
+              {error}
+            </p>
+          )}
+          <Button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="min-h-11 rounded-full px-5 text-sm font-bold text-text-secondary ring-1 ring-border-light disabled:opacity-40"
+            variant="outline"
+            color="gray"
+            size="3"
           >
             取消
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => void handleSave()}
             disabled={saving}
-            className="min-h-11 rounded-full bg-app-blue px-6 text-sm font-bold text-white shadow-md disabled:opacity-50"
+            variant="solid"
+            color="blue"
+            size="3"
           >
             {saving ? '保存中…' : '保存并应用'}
-          </button>
+          </Button>
         </footer>
       </div>
     </div>

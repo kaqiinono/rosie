@@ -1,11 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { PageBreadcrumb } from '@rosie/ui'
+import { PageBreadcrumb, StickerCard } from '@rosie/ui'
 import { supabase } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import { SAMPLE_WORDS, SAMPLE_WORDS_4B, SAMPLE_WORDS_5A, SYLLABLE_MAP, KW_MAP, CHINESE_DEF_MAP } from '@rosie/english'
+import {
+  SAMPLE_WORDS,
+  SAMPLE_WORDS_4B,
+  SAMPLE_WORDS_5A,
+  SYLLABLE_MAP,
+  KW_MAP,
+  CHINESE_DEF_MAP,
+} from '@rosie/english'
 import type { WordEntry } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
 
 /** Offline backup files used for file↔DB audit (DB remains canonical at runtime). */
 function fileBackupWords(): WordEntry[] {
@@ -73,7 +81,9 @@ export default function WordAuditPage() {
       while (true) {
         const { data, error: qErr } = await supabase
           .from('word_entries')
-          .select('stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type')
+          .select(
+            'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type',
+          )
           .range(from, from + pageSize - 1)
         if (qErr) throw qErr
         if (!data || data.length === 0) break
@@ -117,8 +127,10 @@ export default function WordAuditPage() {
         if (w.ipa && !row.ipa) gaps.push('ipa')
         if (w.example && !row.example) gaps.push('example')
         if (w.explanation && !row.explanation) gaps.push('explanation')
-        if (w.syllables && w.syllables.length > 0 && (!row.syllables || row.syllables.length === 0)) gaps.push('syllables')
-        if (w.keywords && w.keywords.length > 0 && (!row.keywords || row.keywords.length === 0)) gaps.push('keywords')
+        if (w.syllables && w.syllables.length > 0 && (!row.syllables || row.syllables.length === 0))
+          gaps.push('syllables')
+        if (w.keywords && w.keywords.length > 0 && (!row.keywords || row.keywords.length === 0))
+          gaps.push('keywords')
         if (w.phonics && !row.phonics) gaps.push('phonics')
         if (w.vocabType && !row.vocab_type) gaps.push('vocab_type')
         if (gaps.length > 0) {
@@ -162,7 +174,9 @@ export default function WordAuditPage() {
 
   const downloadMissing = () => {
     if (!report) return
-    const blob = new Blob([JSON.stringify(report.missingInDb, null, 2)], { type: 'application/json' })
+    const blob = new Blob([JSON.stringify(report.missingInDb, null, 2)], {
+      type: 'application/json',
+    })
     triggerDownload(blob, 'missing-in-db.json')
   }
 
@@ -179,37 +193,33 @@ export default function WordAuditPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="bg-kid-paper flex min-h-screen items-center justify-center">
         <p className="text-slate-600">请先登录后访问</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 text-slate-800">
+    <div className="bg-kid-paper min-h-screen p-6 text-slate-800">
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">📊 单词数据对账</h1>
           <PageBreadcrumb variant="inline" />
         </div>
 
-        <div className="rounded-lg bg-white p-4 text-sm text-slate-600 shadow-sm">
-          对比 <code className="rounded bg-slate-100 px-1.5 py-0.5">src/utils/english-data.ts</code>（SAMPLE_WORDS 合并 CHINESE_DEF_MAP / SYLLABLE_MAP / KW_MAP）
-          与 Supabase <code className="rounded bg-slate-100 px-1.5 py-0.5">word_entries</code> 表，找出 DB 缺失或字段不全的数据。
-        </div>
+        <StickerCard elevation="sm" radius="md" className="text-sm text-slate-600">
+          对比 <code className="rounded bg-slate-100 px-1.5 py-0.5">src/utils/english-data.ts</code>
+          （SAMPLE_WORDS 合并 CHINESE_DEF_MAP / SYLLABLE_MAP / KW_MAP） 与 Supabase{' '}
+          <code className="rounded bg-slate-100 px-1.5 py-0.5">word_entries</code> 表，找出 DB
+          缺失或字段不全的数据。
+        </StickerCard>
 
-        <button
-          onClick={run}
-          disabled={loading}
-          className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
-        >
+        <Button onClick={run} disabled={loading} variant="solid" color="indigo" size="2">
           {loading ? '对账中...' : '🔍 开始对账'}
-        </button>
+        </Button>
 
         {error && (
-          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">
-            出错：{error}
-          </div>
+          <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700">出错：{error}</div>
         )}
 
         {report && (
@@ -225,7 +235,7 @@ export default function WordAuditPage() {
             <Section title="按 stage 分布">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200">
+                  <tr className="border-kid-line border-b">
                     <th className="p-2 text-left">Stage</th>
                     <th className="p-2 text-right">文件</th>
                     <th className="p-2 text-right">DB</th>
@@ -233,21 +243,27 @@ export default function WordAuditPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from(new Set([...Object.keys(report.fileByStage), ...Object.keys(report.dbByStage)])).sort().map((s) => {
-                    const f = report.fileByStage[s] ?? 0
-                    const d = report.dbByStage[s] ?? 0
-                    const diff = d - f
-                    return (
-                      <tr key={s} className={diff !== 0 ? 'bg-yellow-50' : ''}>
-                        <td className="p-2 font-mono">{s}</td>
-                        <td className="p-2 text-right">{f}</td>
-                        <td className="p-2 text-right">{d}</td>
-                        <td className={`p-2 text-right font-mono ${diff < 0 ? 'text-red-600' : diff > 0 ? 'text-amber-600' : 'text-green-600'}`}>
-                          {diff > 0 ? `+${diff}` : diff}
-                        </td>
-                      </tr>
-                    )
-                  })}
+                  {Array.from(
+                    new Set([...Object.keys(report.fileByStage), ...Object.keys(report.dbByStage)]),
+                  )
+                    .sort()
+                    .map((s) => {
+                      const f = report.fileByStage[s] ?? 0
+                      const d = report.dbByStage[s] ?? 0
+                      const diff = d - f
+                      return (
+                        <tr key={s} className={diff !== 0 ? 'bg-yellow-50' : ''}>
+                          <td className="p-2 font-mono">{s}</td>
+                          <td className="p-2 text-right">{f}</td>
+                          <td className="p-2 text-right">{d}</td>
+                          <td
+                            className={`p-2 text-right font-mono ${diff < 0 ? 'text-red-600' : diff > 0 ? 'text-amber-600' : 'text-green-600'}`}
+                          >
+                            {diff > 0 ? `+${diff}` : diff}
+                          </td>
+                        </tr>
+                      )
+                    })}
                 </tbody>
               </table>
             </Section>
@@ -257,9 +273,15 @@ export default function WordAuditPage() {
                 <p className="text-green-600">✅ 无</p>
               ) : (
                 <>
-                  <button onClick={downloadMissing} className="mb-3 rounded bg-slate-200 px-3 py-1 text-xs hover:bg-slate-300">
+                  <Button
+                    onClick={downloadMissing}
+                    variant="soft"
+                    color="gray"
+                    size="1"
+                    className="mb-3"
+                  >
                     下载完整列表 JSON
-                  </button>
+                  </Button>
                   <ul className="max-h-64 space-y-1 overflow-auto text-sm">
                     {report.missingInDb.slice(0, 50).map((w) => (
                       <li key={keyOf(w)} className="font-mono text-xs">
@@ -267,14 +289,18 @@ export default function WordAuditPage() {
                       </li>
                     ))}
                     {report.missingInDb.length > 50 && (
-                      <li className="text-slate-500">... 共 {report.missingInDb.length} 条，仅显示前 50</li>
+                      <li className="text-slate-500">
+                        ... 共 {report.missingInDb.length} 条，仅显示前 50
+                      </li>
                     )}
                   </ul>
                 </>
               )}
             </Section>
 
-            <Section title={`DB 多余行（DB 有 → 文件没有；可能是 Excel 导入）：${report.extraInDb.length}`}>
+            <Section
+              title={`DB 多余行（DB 有 → 文件没有；可能是 Excel 导入）：${report.extraInDb.length}`}
+            >
               {report.extraInDb.length === 0 ? (
                 <p className="text-green-600">✅ 无</p>
               ) : (
@@ -288,7 +314,9 @@ export default function WordAuditPage() {
                     </li>
                   ))}
                   {report.extraInDb.length > 50 && (
-                    <li className="text-slate-500">... 共 {report.extraInDb.length} 条，仅显示前 50</li>
+                    <li className="text-slate-500">
+                      ... 共 {report.extraInDb.length} 条，仅显示前 50
+                    </li>
                   )}
                 </ul>
               )}
@@ -300,11 +328,19 @@ export default function WordAuditPage() {
               ) : (
                 <>
                   <FieldGapSummary gaps={report.fieldGaps} />
-                  <button onClick={downloadGaps} className="mb-3 mt-3 rounded bg-slate-200 px-3 py-1 text-xs hover:bg-slate-300">
+                  <Button
+                    onClick={downloadGaps}
+                    variant="soft"
+                    color="gray"
+                    size="1"
+                    className="mt-3 mb-3"
+                  >
                     下载完整列表 JSON（含文件中的正确值）
-                  </button>
+                  </Button>
                   <details className="mt-2">
-                    <summary className="cursor-pointer text-sm text-slate-500">展开示例（前 100 条）</summary>
+                    <summary className="cursor-pointer text-sm text-slate-500">
+                      展开示例（前 100 条）
+                    </summary>
                     <ul className="mt-2 max-h-64 space-y-1 overflow-auto text-sm">
                       {report.fieldGaps.slice(0, 100).map((g) => (
                         <li key={g.key} className="font-mono text-xs">
@@ -326,16 +362,16 @@ export default function WordAuditPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm">
+    <StickerCard elevation="sm" radius="md">
       <h2 className="mb-3 text-lg font-semibold">{title}</h2>
       {children}
-    </div>
+    </StickerCard>
   )
 }
 
 function KV({ k, v }: { k: string; v: number }) {
   return (
-    <div className="flex justify-between border-b border-slate-100 py-1.5">
+    <div className="border-kid-line flex justify-between border-b py-1.5">
       <span className="text-slate-600">{k}</span>
       <span className="font-mono">{v.toLocaleString()}</span>
     </div>
@@ -352,7 +388,7 @@ function FieldGapSummary({ gaps }: { gaps: FieldGap[] }) {
       {Object.entries(byField)
         .sort((a, b) => b[1] - a[1])
         .map(([f, n]) => (
-          <li key={f} className="flex justify-between border-b border-slate-100 py-1">
+          <li key={f} className="border-kid-line flex justify-between border-b py-1">
             <span className="font-mono text-amber-700">{f}</span>
             <span className="font-mono">{n} 条</span>
           </li>

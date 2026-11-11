@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { IconButton } from '@rosie/ui/themes'
 
 interface ZoomableWordImageProps {
   src: string
@@ -10,7 +11,12 @@ interface ZoomableWordImageProps {
   imageClassName: string
 }
 
-export default function ZoomableWordImage({ src, word, containerClassName, imageClassName }: ZoomableWordImageProps) {
+export default function ZoomableWordImage({
+  src,
+  word,
+  containerClassName,
+  imageClassName,
+}: ZoomableWordImageProps) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -31,6 +37,7 @@ export default function ZoomableWordImage({ src, word, containerClassName, image
 
   return (
     <>
+      {/* native-ok: 单词配图缩略图容器，外观（尺寸/圆角/背景）由调用方 containerClassName 决定，内容是 <img> */}
       <button
         type="button"
         onClick={(event) => {
@@ -44,38 +51,42 @@ export default function ZoomableWordImage({ src, word, containerClassName, image
         <img src={src} alt={`${word} 配图`} className={imageClassName} />
       </button>
 
-      {open && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${word} 配图预览`}
-          onClick={(event) => {
-            event.stopPropagation()
-            setOpen(false)
-          }}
-          className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={src}
-            alt={word}
-            onClick={(event) => event.stopPropagation()}
-            className="max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain shadow-2xl"
-          />
-          <button
-            type="button"
+      {open &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${word} 配图预览`}
             onClick={(event) => {
               event.stopPropagation()
               setOpen(false)
             }}
-            className="absolute top-4 right-4 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/95 text-xl font-bold text-gray-700 shadow-lg transition hover:bg-white"
-            aria-label="关闭"
+            className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4"
           >
-            ×
-          </button>
-        </div>,
-        document.body,
-      )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={word}
+              onClick={(event) => event.stopPropagation()}
+              className="shadow-sticker-lg max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain"
+            />
+            <IconButton
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation()
+                setOpen(false)
+              }}
+              aria-label="关闭"
+              variant="outline"
+              color="gray"
+              size="3"
+              className="absolute top-4 right-4 w-10"
+            >
+              ×
+            </IconButton>
+          </div>,
+          document.body,
+        )}
     </>
   )
 }

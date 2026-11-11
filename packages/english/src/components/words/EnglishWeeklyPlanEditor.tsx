@@ -3,7 +3,16 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
-import { buildAutoAssignedPlan, buildDailyFullWordPlan, classifyPlanWords, getOrderedLessons, getAllStages, compareStages, wordKey, lessonChipTag } from '../../utils/english-helpers'
+import {
+  buildAutoAssignedPlan,
+  buildDailyFullWordPlan,
+  classifyPlanWords,
+  getOrderedLessons,
+  getAllStages,
+  compareStages,
+  wordKey,
+  lessonChipTag,
+} from '../../utils/english-helpers'
 import { CONSOLIDATE_PASS_STAGE } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -41,6 +50,7 @@ import {
   toggleUnitSelection,
   useVocabRangeFilter,
 } from './vocab-range-filter/useVocabRangeFilter'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface Props {
   vocab: WordEntry[]
@@ -184,11 +194,12 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // 必记 lessons in *selection order* (earlier-selected = higher priority); 预习
   // lessons keep unit/lesson order so preview behavior stays unchanged.
   const consolidateLessons = useMemo(
-    () => displayLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'consolidate'),
+    () =>
+      displayLessons.filter((l) => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'consolidate'),
     [displayLessons, lessonKinds],
   )
   const previewLessons = useMemo(
-    () => displayLessons.filter(l => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview'),
+    () => displayLessons.filter((l) => (lessonKinds[lessonKey(l)] ?? 'consolidate') === 'preview'),
     [displayLessons, lessonKinds],
   )
 
@@ -196,8 +207,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // ascending by mastery stage so the least-familiar words land in the earliest days
   // — initial assignment only; edit path reuses saved layout.
   const consolidateGroups = useMemo(() => {
-    return consolidateLessons.map(l => {
-      const group = vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson)
+    return consolidateLessons.map((l) => {
+      const group = vocab.filter((w) => w.unit === l.unit && w.lesson === l.lesson)
       return group
         .map((w, i) => ({ w, i, stage: masteryMap[wordKey(w)]?.stage ?? 0 }))
         .sort((a, b) => a.stage - b.stage || a.i - b.i)
@@ -209,8 +220,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // ascending by mastery stage so the least-familiar words land in the earliest days
   // — mirrors the per-lesson 必记 model so preview is also allocated per-lesson.
   const previewGroups = useMemo(() => {
-    return previewLessons.map(l => {
-      const group = vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson)
+    return previewLessons.map((l) => {
+      const group = vocab.filter((w) => w.unit === l.unit && w.lesson === l.lesson)
       return group
         .map((w, i) => ({ w, i, stage: masteryMap[wordKey(w)]?.stage ?? 0 }))
         .sort((a, b) => a.stage - b.stage || a.i - b.i)
@@ -222,10 +233,10 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // lesson — 必记 and 预习 alike — is its own group with its own per-lesson daily quota.
   const planGroups = useMemo(() => {
     const g: WordEntry[][] = []
-    consolidateGroups.forEach(grp => {
+    consolidateGroups.forEach((grp) => {
       if (grp.length > 0) g.push(grp)
     })
-    previewGroups.forEach(grp => {
+    previewGroups.forEach((grp) => {
       if (grp.length > 0) g.push(grp)
     })
     return g
@@ -280,58 +291,60 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     return map
   }, [vocab])
 
-
-
-  const openEditPlan = useCallback((plan: WeeklyPlan) => {
-    if (plan.weekCompletion) return
-    const parsed = parsePlanLessons(plan)
-    const lkinds = hydrateLessonKindOverridesFromPlan(plan, parsed, vocab)
-    const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
-    const planWordKeys = parsed.flatMap(l =>
-      vocab.filter(w => w.unit === l.unit && w.lesson === l.lesson).map(w => wordKey(w)),
-    )
-    const inferredBatch = inferBatchModeFromPlan(plan, planWordKeys)
-    const baseline = buildArrangeBaselineKey(plan.weekStart, parsed, lkinds, quotas, inferredBatch)
-    const planStages = [
-      ...new Set(
-        parsed.map((l) => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean),
-      ),
-    ].sort(compareStages)
-    // Plans are single-textbook; if an older plan spanned stages, keep the newest.
-    const stage = planStages[0] ?? ''
-    const stageLessons = stage
-      ? parsed.filter((l) => (lessonStageMap.get(lessonKey(l)) ?? '') === stage)
-      : parsed
-    setPlanStartDate(plan.weekStart)
-    setPlanEndDateStr(planEndDate(plan))
-    setEditingPlanStart(plan.weekStart)
-    setBatchMode(inferredBatch)
-    setSelectedStage(stage)
-    setPendingLessons(stageLessons)
-    setLessonQuotas(quotas)
-    setLessonKindOverrides(lkinds)
-    const stageLessonKeys = new Set(stageLessons.map(lessonKey))
-    setFocusLessonOverride(
-      plan.focusLessonKey && stageLessonKeys.has(plan.focusLessonKey)
-        ? plan.focusLessonKey
-        : null,
-    )
-    setEditArrangeBaselineKey(baseline)
-    setEditingPlan(plan)
-    setIsEditingPlan(true)
-    setSelectedUnits(new Set(stageLessons.map((lesson) => lesson.unit)))
-    setStep('params')
-  }, [vocab, lessonStageMap])
+  const openEditPlan = useCallback(
+    (plan: WeeklyPlan) => {
+      if (plan.weekCompletion) return
+      const parsed = parsePlanLessons(plan)
+      const lkinds = hydrateLessonKindOverridesFromPlan(plan, parsed, vocab)
+      const quotas = inferLessonQuotasFromAssignments(plan, parsed, vocab)
+      const planWordKeys = parsed.flatMap((l) =>
+        vocab.filter((w) => w.unit === l.unit && w.lesson === l.lesson).map((w) => wordKey(w)),
+      )
+      const inferredBatch = inferBatchModeFromPlan(plan, planWordKeys)
+      const baseline = buildArrangeBaselineKey(
+        plan.weekStart,
+        parsed,
+        lkinds,
+        quotas,
+        inferredBatch,
+      )
+      const planStages = [
+        ...new Set(parsed.map((l) => lessonStageMap.get(lessonKey(l)) ?? '').filter(Boolean)),
+      ].sort(compareStages)
+      // Plans are single-textbook; if an older plan spanned stages, keep the newest.
+      const stage = planStages[0] ?? ''
+      const stageLessons = stage
+        ? parsed.filter((l) => (lessonStageMap.get(lessonKey(l)) ?? '') === stage)
+        : parsed
+      setPlanStartDate(plan.weekStart)
+      setPlanEndDateStr(planEndDate(plan))
+      setEditingPlanStart(plan.weekStart)
+      setBatchMode(inferredBatch)
+      setSelectedStage(stage)
+      setPendingLessons(stageLessons)
+      setLessonQuotas(quotas)
+      setLessonKindOverrides(lkinds)
+      const stageLessonKeys = new Set(stageLessons.map(lessonKey))
+      setFocusLessonOverride(
+        plan.focusLessonKey && stageLessonKeys.has(plan.focusLessonKey)
+          ? plan.focusLessonKey
+          : null,
+      )
+      setEditArrangeBaselineKey(baseline)
+      setEditingPlan(plan)
+      setIsEditingPlan(true)
+      setSelectedUnits(new Set(stageLessons.map((lesson) => lesson.unit)))
+      setStep('params')
+    },
+    [vocab, lessonStageMap],
+  )
 
   useEffect(() => {
     if (isLoading || editPlanId) return
     const latest = allStages[0] ?? ''
     const cached = loadCachedLessons().filter((c) =>
       orderedLessonsFull.some(
-        (o) =>
-          o.unit === c.unit &&
-          o.lesson === c.lesson &&
-          (!latest || o.stage === latest),
+        (o) => o.unit === c.unit && o.lesson === c.lesson && (!latest || o.stage === latest),
       ),
     )
     // Reset create-form state when vocab/stages become ready (external load).
@@ -354,7 +367,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
   useEffect(() => {
     if (!editPlanId || isLoading) return
-    const plan = allPlans.find(p => p.id === editPlanId)
+    const plan = allPlans.find((p) => p.id === editPlanId)
     // eslint-disable-next-line react-hooks/set-state-in-effect -- open editor once plan id + plans are ready
     if (plan) openEditPlan(plan)
   }, [editPlanId, isLoading, allPlans, openEditPlan])
@@ -363,7 +376,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     (days: WeeklyPlanDay[], unassigned: string[]) => {
       if (isEditingPlan) return []
       const prevPlan = allPlans
-        .filter(p => planEndDate(p) < planStartDate)
+        .filter((p) => planEndDate(p) < planStartDate)
         .sort((a, b) => planEndDate(b).localeCompare(planEndDate(a)))[0]
       if (!prevPlan) return []
       const prevKindMap = classifyPlanWords(prevPlan, vocab)
@@ -374,7 +387,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
           return !m || (m.stage ?? 0) < CONSOLIDATE_PASS_STAGE
         })
         .map(([key]) => key)
-        .filter(k => !days.some(d => d.newWordKeys.includes(k)) && !unassigned.includes(k))
+        .filter((k) => !days.some((d) => d.newWordKeys.includes(k)) && !unassigned.includes(k))
     },
     [isEditingPlan, allPlans, planStartDate, vocab, masteryMap],
   )
@@ -474,12 +487,18 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   const handleGoToArrange = useCallback(() => {
     if (!activeLesson) return
     if (planEndDateStr < planStartDate || rangeHasOverlap) return
-    const snap = buildArrangeBaselineKey(planStartDate, activeLessons, lessonKinds, lessonQuotas, batchMode)
+    const snap = buildArrangeBaselineKey(
+      planStartDate,
+      activeLessons,
+      lessonKinds,
+      lessonQuotas,
+      batchMode,
+    )
     if (isEditingPlan && editingPlan && snap === editArrangeBaselineKey) {
-      setDraftDays(editingPlan.days.map(d => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
-      const wordSet = new Set(lessonWords.map(w => wordKey(w)))
-      const assigned = new Set(editingPlan.days.flatMap(d => d.newWordKeys))
-      const un = [...wordSet].filter(k => !assigned.has(k))
+      setDraftDays(editingPlan.days.map((d) => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
+      const wordSet = new Set(lessonWords.map((w) => wordKey(w)))
+      const assigned = new Set(editingPlan.days.flatMap((d) => d.newWordKeys))
+      const un = [...wordSet].filter((k) => !assigned.has(k))
       setUnassignedKeys(un)
       setSelectedKeys(new Set())
       setStep('arrange')
@@ -525,16 +544,16 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   ])
 
   const handleMoveWords = useCallback((keys: Set<string>, targetDayIdx: number) => {
-    setDraftDays(prev => {
-      const next = prev.map(d => ({ ...d, newWordKeys: [...d.newWordKeys] }))
+    setDraftDays((prev) => {
+      const next = prev.map((d) => ({ ...d, newWordKeys: [...d.newWordKeys] }))
       for (const day of next) {
-        day.newWordKeys = day.newWordKeys.filter(k => !keys.has(k))
+        day.newWordKeys = day.newWordKeys.filter((k) => !keys.has(k))
       }
       if (targetDayIdx >= 0) next[targetDayIdx].newWordKeys.push(...keys)
       return next
     })
-    setUnassignedKeys(prev => {
-      const withoutMoved = prev.filter(k => !keys.has(k))
+    setUnassignedKeys((prev) => {
+      const withoutMoved = prev.filter((k) => !keys.has(k))
       return targetDayIdx === -1 ? [...withoutMoved, ...keys] : withoutMoved
     })
     setSelectedKeys(new Set())
@@ -555,8 +574,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   // ── PARAMS STEP ────────────────────────────────────────────────────────
   if (step === 'params') {
     const sourceCount =
-      consolidateGroups.filter(g => g.length > 0).length +
-      previewGroups.filter(g => g.length > 0).length
+      consolidateGroups.filter((g) => g.length > 0).length +
+      previewGroups.filter((g) => g.length > 0).length
 
     return (
       <>
@@ -579,7 +598,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
         <div className="mx-auto max-w-[560px] px-4 py-6">
           <div className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-7">
-            <div className="font-fredoka mb-4 bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
+            <div className="font-fredoka mb-4 text-2xl text-[#f59e0b]">
               {isEditingPlan ? '修改多日计划' : '创建多日计划'}
             </div>
 
@@ -642,50 +661,49 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                               {isFocus && <span title="本周重点">⭐</span>}
                             </span>
                             <div className="flex items-center gap-1.5">
-                              <button
+                              <IconButton
                                 type="button"
                                 disabled={kind !== 'consolidate'}
-                                title={kind !== 'consolidate' ? '只有必记课才能设为本周重点' : '设为本周重点'}
+                                title={
+                                  kind !== 'consolidate'
+                                    ? '只有必记课才能设为本周重点'
+                                    : '设为本周重点'
+                                }
                                 onClick={() =>
                                   setFocusLessonOverride((prev) => (prev === lk ? null : lk))
                                 }
-                                className={`flex h-[22px] w-[22px] items-center justify-center rounded-full border-[1.5px] text-[.8rem] transition-all ${
-                                  isFocus
-                                    ? 'border-[#f59e0b] bg-gradient-to-br from-[#fbbf24] to-[#f59e0b] text-white shadow-[0_2px_8px_rgba(245,158,11,.4)]'
-                                    : kind === 'consolidate'
-                                      ? 'cursor-pointer border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[#f59e0b] hover:text-[#f59e0b]'
-                                      : 'cursor-not-allowed border-[var(--wm-border)]/40 bg-transparent text-[var(--wm-text-dim)]/40'
-                                }`}
+                                aria-pressed={isFocus}
+                                aria-label="本周重点"
+                                variant={isFocus ? 'solid' : 'outline'}
+                                color={isFocus ? 'amber' : 'gray'}
+                                size="1"
+                                radius="full"
                               >
                                 ⭐
-                              </button>
-                              <button
+                              </IconButton>
+                              <Button
                                 type="button"
                                 onClick={() => {
                                   setLessonKindOverrides((p) => ({ ...p, [lk]: 'consolidate' }))
                                 }}
-                                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
-                                  kind === 'consolidate'
-                                    ? 'border-[rgba(96,165,250,.5)] bg-[rgba(96,165,250,.12)] text-[#93c5fd]'
-                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(96,165,250,.35)]'
-                                }`}
+                                variant={kind === 'consolidate' ? 'soft' : 'outline'}
+                                color={kind === 'consolidate' ? 'blue' : 'gray'}
+                                size="1"
                               >
                                 必记
-                              </button>
-                              <button
+                              </Button>
+                              <Button
                                 type="button"
                                 onClick={() => {
                                   setLessonKindOverrides((p) => ({ ...p, [lk]: 'preview' }))
                                   if (focusLessonOverride === lk) setFocusLessonOverride(null)
                                 }}
-                                className={`cursor-pointer rounded-full border-[1.5px] px-2.5 py-0.5 text-[.65rem] font-extrabold transition-all ${
-                                  kind === 'preview'
-                                    ? 'border-[rgba(249,115,22,.5)] bg-[rgba(249,115,22,.1)] text-[#fb923c]'
-                                    : 'border-[var(--wm-border)] bg-transparent text-[var(--wm-text-dim)] hover:border-[rgba(249,115,22,.35)]'
-                                }`}
+                                variant={kind === 'preview' ? 'soft' : 'outline'}
+                                color={kind === 'preview' ? 'orange' : 'gray'}
+                                size="1"
                               >
                                 预习
-                              </button>
+                              </Button>
                             </div>
                           </div>
                         )
@@ -709,16 +727,15 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                           : '关闭：计划期内每天记忆全部单词'}
                       </p>
                     </div>
-                    <button
+                    <Button
                       type="button"
                       role="switch"
                       aria-checked={batchMode}
-                      onClick={() => setBatchMode(v => !v)}
-                      className={`relative h-7 w-12 shrink-0 cursor-pointer rounded-full border-[1.5px] transition-all ${
-                        batchMode
-                          ? 'border-[#f59e0b] bg-[rgba(245,158,11,.25)]'
-                          : 'border-[var(--wm-border)] bg-[var(--wm-surface)]'
-                      }`}
+                      onClick={() => setBatchMode((v) => !v)}
+                      variant="ghost"
+                      color="gray"
+                      size="1"
+                      className="relative w-12 shrink-0"
                     >
                       <span
                         className={`absolute top-0.5 h-5 w-5 rounded-full transition-all ${
@@ -727,7 +744,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                             : 'left-0.5 bg-[var(--wm-text-dim)]'
                         }`}
                       />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -768,9 +785,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                             )}
                             <QuotaPicker
                               value={q}
-                              onChange={(n) =>
-                                setLessonQuotas(prev => ({ ...prev, [lkey]: n }))
-                              }
+                              onChange={(n) => setLessonQuotas((prev) => ({ ...prev, [lkey]: n }))}
                             />
                           </div>
                         )
@@ -810,9 +825,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                             )}
                             <QuotaPicker
                               value={q}
-                              onChange={(n) =>
-                                setLessonQuotas(prev => ({ ...prev, [lkey]: n }))
-                              }
+                              onChange={(n) => setLessonQuotas((prev) => ({ ...prev, [lkey]: n }))}
                             />
                           </div>
                         )
@@ -822,7 +835,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                 )}
 
                 {batchMode && sourceCount > 1 && (
-                  <div className="mb-4 -mt-1 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+                  <div className="-mt-1 mb-4 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
                     合计每天 {totalPerDay} 个新词
                   </div>
                 )}
@@ -839,22 +852,25 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
             {activeLesson && (
               <div className="mt-2 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
-                <button
+                <Button
                   type="button"
                   onClick={() => router.push('/setting/plans/english')}
-                  className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
+                  variant="outline"
+                  color="gray"
+                  size="2"
+                  className="flex-1"
                 >
                   取消
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={batchMode ? handleGoToArrange : handleDirectCreate}
                   disabled={planDays <= 0 || planEndDateStr < planStartDate || rangeHasOverlap}
-                  className="font-nunito flex-[2] cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                  variant="ghost"
+                  color="gray"
+                  size="2"
                 >
-                  {batchMode
-                    ? '下一步：编辑分配 ▶'
-                    : (isEditingPlan ? '保存修改' : '创建计划')}
-                </button>
+                  {batchMode ? '下一步：编辑分配 ▶' : isEditingPlan ? '保存修改' : '创建计划'}
+                </Button>
               </div>
             )}
           </div>
@@ -869,7 +885,13 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     const hasSelection = selectedKeys.size > 0
     const rolloverKeySet = new Set<string>(
       typeof window !== 'undefined'
-        ? (() => { try { return JSON.parse(sessionStorage.getItem('rollover_keys') ?? '[]') as string[] } catch { return [] } })()
+        ? (() => {
+            try {
+              return JSON.parse(sessionStorage.getItem('rollover_keys') ?? '[]') as string[]
+            } catch {
+              return []
+            }
+          })()
         : [],
     )
     const rolloverCount = rolloverKeySet.size
@@ -879,9 +901,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       e.stopPropagation()
       // If the chip the user grabbed is part of a multi-selection, drag the whole batch;
       // otherwise drag just this chip (without disturbing existing selection).
-      const keys = selectedKeys.has(key) && selectedKeys.size > 1
-        ? Array.from(selectedKeys)
-        : [key]
+      const keys = selectedKeys.has(key) && selectedKeys.size > 1 ? Array.from(selectedKeys) : [key]
       setDraggedKeys(keys)
       try {
         e.dataTransfer.effectAllowed = 'move'
@@ -918,208 +938,222 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       const word = entry?.word ?? key.split('::')[2] ?? key
       const isSelected = selectedKeys.has(key)
       const isRollover = rolloverKeySet.has(key)
-      const isDraggingThis = draggedKeys?.includes(key) ?? false
       const wordKind: 'consolidate' | 'preview' = entry
         ? (lessonKinds[`${entry.unit}::${entry.lesson}`] ?? 'consolidate')
         : 'consolidate'
       const lessonTag = entry ? lessonChipTag(entry.unit, entry.lesson) : ''
       return (
-        <button
+        <Button
           key={key}
+          type="button"
           draggable
           onDragStart={(e) => handleChipDragStart(e, key)}
           onDragEnd={handleChipDragEnd}
           onClick={(e) => {
             e.stopPropagation()
-            setSelectedKeys(prev => {
+            setSelectedKeys((prev) => {
               const next = new Set(prev)
               if (next.has(key)) next.delete(key)
               else next.add(key)
               return next
             })
           }}
-          className={`cursor-grab rounded-full border-[1.5px] px-3 py-1 text-[.82rem] font-bold transition-all active:cursor-grabbing ${
-            isDraggingThis ? 'opacity-40' : ''
-          } ${
+          variant={isSelected ? 'solid' : 'soft'}
+          color={
             isSelected
-              ? 'border-[#f59e0b] bg-[rgba(245,158,11,.2)] text-[#fbbf24] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
+              ? 'amber'
               : isRollover
-                ? 'border-[rgba(167,139,250,.5)] bg-[rgba(167,139,250,.1)] text-[#c4b5fd] hover:border-[#a78bfa]'
+                ? 'violet'
                 : wordKind === 'preview'
-                  ? 'border-[rgba(249,115,22,.4)] bg-[rgba(249,115,22,.08)] text-[#fb923c] hover:border-[#f97316]'
-                  : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.07)] text-[#93c5fd] hover:border-[#60a5fa]'
-          }`}
+                  ? 'orange'
+                  : 'blue'
+          }
+          size="1"
+          radius="full"
         >
           {isRollover && <span className="mr-1 text-[.6rem]">↻</span>}
           {word}
           {lessonTag && (
-            <span className="ml-1 rounded-[3px] bg-[rgba(255,255,255,.08)] px-1 py-px text-[.5rem] font-extrabold leading-none tracking-tight opacity-60 align-middle">
+            <span className="ml-1 rounded-[3px] bg-[rgba(255,255,255,.08)] px-1 py-px align-middle text-[.5rem] leading-none font-extrabold tracking-tight opacity-60">
               {lessonTag}
             </span>
           )}
-        </button>
+        </Button>
       )
     }
 
     return (
       <div className="mx-auto max-w-[680px] px-4 py-6" onClick={() => setSelectedKeys(new Set())}>
-          <div className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
-            <div className="mb-1 flex items-center justify-between">
-              <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] to-[#f97316] bg-clip-text text-2xl text-transparent">
-                {isEditingPlan ? '编辑多日计划 · 分配' : '编辑单词分配'}
-              </div>
-              <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)]">
-                已分配 {totalAssigned} / {lessonWords.length} 词
-              </div>
+        <div
+          className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="mb-1 flex items-center justify-between">
+            <div className="font-fredoka text-2xl text-[#f59e0b]">
+              {isEditingPlan ? '编辑多日计划 · 分配' : '编辑单词分配'}
             </div>
-            <div className="mb-2 text-[.72rem] text-[var(--wm-text-dim)]">
-              拖拽单词到目标星期块；或点击多选后再点目标日期批量移动
+            <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)]">
+              已分配 {totalAssigned} / {lessonWords.length} 词
             </div>
-            <div className="mb-3 flex items-center gap-3 text-[.68rem]">
-              <span className="flex items-center gap-1">
-                <span className="inline-block h-2 w-2 rounded-full bg-[rgba(96,165,250,.6)]" />
-                <span className="text-[#93c5fd]">必记</span>
+          </div>
+          <div className="mb-2 text-[.72rem] text-[var(--wm-text-dim)]">
+            拖拽单词到目标星期块；或点击多选后再点目标日期批量移动
+          </div>
+          <div className="mb-3 flex items-center gap-3 text-[.68rem]">
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-2 w-2 rounded-full bg-[rgba(96,165,250,.6)]" />
+              <span className="text-[#93c5fd]">必记</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-block h-2 w-2 rounded-full bg-[rgba(249,115,22,.6)]" />
+              <span className="text-[#fb923c]">预习</span>
+            </span>
+          </div>
+
+          {/* Rollover notice (§3.7) */}
+          {rolloverCount > 0 && (
+            <div className="mb-3 rounded-[10px] border border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.08)] px-4 py-2.5 text-[.75rem] font-bold text-[#c4b5fd]">
+              ↻ 上周有 {rolloverCount} 个必记词未达标，已加入待分配池，请安排到合适日子
+            </div>
+          )}
+
+          {/* Selection status bar */}
+          {hasSelection && (
+            <div className="mb-3 flex items-center gap-2 rounded-xl border border-[rgba(245,158,11,.4)] bg-[rgba(245,158,11,.08)] px-3 py-2">
+              <span className="text-[.75rem] font-extrabold text-[#fbbf24]">
+                已选 {selectedKeys.size} 个单词
               </span>
-              <span className="flex items-center gap-1">
-                <span className="inline-block h-2 w-2 rounded-full bg-[rgba(249,115,22,.6)]" />
-                <span className="text-[#fb923c]">预习</span>
-              </span>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedKeys(new Set())
+                }}
+                variant="outline"
+                color="gray"
+                size="1"
+                className="ml-auto"
+              >
+                取消选择
+              </Button>
             </div>
+          )}
 
-            {/* Rollover notice (§3.7) */}
-            {rolloverCount > 0 && (
-              <div className="mb-3 rounded-[10px] border border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.08)] px-4 py-2.5 text-[.75rem] font-bold text-[#c4b5fd]">
-                ↻ 上周有 {rolloverCount} 个必记词未达标，已加入待分配池，请安排到合适日子
-              </div>
-            )}
+          {rolloverCount > 0 && (
+            <div className="mb-3 rounded-[14px] border border-[rgba(245,158,11,.4)] bg-[rgba(245,158,11,.08)] px-4 py-3 text-[.78rem] font-bold text-[#fbbf24]">
+              ↻ 上周有 {rolloverCount} 个必记词未达标，已加入下方待分配池，请安排到合适的日子。
+            </div>
+          )}
 
-            {/* Selection status bar */}
-            {hasSelection && (
-              <div className="mb-3 flex items-center gap-2 rounded-xl border border-[rgba(245,158,11,.4)] bg-[rgba(245,158,11,.08)] px-3 py-2">
-                <span className="text-[.75rem] font-extrabold text-[#fbbf24]">
-                  已选 {selectedKeys.size} 个单词
-                </span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setSelectedKeys(new Set()) }}
-                  className="ml-auto cursor-pointer rounded-full border border-[rgba(245,158,11,.3)] px-2.5 py-0.5 text-[.65rem] font-bold text-[#fbbf24] hover:bg-[rgba(245,158,11,.15)]"
-                >
-                  取消选择
-                </button>
-              </div>
-            )}
-
-            {rolloverCount > 0 && (
-              <div className="mb-3 rounded-[14px] border border-[rgba(245,158,11,.4)] bg-[rgba(245,158,11,.08)] px-4 py-3 text-[.78rem] font-bold text-[#fbbf24]">
-                ↻ 上周有 {rolloverCount} 个必记词未达标，已加入下方待分配池，请安排到合适的日子。
-              </div>
-            )}
-
-            {/* Unassigned pool */}
-            {unassignedKeys.length > 0 && (
-              <div
-                onDragOver={(e) => handleZoneDragOver(e, -1)}
-                onDrop={(e) => handleZoneDrop(e, -1)}
-                className={`mb-4 rounded-[14px] border transition-all ${
-                  dragOverIdx === -1
-                    ? 'border-[#f87171] bg-[rgba(248,113,113,.14)] shadow-[0_0_0_2px_rgba(248,113,113,.3)]'
-                    : hasSelection || isDragging
-                      ? 'border-[rgba(248,113,113,.5)] bg-[rgba(248,113,113,.05)]'
-                      : 'border-[rgba(248,113,113,.3)] bg-[rgba(248,113,113,.04)]'
+          {/* Unassigned pool */}
+          {unassignedKeys.length > 0 && (
+            <div
+              onDragOver={(e) => handleZoneDragOver(e, -1)}
+              onDrop={(e) => handleZoneDrop(e, -1)}
+              className={`mb-4 rounded-[14px] border transition-all ${
+                dragOverIdx === -1
+                  ? 'border-[#f87171] bg-[rgba(248,113,113,.14)] shadow-[0_0_0_2px_rgba(248,113,113,.3)]'
+                  : hasSelection || isDragging
+                    ? 'border-[rgba(248,113,113,.5)] bg-[rgba(248,113,113,.05)]'
+                    : 'border-[rgba(248,113,113,.3)] bg-[rgba(248,113,113,.04)]'
+              }`}
+            >
+              <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
+                onClick={() => {
+                  if (hasSelection) handleMoveWords(selectedKeys, -1)
+                }}
+                disabled={!hasSelection}
+                className={`flex w-full items-center gap-2 rounded-t-[14px] px-4 py-2.5 text-left transition-all ${
+                  hasSelection ? 'cursor-pointer hover:bg-[rgba(248,113,113,.1)]' : 'cursor-default'
                 }`}
               >
-                <button
-                  onClick={() => { if (hasSelection) handleMoveWords(selectedKeys, -1) }}
+                <span className="text-[.78rem] font-extrabold text-[#f87171]">待分配</span>
+                <span className="ml-auto text-[.68rem] font-bold text-[#f87171]">
+                  {unassignedKeys.length} 词
+                </span>
+                {(hasSelection || isDragging) && (
+                  <span className="ml-1 rounded-full bg-[rgba(248,113,113,.2)] px-2 py-0.5 text-[.65rem] font-extrabold text-[#f87171]">
+                    {isDragging ? '拖到这里' : '移回这里'}
+                  </span>
+                )}
+              </button>
+              <div className="flex min-h-[36px] flex-wrap gap-1.5 px-4 pb-3">
+                {unassignedKeys.map((key) => renderChip(key))}
+              </div>
+            </div>
+          )}
+
+          {/* Day rows */}
+          <div className="flex flex-col gap-3">
+            {draftDays.map((day, dayIdx) => (
+              <div
+                key={day.date}
+                onDragOver={(e) => handleZoneDragOver(e, dayIdx)}
+                onDrop={(e) => handleZoneDrop(e, dayIdx)}
+                className={`rounded-[14px] border transition-all ${
+                  dragOverIdx === dayIdx
+                    ? 'border-[#f59e0b] bg-[rgba(245,158,11,.14)] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
+                    : hasSelection || isDragging
+                      ? 'border-[rgba(245,158,11,.5)] bg-[rgba(245,158,11,.04)]'
+                      : 'border-[var(--wm-border)] bg-[var(--wm-surface2)]'
+                }`}
+              >
+                <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
+                  onClick={() => {
+                    if (hasSelection) handleMoveWords(selectedKeys, dayIdx)
+                  }}
                   disabled={!hasSelection}
                   className={`flex w-full items-center gap-2 rounded-t-[14px] px-4 py-2.5 text-left transition-all ${
-                    hasSelection ? 'cursor-pointer hover:bg-[rgba(248,113,113,.1)]' : 'cursor-default'
+                    hasSelection
+                      ? 'cursor-pointer hover:bg-[rgba(245,158,11,.12)]'
+                      : 'cursor-default'
                   }`}
                 >
-                  <span className="text-[.78rem] font-extrabold text-[#f87171]">待分配</span>
-                  <span className="ml-auto text-[.68rem] font-bold text-[#f87171]">
-                    {unassignedKeys.length} 词
+                  <span className="text-[.78rem] font-extrabold text-[var(--wm-text-dim)]">
+                    {getDayLabel(day.date)}
+                  </span>
+                  <span className="text-[.7rem] text-[var(--wm-text-dim)]">
+                    {fmtShortDate(day.date)}
+                  </span>
+                  <span className="ml-auto text-[.68rem] font-bold text-[var(--wm-text-dim)]">
+                    {day.newWordKeys.length} 词
                   </span>
                   {(hasSelection || isDragging) && (
-                    <span className="ml-1 rounded-full bg-[rgba(248,113,113,.2)] px-2 py-0.5 text-[.65rem] font-extrabold text-[#f87171]">
-                      {isDragging ? '拖到这里' : '移回这里'}
+                    <span className="ml-1 rounded-full bg-[rgba(245,158,11,.2)] px-2 py-0.5 text-[.65rem] font-extrabold text-[#fbbf24]">
+                      {isDragging ? '拖到这里' : '移到这里'}
                     </span>
                   )}
                 </button>
                 <div className="flex min-h-[36px] flex-wrap gap-1.5 px-4 pb-3">
-                  {unassignedKeys.map(key => renderChip(key))}
+                  {day.newWordKeys.length === 0 ? (
+                    <span className="text-[.7rem] text-[var(--wm-text-dim)] italic opacity-50">
+                      休息日
+                    </span>
+                  ) : (
+                    day.newWordKeys.map((key) => renderChip(key))
+                  )}
                 </div>
               </div>
-            )}
+            ))}
+          </div>
 
-            {/* Day rows */}
-            <div className="flex flex-col gap-3">
-              {draftDays.map((day, dayIdx) => (
-                <div
-                  key={day.date}
-                  onDragOver={(e) => handleZoneDragOver(e, dayIdx)}
-                  onDrop={(e) => handleZoneDrop(e, dayIdx)}
-                  className={`rounded-[14px] border transition-all ${
-                    dragOverIdx === dayIdx
-                      ? 'border-[#f59e0b] bg-[rgba(245,158,11,.14)] shadow-[0_0_0_2px_rgba(245,158,11,.3)]'
-                      : hasSelection || isDragging
-                        ? 'border-[rgba(245,158,11,.5)] bg-[rgba(245,158,11,.04)]'
-                        : 'border-[var(--wm-border)] bg-[var(--wm-surface2)]'
-                  }`}
-                >
-                  <button
-                    onClick={() => { if (hasSelection) handleMoveWords(selectedKeys, dayIdx) }}
-                    disabled={!hasSelection}
-                    className={`flex w-full items-center gap-2 rounded-t-[14px] px-4 py-2.5 text-left transition-all ${
-                      hasSelection
-                        ? 'cursor-pointer hover:bg-[rgba(245,158,11,.12)]'
-                        : 'cursor-default'
-                    }`}
-                  >
-                    <span className="text-[.78rem] font-extrabold text-[var(--wm-text-dim)]">
-                      {getDayLabel(day.date)}
-                    </span>
-                    <span className="text-[.7rem] text-[var(--wm-text-dim)]">
-                      {fmtShortDate(day.date)}
-                    </span>
-                    <span className="ml-auto text-[.68rem] font-bold text-[var(--wm-text-dim)]">
-                      {day.newWordKeys.length} 词
-                    </span>
-                    {(hasSelection || isDragging) && (
-                      <span className="ml-1 rounded-full bg-[rgba(245,158,11,.2)] px-2 py-0.5 text-[.65rem] font-extrabold text-[#fbbf24]">
-                        {isDragging ? '拖到这里' : '移到这里'}
-                      </span>
-                    )}
-                  </button>
-                  <div className="flex min-h-[36px] flex-wrap gap-1.5 px-4 pb-3">
-                    {day.newWordKeys.length === 0 ? (
-                      <span className="text-[.7rem] italic text-[var(--wm-text-dim)] opacity-50">
-                        休息日
-                      </span>
-                    ) : (
-                      day.newWordKeys.map(key => renderChip(key))
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="mt-6 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
-              <button
-                onClick={() => setStep('params')}
-                className="font-nunito flex-1 cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent py-2.5 text-[.85rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]"
-              >
-                ← 返回
-              </button>
-              <button
-                onClick={handleConfirmArrange}
-                className="font-nunito flex-[2] cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#d97706] to-[#f59e0b] py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(245,158,11,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(245,158,11,.5)]"
-              >
-                {isEditingPlan ? '保存修改' : '创建多日计划'}
-              </button>
-            </div>
+          {/* Actions */}
+          <div className="mt-6 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
+            <Button
+              onClick={() => setStep('params')}
+              variant="outline"
+              color="gray"
+              size="2"
+              className="flex-1"
+            >
+              ← 返回
+            </Button>
+            <Button onClick={handleConfirmArrange} variant="solid" color="amber" size="2">
+              {isEditingPlan ? '保存修改' : '创建多日计划'}
+            </Button>
           </div>
         </div>
+      </div>
     )
   }
 

@@ -7,6 +7,8 @@ import { blankWordInSentence, buildEntryRegex } from '../../utils/reading-data'
 import { getWordMasteryLevel } from '@rosie/core'
 import SpeakButton from '../words/SpeakButton'
 import { READING_RETRY_MESSAGE } from '@rosie/core'
+import { Button, IconButton } from '@rosie/ui/themes'
+import { AppDialog, StickerCard } from '@rosie/ui'
 
 interface ParagraphRecallQuizProps {
   paragraphText: string
@@ -47,9 +49,7 @@ function pickQuizTarget(
   if (!candidates.length) return null
   // Round-rotating priority: fewest recalls first, then lowest mastery,
   // then least-correct. Never excludes — always rotates onto next round.
-  candidates.sort(
-    (a, b) => a.recalls - b.recalls || a.level - b.level || a.correct - b.correct,
-  )
+  candidates.sort((a, b) => a.recalls - b.recalls || a.level - b.level || a.correct - b.correct)
   const chosen = candidates[0]
   return { entry: chosen.entry, sentence: chosen.sentence }
 }
@@ -60,7 +60,7 @@ function highlightedSentence(sentence: string, word: string, tone: 'emerald' | '
   if (!m || m.index === undefined) return sentence
   const cls =
     tone === 'emerald'
-      ? 'rounded-md bg-emerald-200 px-1.5 py-0.5 font-extrabold text-emerald-900 shadow-sm ring-1 ring-emerald-300'
+      ? 'rounded-md bg-emerald-200 px-1.5 py-0.5 font-extrabold text-emerald-900 shadow-sticker-sm ring-1 ring-emerald-300'
       : 'rounded-md bg-rose-100 px-1.5 py-0.5 font-extrabold text-rose-700 ring-2 ring-rose-300'
   return (
     <>
@@ -122,7 +122,10 @@ export default function ParagraphRecallQuiz({
     if (attempt === 'done') return
     const isCorrect = option.word === target.entry.word
     if (isCorrect) {
-      setAnswered(true); setSelected(option); setCorrect(true); setAttempt('done')
+      setAnswered(true)
+      setSelected(option)
+      setCorrect(true)
+      setAttempt('done')
       onAnswer(target.entry, true)
       return
     }
@@ -132,7 +135,10 @@ export default function ParagraphRecallQuiz({
       return
     }
     // second wrong → commit + reveal
-    setAnswered(true); setSelected(option); setCorrect(false); setAttempt('done')
+    setAnswered(true)
+    setSelected(option)
+    setCorrect(false)
+    setAttempt('done')
     setWrongPicks((s) => new Set(s).add(option.word))
     onAnswer(target.entry, false)
   }
@@ -140,8 +146,11 @@ export default function ParagraphRecallQuiz({
   const ipaStr = target.entry.ipa ? target.entry.ipa.replace(/^\/|\/$/g, '') : null
 
   const retry = () => {
-    setAnswered(false); setSelected(null); setCorrect(null)
-    setAttempt('first'); setWrongPicks(new Set())
+    setAnswered(false)
+    setSelected(null)
+    setCorrect(null)
+    setAttempt('first')
+    setWrongPicks(new Set())
     setOpened(true)
   }
 
@@ -154,7 +163,7 @@ export default function ParagraphRecallQuiz({
   const Pill = (() => {
     if (!answered) {
       return (
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           onClick={() => setOpened(true)}
           className="group flex w-full items-center justify-between gap-3 rounded-xl border border-dashed border-amber-300 bg-amber-50/60 px-3 py-2 text-left transition hover:border-amber-400 hover:bg-amber-50 active:scale-[0.99]"
         >
@@ -171,24 +180,20 @@ export default function ParagraphRecallQuiz({
       return null
     }
     return (
-      <button
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         onClick={retry}
-        className="group flex w-full items-stretch gap-2.5 rounded-xl border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-amber-50 px-3 py-2.5 text-left transition hover:-translate-y-px hover:border-rose-300 hover:shadow-sm active:scale-[0.99] sm:gap-3"
+        className="group hover:shadow-sticker-sm flex w-full items-stretch gap-2.5 rounded-xl border-2 border-rose-200 bg-amber-50 px-3 py-2.5 text-left transition hover:-translate-y-px hover:border-rose-300 active:scale-[0.99] sm:gap-3"
       >
         <div className="flex shrink-0 flex-col items-center justify-start pt-0.5">
           <span className="text-[20px] leading-none sm:text-[22px]">💩</span>
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* Row 1: word + speaker (always 一行,长词允许换行) */}
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="font-fredoka text-[16px] font-extrabold text-rose-700 sm:text-[17px]">
               {target.entry.word}
             </span>
-            <SpeakButton
-              word={target.entry.word}
-              size="text-[14px]"
-              className="h-7 w-7 bg-rose-100 text-rose-700 hover:bg-rose-200"
-            />
+            <SpeakButton entry={target.entry} word={target.entry.word} size="1" />
           </div>
           {/* Row 2: IPA on its own line — never crowds the word */}
           {ipaStr && (
@@ -207,7 +212,7 @@ export default function ParagraphRecallQuiz({
             </div>
           )}
           {/* Retry hint — always visible on touch, subtle on desktop */}
-          <div className="mt-1.5 flex justify-end text-[10px] font-bold uppercase tracking-wider text-rose-500/70 transition group-hover:text-rose-500">
+          <div className="mt-1.5 flex justify-end text-[10px] font-bold tracking-wider text-rose-500/70 uppercase transition group-hover:text-rose-500">
             再试一次 →
           </div>
         </div>
@@ -220,23 +225,34 @@ export default function ParagraphRecallQuiz({
       {Pill}
 
       {opened && (
-        <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 px-3 backdrop-blur-sm sm:items-center"
-          onClick={() => setOpened(false)}
+        <AppDialog
+          open
+          chrome="none"
+          title="段落回忆"
+          onOpenChange={(open) => {
+            if (!open) setOpened(false)
+          }}
         >
-          <div
-            className="font-nunito relative w-full max-w-md animate-pop-in overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
+          <div className="font-nunito relative">
+            <IconButton
               onClick={() => setOpened(false)}
-              className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200 hover:text-gray-700"
               aria-label="关闭"
+              variant="soft"
+              color="gray"
+              size="1"
+              className="absolute top-3 right-3 z-10 w-8"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
-            </button>
+            </IconButton>
 
             {/* QUIZ */}
             {!answered && (
@@ -251,7 +267,7 @@ export default function ParagraphRecallQuiz({
                   <div
                     role="status"
                     aria-live="polite"
-                    className="mb-3 rounded-lg border border-[var(--rescue-half)]/40 bg-[rgba(96,165,250,.1)] px-3 py-2 text-center text-[13px] font-bold text-[color:var(--rescue-half)] shadow-[0_0_20px_rgba(96,165,250,.1)] animate-[fade-up_.2s_ease]"
+                    className="mb-3 animate-[fade-up_.2s_ease] rounded-lg border border-[var(--rescue-half)]/40 bg-[rgba(96,165,250,.1)] px-3 py-2 text-center text-[13px] font-bold text-[color:var(--rescue-half)] shadow-[0_0_20px_rgba(96,165,250,.1)]"
                   >
                     {READING_RETRY_MESSAGE}
                   </div>
@@ -263,14 +279,18 @@ export default function ParagraphRecallQuiz({
                   {options.map((o) => {
                     const wasWrong = wrongPicks.has(o.word)
                     return (
-                    <button
-                      key={o.word}
-                      onClick={() => handlePick(o)}
-                      disabled={wasWrong}
-                      className={wasWrong ? 'cursor-default rounded-xl border-2 border-gray-200 bg-gray-50 px-3 py-3 text-left text-[14px] font-bold text-gray-400 opacity-40 transition-all' : 'cursor-pointer rounded-xl border-2 border-gray-200 bg-white px-3 py-3 text-left text-[14px] font-bold text-gray-800 transition-all hover:-translate-y-px hover:border-amber-400 hover:bg-amber-50 hover:shadow-sm'}
-                    >
-                      {o.word}
-                    </button>
+                      <Button
+                        key={o.word}
+                        type="button"
+                        onClick={() => handlePick(o)}
+                        disabled={wasWrong}
+                        variant="outline"
+                        color="gray"
+                        size="3"
+                        className="justify-start"
+                      >
+                        {o.word}
+                      </Button>
                     )
                   })}
                 </div>
@@ -280,7 +300,10 @@ export default function ParagraphRecallQuiz({
             {/* CORRECT */}
             {answered && correct && (
               <div className="relative overflow-hidden px-5 pt-6 pb-5">
-                <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-center" aria-hidden>
+                <div
+                  className="pointer-events-none absolute inset-x-0 top-0 flex justify-center"
+                  aria-hidden
+                >
                   {CONFETTI_COLORS.flatMap((c, i) =>
                     [0, 1].map((j) => (
                       <span
@@ -297,20 +320,36 @@ export default function ParagraphRecallQuiz({
                   )}
                 </div>
                 <div className="relative flex flex-col items-center text-center">
-                  <div className="mb-2 flex h-14 w-14 animate-star-pop items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-green-500 text-white shadow-lg ring-4 ring-emerald-200">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" aria-hidden>
+                  <div className="animate-star-pop shadow-sticker mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-white ring-4 ring-emerald-200">
+                    <svg
+                      width="32"
+                      height="32"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      aria-hidden
+                    >
                       <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <div className="font-fredoka text-[22px] font-extrabold text-emerald-700">太棒了!</div>
-                  <div className="mt-0.5 text-[12px] font-bold text-emerald-600">回想成功 · 掌握度 +1 ⭐</div>
+                  <div className="font-fredoka text-[22px] font-extrabold text-emerald-700">
+                    太棒了!
+                  </div>
+                  <div className="mt-0.5 text-[12px] font-bold text-emerald-600">
+                    回想成功 · 掌握度 +1 ⭐
+                  </div>
 
                   <div className="mt-3 flex items-center gap-2 rounded-full bg-emerald-100/80 px-3 py-1">
                     <span className="font-extrabold text-emerald-800">{target.entry.word}</span>
-                    {ipaStr && <span className="font-mono text-[12px] text-emerald-700">/{ipaStr}/</span>}
-                    <SpeakButton word={target.entry.word} size="text-[16px]" className="h-6 w-6 bg-white text-emerald-700 hover:bg-emerald-50" />
+                    {ipaStr && (
+                      <span className="font-mono text-[12px] text-emerald-700">/{ipaStr}/</span>
+                    )}
+                    <SpeakButton entry={target.entry} word={target.entry.word} size="1" />
                   </div>
-                  <div className="mt-1 text-[13px] text-emerald-700/80">{target.entry.explanation}</div>
+                  <div className="mt-1 text-[13px] text-emerald-700/80">
+                    {target.entry.explanation}
+                  </div>
 
                   <div className="mt-3 w-full rounded-xl bg-white px-4 py-3 text-[14px] leading-relaxed text-gray-800 ring-1 ring-emerald-200">
                     {highlightedSentence(target.sentence, target.entry.word, 'emerald')}
@@ -324,13 +363,23 @@ export default function ParagraphRecallQuiz({
               <div className="px-5 pt-6 pb-5">
                 <div className="mb-4 flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-500 ring-2 ring-rose-200">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      aria-hidden
+                    >
                       <path d="M12 9v4M12 17h.01" strokeLinecap="round" />
                       <circle cx="12" cy="12" r="9" />
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <div className="font-fredoka text-[16px] font-extrabold text-rose-700">差一点 — 多看看这个词</div>
+                    <div className="font-fredoka text-[16px] font-extrabold text-rose-700">
+                      差一点 — 多看看这个词
+                    </div>
                     {selected && (
                       <div className="mt-0.5 text-[11px] text-rose-500">
                         你选了 <span className="font-bold text-rose-600">{selected.word}</span>
@@ -340,21 +389,28 @@ export default function ParagraphRecallQuiz({
                 </div>
 
                 {/* Correct answer card */}
-                <div className="mb-3 rounded-xl bg-white p-4 ring-2 ring-emerald-300 shadow-sm">
+                <StickerCard elevation="sm" radius="md" className="mb-3">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-fredoka text-[26px] font-extrabold text-emerald-700">{target.entry.word}</span>
-                      <SpeakButton word={target.entry.word} size="text-[18px]" className="h-9 w-9 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" />
+                      <span className="font-fredoka text-[26px] font-extrabold text-emerald-700">
+                        {target.entry.word}
+                      </span>
+                      <SpeakButton entry={target.entry} word={target.entry.word} size="2" />
                     </div>
-                    {ipaStr && <span className="font-mono text-[13px] text-gray-500">/{ipaStr}/</span>}
+                    {ipaStr && (
+                      <span className="font-mono text-[13px] text-gray-500">/{ipaStr}/</span>
+                    )}
                   </div>
-                  <div className="mt-1 text-[14px] font-bold text-gray-700">{target.entry.explanation}</div>
-                </div>
+                  <div className="mt-1 text-[14px] font-bold text-gray-700">
+                    {target.entry.explanation}
+                  </div>
+                </StickerCard>
 
                 {/* In-passage usage */}
                 <div className="mb-3">
                   <div className="mb-1 flex items-center gap-1.5 text-[11px] font-extrabold tracking-wide text-amber-700 uppercase">
-                    <span>📖</span><span>课文里这样用</span>
+                    <span>📖</span>
+                    <span>课文里这样用</span>
                   </div>
                   <div className="rounded-xl bg-amber-50/70 px-3 py-2 text-[14px] leading-relaxed text-gray-800 ring-1 ring-amber-200">
                     {highlightedSentence(target.sentence, target.entry.word, 'rose')}
@@ -365,7 +421,8 @@ export default function ParagraphRecallQuiz({
                 {target.entry.example && (
                   <div>
                     <div className="mb-1 flex items-center gap-1.5 text-[11px] font-extrabold tracking-wide text-sky-700 uppercase">
-                      <span>💡</span><span>另一个例句</span>
+                      <span>💡</span>
+                      <span>另一个例句</span>
                     </div>
                     <div className="rounded-xl bg-sky-50/70 px-3 py-2 text-[13px] leading-relaxed text-sky-900 ring-1 ring-sky-200">
                       {highlightedSentence(target.entry.example, target.entry.word, 'emerald')}
@@ -373,11 +430,13 @@ export default function ParagraphRecallQuiz({
                   </div>
                 )}
 
-                <div className="mt-4 text-center text-[11px] text-gray-500">下次见到它就认识啦 ✨</div>
+                <div className="mt-4 text-center text-[11px] text-gray-500">
+                  下次见到它就认识啦 ✨
+                </div>
               </div>
             )}
           </div>
-        </div>
+        </AppDialog>
       )}
     </>
   )

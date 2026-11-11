@@ -6,6 +6,7 @@ import { SelectControl } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useWordData } from '../../hooks/useWordData'
 import { buildEntryMatchRegex, findPassageByKey } from '../../utils/reading-data'
+import { Button } from '@rosie/ui/themes'
 
 type PrintFont = {
   id: string
@@ -34,7 +35,8 @@ const PRINT_FONTS: PrintFont[] = [
   {
     id: 'sassoon-infant',
     label: 'U 形 y（Sassoon Infant）',
-    family: '"Rosie Sassoon Infant", "Sassoon Infant", "Sassoon Primary Infant", "Sassoon Primary", "Chalkboard SE", cursive',
+    family:
+      '"Rosie Sassoon Infant", "Sassoon Infant", "Sassoon Primary Infant", "Sassoon Primary", "Chalkboard SE", cursive',
     note: '初学书写字形；y 的上半部为圆弧连接，优先推荐临摹使用',
   },
   {
@@ -98,24 +100,58 @@ const PRINT_TONES: PrintTone[] = [
 // Primary stroke-start dot centers extracted from SassoonInfantDt-Regular.
 // x is measured from the glyph origin and y upward from the baseline, in em.
 const SASSOON_PRIMARY_START_POINTS: Record<string, GlyphStartPoint> = {
-  a: { x: 0.38, y: 0.37 }, b: { x: 0.104, y: 0.688 }, c: { x: 0.356, y: 0.373 },
-  d: { x: 0.384, y: 0.371 }, e: { x: 0.081, y: 0.228 }, f: { x: 0.325, y: 0.656 },
-  g: { x: 0.392, y: 0.374 }, h: { x: 0.102, y: 0.689 }, i: { x: 0.102, y: 0.421 },
-  j: { x: 0.102, y: 0.421 }, k: { x: 0.102, y: 0.686 }, l: { x: 0.096, y: 0.686 },
-  m: { x: 0.084, y: 0.424 }, n: { x: 0.084, y: 0.424 }, o: { x: 0.373, y: 0.392 },
-  p: { x: 0.087, y: 0.418 }, q: { x: 0.394, y: 0.367 }, r: { x: 0.079, y: 0.424 },
-  s: { x: 0.293, y: 0.391 }, t: { x: 0.132, y: 0.566 }, u: { x: 0.09, y: 0.426 },
-  v: { x: 0.068, y: 0.422 }, w: { x: 0.058, y: 0.422 }, x: { x: 0.086, y: 0.426 },
-  y: { x: 0.091, y: 0.426 }, z: { x: 0.071, y: 0.423 },
-  A: { x: 0.315, y: 0.692 }, B: { x: 0.113, y: 0.688 }, C: { x: 0.531, y: 0.596 },
-  D: { x: 0.113, y: 0.688 }, E: { x: 0.113, y: 0.688 }, F: { x: 0.113, y: 0.688 },
-  G: { x: 0.531, y: 0.596 }, H: { x: 0.114, y: 0.688 }, I: { x: 0.042, y: 0.688 },
-  J: { x: 0.185, y: 0.688 }, K: { x: 0.113, y: 0.688 }, L: { x: 0.113, y: 0.688 },
-  M: { x: 0.113, y: 0.688 }, N: { x: 0.113, y: 0.688 }, O: { x: 0.536, y: 0.606 },
-  P: { x: 0.113, y: 0.688 }, Q: { x: 0.536, y: 0.606 }, R: { x: 0.113, y: 0.688 },
-  S: { x: 0.411, y: 0.612 }, T: { x: 0.049, y: 0.689 }, U: { x: 0.113, y: 0.688 },
-  V: { x: 0.068, y: 0.686 }, W: { x: 0.043, y: 0.692 }, X: { x: 0.066, y: 0.688 },
-  Y: { x: 0.07, y: 0.688 }, Z: { x: 0.052, y: 0.688 },
+  a: { x: 0.38, y: 0.37 },
+  b: { x: 0.104, y: 0.688 },
+  c: { x: 0.356, y: 0.373 },
+  d: { x: 0.384, y: 0.371 },
+  e: { x: 0.081, y: 0.228 },
+  f: { x: 0.325, y: 0.656 },
+  g: { x: 0.392, y: 0.374 },
+  h: { x: 0.102, y: 0.689 },
+  i: { x: 0.102, y: 0.421 },
+  j: { x: 0.102, y: 0.421 },
+  k: { x: 0.102, y: 0.686 },
+  l: { x: 0.096, y: 0.686 },
+  m: { x: 0.084, y: 0.424 },
+  n: { x: 0.084, y: 0.424 },
+  o: { x: 0.373, y: 0.392 },
+  p: { x: 0.087, y: 0.418 },
+  q: { x: 0.394, y: 0.367 },
+  r: { x: 0.079, y: 0.424 },
+  s: { x: 0.293, y: 0.391 },
+  t: { x: 0.132, y: 0.566 },
+  u: { x: 0.09, y: 0.426 },
+  v: { x: 0.068, y: 0.422 },
+  w: { x: 0.058, y: 0.422 },
+  x: { x: 0.086, y: 0.426 },
+  y: { x: 0.091, y: 0.426 },
+  z: { x: 0.071, y: 0.423 },
+  A: { x: 0.315, y: 0.692 },
+  B: { x: 0.113, y: 0.688 },
+  C: { x: 0.531, y: 0.596 },
+  D: { x: 0.113, y: 0.688 },
+  E: { x: 0.113, y: 0.688 },
+  F: { x: 0.113, y: 0.688 },
+  G: { x: 0.531, y: 0.596 },
+  H: { x: 0.114, y: 0.688 },
+  I: { x: 0.042, y: 0.688 },
+  J: { x: 0.185, y: 0.688 },
+  K: { x: 0.113, y: 0.688 },
+  L: { x: 0.113, y: 0.688 },
+  M: { x: 0.113, y: 0.688 },
+  N: { x: 0.113, y: 0.688 },
+  O: { x: 0.536, y: 0.606 },
+  P: { x: 0.113, y: 0.688 },
+  Q: { x: 0.536, y: 0.606 },
+  R: { x: 0.113, y: 0.688 },
+  S: { x: 0.411, y: 0.612 },
+  T: { x: 0.049, y: 0.689 },
+  U: { x: 0.113, y: 0.688 },
+  V: { x: 0.068, y: 0.686 },
+  W: { x: 0.043, y: 0.692 },
+  X: { x: 0.066, y: 0.688 },
+  Y: { x: 0.07, y: 0.688 },
+  Z: { x: 0.052, y: 0.688 },
 }
 
 function primaryStartPoint(word: string): GlyphStartPoint {
@@ -211,7 +247,7 @@ export default function ReadingPassagePrintPage({ passageKey }: { passageKey: st
 
   return (
     <div className="reading-print-root min-h-screen bg-stone-100">
-      <div className="en-no-print sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur-sm">
+      <div className="en-no-print border-kid-line sticky top-0 z-50 border-b bg-white">
         <div className="mx-auto flex min-h-14 max-w-[1600px] flex-nowrap items-center gap-2 overflow-visible px-3 py-2 whitespace-nowrap sm:px-4">
           <Link
             href={`/english/words/reading/${passage.key}`}
@@ -227,59 +263,57 @@ export default function ReadingPassagePrintPage({ passageKey }: { passageKey: st
             className="ml-auto w-[16rem] shrink-0"
             selectClassName="text-xs"
           />
-          <button
+          <Button
             type="button"
             onClick={() => setBlankVocabulary((current) => !current)}
             disabled={isVocabLoading}
             aria-pressed={blankVocabulary}
             title="将文章里所有已录入词库的单词和变体挖空"
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition disabled:cursor-wait disabled:opacity-50 ${
-              blankVocabulary
-                ? 'bg-amber-500 text-white hover:bg-amber-600'
-                : 'bg-white text-stone-700 ring-1 ring-stone-300 hover:bg-stone-50'
-            }`}
+            variant={blankVocabulary ? 'solid' : 'outline'}
+            color={blankVocabulary ? 'amber' : 'gray'}
+            size="1"
+            className="shrink-0"
           >
             {isVocabLoading ? '词库加载中…' : blankVocabulary ? '已挖空词汇' : '挖空词汇'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            onClick={() => setPositioningMode((current) => (current === 'normal' ? 'advanced' : 'normal'))}
+            onClick={() =>
+              setPositioningMode((current) => (current === 'normal' ? 'advanced' : 'normal'))
+            }
             aria-pressed={positioningMode === 'advanced'}
             title="普通定位使用第 2 条线上的小点；高级定位使用首字母的主要起笔点"
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-              positioningMode === 'advanced'
-                ? 'bg-rose-600 text-white hover:bg-rose-700'
-                : 'bg-white text-stone-700 ring-1 ring-stone-300 hover:bg-stone-50'
-            }`}
+            variant={positioningMode === 'advanced' ? 'solid' : 'outline'}
+            color={positioningMode === 'advanced' ? 'ruby' : 'gray'}
+            size="1"
+            className="shrink-0"
           >
             {positioningMode === 'advanced' ? '定位：高级' : '定位：普通'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => setShowWritingLines((current) => !current)}
             aria-pressed={showWritingLines}
             title="显示或隐藏英文四线书写格"
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-              showWritingLines
-                ? 'bg-sky-600 text-white hover:bg-sky-700'
-                : 'bg-white text-stone-700 ring-1 ring-stone-300 hover:bg-stone-50'
-            }`}
+            variant={showWritingLines ? 'solid' : 'outline'}
+            color={showWritingLines ? 'sky' : 'gray'}
+            size="1"
+            className="shrink-0"
           >
             {showWritingLines ? '四线格：开' : '四线格：关'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => setToneId((current) => (current === 'trace' ? 'dark' : 'trace'))}
             aria-pressed={copyMode}
             title="将正文变为浅灰色，方便临摹描写"
-            className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-              copyMode
-                ? 'bg-slate-600 text-white hover:bg-slate-700'
-                : 'bg-white text-stone-700 ring-1 ring-stone-300 hover:bg-stone-50'
-            }`}
+            variant={copyMode ? 'solid' : 'outline'}
+            color="gray"
+            size="1"
+            className="shrink-0"
           >
             {copyMode ? '默写模式：开' : '默写模式'}
-          </button>
+          </Button>
           <SelectControl
             value={toneId}
             options={PRINT_TONES.map(({ id, label, color }) => ({
@@ -292,23 +326,28 @@ export default function ReadingPassagePrintPage({ passageKey }: { passageKey: st
             className="w-[9rem] shrink-0"
             selectClassName="text-xs"
           />
-          <button
+          <Button
             type="button"
             onClick={() => void printSettledLayout()}
-            className="shrink-0 rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700"
+            variant="solid"
+            color="indigo"
+            size="1"
+            className="shrink-0"
           >
             打印
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="mx-auto max-w-[900px] overflow-x-auto px-4 py-6 print:max-w-none print:overflow-visible print:p-0">
         <article
-          className="reading-print-sheet rounded-lg bg-white p-8 shadow-sm print:rounded-none print:p-0 print:shadow-none"
-          style={{
-            fontFamily: font.family,
-            '--reading-print-ink': tone.color,
-          } as CSSProperties}
+          className="reading-print-sheet shadow-sticker-sm rounded-lg bg-white p-8 print:rounded-none print:p-0 print:shadow-none"
+          style={
+            {
+              fontFamily: font.family,
+              '--reading-print-ink': tone.color,
+            } as CSSProperties
+          }
         >
           <header className="reading-print-header">
             <h1>{passage.title}</h1>
@@ -373,10 +412,10 @@ export default function ReadingPassagePrintPage({ passageKey }: { passageKey: st
         }
         .reading-print-guides p {
           background-image:
-            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px),
-            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px),
-            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px),
-            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px);
+            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px), /* visual-ok: 作文格横线图案 */
+            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px), /* visual-ok: 作文格横线图案 */
+            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px), /* visual-ok: 作文格横线图案 */
+            linear-gradient(to bottom, #c6d7e8 0, #c6d7e8 1px, transparent 1px); /* visual-ok: 作文格横线图案 */
           background-repeat: repeat-y;
           background-size:
             100% var(--writing-row),

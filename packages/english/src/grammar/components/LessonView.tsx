@@ -15,44 +15,46 @@ import type {
 } from '../types'
 import { grammarPageImageUrl } from '../types'
 import { FigureCard } from './FigureCard'
+import { Button } from '@rosie/ui/themes'
 
 /** 原书印刷页码角标 */
 function PageBadge({ page, onClick }: { page?: number; onClick?: (page: number) => void }) {
   if (typeof page !== 'number') return null
   const clickable = !!onClick
   return (
-    <button
+    <Button
       type="button"
       disabled={!clickable}
       onClick={() => clickable && onClick(page)}
-      className={`ml-auto shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 transition-colors ${
-        clickable
-          ? 'cursor-pointer bg-surface-dim text-app-blue ring-border-light hover:bg-app-blue-light hover:text-app-blue-dark'
-          : 'bg-surface-dim text-text-muted ring-border-light'
-      }`}
+      variant="outline"
+      color={clickable ? 'blue' : 'gray'}
+      size="1"
+      className="ml-auto shrink-0"
     >
       p.{page}
-    </button>
+    </Button>
   )
 }
 
 /** 情境例句使用紧凑卡片，降低长列表高度并强化英中对照的扫描路径。 */
 function ExampleCard({ item, index }: { item: GrammarExample; index: number }) {
   return (
-    <li className="group relative min-w-0 overflow-hidden rounded-lg bg-surface px-3.5 py-3 ring-1 ring-sky-200/80 transition-[box-shadow,border-color] duration-200 hover:ring-sky-300 hover:shadow-sm">
+    <li className="group bg-surface hover:shadow-sticker-sm relative min-w-0 overflow-hidden rounded-lg px-3.5 py-3 ring-1 ring-sky-200/80 transition-[box-shadow,border-color] duration-200 hover:ring-sky-300">
       <span
         aria-hidden="true"
-        className="absolute top-0 left-0 flex h-6 w-6 items-center justify-center rounded-br-lg bg-sky-100 text-[11px] font-black tabular-nums text-sky-700"
+        className="absolute top-0 left-0 flex h-6 w-6 items-center justify-center rounded-br-lg bg-sky-100 text-[11px] font-black text-sky-700 tabular-nums"
       >
         {index + 1}
       </span>
       <div className="min-w-0 pl-4">
-        <p className="text-base leading-6 font-bold tracking-[-0.01em] text-app-blue-dark sm:text-[17px]">
+        <p className="text-app-blue-dark text-base leading-6 font-bold tracking-[-0.01em] sm:text-[17px]">
           {renderExampleText(item, 'en')}
         </p>
-        <p className="mt-1 text-[13px] leading-5 font-normal text-text-secondary">
+        <p className="text-text-secondary mt-1 text-[13px] leading-5 font-normal">
           {renderExampleText(item, 'zh')}
-          {item.note ? <span className="ml-1 text-text-muted">（{renderExampleText(item, 'note')}）</span> : null}
+          {item.note ? (
+            <span className="text-text-muted ml-1">（{renderExampleText(item, 'note')}）</span>
+          ) : null}
         </p>
       </div>
     </li>
@@ -73,20 +75,26 @@ function ExamplesGrid({ items }: { items: GrammarExample[] }) {
         return (
           <li
             key={i}
-            className="relative min-w-0 overflow-hidden rounded-lg bg-surface px-3.5 py-3 pl-5 ring-1 ring-border-light"
+            className="bg-surface ring-border-light relative min-w-0 overflow-hidden rounded-lg px-3.5 py-3 pl-5 ring-1"
           >
             <span
               aria-hidden="true"
               className={`absolute top-3.5 bottom-3.5 left-0 w-1 rounded-r-full ${reply ? 'bg-app-green' : 'bg-app-blue'}`}
             />
-            <p className="text-base leading-6 font-semibold text-app-blue-dark">
+            <p className="text-app-blue-dark text-base leading-6 font-semibold">
               {renderExampleText(item, 'en')}
             </p>
             {item.zh && (
-              <div className={`mt-1 leading-6 ${reply ? 'text-base font-semibold text-app-green-dark' : 'text-[13px] text-text-secondary'}`}>
+              <div
+                className={`mt-1 leading-6 ${reply ? 'text-app-green-dark text-base font-semibold' : 'text-text-secondary text-[13px]'}`}
+              >
                 <span>
                   {renderExampleText(item, 'zh')}
-                  {item.note ? <span className="ml-1 text-text-muted">（{renderExampleText(item, 'note')}）</span> : null}
+                  {item.note ? (
+                    <span className="text-text-muted ml-1">
+                      （{renderExampleText(item, 'note')}）
+                    </span>
+                  ) : null}
                 </span>
               </div>
             )}
@@ -122,23 +130,32 @@ function CompactFormulaView({ block }: { block: GrammarTableBlock }) {
   const suffix = block.headers.find((header) => header.includes('ing')) || '-ing'
   return (
     <div
-      className="grid overflow-hidden rounded-lg bg-surface ring-1 ring-app-blue/20 grid-cols-[minmax(0,1fr)_4.5rem]"
+      className="bg-surface ring-app-blue/20 grid grid-cols-[minmax(0,1fr)_4.5rem] overflow-hidden rounded-lg ring-1"
       role="table"
       aria-label="现在进行时结构：主语搭配 am、is 或 are，再加 ing 动词"
     >
-      <div className="divide-y divide-border-light" role="rowgroup">
+      <div className="divide-border-light divide-y" role="rowgroup">
         {block.rows.map((row, i) => (
           <div key={i} className="grid min-h-14 grid-cols-[0.85fr_1.15fr] items-center" role="row">
-            <div className="px-3 py-2 text-sm leading-5 font-medium whitespace-pre-line text-text-secondary" role="cell">
+            <div
+              className="text-text-secondary px-3 py-2 text-sm leading-5 font-medium whitespace-pre-line"
+              role="cell"
+            >
               {row[0]}
             </div>
-            <div className="border-l border-border-light px-3 py-2 text-base font-bold text-text-primary" role="cell">
+            <div
+              className="border-border-light text-text-primary border-l px-3 py-2 text-base font-bold"
+              role="cell"
+            >
               {renderTableCell(row[1] ?? '')}
             </div>
           </div>
         ))}
       </div>
-      <div className="flex items-center justify-center border-l border-app-blue/20 bg-app-blue-light/60 px-2 text-lg font-black text-app-blue-dark" role="cell">
+      <div
+        className="border-app-blue/20 bg-app-blue-light/60 text-app-blue-dark flex items-center justify-center border-l px-2 text-lg font-black"
+        role="cell"
+      >
         {suffix}
       </div>
     </div>
@@ -164,26 +181,32 @@ function PresentFormView({
     ruleBlock.type !== 'rule_text' ||
     tableBlock.type !== 'grammar_table' ||
     examplesBlock.type !== 'examples'
-  ) return null
+  )
+    return null
 
   return (
     <div className="grid gap-3 md:grid-cols-[minmax(15rem,0.85fr)_minmax(0,1.6fr)]">
-      <div className="relative overflow-hidden rounded-xl bg-surface ring-1 ring-app-blue/25">
-        <div className="flex items-center justify-between gap-3 bg-app-blue-light/70 px-4 py-3">
+      <div className="bg-surface ring-app-blue/25 relative overflow-hidden rounded-xl ring-1">
+        <div className="bg-app-blue-light/70 flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
-            <div className="text-[11px] font-bold tracking-[0.14em] text-app-blue-dark uppercase">现在进行时结构</div>
-            <p className="mt-1 text-base leading-6 font-black text-text-primary">
-              am / is / are <span className="mx-1 text-app-blue">+</span> 动词-ing
+            <div className="text-app-blue-dark text-[11px] font-bold tracking-[0.14em] uppercase">
+              现在进行时结构
+            </div>
+            <p className="text-text-primary mt-1 text-base leading-6 font-black">
+              am / is / are <span className="text-app-blue mx-1">+</span> 动词-ing
             </p>
           </div>
           {isAdmin && (
-            <button
+            <Button
               type="button"
               onClick={() => onEditTable?.(sectionIdx, 2)}
-              className="min-h-9 shrink-0 rounded-full bg-surface px-3 text-xs font-bold text-app-blue shadow-sm ring-1 ring-border-light transition-colors hover:bg-app-blue-light"
+              variant="outline"
+              color="blue"
+              size="1"
+              className="shrink-0"
             >
               编辑
-            </button>
+            </Button>
           )}
         </div>
         <div className="p-3">
@@ -191,21 +214,33 @@ function PresentFormView({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl bg-surface ring-1 ring-border-light">
-        <div className="border-b border-border-light px-4 py-3">
-          <div className="text-[11px] font-bold tracking-[0.14em] text-text-secondary uppercase">应用例句</div>
-          <p className="mt-0.5 text-xs text-text-muted">观察 am / is / are 与 -ing 动词如何组合</p>
+      <div className="bg-surface ring-border-light overflow-hidden rounded-xl ring-1">
+        <div className="border-border-light border-b px-4 py-3">
+          <div className="text-text-secondary text-[11px] font-bold tracking-[0.14em] uppercase">
+            应用例句
+          </div>
+          <p className="text-text-muted mt-0.5 text-xs">观察 am / is / are 与 -ing 动词如何组合</p>
         </div>
         <ul className="grid grid-cols-1 gap-x-5 px-4 py-2 sm:grid-cols-2">
           {examplesBlock.items.map((item, i) => (
-            <li key={i} className="relative border-b border-border-light py-2.5 pl-4 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0">
-              <span className="absolute top-4 left-0 h-1.5 w-1.5 rounded-full bg-app-blue" aria-hidden="true" />
-              <p className="text-[15px] leading-6 font-semibold text-app-blue-dark">
+            <li
+              key={i}
+              className="border-border-light relative border-b py-2.5 pl-4 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0"
+            >
+              <span
+                className="bg-app-blue absolute top-4 left-0 h-1.5 w-1.5 rounded-full"
+                aria-hidden="true"
+              />
+              <p className="text-app-blue-dark text-[15px] leading-6 font-semibold">
                 {renderExampleText(item, 'en')}
               </p>
-              <p className="text-[13px] leading-5 text-text-secondary">
+              <p className="text-text-secondary text-[13px] leading-5">
                 {renderExampleText(item, 'zh')}
-                {item.note ? <span className="ml-1 text-text-muted">（{renderExampleText(item, 'note')}）</span> : null}
+                {item.note ? (
+                  <span className="text-text-muted ml-1">
+                    （{renderExampleText(item, 'note')}）
+                  </span>
+                ) : null}
               </p>
             </li>
           ))}
@@ -222,9 +257,9 @@ function PresentTimelineView({ section }: { section: GrammarSection }) {
   if (patternBlock.type !== 'examples' || contextBlock.type !== 'examples') return null
 
   return (
-    <div className="overflow-hidden rounded-xl bg-gradient-to-b from-sky-50 via-surface to-surface ring-1 ring-sky-200">
+    <div className="overflow-hidden rounded-xl bg-sky-50 ring-1 ring-sky-200">
       <div className="px-3 pt-4 sm:px-5 sm:pt-5">
-        <div className="mx-auto max-w-2xl rounded-xl bg-app-blue px-4 py-3 text-white shadow-md shadow-sky-200/70">
+        <div className="bg-app-blue shadow-sticker mx-auto max-w-2xl rounded-xl px-4 py-3 text-white">
           <div className="mb-2 text-center text-[11px] font-bold tracking-[0.16em] text-blue-100 uppercase">
             正在发生
           </div>
@@ -243,25 +278,34 @@ function PresentTimelineView({ section }: { section: GrammarSection }) {
           role="img"
           aria-label="时间轴：现在进行时表示动作正在现在发生"
         >
-          <div className="absolute top-5 right-0 left-0 h-0.5 bg-border-light" />
-          <div className="absolute top-5 left-1/2 h-0.5 w-1/2 -translate-x-1/2 bg-gradient-to-r from-transparent via-app-blue to-transparent" />
-          <div className="absolute top-3.5 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rounded-full bg-app-blue ring-4 ring-app-blue-light" />
-          <span className="absolute top-7 left-0 text-xs font-medium text-text-muted">过去</span>
-          <span className="absolute top-7 left-1/2 -translate-x-1/2 text-xs font-black text-app-blue-dark">现在</span>
-          <span className="absolute top-7 right-0 text-xs font-medium text-text-muted">将来</span>
+          <div className="bg-border-light absolute top-5 right-0 left-0 h-0.5" />
+          <div className="bg-app-blue absolute top-5 left-1/2 h-0.5 w-1/2 -translate-x-1/2" />
+          <div className="bg-app-blue ring-app-blue-light absolute top-3.5 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rounded-full ring-4" />
+          <span className="text-text-muted absolute top-7 left-0 text-xs font-medium">过去</span>
+          <span className="text-app-blue-dark absolute top-7 left-1/2 -translate-x-1/2 text-xs font-black">
+            现在
+          </span>
+          <span className="text-text-muted absolute top-7 right-0 text-xs font-medium">将来</span>
         </div>
       </div>
 
-      <div className="border-t border-sky-100 bg-surface/80 px-3 py-3 sm:px-5 sm:py-4">
+      <div className="bg-surface/80 border-t border-sky-100 px-3 py-3 sm:px-5 sm:py-4">
         <div className="mb-2 flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-app-blue" aria-hidden="true" />
-          <h4 className="text-xs font-bold tracking-wide text-text-secondary">从语境判断“此刻正在发生”</h4>
+          <span className="bg-app-blue h-2 w-2 rounded-full" aria-hidden="true" />
+          <h4 className="text-text-secondary text-xs font-bold tracking-wide">
+            从语境判断“此刻正在发生”
+          </h4>
         </div>
         <ul className="grid grid-cols-1 gap-x-5 gap-y-1 sm:grid-cols-2">
           {contextBlock.items.map((item, i) => (
-            <li key={i} className="border-b border-border-light py-2.5 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0">
-              <p className="text-[15px] leading-6 font-semibold text-app-blue-dark">{item.en}</p>
-              <p className="mt-0.5 text-[13px] leading-5 text-text-secondary">{renderExampleText(item, 'zh')}</p>
+            <li
+              key={i}
+              className="border-border-light border-b py-2.5 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0"
+            >
+              <p className="text-app-blue-dark text-[15px] leading-6 font-semibold">{item.en}</p>
+              <p className="text-text-secondary mt-0.5 text-[13px] leading-5">
+                {renderExampleText(item, 'zh')}
+              </p>
             </li>
           ))}
         </ul>
@@ -308,7 +352,10 @@ function restoreConjugationGroups(block: GrammarTableBlock): string[][] {
     }
     if (groups.length === 2 && groups.every((group) => group.length > 0)) {
       return groups.map((group) => [
-        group.map((row) => row[0]).filter(Boolean).join('\n'),
+        group
+          .map((row) => row[0])
+          .filter(Boolean)
+          .join('\n'),
         group.map((row) => row[1]).join('\n'),
       ])
     }
@@ -360,7 +407,7 @@ function renderTableCell(cell: string): ReactNode {
   if (!match) return cell
   return (
     <>
-      {match[1]} <span className="font-normal text-text-muted">{match[2]}</span>
+      {match[1]} <span className="text-text-muted font-normal">{match[2]}</span>
     </>
   )
 }
@@ -376,23 +423,40 @@ const TABLE_TEXT_STYLE_CLASSES: Record<GrammarTableTextStyle, string> = {
 }
 
 function renderMarkedText(text: string, marks?: GrammarTableTextMark[]): ReactNode {
-  const validMarks = marks?.filter((mark) => mark.start < text.length && mark.end > mark.start) ?? []
+  const validMarks =
+    marks?.filter((mark) => mark.start < text.length && mark.end > mark.start) ?? []
   if (validMarks.length === 0) return text
-  const boundaries = [...new Set([0, text.length, ...validMarks.flatMap((mark) => [mark.start, Math.min(mark.end, text.length)])])]
-    .sort((a, b) => a - b)
+  const boundaries = [
+    ...new Set([
+      0,
+      text.length,
+      ...validMarks.flatMap((mark) => [mark.start, Math.min(mark.end, text.length)]),
+    ]),
+  ].sort((a, b) => a - b)
   return boundaries.slice(0, -1).map((start, index) => {
     const end = boundaries[index + 1]
-    const styles = [...new Set(validMarks
-      .filter((mark) => mark.start <= start && mark.end >= end)
-      .flatMap((mark) => mark.styles))]
-    return styles.length > 0
-      ? <span key={`${start}:${end}`} className={styles.map((style) => TABLE_TEXT_STYLE_CLASSES[style]).join(' ')}>{text.slice(start, end)}</span>
-      : text.slice(start, end)
+    const styles = [
+      ...new Set(
+        validMarks
+          .filter((mark) => mark.start <= start && mark.end >= end)
+          .flatMap((mark) => mark.styles),
+      ),
+    ]
+    return styles.length > 0 ? (
+      <span
+        key={`${start}:${end}`}
+        className={styles.map((style) => TABLE_TEXT_STYLE_CLASSES[style]).join(' ')}
+      >
+        {text.slice(start, end)}
+      </span>
+    ) : (
+      text.slice(start, end)
+    )
   })
 }
 
 function renderExampleText(item: GrammarExample, field: 'en' | 'zh' | 'note'): ReactNode {
-  const value = field === 'note' ? item.note ?? '' : item[field]
+  const value = field === 'note' ? (item.note ?? '') : item[field]
   const marks = [...(item.textMarks?.[field] ?? [])]
   if (field === 'en') {
     let cursor = 0
@@ -413,8 +477,8 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
     block.headers[1] === '现在' &&
     block.headers[2] === '将来' &&
     block.rows.every((row) => row.every((cell) => cell.trim() === ''))
-  const isTimeline = block.displayType === 'timeline' ||
-    (block.displayType === undefined && isLegacyTimeline)
+  const isTimeline =
+    block.displayType === 'timeline' || (block.displayType === undefined && isLegacyTimeline)
 
   if (isTimeline) {
     return (
@@ -424,17 +488,23 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
         aria-label={`${block.title ?? '时态'}：从过去经现在到将来的时间轴`}
       >
         {block.title && (
-          <div className="mx-4 bg-text-primary/12 px-8 py-1.5 text-center text-sm font-black text-text-primary [clip-path:polygon(0.75rem_0,calc(100%_-_0.75rem)_0,100%_50%,calc(100%_-_0.75rem)_100%,0.75rem_100%,0_50%)] sm:mx-8">
+          <div className="bg-text-primary/12 text-text-primary mx-4 px-8 py-1.5 text-center text-sm font-black [clip-path:polygon(0.75rem_0,calc(100%_-_0.75rem)_0,100%_50%,calc(100%_-_0.75rem)_100%,0.75rem_100%,0_50%)] sm:mx-8">
             {renderMarkedText(block.title, block.textMarks?.title)}
           </div>
         )}
-        <div className="relative mt-1 grid grid-cols-3 border-t border-text-muted/45 pt-1 text-xs font-semibold text-text-secondary sm:text-sm">
-          <span className="text-left">{renderMarkedText(block.headers[0], block.textMarks?.['header:0'])}</span>
-          <span className="text-center">{renderMarkedText(block.headers[1], block.textMarks?.['header:1'])}</span>
-          <span className="text-right">{renderMarkedText(block.headers[2], block.textMarks?.['header:2'])}</span>
+        <div className="border-text-muted/45 text-text-secondary relative mt-1 grid grid-cols-3 border-t pt-1 text-xs font-semibold sm:text-sm">
+          <span className="text-left">
+            {renderMarkedText(block.headers[0], block.textMarks?.['header:0'])}
+          </span>
+          <span className="text-center">
+            {renderMarkedText(block.headers[1], block.textMarks?.['header:1'])}
+          </span>
+          <span className="text-right">
+            {renderMarkedText(block.headers[2], block.textMarks?.['header:2'])}
+          </span>
           <span
             aria-hidden="true"
-            className="absolute top-[-3px] left-1/2 h-1.5 w-px -translate-x-1/2 bg-text-muted/60"
+            className="bg-text-muted/60 absolute top-[-3px] left-1/2 h-1.5 w-px -translate-x-1/2"
           />
         </div>
       </div>
@@ -443,10 +513,7 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
 
   const usesExplicitMerges = block.merges !== undefined
   const restoredRows = usesExplicitMerges ? block.rows : restoreConjugationGroups(block)
-  const columnCount = Math.max(
-    block.headers.length,
-    ...restoredRows.map((row) => row.length),
-  )
+  const columnCount = Math.max(block.headers.length, ...restoredRows.map((row) => row.length))
   const rows = normalizeTableRows(restoredRows, columnCount)
   // 多列完整句型中重复的 do/does 是每句的独立成分，不应合并。
   const spans = usesExplicitMerges
@@ -463,11 +530,9 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
     (header, columnIndex) => header !== '' && !spanningHeaderColumns.has(columnIndex),
   )
   return (
-    <div className="overflow-hidden rounded-xl ring-1 ring-border-light">
+    <div className="ring-border-light overflow-hidden rounded-xl ring-1">
       {block.title && (
-        <div className="bg-gradient-to-r from-app-blue to-sky-500 px-4 py-2 text-sm font-bold text-white">
-          {block.title}
-        </div>
+        <div className="bg-sky-600 px-4 py-2 text-sm font-bold text-white">{block.title}</div>
       )}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
@@ -475,8 +540,13 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
             <thead>
               <tr className="bg-app-blue-light/50">
                 {block.headers.map((h, i) => (
-                  <th key={i} className="border border-border-light px-4 py-2 text-left text-xs font-bold text-app-blue-dark">
-                    {spanningHeaderColumns.has(i) ? '' : renderMarkedText(h, block.textMarks?.[`header:${i}`])}
+                  <th
+                    key={i}
+                    className="border-border-light text-app-blue-dark border px-4 py-2 text-left text-xs font-bold"
+                  >
+                    {spanningHeaderColumns.has(i)
+                      ? ''
+                      : renderMarkedText(h, block.textMarks?.[`header:${i}`])}
                   </th>
                 ))}
               </tr>
@@ -492,7 +562,7 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
                       <td
                         key={ci}
                         rowSpan={rows.length}
-                        className="border border-app-blue/40 bg-app-blue-light/50 px-4 py-2.5 align-middle font-bold whitespace-pre-line text-text-primary"
+                        className="border-app-blue/40 bg-app-blue-light/50 text-text-primary border px-4 py-2.5 align-middle font-bold whitespace-pre-line"
                       >
                         {renderMarkedText(block.headers[ci], block.textMarks?.[`header:${ci}`])}
                       </td>
@@ -519,9 +589,7 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
                       rowSpan={renderedRowSpan > 1 ? renderedRowSpan : undefined}
                       colSpan={renderedColSpan > 1 ? renderedColSpan : undefined}
                       className={`border px-4 py-2.5 align-middle whitespace-pre-line ${
-                        ci === 0
-                          ? 'font-medium text-text-secondary'
-                          : 'font-bold text-text-primary'
+                        ci === 0 ? 'text-text-secondary font-medium' : 'text-text-primary font-bold'
                       } ${isMerged ? 'border-app-blue/40 bg-app-blue-light/50' : 'border-border-light'}`}
                     >
                       {block.textMarks?.[`body:${ri}:${ci}`]
@@ -542,17 +610,26 @@ export function GrammarTableView({ block }: { block: GrammarTableBlock }) {
 function BlockView({ block }: { block: GrammarBlock }) {
   if (block.type === 'example_set') {
     if (block.displayType === 'paragraph') {
-      const contextRepeatsItems = block.context.trim() === block.items.map((item) => item.en.trim()).join(' ')
+      const contextRepeatsItems =
+        block.context.trim() === block.items.map((item) => item.en.trim()).join(' ')
       return (
         <article className="rounded-xl bg-sky-50/70 px-4 py-4 sm:px-5">
           {block.context && !contextRepeatsItems && (
-            <p className="mb-3 text-sm font-semibold text-sky-800">{renderMarkedText(block.context, block.contextMarks)}</p>
+            <p className="mb-3 text-sm font-semibold text-sky-800">
+              {renderMarkedText(block.context, block.contextMarks)}
+            </p>
           )}
           <div className="space-y-2.5">
             {block.items.map((item, index) => (
-              <p key={index} className="text-base leading-7 text-text-primary sm:text-[17px]">
-                <span className="font-medium text-app-blue-dark">{renderExampleText(item, 'en')}</span>
-                {item.zh && <span className="ml-2 text-[13px] text-text-muted">{renderExampleText(item, 'zh')}</span>}
+              <p key={index} className="text-text-primary text-base leading-7 sm:text-[17px]">
+                <span className="text-app-blue-dark font-medium">
+                  {renderExampleText(item, 'en')}
+                </span>
+                {item.zh && (
+                  <span className="text-text-muted ml-2 text-[13px]">
+                    {renderExampleText(item, 'zh')}
+                  </span>
+                )}
               </p>
             ))}
           </div>
@@ -560,9 +637,9 @@ function BlockView({ block }: { block: GrammarBlock }) {
       )
     }
     return (
-      <div className="overflow-hidden rounded-xl bg-gradient-to-br from-sky-50 to-surface p-3 ring-1 ring-sky-200 sm:p-4">
+      <div className="overflow-hidden rounded-xl bg-sky-50 p-3 ring-1 ring-sky-200 sm:p-4">
         {block.context && (
-          <div className="mb-3 flex items-start gap-2 rounded-lg bg-sky-100/80 px-3 py-2 text-sm font-semibold leading-5 text-sky-800">
+          <div className="mb-3 flex items-start gap-2 rounded-lg bg-sky-100/80 px-3 py-2 text-sm leading-5 font-semibold text-sky-800">
             <svg
               aria-hidden="true"
               viewBox="0 0 24 24"
@@ -607,7 +684,7 @@ function BlockView({ block }: { block: GrammarBlock }) {
             <div key={i} className="flex items-center gap-2 text-sm">
               <span className="text-text-secondary">{c.full}</span>
               <span className="text-amber-500">→</span>
-              <span className="font-bold text-text-primary">{c.short}</span>
+              <span className="text-text-primary font-bold">{c.short}</span>
             </div>
           ))}
         </div>
@@ -625,18 +702,25 @@ function BlockView({ block }: { block: GrammarBlock }) {
     const toneSymbols = { success: '✓', info: 'i', warning: '!', error: '×' }
     const tone = block.tone ?? 'info'
     return (
-      <div className={`flex items-start gap-3 rounded-xl px-4 py-3.5 text-sm leading-relaxed ${toneStyles[tone]}`}>
-        <span aria-hidden="true" className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-current/10 text-xs font-black">
+      <div
+        className={`flex items-start gap-3 rounded-xl px-4 py-3.5 text-sm leading-relaxed ${toneStyles[tone]}`}
+      >
+        <span
+          aria-hidden="true"
+          className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-current/10 text-xs font-black"
+        >
           {toneSymbols[tone]}
         </span>
-        <p className="min-w-0 whitespace-pre-line">{renderMarkedText(block.text, block.textMarks)}</p>
+        <p className="min-w-0 whitespace-pre-line">
+          {renderMarkedText(block.text, block.textMarks)}
+        </p>
       </div>
     )
   }
 
   if (block.type === 'tip') {
     return (
-      <div className="rounded-xl bg-app-purple-light/50 p-4 text-sm leading-relaxed text-app-purple-dark ring-1 ring-app-purple/20">
+      <div className="bg-app-purple-light/50 text-app-purple-dark ring-app-purple/20 rounded-xl p-4 text-sm leading-relaxed ring-1">
         <span className="mr-1">💡</span>
         {renderMarkedText(block.text, block.textMarks)}
       </div>
@@ -649,13 +733,20 @@ function BlockView({ block }: { block: GrammarBlock }) {
 
   if (block.type === 'vocabulary_list') {
     return (
-      <ul className="grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg bg-surface-dim/65 px-4 py-3 ring-1 ring-border-light/70 sm:grid-cols-4 xl:grid-cols-7">
+      <ul className="bg-surface-dim/65 ring-border-light/70 grid grid-cols-2 gap-x-4 gap-y-2 rounded-lg px-4 py-3 ring-1 sm:grid-cols-4 xl:grid-cols-7">
         {block.items.map((item, index) => (
-          <li key={`${item.en}-${index}`} className="min-w-0 border-b border-border-light/70 pb-2 last:border-b-0 sm:border-b-0 sm:pb-0">
-            <p className="text-[15px] leading-5 font-bold text-text-primary">
+          <li
+            key={`${item.en}-${index}`}
+            className="border-border-light/70 min-w-0 border-b pb-2 last:border-b-0 sm:border-b-0 sm:pb-0"
+          >
+            <p className="text-text-primary text-[15px] leading-5 font-bold">
               {renderExampleText(item, 'en')}
             </p>
-            {item.zh && <p className="mt-0.5 text-[11px] leading-4 text-text-muted">{renderExampleText(item, 'zh')}</p>}
+            {item.zh && (
+              <p className="text-text-muted mt-0.5 text-[11px] leading-4">
+                {renderExampleText(item, 'zh')}
+              </p>
+            )}
           </li>
         ))}
       </ul>
@@ -669,18 +760,20 @@ function BlockView({ block }: { block: GrammarBlock }) {
           ✍️ 拼写规则
         </div>
         {block.text && (
-          <p className="mb-2 text-sm leading-relaxed whitespace-pre-line text-text-primary">{renderMarkedText(block.text, block.textMarks)}</p>
+          <p className="text-text-primary mb-2 text-sm leading-relaxed whitespace-pre-line">
+            {renderMarkedText(block.text, block.textMarks)}
+          </p>
         )}
         {block.examples.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {block.examples.map((e, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1 rounded-full bg-surface px-2.5 py-1 text-[13px] font-medium ring-1 ring-orange-100"
+                className="bg-surface inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-medium ring-1 ring-orange-100"
               >
                 <span className="text-text-secondary">{e.base}</span>
                 <span className="text-orange-400">→</span>
-                <span className="font-bold text-text-primary">{e.form}</span>
+                <span className="text-text-primary font-bold">{e.form}</span>
               </span>
             ))}
           </div>
@@ -695,18 +788,20 @@ function BlockView({ block }: { block: GrammarBlock }) {
         <div className="mb-2 text-xs font-bold tracking-wide text-teal-700 uppercase">
           🖼️ 插图说明
         </div>
-        <p className="text-sm leading-relaxed whitespace-pre-line text-text-primary">{renderMarkedText(block.text, block.textMarks)}</p>
+        <p className="text-text-primary text-sm leading-relaxed whitespace-pre-line">
+          {renderMarkedText(block.text, block.textMarks)}
+        </p>
       </div>
     )
   }
 
   // unsupported：未知 block 类型优雅降级（框架扩展四步流程落地前的兜底）
   return (
-    <div className="rounded-xl border-2 border-dashed border-border-light bg-surface-dim p-4 text-sm text-text-muted">
+    <div className="border-border-light bg-surface-dim text-text-muted rounded-xl border-2 border-dashed p-4 text-sm">
       <div className="mb-1 text-xs font-bold">🧩 暂未支持的内容块（{block.originalType}）</div>
       <details>
         <summary className="cursor-pointer text-xs">原始数据</summary>
-        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap text-[11px]">{block.text}</pre>
+        <pre className="mt-2 overflow-x-auto text-[11px] whitespace-pre-wrap">{block.text}</pre>
       </details>
     </div>
   )
@@ -741,7 +836,7 @@ function SectionView({
   return (
     <section className="flex gap-3 sm:gap-4">
       {section.label ? (
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-app-blue to-sky-500 text-lg font-black text-white shadow-md shadow-sky-200">
+        <div className="shadow-sticker flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-600 text-lg font-black text-white">
           {section.label}
         </div>
       ) : (
@@ -749,17 +844,22 @@ function SectionView({
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-center gap-2">
-          {section.title && <h3 className="text-base font-bold text-text-primary">{section.title}</h3>}
+          {section.title && (
+            <h3 className="text-text-primary text-base font-bold">{section.title}</h3>
+          )}
           <PageBadge page={section.bookPage} onClick={onPageClick} />
           {isAdmin && figureSourceUrl && typeof section.bookPage === 'number' && (
-            <button
+            <Button
               type="button"
               onClick={() => onStartCrop?.(sectionIdx)}
               title="从原书页图裁切插图"
-              className="shrink-0 rounded-full bg-surface-dim px-2 py-0.5 text-[10px] font-bold text-app-purple ring-1 ring-border-light transition-colors hover:bg-app-purple-light hover:text-app-purple-dark"
+              variant="outline"
+              color="purple"
+              size="1"
+              className="shrink-0"
             >
               ＋ 插图
-            </button>
+            </Button>
           )}
         </div>
         {/* Section 级插图：标题下方、内容块之前，按插入顺序渲染 */}
@@ -771,7 +871,9 @@ function SectionView({
                 figure={figure}
                 isAdmin={isAdmin}
                 onPreview={onPreviewFigure}
-                onRecrop={isAdmin && figureSourceUrl ? () => onStartCrop?.(sectionIdx, fi) : undefined}
+                onRecrop={
+                  isAdmin && figureSourceUrl ? () => onStartCrop?.(sectionIdx, fi) : undefined
+                }
                 onRemove={isAdmin ? () => onRemoveFigure?.(sectionIdx, fi) : undefined}
               />
             ))}
@@ -824,20 +926,27 @@ function renderSectionBlocks(
     const tableStart = i
     const run = blocks.slice(i, j)
     const gridClass =
-      run.length >= 3 ? 'grid gap-3 md:grid-cols-3' : run.length === 2 ? 'grid gap-3 sm:grid-cols-2' : ''
+      run.length >= 3
+        ? 'grid gap-3 md:grid-cols-3'
+        : run.length === 2
+          ? 'grid gap-3 sm:grid-cols-2'
+          : ''
     out.push(
       <div key={`tables${i}`} className={gridClass}>
         {run.map((table, k) => (
           <div key={k} className="group/table relative min-w-0">
             <BlockView block={table} />
             {isAdmin && (
-              <button
+              <Button
                 type="button"
                 onClick={() => onEditTable?.(sectionIdx, blockOffset + tableStart + k)}
-                className="absolute top-2 right-2 min-h-9 rounded-full bg-surface/95 px-3 text-xs font-bold text-app-blue shadow-md ring-1 ring-border-light transition-colors hover:bg-app-blue-light"
+                variant="outline"
+                color="blue"
+                size="1"
+                className="absolute top-2 right-2"
               >
                 编辑表格
-              </button>
+              </Button>
             )}
           </div>
         ))}
@@ -851,12 +960,12 @@ function renderSectionBlocks(
 function CrossReferenceChips({ refs }: { refs: CrossReference[] }) {
   if (refs.length === 0) return null
   return (
-    <div className="flex flex-wrap items-center gap-2 border-t border-border-light pt-4">
-      <span className="text-xs font-bold text-text-muted">相关单元</span>
+    <div className="border-border-light flex flex-wrap items-center gap-2 border-t pt-4">
+      <span className="text-text-muted text-xs font-bold">相关单元</span>
       {refs.map((ref, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-1 rounded-full bg-app-blue-light px-3 py-1 text-xs font-semibold text-app-blue-dark"
+          className="bg-app-blue-light text-app-blue-dark inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
         >
           {ref.text}
         </span>

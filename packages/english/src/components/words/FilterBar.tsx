@@ -4,6 +4,7 @@ import type { WordMasteryMap } from '@rosie/core'
 import type { MasteryLevel } from '@rosie/core'
 import type { WordEntry, WordVocabType } from '@rosie/core'
 import VocabRangeFilter from './vocab-range-filter/VocabRangeFilter'
+import { Button } from '@rosie/ui/themes'
 
 interface FilterBarProps {
   vocab: WordEntry[]
@@ -84,57 +85,57 @@ export default function FilterBar({
         <span className="rounded-lg border border-[var(--wm-border)] bg-[var(--wm-surface2)] px-2.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)]">
           {filteredCount} 词
         </span>
-        <button
+        <Button
           onClick={onClearWords}
           disabled={selWords.size === 0}
-          className="font-nunito cursor-pointer rounded-lg border-[1.5px] border-[var(--wm-border)] bg-transparent px-3 py-1.5 text-[.75rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-[var(--wm-border)] disabled:hover:text-[var(--wm-text-dim)]"
+          variant="outline"
+          color="gray"
+          size="2"
         >
           清除单词筛选
-        </button>
+        </Button>
         {(onFlipAll || onShuffleOrder || onToggleDualMode || onImmersive) && (
           <>
             <div className="h-[22px] w-px bg-[var(--wm-border)]" />
             {onShuffleOrder && (
-              <button
+              <Button
                 type="button"
                 onClick={onShuffleOrder}
                 disabled={filteredCount === 0}
-                className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-[1.5px] border-[var(--wm-border)] bg-[var(--wm-surface2)] px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[#a855f7] hover:text-[#a855f7] disabled:cursor-not-allowed disabled:opacity-40"
+                variant="soft"
+                color="gray"
+                size="2"
               >
                 🔀 随机排序
-              </button>
+              </Button>
             )}
             {onFlipAll && (
-              <button
-                onClick={onFlipAll}
-                disabled={dualMode}
-                className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[var(--wm-accent4)] to-[#3b82f6] px-4 py-1.5 text-[0.875rem] font-bold text-white transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(96,165,250,.4)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
-              >
+              <Button onClick={onFlipAll} disabled={dualMode} variant="solid" color="blue" size="2">
                 🔄 {allFlipped ? '全部翻回' : '全部翻面'}
-              </button>
+              </Button>
             )}
             {onToggleDualMode && (
-              <button
+              <Button
                 type="button"
                 onClick={onToggleDualMode}
-                className={`font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg px-4 py-1.5 text-[0.875rem] font-bold transition-all ${
-                  dualMode
-                    ? 'border-0 bg-gradient-to-br from-[#10b981] to-[#059669] text-white hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(16,185,129,.4)]'
-                    : 'border-[1.5px] border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[#10b981] hover:text-[#10b981]'
-                }`}
+                variant={dualMode ? 'solid' : 'soft'}
+                color={dualMode ? 'green' : 'gray'}
+                size="2"
               >
                 📖 {dualMode ? '退出双面' : '双面模式'}
-              </button>
+              </Button>
             )}
             {onImmersive && (
-              <button
+              <Button
                 type="button"
                 onClick={onImmersive}
                 disabled={filteredCount === 0}
-                className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] px-4 py-1.5 text-[0.875rem] font-bold text-white shadow-[0_2px_10px_rgba(124,58,237,.3)] transition-all hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(124,58,237,.45)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                variant="solid"
+                color="violet"
+                size="2"
               >
                 ⚡ 沉浸模式
-              </button>
+              </Button>
             )}
           </>
         )}

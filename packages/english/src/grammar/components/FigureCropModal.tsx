@@ -3,6 +3,7 @@
 import { GrammarScanImage } from './GrammarScanImage'
 
 import { useMemo, useCallback, useEffect, useRef, useState } from 'react'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface Rect {
   x: number
@@ -32,7 +33,14 @@ const MIN_SELECT = 20
  * 选区遮罩用 box-shadow 大范围扩散实现（选区内清晰、选区外变暗）。
  * 弹窗只负责交互并产出 Blob，不负责上传与写库。
  */
-export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onClose }: FigureCropModalProps) {
+export function FigureCropModal({
+  imageUrl,
+  title,
+  saving,
+  error,
+  onConfirm,
+  onClose,
+}: FigureCropModalProps) {
   const imgRef = useRef<HTMLImageElement | null>(null)
   const dragRef = useRef<{ x: number; y: number } | null>(null)
   const [loaded, setLoaded] = useState(false)
@@ -50,15 +58,18 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
     return () => window.removeEventListener('keydown', handler)
   }, [onClose, saving])
 
-  const sel = useMemo<Rect | null>(() =>
-    start && end
-      ? {
-          x: Math.min(start.x, end.x),
-          y: Math.min(start.y, end.y),
-          w: Math.abs(end.x - start.x),
-          h: Math.abs(end.y - start.y),
-        }
-      : null, [start, end])
+  const sel = useMemo<Rect | null>(
+    () =>
+      start && end
+        ? {
+            x: Math.min(start.x, end.x),
+            y: Math.min(start.y, end.y),
+            w: Math.abs(end.x - start.x),
+            h: Math.abs(end.y - start.y),
+          }
+        : null,
+    [start, end],
+  )
   const selValid = sel !== null && sel.w >= MIN_SELECT && sel.h >= MIN_SELECT
   const busy = saving || exporting
 
@@ -140,31 +151,34 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={(e) => {
         if (e.target === e.currentTarget && !busy) onClose()
       }}
     >
-      <div className="relative mx-4 flex max-h-[92vh] w-full max-w-[640px] flex-col gap-3 rounded-2xl bg-surface p-4 shadow-2xl ring-1 ring-border-light">
+      <div className="bg-surface shadow-sticker-lg ring-border-light relative mx-4 flex max-h-[92vh] w-full max-w-[640px] flex-col gap-3 rounded-2xl p-4 ring-1">
         <div className="flex w-full items-center justify-between">
-          <h3 className="text-sm font-bold text-text-primary">✂️ {title}</h3>
-          <button
+          <h3 className="text-text-primary text-sm font-bold">✂️ {title}</h3>
+          <IconButton
             onClick={onClose}
             disabled={busy}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-dim hover:text-text-primary disabled:opacity-40"
+            variant="ghost"
+            color="gray"
+            size="1"
+            className="w-8"
           >
             ✕
-          </button>
+          </IconButton>
         </div>
 
-        <div className="flex w-full flex-1 items-center justify-center overflow-auto rounded-xl bg-surface-dim p-2">
+        <div className="bg-surface-dim flex w-full flex-1 items-center justify-center overflow-auto rounded-xl p-2">
           {!loaded && !errored && (
             <div className="flex items-center justify-center py-16">
-              <div className="h-8 w-8 animate-spin rounded-full border-3 border-app-blue border-t-transparent" />
+              <div className="border-app-blue h-8 w-8 animate-spin rounded-full border-3 border-t-transparent" />
             </div>
           )}
           {errored ? (
-            <div className="flex flex-col items-center gap-2 py-12 text-text-muted">
+            <div className="text-text-muted flex flex-col items-center gap-2 py-12">
               <span className="text-3xl">🖼️</span>
               <span className="text-xs">页面图片加载失败，无法裁切</span>
             </div>
@@ -188,13 +202,13 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
               />
               {loaded && sel && (
                 <div
-                  className="pointer-events-none absolute rounded-sm border-2 border-app-blue"
+                  className="border-app-blue pointer-events-none absolute rounded-sm border-2"
                   style={{
                     left: sel.x,
                     top: sel.y,
                     width: sel.w,
                     height: sel.h,
-                    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.45)',
+                    boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.45)',
                   }}
                 />
               )}
@@ -202,27 +216,27 @@ export function FigureCropModal({ imageUrl, title, saving, error, onConfirm, onC
           )}
         </div>
 
-        <p className="text-center text-[11px] text-text-muted">
+        <p className="text-text-muted text-center text-[11px]">
           {selValid ? '松开后可继续拖拽重画选区' : '在图片上拖拽框选要插入的插图区域'}
         </p>
-        {error && <p className="text-center text-xs font-semibold text-app-red">{error}</p>}
-        {exportError && <p className="text-center text-xs font-semibold text-app-red">{exportError}</p>}
+        {error && <p className="text-app-red text-center text-xs font-semibold">{error}</p>}
+        {exportError && (
+          <p className="text-app-red text-center text-xs font-semibold">{exportError}</p>
+        )}
 
         <div className="flex items-center justify-center gap-3">
-          <button
-            onClick={onClose}
-            disabled={busy}
-            className="rounded-full px-4 py-1.5 text-sm font-bold text-text-secondary ring-1 ring-border-light transition-colors hover:bg-surface-dim disabled:opacity-40"
-          >
+          <Button onClick={onClose} disabled={busy} variant="outline" color="gray" size="2">
             取消
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleConfirm}
             disabled={!selValid || busy}
-            className="rounded-full bg-app-blue px-5 py-1.5 text-sm font-bold text-white transition-transform active:scale-95 disabled:opacity-40"
+            variant="solid"
+            color="blue"
+            size="2"
           >
             {saving ? '保存中…' : exporting ? '裁切中…' : '裁切并插入'}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

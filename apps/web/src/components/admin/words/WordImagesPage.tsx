@@ -5,12 +5,9 @@ import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import { supabase, useAuth } from '@rosie/core'
 import type { WordEntry } from '@rosie/core'
-import {
-  getAllStages,
-  getWordImagePublicUrl,
-  useWordData,
-  wordEntriesStore,
-} from '@rosie/english'
+import { getAllStages, getWordImagePublicUrl, useWordData, wordEntriesStore } from '@rosie/english'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
+import { FormSelect, StickerCard } from '@rosie/ui'
 
 type SortMode = 'score-asc' | 'score-desc' | 'word'
 
@@ -74,9 +71,7 @@ function WordImagesPageInner({ user }: { user: User }) {
   } | null>(null)
 
   const units = useMemo(() => {
-    const set = new Set(
-      vocab.filter((w) => (stage ? w.stage === stage : true)).map((w) => w.unit),
-    )
+    const set = new Set(vocab.filter((w) => (stage ? w.stage === stage : true)).map((w) => w.unit))
     return [...set].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
   }, [vocab, stage])
 
@@ -306,77 +301,76 @@ function WordImagesPageInner({ user }: { user: User }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <div className="bg-kid-paper min-h-screen text-slate-800">
+      <header className="border-kid-line sticky top-0 z-20 border-b bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3">
           <Link href="/admin" className="text-sm text-slate-500 hover:underline">
             ← Admin
           </Link>
           <h1 className="text-lg font-extrabold">单词配图</h1>
-          <span className="text-xs text-slate-400">{isLoading ? '加载中…' : `${rows.length} 词`}</span>
+          <span className="text-xs text-slate-400">
+            {isLoading ? '加载中…' : `${rows.length} 词`}
+          </span>
           <div className="ml-auto flex flex-wrap items-center gap-2">
-            <select
-              className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm font-bold"
+            <FormSelect
+              size="2"
+              ariaLabel="词库"
               value={stage}
-              onChange={(e) => {
-                setStage(e.target.value)
+              onValueChange={(next) => {
+                setStage(next)
                 setUnit('Unit 1')
                 setLesson('')
               }}
-            >
-              {(stages.includes('5A') ? stages : ['5A', ...stages]).map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm font-bold"
+              options={(stages.includes('5A') ? stages : ['5A', ...stages]).map((s) => ({
+                value: s,
+                label: s,
+              }))}
+            />
+            <FormSelect
+              size="2"
+              ariaLabel="单元"
               value={unit}
-              onChange={(e) => {
-                setUnit(e.target.value)
+              onValueChange={(next) => {
+                setUnit(next)
                 setLesson('')
               }}
-            >
-              {units.map((u) => (
-                <option key={u} value={u}>
-                  {u}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm font-bold"
+              options={units.map((u) => ({ value: u, label: u }))}
+            />
+            <FormSelect
+              size="2"
+              ariaLabel="Lesson"
               value={lesson}
-              onChange={(e) => setLesson(e.target.value)}
-            >
-              <option value="">全部 Lesson</option>
-              {lessons.map((l) => (
-                <option key={l} value={l}>
-                  {l}
-                </option>
-              ))}
-            </select>
-            <select
-              className="rounded-lg border border-slate-200 px-2 py-1.5 text-sm font-bold"
+              onValueChange={setLesson}
+              options={[
+                { value: '', label: '全部 Lesson' },
+                ...lessons.map((l) => ({ value: l, label: l })),
+              ]}
+            />
+            <FormSelect
+              size="2"
+              ariaLabel="排序"
               value={sort}
-              onChange={(e) => setSort(e.target.value as SortMode)}
-            >
-              <option value="score-asc">分数 ↑（先看差的）</option>
-              <option value="score-desc">分数 ↓</option>
-              <option value="word">单词 A–Z</option>
-            </select>
-            <button
+              onValueChange={(next) => setSort(next as SortMode)}
+              options={[
+                { value: 'score-asc', label: '分数 ↑（先看差的）' },
+                { value: 'score-desc', label: '分数 ↓' },
+                { value: 'word', label: '单词 A–Z' },
+              ]}
+            />
+            <Button
               type="button"
               disabled={busy || !unit}
               onClick={() => void runBatch()}
-              className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-extrabold text-white shadow disabled:opacity-50"
+              variant="solid"
+              color="jade"
+              size="2"
             >
               {batchProgress
                 ? `配图中 ${batchProgress.done}/${batchProgress.total}`
                 : busy
                   ? '处理中…'
                   : '为当前列表自动配图'}
-            </button>
+            </Button>
           </div>
         </div>
         {message && (
@@ -400,17 +394,24 @@ function WordImagesPageInner({ user }: { user: User }) {
           const base = w.imagePath ? getWordImagePublicUrl(w.imagePath) : ''
           const src = base ? (bust ? `${base}?v=${bust}` : base) : ''
           return (
-            <article
+            <StickerCard
+              as="article"
+              size="none"
+              elevation="sm"
+              radius="md"
+              className="flex flex-col overflow-hidden"
               key={k}
-              className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
               <div className="relative aspect-[4/3] w-full shrink-0 bg-slate-100">
                 {src ? (
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setPreview({ src, word: w.word })}
-                    className="group absolute inset-0 cursor-zoom-in"
                     aria-label={`放大预览 ${w.word}`}
+                    variant="ghost"
+                    color="gray"
+                    size="2"
+                    className="absolute inset-0"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -422,7 +423,7 @@ function WordImagesPageInner({ user }: { user: User }) {
                     <span className="pointer-events-none absolute bottom-2 left-2 rounded-md bg-black/55 px-1.5 py-0.5 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
                       点击放大
                     </span>
-                  </button>
+                  </Button>
                 ) : (
                   <span className="absolute inset-0 flex items-center justify-center text-sm text-slate-400">
                     无配图
@@ -441,7 +442,7 @@ function WordImagesPageInner({ user }: { user: User }) {
               <div className="flex flex-1 flex-col gap-2 p-3">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <h2 className="text-[15px] font-black">{w.word}</h2>
-                  <span className="text-[12px] font-extrabold tabular-nums text-slate-600">
+                  <span className="text-[12px] font-extrabold text-slate-600 tabular-nums">
                     匹配度 {w.imageMatchScore != null ? w.imageMatchScore : '—'}
                   </span>
                   {w.vocabType && (
@@ -454,37 +455,44 @@ function WordImagesPageInner({ user }: { user: User }) {
                     {w.imageSource ? ` · ${w.imageSource}` : ''}
                   </span>
                 </div>
-                <p className="line-clamp-2 text-[12px] leading-relaxed text-slate-600">{w.explanation}</p>
+                <p className="line-clamp-2 text-[12px] leading-relaxed text-slate-600">
+                  {w.explanation}
+                </p>
                 {w.chineseDef && (
                   <p className="line-clamp-1 text-[12px] text-slate-400">{w.chineseDef}</p>
                 )}
                 <label className="block text-[10px] font-bold tracking-wide text-slate-400 uppercase">
                   搜索词
-                  <input
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-[13px] font-normal text-slate-700 normal-case"
+                  <TextField.Root
                     value={q}
                     onChange={(e) => setQueryEdits((prev) => ({ ...prev, [k]: e.target.value }))}
                     placeholder="改词后点重搜"
+                    size="2"
+                    className="mt-1 w-full"
                   />
                 </label>
                 <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
-                  <button
+                  <Button
                     type="button"
                     disabled={busy}
                     onClick={() => void rematch(w, { next: true })}
-                    className="rounded-lg border border-slate-200 px-2 py-1 text-[12px] font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                    variant="outline"
+                    color="gray"
+                    size="1"
                   >
                     换一张
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     disabled={busy || !q.trim()}
                     onClick={() => void rematch(w, { query: q.trim() })}
-                    className="rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-1 text-[12px] font-bold text-indigo-700 disabled:opacity-50"
+                    variant="soft"
+                    color="indigo"
+                    size="1"
                   >
                     改词重搜
-                  </button>
-                  <label className="cursor-pointer rounded-lg border border-slate-200 px-2 py-1 text-[12px] font-bold text-slate-600 hover:bg-slate-50">
+                  </Button>
+                  <label className="border-kid-line hover:bg-kid-paper cursor-pointer rounded-lg border-2 px-2 py-1 text-[12px] font-bold text-slate-600">
                     上传
                     <input
                       type="file"
@@ -498,17 +506,19 @@ function WordImagesPageInner({ user }: { user: User }) {
                       }}
                     />
                   </label>
-                  <button
+                  <Button
                     type="button"
                     disabled={busy || !w.imagePath}
                     onClick={() => void clearImage(w)}
-                    className="rounded-lg border border-red-200 px-2 py-1 text-[12px] font-bold text-red-600 disabled:opacity-50"
+                    variant="outline"
+                    color="red"
+                    size="1"
                   >
                     清除
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </article>
+            </StickerCard>
           )
         })}
       </main>
@@ -519,30 +529,33 @@ function WordImagesPageInner({ user }: { user: User }) {
           aria-modal="true"
           aria-label={`${preview.word} 配图预览`}
           onClick={() => setPreview(null)}
-          className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex cursor-zoom-out items-center justify-center bg-black/85 p-4"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={preview.src}
             alt={preview.word}
             onClick={(e) => e.stopPropagation()}
-            className="max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain shadow-2xl"
+            className="shadow-sticker-lg max-h-[92vh] max-w-[96vw] cursor-default rounded-lg bg-white object-contain"
           />
           <div
             onClick={(e) => e.stopPropagation()}
             className="absolute top-4 right-4 flex items-center gap-2"
           >
-            <span className="rounded-full bg-white/95 px-3 py-2 text-sm font-bold text-slate-700 shadow-lg">
+            <span className="shadow-sticker rounded-full bg-white px-3 py-2 text-sm font-bold text-slate-700">
               {preview.word}
             </span>
-            <button
+            <IconButton
               type="button"
               onClick={() => setPreview(null)}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/95 text-xl font-bold text-gray-700 shadow-lg transition hover:bg-white"
               aria-label="关闭"
+              variant="outline"
+              color="gray"
+              size="3"
+              className="w-10"
             >
               ×
-            </button>
+            </IconButton>
           </div>
         </div>
       )}

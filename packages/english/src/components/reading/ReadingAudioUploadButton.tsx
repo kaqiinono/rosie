@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import clsx from 'clsx'
+import { IconButton } from '@rosie/ui/themes'
 import { isReadingAudioFile } from '../../utils/reading-audio-types'
 
 type ReadingAudioUploadButtonProps = {
@@ -51,8 +52,6 @@ export default function ReadingAudioUploadButton({
     [onUpload, passageKey],
   )
 
-  const sizeClass = size === 'sm' ? 'h-8 w-8 text-[14px]' : 'h-9 w-9 text-[15px]'
-
   return (
     <div className={clsx('inline-flex flex-col items-end gap-0.5', className)}>
       <input
@@ -63,49 +62,22 @@ export default function ReadingAudioUploadButton({
         aria-hidden
         onChange={(e) => void onFileChange(e)}
       />
-      <button
+      <IconButton
         type="button"
-        disabled={uploading}
+        loading={uploading}
         onClick={openPicker}
-        title={
-          uploading
-            ? '上传中…'
-            : hasAudio
-              ? '重新上传将覆盖原音频'
-              : '选择音频文件上传'
-        }
-        aria-label={
-          uploading
-            ? '上传中'
-            : hasAudio
-              ? '更换课文音频'
-              : '上传课文音频'
-        }
-        className={clsx(
-          'inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full ring-1 transition active:scale-95 disabled:cursor-wait disabled:opacity-60',
-          sizeClass,
-          hasAudio
-            ? 'bg-white/90 text-slate-500 ring-slate-200 hover:bg-white hover:text-slate-700'
-            : 'bg-white/90 text-orange-700 ring-orange-200 hover:bg-white',
-          className,
-        )}
+        title={uploading ? '上传中…' : hasAudio ? '重新上传将覆盖原音频' : '选择音频文件上传'}
+        aria-label={uploading ? '上传中' : hasAudio ? '更换课文音频' : '上传课文音频'}
+        variant="outline"
+        color={hasAudio ? 'gray' : 'orange'}
+        size={size === 'sm' ? '2' : '3'}
+        radius="full"
+        className={clsx('shrink-0', className)}
       >
-        {uploading ? (
-          <span
-            aria-hidden
-            className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"
-          />
-        ) : hasAudio ? (
-          <ReplaceIcon />
-        ) : (
-          <UploadIcon />
-        )}
-      </button>
+        {hasAudio ? <ReplaceIcon /> : <UploadIcon />}
+      </IconButton>
       {error && (
-        <span
-          className="max-w-40 text-right text-[9px] leading-tight text-red-600"
-          role="alert"
-        >
+        <span className="max-w-40 text-right text-[9px] leading-tight text-red-600" role="alert">
           {error}
         </span>
       )}

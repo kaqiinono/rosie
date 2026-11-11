@@ -74,7 +74,7 @@ export default function GrammarStudyGuidePage({
         </div>
         <header className="text-center">
           <div className="inline-block text-5xl">🧭</div>
-          <h1 className="mt-2 bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
+          <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-sky-600">
             学习指导
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm">
@@ -100,7 +100,7 @@ export default function GrammarStudyGuidePage({
             <section
               key={d.unitNumber}
               id={`guide-${d.unitNumber}`}
-              className="bg-surface/90 ring-border-light flex scroll-mt-24 flex-col gap-4 rounded-2xl p-4 shadow-sm ring-1 backdrop-blur-sm sm:p-6"
+              className="bg-surface/90 ring-border-light shadow-sticker-sm flex scroll-mt-24 flex-col gap-4 rounded-2xl p-4 ring-1 sm:p-6"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-text-primary text-base font-black">{d.title}</h2>
@@ -144,7 +144,7 @@ export default function GrammarStudyGuidePage({
 
       {lightbox && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
           onClick={() => setLightbox(null)}
         >
           <div className="mx-4 max-h-[90vh] max-w-[90vw]" onClick={(e) => e.stopPropagation()}>

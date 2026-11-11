@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import type { GlossaryWord } from '../../utils/reading-data'
 import SpeakButton from '../words/SpeakButton'
+import { Button, IconButton } from '@rosie/ui/themes'
+import { AppDialog } from '@rosie/ui'
 
 interface Props {
   open: boolean
@@ -32,27 +34,28 @@ export default function GlossaryPanel({ open, onClose, glossary }: Props) {
   const ipa = entry.ipa?.replace(/^\/|\/$/g, '')
 
   return (
-    <div
-      className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 px-3 backdrop-blur-sm sm:items-center"
-      onClick={onClose}
+    <AppDialog
+      open
+      chrome="none"
+      title="本章难点词卡片"
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label="本章难点词卡片"
-        className="font-nunito relative w-full max-w-md overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="bg-gradient-to-br from-slate-50 to-amber-50 px-5 pt-5 pb-4">
+      <div className="font-nunito relative">
+        <div className="bg-amber-50 px-5 pt-5 pb-4">
           <div className="flex items-center justify-between gap-3">
             <span className="text-xs font-extrabold tracking-wider text-slate-500 uppercase">
               本章难点词 · {safeIndex + 1}/{glossary.length}
             </span>
-            <button
+            <IconButton
               type="button"
               onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-500 ring-1 ring-slate-200 transition hover:bg-slate-100"
               aria-label="关闭难点词卡片"
+              variant="outline"
+              color="gray"
+              size="2"
+              className="w-10"
             >
               <svg
                 width="18"
@@ -65,22 +68,18 @@ export default function GlossaryPanel({ open, onClose, glossary }: Props) {
               >
                 <path d="M18 6L6 18M6 6l12 12" />
               </svg>
-            </button>
+            </IconButton>
           </div>
           <div className="mt-4 flex items-center gap-3">
             <h2 className="font-fredoka min-w-0 text-3xl font-black text-slate-900">
               {entry.word}
             </h2>
-            <SpeakButton
-              word={entry.word}
-              size="text-[18px]"
-              className="h-11 w-11 shrink-0 bg-amber-100 text-amber-800 hover:bg-amber-200"
-            />
+            <SpeakButton word={entry.word} size="3" className="shrink-0" />
           </div>
           {ipa && <p className="mt-1 font-mono text-sm text-slate-500">/{ipa}/</p>}
           <div className="mt-3 flex flex-wrap gap-2">
             {entry.category && (
-              <span className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200">
+              <span className="ring-kid-line rounded-full bg-white px-2.5 py-1 text-xs font-bold text-slate-600 ring-1">
                 {entry.category}
               </span>
             )}
@@ -111,28 +110,34 @@ export default function GlossaryPanel({ open, onClose, glossary }: Props) {
           </div>
         </div>
 
-        <nav className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t border-slate-100 px-5 py-4">
-          <button
+        <nav className="border-kid-line grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t px-5 py-4">
+          <Button
             type="button"
             disabled={safeIndex === 0}
             onClick={() => setIndex((value) => value - 1)}
-            className="min-h-11 justify-self-start rounded-full px-3 text-sm font-bold text-sky-700 hover:bg-sky-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
+            variant="ghost"
+            color="sky"
+            size="3"
+            className="justify-self-start"
           >
             ← 上一张
-          </button>
+          </Button>
           <span className="text-xs font-bold text-slate-500 tabular-nums" aria-live="polite">
             {safeIndex + 1} / {glossary.length}
           </span>
-          <button
+          <Button
             type="button"
             disabled={safeIndex === glossary.length - 1}
             onClick={() => setIndex((value) => value + 1)}
-            className="min-h-11 justify-self-end rounded-full px-3 text-sm font-bold text-sky-700 hover:bg-sky-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent"
+            variant="ghost"
+            color="sky"
+            size="3"
+            className="justify-self-end"
           >
             下一张 →
-          </button>
+          </Button>
         </nav>
-      </section>
-    </div>
+      </div>
+    </AppDialog>
   )
 }

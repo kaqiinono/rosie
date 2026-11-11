@@ -14,6 +14,8 @@ import {
   moveEditorItem,
   useEditorDismissGuard,
 } from './GrammarEditorShared'
+import { FormSelect } from '@rosie/ui'
+import { Button, IconButton, TextArea, TextField } from '@rosie/ui/themes'
 
 interface GrammarExerciseEditorModalProps {
   groups: GrammarExerciseGroup[]
@@ -146,122 +148,355 @@ export function GrammarExerciseEditorModal({
       aria-modal="true"
       aria-labelledby="grammar-exercise-editor-title"
     >
-      <div className="flex h-dvh min-h-0 w-full max-w-none flex-col overflow-hidden bg-surface shadow-2xl">
-        <header className="flex items-center justify-between gap-3 border-b border-border-light px-4 py-3 sm:px-5">
+      <div className="bg-surface shadow-sticker-lg flex h-dvh min-h-0 w-full max-w-none flex-col overflow-hidden">
+        <header className="border-border-light flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-5">
           <div>
-            <h2 id="grammar-exercise-editor-title" className="font-black text-text-primary">管理练习</h2>
-            <p className="text-xs text-text-muted">编辑组、题型、题干、答案和选项，右侧实时预览</p>
+            <h2 id="grammar-exercise-editor-title" className="text-text-primary font-black">
+              管理练习
+            </h2>
+            <p className="text-text-muted text-xs">编辑组、题型、题干、答案和选项，右侧实时预览</p>
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <IconButton
               type="button"
               onClick={requestClose}
               disabled={saving}
               aria-label="关闭练习编辑器"
-              className="min-h-11 min-w-11 rounded-full text-lg font-bold text-text-secondary hover:bg-surface-dim disabled:opacity-40"
+              variant="ghost"
+              color="gray"
+              size="3"
             >
               ×
-            </button>
+            </IconButton>
           </div>
         </header>
 
         <div className="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[190px_minmax(0,1fr)_500px] lg:overflow-hidden">
-          <aside className="border-b border-border-light bg-surface-dim/50 p-3 lg:overflow-y-auto lg:border-r lg:border-b-0">
+          <aside className="border-border-light bg-surface-dim/50 border-b p-3 lg:overflow-y-auto lg:border-r lg:border-b-0">
             <div className="mb-2 grid grid-cols-2 gap-1.5">
-              <button type="button" onClick={addGroup} className="min-h-9 rounded-lg bg-app-blue text-xs font-bold text-white">＋ 新建组</button>
-              <button type="button" onClick={copyGroup} disabled={!current} className="min-h-9 rounded-lg bg-surface text-xs font-bold text-text-secondary ring-1 ring-border-light disabled:opacity-35">复制组</button>
+              <Button type="button" onClick={addGroup} variant="solid" color="blue" size="1">
+                ＋ 新建组
+              </Button>
+              <Button
+                type="button"
+                onClick={copyGroup}
+                disabled={!current}
+                variant="outline"
+                color="gray"
+                size="1"
+              >
+                复制组
+              </Button>
             </div>
             <div className="mb-2 grid grid-cols-3 gap-1">
-              <button type="button" onClick={() => moveGroup(-1)} disabled={activeGroup === 0} className="min-h-8 rounded-md bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↑</button>
-              <button type="button" onClick={() => moveGroup(1)} disabled={activeGroup >= draft.length - 1} className="min-h-8 rounded-md bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↓</button>
-              <button type="button" onClick={deleteGroup} disabled={!current} className="min-h-8 rounded-md bg-app-red-light text-xs font-bold text-app-red disabled:opacity-30">删除</button>
+              <IconButton
+                type="button"
+                onClick={() => moveGroup(-1)}
+                disabled={activeGroup === 0}
+                variant="outline"
+                color="gray"
+                size="1"
+              >
+                ↑
+              </IconButton>
+              <IconButton
+                type="button"
+                onClick={() => moveGroup(1)}
+                disabled={activeGroup >= draft.length - 1}
+                variant="outline"
+                color="gray"
+                size="1"
+              >
+                ↓
+              </IconButton>
+              <Button
+                type="button"
+                onClick={deleteGroup}
+                disabled={!current}
+                variant="soft"
+                color="red"
+                size="1"
+              >
+                删除
+              </Button>
             </div>
             <div className="flex gap-1.5 overflow-x-auto lg:flex-col lg:overflow-visible">
               {draft.map((group, index) => (
-                <button
+                <Button
                   key={`${group.section}-${index}`}
                   type="button"
                   onClick={() => setActiveGroup(index)}
-                  className={`min-h-10 min-w-28 rounded-lg px-2 text-left text-xs font-bold ring-1 ${
-                    index === activeGroup
-                      ? 'bg-app-blue-light text-app-blue-dark ring-app-blue/30'
-                      : 'bg-surface text-text-secondary ring-border-light'
-                  }`}
+                  variant={index === activeGroup ? 'soft' : 'outline'}
+                  color={index === activeGroup ? 'blue' : 'gray'}
+                  size="1"
                 >
                   {group.section || `第 ${index + 1} 组`} · {group.items.length} 题
-                </button>
+                </Button>
               ))}
             </div>
           </aside>
 
-          <main className="min-w-0 border-b border-border-light p-4 sm:p-5 lg:overflow-y-auto lg:border-r lg:border-b-0">
+          <main className="border-border-light min-w-0 border-b p-4 sm:p-5 lg:overflow-y-auto lg:border-r lg:border-b-0">
             {current ? (
               <div className="flex flex-col gap-4">
                 <div className="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)_110px]">
-                  <label className="text-xs font-bold text-text-secondary">组编号
-                    <input value={current.section} onChange={(event) => updateGroup((group) => ({ ...group, section: event.target.value }))} className="mt-1 min-h-10 w-full rounded-lg px-3 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
+                  <label className="text-text-secondary text-xs font-bold">
+                    组编号
+                    <TextField.Root
+                      value={current.section}
+                      onChange={(event) =>
+                        updateGroup((group) => ({ ...group, section: event.target.value }))
+                      }
+                      size="2"
+                      className="mt-1 w-full"
+                    />
                   </label>
-                  <label className="text-xs font-bold text-text-secondary">练习说明
-                    <input value={current.instruction} onChange={(event) => updateGroup((group) => ({ ...group, instruction: event.target.value }))} className="mt-1 min-h-10 w-full rounded-lg px-3 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
+                  <label className="text-text-secondary text-xs font-bold">
+                    练习说明
+                    <TextField.Root
+                      value={current.instruction}
+                      onChange={(event) =>
+                        updateGroup((group) => ({ ...group, instruction: event.target.value }))
+                      }
+                      size="2"
+                      className="mt-1 w-full"
+                    />
                   </label>
-                  <label className="text-xs font-bold text-text-secondary">原书页码
-                    <input type="number" value={current.bookPage ?? ''} onChange={(event) => updateGroup((group) => ({ ...group, bookPage: event.target.value === '' ? undefined : Number(event.target.value) }))} className="mt-1 min-h-10 w-full rounded-lg px-3 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
+                  <label className="text-text-secondary text-xs font-bold">
+                    原书页码
+                    <TextField.Root
+                      type="number"
+                      value={current.bookPage ?? ''}
+                      onChange={(event) =>
+                        updateGroup((group) => ({
+                          ...group,
+                          bookPage:
+                            event.target.value === '' ? undefined : Number(event.target.value),
+                        }))
+                      }
+                      size="2"
+                      className="mt-1 w-full"
+                    />
                   </label>
                 </div>
 
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-black text-text-primary">题目</h3>
-                  <button
+                  <h3 className="text-text-primary text-sm font-black">题目</h3>
+                  <Button
                     type="button"
-                    onClick={() => updateGroup((group) => ({ ...group, items: [...group.items, emptyItem(nextQuestionNumber(group.items))] }))}
-                    className="min-h-9 rounded-full bg-app-blue px-4 text-xs font-bold text-white"
+                    onClick={() =>
+                      updateGroup((group) => ({
+                        ...group,
+                        items: [...group.items, emptyItem(nextQuestionNumber(group.items))],
+                      }))
+                    }
+                    variant="solid"
+                    color="blue"
+                    size="1"
                   >
                     ＋ 添加题目
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="flex flex-col gap-3">
                   {current.items.map((item, itemIndex) => (
-                    <article key={itemIndex} className="rounded-xl bg-surface-dim/45 p-3 ring-1 ring-border-light">
+                    <article
+                      key={itemIndex}
+                      className="bg-surface-dim/45 ring-border-light rounded-xl p-3 ring-1"
+                    >
                       <div className="mb-3 flex flex-wrap items-center gap-2">
-                        <input type="number" min={1} value={item.number} aria-label={`第 ${itemIndex + 1} 题题号`} onChange={(event) => updateItem(itemIndex, (value) => ({ ...value, number: Number(event.target.value) }))} className="h-9 w-16 rounded-lg bg-surface px-2 text-center text-sm font-bold text-text-primary ring-1 ring-border-light" />
-                        <select value={item.type} onChange={(event) => updateItem(itemIndex, (value) => ({ ...value, type: event.target.value as GrammarExerciseType }))} className="h-9 rounded-lg bg-surface px-2 text-xs font-bold text-text-primary ring-1 ring-border-light">
-                          {EXERCISE_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
-                        </select>
+                        <TextField.Root
+                          size="2"
+                          type="number"
+                          min={1}
+                          value={item.number}
+                          aria-label={`第 ${itemIndex + 1} 题题号`}
+                          onChange={(event) =>
+                            updateItem(itemIndex, (value) => ({
+                              ...value,
+                              number: Number(event.target.value),
+                            }))
+                          }
+                          className="w-20"
+                        />
+                        <FormSelect
+                          size="2"
+                          value={item.type}
+                          ariaLabel={`第 ${itemIndex + 1} 题题型`}
+                          onValueChange={(next) =>
+                            updateItem(itemIndex, (value) => ({
+                              ...value,
+                              type: next as GrammarExerciseType,
+                            }))
+                          }
+                          options={EXERCISE_TYPES}
+                        />
                         <div className="ml-auto flex gap-1">
-                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: moveEditorItem(group.items, itemIndex, itemIndex - 1) }))} disabled={itemIndex === 0} className="h-9 min-w-9 rounded-lg bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↑</button>
-                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: moveEditorItem(group.items, itemIndex, itemIndex + 1) }))} disabled={itemIndex === current.items.length - 1} className="h-9 min-w-9 rounded-lg bg-surface text-xs font-bold text-text-secondary disabled:opacity-30">↓</button>
-                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: [...group.items.slice(0, itemIndex + 1), { ...item, number: nextQuestionNumber(group.items), options: item.options ? [...item.options] : null }, ...group.items.slice(itemIndex + 1)] }))} className="h-9 rounded-lg bg-surface px-2 text-xs font-bold text-text-secondary">复制</button>
-                          <button type="button" onClick={() => updateGroup((group) => ({ ...group, items: group.items.filter((_, index) => index !== itemIndex) }))} className="h-9 rounded-lg bg-app-red-light px-2 text-xs font-bold text-app-red">删除</button>
+                          <IconButton
+                            type="button"
+                            onClick={() =>
+                              updateGroup((group) => ({
+                                ...group,
+                                items: moveEditorItem(group.items, itemIndex, itemIndex - 1),
+                              }))
+                            }
+                            disabled={itemIndex === 0}
+                            variant="outline"
+                            color="gray"
+                            size="1"
+                          >
+                            ↑
+                          </IconButton>
+                          <IconButton
+                            type="button"
+                            onClick={() =>
+                              updateGroup((group) => ({
+                                ...group,
+                                items: moveEditorItem(group.items, itemIndex, itemIndex + 1),
+                              }))
+                            }
+                            disabled={itemIndex === current.items.length - 1}
+                            variant="outline"
+                            color="gray"
+                            size="1"
+                          >
+                            ↓
+                          </IconButton>
+                          <Button
+                            type="button"
+                            onClick={() =>
+                              updateGroup((group) => ({
+                                ...group,
+                                items: [
+                                  ...group.items.slice(0, itemIndex + 1),
+                                  {
+                                    ...item,
+                                    number: nextQuestionNumber(group.items),
+                                    options: item.options ? [...item.options] : null,
+                                  },
+                                  ...group.items.slice(itemIndex + 1),
+                                ],
+                              }))
+                            }
+                            variant="outline"
+                            color="gray"
+                            size="1"
+                          >
+                            复制
+                          </Button>
+                          <Button
+                            type="button"
+                            onClick={() =>
+                              updateGroup((group) => ({
+                                ...group,
+                                items: group.items.filter((_, index) => index !== itemIndex),
+                              }))
+                            }
+                            variant="soft"
+                            color="red"
+                            size="1"
+                          >
+                            删除
+                          </Button>
                         </div>
                       </div>
 
-                      <label className="block text-xs font-bold text-text-secondary">题干
-                        <textarea value={item.prompt} onChange={(event) => updateItem(itemIndex, (value) => ({ ...value, prompt: event.target.value }))} className="mt-1 min-h-20 w-full resize-y rounded-lg bg-surface p-2.5 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
+                      <label className="text-text-secondary block text-xs font-bold">
+                        题干
+                        <TextArea
+                          value={item.prompt}
+                          onChange={(event) =>
+                            updateItem(itemIndex, (value) => ({
+                              ...value,
+                              prompt: event.target.value,
+                            }))
+                          }
+                          size="2"
+                          resize="vertical"
+                          className="mt-1 w-full"
+                        />
                       </label>
-                      <button type="button" onClick={() => updateItem(itemIndex, (value) => ({ ...value, prompt: `${value.prompt}${value.prompt.endsWith(' ') || value.prompt === '' ? '' : ' '}______` }))} className="mt-1.5 rounded-full bg-app-blue-light px-3 py-1 text-[11px] font-bold text-app-blue-dark">＋ 插入填空</button>
-                      <span className="ml-2 text-[11px] font-medium text-text-muted">
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          updateItem(itemIndex, (value) => ({
+                            ...value,
+                            prompt: `${value.prompt}${value.prompt.endsWith(' ') || value.prompt === '' ? '' : ' '}______`,
+                          }))
+                        }
+                        variant="soft"
+                        color="blue"
+                        size="1"
+                        className="mt-1.5"
+                      >
+                        ＋ 插入填空
+                      </Button>
+                      <span className="text-text-muted ml-2 text-[11px] font-medium">
                         示例写法：题干 ==&gt; 示例答案 &lt;== 后续题干
                       </span>
 
                       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                        <label className="text-xs font-bold text-text-secondary">标准答案
-                          <textarea value={item.answer} onChange={(event) => updateItem(itemIndex, (value) => ({ ...value, answer: event.target.value }))} placeholder="留空表示开放题" className="mt-1 min-h-16 w-full resize-y rounded-lg bg-surface p-2.5 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
-                          <span className="mt-1 block font-medium text-text-muted">单空题有多个可接受答案时，每行填写一个答案。</span>
+                        <label className="text-text-secondary text-xs font-bold">
+                          标准答案
+                          <TextArea
+                            value={item.answer}
+                            onChange={(event) =>
+                              updateItem(itemIndex, (value) => ({
+                                ...value,
+                                answer: event.target.value,
+                              }))
+                            }
+                            placeholder="留空表示开放题"
+                            size="2"
+                            resize="vertical"
+                            className="mt-1 w-full"
+                          />
+                          <span className="text-text-muted mt-1 block font-medium">
+                            单空题有多个可接受答案时，每行填写一个答案。
+                          </span>
                         </label>
-                        <label className="text-xs font-bold text-text-secondary">选项（每行一个）
-                          <textarea value={(item.options ?? []).join('\n')} onChange={(event) => updateItem(itemIndex, (value) => ({ ...value, options: event.target.value === '' ? null : event.target.value.split('\n') }))} className="mt-1 min-h-16 w-full resize-y rounded-lg bg-surface p-2.5 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
+                        <label className="text-text-secondary text-xs font-bold">
+                          选项（每行一个）
+                          <TextArea
+                            value={(item.options ?? []).join('\n')}
+                            onChange={(event) =>
+                              updateItem(itemIndex, (value) => ({
+                                ...value,
+                                options:
+                                  event.target.value === '' ? null : event.target.value.split('\n'),
+                              }))
+                            }
+                            size="2"
+                            resize="vertical"
+                            className="mt-1 w-full"
+                          />
                         </label>
                       </div>
-                      <label className="mt-3 block text-xs font-bold text-text-secondary">关联学习单元（逗号分隔）
-                        <input value={(item.studyUnits ?? []).join(', ')} onChange={(event) => updateItem(itemIndex, (value) => ({ ...value, studyUnits: event.target.value.split(/[,，\s]+/).map(Number).filter((number) => Number.isFinite(number) && number > 0) }))} className="mt-1 min-h-9 w-full rounded-lg bg-surface px-3 text-sm text-text-primary outline-none ring-1 ring-border-light focus:ring-2 focus:ring-app-blue" />
+                      <label className="text-text-secondary mt-3 block text-xs font-bold">
+                        关联学习单元（逗号分隔）
+                        <TextField.Root
+                          value={(item.studyUnits ?? []).join(', ')}
+                          onChange={(event) =>
+                            updateItem(itemIndex, (value) => ({
+                              ...value,
+                              studyUnits: event.target.value
+                                .split(/[,，\s]+/)
+                                .map(Number)
+                                .filter((number) => Number.isFinite(number) && number > 0),
+                            }))
+                          }
+                          size="2"
+                          className="mt-1 w-full"
+                        />
                       </label>
                     </article>
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="py-16 text-center text-sm text-text-muted">暂无练习组，点击左侧“新建组”开始添加。</div>
+              <div className="text-text-muted py-16 text-center text-sm">
+                暂无练习组，点击左侧“新建组”开始添加。
+              </div>
             )}
           </main>
 
@@ -270,14 +505,44 @@ export function GrammarExerciseEditorModal({
             page={current?.bookPage}
             imageType="exercise"
             previewEmpty={previewGroups.length === 0}
-            preview={<ExerciseView groups={previewGroups} isAdmin={false} pageImages={[]} onGroupResult={() => {}} onPreviewFigure={() => {}} />}
+            preview={
+              <ExerciseView
+                groups={previewGroups}
+                isAdmin={false}
+                pageImages={[]}
+                onGroupResult={() => {}}
+                onPreviewFigure={() => {}}
+              />
+            }
           />
         </div>
 
-        <footer className="flex flex-wrap items-center justify-end gap-2 border-t border-border-light px-4 py-3 sm:px-5">
-          {error && <p role="alert" className="mr-auto text-sm font-bold text-app-red">{error}</p>}
-          <button type="button" onClick={requestClose} disabled={saving} className="min-h-11 rounded-full px-5 text-sm font-bold text-text-secondary ring-1 ring-border-light disabled:opacity-40">取消</button>
-          <button type="button" onClick={() => void handleSave()} disabled={saving} className="min-h-11 rounded-full bg-app-blue px-6 text-sm font-bold text-white disabled:opacity-50">{saving ? '保存中…' : '保存并应用'}</button>
+        <footer className="border-border-light flex flex-wrap items-center justify-end gap-2 border-t px-4 py-3 sm:px-5">
+          {error && (
+            <p role="alert" className="text-app-red mr-auto text-sm font-bold">
+              {error}
+            </p>
+          )}
+          <Button
+            type="button"
+            onClick={requestClose}
+            disabled={saving}
+            variant="outline"
+            color="gray"
+            size="3"
+          >
+            取消
+          </Button>
+          <Button
+            type="button"
+            onClick={() => void handleSave()}
+            disabled={saving}
+            variant="solid"
+            color="blue"
+            size="3"
+          >
+            {saving ? '保存中…' : '保存并应用'}
+          </Button>
         </footer>
       </div>
     </div>

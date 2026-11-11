@@ -7,6 +7,7 @@ import { useGrammarMastery } from '../hooks/useGrammarMastery'
 import { useGrammarToc, type GrammarTocEntry, type GrammarTocGroup } from '../grammar-toc'
 import { BACKMATTER_ICONS } from '../grammar-toc'
 import type { GrammarBookId } from '../types'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 /** 单元行：编号徽章 + 标题；当前单元高亮，锁定单元不可点击 */
 function UnitRow({
@@ -27,7 +28,7 @@ function UnitRow({
           entry.locked
             ? 'bg-surface-dim text-text-muted'
             : active
-              ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white'
+              ? 'bg-teal-600 text-white'
               : 'bg-surface-dim text-text-secondary'
         }`}
       >
@@ -97,7 +98,7 @@ function TocList({
     const open = openSections.has(section.id)
     return (
       <div key={section.id}>
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           type="button"
           onClick={() => onToggleSection(section.id)}
           className="hover:bg-surface-dim flex min-h-9 w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-colors"
@@ -225,31 +226,36 @@ export default function GrammarToc({
     <>
       {/* 桌面 sticky 侧栏（lg+；md 区间归入抽屉模式，避免挤压内容列） */}
       <aside
-        className={`bg-surface/90 ring-border-light sticky top-5 z-20 hidden shrink-0 self-start overflow-hidden rounded-2xl shadow-sm ring-1 backdrop-blur-sm transition-[width] duration-200 lg:block ${
+        className={`bg-surface/90 ring-border-light shadow-sticker-sm sticky top-5 z-20 hidden shrink-0 self-start overflow-hidden rounded-2xl ring-1 transition-[width] duration-200 lg:block ${
           collapsed ? 'w-11' : 'w-[248px]'
         }`}
       >
         {collapsed ? (
-          <button
+          <IconButton
             type="button"
             onClick={() => setCollapsed(false)}
             aria-label="展开目录"
-            className="hover:bg-surface-dim flex h-12 w-full items-center justify-center text-base transition-colors"
+            variant="ghost"
+            color="gray"
+            size="3"
+            className="w-full"
           >
             ☰
-          </button>
+          </IconButton>
         ) : (
           <div className="flex h-[calc(100vh-2.5rem)] flex-col">
             <div className="border-border-light flex shrink-0 items-center justify-between border-b px-3 py-2.5">
               <span className="text-text-primary text-sm font-black">📗 目录</span>
-              <button
+              <IconButton
                 type="button"
                 onClick={() => setCollapsed(true)}
                 aria-label="收起目录"
-                className="text-text-muted hover:bg-surface-dim rounded-md px-1.5 py-0.5 text-xs transition-colors"
+                variant="ghost"
+                color="gray"
+                size="1"
               >
                 ◀◀
-              </button>
+              </IconButton>
             </div>
             <nav className="flex-1 overflow-y-auto px-2 py-2">{list}</nav>
           </div>
@@ -257,16 +263,17 @@ export default function GrammarToc({
       </aside>
 
       {/* 移动/平板：左下角悬浮胶囊（避开右下 AI 助手）+ 抽屉 */}
-      <button
+      <Button
         type="button"
         onClick={() => setMobileOpen(true)}
         aria-label="打开目录"
-        className={`bg-surface ring-border-light fixed bottom-4 left-3 z-30 flex h-11 items-center gap-1.5 rounded-full px-4 text-sm font-bold shadow-md ring-1 transition-all active:scale-95 lg:hidden ${
-          mobileOpen ? 'pointer-events-none opacity-0' : ''
-        }`}
+        variant="outline"
+        color="gray"
+        size="3"
+        className="fixed bottom-4 left-3 z-30 lg:hidden"
       >
         📗 目录
-      </button>
+      </Button>
 
       {mobileOpen && (
         <div
@@ -276,17 +283,20 @@ export default function GrammarToc({
           aria-label="单元目录"
         >
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
-          <div className="bg-surface absolute inset-y-0 left-0 flex w-[300px] max-w-[85vw] flex-col pb-[env(safe-area-inset-bottom)] shadow-2xl">
+          <div className="bg-surface shadow-sticker-lg absolute inset-y-0 left-0 flex w-[300px] max-w-[85vw] flex-col pb-[env(safe-area-inset-bottom)]">
             <div className="border-border-light flex h-12 shrink-0 items-center justify-between border-b px-3">
               <span className="text-text-primary text-sm font-black">📗 目录</span>
-              <button
+              <IconButton
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="关闭目录"
-                className="text-text-muted hover:bg-surface-dim flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors"
+                variant="ghost"
+                color="gray"
+                size="2"
+                className="w-9"
               >
                 ✕
-              </button>
+              </IconButton>
             </div>
             <nav className="flex-1 overflow-y-auto px-2 py-2">{list}</nav>
           </div>

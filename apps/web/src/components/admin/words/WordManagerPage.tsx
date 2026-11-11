@@ -2,6 +2,20 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { LoadingOverlay, StickerCard } from '@rosie/ui'
+import {
+  Box,
+  Button,
+  Card,
+  Flex,
+  Heading,
+  IconButton,
+  Select,
+  Table,
+  Text,
+  TextField,
+  Theme,
+} from '@rosie/ui/themes'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry } from '@rosie/core'
 import { useWordData } from '@rosie/english'
@@ -13,6 +27,34 @@ import NewStageModal from './NewStageModal'
 import { withDraftEntry, type StageTree, type StageUnit } from './types'
 
 type Props = { user: User | null }
+
+type FilterSelectProps = {
+  label: string
+  options: string[]
+  value: string
+  onChange: (value: string) => void
+}
+
+function FilterSelect({ label, options, value, onChange }: FilterSelectProps) {
+  // Radix reserves the empty string. Prefix every value, including the unfiltered choice.
+  const prefix = 'filter:'
+  return (
+    <Select.Root
+      value={prefix + value}
+      onValueChange={(next) => onChange(next.slice(prefix.length))}
+    >
+      <Select.Trigger aria-label={label + '筛选'} />
+      <Select.Content position="popper">
+        <Select.Item value={prefix}>全部{label}</Select.Item>
+        {options.filter(Boolean).map((option) => (
+          <Select.Item key={option} value={prefix + option}>
+            {option}
+          </Select.Item>
+        ))}
+      </Select.Content>
+    </Select.Root>
+  )
+}
 
 const NO_STAGE = ''
 const NO_STAGE_LABEL = '（无词库）'
@@ -72,7 +114,8 @@ function writeDraftStages(userId: string | undefined, list: StageTree[]) {
 }
 
 export default function WordManagerPage({ user }: Props) {
-  const { vocab, addWords, updateWord, deleteWord, deleteStage, renameStage } = useWordData(user)
+  const { vocab, isLoading, error, addWords, updateWord, deleteWord, deleteStage, renameStage } =
+    useWordData(user)
 
   const [activeStage, setActiveStage] = useState<string | null>(null)
   const [draftStages, setDraftStagesState] = useState<StageTree[]>(() => readDraftStages(user?.id))
@@ -81,7 +124,6 @@ export default function WordManagerPage({ user }: Props) {
   const [search, setSearch] = useState('')
   const [form, setForm] = useState<FormState>(null)
   const [previewWord, setPreviewWord] = useState<WordEntry | null>(null)
-  const [batchOpen, setBatchOpen] = useState(false)
   const [newStageOpen, setNewStageOpen] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
 
@@ -100,9 +142,15 @@ export default function WordManagerPage({ user }: Props) {
     const map = new Map<string, Map<string, Set<string>>>()
     const ensure = (s: string, u: string) => {
       let um = map.get(s)
-      if (!um) { um = new Map(); map.set(s, um) }
+      if (!um) {
+        um = new Map()
+        map.set(s, um)
+      }
       let ls = um.get(u)
-      if (!ls) { ls = new Set(); um.set(u, ls) }
+      if (!ls) {
+        ls = new Set()
+        um.set(u, ls)
+      }
       return ls
     }
     for (const w of vocab) ensure(w.stage ?? NO_STAGE, w.unit).add(w.lesson)
@@ -145,7 +193,10 @@ export default function WordManagerPage({ user }: Props) {
   // 表格筛选用的单元/课次（基于真实单词）
   const units = useMemo(() => [...new Set(stageWords.map((w) => w.unit))].sort(), [stageWords])
   const lessons = useMemo(
-    () => [...new Set(stageWords.filter((w) => !selUnit || w.unit === selUnit).map((w) => w.lesson))].sort(),
+    () =>
+      [
+        ...new Set(stageWords.filter((w) => !selUnit || w.unit === selUnit).map((w) => w.lesson)),
+      ].sort(),
     [stageWords, selUnit],
   )
 
@@ -202,8 +253,10 @@ export default function WordManagerPage({ user }: Props) {
   }
 
   // 表单内联创建 stage / unit / lesson → 持久化到草稿结构，级联选项即时可见且刷新不丢
-  const handleCreateStageInForm = (stage: string) => persistDrafts(withDraftEntry(draftStages, stage))
-  const handleCreateUnit = (stage: string, unit: string) => persistDrafts(withDraftEntry(draftStages, stage, unit))
+  const handleCreateStageInForm = (stage: string) =>
+    persistDrafts(withDraftEntry(draftStages, stage))
+  const handleCreateUnit = (stage: string, unit: string) =>
+    persistDrafts(withDraftEntry(draftStages, stage, unit))
   const handleCreateLesson = (stage: string, unit: string, lesson: string) =>
     persistDrafts(withDraftEntry(draftStages, stage, unit, lesson))
 
@@ -236,7 +289,6 @@ export default function WordManagerPage({ user }: Props) {
 
   const handleBatchConfirm = async (words: WordEntry[]) => {
     await addWords(words)
-    setBatchOpen(false)
     triggerFlash(`已添加 ${words.length} 个单词`)
   }
 
@@ -245,7 +297,15 @@ export default function WordManagerPage({ user }: Props) {
     const xlsx = await import('xlsx')
     const { utils, writeFile } = xlsx.default || xlsx
     const wb = utils.book_new()
-    const headers = ['Stage', 'Unit', 'Lesson', '单词 (word)', '释义 (explanation)', '音标 (ipa)', '例句 (example)']
+    const headers = [
+      'Stage',
+      'Unit',
+      'Lesson',
+      '单词 (word)',
+      '释义 (explanation)',
+      '音标 (ipa)',
+      '例句 (example)',
+    ]
     const data = [
       headers,
       ...rows.map((v) => [
@@ -259,7 +319,15 @@ export default function WordManagerPage({ user }: Props) {
       ]),
     ]
     const ws = utils.aoa_to_sheet(data)
-    ws['!cols'] = [{ wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 22 }, { wch: 45 }, { wch: 18 }, { wch: 50 }]
+    ws['!cols'] = [
+      { wch: 8 },
+      { wch: 10 },
+      { wch: 12 },
+      { wch: 22 },
+      { wch: 45 },
+      { wch: 18 },
+      { wch: 50 },
+    ]
     utils.book_append_sheet(wb, ws, '单词数据')
     writeFile(wb, 'RosieFun_词库.xlsx')
     triggerFlash(`已导出 ${rows.length} 个单词`)
@@ -267,21 +335,26 @@ export default function WordManagerPage({ user }: Props) {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">请先登录</div>
+      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
+        请先登录
+      </div>
     )
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg,#fffbeb 0%,#fff1f2 45%,#eff6ff 100%)' }}>
+    <div className="flex min-h-dvh flex-col" style={{ background: '#fff1f2' }}>
       <header
-        className="sticky top-0 z-30 border-b border-amber-200/40 backdrop-blur"
+        className="sticky top-0 z-30 border-b border-amber-200/40"
         style={{ background: 'rgba(255,255,255,0.85)' }}
       >
         <div className="mx-auto flex h-14 max-w-[1400px] items-center gap-3 px-4">
           <Link
             href="/admin"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-amber-700 transition hover:scale-110"
-            style={{ background: 'rgba(245,158,11,0.10)', border: '1.5px solid rgba(245,158,11,0.30)' }}
+            style={{
+              background: 'rgba(245,158,11,0.10)',
+              border: '1.5px solid rgba(245,158,11,0.30)',
+            }}
             aria-label="返回管理后台"
           >
             ←
@@ -293,7 +366,10 @@ export default function WordManagerPage({ user }: Props) {
           {flash && (
             <div
               className="ml-auto rounded-full px-3 py-1 text-[12px] font-extrabold text-emerald-700"
-              style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.4)' }}
+              style={{
+                background: 'rgba(16,185,129,0.12)',
+                border: '1px solid rgba(16,185,129,0.4)',
+              }}
             >
               ✓ {flash}
             </div>
@@ -301,178 +377,273 @@ export default function WordManagerPage({ user }: Props) {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-[1400px] grid-cols-1 gap-4 px-4 py-6 pb-20 md:grid-cols-[240px_1fr]">
-        {/* 词库侧栏 */}
-        <aside className="space-y-3">
-          <div className="rounded-2xl bg-white/85 p-3 shadow-sm" style={{ border: '1.5px solid rgba(245,158,11,0.22)' }}>
-            <div className="mb-2 text-[11px] font-extrabold tracking-[0.18em] text-amber-800/80 uppercase">词库</div>
-            <div className="space-y-1.5">
-              {stages.length === 0 && (
-                <div className="rounded-lg bg-white/60 py-4 text-center text-[12px] text-slate-400">还没有词库，新建一个</div>
-              )}
-              {stages.map(({ stage, count }) => {
-                const active = stage === effectiveStage
-                return (
-                  <div
-                    key={stage || '__none__'}
-                    className="group flex items-center gap-1 rounded-xl px-2 py-1.5 transition"
-                    style={{
-                      background: active ? 'linear-gradient(135deg,rgba(245,158,11,0.16),rgba(244,63,94,0.10))' : 'rgba(255,255,255,0.6)',
-                      border: active ? '1.5px solid rgba(245,158,11,0.45)' : '1.5px solid transparent',
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => { setActiveStage(stage); setSelUnit(''); setSelLesson('') }}
-                      className="flex flex-1 cursor-pointer items-center justify-between gap-2 text-left"
-                    >
-                      <span className="text-[13px] font-extrabold text-slate-800">{stage || NO_STAGE_LABEL}</span>
-                      <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-slate-500 tabular-nums">{count}</span>
-                    </button>
-                    {stage !== NO_STAGE && (
-                      <div className="flex shrink-0 opacity-0 transition group-hover:opacity-100">
-                        <button type="button" onClick={() => handleRenameStage(stage)} className="cursor-pointer rounded px-1 text-[11px] text-slate-500 hover:text-amber-700" title="重命名">✎</button>
-                        <button type="button" onClick={() => handleDeleteStage(stage)} className="cursor-pointer rounded px-1 text-[11px] text-slate-400 hover:text-red-600" title="删除词库">🗑</button>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="mt-3 border-t border-slate-200 pt-3">
-              <button
-                type="button"
-                onClick={() => setNewStageOpen(true)}
-                className="w-full cursor-pointer rounded-lg py-2 text-[13px] font-extrabold text-white shadow transition hover:-translate-y-px"
-                style={{ background: 'linear-gradient(135deg,#f59e0b,#b45309)', boxShadow: '0 3px 10px rgba(245,158,11,0.35)' }}
+      <main
+        className={
+          isLoading
+            ? 'flex flex-1 flex-col'
+            : 'mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-4 px-4 py-6 pb-20 md:grid-cols-[240px_1fr]'
+        }
+      >
+        {isLoading ? (
+          <LoadingOverlay visible placement="content" />
+        ) : error != null ? (
+          <Box gridColumn="1 / -1">
+            <Card>
+              <Text as="p" align="center" size="2" color="red" role="alert">
+                词库加载失败，请刷新页面重试。
+              </Text>
+            </Card>
+          </Box>
+        ) : (
+          <>
+            {/* 词库侧栏 */}
+            <aside className="space-y-3">
+              <StickerCard
+                size="sm"
+                elevation="sm"
+                radius="md"
+                style={{ border: '1.5px solid rgba(245,158,11,0.22)' }}
               >
-                + 新建词库
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        {/* 单词区 */}
-        <section className="space-y-3">
-          {/* 工具条 */}
-          <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-white/85 p-3 shadow-sm" style={{ border: '1.5px solid rgba(15,23,42,0.06)' }}>
-            <select
-              value={selUnit}
-              onChange={(e) => { setSelUnit(e.target.value); setSelLesson('') }}
-              className="rounded-lg border-2 border-slate-200 bg-white px-2 py-1.5 text-[13px] font-bold text-slate-700 focus:border-amber-400 focus:outline-none"
-            >
-              <option value="">全部单元</option>
-              {units.map((u) => <option key={u} value={u}>{u}</option>)}
-            </select>
-            <select
-              value={selLesson}
-              onChange={(e) => setSelLesson(e.target.value)}
-              className="rounded-lg border-2 border-slate-200 bg-white px-2 py-1.5 text-[13px] font-bold text-slate-700 focus:border-amber-400 focus:outline-none"
-            >
-              <option value="">全部课次</option>
-              {lessons.map((l) => <option key={l} value={l}>{l}</option>)}
-            </select>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索 单词 / 释义 / 中文"
-              className="min-w-[140px] flex-1 rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-[13px] focus:border-amber-400 focus:outline-none"
-            />
-            <div className="ml-auto flex gap-2">
-              <button
-                type="button"
-                onClick={() => void handleExportVocab()}
-                disabled={rows.length === 0}
-                className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                导出词库
-              </button>
-              <button
-                type="button"
-                onClick={() => setBatchOpen(true)}
-                disabled={!hasStage}
-                className="cursor-pointer rounded-full border border-amber-300 bg-white px-3 py-1.5 text-[12px] font-extrabold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                批量添加
-              </button>
-              <button
-                type="button"
-                onClick={() => setForm({ mode: 'new' })}
-                disabled={!hasStage}
-                className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-extrabold text-white shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: 'linear-gradient(135deg,#f59e0b,#b45309)', boxShadow: '0 3px 10px rgba(245,158,11,0.4)' }}
-              >
-                + 添加单词
-              </button>
-            </div>
-          </div>
-
-          {/* 单词表 */}
-          <div className="overflow-hidden rounded-2xl bg-white/90 shadow-sm" style={{ border: '1.5px solid rgba(15,23,42,0.06)' }}>
-            <div className="flex items-center justify-between px-4 py-2 text-[12px] text-slate-500">
-              <span>词库 <span className="font-extrabold text-slate-700">{effectiveStage || NO_STAGE_LABEL}</span></span>
-              <span className="tabular-nums">{rows.length} 个单词</span>
-            </div>
-            <div className="max-h-[60vh] overflow-auto">
-              <table className="w-full border-collapse text-left text-[13px]">
-                <thead className="sticky top-0 z-10 bg-slate-50 text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">
-                  <tr>
-                    <th className="px-3 py-2">单词</th>
-                    <th className="px-3 py-2">音标</th>
-                    <th className="px-3 py-2">中文</th>
-                    <th className="px-3 py-2">英文释义</th>
-                    <th className="px-3 py-2">Unit</th>
-                    <th className="px-3 py-2">Lesson</th>
-                    <th className="px-3 py-2 text-right">操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.length === 0 && (
-                    <tr>
-                      <td colSpan={7} className="px-3 py-10 text-center text-[13px] text-slate-400">
-                        {hasStage ? '该筛选下还没有单词，点右上角「添加单词」' : '请先在左侧新建一个词库'}
-                      </td>
-                    </tr>
+                <div className="mb-2 text-[11px] font-extrabold tracking-[0.18em] text-amber-800/80 uppercase">
+                  词库
+                </div>
+                <div className="space-y-1.5">
+                  {stages.length === 0 && (
+                    <div className="rounded-lg bg-white py-4 text-center text-[12px] text-slate-400">
+                      还没有词库，新建一个
+                    </div>
                   )}
-                  {rows.map((w, i) => (
-                    <tr key={`${w.unit}::${w.lesson}::${w.word}::${i}`} className="border-t border-slate-100 hover:bg-amber-50/40">
-                      <td className="px-3 py-2 font-extrabold text-slate-800">{w.word}</td>
-                      <td className="px-3 py-2 font-mono text-[12px] text-slate-500">{w.ipa || '—'}</td>
-                      <td className="px-3 py-2 text-slate-700">{w.chineseDef || '—'}</td>
-                      <td className="max-w-[320px] truncate px-3 py-2 text-slate-600" title={w.explanation || ''}>{w.explanation || '—'}</td>
-                      <td className="px-3 py-2 text-slate-500">{w.unit}</td>
-                      <td className="px-3 py-2 text-slate-500">{w.lesson}</td>
-                      <td className="px-3 py-2 text-right whitespace-nowrap">
-                        <button
+                  {stages.map(({ stage, count }) => {
+                    const active = stage === effectiveStage
+                    return (
+                      <div
+                        key={stage || '__none__'}
+                        className="group flex items-center gap-1 rounded-xl px-2 py-1.5 transition"
+                        style={{
+                          background: active ? 'rgba(245,158,11,0.16)' : 'rgba(255,255,255,0.6)',
+                          border: active
+                            ? '1.5px solid rgba(245,158,11,0.45)'
+                            : '1.5px solid transparent',
+                        }}
+                      >
+                        <Button
                           type="button"
-                          onClick={() => setPreviewWord(w)}
-                          className="cursor-pointer rounded px-2 py-1 text-[12px] font-bold text-indigo-600 transition hover:bg-indigo-50"
+                          onClick={() => {
+                            setActiveStage(stage)
+                            setSelUnit('')
+                            setSelLesson('')
+                          }}
+                          variant="ghost"
+                          color="gray"
+                          size="2"
+                          className="flex-1"
                         >
-                          预览
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setForm({ mode: 'edit', word: w })}
-                          className="cursor-pointer rounded px-2 py-1 text-[12px] font-bold text-slate-600 transition hover:bg-slate-100"
-                        >
-                          编辑
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteWord(w)}
-                          className="cursor-pointer rounded px-2 py-1 text-[12px] font-bold text-red-600 transition hover:bg-red-50"
-                        >
-                          删除
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+                          <span className="text-[13px] font-extrabold text-slate-800">
+                            {stage || NO_STAGE_LABEL}
+                          </span>
+                          <span className="rounded-full bg-white px-1.5 py-0.5 text-[10px] font-bold text-slate-500 tabular-nums">
+                            {count}
+                          </span>
+                        </Button>
+                        {stage !== NO_STAGE && (
+                          <div className="flex shrink-0 opacity-0 transition group-hover:opacity-100">
+                            <IconButton
+                              type="button"
+                              onClick={() => handleRenameStage(stage)}
+                              title="重命名"
+                              variant="ghost"
+                              color="gray"
+                              size="1"
+                            >
+                              ✎
+                            </IconButton>
+                            <IconButton
+                              type="button"
+                              onClick={() => handleDeleteStage(stage)}
+                              title="删除词库"
+                              variant="ghost"
+                              color="gray"
+                              size="1"
+                            >
+                              🗑
+                            </IconButton>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+
+                <div className="border-kid-line mt-3 border-t pt-3">
+                  <Button
+                    type="button"
+                    onClick={() => setNewStageOpen(true)}
+                    color="amber"
+                    variant="solid"
+                    size="2"
+                    className="w-full"
+                  >
+                    + 新建词库
+                  </Button>
+                </div>
+              </StickerCard>
+            </aside>
+
+            {/* 单词区 */}
+            <section className="min-w-0 space-y-3">
+              {/* 工具条 */}
+              <Card>
+                <Flex wrap="wrap" align="center" gap="2">
+                  <FilterSelect
+                    label="单元"
+                    options={units}
+                    value={selUnit}
+                    onChange={(unit) => {
+                      setSelUnit(unit)
+                      setSelLesson('')
+                    }}
+                  />
+                  <FilterSelect
+                    label="课次"
+                    options={lessons}
+                    value={selLesson}
+                    onChange={setSelLesson}
+                  />
+                  <div className="min-w-[140px] flex-1">
+                    <TextField.Root
+                      aria-label="搜索单词、释义或中文"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      placeholder="搜索单词 / 释义 / 中文"
+                    />
+                  </div>
+                  <div className="ml-auto flex gap-2">
+                    <Button
+                      type="button"
+                      variant="soft"
+                      color="gray"
+                      onClick={() => void handleExportVocab()}
+                      disabled={!rows.length}
+                    >
+                      导出词库
+                    </Button>
+                    <BatchAddModal
+                      defaultStage={effectiveStage}
+                      disabled={!hasStage}
+                      onConfirm={handleBatchConfirm}
+                    />
+                    <Button
+                      type="button"
+                      disabled={!hasStage}
+                      onClick={() => setForm({ mode: 'new' })}
+                    >
+                      + 添加单词
+                    </Button>
+                  </div>
+                </Flex>
+              </Card>
+
+              {/* 单词表 */}
+              <Card>
+                <Flex align="center" justify="between" gap="3" mb="3">
+                  <Heading as="h2" size="3">
+                    词库 {effectiveStage || NO_STAGE_LABEL}
+                  </Heading>
+                  <Text size="2" color="gray">
+                    {rows.length} 个单词
+                  </Text>
+                </Flex>
+                <Table.Root
+                  size="1"
+                  className="flex max-h-[60vh] flex-col"
+                  aria-label="词库单词列表"
+                  role="region"
+                >
+                  <Theme asChild hasBackground>
+                    <Table.Header className="sticky top-0 z-10">
+                      <Table.Row>
+                        <Table.ColumnHeaderCell>单词</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell>音标</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell>中文</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell>英文释义</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell>Unit</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell>Lesson</Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell justify="end">操作</Table.ColumnHeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+                  </Theme>
+                  <Table.Body>
+                    {rows.length === 0 && (
+                      <Table.Row>
+                        <Table.Cell colSpan={7} justify="center" py="5">
+                          <Text color="gray">
+                            {hasStage
+                              ? '该筛选下还没有单词，点右上角「添加单词」'
+                              : '请先在左侧新建一个词库'}
+                          </Text>
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                    {rows.map((w, i) => (
+                      <Table.Row key={`${w.unit}::${w.lesson}::${w.word}::${i}`} align="center">
+                        <Table.RowHeaderCell>
+                          <Text weight="medium">{w.word}</Text>
+                        </Table.RowHeaderCell>
+                        <Table.Cell>
+                          <Text color="gray">{w.ipa || '—'}</Text>
+                        </Table.Cell>
+                        <Table.Cell>{w.chineseDef || '—'}</Table.Cell>
+                        <Table.Cell>
+                          <Box maxWidth="20rem">
+                            <Text as="div" truncate title={w.explanation || undefined}>
+                              {w.explanation || '—'}
+                            </Text>
+                          </Box>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text wrap="nowrap">{w.unit}</Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Text wrap="nowrap">{w.lesson}</Text>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Flex justify="end" align="center" gap="3">
+                            <Button
+                              type="button"
+                              size="1"
+                              variant="ghost"
+                              onClick={() => setPreviewWord(w)}
+                            >
+                              预览
+                            </Button>
+                            <Button
+                              type="button"
+                              size="1"
+                              variant="ghost"
+                              color="gray"
+                              onClick={() => setForm({ mode: 'edit', word: w })}
+                            >
+                              编辑
+                            </Button>
+                            <Button
+                              type="button"
+                              size="1"
+                              variant="ghost"
+                              color="red"
+                              onClick={() => handleDeleteWord(w)}
+                            >
+                              删除
+                            </Button>
+                          </Flex>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </Card>
+            </section>
+          </>
+        )}
       </main>
 
       {newStageOpen && (
@@ -483,9 +654,7 @@ export default function WordManagerPage({ user }: Props) {
         />
       )}
 
-      {previewWord && (
-        <WordPreviewModal word={previewWord} onClose={() => setPreviewWord(null)} />
-      )}
+      {previewWord && <WordPreviewModal word={previewWord} onClose={() => setPreviewWord(null)} />}
 
       {form && (
         <WordFormModal
@@ -497,14 +666,6 @@ export default function WordManagerPage({ user }: Props) {
           onCreateLesson={handleCreateLesson}
           onCancel={() => setForm(null)}
           onSubmit={handleSubmitWord}
-        />
-      )}
-
-      {batchOpen && (
-        <BatchAddModal
-          defaultStage={effectiveStage}
-          onCancel={() => setBatchOpen(false)}
-          onConfirm={handleBatchConfirm}
         />
       )}
     </div>

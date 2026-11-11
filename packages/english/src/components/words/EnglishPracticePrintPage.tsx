@@ -18,6 +18,7 @@ import {
   nextPrintSeed,
 } from '../../utils/english-practice-print-helpers'
 import { getFilteredWords, lessonChipTag, letterCount, wordKey } from '../../utils/english-helpers'
+import { Button } from '@rosie/ui/themes'
 
 /** Minimum width ≈ three short English words; grows for longer phrases. */
 function printFourLineWidthRem(word: string): number {
@@ -52,7 +53,9 @@ function PrintQuestionBlock({
             <span className="en-print-qnum">{question.num}.</span>
             <span className="en-print-spell-prompt">{question.prompt}</span>
             {vocabType && (
-              <span className={`en-print-vocab-type en-print-vocab-type-${vocabType.toLowerCase()}`}>
+              <span
+                className={`en-print-vocab-type en-print-vocab-type-${vocabType.toLowerCase()}`}
+              >
                 {vocabType}
               </span>
             )}
@@ -85,9 +88,7 @@ function PrintQuestionBlock({
         <span className="en-print-lesson-tag">{lessonTag}</span>
       </div>
 
-      {question.ipa && (
-        <div className="en-print-ipa">{question.ipa}</div>
-      )}
+      {question.ipa && <div className="en-print-ipa">{question.ipa}</div>}
 
       <div className="en-print-options">
         {question.options.map((opt) => (
@@ -132,10 +133,7 @@ function parseSeed(raw: string | null): number {
 export default function EnglishPracticePrintPage() {
   const { vocab, masteryMap, selStage, setSelStage, isVocabLoading } = useWordsContext()
   const searchParams = useSearchParams()
-  const requestedSeed = useMemo(
-    () => parseSeed(searchParams.get('seed')),
-    [searchParams],
-  )
+  const requestedSeed = useMemo(() => parseSeed(searchParams.get('seed')), [searchParams])
   const [printSeed, setPrintSeed] = useState(requestedSeed)
 
   useEffect(() => {
@@ -158,22 +156,10 @@ export default function EnglishPracticePrintPage() {
 
   const stageReady = stage === selStage && !isVocabLoading
 
-  const selUnits = useMemo(
-    () => parsePrintUnits(searchParams.get('units')),
-    [searchParams],
-  )
-  const selLessons = useMemo(
-    () => parsePrintLessons(searchParams.get('lessons')),
-    [searchParams],
-  )
-  const selWords = useMemo(
-    () => parsePrintWords(searchParams.get('words')),
-    [searchParams],
-  )
-  const types = useMemo(
-    () => parsePrintTypes(searchParams.get('types')),
-    [searchParams],
-  )
+  const selUnits = useMemo(() => parsePrintUnits(searchParams.get('units')), [searchParams])
+  const selLessons = useMemo(() => parsePrintLessons(searchParams.get('lessons')), [searchParams])
+  const selWords = useMemo(() => parsePrintWords(searchParams.get('words')), [searchParams])
+  const types = useMemo(() => parsePrintTypes(searchParams.get('types')), [searchParams])
   const masteryFilter = useMemo(
     () => parsePrintMastery(searchParams.get('mastery')),
     [searchParams],
@@ -190,9 +176,7 @@ export default function EnglishPracticePrintPage() {
     }
     if (masteryFilter !== null) {
       base = base.filter(
-        (v) =>
-          getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) ===
-          masteryFilter,
+        (v) => getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter,
       )
     }
     return base
@@ -204,14 +188,7 @@ export default function EnglishPracticePrintPage() {
   )
 
   const title = useMemo(
-    () =>
-      buildPracticePrintTitle(
-        stage,
-        selUnits,
-        selLessons,
-        filteredWords.length,
-        types,
-      ),
+    () => buildPracticePrintTitle(stage, selUnits, selLessons, filteredWords.length, types),
     [stage, selUnits, selLessons, filteredWords.length, types],
   )
 
@@ -251,7 +228,7 @@ export default function EnglishPracticePrintPage() {
 
   return (
     <div className="en-print-root min-h-screen bg-stone-100">
-      <div className="en-no-print sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur-sm">
+      <div className="en-no-print border-kid-line sticky top-0 z-50 border-b bg-white">
         <div className="mx-auto flex h-14 max-w-[900px] items-center gap-2 px-3 sm:px-4">
           <Link
             href="/english/words/practice"
@@ -262,27 +239,28 @@ export default function EnglishPracticePrintPage() {
           <h1 className="min-w-0 flex-1 truncate text-center text-sm font-bold text-stone-800">
             打印预览 · {questionCount} 题
           </h1>
-          <button
+          <Button
             type="button"
             onClick={() =>
               runPrint(title, () =>
                 setPrintSeed((seed) => nextPrintSeed(filteredWords, types, vocab, seed)),
               )
             }
-            className="shrink-0 rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700 sm:px-4"
+            variant="solid"
+            color="indigo"
+            size="1"
+            className="shrink-0"
           >
             打印
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="mx-auto max-w-[900px] px-4 py-6 print:max-w-none print:p-0">
-        <div className="en-print-sheet rounded-lg bg-white p-8 shadow-sm print:rounded-none print:p-0 print:shadow-none">
+        <div className="en-print-sheet shadow-sticker-sm rounded-lg bg-white p-8 print:rounded-none print:p-0 print:shadow-none">
           <header className="en-print-doc-header">
             <h1 className="en-print-doc-title">{title}</h1>
-            <p className="en-print-doc-meta">
-              姓名：____________　　日期：____________
-            </p>
+            <p className="en-print-doc-meta">姓名：____________　　日期：____________</p>
           </header>
 
           {sections.map((section) => (

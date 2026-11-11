@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
 import { MONSTERS } from './monsters'
 import { EATEN_TITLE_MESSAGES, EATEN_SUB_MESSAGES, pickMessage } from '@rosie/core'
+import { StickerCard } from '@rosie/ui'
+import { Button } from '@rosie/ui/themes'
 
 function escapeHtml(s: string): string {
   return s.replace(
@@ -120,9 +122,7 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
     .replace(/{word}/g, `<b style="color:#D85A30">${escapeHtml(word)}</b>`)
     .replace(/{name}/g, `<b>${escapeHtml(monster.name)}</b>`)
 
-  // Candy chip colours derived from the monster's own colour (color-mix → light top, dark edge)
-  const candyLight = `color-mix(in srgb, ${monster.color} 42%, white)`
-  const candyDark = `color-mix(in srgb, ${monster.color} 62%, black)`
+  // Candy chip edge colour derived from the monster's own colour
   const candyEdge = `color-mix(in srgb, ${monster.color} 50%, black)`
 
   // Flying-word target position: mouth center in canvas-pixel coords.
@@ -137,10 +137,13 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-3 backdrop-blur-md"
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center px-3"
       style={{ background: 'var(--rescue-monster-veil)' }}
     >
-      <div className="font-nunito flex max-h-[92vh] w-full max-w-[340px] flex-col items-center overflow-y-auto rounded-3xl bg-white p-5 shadow-[0_20px_60px_rgba(0,0,0,.3)]">
+      <StickerCard
+        elevation="lg"
+        className="font-nunito flex max-h-[92vh] w-full max-w-[340px] flex-col items-center overflow-y-auto"
+      >
         {/* ── Swallow animation (enter / flying / eaten) ─────────────────── */}
         {phase !== 'done' && (
           <div className="relative mx-auto flex h-[280px] w-[280px] max-w-full items-center justify-center">
@@ -150,8 +153,8 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
                 className="absolute top-0 left-0 z-10 px-5 py-2.5 text-[22px] font-extrabold whitespace-nowrap text-white"
                 style={{
                   borderRadius: candyShape,
-                  background: `linear-gradient(165deg, ${candyLight} 0%, ${monster.color} 56%, ${candyDark} 100%)`,
-                  boxShadow: `0 5px 0 ${candyEdge}, 0 12px 20px color-mix(in srgb, ${monster.color} 45%, transparent), inset 0 2px 5px rgba(255,255,255,.55)`,
+                  background: monster.color,
+                  boxShadow: `0 5px 0 ${candyEdge}`,
                   textShadow: '0 1px 3px rgba(0,0,0,.4)',
                   transform:
                     phase === 'enter'
@@ -165,15 +168,6 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
                   willChange: phase === 'enter' ? 'transform' : undefined,
                 }}
               >
-                {/* glossy candy shine on top */}
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-1.5 top-1 rounded-full"
-                  style={{
-                    height: '33%',
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,.7), rgba(255,255,255,0))',
-                  }}
-                />
                 <span className="relative">{word}</span>
               </div>
             )}
@@ -215,10 +209,10 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
 
             {/* BELLY CARD — body-colour frame wrapping the word card (replaces mouth) */}
             <div
-              className="relative z-20 w-full max-w-[300px] animate-[belly-pop_.42s_cubic-bezier(.34,1.56,.64,1)] rounded-[32px] p-3 shadow-[0_12px_30px_rgba(0,0,0,.18)]"
+              className="shadow-sticker relative z-20 w-full max-w-[300px] animate-[belly-pop_.42s_cubic-bezier(.34,1.56,.64,1)] rounded-[32px] p-3"
               style={{ backgroundColor: monster.color }}
             >
-              <div className="rounded-3xl bg-white px-4 py-4 text-center shadow-[inset_0_2px_8px_rgba(0,0,0,.05)]">
+              <StickerCard size="none" elevation="sm" className="px-4 py-4 text-center">
                 <div className="font-fredoka text-[30px] leading-tight font-extrabold text-[#2b2660]">
                   {word}
                 </div>
@@ -243,7 +237,7 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
                     <span className="italic">{entry.example}</span>
                   </div>
                 )}
-              </div>
+              </StickerCard>
             </div>
 
             {/* LOWER BODY + FEET — body-colour bump + two feet peeking below the card.
@@ -286,16 +280,19 @@ export default function MonsterEatScene({ entry, monsterIdx, isAbbreviated, onDi
               <div className="mt-1 font-bold text-[#854F0B]">{sub}</div>
             </div>
 
-            <button
+            <Button
               type="button"
               onClick={onDismiss}
-              className="mt-3 w-full rounded-xl bg-[#534AB7] px-8 py-2.5 text-[15px] font-extrabold text-white transition hover:bg-[#3C3489]"
+              variant="solid"
+              color="indigo"
+              size="3"
+              className="mt-3 w-full"
             >
               ⚔️ 知道啦，继续闯关！
-            </button>
+            </Button>
           </div>
         )}
-      </div>
+      </StickerCard>
     </div>
   )
 }

@@ -17,10 +17,7 @@ import { todayStr, useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useWeeklyPlan } from '../../hooks/useWeeklyPlan'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
-import {
-  buildDailyTask,
-  type AdaptiveDailyTask,
-} from '../../utils/adaptivePlanScheduler'
+import { buildDailyTask, type AdaptiveDailyTask } from '../../utils/adaptivePlanScheduler'
 import {
   ADAPTIVE_MASTERED_STAGE,
   ADAPTIVE_NOT_STARTED_STAGE,
@@ -32,6 +29,7 @@ import { planDayCount, planEndDate, daysUntilExpiry } from './english-weekly-pla
 import AdaptivePlanCardCalendar from './AdaptivePlanCardCalendar'
 import AdaptivePlanUnitProgress from './AdaptivePlanUnitProgress'
 import { simulateAdaptivePlan } from '../../utils/adaptivePlanSimulate'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface Props {
   vocab: WordEntry[]
@@ -152,8 +150,8 @@ function cardShellClass(kind: PlanCardKind, isCurrent: boolean): string {
     'group flex h-full flex-col rounded-[16px] border bg-[var(--wm-surface2)] transition-all'
   if (isCurrent) {
     return kind === 'weekly'
-      ? `${base} border-[rgba(245,158,11,.75)] bg-[rgba(245,158,11,.08)] shadow-[0_0_0_1px_rgba(245,158,11,.35),0_8px_28px_rgba(245,158,11,.18)]`
-      : `${base} border-[rgba(139,92,246,.75)] bg-[rgba(139,92,246,.1)] shadow-[0_0_0_1px_rgba(139,92,246,.35),0_8px_28px_rgba(139,92,246,.2)]`
+      ? `${base} border-[rgba(245,158,11,.75)] bg-[rgba(245,158,11,.08)] shadow-sticker-sm`
+      : `${base} border-[rgba(139,92,246,.75)] bg-[rgba(139,92,246,.1)] shadow-sticker-sm`
   }
   return kind === 'weekly'
     ? `${base} border-[rgba(245,158,11,.22)] hover:border-[rgba(245,158,11,.5)] hover:bg-[var(--wm-surface)]`
@@ -164,11 +162,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
   const router = useRouter()
   const { user } = useAuth()
   const { masteryMap } = useWordsContext()
-  const {
-    allPlans,
-    weeklyPlan,
-    isLoading: weeklyLoading,
-  } = useWeeklyPlan(user)
+  const { allPlans, weeklyPlan, isLoading: weeklyLoading } = useWeeklyPlan(user)
   const {
     plans: adaptivePlans,
     isLoading: adaptiveLoading,
@@ -194,8 +188,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
   )
 
   const visibleWeeklyPlan = useMemo(
-    () =>
-      weeklyPlan && weeklyPlanMatchesStage(weeklyPlan, stageWordKeys) ? weeklyPlan : null,
+    () => (weeklyPlan && weeklyPlanMatchesStage(weeklyPlan, stageWordKeys) ? weeklyPlan : null),
     [weeklyPlan, stageWordKeys],
   )
 
@@ -262,9 +255,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
 
   const currentAndNextWeekPlans = useMemo(() => {
     const today = todayStr()
-    const sorted = [...visibleWeeklyPlans].sort((a, b) =>
-      a.weekStart.localeCompare(b.weekStart),
-    )
+    const sorted = [...visibleWeeklyPlans].sort((a, b) => a.weekStart.localeCompare(b.weekStart))
     let currentIdx = -1
     for (let i = sorted.length - 1; i >= 0; i--) {
       if (sorted[i].weekStart <= today) {
@@ -346,21 +337,21 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
       <div className="mx-auto max-w-[1280px] px-4 pt-5 pb-3">
         <div className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-5 sm:p-7">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div className="font-fredoka bg-gradient-to-br from-[#f59e0b] via-[#fb923c] to-[#8b5cf6] bg-clip-text text-2xl text-transparent">
-              练习计划
-            </div>
+            <div className="font-fredoka text-2xl text-[#8b5cf6]">练习计划</div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               {oldReviewWords.length > 0 && (
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowOldReview(true)}
-                  className="font-nunito flex cursor-pointer items-center gap-1.5 rounded-[10px] border-[1.5px] border-[rgba(167,139,250,.4)] bg-[rgba(167,139,250,.08)] px-4 py-2.5 text-[.88rem] font-extrabold text-[#c4b5fd] transition-all hover:border-[rgba(167,139,250,.7)] hover:bg-[rgba(167,139,250,.15)]"
+                  variant="soft"
+                  color="violet"
+                  size="2"
                 >
                   📚 旧词复习
                   <span className="rounded-full bg-[rgba(167,139,250,.25)] px-1.5 py-0.5 text-[.72rem] font-black text-[#a78bfa]">
                     {oldReviewWords.length}
                   </span>
-                </button>
+                </Button>
               )}
               <Link
                 href="/setting/plans/english"
@@ -423,11 +414,7 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
         </div>
       </div>
       <div className="mx-auto max-w-[1280px]">
-        <MasteryStatusPanel
-          vocab={vocab}
-          masteryMap={masteryMap}
-          panelTitle="全局词汇学习状态"
-        />
+        <MasteryStatusPanel vocab={vocab} masteryMap={masteryMap} panelTitle="全局词汇学习状态" />
       </div>
     </>
   )
@@ -452,7 +439,7 @@ function WeeklyPlanCard({
 
   return (
     <div className={cardShellClass('weekly', isCurrent)}>
-      <button
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={onOpen}
         className="min-h-0 min-w-0 flex-1 cursor-pointer rounded-t-[16px] px-4 py-4 text-left"
@@ -472,7 +459,7 @@ function WeeklyPlanCard({
             </span>
           )}
         </div>
-        <div className="mb-1 text-[1rem] font-bold leading-snug text-[var(--wm-text)]">
+        <div className="mb-1 text-[1rem] leading-snug font-bold text-[var(--wm-text)]">
           {lessonLabel}
         </div>
         <div className="flex flex-col gap-1 text-[.72rem] text-[var(--wm-text-dim)]">
@@ -594,10 +581,10 @@ function AdaptivePlanCard({
 
   return (
     <div className={cardShellClass('adaptive', isCurrent)}>
-      <button
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={onOpen}
-        className="min-h-0 min-w-0 w-full flex-1 cursor-pointer rounded-t-[16px] px-4 py-4 text-left"
+        className="min-h-0 min-w-0 flex-1 cursor-pointer rounded-t-[16px] px-4 py-4 text-left"
       >
         <div className="mb-2 flex flex-wrap items-center gap-1.5">
           <span className="rounded-full border border-[rgba(139,92,246,.4)] bg-[rgba(139,92,246,.12)] px-2 py-0.5 text-[.62rem] font-extrabold text-[#c4b5fd]">
@@ -618,7 +605,7 @@ function AdaptivePlanCard({
             {plan.status === 'completed' ? '已完成' : '进行中'}
           </span>
         </div>
-        <div className="mb-1 text-[1rem] font-bold leading-snug text-[var(--wm-text)]">
+        <div className="mb-1 text-[1rem] leading-snug font-bold text-[var(--wm-text)]">
           {plan.title}
         </div>
         <div className="flex flex-col gap-1 text-[.72rem] text-[var(--wm-text-dim)]">
@@ -644,7 +631,7 @@ function AdaptivePlanCard({
                 {capsules.slice(0, 8).map((capsule) => (
                   <span
                     key={capsule.wordKey}
-                    className={`inline-flex items-center rounded-2xl border-[1.5px] px-2 py-0.5 text-[0.78rem] font-bold leading-tight ${CAPSULE_KIND_CLASS[capsule.kind]}`}
+                    className={`inline-flex items-center rounded-2xl border-[1.5px] px-2 py-0.5 text-[0.78rem] leading-tight font-bold ${CAPSULE_KIND_CLASS[capsule.kind]}`}
                   >
                     <span className="mr-1 text-[.7rem] leading-none">{capsule.boxEmoji}</span>
                     {capsule.word}
@@ -661,14 +648,17 @@ function AdaptivePlanCard({
         )}
       </button>
       <div className="mt-auto flex flex-wrap items-center justify-end gap-1.5 px-4 pb-4">
-        <button
+        <Button
           type="button"
           aria-expanded={calendarOpen}
           onClick={openCalendar}
-          className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#93c5fd] transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
+          variant="outline"
+          color="gray"
+          size="2"
+          className="whitespace-nowrap"
         >
           {calendarLoading ? '加载轨迹…' : '🧭 批次轨迹'}
-        </button>
+        </Button>
         {plan.status === 'active' && capsules.length > 0 && (
           <Link
             href={`/english/words/adaptive/${plan.id}/practice`}
@@ -677,14 +667,17 @@ function AdaptivePlanCard({
             📖 学习
           </Link>
         )}
-        <button
+        <Button
           type="button"
           aria-expanded={unitProgressOpen}
           onClick={openUnitProgress}
-          className="font-nunito rounded-[10px] border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#93c5fd] no-underline transition hover:border-[rgba(96,165,250,.7)] hover:bg-[rgba(96,165,250,.18)]"
+          variant="outline"
+          color="gray"
+          size="2"
+          className="whitespace-nowrap"
         >
           📊 单元进度
-        </button>
+        </Button>
         <Link
           href={`/english/words/adaptive/${plan.id}/preview`}
           className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline"
@@ -711,8 +704,8 @@ function AdaptivePlanCard({
           trajectoryDays={calendarSimulation?.days ?? []}
           rangeStart={plan.createdAt.slice(0, 10)}
           rangeEnd={
-            calendarSimulation?.days.at(-1)?.date
-            ?? (plan.status === 'completed' ? plan.updatedAt.slice(0, 10) : todayStr())
+            calendarSimulation?.days.at(-1)?.date ??
+            (plan.status === 'completed' ? plan.updatedAt.slice(0, 10) : todayStr())
           }
           onClose={() => setCalendarOpen(false)}
         />
@@ -721,28 +714,31 @@ function AdaptivePlanCard({
         <div
           role="presentation"
           onClick={() => setUnitProgressOpen(false)}
-          className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-5"
+          className="fixed inset-0 z-[280] flex items-end justify-center bg-black/65 p-0 sm:items-center sm:p-5"
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-label={`${plan.title}单元进度`}
             onClick={(event) => event.stopPropagation()}
-            className="animate-pop-in max-h-[94dvh] w-full max-w-[760px] overflow-y-auto rounded-t-[26px] border border-[rgba(96,165,250,.4)] bg-[#111126] p-3 shadow-[0_24px_90px_rgba(0,0,0,.65)] sm:rounded-[26px] sm:p-5"
+            className="animate-pop-in shadow-sticker-lg max-h-[94dvh] w-full max-w-[760px] overflow-y-auto rounded-t-[26px] border border-[rgba(96,165,250,.4)] bg-[#111126] p-3 sm:rounded-[26px] sm:p-5"
           >
             <div className="mb-3 flex items-center justify-between gap-3 px-1">
               <div className="min-w-0 truncate text-[.78rem] font-bold text-[var(--wm-text-dim)]">
                 {plan.title}
               </div>
-              <button
+              <IconButton
                 type="button"
                 autoFocus
                 aria-label="关闭单元进度"
                 onClick={() => setUnitProgressOpen(false)}
-                className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[.06] text-lg text-white/55 transition hover:bg-white/[.12] hover:text-white"
+                variant="outline"
+                color="gray"
+                size="3"
+                className="w-9 shrink-0"
               >
                 ×
-              </button>
+              </IconButton>
             </div>
             {calendarSimulation && effectiveCalendarRows ? (
               <AdaptivePlanUnitProgress
@@ -758,7 +754,9 @@ function AdaptivePlanCard({
         </div>
       )}
       {calendarError && (
-        <div className="px-4 pb-3 text-right text-[.68rem] font-bold text-rose-300">{calendarError}</div>
+        <div className="px-4 pb-3 text-right text-[.68rem] font-bold text-rose-300">
+          {calendarError}
+        </div>
       )}
     </div>
   )

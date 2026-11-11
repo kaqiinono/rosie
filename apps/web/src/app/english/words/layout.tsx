@@ -2,12 +2,15 @@
 
 import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { WordsProvider, useWordsContext } from '@rosie/english'
-import { useImmersive } from '@rosie/core'
+import { WordsProvider, useWordsContext, useBaiduReadingAudio } from '@rosie/english'
+import { useAuth, useImmersive } from '@rosie/core'
+import { DarkScope } from '@rosie/ui'
 import { AppHeader } from '@rosie/english'
 import { ImmersiveMode } from '@rosie/english'
 
 function LayoutInner({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+  useBaiduReadingAudio(user)
   const pathname = usePathname()
   const {
     vocab,
@@ -40,43 +43,35 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   // text color (#f0f0ff). Never mount the fixed pink/blue glow layer on print
   // routes — iOS Safari paints position:fixed decorations onto page 1 of PDFs.
   return (
-    <div
-      className={`font-nunito min-h-screen ${isPrintPage ? 'en-words-print-layout' : ''}`}
-      style={
-        isPrintPage
-          ? { background: '#ffffff', color: '#1c1917' }
-          : { background: 'var(--wm-bg)', color: 'var(--wm-text)' }
-      }
-    >
-      {!isPrintPage && (
-        <div
-          className="en-words-bg-deco en-no-print pointer-events-none fixed inset-0 z-0"
-          aria-hidden
-          style={{
-            background:
-              'radial-gradient(ellipse at 15% 25%, rgba(233,69,96,.07) 0, transparent 55%), radial-gradient(ellipse at 85% 75%, rgba(96,165,250,.07) 0, transparent 55%)',
+    <DarkScope appearance={isPrintPage ? 'light' : 'dark'}>
+      <div
+        className={`font-nunito min-h-screen ${isPrintPage ? 'en-words-print-layout' : ''}`}
+        style={
+          isPrintPage
+            ? { background: '#ffffff', color: '#1c1917' }
+            : { background: 'var(--wm-bg)', color: 'var(--wm-text)' }
+        }
+      >
+        {(!isImmersive || isReading) && !isPrintPage && <AppHeader />}
+        {children}
+        <ImmersiveMode
+          open={isImmersive && !suppressGlobalImmersive}
+          words={filteredWords}
+          allWords={vocab}
+          mode={immersiveMode}
+          practiceTypes={practiceTypes}
+          spellButtonStyle={practiceButtonStyle}
+          onClose={() => {
+            if (isPracticePage && previewCards) {
+              setPreviewCards(false)
+            } else {
+              setIsImmersive(false)
+            }
           }}
+          onQuizComplete={recordBatch}
         />
-      )}
-      {(!isImmersive || isReading) && !isPrintPage && <AppHeader />}
-      {children}
-      <ImmersiveMode
-        open={isImmersive && !suppressGlobalImmersive}
-        words={filteredWords}
-        allWords={vocab}
-        mode={immersiveMode}
-        practiceTypes={practiceTypes}
-        spellButtonStyle={practiceButtonStyle}
-        onClose={() => {
-          if (isPracticePage && previewCards) {
-            setPreviewCards(false)
-          } else {
-            setIsImmersive(false)
-          }
-        }}
-        onQuizComplete={recordBatch}
-      />
-    </div>
+      </div>
+    </DarkScope>
   )
 }
 

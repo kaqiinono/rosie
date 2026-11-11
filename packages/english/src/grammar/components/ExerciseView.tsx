@@ -1,9 +1,15 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { GrammarExerciseGroup, GrammarExerciseItem, GrammarFigure, GrammarPageImage } from '../types'
+import type {
+  GrammarExerciseGroup,
+  GrammarExerciseItem,
+  GrammarFigure,
+  GrammarPageImage,
+} from '../types'
 import { grammarPageImageUrl } from '../types'
 import { FigureCard } from './FigureCard'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 const BLANK = '______'
 
@@ -135,7 +141,8 @@ function isChoiceCorrect(item: GrammarExerciseItem, value: string): boolean {
 
   const labeledChoice = /^([A-Z])(?:[.)]|\s+)\s*(.+)$/i.exec(value.trim())
   return labeledChoice
-    ? accepted.includes(normalize(labeledChoice[1])) || accepted.includes(normalize(labeledChoice[2]))
+    ? accepted.includes(normalize(labeledChoice[1])) ||
+        accepted.includes(normalize(labeledChoice[2]))
     : false
 }
 
@@ -149,7 +156,14 @@ function choicePresentation(choice: string, index: number): { label: string; tex
 function sharedOptions(items: GrammarExerciseItem[]): string[] | null {
   const first = items[0]?.options
   if (!first || first.length === 0) return null
-  if (!items.every((it) => it.options && it.options.length === first.length && it.options.every((o, i) => o === first[i]))) {
+  if (
+    !items.every(
+      (it) =>
+        it.options &&
+        it.options.length === first.length &&
+        it.options.every((o, i) => o === first[i]),
+    )
+  ) {
     return null
   }
   return first
@@ -159,7 +173,10 @@ function ReferenceOptions({ options }: { options: string[] }) {
   return (
     <div className="mt-2 flex flex-wrap gap-2 pl-7">
       {options.map((option, index) => (
-        <span key={index} className="rounded-lg bg-surface-dim px-3 py-1.5 text-sm text-text-secondary">
+        <span
+          key={index}
+          className="bg-surface-dim text-text-secondary rounded-lg px-3 py-1.5 text-sm"
+        >
           {option}
         </span>
       ))}
@@ -183,7 +200,10 @@ function sentenceCues(item: GrammarExerciseItem): string[] {
   const prompt = item.prompt.replace(new RegExp(`^\\s*${item.number}\\s+`), '')
   const parenthesized = /\((.+)\)/.exec(prompt)?.[1]
   if (!parenthesized) return []
-  return parenthesized.split('/').map((part) => part.trim()).filter(Boolean)
+  return parenthesized
+    .split('/')
+    .map((part) => part.trim())
+    .filter(Boolean)
 }
 
 interface SentenceBuilderProps {
@@ -219,39 +239,47 @@ function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: Sentenc
     setDragging(null)
   }
 
-  const unused = cues.map((cue, index) => ({ cue, index })).filter(({ index }) => !order.includes(index))
+  const unused = cues
+    .map((cue, index) => ({ cue, index }))
+    .filter(({ index }) => !order.includes(index))
 
   return (
     <div className="mt-4 space-y-3 sm:ml-7">
       <div>
-        <p className="mb-2 text-sm font-bold text-text-secondary">点击词组加入句子</p>
-        <div className="flex min-h-12 flex-wrap gap-2 rounded-xl bg-surface-dim/70 p-2">
+        <p className="text-text-secondary mb-2 text-sm font-bold">点击词组加入句子</p>
+        <div className="bg-surface-dim/70 flex min-h-12 flex-wrap gap-2 rounded-xl p-2">
           {unused.map(({ cue, index }) => (
-            <button
+            <Button
               key={index}
               type="button"
               draggable
               onDragStart={() => setDragging(index)}
               onDragEnd={() => setDragging(null)}
               onClick={() => append(index)}
-              className="min-h-10 cursor-grab rounded-lg bg-surface px-3 py-2 text-base font-semibold text-text-primary shadow-sm transition-[color,background-color,transform] hover:bg-app-blue-light hover:text-app-blue-dark active:cursor-grabbing active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-blue"
+              variant="outline"
+              color="gray"
+              size="3"
             >
               {cue}
-            </button>
+            </Button>
           ))}
-          {unused.length === 0 && <span className="px-2 py-2 text-sm text-text-muted">所有词组已加入</span>}
+          {unused.length === 0 && (
+            <span className="text-text-muted px-2 py-2 text-sm">所有词组已加入</span>
+          )}
         </div>
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-bold text-text-secondary">你的句子</p>
-        <div className={`flex min-h-16 flex-wrap items-center rounded-xl p-2 transition-colors ${
-          status === 'correct'
-            ? 'bg-app-green-light'
-            : status === 'wrong'
-              ? 'bg-app-red-light'
-              : 'bg-app-purple-light/35'
-        }`}>
+        <p className="text-text-secondary mb-2 text-sm font-bold">你的句子</p>
+        <div
+          className={`flex min-h-16 flex-wrap items-center rounded-xl p-2 transition-colors ${
+            status === 'correct'
+              ? 'bg-app-green-light'
+              : status === 'wrong'
+                ? 'bg-app-red-light'
+                : 'bg-app-purple-light/35'
+          }`}
+        >
           {Array.from({ length: order.length + 1 }, (_, slot) => (
             <span key={slot} className="contents">
               <span
@@ -260,46 +288,64 @@ function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: Sentenc
                   if (dragging != null) insertAt(dragging, slot)
                 }}
                 className={`mx-0.5 h-10 rounded-full transition-[width,background-color] ${
-                  dragging == null ? 'w-1' : 'w-3 bg-app-blue/25'
+                  dragging == null ? 'w-1' : 'bg-app-blue/25 w-3'
                 }`}
                 aria-hidden="true"
               />
               {slot < order.length && (
-                <button
+                <Button
                   type="button"
                   draggable
                   onDragStart={() => setDragging(order[slot])}
                   onDragEnd={() => setDragging(null)}
                   onClick={() => remove(order[slot])}
                   aria-label={`移除词组 ${cues[order[slot]]}`}
-                  className="min-h-10 cursor-grab rounded-lg bg-surface px-3 py-2 text-base font-bold text-text-primary shadow-sm transition-transform active:cursor-grabbing active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-blue"
+                  variant="outline"
+                  color="gray"
+                  size="3"
                 >
                   {cues[order[slot]]}
-                </button>
+                </Button>
               )}
             </span>
           ))}
-          {order.length === 0 && <span className="px-2 text-base text-text-muted">按顺序点击上方词组</span>}
+          {order.length === 0 && (
+            <span className="text-text-muted px-2 text-base">按顺序点击上方词组</span>
+          )}
         </div>
-        <p className="mt-1.5 text-xs text-text-muted">点击答案区中的词组可撤回；拖动词组可插入任意位置。</p>
+        <p className="text-text-muted mt-1.5 text-xs">
+          点击答案区中的词组可撤回；拖动词组可插入任意位置。
+        </p>
       </div>
 
       {!openEnded && status === 'idle' && (
-        <button
+        <Button
           type="button"
           disabled={order.length !== cues.length}
           onClick={onCheck}
-          className="min-h-11 rounded-xl bg-app-blue px-5 text-sm font-bold text-white transition-[opacity,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+          variant="solid"
+          color="blue"
+          size="3"
         >
           检查答案
-        </button>
+        </Button>
       )}
     </div>
   )
 }
 
 /** 二选一/多选题的单选卡片（multiple_choice）：选项来自 options 数组或题干 A / B 斜杠对 */
-function ChoiceChips({ item, selectedValue, status, onPick }: { item: GrammarExerciseItem; selectedValue: string; status: ItemStatus; onPick: (v: string) => void }) {
+function ChoiceChips({
+  item,
+  selectedValue,
+  status,
+  onPick,
+}: {
+  item: GrammarExerciseItem
+  selectedValue: string
+  status: ItemStatus
+  onPick: (v: string) => void
+}) {
   let choices: string[] = item.options && item.options.length > 0 ? [...item.options] : []
   if (choices.length === 0) {
     const m = /([\w'’.\-]+(?: [\w'’.\-]+)?) \/ ([\w'’.\-]+(?: [\w'’.\-]+)?)/.exec(item.prompt)
@@ -308,12 +354,17 @@ function ChoiceChips({ item, selectedValue, status, onPick }: { item: GrammarExe
   if (choices.length === 0) return null
   const judged = status === 'correct' || status === 'wrong'
   return (
-    <div className="mt-4 grid gap-2 sm:grid-cols-2 sm:pl-9" role="radiogroup" aria-label={`第 ${item.number} 题选项`}>
+    <div
+      className="mt-4 grid gap-2 sm:grid-cols-2 sm:pl-9"
+      role="radiogroup"
+      aria-label={`第 ${item.number} 题选项`}
+    >
       {choices.map((c, i) => {
         const presentation = choicePresentation(c, i)
         const isSelected = normalize(selectedValue) === normalize(c)
         const isAnswer = judged && isChoiceCorrect(item, c)
         return (
+          // native-ok: 选项为多块内容（序号 + 文本 + ✓/× 标记）且按判分结果着色的 radio 卡片，Radix Button 的居中 inline-flex 会挤压
           <button
             key={i}
             type="button"
@@ -321,28 +372,38 @@ function ChoiceChips({ item, selectedValue, status, onPick }: { item: GrammarExe
             aria-checked={isSelected}
             disabled={judged}
             onClick={() => onPick(c)}
-            className={`flex min-h-14 items-center gap-3 rounded-xl px-4 py-3 text-left text-base font-semibold leading-relaxed transition-[color,background-color,box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-blue focus-visible:ring-offset-2 ${
+            className={`focus-visible:ring-app-blue flex min-h-14 items-center gap-3 rounded-xl px-4 py-3 text-left text-base leading-relaxed font-semibold transition-[color,background-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
               isAnswer
-                ? 'bg-app-green-light text-app-green-dark shadow-sm'
+                ? 'bg-app-green-light text-app-green-dark shadow-sticker-sm'
                 : isSelected && status === 'wrong'
-                  ? 'bg-app-red-light text-app-red shadow-sm'
-                : judged
-                  ? 'bg-surface-dim/70 text-text-muted'
-                  : 'cursor-pointer bg-surface-dim text-text-primary hover:bg-app-blue-light hover:text-app-blue-dark active:scale-[0.99]'
+                  ? 'bg-app-red-light text-app-red shadow-sticker-sm'
+                  : judged
+                    ? 'bg-surface-dim/70 text-text-muted'
+                    : 'bg-surface-dim text-text-primary hover:bg-app-blue-light hover:text-app-blue-dark cursor-pointer active:scale-[0.99]'
             }`}
           >
-            <span className={`w-6 shrink-0 text-center text-sm font-black ${
-              isAnswer
-                ? 'text-app-green-dark'
-                : isSelected && status === 'wrong'
-                  ? 'text-app-red'
-                  : 'text-app-blue'
-            }`}>
+            <span
+              className={`w-6 shrink-0 text-center text-sm font-black ${
+                isAnswer
+                  ? 'text-app-green-dark'
+                  : isSelected && status === 'wrong'
+                    ? 'text-app-red'
+                    : 'text-app-blue'
+              }`}
+            >
               {presentation.label}
             </span>
             <span className="min-w-0 leading-snug">{presentation.text}</span>
-            {isAnswer && <span className="ml-auto shrink-0 font-black" aria-hidden="true">✓</span>}
-            {isSelected && status === 'wrong' && <span className="ml-auto shrink-0 font-black" aria-hidden="true">×</span>}
+            {isAnswer && (
+              <span className="ml-auto shrink-0 font-black" aria-hidden="true">
+                ✓
+              </span>
+            )}
+            {isSelected && status === 'wrong' && (
+              <span className="ml-auto shrink-0 font-black" aria-hidden="true">
+                ×
+              </span>
+            )}
           </button>
         )
       })}
@@ -363,28 +424,36 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
   const usesUnderlineBlank = isFillBlank || isSentenceCompletion
   const blankInputColumns = isSentenceCompletion ? 18 : 6
   const isWritingQuestion = item.type === 'short_answer' || item.type === 'sentence_completion'
-  const needsWholeAnswer = item.type !== 'multiple_choice' && item.type !== 'matching' && blankCount === 0
+  const needsWholeAnswer =
+    item.type !== 'multiple_choice' && item.type !== 'matching' && blankCount === 0
   const cues = sentenceCues(displayItem)
   const usesSentenceBuilder = needsWholeAnswer && cues.length > 1
   const displayedParts = needsWholeAnswer
     ? [displayItem.prompt.replace(new RegExp(`^\\s*${item.number}\\s+`), '')]
     : parts
   const selectedChoice = values[0] ?? ''
-  const selectedChoiceIndex = item.options?.findIndex((option) => normalize(option) === normalize(selectedChoice)) ?? -1
+  const selectedChoiceIndex =
+    item.options?.findIndex((option) => normalize(option) === normalize(selectedChoice)) ?? -1
   const selectedChoiceText = selectedChoice
     ? choicePresentation(selectedChoice, Math.max(selectedChoiceIndex, 0)).text
     : ''
 
   if (example) {
     return (
-      <div className="rounded-xl bg-app-purple-light/35 p-3 sm:p-4" role="note" aria-label={`第 ${item.number} 题参考示例`}>
+      <div
+        className="bg-app-purple-light/35 rounded-xl p-3 sm:p-4"
+        role="note"
+        aria-label={`第 ${item.number} 题参考示例`}
+      >
         <div className="mb-2 flex items-center gap-2">
-          <span className="text-sm font-black text-app-purple">{item.number}</span>
-          <span className="rounded-md bg-app-purple px-2 py-0.5 text-[11px] font-black text-white">示例</span>
+          <span className="text-app-purple text-sm font-black">{item.number}</span>
+          <span className="bg-app-purple rounded-md px-2 py-0.5 text-[11px] font-black text-white">
+            示例
+          </span>
         </div>
-        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-base leading-relaxed text-text-primary sm:text-[17px]">
+        <div className="text-text-primary flex flex-wrap items-baseline gap-x-2 gap-y-1 text-base leading-relaxed sm:text-[17px]">
           <span className="font-semibold">{example.cue}</span>
-          <span className="border-b border-dashed border-app-purple/35 px-2 pb-0.5 font-medium italic text-app-purple-dark">
+          <span className="border-app-purple/35 text-app-purple-dark border-b border-dashed px-2 pb-0.5 font-medium italic">
             {example.answer}
           </span>
           {example.suffix && <span className="font-semibold">{example.suffix}</span>}
@@ -424,34 +493,42 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
 
   return (
     <div
-      className={isChoice
-        ? `border-b border-border-light/70 px-1 py-5 last:border-b-0 sm:px-2 ${
-            status === 'correct'
-              ? 'bg-app-green-light/20'
-              : status === 'wrong'
-                ? 'animate-wiggle bg-app-red-light/20'
-                : 'bg-transparent'
-          }`
-        : isWritingQuestion
-          ? `border-b border-border-light/70 px-1 py-5 last:border-b-0 sm:px-2 ${
+      className={
+        isChoice
+          ? `border-border-light/70 border-b px-1 py-5 last:border-b-0 sm:px-2 ${
               status === 'correct'
                 ? 'bg-app-green-light/20'
                 : status === 'wrong'
                   ? 'animate-wiggle bg-app-red-light/20'
                   : 'bg-transparent'
             }`
-          : `rounded-xl p-3 ring-1 transition-shadow ${
-              status === 'correct'
-                ? 'bg-app-green-light/40 ring-app-green/40'
-                : status === 'wrong'
-                  ? 'animate-wiggle bg-app-red-light/30 ring-app-red/30'
-                  : 'bg-surface ring-border-light'
-            }`}
+          : isWritingQuestion
+            ? `border-border-light/70 border-b px-1 py-5 last:border-b-0 sm:px-2 ${
+                status === 'correct'
+                  ? 'bg-app-green-light/20'
+                  : status === 'wrong'
+                    ? 'animate-wiggle bg-app-red-light/20'
+                    : 'bg-transparent'
+              }`
+            : `rounded-xl p-3 ring-1 transition-shadow ${
+                status === 'correct'
+                  ? 'bg-app-green-light/40 ring-app-green/40'
+                  : status === 'wrong'
+                    ? 'animate-wiggle bg-app-red-light/30 ring-app-red/30'
+                    : 'bg-surface ring-border-light'
+              }`
+      }
     >
-      <div className={`flex flex-wrap items-center gap-y-2 leading-relaxed text-text-primary ${isChoice || isWritingQuestion ? 'text-[17px] sm:text-lg' : 'text-[15px]'}`}>
-        <span className={isChoice || isWritingQuestion
-          ? 'mr-2 inline-flex w-7 shrink-0 items-center justify-center text-sm font-black text-app-purple'
-          : 'mr-1.5 inline-flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-surface-dim text-[11px] font-bold text-text-muted ring-1 ring-border-light'}>
+      <div
+        className={`text-text-primary flex flex-wrap items-center gap-y-2 leading-relaxed ${isChoice || isWritingQuestion ? 'text-[17px] sm:text-lg' : 'text-[15px]'}`}
+      >
+        <span
+          className={
+            isChoice || isWritingQuestion
+              ? 'text-app-purple mr-2 inline-flex w-7 shrink-0 items-center justify-center text-sm font-black'
+              : 'bg-surface-dim text-text-muted ring-border-light mr-1.5 inline-flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ring-1'
+          }
+        >
           {item.number}
         </span>
         {displayedParts.map((part, i) => {
@@ -464,73 +541,86 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
           if (usesUnderlineBlank && hasBlank) visiblePart = visiblePart.replace(/\s+$/, '')
 
           return (
-          <span key={i} className="contents">
-            {visiblePart}
-            {i < blankCount &&
-              (openEnded ? (
-                <input
-                  className={usesUnderlineBlank
-                    ? `inline-block min-w-[6ch] max-w-full border-0 border-b-2 border-border-light bg-transparent px-1 py-0.5 text-center text-base font-medium text-text-primary outline-none focus:border-app-purple ${blankSpacing}`
-                    : 'mx-1 inline-block w-40 rounded-lg border-2 border-dashed border-border-light bg-surface-dim px-2 py-0.5 text-[15px] font-medium text-text-primary outline-none focus:border-app-purple'}
-                  size={usesUnderlineBlank ? Math.max(blankInputColumns, Array.from(values[i] ?? '').length + 1) : undefined}
-                  value={values[i] ?? ''}
-                  onChange={(e) => onChange(i, e.target.value)}
-                  placeholder={usesUnderlineBlank ? undefined : '自由作答'}
-                  aria-label={`第 ${item.number} 题第 ${i + 1} 个空`}
-                />
-              ) : isChoice ? (
-                <span
-                  className={`mx-2 inline-flex min-h-9 min-w-24 items-center justify-center rounded-md px-3 py-1 text-center text-base font-bold ${
-                    status === 'correct'
-                      ? 'bg-app-green-light text-app-green-dark'
-                      : status === 'wrong'
-                        ? 'bg-app-red-light text-app-red'
-                        : 'bg-app-blue-light/70 text-app-blue-dark'
-                  }`}
-                >
-                  {selectedChoiceText || '请选择'}
-                </span>
-              ) : (
-                <input
-                  className={`${inputClass(i)} ${usesUnderlineBlank ? blankSpacing : ''}`}
-                  size={usesUnderlineBlank ? Math.max(blankInputColumns, Array.from(values[i] ?? '').length + 1) : undefined}
-                  value={values[i] ?? ''}
-                  onChange={(e) => onChange(i, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') onCheck()
-                  }}
-                  aria-label={`第 ${item.number} 题第 ${i + 1} 个空`}
-                  autoComplete="off"
-                  autoCapitalize="off"
-                  spellCheck={false}
-                />
-              ))}
-          </span>
+            <span key={i} className="contents">
+              {visiblePart}
+              {i < blankCount &&
+                (openEnded ? (
+                  // native-ok: 嵌在句子中的行内填空输入框，需按文本宽度（size）与下划线样式贴合句子排版
+                  <input
+                    className={
+                      usesUnderlineBlank
+                        ? `border-border-light text-text-primary focus:border-app-purple inline-block max-w-full min-w-[6ch] border-0 border-b-2 bg-transparent px-1 py-0.5 text-center text-base font-medium outline-none ${blankSpacing}`
+                        : 'border-border-light bg-surface-dim text-text-primary focus:border-app-purple mx-1 inline-block w-40 rounded-lg border-2 border-dashed px-2 py-0.5 text-[15px] font-medium outline-none'
+                    }
+                    size={
+                      usesUnderlineBlank
+                        ? Math.max(blankInputColumns, Array.from(values[i] ?? '').length + 1)
+                        : undefined
+                    }
+                    value={values[i] ?? ''}
+                    onChange={(e) => onChange(i, e.target.value)}
+                    placeholder={usesUnderlineBlank ? undefined : '自由作答'}
+                    aria-label={`第 ${item.number} 题第 ${i + 1} 个空`}
+                  />
+                ) : isChoice ? (
+                  <span
+                    className={`mx-2 inline-flex min-h-9 min-w-24 items-center justify-center rounded-md px-3 py-1 text-center text-base font-bold ${
+                      status === 'correct'
+                        ? 'bg-app-green-light text-app-green-dark'
+                        : status === 'wrong'
+                          ? 'bg-app-red-light text-app-red'
+                          : 'bg-app-blue-light/70 text-app-blue-dark'
+                    }`}
+                  >
+                    {selectedChoiceText || '请选择'}
+                  </span>
+                ) : (
+                  // native-ok: 嵌在句子中的行内填空输入框，需按文本宽度（size）与下划线样式贴合句子排版
+                  <input
+                    className={`${inputClass(i)} ${usesUnderlineBlank ? blankSpacing : ''}`}
+                    size={
+                      usesUnderlineBlank
+                        ? Math.max(blankInputColumns, Array.from(values[i] ?? '').length + 1)
+                        : undefined
+                    }
+                    value={values[i] ?? ''}
+                    onChange={(e) => onChange(i, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') onCheck()
+                    }}
+                    aria-label={`第 ${item.number} 题第 ${i + 1} 个空`}
+                    autoComplete="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                  />
+                ))}
+            </span>
           )
         })}
         {response && (
           <span
             role="note"
             aria-label="固定回答"
-            className="ml-3 inline-flex rounded-r-lg border-l-2 border-app-blue/40 bg-app-blue-light/45 px-3 py-1.5 font-medium text-text-primary"
+            className="border-app-blue/40 bg-app-blue-light/45 text-text-primary ml-3 inline-flex rounded-r-lg border-l-2 px-3 py-1.5 font-medium"
           >
             {response.response}
           </span>
         )}
         {!openEnded && !isChoice && !needsWholeAnswer && status === 'idle' && (
-          <button
+          <Button
             onClick={onCheck}
-            className="ml-1.5 shrink-0 rounded-full bg-app-blue px-3 py-0.5 text-xs font-bold text-white transition-transform active:scale-95"
+            variant="solid"
+            color="blue"
+            size="1"
+            className="ml-1.5 shrink-0"
           >
             检查
-          </button>
+          </Button>
         )}
-        {status === 'correct' && <span className="ml-1.5 text-sm font-bold text-app-green-dark">✔ 正确</span>}
-        {openEnded && (
-          <span className="ml-2 text-xs font-medium text-text-muted">
-            自由作答
-          </span>
+        {status === 'correct' && (
+          <span className="text-app-green-dark ml-1.5 text-sm font-bold">✔ 正确</span>
         )}
+        {openEnded && <span className="text-text-muted ml-2 text-xs font-medium">自由作答</span>}
       </div>
       {usesSentenceBuilder && (
         <SentenceBuilder
@@ -542,8 +632,13 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
         />
       )}
       {needsWholeAnswer && !usesSentenceBuilder && (
-        <div className={`mt-3 flex flex-col gap-2 sm:flex-row sm:items-center ${isWritingQuestion ? 'sm:ml-9' : 'sm:ml-7'}`}>
-          <input
+        <div
+          className={`mt-3 flex flex-col gap-2 sm:flex-row sm:items-center ${isWritingQuestion ? 'sm:ml-9' : 'sm:ml-7'}`}
+        >
+          <TextField.Root
+            size="3"
+            variant={status === 'correct' || status === 'wrong' ? 'soft' : 'surface'}
+            color={status === 'correct' ? 'green' : status === 'wrong' ? 'red' : undefined}
             aria-label={`第 ${item.number} 题完整答案`}
             value={values[0] ?? ''}
             onChange={(event) => onChange(0, event.target.value)}
@@ -554,38 +649,37 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
             autoComplete="off"
             autoCapitalize="sentences"
             spellCheck={false}
-            className={`min-h-12 min-w-0 flex-1 rounded-lg border-b-2 px-3 text-base font-medium text-text-primary outline-none transition-[background-color,border-color] ${
-              status === 'correct'
-                ? 'border-app-green bg-app-green-light/60'
-                : status === 'wrong'
-                  ? 'border-app-red bg-app-red-light/60'
-                  : 'border-border-light bg-surface-dim/55 focus:border-app-blue'
-            }`}
+            className="min-w-0 flex-1"
           />
           {!openEnded && status === 'idle' && (
-            <button
+            <Button
               type="button"
               disabled={!values[0]?.trim()}
               onClick={onCheck}
-              className="min-h-11 shrink-0 rounded-xl bg-app-blue px-5 text-sm font-bold text-white transition-[opacity,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              variant="solid"
+              color="blue"
+              size="3"
+              className="shrink-0"
             >
               检查答案
-            </button>
+            </Button>
           )}
         </div>
       )}
       {/* 选择/匹配类题目的选项列表（未共享渲染时才展示；multiple_choice 用 chips 展示） */}
-      {isChoice && <ChoiceChips item={item} selectedValue={selectedChoice} status={status} onPick={onPick} />}
+      {isChoice && (
+        <ChoiceChips item={item} selectedValue={selectedChoice} status={status} onPick={onPick} />
+      )}
       {!hideOptions && item.options && item.options.length > 0 && !isChoice && (
         <ReferenceOptions options={item.options} />
       )}
       {status === 'wrong' && item.answer && (
-        <div className="mt-1.5 pl-7 text-[13px] text-text-secondary">
-          参考答案：<span className="font-semibold text-text-primary">{item.answer}</span>
+        <div className="text-text-secondary mt-1.5 pl-7 text-[13px]">
+          参考答案：<span className="text-text-primary font-semibold">{item.answer}</span>
         </div>
       )}
       {status !== 'idle' && item.explanation && (
-        <div className="mt-2 rounded-lg bg-app-blue-light/55 px-3 py-2 text-[13px] leading-relaxed text-app-blue-dark sm:ml-7">
+        <div className="bg-app-blue-light/55 text-app-blue-dark mt-2 rounded-lg px-3 py-2 text-[13px] leading-relaxed sm:ml-7">
           💡 {item.explanation}
         </div>
       )}
@@ -649,10 +743,12 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
       const endX = rightRect.left - boardRect.left
       const endY = rightRect.top + rightRect.height / 2 - boardRect.top
       const curve = Math.max((endX - startX) * 0.45, 12)
-      return [{
-        itemNumber: item.number,
-        path: `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`,
-      }]
+      return [
+        {
+          itemNumber: item.number,
+          path: `M ${startX} ${startY} C ${startX + curve} ${startY}, ${endX - curve} ${endY}, ${endX} ${endY}`,
+        },
+      ]
     })
     setLines(nextLines)
   }, [items, matches])
@@ -684,7 +780,11 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
       connect(itemNumber, selection.option)
       return
     }
-    setSelection(selection?.side === 'left' && selection.itemNumber === itemNumber ? null : { side: 'left', itemNumber })
+    setSelection(
+      selection?.side === 'left' && selection.itemNumber === itemNumber
+        ? null
+        : { side: 'left', itemNumber },
+    )
   }
 
   const selectRight = (option: string) => {
@@ -692,7 +792,9 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
       connect(selection.itemNumber, option)
       return
     }
-    setSelection(selection?.side === 'right' && selection.option === option ? null : { side: 'right', option })
+    setSelection(
+      selection?.side === 'right' && selection.option === option ? null : { side: 'right', option },
+    )
   }
 
   const matchedItemForOption = (option: string) =>
@@ -700,11 +802,17 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
 
   return (
     <div>
-      <p className="mb-4 text-sm font-semibold text-text-secondary">
+      <p className="text-text-secondary mb-4 text-sm font-semibold">
         点击任意一侧，再点击另一侧完成连线；已连接的项目可以重新匹配。
       </p>
-      <div ref={boardRef} className="relative grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-10 sm:gap-x-20">
-        <svg className="pointer-events-none absolute inset-0 z-0 size-full overflow-visible" aria-hidden="true">
+      <div
+        ref={boardRef}
+        className="relative grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-10 sm:gap-x-20"
+      >
+        <svg
+          className="pointer-events-none absolute inset-0 z-0 size-full overflow-visible"
+          aria-hidden="true"
+        >
           {lines.map((line) => {
             const status = statuses[line.itemNumber]
             return (
@@ -712,7 +820,13 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
                 key={line.itemNumber}
                 d={line.path}
                 fill="none"
-                stroke={status === 'correct' ? 'var(--color-app-green)' : status === 'wrong' ? 'var(--color-app-red)' : 'var(--color-app-purple)'}
+                stroke={
+                  status === 'correct'
+                    ? 'var(--color-app-green)'
+                    : status === 'wrong'
+                      ? 'var(--color-app-red)'
+                      : 'var(--color-app-purple)'
+                }
                 strokeWidth="3"
                 strokeLinecap="round"
                 opacity="0.75"
@@ -722,12 +836,13 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
         </svg>
 
         <div className="relative z-10 min-w-0 space-y-3">
-          <p className="text-sm font-black text-app-purple-dark">问题</p>
+          <p className="text-app-purple-dark text-sm font-black">问题</p>
           {items.map((item) => {
             const selected = selection?.side === 'left' && selection.itemNumber === item.number
             const matched = Boolean(matches[item.number])
             const status = statuses[item.number]
             return (
+              // native-ok: 连线匹配题的左侧格子，需 ref 定位以绘制 SVG 连线，且为多状态着色的块状单元
               <button
                 key={item.number}
                 ref={(element) => {
@@ -737,9 +852,9 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
                 type="button"
                 aria-pressed={selected}
                 onClick={() => selectLeft(item.number)}
-                className={`flex min-h-14 w-full items-center gap-2 rounded-xl p-2 text-left text-base font-semibold leading-relaxed transition-[background-color,color,box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-blue focus-visible:ring-offset-2 active:scale-[0.99] ${
+                className={`focus-visible:ring-app-blue flex min-h-14 w-full items-center gap-2 rounded-xl p-2 text-left text-base leading-relaxed font-semibold transition-[background-color,color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.99] ${
                   selected
-                    ? 'bg-app-blue-light text-app-blue-dark shadow-sm'
+                    ? 'bg-app-blue-light text-app-blue-dark shadow-sticker-sm'
                     : status === 'correct'
                       ? 'bg-app-green-light text-app-green-dark'
                       : status === 'wrong'
@@ -749,7 +864,9 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
                           : 'bg-surface-dim text-text-primary hover:bg-app-blue-light/60'
                 }`}
               >
-                <span className="w-6 shrink-0 text-center text-sm font-black text-app-purple">{item.number}</span>
+                <span className="text-app-purple w-6 shrink-0 text-center text-sm font-black">
+                  {item.number}
+                </span>
                 <span className="min-w-0">{item.prompt}</span>
               </button>
             )
@@ -757,13 +874,14 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
         </div>
 
         <div className="relative z-10 min-w-0 space-y-3">
-          <p className="text-sm font-black text-app-purple-dark">答案</p>
+          <p className="text-app-purple-dark text-sm font-black">答案</p>
           {options.map((option, index) => {
             const presentation = choicePresentation(option, index)
             const matchedItem = matchedItemForOption(option)
             const selected = selection?.side === 'right' && selection.option === option
             const status = matchedItem ? statuses[matchedItem.number] : 'idle'
             return (
+              // native-ok: 连线匹配题的右侧格子，需 ref 定位以绘制 SVG 连线，且为多状态着色的块状单元
               <button
                 key={option}
                 ref={(element) => {
@@ -773,9 +891,9 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
                 type="button"
                 aria-pressed={selected}
                 onClick={() => selectRight(option)}
-                className={`flex min-h-14 w-full items-center gap-2 rounded-xl p-2 text-left text-base font-semibold leading-relaxed transition-[background-color,color,box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-blue focus-visible:ring-offset-2 active:scale-[0.99] ${
+                className={`focus-visible:ring-app-blue flex min-h-14 w-full items-center gap-2 rounded-xl p-2 text-left text-base leading-relaxed font-semibold transition-[background-color,color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.99] ${
                   selected
-                    ? 'bg-app-blue-light text-app-blue-dark shadow-sm'
+                    ? 'bg-app-blue-light text-app-blue-dark shadow-sticker-sm'
                     : status === 'correct'
                       ? 'bg-app-green-light text-app-green-dark'
                       : status === 'wrong'
@@ -785,7 +903,9 @@ function MatchingBoard({ items, options, matches, statuses, onMatch }: MatchingB
                           : 'bg-surface-dim text-text-primary hover:bg-app-blue-light/60'
                 }`}
               >
-                <span className="w-6 shrink-0 text-center text-sm font-black text-app-purple">{presentation.label}</span>
+                <span className="text-app-purple w-6 shrink-0 text-center text-sm font-black">
+                  {presentation.label}
+                </span>
                 <span className="min-w-0">{presentation.text}</span>
               </button>
             )
@@ -822,10 +942,13 @@ function ExerciseGroup({
   const itemKey = (n: number) => `g${groupIdx}-${n}`
   const graded = useMemo(() => group.items.filter(isGraded), [group.items])
   const shared = useMemo(() => sharedOptions(group.items), [group.items])
-  const isMatchingGroup = group.items.length > 0 && group.items.every((item) => item.type === 'matching')
+  const isMatchingGroup =
+    group.items.length > 0 && group.items.every((item) => item.type === 'matching')
   const matchingOptions = isMatchingGroup ? (shared ?? group.items[0]?.options ?? []) : []
   const correctCount = graded.filter((it) => statuses[it.number] === 'correct').length
-  const allJudged = graded.length > 0 && graded.every((it) => statuses[it.number] === 'correct' || statuses[it.number] === 'wrong')
+  const allJudged =
+    graded.length > 0 &&
+    graded.every((it) => statuses[it.number] === 'correct' || statuses[it.number] === 'wrong')
 
   // 组级完成上报：全部可判分题判定后触发；结果变化（重做）时再次触发
   const reportedRef = useRef('')
@@ -845,7 +968,8 @@ function ExerciseGroup({
     const normValues = values.map((v) => normalize(v ?? ''))
     const ok = normValues.every(
       (v, i) =>
-        v === normalize(expected[i] ?? expected[0] ?? '') || expected.some((e) => normalize(e) === v),
+        v === normalize(expected[i] ?? expected[0] ?? '') ||
+        expected.some((e) => normalize(e) === v),
     )
     setStatuses((prev) => ({ ...prev, [item.number]: ok ? 'correct' : 'wrong' }))
   }
@@ -860,7 +984,10 @@ function ExerciseGroup({
   const handlePick = (item: GrammarExerciseItem, value: string) => {
     const blankCount = promptParts(item).length - 1
     const slots = Math.max(blankCount, 1)
-    setInputs((prev) => ({ ...prev, [itemKey(item.number)]: Array.from({ length: slots }, (_, i) => (i === 0 ? value : '')) }))
+    setInputs((prev) => ({
+      ...prev,
+      [itemKey(item.number)]: Array.from({ length: slots }, (_, i) => (i === 0 ? value : '')),
+    }))
     const ok = isChoiceCorrect(item, value)
     setStatuses((prev) => ({ ...prev, [item.number]: ok ? 'correct' : 'wrong' }))
   }
@@ -885,57 +1012,79 @@ function ExerciseGroup({
   }
 
   return (
-    <section className="rounded-2xl bg-surface p-4 shadow-sm ring-1 ring-border-light sm:p-5">
+    <section className="bg-surface shadow-sticker-sm ring-border-light rounded-2xl p-4 ring-1 sm:p-5">
       <header className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center justify-center rounded-lg bg-gradient-to-br from-app-purple to-pink-500 px-2.5 py-1 text-sm font-black text-white">
+        <span className="inline-flex items-center justify-center rounded-lg bg-pink-600 px-2.5 py-1 text-sm font-black text-white">
           {group.section}
         </span>
-        <p className="min-w-0 flex-1 text-sm font-semibold text-text-primary">{group.instruction}</p>
+        <p className="text-text-primary min-w-0 flex-1 text-sm font-semibold">
+          {group.instruction}
+        </p>
         {typeof group.bookPage === 'number' && (
-          <button
+          <Button
             type="button"
             onClick={() => onPageClick?.(group.bookPage!)}
-            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 transition-colors ${
-              onPageClick
-                ? 'cursor-pointer bg-surface-dim text-app-blue ring-border-light hover:bg-app-blue-light hover:text-app-blue-dark'
-                : 'bg-surface-dim text-text-muted ring-border-light'
-            }`}
+            variant="outline"
+            color={onPageClick ? 'blue' : 'gray'}
+            size="1"
+            className="shrink-0"
           >
             p.{group.bookPage}
-          </button>
+          </Button>
         )}
-        {isAdmin && onStartCrop && !group.figure && figureSourceUrl && typeof group.bookPage === 'number' && (
-          <button
-            type="button"
-            onClick={() => onStartCrop?.(groupIdx)}
-            className="shrink-0 rounded-full bg-surface-dim px-2 py-0.5 text-[10px] font-bold text-app-purple ring-1 ring-border-light transition-colors hover:bg-app-purple-light hover:text-app-purple-dark"
-          >
-            ＋ 插图
-          </button>
-        )}
+        {isAdmin &&
+          onStartCrop &&
+          !group.figure &&
+          figureSourceUrl &&
+          typeof group.bookPage === 'number' && (
+            <Button
+              type="button"
+              onClick={() => onStartCrop?.(groupIdx)}
+              variant="outline"
+              color="purple"
+              size="1"
+              className="shrink-0"
+            >
+              ＋ 插图
+            </Button>
+          )}
         {graded.length > 0 && (
           <span
             className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${
               correctCount === graded.length && allJudged
                 ? 'bg-app-green-light text-app-green-dark'
-                : 'bg-surface-dim text-text-muted ring-1 ring-border-light'
+                : 'bg-surface-dim text-text-muted ring-border-light ring-1'
             }`}
           >
             {correctCount}/{graded.length}
           </span>
         )}
         {isAdmin && onEditGroup && (
-          <button
+          <IconButton
             type="button"
             onClick={() => onEditGroup(groupIdx)}
             aria-label={`编辑练习组 ${group.section}`}
             title="编辑本组"
-            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-app-purple transition-colors hover:bg-app-purple-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-app-purple focus-visible:ring-offset-2"
+            variant="ghost"
+            color="purple"
+            size="2"
+            className="shrink-0"
           >
-            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.2 5.2 18.8 8.8M4 20l4.4-1 10.8-10.8a2.55 2.55 0 0 0-3.6-3.6L4.8 15.4 4 20Z" />
+            <svg
+              viewBox="0 0 24 24"
+              className="size-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.2 5.2 18.8 8.8M4 20l4.4-1 10.8-10.8a2.55 2.55 0 0 0-3.6-3.6L4.8 15.4 4 20Z"
+              />
             </svg>
-          </button>
+          </IconButton>
         )}
       </header>
       {group.figure && (
@@ -943,7 +1092,9 @@ function ExerciseGroup({
           figure={group.figure}
           isAdmin={isAdmin}
           onPreview={onPreviewFigure}
-          onRecrop={figureSourceUrl && isAdmin && onStartCrop ? () => onStartCrop(groupIdx) : undefined}
+          onRecrop={
+            figureSourceUrl && isAdmin && onStartCrop ? () => onStartCrop(groupIdx) : undefined
+          }
           onRemove={isAdmin && onRemoveFigure ? () => onRemoveFigure(groupIdx) : undefined}
         />
       )}
@@ -953,7 +1104,9 @@ function ExerciseGroup({
           key={resetVersion}
           items={group.items}
           options={matchingOptions}
-          matches={Object.fromEntries(group.items.map((item) => [item.number, inputs[itemKey(item.number)]?.[0] ?? '']))}
+          matches={Object.fromEntries(
+            group.items.map((item) => [item.number, inputs[itemKey(item.number)]?.[0] ?? '']),
+          )}
           statuses={statuses}
           onMatch={handleMatch}
         />
@@ -972,7 +1125,9 @@ function ExerciseGroup({
                   next[blankIdx] = value
                   return { ...prev, [itemKey(item.number)]: next }
                 })
-                setStatuses((prev) => (prev[item.number] ? { ...prev, [item.number]: 'idle' } : prev))
+                setStatuses((prev) =>
+                  prev[item.number] ? { ...prev, [item.number]: 'idle' } : prev,
+                )
               }}
               onCheck={() => handleCheck(item)}
               onPick={(value) => handlePick(item, value)}
@@ -981,12 +1136,9 @@ function ExerciseGroup({
         </div>
       )}
       {Object.keys(statuses).length > 0 && (
-        <button
-          onClick={handleReset}
-          className="mt-3 text-xs font-semibold text-text-muted underline-offset-2 hover:underline"
-        >
+        <Button onClick={handleReset} variant="ghost" color="gray" size="1" className="mt-3">
           重做本组
-        </button>
+        </Button>
       )}
     </section>
   )
@@ -1019,7 +1171,9 @@ export function ExerciseView({
     <div className="flex flex-col gap-5">
       {groups.map((group, i) => {
         const src =
-          typeof group.bookPage === 'number' ? pageImages.find((img) => img.page === group.bookPage) : undefined
+          typeof group.bookPage === 'number'
+            ? pageImages.find((img) => img.page === group.bookPage)
+            : undefined
         return (
           <ExerciseGroup
             key={`${group.section}-${i}`}

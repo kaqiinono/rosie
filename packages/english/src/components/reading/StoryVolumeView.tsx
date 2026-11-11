@@ -7,6 +7,7 @@ import { useStoryReadingProgress } from '../../hooks/useStoryReadingProgress'
 import { useStoryRecordings } from '../../hooks/useStoryRecordings'
 import type { StorySeries, StoryVolume } from '../../utils/story-types'
 import { storyContentKey } from '../../utils/story-types'
+import { Button } from '@rosie/ui/themes'
 
 export default function StoryVolumeView({
   series,
@@ -34,7 +35,7 @@ export default function StoryVolumeView({
       >
         ← 返回 {series.title}
       </Link>
-      <header className="mt-4 rounded-3xl bg-gradient-to-br from-amber-100 via-orange-50 to-white p-6 ring-1 ring-amber-200">
+      <header className="mt-4 rounded-3xl bg-orange-50 p-6 ring-1 ring-amber-200">
         <p className="text-xs font-extrabold tracking-wider text-amber-600 uppercase">
           第 {volume.number} 辑
         </p>
@@ -56,18 +57,18 @@ export default function StoryVolumeView({
             </Link>
           )}
           {progress && (
-            <button
+            <Button
               type="button"
               onClick={() => void clearProgress()}
-              className="rounded-full bg-white px-3 py-2 text-sm font-bold text-slate-600 ring-1 ring-slate-200"
+              variant="outline"
+              color="gray"
+              size="2"
             >
               清除标记
-            </button>
+            </Button>
           )}
         </div>
-        <p className="mt-4 text-xs font-bold text-slate-500">
-          已保存 {recordedClips} 个朗读片段
-        </p>
+        <p className="mt-4 text-xs font-bold text-slate-500">已保存 {recordedClips} 个朗读片段</p>
       </header>
       <ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {volume.chapters.map((chapter) => {
@@ -79,10 +80,10 @@ export default function StoryVolumeView({
                 href={`/english/words/reading/story/${series.slug}/${volume.slug}/${chapter.key}`}
                 aria-current={isReading ? 'true' : undefined}
                 className={clsx(
-                  'flex h-full items-center gap-3 rounded-2xl p-4 no-underline ring-1 transition hover:shadow-sm',
+                  'hover:shadow-sticker-sm flex h-full items-center gap-3 rounded-2xl p-4 no-underline ring-1 transition',
                   isReading
-                    ? 'bg-gradient-to-br from-emerald-50 via-white to-white ring-2 ring-emerald-400 hover:ring-emerald-500'
-                    : 'bg-white ring-slate-200 hover:ring-amber-300',
+                    ? 'bg-emerald-50 ring-2 ring-emerald-400 hover:ring-emerald-500'
+                    : 'ring-kid-line bg-white hover:ring-amber-300',
                 )}
               >
                 <span

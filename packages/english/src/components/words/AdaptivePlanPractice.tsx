@@ -8,10 +8,7 @@ import { todayStr, useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { findWordByKey } from '../../utils/english-helpers'
-import {
-  buildDailyTask,
-  type AdaptiveDailyTask,
-} from '../../utils/adaptivePlanScheduler'
+import { buildDailyTask, type AdaptiveDailyTask } from '../../utils/adaptivePlanScheduler'
 import {
   ADAPTIVE_MASTERED_STAGE,
   ADAPTIVE_BOSS_STAGE,
@@ -45,7 +42,8 @@ type DailyWordCapsule = {
 function boxEmojiForRow(row: AdaptivePlanWordProgress | undefined): string {
   if (!row) return ADAPTIVE_NOT_STARTED_STAGE.emoji
   if (row.status === 'MASTERED') return ADAPTIVE_MASTERED_STAGE.emoji
-  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return ADAPTIVE_BOSS_STAGE.emoji
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5)
+    return ADAPTIVE_BOSS_STAGE.emoji
   if (row.status === 'LEARNING_PENDING') return ADAPTIVE_PENDING_STAGE.emoji
   if (row.status === 'NOT_STARTED') return ADAPTIVE_NOT_STARTED_STAGE.emoji
   return adaptiveBoxStage(row.boxIndex).emoji
@@ -136,7 +134,9 @@ export default function AdaptivePlanPractice() {
               dailyTask,
               mastered: stats.mastered,
               total: stats.total,
-              weakCount: rows.filter((row) => row.archivedAt == null && row.status === 'LEARNING' && row.streakWrong > 0).length,
+              weakCount: rows.filter(
+                (row) => row.archivedAt == null && row.status === 'LEARNING' && row.streakWrong > 0,
+              ).length,
             } satisfies PlanDaySnapshot,
           ] as const
         })
@@ -165,9 +165,7 @@ export default function AdaptivePlanPractice() {
     <div className="mx-auto max-w-[1280px] px-4 pt-2 pb-3">
       <div className="rounded-[20px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-7">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="font-fredoka bg-gradient-to-br from-[#8b5cf6] to-[#3b82f6] bg-clip-text text-2xl text-transparent">
-            自适应计划
-          </div>
+          <div className="font-fredoka text-2xl text-[#3b82f6]">自适应计划</div>
         </div>
 
         {sortedPlans.length === 0 ? (
@@ -197,10 +195,10 @@ export default function AdaptivePlanPractice() {
                   key={plan.id}
                   className="group flex flex-col rounded-[14px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] transition-all hover:border-[var(--wm-accent)] hover:bg-[var(--wm-surface)]"
                 >
-                  <button
+                  <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                     type="button"
                     onClick={() => router.push(`/english/words/adaptive/${plan.id}`)}
-                    className="min-h-0 min-w-0 w-full cursor-pointer rounded-t-[14px] px-3 py-3 text-left sm:px-5 sm:py-4"
+                    className="min-h-0 w-full min-w-0 cursor-pointer rounded-t-[14px] px-3 py-3 text-left sm:px-5 sm:py-4"
                   >
                     <div className="mb-1 flex flex-wrap items-center gap-2 text-[1rem] font-bold text-[var(--wm-text)]">
                       {plan.title}
@@ -227,7 +225,9 @@ export default function AdaptivePlanPractice() {
                             {daySnapshot.dailyTask.reviewKeys.length}
                           </span>
                           {daySnapshot.weakCount >= plan.backlogFuse && (
-                            <span className="font-bold text-[#fbbf24]">弱词 {daySnapshot.weakCount} · 已在主线优先安排</span>
+                            <span className="font-bold text-[#fbbf24]">
+                              弱词 {daySnapshot.weakCount} · 已在主线优先安排
+                            </span>
                           )}
                         </>
                       )}
@@ -247,7 +247,7 @@ export default function AdaptivePlanPractice() {
                             {capsules.map((capsule) => (
                               <span
                                 key={capsule.wordKey}
-                                className={`inline-flex items-center rounded-2xl border-[1.5px] px-2.5 py-1 text-[0.875rem] font-bold leading-tight ${CAPSULE_KIND_CLASS[capsule.kind]}`}
+                                className={`inline-flex items-center rounded-2xl border-[1.5px] px-2.5 py-1 text-[0.875rem] leading-tight font-bold ${CAPSULE_KIND_CLASS[capsule.kind]}`}
                               >
                                 <span className="mr-1 text-[.75rem] leading-none">
                                   {capsule.boxEmoji}

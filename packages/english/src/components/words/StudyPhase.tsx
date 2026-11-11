@@ -7,6 +7,7 @@ import { getWordImagePublicUrl } from '../../utils/word-image'
 import PhonicsWord from './PhonicsWord'
 import SpeakButton from './SpeakButton'
 import ZoomableWordImage from './ZoomableWordImage'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface StudyPhaseProps {
   entry: WordEntry
@@ -24,9 +25,8 @@ interface StudyPhaseProps {
 
   // Full Tailwind class strings — must appear as literals in callers
   // so the JIT scanner generates them.
-  progressGradientClasses: string
-  nextButtonGradientClasses: string
-  nextButtonShadowClass: string
+  progressColorClass: string
+  nextButtonColor: 'amber' | 'violet' | 'blue'
 
   wordBadge: ReactNode
 
@@ -51,9 +51,8 @@ export default function StudyPhase({
   isImmersive,
   onExitImmersive,
   compactImmersiveControls = false,
-  progressGradientClasses,
-  nextButtonGradientClasses,
-  nextButtonShadowClass,
+  progressColorClass,
+  nextButtonColor,
   wordBadge,
   onBack,
   onPrev,
@@ -88,59 +87,67 @@ export default function StudyPhase({
     >
       {useCompactControls ? (
         <div className="flex shrink-0 items-center gap-2 py-2.5">
-          <button
+          <Button
             type="button"
             onClick={onBack}
             aria-label="返回计划"
             title="返回计划"
-            className="font-nunito flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent text-lg font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)] md:w-auto md:px-3 md:text-[.8rem]"
+            variant="outline"
+            color="gray"
+            size="3"
+            className="w-10 shrink-0 md:w-auto md:text-[.8rem]"
           >
             <span aria-hidden>←</span>
             <span className="hidden md:inline">返回</span>
-          </button>
+          </Button>
           {onStash && (
-            <button
+            <Button
               type="button"
               onClick={onStash}
               disabled={isStashing}
               aria-label={isStashing ? '暂存中' : '暂存练习'}
               title={isStashing ? '暂存中…' : '暂存练习'}
-              className="font-nunito flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[rgba(245,158,11,.55)] bg-[rgba(245,158,11,.12)] text-base font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60 md:w-auto md:px-3 md:text-[.8rem]"
+              variant="soft"
+              color="amber"
+              size="3"
+              className="w-10 shrink-0 md:w-auto md:text-[.8rem]"
             >
               <span aria-hidden>💾</span>
               <span className="hidden md:inline">{isStashing ? '暂存中…' : '暂存'}</span>
-            </button>
+            </Button>
           )}
           {onRestart && (
-            <button
+            <Button
               type="button"
               onClick={onRestart}
               disabled={isRestarting || isStashing}
               aria-label={isRestarting ? '重置中' : '重新开始卡片预览'}
               title={isRestarting ? '重置中…' : '重新开始'}
-              className="font-nunito flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-[1.5px] border-[rgba(96,165,250,.55)] bg-[rgba(96,165,250,.12)] text-xl font-bold text-[#93c5fd] transition-all hover:bg-[rgba(96,165,250,.2)] disabled:cursor-wait disabled:opacity-60 md:w-auto md:px-3 md:text-[.8rem]"
+              variant="soft"
+              color="blue"
+              size="3"
+              className="w-10 shrink-0 md:w-auto md:text-[.8rem]"
             >
               <span aria-hidden>↻</span>
               <span className="hidden md:inline">{isRestarting ? '重置中…' : '重来'}</span>
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             type="button"
             onClick={() => onStudyDefOnlyChange(!studyDefOnly)}
             aria-label={studyDefOnly ? '关闭仅看释义' : '开启仅看释义'}
             aria-pressed={studyDefOnly}
             title={studyDefOnly ? '关闭仅看释义' : '仅看释义'}
-            className={`font-nunito flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full border-[1.5px] text-base font-bold transition-all md:w-auto md:px-3 md:text-[.8rem] ${
-              studyDefOnly
-                ? 'border-[#f59e0b] bg-[rgba(245,158,11,.18)] text-[#fbbf24]'
-                : 'border-white/10 bg-white/5 text-white/50 hover:border-[#f59e0b]/60 hover:text-[#fbbf24]'
-            }`}
+            variant={studyDefOnly ? 'ghost' : 'outline'}
+            color="gray"
+            size="3"
+            className="w-10 shrink-0 md:w-auto md:text-[.8rem]"
           >
             <span aria-hidden>👁</span>
             <span className="hidden md:inline">仅看释义</span>
-          </button>
+          </Button>
           <div
-            className="font-fredoka ml-auto shrink-0 rounded-full border-[1.5px] border-[rgba(167,139,250,.5)] bg-gradient-to-br from-[rgba(96,165,250,.14)] to-[rgba(124,58,237,.18)] px-3.5 py-1.5 text-[.82rem] font-extrabold whitespace-nowrap text-[#e0e7ff] tabular-nums shadow-[0_0_16px_rgba(124,58,237,.18)] md:px-4 md:py-2 md:text-[.875rem]"
+            className="font-fredoka ml-auto shrink-0 rounded-full border-[1.5px] border-[rgba(167,139,250,.5)] bg-[rgba(124,58,237,.18)] px-3.5 py-1.5 text-[.82rem] font-extrabold whitespace-nowrap text-[#e0e7ff] tabular-nums shadow-[0_0_16px_rgba(124,58,237,.18)] md:px-4 md:py-2 md:text-[.875rem]"
             aria-label={`当前第 ${currentIdx + 1} 个，共 ${totalCount} 个单词`}
           >
             {currentIdx + 1} / {totalCount}
@@ -149,37 +156,40 @@ export default function StudyPhase({
       ) : (
         <div className="mb-0 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-2 py-2.5 md:flex md:flex-wrap">
           <div className="flex min-w-0 items-center gap-1.5 md:flex-1 md:gap-2">
-            <button
-              onClick={onBack}
-              className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3 py-2 text-[.75rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)] md:py-1.5"
-            >
+            <Button onClick={onBack} variant="outline" color="gray" size="2" className="shrink-0">
               ← 返回
-            </button>
+            </Button>
             {onStash && (
-              <button
+              <Button
                 type="button"
                 onClick={onStash}
                 disabled={isStashing}
                 aria-label={isStashing ? '暂存中' : '暂存练习'}
                 title={isStashing ? '暂存中…' : '暂存练习'}
-                className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.12)] px-2.5 py-2 text-[.75rem] font-bold text-[#fbbf24] transition-all hover:bg-[rgba(245,158,11,.2)] disabled:cursor-wait disabled:opacity-60 sm:px-3 sm:py-1.5"
+                variant="soft"
+                color="amber"
+                size="2"
+                className="shrink-0"
               >
                 <span aria-hidden>💾</span>
                 <span className="hidden sm:inline"> {isStashing ? '暂存中…' : '暂存'}</span>
-              </button>
+              </Button>
             )}
             {onRestart && (
-              <button
+              <Button
                 type="button"
                 onClick={onRestart}
                 disabled={isRestarting || isStashing}
                 aria-label={isRestarting ? '重置中' : '重新开始卡片预览'}
                 title={isRestarting ? '重置中…' : '重新开始'}
-                className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[rgba(96,165,250,.45)] bg-[rgba(96,165,250,.12)] px-2.5 py-2 text-[.75rem] font-bold text-[#93c5fd] transition-all hover:bg-[rgba(96,165,250,.2)] disabled:cursor-wait disabled:opacity-60 sm:px-3 sm:py-1.5"
+                variant="soft"
+                color="blue"
+                size="2"
+                className="shrink-0"
               >
                 <span aria-hidden>↻</span>
                 <span className="hidden sm:inline"> {isRestarting ? '重置中…' : '重来'}</span>
-              </button>
+              </Button>
             )}
             <div className="font-fredoka hidden truncate text-[1rem] text-[var(--wm-text)] lg:block">
               {title}
@@ -189,7 +199,7 @@ export default function StudyPhase({
             {currentIdx + 1} / {totalCount}
           </div>
           <div className="col-span-2 flex min-w-0 items-center justify-between gap-2 md:col-span-1 md:contents">
-            <button
+            <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
               type="button"
               onClick={() => onStudyDefOnlyChange(!studyDefOnly)}
               aria-pressed={studyDefOnly}
@@ -209,13 +219,16 @@ export default function StudyPhase({
               </div>
             </button>
             {isImmersive && (
-              <button
+              <Button
                 type="button"
                 onClick={onExitImmersive}
-                className="shrink-0 cursor-pointer rounded-full border border-white/20 bg-white/10 px-3 py-2 text-[.72rem] font-bold text-white/55 transition-all hover:bg-white/20 hover:text-white/80 md:py-1.5"
+                variant="outline"
+                color="gray"
+                size="2"
+                className="shrink-0"
               >
                 ✕ 退出沉浸
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -223,27 +236,26 @@ export default function StudyPhase({
 
       <div className="mb-2 h-[3px] shrink-0 rounded-sm bg-white/[.04]">
         <div
-          className={`h-full rounded-sm bg-gradient-to-r transition-[width] duration-400 ${progressGradientClasses}`}
+          className={`h-full rounded-sm transition-[width] duration-400 ${progressColorClass}`}
           style={{ width: `${((currentIdx + 1) / totalCount) * 100}%` }}
         />
       </div>
 
       <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-[16px] border border-[var(--wm-border)] max-sm:flex-col">
-        <button
+        <IconButton
           type="button"
           onClick={onPrev}
           disabled={currentIdx === 0}
           aria-label="上一个单词"
           title="上一个单词"
-          className={`absolute top-[45%] left-0 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full font-black backdrop-blur-sm transition-all hover:scale-110 disabled:cursor-default sm:top-1/2 sm:left-2 ${
-            useCompactControls
-              ? 'h-12 w-12 border-2 border-[#93c5fd] bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] text-xl text-white shadow-[0_0_0_4px_rgba(37,99,235,.16),0_6px_22px_rgba(37,99,235,.55)] hover:border-white hover:shadow-[0_0_0_5px_rgba(96,165,250,.22),0_8px_28px_rgba(37,99,235,.7)] disabled:border-white/20 disabled:bg-[#111827] disabled:bg-none disabled:text-white/35 disabled:opacity-60 disabled:shadow-none sm:left-3 sm:h-14 sm:w-14 sm:text-2xl'
-              : 'h-11 w-11 border border-white/15 bg-[#090914]/75 text-2xl text-white/70 shadow-lg hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:opacity-20 max-sm:h-10 max-sm:w-10 max-sm:text-xl'
-          }`}
+          variant="outline"
+          color="gray"
+          size="3"
+          className="absolute top-[45%] left-0 z-10 sm:top-1/2 sm:left-2"
         >
           ←
-        </button>
-        <button
+        </IconButton>
+        <Button
           type="button"
           onClick={() => {
             if (isLast) onComplete()
@@ -251,21 +263,20 @@ export default function StudyPhase({
           }}
           aria-label={isLast ? completeButtonText : '下一个单词'}
           title={isLast ? completeButtonText : '下一个单词'}
-          className={`absolute top-[45%] right-0 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center rounded-full font-black backdrop-blur-sm transition-all hover:scale-110 sm:top-1/2 sm:right-2 ${
-            useCompactControls
-              ? 'h-12 w-12 border-2 border-[#c4b5fd] bg-gradient-to-br from-[#7c3aed] to-[#a855f7] text-xl text-white shadow-[0_0_0_4px_rgba(124,58,237,.16),0_6px_22px_rgba(124,58,237,.58)] hover:border-white hover:shadow-[0_0_0_5px_rgba(167,139,250,.22),0_8px_28px_rgba(124,58,237,.75)] sm:right-3 sm:h-14 sm:w-14 sm:text-2xl'
-              : 'h-11 w-11 border border-white/15 bg-[#090914]/75 text-2xl text-white/70 shadow-lg hover:border-[#a78bfa] hover:text-[#c4b5fd] max-sm:h-10 max-sm:w-10 max-sm:text-xl'
-          }`}
+          variant="outline"
+          color="gray"
+          size="3"
+          className="absolute top-[45%] right-0 z-10 sm:top-1/2 sm:right-2"
         >
           {isLast ? '✓' : '→'}
-        </button>
+        </Button>
         <div
           className={`relative flex flex-col items-center justify-center gap-3 overflow-hidden px-7 py-6 transition-all duration-400 max-sm:px-5 ${
             studyDefOnly && !studyWordVisible
               ? 'w-0 overflow-hidden p-0 opacity-0 max-sm:h-0 max-sm:w-full'
               : 'w-1/2 opacity-100 max-sm:h-[45%] max-sm:w-full'
           }`}
-          style={{ background: 'linear-gradient(135deg, #1a1a30 0%, #12122a 100%)' }}
+          style={{ background: '#1a1a30' }}
         >
           <div className="font-fredoka pointer-events-none absolute top-1/2 right-[-10px] -translate-y-1/2 text-[min(35vw,240px)] leading-none text-white/[.022] select-none">
             {entry.word.charAt(0).toUpperCase()}
@@ -293,11 +304,7 @@ export default function StudyPhase({
             <div className="font-nunito text-center text-[clamp(2rem,5vw,3.5rem)] leading-tight font-black break-words">
               <PhonicsWord text={entry.word} syllables={entry.syllables} />
             </div>
-            <SpeakButton
-              word={entry.word}
-              size="text-[1.5rem]"
-              className="opacity-40 hover:opacity-90"
-            />
+            <SpeakButton entry={entry} word={entry.word} size="3" />
           </div>
           {entry.ipa && (
             <div className="relative z-[1] text-[clamp(.85rem,1.8vw,1rem)] font-semibold text-[var(--wm-accent2)] italic opacity-85">
@@ -330,7 +337,7 @@ export default function StudyPhase({
                 ? 'w-1/2 cursor-pointer max-sm:flex-1'
                 : 'w-1/2 cursor-default max-sm:flex-1'
           }`}
-          style={{ background: 'linear-gradient(135deg, #0e2a50 0%, #1a1a2e 100%)' }}
+          style={{ background: '#0e2a50' }}
         >
           <div className="flex w-full max-w-[420px] flex-col items-start gap-2">
             {imageSrc && (
@@ -366,27 +373,33 @@ export default function StudyPhase({
 
       {!useCompactControls && (
         <div className="flex shrink-0 items-center justify-center gap-3.5 py-2">
-          <button
+          <Button
             onClick={() => {
               if (currentIdx > 0) onPrev()
             }}
             disabled={currentIdx === 0}
-            className="font-nunito cursor-pointer rounded-full border-[1.5px] border-white/10 bg-transparent px-6 py-2.5 text-[1rem] font-bold text-white/40 transition-all hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:cursor-default disabled:opacity-20"
+            variant="outline"
+            color="gray"
+            size="2"
           >
             ← 上一个
-          </button>
+          </Button>
           <div className="min-w-[60px] text-center text-[0.875rem] font-bold text-white/30">
             {currentIdx + 1} / {totalCount}
           </div>
-          <button
+          <Button
+            type="button"
             onClick={() => {
               if (isLast) onComplete()
               else onNext()
             }}
-            className={`font-nunito cursor-pointer rounded-full border-0 bg-gradient-to-br px-7 py-2.5 text-[1rem] font-extrabold text-white hover:-translate-y-px ${nextButtonGradientClasses} ${nextButtonShadowClass}`}
+            variant="solid"
+            color={nextButtonColor}
+            size="3"
+            radius="full"
           >
             {isLast ? completeButtonText : '下一个 →'}
-          </button>
+          </Button>
         </div>
       )}
     </div>

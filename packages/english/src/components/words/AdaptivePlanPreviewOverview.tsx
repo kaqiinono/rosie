@@ -18,9 +18,10 @@ type OverviewStat = {
   compactValue?: boolean
 }
 
-function firstDayTaskLabel(
-  day: SimulateAdaptivePlanResult['days'][number] | undefined,
-): { text: string; color: string } {
+function firstDayTaskLabel(day: SimulateAdaptivePlanResult['days'][number] | undefined): {
+  text: string
+  color: string
+} {
   if (!day) return { text: '—', color: '#94a3b8' }
 
   if (day.mode === 'boss') {
@@ -41,8 +42,7 @@ function firstDayTaskLabel(
   if (day.newWordKeys.length > 0) parts.push(`${day.newWordKeys.length} 新词`)
   if (day.reviewWordKeys.length > 0) parts.push(`${day.reviewWordKeys.length} 阶段推进`)
   const base = parts.length > 0 ? parts.join(' · ') : '空批次'
-  const withQuestions =
-    day.totalQuestions > 0 ? `${base} · 约 ${day.totalQuestions} 题` : base
+  const withQuestions = day.totalQuestions > 0 ? `${base} · 约 ${day.totalQuestions} 题` : base
 
   return { text: withQuestions, color: '#93c5fd' }
 }
@@ -65,7 +65,9 @@ function motivationalTagline(
   if (total <= 0) return '暂无单词'
   if (mastered >= total) return '🎉 全部毕业，计划通关！'
   if (activated === 0) {
-    return projectedBatches > 0 ? `从下一批起步，全对节奏约 ${projectedBatches} 批通关` : '踏上通关之旅'
+    return projectedBatches > 0
+      ? `从下一批起步，全对节奏约 ${projectedBatches} 批通关`
+      : '踏上通关之旅'
   }
   if (mastered === 0) {
     return `${activated} 词已经启程 · 成长 ${growthPct}%${projectedBatches > 0 ? ` · 约 ${projectedBatches} 批通关` : ''}`
@@ -88,19 +90,20 @@ function buildOverviewStats(
   const projectedDays = simulation.days.length
 
   const bossEnabled = plan.bossEveryNNew > 0
-  const milestoneStat: OverviewStat = bossEnabled && firstBossDay
-    ? {
-        label: '首个 Boss 验收',
-        value: `D${firstBossDay.dayIndex}`,
-        color: '#fbbf24',
-        hint: `第 ${firstBossDay.dayIndex} 批`,
-      }
-    : {
-        label: '预计通关',
-        value: projectedDays > 0 ? `${projectedDays} 批` : '—',
-        color: '#f0abfc',
-        hint: projectedDays > 0 ? `${projectedDays} 个批次` : undefined,
-      }
+  const milestoneStat: OverviewStat =
+    bossEnabled && firstBossDay
+      ? {
+          label: '首个 Boss 验收',
+          value: `D${firstBossDay.dayIndex}`,
+          color: '#fbbf24',
+          hint: `第 ${firstBossDay.dayIndex} 批`,
+        }
+      : {
+          label: '预计通关',
+          value: projectedDays > 0 ? `${projectedDays} 批` : '—',
+          color: '#f0abfc',
+          hint: projectedDays > 0 ? `${projectedDays} 个批次` : undefined,
+        }
 
   return [
     {
@@ -144,21 +147,17 @@ export default function AdaptivePlanPreviewOverview({
   const stats = buildOverviewStats(rows, plan, simulation)
 
   const segments = [
-    { count: mastered, className: 'bg-gradient-to-r from-[#22c55e] to-[#86efac]' },
-    { count: learning, className: 'bg-gradient-to-r from-[#60a5fa] to-[#a78bfa]' },
-    { count: pending, className: 'bg-gradient-to-r from-[#f59e0b] to-[#fbbf24]' },
+    { count: mastered, className: 'bg-[#22c55e] ' },
+    { count: learning, className: 'bg-[#60a5fa] ' },
+    { count: pending, className: 'bg-[#f59e0b] ' },
     { count: notStarted, className: 'bg-white/12' },
   ]
 
   const headline =
     total > 0 ? (
       <>
-        <span className="bg-gradient-to-r from-[#60a5fa] via-[#a78bfa] to-[#86efac] bg-clip-text text-transparent">
-          {growthPct}%
-        </span>
-        <span className="ml-2 text-[.95rem] font-bold text-[var(--wm-text-dim)]">
-          计划成长进度
-        </span>
+        <span className="text-[#60a5fa]">{growthPct}%</span>
+        <span className="ml-2 text-[.95rem] font-bold text-[var(--wm-text-dim)]">计划成长进度</span>
       </>
     ) : (
       '暂无单词'
@@ -172,7 +171,7 @@ export default function AdaptivePlanPreviewOverview({
             计划概览
           </div>
           <div className="font-fredoka text-xl text-[var(--wm-text)]">{headline}</div>
-          <div className="mt-1 text-[.75rem] font-bold leading-relaxed text-[var(--wm-text-dim)]">
+          <div className="mt-1 text-[.75rem] leading-relaxed font-bold text-[var(--wm-text-dim)]">
             {tagline}
           </div>
         </div>
@@ -185,20 +184,20 @@ export default function AdaptivePlanPreviewOverview({
 
       <div className="relative mb-4 h-3 overflow-hidden rounded-full bg-white/[.06]">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#60a5fa] via-[#a78bfa] to-[#86efac] transition-[width] duration-500"
+          className="absolute inset-y-0 left-0 rounded-full bg-[#60a5fa] transition-[width] duration-500"
           style={{ width: `${growthPct}%` }}
         />
         <div className="relative flex h-full opacity-35">
-        {segments.map((segment, index) => {
-          if (segment.count <= 0 || total <= 0) return null
-          return (
-            <div
-              key={index}
-              className={segment.className}
-              style={{ width: `${(segment.count / total) * 100}%` }}
-            />
-          )
-        })}
+          {segments.map((segment, index) => {
+            if (segment.count <= 0 || total <= 0) return null
+            return (
+              <div
+                key={index}
+                className={segment.className}
+                style={{ width: `${(segment.count / total) * 100}%` }}
+              />
+            )
+          })}
         </div>
       </div>
 
@@ -220,8 +219,8 @@ export default function AdaptivePlanPreviewOverview({
             <div
               className={
                 stat.compactValue
-                  ? 'mt-0.5 text-[.78rem] font-extrabold leading-snug'
-                  : 'mt-0.5 font-fredoka text-lg leading-tight'
+                  ? 'mt-0.5 text-[.78rem] leading-snug font-extrabold'
+                  : 'font-fredoka mt-0.5 text-lg leading-tight'
               }
               style={{ color: stat.color }}
             >

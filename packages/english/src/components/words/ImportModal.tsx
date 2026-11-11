@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import type { WordEntry } from '@rosie/core'
 import { parseWordRows, WORD_TEMPLATE_HEADERS } from '../../utils/english-helpers'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface ImportModalProps {
   open: boolean
@@ -48,8 +49,8 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
       }
 
       setImportedVocab(vocab)
-      const stageSet = new Set(vocab.map(v => v.stage).filter(Boolean))
-      const unitCount = new Set(vocab.map(v => v.unit)).size
+      const stageSet = new Set(vocab.map((v) => v.stage).filter(Boolean))
+      const unitCount = new Set(vocab.map((v) => v.unit)).size
       setStatus({
         type: 'success',
         text: `✅ 解析成功！Stage: ${[...stageSet].join(', ')} · ${vocab.length} 个单词 · ${unitCount} 个 Unit`,
@@ -73,21 +74,51 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
   )
 
   const handleAppend = useCallback(() => {
-    if (importedVocab) { onAppend(importedVocab); resetState(); onClose() }
+    if (importedVocab) {
+      onAppend(importedVocab)
+      resetState()
+      onClose()
+    }
   }, [importedVocab, onAppend, resetState, onClose])
 
-  const handleClose = useCallback(() => { resetState(); onClose() }, [resetState, onClose])
+  const handleClose = useCallback(() => {
+    resetState()
+    onClose()
+  }, [resetState, onClose])
 
   const downloadTemplate = useCallback(async () => {
     const xlsx = await import('xlsx')
     const { utils, writeFile } = xlsx.default || xlsx
     const sample = [
-      ['4A', 'Unit 1', 'Lesson 1', 'think', 'to use your mind', '思考', '/θɪŋk/', 'I thought about it.', 'th-i-nk', 'think', 'mind|blue', '{"past":["thought"],"pastParticiple":["thought"]}'],
+      [
+        '4A',
+        'Unit 1',
+        'Lesson 1',
+        'think',
+        'to use your mind',
+        '思考',
+        '/θɪŋk/',
+        'I thought about it.',
+        'th-i-nk',
+        'think',
+        'mind|blue',
+        '{"past":["thought"],"pastParticiple":["thought"]}',
+      ],
     ]
     const ws = utils.aoa_to_sheet([WORD_TEMPLATE_HEADERS, ...sample])
     ws['!cols'] = [
-      { wch: 8 }, { wch: 10 }, { wch: 12 }, { wch: 18 }, { wch: 34 }, { wch: 14 },
-      { wch: 16 }, { wch: 40 }, { wch: 14 }, { wch: 18 }, { wch: 34 }, { wch: 48 },
+      { wch: 8 },
+      { wch: 10 },
+      { wch: 12 },
+      { wch: 18 },
+      { wch: 34 },
+      { wch: 14 },
+      { wch: 16 },
+      { wch: 40 },
+      { wch: 14 },
+      { wch: 18 },
+      { wch: 34 },
+      { wch: 48 },
     ]
     const wb = utils.book_new()
     utils.book_append_sheet(wb, ws, '单词数据')
@@ -103,30 +134,32 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
   }
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/70">
       <div className="relative w-[90%] max-w-[540px] rounded-[20px] border border-white/[.12] bg-[#1a1a2e] p-8">
-        <button
+        <IconButton
           onClick={handleClose}
-          className="absolute top-3.5 right-4 cursor-pointer border-0 bg-transparent text-[1.2rem] text-white/40"
+          variant="outline"
+          color="gray"
+          size="2"
+          className="absolute top-3.5 right-4"
         >
           ✕
-        </button>
-        <div className="font-fredoka mb-1 bg-gradient-to-br from-[#4ade80] to-[#22c55e] bg-clip-text text-[1.3rem] text-transparent">
-          📥 导入单词表
-        </div>
+        </IconButton>
+        <div className="font-fredoka mb-1 text-[1.3rem] text-[#22c55e]">📥 导入单词表</div>
         <div className="mb-1 text-[.8rem] text-white/40">
-          列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节 / 关键词高亮 / 特殊词形 JSON
+          列顺序：Stage / Unit / Lesson / 单词 / 英文释义 / 中文释义 / 音标 / 例句 / phonics / 音节
+          / 关键词高亮 / 特殊词形 JSON
         </div>
-        <button
-          onClick={downloadTemplate}
-          className="font-nunito mb-4 cursor-pointer rounded-lg border border-white/[.12] bg-white/[.05] px-3 py-1 text-[.75rem] font-bold text-white/50 transition-all hover:border-[#4ade80]/50 hover:text-[#4ade80]"
-        >
+        <Button onClick={downloadTemplate} variant="outline" color="gray" size="1" className="mb-4">
           ⬇ 下载 Excel 模版
-        </button>
+        </Button>
 
         <div
           onClick={() => document.getElementById('import-file-input')?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDzHover(true) }}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDzHover(true)
+          }}
           onDragLeave={() => setDzHover(false)}
           onDrop={handleDrop}
           className={`mb-4 cursor-pointer rounded-[14px] border-2 border-dashed px-5 py-9 text-center transition-all ${
@@ -148,34 +181,36 @@ export default function ImportModal({ open, onClose, onAppend }: ImportModalProp
           type="file"
           accept=".xlsx"
           className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) processFile(f) }}
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) processFile(f)
+          }}
         />
 
         {status && (
-          <div className={`mb-3.5 rounded-[10px] p-3 px-4 text-[1rem] font-bold ${statusColors[status.type]}`}>
+          <div
+            className={`mb-3.5 rounded-[10px] p-3 px-4 text-[1rem] font-bold ${statusColors[status.type]}`}
+          >
             {status.text}
           </div>
         )}
 
         <div className="flex justify-end gap-2.5">
-          <button
-            onClick={handleClose}
-            className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-white/[.15] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-white/50"
-          >
+          <Button onClick={handleClose} variant="outline" color="gray" size="2">
             取消
-          </button>
+          </Button>
           {importedVocab && (
-            <button
-              onClick={handleAppend}
-              className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#a855f7] to-[#c084fc] px-6 py-2.5 text-[1rem] font-extrabold text-white"
-            >
+            <Button onClick={handleAppend} variant="solid" color="violet" size="2">
               + 按Stage追加
-            </button>
+            </Button>
           )}
         </div>
 
         <div className="mt-3.5 rounded-[10px] bg-white/[.04] p-3 text-[.72rem] text-white/30">
-          <span className="font-bold text-[#c084fc]">+ 按Stage追加</span>：删除同 Stage 的旧数据并写入新数据，其他 Stage 不受影响。模版已含中文释义 / 音节（逗号分隔）/ 关键词高亮（格式 <span className="font-mono">词|颜色; 词|颜色</span>，颜色填 red/gold/blue）——留空的列会被写为空。
+          <span className="font-bold text-[#c084fc]">+ 按Stage追加</span>：删除同 Stage
+          的旧数据并写入新数据，其他 Stage 不受影响。模版已含中文释义 / 音节（逗号分隔）/
+          关键词高亮（格式 <span className="font-mono">词|颜色; 词|颜色</span>，颜色填
+          red/gold/blue）——留空的列会被写为空。
         </div>
       </div>
     </div>

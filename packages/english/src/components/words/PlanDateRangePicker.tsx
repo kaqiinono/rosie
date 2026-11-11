@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { todayStr } from '@rosie/core'
 import { addPlanDays } from './english-weekly-plan-shared'
+import { IconButton } from '@rosie/ui/themes'
 
 const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六']
 
@@ -46,7 +47,12 @@ function rangeContainsOccupied(start: string, end: string, occupied: Set<string>
   return false
 }
 
-export default function PlanDateRangePicker({ startDate, endDate, occupiedDates, onRangeChange }: Props) {
+export default function PlanDateRangePicker({
+  startDate,
+  endDate,
+  occupiedDates,
+  onRangeChange,
+}: Props) {
   const today = todayStr()
   const initialMonth = startDate.slice(0, 7) || today.slice(0, 7)
   const [viewMonthKey, setViewMonthKey] = useState(initialMonth)
@@ -93,26 +99,35 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <button
+        <IconButton
           type="button"
           onClick={() => shiftMonth(-1)}
-          className="cursor-pointer rounded-lg px-2 py-1 text-[14px] font-bold text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]"
+          variant="ghost"
+          color="gray"
+          size="1"
         >
           ‹
-        </button>
-        <span className="text-[13px] font-extrabold text-[var(--wm-text)]">{monthLabel(viewMonthKey)}</span>
-        <button
+        </IconButton>
+        <span className="text-[13px] font-extrabold text-[var(--wm-text)]">
+          {monthLabel(viewMonthKey)}
+        </span>
+        <IconButton
           type="button"
           onClick={() => shiftMonth(1)}
-          className="cursor-pointer rounded-lg px-2 py-1 text-[14px] font-bold text-[var(--wm-text-dim)] hover:bg-[var(--wm-surface2)] hover:text-[var(--wm-text)]"
+          variant="ghost"
+          color="gray"
+          size="1"
         >
           ›
-        </button>
+        </IconButton>
       </div>
 
       <div className="mb-1 grid grid-cols-7 gap-1">
-        {WEEKDAY_LABELS.map(label => (
-          <div key={label} className="py-1 text-center text-[10px] font-bold text-[var(--wm-text-dim)]">
+        {WEEKDAY_LABELS.map((label) => (
+          <div
+            key={label}
+            className="py-1 text-center text-[10px] font-bold text-[var(--wm-text-dim)]"
+          >
             {label}
           </div>
         ))}
@@ -131,6 +146,7 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
           const isPending = cell.date === pendingStart
 
           return (
+            // native-ok: 日期范围选择的日历日期格子（按占用/范围/端点着色的方格）
             <button
               key={cell.date}
               type="button"
@@ -142,7 +158,7 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
                   ? 'rgba(255,255,255,.04)'
                   : inRange
                     ? isEdge
-                      ? 'linear-gradient(135deg, #d97706, #f59e0b)'
+                      ? '#d97706'
                       : 'rgba(245,158,11,.15)'
                     : isPending
                       ? 'rgba(245,158,11,.25)'

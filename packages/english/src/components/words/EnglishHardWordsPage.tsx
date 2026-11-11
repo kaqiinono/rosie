@@ -7,6 +7,7 @@ import { useEnglishWrong } from '../../hooks/useEnglishWrong'
 import { findWordByKey, practiceHrefForWord, wordKey } from '../../utils/english-helpers'
 import { getWordMasteryLevel } from '@rosie/core'
 import SpeakButton from './SpeakButton'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 type StatusFilter = 'unresolved' | 'resolved' | 'all'
 
@@ -35,7 +36,7 @@ export default function EnglishHardWordsPage() {
   // Single-textbook: only words that resolve in the active stage's vocab.
   const items = useMemo(() => {
     return rows
-      .map(row => {
+      .map((row) => {
         const entry = findWordByKey(vocab, row.wordKey)
         if (!entry) return null
         return { row, entry }
@@ -53,15 +54,15 @@ export default function EnglishHardWordsPage() {
     return rows.filter((r) => keys.has(r.wordKey))
   }, [rows, vocab])
 
-  const unresolvedCount = stageRows.filter(r => !r.resolved).length
-  const resolvedCount = stageRows.filter(r => r.resolved).length
+  const unresolvedCount = stageRows.filter((r) => !r.resolved).length
+  const resolvedCount = stageRows.filter((r) => r.resolved).length
 
   return (
     <div className="relative z-1 mx-auto max-w-[720px] px-4 py-6 pb-16">
       <div
         className="mb-5 rounded-[16px] px-5 py-4"
         style={{
-          background: 'linear-gradient(135deg, rgba(233,69,96,.12), rgba(96,165,250,.08))',
+          background: 'rgba(233,69,96,.12)',
           border: '1.5px solid var(--wm-border)',
         }}
       >
@@ -75,28 +76,30 @@ export default function EnglishHardWordsPage() {
           )}
         </div>
         <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--wm-text-dim)]">
-          仅当前教材{selStage ? `（${selStage}）` : ''} · 答错收录 · 再练答对后自动标记已改正
-          · 顶部可切换其它册
+          仅当前教材{selStage ? `（${selStage}）` : ''} · 答错收录 · 再练答对后自动标记已改正 ·
+          顶部可切换其它册
         </p>
       </div>
 
       <div className="mb-5 flex flex-wrap gap-2">
-        {STATUS_TABS.map(tab => (
-          <button
+        {STATUS_TABS.map((tab) => (
+          <Button
             key={tab.key}
             type="button"
             onClick={() => setStatusFilter(tab.key)}
-            className={`rounded-full px-3 py-1.5 text-[12px] font-bold transition-all ${
-              statusFilter === tab.key
-                ? 'bg-[var(--wm-accent)] text-white'
-                : 'border border-[var(--wm-border)] bg-[var(--wm-surface)] text-[var(--wm-text-dim)]'
-            }`}
+            variant={statusFilter === tab.key ? 'ghost' : 'outline'}
+            color="gray"
+            size="1"
           >
             {tab.label}
             <span className="ml-1 opacity-80">
-              {tab.key === 'unresolved' ? unresolvedCount : tab.key === 'resolved' ? resolvedCount : stageRows.length}
+              {tab.key === 'unresolved'
+                ? unresolvedCount
+                : tab.key === 'resolved'
+                  ? resolvedCount
+                  : stageRows.length}
             </span>
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -109,7 +112,11 @@ export default function EnglishHardWordsPage() {
         >
           <div className="text-5xl">{statusFilter === 'unresolved' ? '🎉' : '📭'}</div>
           <div className="text-[15px] font-bold text-[var(--wm-text)]">
-            {statusFilter === 'unresolved' ? '没有待改正的难词' : statusFilter === 'resolved' ? '还没有已改正记录' : '难词本是空的'}
+            {statusFilter === 'unresolved'
+              ? '没有待改正的难词'
+              : statusFilter === 'resolved'
+                ? '还没有已改正记录'
+                : '难词本是空的'}
           </div>
           <p className="max-w-[280px] text-[12px] text-[var(--wm-text-dim)]">
             本册练习答错会收录于此；其它教材请先切换顶部教材
@@ -140,17 +147,23 @@ export default function EnglishHardWordsPage() {
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`font-fredoka text-[17px] font-extrabold ${isResolved ? 'text-green-600 line-through' : 'text-[var(--wm-text)]'}`}>
+                    <span
+                      className={`font-fredoka text-[17px] font-extrabold ${isResolved ? 'text-green-600 line-through' : 'text-[var(--wm-text)]'}`}
+                    >
                       {entry.word}
                     </span>
-                    <SpeakButton word={entry.word} size="text-[14px]" />
+                    <SpeakButton entry={entry} word={entry.word} size="1" />
                   </div>
-                  <div className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">{entry.explanation}</div>
+                  <div className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">
+                    {entry.explanation}
+                  </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                     <span className="rounded-full bg-white/10 px-2 py-px text-[10px] font-semibold text-[var(--wm-text-dim)]">
                       {entry.unit} · {entry.lesson}
                     </span>
-                    <span className={`rounded-full px-2 py-px text-[10px] font-bold ${isResolved ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                    <span
+                      className={`rounded-full px-2 py-px text-[10px] font-bold ${isResolved ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}
+                    >
                       {isResolved ? '已改正' : '未改正'}
                     </span>
                     <span className="text-[10px] text-[var(--wm-text-dim)]">
@@ -169,14 +182,16 @@ export default function EnglishHardWordsPage() {
                       再练 ✨
                     </Link>
                   )}
-                  <button
+                  <IconButton
                     type="button"
                     onClick={() => void removeWrong(row.wordKey).then(() => refetch())}
-                    className="rounded-full border border-white/15 px-2 py-1.5 text-[11px] text-[var(--wm-text-dim)] hover:text-[var(--wm-text)]"
                     title="从难词本移除"
+                    variant="outline"
+                    color="gray"
+                    size="1"
                   >
                     ✕
-                  </button>
+                  </IconButton>
                 </div>
               </div>
             )

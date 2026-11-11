@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { GrammarPageImage } from '../types'
 import { grammarPageImageUrl } from '../types'
+import { Button } from '@rosie/ui/themes'
 
 export function moveEditorItem<T>(items: T[], from: number, to: number): T[] {
   if (to < 0 || to >= items.length || from === to) return items
@@ -75,56 +76,72 @@ export function GrammarEditorReferencePane({
   const [viewerMode, setViewerMode] = useState<'source' | 'preview'>('source')
   const referenceImage = useMemo(
     () =>
-      pageImages.find((image) => image.page === page && image.type === imageType)
-      ?? pageImages.find((image) => image.page === page)
-      ?? pageImages.find((image) => image.type === imageType)
-      ?? pageImages[0],
+      pageImages.find((image) => image.page === page && image.type === imageType) ??
+      pageImages.find((image) => image.page === page) ??
+      pageImages.find((image) => image.type === imageType) ??
+      pageImages[0],
     [imageType, page, pageImages],
   )
   const referenceImageUrl = referenceImage ? grammarPageImageUrl(referenceImage.path) : ''
 
   return (
-    <aside className="order-first min-w-0 border-b border-border-light bg-surface-dim/45 p-4 lg:order-none lg:overflow-y-auto lg:border-b-0">
-      <div className="mb-4 grid grid-cols-2 rounded-xl bg-surface p-1 ring-1 ring-border-light" role="tablist" aria-label="查看区域">
-        <button
+    <aside className="border-border-light bg-surface-dim/45 order-first min-w-0 border-b p-4 lg:order-none lg:overflow-y-auto lg:border-b-0">
+      <div
+        className="bg-surface ring-border-light mb-4 grid grid-cols-2 rounded-xl p-1 ring-1"
+        role="tablist"
+        aria-label="查看区域"
+      >
+        <Button
           type="button"
           role="tab"
           aria-selected={viewerMode === 'source'}
           onClick={() => setViewerMode('source')}
-          className={`min-h-10 rounded-lg px-3 text-sm font-bold transition-colors ${viewerMode === 'source' ? 'bg-app-blue text-white shadow-sm' : 'text-text-secondary hover:bg-surface-dim'}`}
+          variant={viewerMode === 'source' ? 'solid' : 'ghost'}
+          color={viewerMode === 'source' ? 'blue' : 'gray'}
+          size="2"
         >
           原书对照{referenceImage ? ` · p.${referenceImage.page}` : ''}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           role="tab"
           aria-selected={viewerMode === 'preview'}
           onClick={() => setViewerMode('preview')}
-          className={`min-h-10 rounded-lg px-3 text-sm font-bold transition-colors ${viewerMode === 'preview' ? 'bg-app-blue text-white shadow-sm' : 'text-text-secondary hover:bg-surface-dim'}`}
+          variant={viewerMode === 'preview' ? 'solid' : 'ghost'}
+          color={viewerMode === 'preview' ? 'blue' : 'gray'}
+          size="2"
         >
           实时预览
-        </button>
+        </Button>
       </div>
 
       {viewerMode === 'source' ? (
         <section role="tabpanel" aria-label="原书对照">
           {referenceImageUrl ? (
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-surface ring-1 ring-border-light">
+            <div className="bg-surface ring-border-light relative aspect-[3/4] w-full overflow-hidden rounded-xl ring-1">
               {/* Storage 域名随环境变化，沿用原书预览的直接图片加载方式。 */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={referenceImageUrl} alt={`原书第 ${referenceImage?.page ?? ''} 页`} className="h-full w-full object-contain" />
+              <img
+                src={referenceImageUrl}
+                alt={`原书第 ${referenceImage?.page ?? ''} 页`}
+                className="h-full w-full object-contain"
+              />
             </div>
           ) : (
-            <div className="rounded-xl bg-surface p-6 text-center text-sm text-text-muted ring-1 ring-border-light">本单元暂无可对照的原书图片</div>
+            <div className="bg-surface text-text-muted ring-border-light rounded-xl p-6 text-center text-sm ring-1">
+              本单元暂无可对照的原书图片
+            </div>
           )}
         </section>
       ) : (
         <section role="tabpanel" aria-label="学生端实时预览">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-black text-text-primary">学生端实时预览</h3>
-            <span className="rounded-full bg-app-green-light px-2 py-1 text-[10px] font-bold text-app-green-dark">自动更新</span>
+            <h3 className="text-text-primary text-sm font-black">学生端实时预览</h3>
+            <span className="bg-app-green-light text-app-green-dark rounded-full px-2 py-1 text-[10px] font-bold">
+              自动更新
+            </span>
           </div>
-          {previewEmpty ? <p className="text-sm text-text-muted">暂无可预览内容</p> : preview}
+          {previewEmpty ? <p className="text-text-muted text-sm">暂无可预览内容</p> : preview}
         </section>
       )}
     </aside>

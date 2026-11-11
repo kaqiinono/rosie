@@ -75,7 +75,10 @@ function sourceStyle(stage: string | undefined) {
 }
 
 function slugForWord(word: string, paragraphIndex: number, occurrence: number): string {
-  const slug = word.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  const slug = word
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
   return `pw-${paragraphIndex}-${slug}-${occurrence}`
 }
 
@@ -149,10 +152,7 @@ export default function PassageView({
     }
   }, [activeCue])
 
-  const regex = useMemo(
-    () => buildEntryMatchRegex(lessonWords),
-    [lessonWords],
-  )
+  const regex = useMemo(() => buildEntryMatchRegex(lessonWords), [lessonWords])
 
   const glossary = useMemo(() => passage.glossary ?? [], [passage.glossary])
   const glossaryRegex = useMemo(() => buildGlossaryRegex(glossary), [glossary])
@@ -212,6 +212,7 @@ export default function PassageView({
           ? 'italic underline decoration-dotted decoration-slate-300 underline-offset-2 text-slate-700/85 hover:text-slate-900 hover:bg-slate-100/60'
           : 'underline decoration-dotted decoration-slate-400 underline-offset-2 text-slate-700/90 hover:text-slate-900 hover:bg-slate-100/60'
         out.push(
+          // native-ok: 嵌在课文段落中的行内难点词（虚线下划线文本），Radix Button 会破坏文字排版
           <button
             key={`${keyPrefix}-g-${m.index}`}
             onClick={() => setGlossarySelected(gw)}
@@ -229,7 +230,11 @@ export default function PassageView({
     return out
   }
 
-  const renderParagraph = (text: string, paragraphIndex: number, occurrenceMap = new Map<string, number>()): ReactNode => {
+  const renderParagraph = (
+    text: string,
+    paragraphIndex: number,
+    occurrenceMap = new Map<string, number>(),
+  ): ReactNode => {
     if (!regex) return renderGlossary(text, `p${paragraphIndex}`)
     // Reset regex state (it has /g flag in some constructions)
     const re = new RegExp(regex.source, regex.flags)
@@ -240,10 +245,7 @@ export default function PassageView({
     while ((m = re.exec(text)) !== null) {
       if (m.index > lastIndex) {
         parts.push(
-          ...renderGlossary(
-            text.slice(lastIndex, m.index),
-            `p${paragraphIndex}-pre${m.index}`,
-          ),
+          ...renderGlossary(text.slice(lastIndex, m.index), `p${paragraphIndex}-pre${m.index}`),
         )
       }
       const matched = m[0]
@@ -261,7 +263,11 @@ export default function PassageView({
         // those belong to learn mode; focus is for distraction-free reading.
         const outcome = mode === 'focus' ? undefined : recallOutcomes?.[wordKey(entry)]
         const outcomeClass =
-          outcome === 'correct' ? 'recall-mark-correct' : outcome === 'wrong' ? 'recall-mark-wrong' : ''
+          outcome === 'correct'
+            ? 'recall-mark-correct'
+            : outcome === 'wrong'
+              ? 'recall-mark-wrong'
+              : ''
         const recalls = recallCounts?.[wordKey(entry)] ?? 0
         const source = entry.stage?.trim() || '未分级'
         const isCurrentLesson =
@@ -270,6 +276,7 @@ export default function PassageView({
           entry.lesson === passage.lesson
         const lessonEmphasisClass = isCurrentLesson ? 'font-black' : 'opacity-80 hover:opacity-100'
         parts.push(
+          // native-ok: 嵌在课文段落中的行内高亮生词（按掌握度着色），Radix Button 会破坏文字排版
           <button
             key={`${id}-${m.index}`}
             id={id}
@@ -291,7 +298,7 @@ export default function PassageView({
               <span
                 aria-hidden
                 title={`已回想 ${recalls} 次`}
-                className="ml-0.5 align-super text-[9px] font-extrabold leading-none text-emerald-600/70"
+                className="ml-0.5 align-super text-[9px] leading-none font-extrabold text-emerald-600/70"
               >
                 ✓{recalls >= 2 ? toSuperscript(recalls) : ''}
               </span>
@@ -317,10 +324,19 @@ export default function PassageView({
     return sentences.map((sentence, i) => {
       const cue = `${index}-${i}`
       return (
-        <span key={cue} data-narration-cue={cue} className={cue === listeningTarget
-          ? listeningHighlight
-          : cue === activeCue ? 'rounded bg-amber-100 box-decoration-clone text-[1.08em]' : undefined}>
-          {renderParagraph(sentence, index, occurrences)}{renderClipButton?.(cue)}{' '}
+        <span
+          key={cue}
+          data-narration-cue={cue}
+          className={
+            cue === listeningTarget
+              ? listeningHighlight
+              : cue === activeCue
+                ? 'rounded bg-amber-100 box-decoration-clone text-[1.08em]'
+                : undefined
+          }
+        >
+          {renderParagraph(sentence, index, occurrences)}
+          {renderClipButton?.(cue)}{' '}
         </span>
       )
     })
@@ -329,7 +345,7 @@ export default function PassageView({
   return (
     <div ref={containerRef} className="font-nunito">
       {sourceStages.length > 1 && (
-        <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200">
+        <div className="ring-kid-line mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1">
           <span className="font-bold text-slate-500">词库来源</span>
           {sourceStages.map((stage) => (
             <span key={stage} className="inline-flex items-center gap-1.5 font-bold">
@@ -346,8 +362,14 @@ export default function PassageView({
         {passage.paragraphs.map((p, i) => (
           <div key={i}>
             {passage.paragraphTitles?.[i] && (
-              <h2 className="font-fredoka mb-2 text-base font-black tracking-wide text-app-blue-dark sm:text-lg">
-                <span data-narration-cue={`heading-${i}`} className={listeningTarget === `heading-${i}` ? listeningHighlight : undefined}>{passage.paragraphTitles[i]}</span>{renderClipButton?.(`heading-${i}`)}
+              <h2 className="font-fredoka text-app-blue-dark mb-2 text-base font-black tracking-wide sm:text-lg">
+                <span
+                  data-narration-cue={`heading-${i}`}
+                  className={listeningTarget === `heading-${i}` ? listeningHighlight : undefined}
+                >
+                  {passage.paragraphTitles[i]}
+                </span>
+                {renderClipButton?.(`heading-${i}`)}
               </h2>
             )}
             <p className="break-words">
@@ -366,9 +388,7 @@ export default function PassageView({
                   ))
                 : renderTextbookParagraph(p, i)}
             </p>
-            {renderParagraphFooter && (
-              <div className="mt-4">{renderParagraphFooter(i)}</div>
-            )}
+            {renderParagraphFooter && <div className="mt-4">{renderParagraphFooter(i)}</div>}
           </div>
         ))}
       </article>
@@ -389,10 +409,7 @@ export default function PassageView({
         }}
       />
 
-      <GlossaryPopup
-        entry={glossarySelected}
-        onClose={() => setGlossarySelected(null)}
-      />
+      <GlossaryPopup entry={glossarySelected} onClose={() => setGlossarySelected(null)} />
     </div>
   )
 }

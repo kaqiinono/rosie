@@ -5,6 +5,7 @@ import { STORAGE_KEYS } from '@rosie/core'
 
 import type { WordEntry } from '@rosie/core'
 import { classifyPlanWords, wordKey } from '../../utils/english-helpers'
+import { Button, TextField } from '@rosie/ui/themes'
 
 export function getDayLabel(dateStr: string): string {
   const d = new Date(dateStr + 'T12:00:00')
@@ -38,14 +39,23 @@ export function cmpNatural(a: string, b: string): number {
 }
 
 /** Ascending by unit then lesson. */
-export function cmpLesson(a: { unit: string; lesson: string }, b: { unit: string; lesson: string }): number {
+export function cmpLesson(
+  a: { unit: string; lesson: string },
+  b: { unit: string; lesson: string },
+): number {
   return cmpNatural(a.unit, b.unit) || cmpNatural(a.lesson, b.lesson)
 }
 
 /** Reverse `unit` / `lesson` comma lists saved on `WeeklyPlan`. */
 export function parsePlanLessons(plan: WeeklyPlan): { unit: string; lesson: string }[] {
-  const units = plan.unit.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
-  const lessons = plan.lesson.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean)
+  const units = plan.unit
+    .split(/\s*,\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const lessons = plan.lesson
+    .split(/\s*,\s*/)
+    .map((s) => s.trim())
+    .filter(Boolean)
   if (units.length === 0) return []
   const n = Math.max(units.length, lessons.length)
   const out: { unit: string; lesson: string }[] = []
@@ -70,7 +80,7 @@ export function inferLessonQuotasFromAssignments(
     for (const day of plan.days) {
       let n = 0
       for (const k of day.newWordKeys) {
-        const e = vocab.find(w => wordKey(w) === k)
+        const e = vocab.find((w) => wordKey(w) === k)
         if (e && e.unit === l.unit && e.lesson === l.lesson) n += 1
       }
       maxPerDay = Math.max(maxPerDay, n)
@@ -102,7 +112,7 @@ export function hydrateLessonKindOverridesFromPlan(
     for (const d of plan.days) {
       for (const k of d.newWordKeys) {
         if (seen.has(k)) continue
-        const e = vocab.find(w => wordKey(w) === k)
+        const e = vocab.find((w) => wordKey(w) === k)
         if (e && e.unit === l.unit && e.lesson === l.lesson) {
           seen.add(k)
           inLesson.push(k)
@@ -110,7 +120,7 @@ export function hydrateLessonKindOverridesFromPlan(
       }
     }
     if (inLesson.length === 0) out[lk] = 'consolidate'
-    else out[lk] = inLesson.every(k => cls.get(k) === 'preview') ? 'preview' : 'consolidate'
+    else out[lk] = inLesson.every((k) => cls.get(k) === 'preview') ? 'preview' : 'consolidate'
   }
   return out
 }
@@ -123,7 +133,7 @@ export function buildArrangeBaselineKey(
   batchMode = true,
 ): string {
   const sorted = [...lessons].sort((a, b) => lessonKey(a).localeCompare(lessonKey(b)))
-  const parts = sorted.map(l => {
+  const parts = sorted.map((l) => {
     const lk = lessonKey(l)
     const kind = kinds[lk] ?? 'consolidate'
     return `${lk}:${kind}:${quotas[lk] ?? 3}`
@@ -135,7 +145,7 @@ export function inferBatchModeFromPlan(plan: WeeklyPlan, planWordKeys: string[])
   if (plan.batchMode !== undefined) return plan.batchMode
   if (plan.days.length === 0 || planWordKeys.length === 0) return true
   const expected = [...planWordKeys].sort().join(',')
-  return !plan.days.every(day => [...day.newWordKeys].sort().join(',') === expected)
+  return !plan.days.every((day) => [...day.newWordKeys].sort().join(',') === expected)
 }
 
 export function getWeekEnd(weekStart: string): string {
@@ -168,7 +178,11 @@ export function fmtPlanRange(start: string, end: string): string {
   return `${fmtShortDate(start)} — ${fmtShortDate(end)}`
 }
 
-export function planEndDate(plan: { planEnd?: string; weekStart: string; days: WeeklyPlanDay[] }): string {
+export function planEndDate(plan: {
+  planEnd?: string
+  weekStart: string
+  days: WeeklyPlanDay[]
+}): string {
   if (plan.planEnd) return plan.planEnd
   if (plan.days.length > 0) return plan.days[plan.days.length - 1]!.date
   return getWeekEnd(plan.weekStart)
@@ -245,7 +259,7 @@ export function loadCachedLessons(): { unit: string; lesson: string }[] {
 export function saveCachedLessons(lessons: { unit: string; lesson: string }[]): void {
   if (typeof window === 'undefined') return
   try {
-    const slim = lessons.map(l => ({ unit: l.unit, lesson: l.lesson }))
+    const slim = lessons.map((l) => ({ unit: l.unit, lesson: l.lesson }))
     window.localStorage.setItem(STORAGE_KEYS.WEEKLY_PLAN_LAST_LESSONS, JSON.stringify(slim))
   } catch {
     // localStorage may be unavailable (private mode, quota, etc.) — silently skip.
@@ -274,7 +288,11 @@ export function saveCachedStages(stages: string[]): void {
   }
 }
 
-export function planDayCount(plan: { weekStart: string; days: WeeklyPlanDay[]; planEnd?: string }): number {
+export function planDayCount(plan: {
+  weekStart: string
+  days: WeeklyPlanDay[]
+  planEnd?: string
+}): number {
   return plan.days.length > 0 ? plan.days.length : countPlanDays(plan.weekStart, planEndDate(plan))
 }
 
@@ -294,23 +312,24 @@ export function QuotaPicker({ value, onChange }: { value: number; onChange: (n: 
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {QUOTA_PRESETS.map(n => (
-        <button
+      {QUOTA_PRESETS.map((n) => (
+        <Button
           key={n}
           type="button"
           onClick={() => onChange(n)}
-          className={`h-7 w-7 cursor-pointer rounded-full border-[1.5px] text-[.8rem] font-extrabold transition-all ${
-            value === n
-              ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-              : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)] hover:text-[var(--wm-accent)]'
-          }`}
+          variant={value === n ? 'solid' : 'outline'}
+          color={value === n ? 'amber' : 'gray'}
+          size="1"
+          className="w-7"
         >
           {n}
-        </button>
+        </Button>
       ))}
       <div className="ml-1 flex items-center gap-1.5">
         <span className="text-[.68rem] font-bold text-[var(--wm-text-dim)]">自定义</span>
-        <input
+        <TextField.Root
+          size="1"
+          color={isCustom ? 'amber' : 'gray'}
           type="number"
           min={1}
           max={99}
@@ -322,11 +341,7 @@ export function QuotaPicker({ value, onChange }: { value: number; onChange: (n: 
             if (!Number.isFinite(n)) return
             onChange(Math.min(99, Math.max(1, Math.floor(n))))
           }}
-          className={`h-7 w-14 rounded-full border-[1.5px] bg-[var(--wm-surface2)] px-2 text-center text-[.8rem] font-extrabold outline-none focus:border-[#f59e0b] ${
-            isCustom
-              ? 'border-[#f59e0b] text-[#fbbf24]'
-              : 'border-[var(--wm-border)] text-[var(--wm-text)]'
-          }`}
+          className="w-16"
         />
       </div>
     </div>

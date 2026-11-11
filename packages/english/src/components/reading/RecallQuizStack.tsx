@@ -6,6 +6,7 @@ import type { ReadingPassage } from '../../utils/reading-data'
 import { findSentenceForWord, blankWordInSentence } from '../../utils/reading-data'
 import { buildQuizOptions, wordKey } from '../../utils/english-helpers'
 import SpeakButton from '../words/SpeakButton'
+import { Button } from '@rosie/ui/themes'
 import { READING_RETRY_MESSAGE, READING_SECOND_WRONG_TEMPLATE } from '@rosie/core'
 
 function highlightedSentence(sentence: string, word: string): ReactNode {
@@ -63,11 +64,6 @@ const TONE_HINT: Record<NonNullable<Props['tone']>, string> = {
   amber: 'text-amber-700',
   sky: 'text-sky-700',
 }
-const TONE_OPTION_HOVER: Record<NonNullable<Props['tone']>, string> = {
-  amber: 'hover:border-amber-400 hover:bg-amber-50',
-  sky: 'hover:border-sky-400 hover:bg-sky-50',
-}
-
 export default function RecallQuizStack({
   items,
   lessonWords,
@@ -115,24 +111,35 @@ export default function RecallQuizStack({
         const result = results[k]
         const ipaStr = entry.ipa ? entry.ipa.replace(/^\/|\/$/g, '') : null
         return (
-          <div
-            key={k}
-            className={`rounded-xl bg-white p-3.5 ring-1 ${TONE_CARD[tone]}`}
-          >
-            <div className={`mb-2 flex items-center justify-between text-[11px] font-extrabold tracking-wide uppercase ${TONE_HEADER[tone]}`}>
-              <span>第 {i + 1} / {items.length} 题</span>
+          <div key={k} className={`rounded-xl bg-white p-3.5 ring-1 ${TONE_CARD[tone]}`}>
+            <div
+              className={`mb-2 flex items-center justify-between text-[11px] font-extrabold tracking-wide uppercase ${TONE_HEADER[tone]}`}
+            >
+              <span>
+                第 {i + 1} / {items.length} 题
+              </span>
               {result?.correct && <span className="text-emerald-600">✓ 答对了</span>}
               {attempts[k] === 'retry' && (
                 <span className="text-[color:var(--rescue-half)]">{READING_RETRY_MESSAGE}</span>
               )}
-              {result && !result.correct && (() => {
-                const [pre, post] = READING_SECOND_WRONG_TEMPLATE.split('{word}')
-                return <span className="text-amber-600">{pre}<b>{entry.word}</b>{post}</span>
-              })()}
+              {result &&
+                !result.correct &&
+                (() => {
+                  const [pre, post] = READING_SECOND_WRONG_TEMPLATE.split('{word}')
+                  return (
+                    <span className="text-amber-600">
+                      {pre}
+                      <b>{entry.word}</b>
+                      {post}
+                    </span>
+                  )
+                })()}
             </div>
 
             {sentence ? (
-              <div className={`mb-3 rounded-lg px-3 py-2.5 text-[14px] leading-relaxed text-gray-800 ring-1 ${TONE_PROMPT[tone]}`}>
+              <div
+                className={`mb-3 rounded-lg px-3 py-2.5 text-[14px] leading-relaxed text-gray-800 ring-1 ${TONE_PROMPT[tone]}`}
+              >
                 {result ? (
                   <>&ldquo;{highlightedSentence(sentence, entry.word)}&rdquo;</>
                 ) : (
@@ -140,7 +147,9 @@ export default function RecallQuizStack({
                 )}
               </div>
             ) : (
-              <div className={`mb-3 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 ring-1 ${TONE_PROMPT[tone]}`}>
+              <div
+                className={`mb-3 rounded-lg px-3 py-2.5 text-[13px] text-gray-700 ring-1 ${TONE_PROMPT[tone]}`}
+              >
                 <span className={`mr-1 text-[11px] font-bold ${TONE_HINT[tone]}`}>提示:</span>
                 {entry.chineseDef ? entry.chineseDef : entry.explanation}
               </div>
@@ -150,23 +159,21 @@ export default function RecallQuizStack({
               {options.map((o) => {
                 const isTarget = o.word === entry.word
                 const wasWrongPicked = wrongPicks[k]?.has(o.word)
-                let cls = `border-gray-200 bg-white text-gray-800 hover:-translate-y-px ${TONE_OPTION_HOVER[tone]}`
-                if (result) {
-                  if (isTarget) cls = 'border-emerald-400 bg-emerald-50 text-emerald-800'
-                  else if (wasWrongPicked) cls = 'border-gray-200 bg-gray-50 text-gray-400'
-                  else cls = 'border-gray-200 bg-gray-50 text-gray-400'
-                } else if (wasWrongPicked) {
-                  cls = 'border-gray-200 bg-gray-50 text-gray-400 opacity-50'
-                }
+                const showCorrect = !!result && isTarget
                 return (
-                  <button
+                  <Button
                     key={o.word}
+                    type="button"
                     onClick={() => handlePick(entry, o)}
-                    disabled={!!result || !!wasWrongPicked}
-                    className={`rounded-xl border-2 px-3 py-2.5 text-left text-[14px] font-bold transition-all ${cls} ${result || wasWrongPicked ? 'cursor-default' : 'cursor-pointer hover:shadow-sm'}`}
+                    // 答完后非正确项保持可聚焦但无操作（handlePick 已拦截），正确项需保持绿色实心外观，故不整体 disabled
+                    disabled={!!wasWrongPicked}
+                    variant={showCorrect ? 'solid' : result ? 'soft' : 'outline'}
+                    color={showCorrect ? 'green' : 'gray'}
+                    size="3"
+                    className="justify-start"
                   >
                     {o.word}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -175,8 +182,12 @@ export default function RecallQuizStack({
               <div className="mt-3 flex items-start justify-between gap-2 rounded-lg bg-emerald-50/70 px-3 py-2 ring-1 ring-emerald-200">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                    <span className="font-fredoka text-[16px] font-extrabold text-emerald-800">{entry.word}</span>
-                    {ipaStr && <span className="font-mono text-[11px] text-emerald-700/80">/{ipaStr}/</span>}
+                    <span className="font-fredoka text-[16px] font-extrabold text-emerald-800">
+                      {entry.word}
+                    </span>
+                    {ipaStr && (
+                      <span className="font-mono text-[11px] text-emerald-700/80">/{ipaStr}/</span>
+                    )}
                     <span className="text-[12px] text-emerald-700/80">· {entry.explanation}</span>
                   </div>
                   {entry.chineseDef && (
@@ -185,7 +196,7 @@ export default function RecallQuizStack({
                     </div>
                   )}
                 </div>
-                <SpeakButton word={entry.word} size="text-[14px]" className="h-7 w-7 shrink-0 bg-white text-emerald-700 hover:bg-emerald-50" />
+                <SpeakButton entry={entry} word={entry.word} size="1" className="shrink-0" />
               </div>
             )}
           </div>

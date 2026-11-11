@@ -24,7 +24,7 @@ function SummaryCard({ card, index }: { card: ReadingGrammarSummaryCard; index: 
       <h4 className="font-fredoka text-lg font-black">{card.title}</h4>
       {card.formula && <p className="mt-1 text-sm font-bold opacity-75">{card.formula}</p>}
       {card.signals && (
-        <p className="mt-2 rounded-lg bg-white/70 px-3 py-2 text-xs font-bold">
+        <p className="mt-2 rounded-lg bg-white px-3 py-2 text-xs font-bold">
           判断线索：{card.signals}
         </p>
       )}
@@ -56,21 +56,27 @@ export default function ReadingGrammarSummary({ refs, summary }: Props) {
         <div className="text-sm font-black text-amber-900">⭐ {summary.contrastTitle}</div>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {summary.contrasts.map((contrast) => (
-            <p key={contrast.example} className="rounded-xl bg-white/75 p-3 text-sm text-amber-950">
-              <strong>{contrast.example}</strong><br />{contrast.note}
+            <p key={contrast.example} className="rounded-xl bg-white p-3 text-sm text-amber-950">
+              <strong>{contrast.example}</strong>
+              <br />
+              {contrast.note}
             </p>
           ))}
         </div>
       </div>
 
-      <div className="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200">
+      <div className="ring-kid-line rounded-2xl bg-slate-50 p-4 ring-1">
         <div className="text-sm font-black text-slate-800">一眼判断</div>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-slate-700">
-          {summary.decisionGuide.map((item) => <li key={item}>{item}</li>)}
+          {summary.decisionGuide.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
         {summary.reminders && summary.reminders.length > 0 && (
           <ul className="mt-3 list-disc space-y-1 pl-5 text-xs leading-relaxed text-slate-600">
-            {summary.reminders.map((item) => <li key={item}>{item}</li>)}
+            {summary.reminders.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
           </ul>
         )}
       </div>
@@ -78,14 +84,16 @@ export default function ReadingGrammarSummary({ refs, summary }: Props) {
       {primary && (
         <Link
           href={`/english/grammar/${primary.book}/${primary.unitNumber}`}
-          className="flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 text-center text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5"
+          className="shadow-sticker-sm flex min-h-12 items-center justify-center rounded-xl bg-teal-600 px-4 text-center text-sm font-black text-white transition hover:-translate-y-0.5"
         >
           📗 系统学习：剑桥 Essential Unit {primary.unitNumber} · {primary.label}
         </Link>
       )}
       {related.length > 0 && (
-        <details className="rounded-xl bg-white p-3 ring-1 ring-slate-200">
-          <summary className="cursor-pointer text-sm font-bold text-slate-700">基础复习与扩展单元</summary>
+        <details className="ring-kid-line rounded-xl bg-white p-3 ring-1">
+          <summary className="cursor-pointer text-sm font-bold text-slate-700">
+            基础复习与扩展单元
+          </summary>
           <div className="mt-3 flex flex-wrap gap-2">
             {related.map((ref) => (
               <Link

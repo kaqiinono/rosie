@@ -12,6 +12,8 @@ import { splitStorySentences, storyContentKey } from '../../utils/story-types'
 import PassageView from './PassageView'
 import GlossaryPanel from './GlossaryPanel'
 import StoryRecorder from './StoryRecorder'
+import { Button } from '@rosie/ui/themes'
+import { StickerCard } from '@rosie/ui'
 
 type Props = {
   volume: StoryVolume
@@ -182,27 +184,36 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="sticky top-[112px] z-30 flex flex-wrap items-center gap-2 rounded-2xl bg-white/95 p-3 shadow-sm ring-1 ring-amber-200 backdrop-blur md:top-[60px]">
-        <button
+      <StickerCard
+        size="sm"
+        elevation="sm"
+        radius="md"
+        className="sticky top-[112px] z-30 flex flex-wrap items-center gap-2 md:top-[60px]"
+      >
+        <Button
           type="button"
           onClick={() => void markPosition()}
           disabled={bookmarkState === 'saving'}
-          className="rounded-full bg-amber-500 px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+          variant="solid"
+          color="amber"
+          size="2"
         >
           {bookmarkState === 'saving'
             ? '保存中…'
             : bookmarkState === 'saved'
               ? '✓ 已标记'
               : '🔖 标记从这里离开'}
-        </button>
+        </Button>
         {combinedGlossary.length > 0 && (
-          <button
+          <Button
             type="button"
             onClick={openCurrentChapterGlossary}
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700"
+            variant="soft"
+            color="gray"
+            size="2"
           >
             📒 本章难点词
-          </button>
+          </Button>
         )}
         {vocabLoading && <span className="text-xs text-slate-500">正在匹配全部词库…</span>}
         {bookmarkState === 'error' && (
@@ -210,7 +221,7 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
             当前位置标记失败，请稍后重试
           </span>
         )}
-      </div>
+      </StickerCard>
 
       <GlossaryPanel
         open={Boolean(glossary)}
@@ -219,12 +230,16 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
       />
 
       {prepared.map(({ chapter, passage, sentences, chapterWords }) => (
-        <section
+        <StickerCard
+          as="section"
+          size="none"
+          elevation="sm"
+          radius="md"
+          className="overflow-hidden"
           key={chapter.key}
           id={chapter.key}
-          className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-amber-200"
         >
-          <header className="bg-gradient-to-br from-amber-100 to-orange-50 p-5 sm:px-7">
+          <header className="bg-orange-50 p-5 sm:px-7">
             <StoryRecorder
               contentKey={storyContentKey(volume, chapter)}
               scope="chapter"
@@ -251,7 +266,7 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
               mode="focus"
             />
           </div>
-        </section>
+        </StickerCard>
       ))}
     </div>
   )

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { SpellButtonStyle } from './SpellTiles'
+import { Button } from '@rosie/ui/themes'
 
 interface PracticeSetupProps {
   scopeLabel: string
@@ -75,31 +76,27 @@ export default function PracticeSetup({
         </span>
         <div className="flex flex-wrap gap-2">
           {baseTypes.map((t) => (
-            <button
+            <Button
               key={t.key}
               onClick={() => t.toggle(!t.checked)}
-              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
-                t.checked
-                  ? 'border-[var(--wm-accent)] bg-[rgba(233,69,96,.15)] text-[var(--wm-accent)]'
-                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
-              }`}
+              variant="outline"
+              color="gray"
+              size="2"
             >
               {t.label}
-            </button>
+            </Button>
           ))}
           {typeDAvailable && (
-            <button
+            <Button
               key="D"
               onClick={() => setTypeD(!typeD)}
               title="本周重点课的词，挖空课文原句作答"
-              className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
-                typeD
-                  ? 'border-[#f59e0b] bg-[rgba(245,158,11,.15)] text-[#fbbf24]'
-                  : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
-              }`}
+              variant="outline"
+              color="gray"
+              size="2"
             >
               📖 D. 课文语境填空
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -114,28 +111,24 @@ export default function PracticeSetup({
           字母砖
         </span>
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button
             onClick={() => setButtonStyle('candy')}
             title="SVG 水果造型（草莓 / 蓝莓 / 爱心 / 糖果 / 棉花糖）"
-            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
-              buttonStyle === 'candy'
-                ? 'border-[#ec4899] bg-[rgba(236,72,153,.15)] text-[#f9a8d4]'
-                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
-            }`}
+            variant="outline"
+            color="gray"
+            size="2"
           >
             🍓 糖果造型
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setButtonStyle('jelly')}
             title="圆角果冻砖（5 色彩虹）"
-            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
-              buttonStyle === 'jelly'
-                ? 'border-[#a78bfa] bg-[rgba(167,139,250,.15)] text-[#c4b5fd]'
-                : 'border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)]'
-            }`}
+            variant="outline"
+            color="gray"
+            size="2"
           >
             💎 果冻砖
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -143,7 +136,7 @@ export default function PracticeSetup({
         <span className="min-w-[60px] text-[0.875rem] font-bold text-[var(--wm-text-dim)]">
           预览卡片
         </span>
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           onClick={() => setPreview(!preview)}
           className={`flex cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-[0.875rem] font-bold transition-all select-none ${
             preview
@@ -169,19 +162,12 @@ export default function PracticeSetup({
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <button
-          onClick={handleStart}
-          className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[var(--wm-accent)] to-[#c0392b] px-7 py-3 text-[.95rem] font-extrabold text-white shadow-[0_4px_14px_rgba(233,69,96,.35)] transition-all hover:-translate-y-0.5 hover:shadow-[0_6px_18px_rgba(233,69,96,.5)]"
-        >
+        <Button onClick={handleStart} variant="solid" color="red" size="3">
           🚀 开始练习
-        </button>
-        <button
-          type="button"
-          onClick={handlePrint}
-          className="font-nunito cursor-pointer rounded-[10px] border-2 border-[var(--wm-border)] bg-[var(--wm-surface2)] px-7 py-3 text-[.95rem] font-extrabold text-[var(--wm-text)] transition-all hover:-translate-y-0.5 hover:border-[var(--wm-accent2)] hover:text-[var(--wm-accent2)]"
-        >
+        </Button>
+        <Button type="button" onClick={handlePrint} variant="outline" color="gray" size="3">
           🖨️ 打印
-        </button>
+        </Button>
       </div>
     </div>
   )

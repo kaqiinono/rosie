@@ -17,7 +17,7 @@ export default function StoryShelf() {
           <li key={series.slug}>
             <Link
               href={`/english/words/reading/story/${series.slug}`}
-              className="block rounded-3xl bg-gradient-to-br from-amber-100 via-orange-50 to-white p-6 no-underline shadow-sm ring-1 ring-amber-200 transition hover:-translate-y-1 hover:shadow-lg"
+              className="shadow-sticker-sm hover:shadow-sticker block rounded-3xl bg-orange-50 p-6 no-underline ring-1 ring-amber-200 transition hover:-translate-y-1"
             >
               <div className="mb-5 text-5xl">🏡</div>
               <h2 className="font-fredoka text-2xl font-black text-slate-900">{series.title}</h2>

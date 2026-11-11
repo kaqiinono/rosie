@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@rosie/ui/themes'
 import {
   ADAPTIVE_PLAN_DEFAULTS,
   BACKLOG_FUSE_OPTIONS,
@@ -17,15 +18,6 @@ type ReviewSchedulePickerProps = {
   savingLabel?: string
 }
 
-function chipClass(active: boolean): string {
-  const base =
-    'h-8 min-w-8 cursor-pointer rounded-full border-[1.5px] px-2 text-[.8rem] font-extrabold transition-all disabled:cursor-wait disabled:opacity-60'
-  if (active) {
-    return `${base} border-[#8b5cf6] bg-[rgba(139,92,246,.15)] text-[#c4b5fd]`
-  }
-  return `${base} border-[var(--wm-border)] bg-[var(--wm-surface2)] text-[var(--wm-text-dim)] hover:border-[#8b5cf6] hover:text-[#c4b5fd]`
-}
-
 export default function ReviewSchedulePicker({
   reviewCap,
   backlogFuse,
@@ -40,7 +32,7 @@ export default function ReviewSchedulePicker({
 
   return (
     <div className="mb-5 rounded-xl border border-[rgba(139,92,246,.22)] bg-[rgba(139,92,246,.05)] px-4 py-3.5">
-      <div className="mb-1 font-fredoka text-[1rem] text-[#c4b5fd]">{help.title}</div>
+      <div className="font-fredoka mb-1 text-[1rem] text-[#c4b5fd]">{help.title}</div>
       <p className="mb-3 text-[.68rem] leading-relaxed font-bold text-[var(--wm-text-dim)]">
         {help.intro}
       </p>
@@ -57,21 +49,26 @@ export default function ReviewSchedulePicker({
         </div>
         <div className="mb-1.5 flex flex-wrap gap-1">
           {REVIEW_CAP_OPTIONS.map((n) => (
-            <button
+            <Button
               key={n}
               type="button"
               disabled={disabled}
               onClick={() => onReviewCapChange(n)}
-              className={chipClass(reviewCap === n)}
+              variant={reviewCap === n ? 'solid' : 'soft'}
+              color={reviewCap === n ? 'violet' : 'gray'}
+              size="1"
+              radius="full"
             >
               {n}
-            </button>
+            </Button>
           ))}
         </div>
         <p className="text-[.65rem] leading-relaxed text-[var(--wm-text-dim)]">
           {help.reviewCap.detail}
         </p>
-        <p className="mt-0.5 text-[.65rem] leading-relaxed text-[#93c5fd]">{help.reviewCap.example}</p>
+        <p className="mt-0.5 text-[.65rem] leading-relaxed text-[#93c5fd]">
+          {help.reviewCap.example}
+        </p>
       </div>
 
       <div>
@@ -85,21 +82,26 @@ export default function ReviewSchedulePicker({
         </div>
         <div className="mb-1.5 flex flex-wrap gap-1">
           {BACKLOG_FUSE_OPTIONS.map((n) => (
-            <button
+            <Button
               key={n}
               type="button"
               disabled={disabled}
               onClick={() => onBacklogFuseChange(n)}
-              className={chipClass(backlogFuse === n)}
+              variant={backlogFuse === n ? 'solid' : 'soft'}
+              color={backlogFuse === n ? 'violet' : 'gray'}
+              size="1"
+              radius="full"
             >
               {n}
-            </button>
+            </Button>
           ))}
         </div>
         <p className="text-[.65rem] leading-relaxed text-[var(--wm-text-dim)]">
           {help.backlogFuse.detail}
         </p>
-        <p className="mt-0.5 text-[.65rem] leading-relaxed text-[#93c5fd]">{help.backlogFuse.example}</p>
+        <p className="mt-0.5 text-[.65rem] leading-relaxed text-[#93c5fd]">
+          {help.backlogFuse.example}
+        </p>
       </div>
     </div>
   )

@@ -23,6 +23,7 @@ import {
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanPreviewOverview from './AdaptivePlanPreviewOverview'
 import AdaptivePlanUnitProgress from './AdaptivePlanUnitProgress'
+import { Button } from '@rosie/ui/themes'
 
 type AdaptivePlanPreviewProps = {
   planId: string
@@ -151,7 +152,7 @@ function ProjectedDayCard({
 
   return (
     <div className="rounded-[16px] border border-[var(--wm-border)] bg-[var(--wm-surface2)]">
-      <button
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left"
@@ -196,7 +197,7 @@ function ProjectedDayCard({
             <div className="text-[.78rem] font-bold text-[var(--wm-text-dim)]">今日无练习任务</div>
           ) : (
             <div className="rounded-xl border border-[var(--wm-border)]">
-              <button
+              <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                 type="button"
                 onClick={() => setWordsOpen((v) => !v)}
                 className="flex w-full cursor-pointer items-center justify-between gap-3 px-3 py-2.5 text-left"
@@ -372,7 +373,9 @@ function PracticeHistory({
                               ? 'Boss 等待'
                               : word.statusAfter === 'LEARNING'
                                 ? '待下批主线'
-                                : session.recordKind === 'exact' ? '已完成' : '未知'}
+                                : session.recordKind === 'exact'
+                                  ? '已完成'
+                                  : '未知'}
                         </td>
                       </tr>
                     ))}
@@ -474,7 +477,7 @@ function StageTrajectoryMatrix({
 
   return (
     <div className="mb-5 rounded-[24px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6">
-      <button
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full cursor-pointer items-center justify-between gap-3 text-left"
@@ -534,8 +537,9 @@ function StageTrajectoryMatrix({
                       {displayWord(word.wordKey, vocab)}
                     </th>
                     {matrix.dayIndices.map((day, colIdx) => {
-                      const cell = displayCells?.[rowIdx]?.[colIdx]
-                        ?? keyStageCell(matrix, days, rowIdx, colIdx)
+                      const cell =
+                        displayCells?.[rowIdx]?.[colIdx] ??
+                        keyStageCell(matrix, days, rowIdx, colIdx)
                       return (
                         <td
                           key={`${word.wordKey}-${day}`}
@@ -669,9 +673,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     }
     dates.sort()
 
-    const projectedWordIndex = new Map(
-      projected.words.map((word, index) => [word.wordKey, index]),
-    )
+    const projectedWordIndex = new Map(projected.words.map((word, index) => [word.wordKey, index]))
     const projectedDateIndex = new Map(projected.dates.map((date, index) => [date, index]))
     const logsByDate = new Map<string, AdaptivePracticeSessionLog[]>()
     for (const session of practiceLogs) {
@@ -680,33 +682,37 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
       logsByDate.set(session.practiceDate, list)
     }
 
-    const displayCells = projected.words.map((word) => dates.map((date) => {
-      const logged = (logsByDate.get(date) ?? [])
-        .flatMap((session) => session.words
-          .filter((item) => item.wordKey === word.wordKey)
-          .map((item) => ({ session, item })))
-        .at(-1)
-      if (logged) {
-        if (logged.session.recordKind === 'inferred') return '?'
-        if (logged.item.statusAfter === 'MASTERED') return MASTERED_CELL
-        if (
-          logged.session.mode === 'boss'
-          && logged.item.boxBefore === logged.item.boxAfter
-          && logged.item.statusBefore === logged.item.statusAfter
-        ) {
-          return BOSS_CELL
+    const displayCells = projected.words.map((word) =>
+      dates.map((date) => {
+        const logged = (logsByDate.get(date) ?? [])
+          .flatMap((session) =>
+            session.words
+              .filter((item) => item.wordKey === word.wordKey)
+              .map((item) => ({ session, item })),
+          )
+          .at(-1)
+        if (logged) {
+          if (logged.session.recordKind === 'inferred') return '?'
+          if (logged.item.statusAfter === 'MASTERED') return MASTERED_CELL
+          if (
+            logged.session.mode === 'boss' &&
+            logged.item.boxBefore === logged.item.boxAfter &&
+            logged.item.statusBefore === logged.item.statusAfter
+          ) {
+            return BOSS_CELL
+          }
+          if (logged.item.boxAfter != null) {
+            return ['🥚', '🐛', '🦋', '🌸', '🌳'][logged.item.boxAfter - 1] ?? '?'
+          }
+          return '?'
         }
-        if (logged.item.boxAfter != null) {
-          return ['🥚', '🐛', '🦋', '🌸', '🌳'][logged.item.boxAfter - 1] ?? '?'
-        }
-        return '?'
-      }
 
-      const projectedCol = projectedDateIndex.get(date)
-      const projectedRow = projectedWordIndex.get(word.wordKey)
-      if (projectedCol == null || projectedRow == null) return ''
-      return keyStageCell(projected, simulation.days, projectedRow, projectedCol)
-    }))
+        const projectedCol = projectedDateIndex.get(date)
+        const projectedRow = projectedWordIndex.get(word.wordKey)
+        if (projectedCol == null || projectedRow == null) return ''
+        return keyStageCell(projected, simulation.days, projectedRow, projectedCol)
+      }),
+    )
 
     return {
       matrix: {
@@ -740,13 +746,9 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
       <div className="mx-auto flex min-h-[60vh] max-w-[560px] flex-col items-center justify-center gap-4 px-4 text-center">
         <div className="text-[1.05rem] font-extrabold text-[#f0abfc]">预览加载失败</div>
         <div className="text-sm text-[var(--wm-text-dim)]">{loadError}</div>
-        <button
-          type="button"
-          onClick={reload}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
-        >
+        <Button type="button" onClick={reload} variant="outline" color="gray" size="2">
           重试
-        </button>
+        </Button>
       </div>
     )
   }
@@ -755,13 +757,9 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <div className="text-sm text-[var(--wm-text-dim)]">计划不存在或暂无单词进度</div>
-        <button
-          type="button"
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-        >
+        <Button type="button" onClick={onBack} variant="outline" color="gray" size="2">
           ← 返回
-        </button>
+        </Button>
       </div>
     )
   }
@@ -772,31 +770,21 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
   return (
     <div className="mx-auto max-w-[1120px] px-4 py-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="font-nunito cursor-pointer rounded-full border border-[var(--wm-border)] px-4 py-2 text-sm font-bold text-[var(--wm-text-dim)]"
-        >
+        <Button type="button" onClick={onBack} variant="outline" color="gray" size="2">
           ← 返回
-        </button>
-        <button
-          type="button"
-          onClick={reload}
-          className="font-nunito cursor-pointer rounded-full border border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.08)] px-4 py-2 text-sm font-bold text-[#93c5fd]"
-        >
+        </Button>
+        <Button type="button" onClick={reload} variant="outline" color="gray" size="2">
           刷新预览
-        </button>
+        </Button>
       </div>
 
       <div className="mb-5 rounded-[24px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-6">
         <div className="mb-1 flex flex-wrap items-start justify-between gap-3">
-          <div className="font-fredoka bg-gradient-to-br from-[#60a5fa] to-[#f0abfc] bg-clip-text text-3xl text-transparent">
-            {plan.title} · 学习轨迹预览
-          </div>
+          <div className="font-fredoka text-3xl text-[#60a5fa]">{plan.title} · 学习轨迹预览</div>
         </div>
         <div className="mb-4 text-sm font-bold text-[var(--wm-text-dim)]">
-          {scopeLabel(plan)} · 每批新词 {plan.newWordsPerDay} · 阶段推进上限 {plan.reviewCap} · 弱词提醒{' '}
-          {plan.backlogFuse} · Boss 累积阈值 {plan.bossEveryNNew}
+          {scopeLabel(plan)} · 每批新词 {plan.newWordsPerDay} · 阶段推进上限 {plan.reviewCap} ·
+          弱词提醒 {plan.backlogFuse} · Boss 累积阈值 {plan.bossEveryNNew}
         </div>
 
         <div className="mb-4">
@@ -828,11 +816,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
           {actualProgress && <span>计划开始 {actualProgress.planStartDate}</span>}
           <span>后续推演起点 {baseline.date}</span>
           <span>当前模式 {MODE_LABELS[baseline.mode]}</span>
-          {lastDay && (
-            <span>
-              全对模拟共 {days.length} 个批次
-            </span>
-          )}
+          {lastDay && <span>全对模拟共 {days.length} 个批次</span>}
         </div>
       </div>
 
@@ -856,12 +840,7 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
         {todayAndNextSevenDays.length > 0 ? (
           <div className="flex flex-col gap-2.5">
             {todayAndNextSevenDays.map((day, index) => (
-              <ProjectedDayCard
-                key={day.date}
-                day={day}
-                vocab={vocab}
-                defaultOpen={index === 0}
-              />
+              <ProjectedDayCard key={day.date} day={day} vocab={vocab} defaultOpen={index === 0} />
             ))}
           </div>
         ) : (
@@ -873,10 +852,10 @@ export default function AdaptivePlanPreview({ planId, onBack }: AdaptivePlanPrev
         {todayAndNextSevenDays.length > 0 &&
           todayAndNextSevenDays.length < 8 &&
           simulation.completed && (
-          <div className="mt-3 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
-            计划预计在这 {todayAndNextSevenDays.length} 天内完成，因此不再生成后续空白日期。
-          </div>
-        )}
+            <div className="mt-3 text-[.68rem] font-bold text-[var(--wm-text-dim)]">
+              计划预计在这 {todayAndNextSevenDays.length} 天内完成，因此不再生成后续空白日期。
+            </div>
+          )}
       </div>
 
       <PracticeHistory sessions={practiceLogs} vocab={vocab} />

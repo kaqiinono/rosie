@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useBaiduMediaError } from '@rosie/core'
+import { IconButton, Spinner } from '@rosie/ui/themes'
 
 type ReadingAudioButtonProps = {
   /** Public Storage URL or authenticated same-origin reading-audio stream. */
@@ -67,8 +68,6 @@ export default function ReadingAudioButton({
     [src, isListCoordination, onActivate, passageKey],
   )
 
-  const sizeClass = size === 'sm' ? 'h-8 w-8 text-[14px]' : 'h-9 w-9 text-[15px]'
-
   return (
     <>
       {src && (
@@ -93,7 +92,7 @@ export default function ReadingAudioButton({
           }}
         />
       )}
-      <button
+      <IconButton
         type="button"
         disabled={disabled}
         aria-label={
@@ -101,37 +100,35 @@ export default function ReadingAudioButton({
             ? '暂无朗读音频'
             : failed
               ? '朗读失败，点击重试'
-            : buffering
-              ? '缓冲中'
-              : playing
-                ? '暂停朗读'
-                : '播放朗读'
+              : buffering
+                ? '缓冲中'
+                : playing
+                  ? '暂停朗读'
+                  : '播放朗读'
         }
-        title={disabled ? '请先上传音频' : failed ? mediaError || '音频暂时无法播放，请重试。' : mode === 'loop' ? '循环朗读' : '朗读一遍'}
-        onClick={toggle}
-        className={clsx(
-          'inline-flex shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95',
-          sizeClass,
+        title={
           disabled
-            ? 'cursor-not-allowed bg-gray-100 text-gray-400 ring-gray-200'
-            : playing
-              ? 'cursor-pointer bg-gradient-to-br from-orange-400 to-amber-400 text-white ring-orange-300 shadow-sm'
-              : 'cursor-pointer bg-white/90 text-orange-700 ring-orange-200 hover:bg-white',
-          className,
-        )}
+            ? '请先上传音频'
+            : failed
+              ? mediaError || '音频暂时无法播放，请重试。'
+              : mode === 'loop'
+                ? '循环朗读'
+                : '朗读一遍'
+        }
+        onClick={toggle}
+        variant={playing ? 'solid' : 'outline'}
+        color="orange"
+        size={size === 'sm' ? '2' : '3'}
+        radius="full"
+        className={clsx('shrink-0', className)}
       >
-        {buffering ? (
-          <span
-            aria-hidden
-            className="block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"
-          />
-        ) : playing ? (
-          '⏸'
-        ) : (
-          '🔊'
-        )}
-      </button>
-      {failed && mediaError && <span role="alert" className="text-sm text-red-700">{mediaError}</span>}
+        {buffering ? <Spinner /> : playing ? '⏸' : '🔊'}
+      </IconButton>
+      {failed && mediaError && (
+        <span role="alert" className="text-sm text-red-700">
+          {mediaError}
+        </span>
+      )}
     </>
   )
 }

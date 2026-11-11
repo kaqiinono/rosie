@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { WordEntry, WordVocabType } from '@rosie/core'
 import { enrichWord, parseWordFormsCell, type EnrichResult } from '@rosie/english'
 import { getWordImagePublicUrl, hilite } from '@rosie/english'
 import { KW_COLORS, DEFAULT_KW_COLOR, type StageTree } from './types'
+import { AppDialog, FormSelect } from '@rosie/ui'
+import { Button, IconButton, TextArea, TextField } from '@rosie/ui/themes'
 
 type Props = {
   /** When provided, modal is in "edit" mode; otherwise "create". */
@@ -21,10 +23,6 @@ type Props = {
 }
 
 const labelCls = 'mb-1 block text-[11px] font-extrabold tracking-wide text-slate-500 uppercase'
-const inputCls =
-  'w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-[14px] focus:border-amber-400 focus:outline-none'
-const selectCls =
-  'w-full rounded-lg border-2 border-slate-200 bg-white px-2 py-2 text-[14px] font-bold text-slate-700 focus:border-amber-400 focus:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400'
 
 const NEW = '__new__'
 
@@ -59,9 +57,10 @@ function CreatableSelect({
     }
     return (
       <div className="flex gap-1.5">
-        <input
+        <TextField.Root
           autoFocus
-          className={inputCls}
+          size="2"
+          className="min-w-0 flex-1"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -70,28 +69,48 @@ function CreatableSelect({
           }}
           placeholder={placeholder}
         />
-        <button type="button" onClick={confirm} className="shrink-0 cursor-pointer rounded-lg bg-emerald-500 px-2.5 text-[14px] font-bold text-white">✓</button>
-        <button type="button" onClick={() => setCreating(false)} className="shrink-0 cursor-pointer rounded-lg bg-slate-200 px-2.5 text-[14px] font-bold text-slate-600">✕</button>
+        <IconButton
+          type="button"
+          onClick={confirm}
+          variant="solid"
+          color="jade"
+          size="2"
+          className="shrink-0"
+        >
+          ✓
+        </IconButton>
+        <IconButton
+          type="button"
+          onClick={() => setCreating(false)}
+          variant="soft"
+          color="gray"
+          size="2"
+          className="shrink-0"
+        >
+          ✕
+        </IconButton>
       </div>
     )
   }
 
   return (
-    <select
-      className={selectCls}
+    <FormSelect
+      className="w-full"
+      size="2"
+      ariaLabel={placeholder}
+      placeholder={placeholder}
       value={options.includes(value) ? value : ''}
       disabled={disabled}
-      onChange={(e) => {
-        if (e.target.value === NEW) setCreating(true)
-        else onChange(e.target.value)
+      onValueChange={(next) => {
+        if (next === NEW) setCreating(true)
+        else onChange(next)
       }}
-    >
-      <option value="">{placeholder}</option>
-      {options.map((o) => (
-        <option key={o} value={o}>{o}</option>
-      ))}
-      <option value={NEW}>➕ {createLabel}</option>
-    </select>
+      options={[
+        { value: '', label: placeholder },
+        ...options.map((o) => ({ value: o, label: o })),
+        { value: NEW, label: `➕ ${createLabel}` },
+      ]}
+    />
   )
 }
 
@@ -128,18 +147,11 @@ export default function WordFormModal({
   const [enriching, setEnriching] = useState(false)
   const [enrichInfo, setEnrichInfo] = useState<EnrichResult | null>(null)
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !submitting && !enriching) onCancel()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onCancel, submitting, enriching])
-
   // 级联选项
   const stageOptions = tree.map((t) => t.stage)
   const unitOptions = tree.find((t) => t.stage === stage)?.units.map((u) => u.unit) ?? []
-  const lessonOptions = tree.find((t) => t.stage === stage)?.units.find((u) => u.unit === unit)?.lessons ?? []
+  const lessonOptions =
+    tree.find((t) => t.stage === stage)?.units.find((u) => u.unit === unit)?.lessons ?? []
 
   const canSubmit =
     unit.trim().length > 0 &&
@@ -226,22 +238,21 @@ export default function WordFormModal({
       (initial.stage ?? '') !== stage.trim())
 
   const validKeywords = keywords.filter((k) => k[0].trim())
-  const previewHtml = explanation.trim() && validKeywords.length ? hilite(explanation, validKeywords) : ''
+  const previewHtml =
+    explanation.trim() && validKeywords.length ? hilite(explanation, validKeywords) : ''
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(8px)' }}
+    <AppDialog
+      open
+      size="form"
+      title={initial ? '编辑单词' : '添加单词'}
+      description="必填：词库 / 单元 / 课次 / 单词 / 英文释义"
+      closeDisabled={submitting || enriching}
+      onOpenChange={(open) => {
+        if (!open && !submitting && !enriching) onCancel()
+      }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="max-h-[92vh] w-full max-w-[560px] overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl"
-      >
-        <div className="mb-4 flex items-baseline justify-between">
-          <h3 className="text-[16px] font-extrabold text-slate-800">{initial ? '编辑单词' : '添加单词'}</h3>
-          <span className="text-[11px] text-slate-400">必填：词库 / 单元 / 课次 / 单词 / 英文释义</span>
-        </div>
-
+      <div>
         <div className="space-y-3">
           {/* 级联：词库 → 单元 → 课次 */}
           <div className="grid grid-cols-3 gap-2">
@@ -252,8 +263,17 @@ export default function WordFormModal({
                 options={stageOptions}
                 placeholder="选择词库"
                 createLabel="新建词库"
-                onChange={(v) => { setStage(v); setUnit(''); setLesson('') }}
-                onCreate={(v) => { onCreateStage(v); setStage(v); setUnit(''); setLesson('') }}
+                onChange={(v) => {
+                  setStage(v)
+                  setUnit('')
+                  setLesson('')
+                }}
+                onCreate={(v) => {
+                  onCreateStage(v)
+                  setStage(v)
+                  setUnit('')
+                  setLesson('')
+                }}
               />
             </div>
             <div>
@@ -264,8 +284,15 @@ export default function WordFormModal({
                 placeholder="选择单元"
                 createLabel="新建单元"
                 disabled={!stage.trim()}
-                onChange={(v) => { setUnit(v); setLesson('') }}
-                onCreate={(v) => { onCreateUnit(stage, v); setUnit(v); setLesson('') }}
+                onChange={(v) => {
+                  setUnit(v)
+                  setLesson('')
+                }}
+                onCreate={(v) => {
+                  onCreateUnit(stage, v)
+                  setUnit(v)
+                  setLesson('')
+                }}
               />
             </div>
             <div>
@@ -277,7 +304,10 @@ export default function WordFormModal({
                 createLabel="新建课次"
                 disabled={!unit.trim()}
                 onChange={(v) => setLesson(v)}
-                onCreate={(v) => { onCreateLesson(stage, unit, v); setLesson(v) }}
+                onCreate={(v) => {
+                  onCreateLesson(stage, unit, v)
+                  setLesson(v)
+                }}
               />
             </div>
           </div>
@@ -286,36 +316,47 @@ export default function WordFormModal({
           <div>
             <label className={labelCls}>单词 / 短语 *</label>
             <div className="flex gap-2">
-              <input className={inputCls} value={word} onChange={(e) => setWord(e.target.value)} placeholder="apple" />
-              <button
+              <TextField.Root
+                size="2"
+                className="min-w-0 flex-1"
+                value={word}
+                onChange={(e) => setWord(e.target.value)}
+                placeholder="apple"
+              />
+              <Button
                 type="button"
                 onClick={handleAutoFill}
                 disabled={!canEnrich}
-                className="shrink-0 cursor-pointer rounded-lg px-3 py-2 text-[12px] font-extrabold text-white shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', boxShadow: '0 3px 10px rgba(99,102,241,0.35)' }}
+                color="indigo"
+                variant="solid"
+                size="2"
+                className="shrink-0"
                 title="根据单词自动生成音标 / 中英文释义 / 例句，填入后可修改"
               >
                 {enriching ? '生成中…' : '✨ 自动填充'}
-              </button>
+              </Button>
             </div>
           </div>
 
           <div>
             <label className={labelCls}>词汇带 (Target / Context / Extension)</label>
-            <select
-              className={selectCls}
+            <FormSelect
+              className="w-full"
+              size="2"
+              ariaLabel="词汇带"
               value={vocabType}
-              onChange={(e) => setVocabType((e.target.value || '') as WordVocabType | '')}
-            >
-              <option value="">（未设置）</option>
-              <option value="Target">Target</option>
-              <option value="Context">Context</option>
-              <option value="Extension">Extension</option>
-            </select>
+              onValueChange={(next) => setVocabType((next || '') as WordVocabType | '')}
+              options={[
+                { value: '', label: '（未设置）' },
+                { value: 'Target', label: 'Target' },
+                { value: 'Context', label: 'Context' },
+                { value: 'Extension', label: 'Extension' },
+              ]}
+            />
           </div>
 
           {initial?.imagePath && (
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2">
+            <div className="border-kid-line flex items-center gap-3 rounded-xl border-2 bg-slate-50 p-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={getWordImagePublicUrl(initial.imagePath)}
@@ -323,7 +364,9 @@ export default function WordFormModal({
                 className="h-14 w-14 rounded-lg object-cover"
               />
               <div className="min-w-0 flex-1">
-                <div className="text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">配图</div>
+                <div className="text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">
+                  配图
+                </div>
                 <a
                   href={`/admin/word-images`}
                   className="text-[12px] font-bold text-indigo-600 hover:underline"
@@ -339,12 +382,22 @@ export default function WordFormModal({
               className="flex flex-wrap items-center gap-2 rounded-lg px-3 py-2 text-[12px]"
               style={
                 enrichInfo.source === 'ai'
-                  ? { background: 'rgba(99,102,241,0.10)', border: '1px solid rgba(99,102,241,0.30)', color: '#4338ca' }
-                  : { background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.35)', color: '#92400e' }
+                  ? {
+                      background: 'rgba(99,102,241,0.10)',
+                      border: '1px solid rgba(99,102,241,0.30)',
+                      color: '#4338ca',
+                    }
+                  : {
+                      background: 'rgba(245,158,11,0.10)',
+                      border: '1px solid rgba(245,158,11,0.35)',
+                      color: '#92400e',
+                    }
               }
             >
-              <span className="rounded-full bg-white/70 px-2 py-0.5 font-extrabold">
-                {enrichInfo.source === 'ai' ? `🤖 百炼（${enrichInfo.model ?? 'AI'}）` : '📖 免费词典 (dictionaryapi.dev)'}
+              <span className="rounded-full bg-white px-2 py-0.5 font-extrabold">
+                {enrichInfo.source === 'ai'
+                  ? `🤖 百炼（${enrichInfo.model ?? 'AI'}）`
+                  : '📖 免费词典 (dictionaryapi.dev)'}
               </span>
               <span className="font-bold">已填入下方字段，请确认或修改后再添加。</span>
               {enrichInfo.note && <span className="opacity-80">{enrichInfo.note}</span>}
@@ -353,44 +406,72 @@ export default function WordFormModal({
 
           <div>
             <label className={labelCls}>英文释义 (explanation) *</label>
-            <input className={inputCls} value={explanation} onChange={(e) => setExplanation(e.target.value)} placeholder="a round fruit" />
+            <TextField.Root
+              size="2"
+              value={explanation}
+              onChange={(e) => setExplanation(e.target.value)}
+              placeholder="a round fruit"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>中文释义</label>
-              <input className={inputCls} value={chineseDef} onChange={(e) => setChineseDef(e.target.value)} placeholder="苹果" />
+              <TextField.Root
+                size="2"
+                value={chineseDef}
+                onChange={(e) => setChineseDef(e.target.value)}
+                placeholder="苹果"
+              />
             </div>
             <div>
               <label className={labelCls}>音标 (IPA)</label>
-              <input className={inputCls} value={ipa} onChange={(e) => setIpa(e.target.value)} placeholder="/ˈæpəl/" />
+              <TextField.Root
+                size="2"
+                value={ipa}
+                onChange={(e) => setIpa(e.target.value)}
+                placeholder="/ˈæpəl/"
+              />
             </div>
           </div>
 
           <div>
             <label className={labelCls}>词性（逗号分隔）</label>
-            <input className={inputCls} value={partOfSpeech} onChange={(e) => setPartOfSpeech(e.target.value)} placeholder="n., v." />
+            <TextField.Root
+              size="2"
+              value={partOfSpeech}
+              onChange={(e) => setPartOfSpeech(e.target.value)}
+              placeholder="n., v."
+            />
           </div>
 
           <div>
             <label className={labelCls}>例句 (example)</label>
-            <input className={inputCls} value={example} onChange={(e) => setExample(e.target.value)} placeholder="I eat an apple every day." />
+            <TextField.Root
+              size="2"
+              value={example}
+              onChange={(e) => setExample(e.target.value)}
+              placeholder="I eat an apple every day."
+            />
           </div>
 
           {/* 高级字段 */}
-          <button
+          <Button
             type="button"
             onClick={() => setShowAdvanced((v) => !v)}
-            className="cursor-pointer text-[12px] font-bold text-slate-500 transition hover:text-slate-700"
+            variant="ghost"
+            color="gray"
+            size="1"
           >
             {showAdvanced ? '▾' : '▸'} 高级字段（特殊词形 / 音节 / 关键词高亮 / phonics，选填）
-          </button>
+          </Button>
           {showAdvanced && (
             <div className="space-y-3 rounded-xl bg-slate-50 p-3">
               <div>
                 <label className={labelCls}>特殊词形 word_forms（JSON）</label>
-                <textarea
-                  className={`${inputCls} min-h-28 font-mono text-[12px]`}
+                <TextArea
+                  size="2"
+                  rows={6}
                   value={wordFormsJson}
                   onChange={(event) => {
                     setWordFormsJson(event.target.value)
@@ -399,7 +480,9 @@ export default function WordFormModal({
                   placeholder={'{"past":["thought"],"pastParticiple":["thought"]}'}
                 />
                 <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                  仅填写规则无法生成的形式；每类使用字符串数组。支持 plural、thirdPerson、presentParticiple、past、pastParticiple、comparative、superlative、other 和 disableGenerated。
+                  仅填写规则无法生成的形式；每类使用字符串数组。支持
+                  plural、thirdPerson、presentParticiple、past、pastParticiple、comparative、superlative、other
+                  和 disableGenerated。
                 </p>
                 {wordFormsError && (
                   <p className="mt-1 text-[11px] font-bold text-red-600">{wordFormsError}</p>
@@ -407,11 +490,21 @@ export default function WordFormModal({
               </div>
               <div>
                 <label className={labelCls}>phonics</label>
-                <input className={inputCls} value={phonics} onChange={(e) => setPhonics(e.target.value)} placeholder="a-pp-le" />
+                <TextField.Root
+                  size="2"
+                  value={phonics}
+                  onChange={(e) => setPhonics(e.target.value)}
+                  placeholder="a-pp-le"
+                />
               </div>
               <div>
                 <label className={labelCls}>音节 (syllables，逗号分隔)</label>
-                <input className={inputCls} value={syllables} onChange={(e) => setSyllables(e.target.value)} placeholder="ap, ple" />
+                <TextField.Root
+                  size="2"
+                  value={syllables}
+                  onChange={(e) => setSyllables(e.target.value)}
+                  placeholder="ap, ple"
+                />
               </div>
               <div>
                 <label className={labelCls}>关键词高亮</label>
@@ -421,25 +514,37 @@ export default function WordFormModal({
                 <div className="space-y-2">
                   {keywords.map((kw, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <input
-                        className={inputCls}
+                      <TextField.Root
+                        size="2"
+                        className="min-w-0 flex-1"
                         value={kw[0]}
-                        onChange={(e) => setKeywords((prev) => prev.map((p, j) => (j === i ? [e.target.value, p[1]] : p)))}
+                        onChange={(e) =>
+                          setKeywords((prev) =>
+                            prev.map((p, j) => (j === i ? [e.target.value, p[1]] : p)),
+                          )
+                        }
                         placeholder="释义里的词/短语"
                       />
                       <div className="flex shrink-0 gap-1">
                         {KW_COLORS.map((c) => {
                           const active = kw[1] === c.cls
                           return (
+                            // native-ok: 关键词颜色色板，圆形纯色色块需自定义背景色与选中描边，不是标准按钮
                             <button
                               key={c.cls}
                               type="button"
                               title={c.label}
-                              onClick={() => setKeywords((prev) => prev.map((p, j) => (j === i ? [p[0], c.cls] : p)))}
+                              onClick={() =>
+                                setKeywords((prev) =>
+                                  prev.map((p, j) => (j === i ? [p[0], c.cls] : p)),
+                                )
+                              }
                               className="h-7 w-7 cursor-pointer rounded-full transition"
                               style={{
                                 background: c.hex,
-                                outline: active ? '2px solid #0f172a' : '1px solid rgba(15,23,42,0.12)',
+                                outline: active
+                                  ? '2px solid #0f172a'
+                                  : '1px solid rgba(15,23,42,0.12)',
                                 outlineOffset: active ? '2px' : '0',
                                 transform: active ? 'scale(1.08)' : undefined,
                               }}
@@ -448,22 +553,27 @@ export default function WordFormModal({
                           )
                         })}
                       </div>
-                      <button
+                      <IconButton
                         type="button"
                         onClick={() => setKeywords((prev) => prev.filter((_, j) => j !== i))}
-                        className="shrink-0 cursor-pointer rounded-lg px-2 text-[13px] font-bold text-red-600 transition hover:bg-red-50"
+                        variant="ghost"
+                        color="red"
+                        size="2"
+                        className="shrink-0"
                       >
                         ✕
-                      </button>
+                      </IconButton>
                     </div>
                   ))}
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setKeywords((prev) => [...prev, ['', DEFAULT_KW_COLOR]])}
-                    className="cursor-pointer rounded-lg border border-dashed border-slate-300 px-3 py-1 text-[12px] font-bold text-slate-500 transition hover:bg-white"
+                    variant="outline"
+                    color="gray"
+                    size="1"
                   >
                     + 添加关键词
-                  </button>
+                  </Button>
                 </div>
                 {previewHtml && (
                   <div className="mt-2 rounded-lg bg-white p-2 text-[13px] text-slate-700">
@@ -477,31 +587,40 @@ export default function WordFormModal({
         </div>
 
         {keyChanged && (
-          <div className="mt-3 rounded-lg px-3 py-2 text-[12px] font-bold text-amber-800" style={{ background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.35)' }}>
+          <div
+            className="mt-3 rounded-lg px-3 py-2 text-[12px] font-bold text-amber-800"
+            style={{
+              background: 'rgba(245,158,11,0.10)',
+              border: '1px solid rgba(245,158,11,0.35)',
+            }}
+          >
             ⚠ 改动了 词库/单元/课次/单词 之一，将按新键写入；若新键已存在会覆盖该条。
           </div>
         )}
 
         <div className="mt-5 flex gap-2">
-          <button
+          <Button
             type="button"
             onClick={onCancel}
             disabled={submitting}
-            className="flex-1 cursor-pointer rounded-lg border border-slate-200 bg-white py-2 text-[13px] font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            variant="outline"
+            color="gray"
+            size="2"
+            className="flex-1"
           >
             取消
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={handleSave}
             disabled={!canSubmit}
-            className="flex-[2] cursor-pointer rounded-lg py-2 text-[13px] font-extrabold text-white shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-            style={{ background: 'linear-gradient(135deg, #f59e0b, #b45309)', boxShadow: '0 3px 12px rgba(245,158,11,0.4)' }}
+            size="2"
+            className="flex-[2]"
           >
             {submitting ? '保存中…' : initial ? '保存修改' : '添加单词'}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </AppDialog>
   )
 }

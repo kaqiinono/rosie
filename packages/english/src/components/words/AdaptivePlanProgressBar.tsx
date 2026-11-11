@@ -26,12 +26,12 @@ export default function AdaptivePlanProgressBar({ rows }: AdaptivePlanProgressBa
   const masteredPct = total > 0 ? Math.round((mastered / total) * 100) : 0
 
   const segments = [
-    { key: 'MASTERED', count: mastered, className: 'bg-gradient-to-r from-[#22c55e] to-[#86efac]' },
-    { key: 'LEARNING', count: learning, className: 'bg-gradient-to-r from-[#60a5fa] to-[#a78bfa]' },
+    { key: 'MASTERED', count: mastered, className: 'bg-[#22c55e] ' },
+    { key: 'LEARNING', count: learning, className: 'bg-[#60a5fa] ' },
     {
       key: 'LEARNING_PENDING',
       count: pending,
-      className: 'bg-gradient-to-r from-[#f59e0b] to-[#fbbf24]',
+      className: 'bg-[#f59e0b] ',
     },
     { key: 'NOT_STARTED', count: notStarted, className: 'bg-white/12' },
   ] as const
@@ -69,7 +69,7 @@ export default function AdaptivePlanProgressBar({ rows }: AdaptivePlanProgressBa
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-white/[.06]">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#60a5fa] via-[#8b5cf6] to-[#c084fc] transition-[width] duration-500"
+          className="h-full rounded-full bg-[#60a5fa] transition-[width] duration-500"
           style={{ width: `${studiedPct}%` }}
         />
       </div>
@@ -82,7 +82,7 @@ export default function AdaptivePlanProgressBar({ rows }: AdaptivePlanProgressBa
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-white/[.06]">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-[#22c55e] to-[#86efac] transition-[width] duration-500"
+          className="h-full rounded-full bg-[#22c55e] transition-[width] duration-500"
           style={{ width: `${masteredPct}%` }}
         />
       </div>

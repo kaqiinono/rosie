@@ -6,7 +6,12 @@ import { useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { useAuth, supabase, useBaiduMediaError } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
-import { useReadingPassageMedia, useBaiduReadingAudio, baiduReadingAudioUrl } from '@rosie/english'
+import {
+  useReadingPassageMedia,
+  useBaiduReadingAudio,
+  lessonAudioUrl,
+  baiduReadingAudioUrl,
+} from '@rosie/english'
 import { usePlaylistPlayer } from '@rosie/player'
 import { useWordsContext } from '@rosie/english'
 import { PlayerDock } from '@rosie/player'
@@ -16,6 +21,7 @@ import { wordKey } from '@rosie/english'
 import { getWordMasteryLevel } from '@rosie/core'
 import { type PlayerTrack } from '@rosie/player'
 import { StoryShelf } from '@rosie/english'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 export default function ReadingIndexPage() {
   const { user } = useAuth()
@@ -23,10 +29,15 @@ export default function ReadingIndexPage() {
   const { vocab, masteryMap, selStage, setSelStage } = useWordsContext()
   const searchParams = useSearchParams()
   const { hasAudio } = useReadingPassageMedia(user)
-  const { hasAudio: hasBaiduAudio, error: baiduError } = useBaiduReadingAudio(user)
+  const {
+    hasAudio: hasBaiduAudio,
+    isLoading: loadingBaidu,
+    error: baiduError,
+  } = useBaiduReadingAudio(user)
   const hasPlayableAudio = useCallback(
-    (key: string) => hasBaiduAudio(key) || hasAudio(key),
-    [hasBaiduAudio, hasAudio],
+    (key: string) =>
+      hasBaiduAudio(key + '#narration') || hasBaiduAudio(key) || (!loadingBaidu && hasAudio(key)),
+    [hasBaiduAudio, hasAudio, loadingBaidu],
   )
   const player = usePlaylistPlayer()
   const playbackError = useBaiduMediaError(player.audioRef)
@@ -52,9 +63,10 @@ export default function ReadingIndexPage() {
   const [queueKeys, setQueueKeys] = useState<string[]>([])
   const [savingCurrentLesson, setSavingCurrentLesson] = useState(false)
   const [currentLessonError, setCurrentLessonError] = useState<string | null>(null)
-  const currentLessonKey = typeof user?.user_metadata?.reading_current_lesson === 'string'
-    ? user.user_metadata.reading_current_lesson
-    : null
+  const currentLessonKey =
+    typeof user?.user_metadata?.reading_current_lesson === 'string'
+      ? user.user_metadata.reading_current_lesson
+      : null
 
   const markCurrentLesson = async (key: string) => {
     if (!user || savingCurrentLesson || key === currentLessonKey) return
@@ -88,9 +100,8 @@ export default function ReadingIndexPage() {
       return num(a.lesson) - num(b.lesson)
     })
     const currentIndex = sorted.findIndex((p) => p.key === currentLessonKey)
-    const ordered = currentIndex >= 0
-      ? [...sorted.slice(currentIndex), ...sorted.slice(0, currentIndex)]
-      : sorted
+    const ordered =
+      currentIndex >= 0 ? [...sorted.slice(currentIndex), ...sorted.slice(0, currentIndex)] : sorted
     return ordered.map((p) => {
       const lessonWords = vocab.filter((w) => w.unit === p.unit && w.lesson === p.lesson)
       const mastered = lessonWords.reduce((n, w) => {
@@ -119,12 +130,15 @@ export default function ReadingIndexPage() {
     const map = new Map<string, PlayerTrack>()
     for (const p of stagePassages) {
       if (!hasPlayableAudio(p.key)) continue
-      const { data } = supabase.storage
-        .from(READING_AUDIO_BUCKET)
-        .getPublicUrl(readingPassageAudioPath(p.key))
-      if (!data?.publicUrl) continue
+      let url: string
+      if (hasBaiduAudio(p.key + '#narration')) url = lessonAudioUrl(p.key, 'narration')
+      else if (hasBaiduAudio(p.key)) url = baiduReadingAudioUrl(p.key)
+      else
+        url = supabase.storage
+          .from(READING_AUDIO_BUCKET)
+          .getPublicUrl(readingPassageAudioPath(p.key)).data.publicUrl
       map.set(p.key, {
-        url: hasBaiduAudio(p.key) ? baiduReadingAudioUrl(p.key) : data.publicUrl,
+        url,
         label: p.title,
         refLink: `/english/words/reading/${p.key}`,
         mediaType: 'audio',
@@ -135,7 +149,10 @@ export default function ReadingIndexPage() {
   }, [stagePassages, hasPlayableAudio, hasBaiduAudio])
 
   const audiobookKeys = useMemo(
-    () => cards.filter(({ passage }) => hasPlayableAudio(passage.key)).map(({ passage }) => passage.key),
+    () =>
+      cards
+        .filter(({ passage }) => hasPlayableAudio(passage.key))
+        .map(({ passage }) => passage.key),
     [cards, hasPlayableAudio],
   )
 
@@ -181,10 +198,12 @@ export default function ReadingIndexPage() {
               <li key={stage}>
                 <Link
                   href={`/english/words/reading?collection=houhai&volume=${encodeURIComponent(stage)}`}
-                  className="group inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-br from-sky-100 via-indigo-50 to-white px-3 py-2 no-underline shadow-sm ring-1 ring-sky-200 transition hover:-translate-y-0.5 hover:shadow-md"
+                  className="group shadow-sticker-sm hover:shadow-sticker inline-flex min-h-11 items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 whitespace-nowrap no-underline ring-1 ring-sky-200 transition hover:-translate-y-0.5"
                 >
                   <h2 className="font-fredoka text-base font-black text-slate-900">{stage}</h2>
-                  <span aria-hidden className="text-slate-400">·</span>
+                  <span aria-hidden className="text-slate-400">
+                    ·
+                  </span>
                   <p className="text-sm font-bold text-slate-500">{passageCount} 篇课文</p>
                   <span
                     aria-hidden
@@ -221,11 +240,13 @@ export default function ReadingIndexPage() {
           </h1>
         </div>
         <div className="flex items-center gap-2 sm:ml-auto">
-          <button
+          <Button
             type="button"
             disabled={audiobookKeys.length === 0}
             onClick={() => playKeys(hasSelection ? selectedKeys : audiobookKeys)}
-            className="font-fredoka rounded-full bg-gradient-to-br from-orange-400 to-amber-500 px-4 py-2 text-[13px] font-bold text-white shadow-md transition active:scale-95 disabled:opacity-50"
+            variant="solid"
+            color="amber"
+            size="2"
           >
             ▶{' '}
             {audiobookKeys.length === 0
@@ -233,23 +254,23 @@ export default function ReadingIndexPage() {
               : hasSelection
                 ? `播放选中 ${selectedKeys.length}`
                 : `播放全部 ${audiobookKeys.length}`}
-          </button>
+          </Button>
           {player.queue.length > 0 && (
-            <button
-              type="button"
-              onClick={player.stop}
-              className="rounded-full bg-white px-3 py-2 text-[13px] font-bold text-orange-700 ring-1 ring-orange-200 transition active:scale-95"
-            >
+            <Button type="button" onClick={player.stop} variant="outline" color="orange" size="2">
               停止
-            </button>
+            </Button>
           )}
         </div>
       </div>
       {isLoading && <div className="mb-3 text-[11px] text-[var(--wm-text-dim)]">载入多日计划…</div>}
-      {currentLessonError && <p role="alert" className="mb-3 text-sm text-red-600">{currentLessonError}</p>}
+      {currentLessonError && (
+        <p role="alert" className="mb-3 text-sm text-red-600">
+          {currentLessonError}
+        </p>
+      )}
 
       {cards.length === 0 ? (
-        <div className="rounded-2xl bg-white p-8 text-center ring-1 ring-gray-200">
+        <div className="ring-kid-line rounded-2xl bg-white p-8 text-center ring-1">
           <div className="mb-2 text-4xl">📭</div>
           <div className="font-bold text-gray-800">{selectedVolume} 还没有课文</div>
           <div className="mt-1 text-[12px] text-gray-500">
@@ -270,34 +291,34 @@ export default function ReadingIndexPage() {
                 <li
                   key={p.key}
                   className={clsx(
-                    'flex items-stretch gap-3 rounded-2xl p-4 ring-1 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(245,158,11,.18)] sm:p-5',
+                    'hover:shadow-sticker flex items-stretch gap-3 rounded-2xl p-4 ring-1 transition hover:-translate-y-0.5 sm:p-5',
                     p.key === currentLessonKey
-                      ? 'bg-sky-50 ring-2 ring-sky-500 shadow-md'
+                      ? 'shadow-sticker bg-sky-50 ring-2 ring-sky-500'
                       : isPlayingInQueue
-                        ? 'bg-white shadow-[0_6px_20px_rgba(245,158,11,.25)] ring-2 ring-orange-400'
-                        : 'bg-white ring-gray-200 hover:ring-orange-300',
+                        ? 'shadow-sticker-sm bg-white ring-2 ring-orange-400'
+                        : 'ring-kid-line bg-white hover:ring-orange-300',
                   )}
                 >
                   <div className="min-w-0 flex-1">
-                  <div className="mb-2 flex flex-wrap items-center gap-1.5">
-                    <Link
-                      href={`/english/words/reading/${p.key}`}
-                      className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-bold text-orange-700 no-underline ring-1 ring-orange-200 transition hover:bg-orange-100"
-                    >
-                      📖 {p.unit} · {p.lesson}
-                    </Link>
-                    {isFocus && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-sky-500 to-indigo-500 px-2 py-0.5 text-[11px] font-bold text-white ring-1 ring-sky-300">
-                        ⭐ 本周精读
-                      </span>
-                    )}
-                    {isPlayingInQueue && (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold text-orange-700 ring-1 ring-orange-300">
-                        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
-                        播放中
-                      </span>
-                    )}
-                  </div>
+                    <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                      <Link
+                        href={`/english/words/reading/${p.key}`}
+                        className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-bold text-orange-700 no-underline ring-1 ring-orange-200 transition hover:bg-orange-100"
+                      >
+                        📖 {p.unit} · {p.lesson}
+                      </Link>
+                      {isFocus && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-sky-600 px-2 py-0.5 text-[11px] font-bold text-white ring-1 ring-sky-300">
+                          ⭐ 本周精读
+                        </span>
+                      )}
+                      {isPlayingInQueue && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-[11px] font-bold text-orange-700 ring-1 ring-orange-300">
+                          <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-orange-500" />
+                          播放中
+                        </span>
+                      )}
+                    </div>
                     <Link
                       href={`/english/words/reading/${p.key}`}
                       className="group block min-w-0 no-underline"
@@ -318,60 +339,74 @@ export default function ReadingIndexPage() {
                       </div>
                     </Link>
                   </div>
-                    <div
-                      className={clsx(
-                        'relative flex shrink-0 flex-col items-center justify-between gap-1.5 self-stretch py-0.5 pl-3',
-                        'before:absolute before:inset-y-1 before:left-0 before:w-px',
-                        'before:bg-gradient-to-b before:from-transparent before:via-orange-200/70 before:to-transparent',
-                      )}
-                    >
-                      {passageHasAudio && (
-                        <QueueToggleButton
-                          active={inQueue}
-                          position={inQueue ? queuePos + 1 : null}
-                          onClick={() => toggleQueueMember(p.key)}
-                        />
-                      )}
-                      <div className="flex flex-col items-center gap-1.5">
-                        {user && (
-                          <button
-                            type="button"
-                            aria-label={p.key === currentLessonKey ? '当前课' : '设为当前课'}
-                            aria-pressed={p.key === currentLessonKey}
-                            aria-busy={savingCurrentLesson}
-                            title={savingCurrentLesson ? '保存中…' : p.key === currentLessonKey ? '当前课' : '设为当前课'}
-                            disabled={savingCurrentLesson}
-                            onClick={() => { void markCurrentLesson(p.key) }}
-                            className={clsx(
-                              'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full ring-1 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 disabled:cursor-wait disabled:opacity-50',
-                              p.key === currentLessonKey
-                                ? 'bg-sky-600 text-white ring-sky-600 hover:bg-sky-700'
-                                : 'bg-white/90 text-orange-700 ring-orange-200 hover:bg-orange-50',
-                            )}
-                          >
-                            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill={p.key === currentLessonKey ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4V4Z" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                      {passageHasAudio && track && (
-                        <button
+                  <div
+                    className={clsx(
+                      'relative flex shrink-0 flex-col items-center justify-between gap-1.5 self-stretch py-0.5 pl-3',
+                      'before:absolute before:inset-y-1 before:left-0 before:w-px',
+                      'before:bg-orange-200/70',
+                    )}
+                  >
+                    {passageHasAudio && (
+                      <QueueToggleButton
+                        active={inQueue}
+                        position={inQueue ? queuePos + 1 : null}
+                        onClick={() => toggleQueueMember(p.key)}
+                      />
+                    )}
+                    <div className="flex flex-col items-center gap-1.5">
+                      {user && (
+                        <IconButton
                           type="button"
-                          aria-label={isPlayingInQueue ? '正在播放' : '播放本课'}
-                          title="播放本课"
-                          onClick={() => player.play([track])}
-                          className={clsx(
-                            'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[14px] ring-1 transition active:scale-95',
-                            isPlayingInQueue
-                              ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white ring-orange-300'
-                              : 'bg-white/90 text-orange-700 ring-orange-200 hover:bg-white',
-                          )}
+                          aria-label={p.key === currentLessonKey ? '当前课' : '设为当前课'}
+                          aria-pressed={p.key === currentLessonKey}
+                          aria-busy={savingCurrentLesson}
+                          title={
+                            savingCurrentLesson
+                              ? '保存中…'
+                              : p.key === currentLessonKey
+                                ? '当前课'
+                                : '设为当前课'
+                          }
+                          disabled={savingCurrentLesson}
+                          onClick={() => {
+                            void markCurrentLesson(p.key)
+                          }}
+                          variant={p.key === currentLessonKey ? 'solid' : 'soft'}
+                          color={p.key === currentLessonKey ? 'sky' : 'orange'}
+                          radius="full"
+                          size="2"
                         >
-                          ▶
-                        </button>
+                          <svg
+                            aria-hidden="true"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill={p.key === currentLessonKey ? 'currentColor' : 'none'}
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4V4Z" />
+                          </svg>
+                        </IconButton>
                       )}
                     </div>
+                    {passageHasAudio && track && (
+                      <IconButton
+                        type="button"
+                        aria-label={isPlayingInQueue ? '正在播放' : '播放本课'}
+                        title="播放本课"
+                        onClick={() => player.play([track])}
+                        variant={isPlayingInQueue ? 'solid' : 'soft'}
+                        color="orange"
+                        radius="full"
+                        size="2"
+                      >
+                        ▶
+                      </IconButton>
+                    )}
+                  </div>
                 </li>
               )
             },
@@ -379,7 +414,11 @@ export default function ReadingIndexPage() {
         </ul>
       )}
 
-      {collection === 'houhai' && (playbackError || baiduError) && <p role="alert" className="mb-24 text-sm text-red-700">{playbackError || baiduError}</p>}
+      {collection === 'houhai' && (playbackError || baiduError) && (
+        <p role="alert" className="mb-24 text-sm text-red-700">
+          {playbackError || baiduError}
+        </p>
+      )}
       <PlayerDock player={player} theme="light" />
     </main>
   )
@@ -395,7 +434,7 @@ function QueueToggleButton({
   onClick: () => void
 }) {
   return (
-    <button
+    <IconButton
       type="button"
       onClick={(e) => {
         e.preventDefault()
@@ -404,12 +443,11 @@ function QueueToggleButton({
       }}
       aria-label={active ? `从选中移除 (#${position})` : '加入播放选择'}
       title={active ? `从选中移除 (#${position})` : '加入播放选择'}
-      className={clsx(
-        'relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[14px] ring-1 transition active:scale-95',
-        active
-          ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white shadow-sm ring-orange-300'
-          : 'bg-white/90 text-orange-700 ring-orange-200 hover:bg-white',
-      )}
+      variant={active ? 'solid' : 'soft'}
+      color="orange"
+      radius="full"
+      size="2"
+      className="relative"
     >
       {active ? '✓' : '＋'}
       {active && position != null && (
@@ -420,6 +458,6 @@ function QueueToggleButton({
           {position}
         </span>
       )}
-    </button>
+    </IconButton>
   )
 }

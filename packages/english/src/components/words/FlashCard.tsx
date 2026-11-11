@@ -30,13 +30,22 @@ function highlightWordInSentence(sentence: string, word: string) {
   return (
     <>
       {sentence.slice(0, m.index)}
-      <span className="font-extrabold text-amber-300">{sentence.slice(m.index, m.index + m[0].length)}</span>
+      <span className="font-extrabold text-amber-300">
+        {sentence.slice(m.index, m.index + m[0].length)}
+      </span>
       {sentence.slice(m.index + m[0].length)}
     </>
   )
 }
 
-export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, dualMode }: FlashCardProps) {
+export default function FlashCard({
+  entry,
+  flipped,
+  onFlip,
+  index,
+  masteryInfo,
+  dualMode,
+}: FlashCardProps) {
   const [sentenceExpanded, setSentenceExpanded] = useState(false)
   const sz = getWordSizeClass(entry.word)
   const level = getWordMasteryLevel(masteryInfo?.correct ?? 0)
@@ -69,7 +78,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
   // gradient and a subtle inset highlight so they meet flush at the seam.
   const frontFaceStyle: CSSProperties = dualMode
     ? {
-        background: 'linear-gradient(145deg, #1c1c3a 0%, #111126 100%)',
+        background: '#1c1c3a',
         boxShadow: 'inset 0 1px 0 rgba(255,255,255,.05)',
       }
     : {
@@ -77,12 +86,12 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
         WebkitBackfaceVisibility: 'hidden',
         transform: 'rotateY(0deg) translateZ(0.01px)',
         WebkitTransform: 'rotateY(0deg) translateZ(0.01px)',
-        background: 'linear-gradient(145deg, #1c1c3a 0%, #111126 100%)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,.05), 0 4px 24px rgba(0,0,0,.35)',
+        background: '#1c1c3a',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,.05), 0 3px 0 rgba(0,0,0,.35)',
       }
   const backFaceStyle: CSSProperties = dualMode
     ? {
-        background: 'linear-gradient(145deg, #0b1a36 0%, #0e2244 100%)',
+        background: '#0b1a36',
         boxShadow: 'inset 0 1px 0 rgba(96,165,250,.07)',
       }
     : {
@@ -90,9 +99,9 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
         WebkitBackfaceVisibility: 'hidden',
         transform: 'rotateY(180deg) translateZ(0.01px)',
         WebkitTransform: 'rotateY(180deg) translateZ(0.01px)',
-        background: 'linear-gradient(145deg, #0b1a36 0%, #0e2244 100%)',
+        background: '#0b1a36',
         border: '1px solid rgba(96,165,250,.1)',
-        boxShadow: 'inset 0 1px 0 rgba(96,165,250,.07), 0 4px 24px rgba(0,0,0,.35)',
+        boxShadow: 'inset 0 1px 0 rgba(96,165,250,.07), 0 3px 0 rgba(0,0,0,.35)',
       }
 
   // Face wrapper shell classes — in flip mode each face is its own card with
@@ -106,18 +115,8 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
     : `${facePosClass} flex min-h-[256px] flex-col items-center justify-center gap-0 overflow-hidden rounded-2xl p-5`
 
   const frontFace = (
-    <div
-      className={frontShellClass}
-      style={frontFaceStyle}
-    >
+    <div className={frontShellClass} style={frontFaceStyle}>
       {/* Decorative top-right glow */}
-      <div
-        className="pointer-events-none absolute top-0 right-0 h-24 w-24"
-        style={{
-          background:
-            'radial-gradient(circle at top right, rgba(233,69,96,.12), transparent 70%)',
-        }}
-      />
       {/* Decorative background initial */}
       <div
         className="font-fredoka pointer-events-none absolute -right-1 -bottom-3 leading-none font-black select-none"
@@ -164,10 +163,10 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
           >
             <PhonicsWord text={entry.word} syllables={entry.syllables} />
           </div>
-          <SpeakButton word={entry.word} className="opacity-50 hover:opacity-100" />
+          <SpeakButton entry={entry} word={entry.word} />
         </div>
         {entry.ipa && (
-          <div className="font-mono text-center text-[.78rem] font-normal tracking-normal text-white/30">
+          <div className="text-center font-mono text-[.78rem] font-normal tracking-normal text-white/30">
             {entry.ipa}
           </div>
         )}
@@ -195,7 +194,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
           inside the expanded passage area, or standalone when no passage
           exists for this word's lesson. */}
       {passageSentence ? (
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           type="button"
           onClick={(e) => {
             e.stopPropagation()
@@ -213,7 +212,9 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
               {sentenceExpanded ? '收起 ▴' : '展开 ▾'}
             </span>
           </div>
-          <p className={`text-[.78rem] leading-relaxed text-white/55 ${sentenceExpanded ? '' : 'line-clamp-3'}`}>
+          <p
+            className={`text-[.78rem] leading-relaxed text-white/55 ${sentenceExpanded ? '' : 'line-clamp-3'}`}
+          >
             {highlightWordInSentence(passageSentence.sentence, entry.word)}
           </p>
           {sentenceExpanded && entry.example && (
@@ -221,9 +222,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
               <div className="mb-0.5 text-[.55rem] font-extrabold tracking-wider text-white/30 uppercase">
                 通用例句
               </div>
-              <p className="text-[.78rem] leading-relaxed text-white/40 italic">
-                {entry.example}
-              </p>
+              <p className="text-[.78rem] leading-relaxed text-white/40 italic">{entry.example}</p>
             </div>
           )}
         </button>
@@ -232,9 +231,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
           <div className="mb-0.5 text-[.55rem] font-extrabold tracking-wider text-white/[.22] uppercase">
             通用例句
           </div>
-          <p className="text-[.8rem] leading-relaxed text-white/[.32]">
-            {entry.example}
-          </p>
+          <p className="text-[.8rem] leading-relaxed text-white/[.32]">{entry.example}</p>
         </div>
       ) : null}
 
@@ -248,10 +245,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
   )
 
   const backFace = (
-    <div
-      className={backShellClass}
-      style={backFaceStyle}
-    >
+    <div className={backShellClass} style={backFaceStyle}>
       {imageSrc && (
         <ZoomableWordImage
           src={imageSrc}
@@ -297,7 +291,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
         <div
           className={`relative flex min-h-[256px] flex-col overflow-hidden rounded-2xl border-2 ${MASTERY_BORDER[level]} sm:flex-row`}
           style={{
-            boxShadow: '0 4px 24px rgba(0,0,0,.35)',
+            boxShadow: '0 3px 0 rgba(0,0,0,.35)',
             animation: `card-flip-fade-up .3s ease ${delay}s backwards`,
           }}
         >
@@ -308,7 +302,7 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
               right on side-by-side desktop). */}
           <span
             aria-hidden
-            className="font-fredoka pointer-events-none absolute top-1/2 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 rotate-90 items-center justify-center rounded-full border-2 border-amber-200/70 bg-gradient-to-br from-amber-300 to-amber-500 text-[.85rem] leading-none font-black text-amber-900 shadow-[0_2px_8px_rgba(245,158,11,.55),inset_0_1px_0_rgba(255,255,255,.5)] sm:rotate-0"
+            className="font-fredoka shadow-sticker-sm pointer-events-none absolute top-1/2 left-1/2 z-10 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 rotate-90 items-center justify-center rounded-full border-2 border-amber-200/70 bg-amber-300 text-[.85rem] leading-none font-black text-amber-900 sm:rotate-0"
           >
             →
           </span>
@@ -321,7 +315,10 @@ export default function FlashCard({ entry, flipped, onFlip, index, masteryInfo, 
     <>
       <div
         className="min-h-[256px] rounded-2xl"
-        style={{ perspective: '1200px', animation: `card-flip-fade-up .3s ease ${delay}s backwards` }}
+        style={{
+          perspective: '1200px',
+          animation: `card-flip-fade-up .3s ease ${delay}s backwards`,
+        }}
       >
         <div
           onClick={onFlip}

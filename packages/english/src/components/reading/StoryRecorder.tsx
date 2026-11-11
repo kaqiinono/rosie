@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '@rosie/core'
 import { useStoryRecordings } from '../../hooks/useStoryRecordings'
 import type { StoryRecordingScope } from '../../utils/story-recording-types'
+import { Button } from '@rosie/ui/themes'
 
 type Props = {
   contentKey: string
@@ -34,13 +35,7 @@ function recordingExtension(mimeType: string): string {
   return 'webm'
 }
 
-export default function StoryRecorder({
-  contentKey,
-  scope,
-  title,
-  downloadName,
-  heading,
-}: Props) {
+export default function StoryRecorder({ contentKey, scope, title, downloadName, heading }: Props) {
   const { user } = useAuth()
   const { recordingsFor, saveRecording, deleteRecording, getSignedUrl } = useStoryRecordings(user)
   const recordings = recordingsFor(contentKey, scope)
@@ -174,19 +169,22 @@ export default function StoryRecorder({
     [getSignedUrl],
   )
 
-  const download = useCallback(async (recording: (typeof recordings)[number], index: number) => {
-    const url = await getSignedUrl(recording.storagePath)
-    if (!url) return setError('暂时无法下载录音')
-    const response = await fetch(url)
-    if (!response.ok) return setError('下载录音失败')
-    const objectUrl = URL.createObjectURL(await response.blob())
-    const anchor = document.createElement('a')
-    anchor.href = objectUrl
-    const extension = recordingExtension(recording.mimeType)
-    anchor.download = `${downloadName.replace(/\.[^.]+$/, '')}-片段-${index + 1}.${extension}`
-    anchor.click()
-    URL.revokeObjectURL(objectUrl)
-  }, [downloadName, getSignedUrl])
+  const download = useCallback(
+    async (recording: (typeof recordings)[number], index: number) => {
+      const url = await getSignedUrl(recording.storagePath)
+      if (!url) return setError('暂时无法下载录音')
+      const response = await fetch(url)
+      if (!response.ok) return setError('下载录音失败')
+      const objectUrl = URL.createObjectURL(await response.blob())
+      const anchor = document.createElement('a')
+      anchor.href = objectUrl
+      const extension = recordingExtension(recording.mimeType)
+      anchor.download = `${downloadName.replace(/\.[^.]+$/, '')}-片段-${index + 1}.${extension}`
+      anchor.click()
+      URL.revokeObjectURL(objectUrl)
+    },
+    [downloadName, getSignedUrl],
+  )
 
   return (
     <section className="mt-1">
@@ -194,39 +192,39 @@ export default function StoryRecorder({
         {heading ?? <h2 className="font-fredoka font-bold text-amber-950">朗读录音</h2>}
         <div className="flex shrink-0 items-center gap-2">
           {recordings.length > 0 && (
-          <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
+            <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">
               {recordings.length} 段
-          </span>
+            </span>
           )}
           {(phase === 'idle' || phase === 'starting') && (
-            <button
+            <Button
               type="button"
               disabled={phase === 'starting'}
               onClick={() => void start()}
-              className="min-h-11 rounded-full bg-amber-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-amber-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-700 disabled:opacity-50"
+              variant="solid"
+              color="amber"
+              size="3"
             >
               {phase === 'starting' ? '准备麦克风…' : '录制新片段'}
-            </button>
+            </Button>
           )}
         </div>
       </div>
       {(phase === 'recording' || phase === 'paused') && (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <span className="font-bold text-rose-600 tabular-nums">● {formatMs(elapsedMs)}</span>
-          <button
-            type="button"
-            onClick={togglePause}
-            className="rounded-full bg-white px-3 py-1.5 text-sm font-bold ring-1 ring-amber-300"
-          >
+          <Button type="button" onClick={togglePause} variant="outline" color="gray" size="2">
             {phase === 'paused' ? '继续' : '暂停'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => recorderRef.current?.stop()}
-            className="rounded-full bg-rose-600 px-3 py-1.5 text-sm font-bold text-white"
+            variant="solid"
+            color="ruby"
+            size="2"
           >
             停止
-          </button>
+          </Button>
         </div>
       )}
       {playbackUrl && (
@@ -238,32 +236,38 @@ export default function StoryRecorder({
           {recordings.map((recording, index) => (
             <div
               key={recording.id}
-              className="flex flex-wrap items-center gap-2 rounded-xl bg-white/75 px-3 py-2 ring-1 ring-amber-200"
+              className="flex flex-wrap items-center gap-2 rounded-xl bg-white px-3 py-2 ring-1 ring-amber-200"
             >
               <span className="min-w-0 flex-1 text-sm font-bold text-slate-700">
                 片段 {recordings.length - index} · {formatMs(recording.durationMs ?? 0)}
               </span>
-              <button
+              <Button
                 type="button"
                 onClick={() => void loadPlayback(recording)}
-                className="min-h-10 rounded-full px-3 text-sm font-bold text-amber-900 ring-1 ring-amber-300"
+                variant="outline"
+                color="amber"
+                size="2"
               >
                 {playbackId === recording.id ? '正在播放' : '播放'}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => void download(recording, recordings.length - index - 1)}
-                className="min-h-10 rounded-full px-3 text-sm font-bold text-amber-900 ring-1 ring-amber-300"
+                variant="outline"
+                color="amber"
+                size="2"
               >
                 下载
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => void deleteRecording(recording)}
-                className="min-h-10 rounded-full px-3 text-sm font-bold text-rose-600"
+                variant="ghost"
+                color="ruby"
+                size="2"
               >
                 删除
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -272,22 +276,26 @@ export default function StoryRecorder({
         <div className="mt-3 space-y-3">
           <audio controls src={previewUrl} preload="metadata" className="w-full" />
           <div className="flex gap-2">
-            <button
+            <Button
               type="button"
               disabled={phase === 'saving'}
               onClick={() => void save()}
-              className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+              variant="solid"
+              color="jade"
+              size="2"
             >
               {phase === 'saving' ? '压缩并保存中…' : '保存录音'}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               disabled={phase === 'saving'}
               onClick={resetPreview}
-              className="rounded-full bg-white px-4 py-2 text-sm font-bold ring-1 ring-amber-300"
+              variant="outline"
+              color="gray"
+              size="2"
             >
               放弃
-            </button>
+            </Button>
           </div>
         </div>
       )}

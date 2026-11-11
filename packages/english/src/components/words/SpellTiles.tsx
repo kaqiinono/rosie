@@ -2,18 +2,11 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { pickMessage, RETRY_SPELL_MESSAGES } from '@rosie/core'
-import {
-  CandyButton,
-  CANDY_PRESETS,
-  DEFAULT_PRESET_ORDER,
-} from '@rosie/ui'
-import {
-  JellyButton,
-  pickNonAdjacentJellyPresets,
-  type JellyPresetKey,
-} from '@rosie/ui'
+import { CandyButton, CANDY_PRESETS, DEFAULT_PRESET_ORDER } from '@rosie/ui'
+import { JellyButton, pickNonAdjacentJellyPresets, type JellyPresetKey } from '@rosie/ui'
 import { MAGIC_STAR_COLOR } from './MagicWand'
 import { acceptedSpellings, normalizeSpelling } from '../../utils/english-helpers'
+import { Button } from '@rosie/ui/themes'
 
 export type SpellButtonStyle = 'candy' | 'jelly'
 
@@ -94,7 +87,10 @@ export default function SpellTiles({
     return result
   }, [segments])
 
-  const lockedCount = magicReset === 0 && revealedHalf && revealedHalf > 0 ? Math.min(revealedHalf, primarySpelling.length) : 0
+  const lockedCount =
+    magicReset === 0 && revealedHalf && revealedHalf > 0
+      ? Math.min(revealedHalf, primarySpelling.length)
+      : 0
 
   const [poolState] = useState<PoolState>(() => {
     const letters = spellingAnswers.join('').replace(/ /g, '').split('')
@@ -228,7 +224,10 @@ export default function SpellTiles({
     onSubmit(placed.join(''))
   }
 
-  const [retryFeedback, setRetryFeedback] = useState<{ correct: Set<number>; wrong: Set<number> } | null>(null)
+  const [retryFeedback, setRetryFeedback] = useState<{
+    correct: Set<number>
+    wrong: Set<number>
+  } | null>(null)
 
   const [previousMagicReset, setPreviousMagicReset] = useState(magicReset)
   if (previousMagicReset !== magicReset) {
@@ -298,10 +297,13 @@ export default function SpellTiles({
             {Array.from({ length: seg.length }).map((_, ci) => {
               const slotIdx = segmentSlots[si].start + ci
               const letter = magicDemo
-                ? (slotIdx < magicDemo.count ? magicDemo.answer[slotIdx] ?? null : null)
+                ? slotIdx < magicDemo.count
+                  ? (magicDemo.answer[slotIdx] ?? null)
+                  : null
                 : placed[slotIdx]
 
-              const magicLit = !!magicDemo && slotIdx < magicDemo.count && slotIdx < magicDemo.answer.length
+              const magicLit =
+                !!magicDemo && slotIdx < magicDemo.count && slotIdx < magicDemo.answer.length
               const isCorrectSlot = retryFeedback?.correct.has(slotIdx)
               const isWrongSlot = retryFeedback?.wrong.has(slotIdx)
               const isLockedSlot = slotIdx < lockedCount
@@ -312,7 +314,8 @@ export default function SpellTiles({
               } else if (isCorrectSlot) {
                 cls = 'border-[#4ade80] bg-[rgba(74,222,128,.18)]'
               } else if (isWrongSlot) {
-                cls = 'border-[var(--rescue-flash-warn)] bg-[rgba(251,191,36,.12)] animate-[shakeReturn_.3s_ease]'
+                cls =
+                  'border-[var(--rescue-flash-warn)] bg-[rgba(251,191,36,.12)] animate-[shakeReturn_.3s_ease]'
               } else if (answered) {
                 // 最终答错（被吃）：保持安静中性，怪兽弹层会接管，不显示可点击态
                 cls = 'border-white/[.18] bg-white/[.04]'
@@ -326,17 +329,24 @@ export default function SpellTiles({
                 <div
                   key={ci}
                   data-magic-slot={slotIdx}
-                  style={magicLit ? {
-                    borderColor: MAGIC_STAR_COLOR,
-                    backgroundColor: 'rgba(162,238,255,.1)',
-                    boxShadow: '0 0 16px rgba(162,238,255,.22)',
-                  } : undefined}
+                  style={
+                    magicLit
+                      ? {
+                          borderColor: MAGIC_STAR_COLOR,
+                          backgroundColor: 'rgba(162,238,255,.1)',
+                          boxShadow: '0 3px 0 rgba(162,238,255,.3)',
+                        }
+                      : undefined
+                  }
                   onClick={() => {
                     if (letter && !answered && slotIdx >= lockedCount) handlePlacedTap(slotIdx)
                   }}
-                  className={`${tileSizeSmall} font-nunito flex items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] touch-manipulation select-none transition-[transform,background,border-color] duration-150 ease-out [-webkit-tap-highlight-color:transparent] ${letter && !answered && slotIdx >= lockedCount ? 'cursor-pointer active:scale-90 animate-pop-in' : ''} ${cls}`}
+                  className={`${tileSizeSmall} font-nunito flex touch-manipulation items-center justify-center rounded-lg border-2 font-black text-[#f0f0ff] transition-[transform,background,border-color] duration-150 ease-out select-none [-webkit-tap-highlight-color:transparent] ${letter && !answered && slotIdx >= lockedCount ? 'animate-pop-in cursor-pointer active:scale-90' : ''} ${cls}`}
                 >
-                  <span style={magicDemo ? { color: MAGIC_STAR_COLOR } : undefined} className={`transition-opacity duration-200 ${magicDemo?.fading ? 'opacity-0' : 'opacity-100'} `}>
+                  <span
+                    style={magicDemo ? { color: MAGIC_STAR_COLOR } : undefined}
+                    className={`transition-opacity duration-200 ${magicDemo?.fading ? 'opacity-0' : 'opacity-100'} `}
+                  >
                     {letter ?? <span className={`text-white/20 ${placeholderSize}`}>_</span>}
                   </span>
                 </div>
@@ -346,7 +356,9 @@ export default function SpellTiles({
         ))}
       </div>
 
-      {magicDemo?.holding && <div className="text-center text-sm font-bold text-amber-200">记住了吗？轮到你啦</div>}
+      {magicDemo?.holding && (
+        <div className="text-center text-sm font-bold text-amber-200">记住了吗？轮到你啦</div>
+      )}
 
       {/* Pool tiles — render mode depends on buttonStyle */}
       {!answered &&
@@ -428,13 +440,16 @@ export default function SpellTiles({
 
       {/* Confirm button — warm honey amber, encouraging not alarming */}
       {canSubmit && !answered && !magicDemo && (
-        <button
+        <Button
           type="button"
           onClick={handleConfirm}
-          className="font-nunito relative mt-1 cursor-pointer touch-manipulation rounded-2xl border-2 border-amber-700/50 bg-gradient-to-b from-[#fde68a] via-[#f59e0b] to-[#d97706] py-3 text-[clamp(.95rem,3vw,1.1rem)] font-black tracking-wide text-amber-950 shadow-[0_5px_0_#92400e,inset_0_2px_0_rgba(255,255,255,.5),inset_0_-2px_0_rgba(0,0,0,.1),0_10px_22px_-6px_rgba(217,119,6,.45)] [-webkit-tap-highlight-color:transparent] [text-shadow:0_1px_0_rgba(120,53,15,.3)] animate-pop-in transition-[transform,box-shadow,filter] duration-100 ease-out active:translate-y-[5px] active:shadow-[0_0_0_#92400e,inset_0_2px_4px_rgba(0,0,0,.2)] [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:brightness-105"
+          variant="outline"
+          color="amber"
+          size="3"
+          className="relative mt-1"
         >
           ✓ 确认答案
-        </button>
+        </Button>
       )}
 
       {/* Feedback */}
@@ -447,7 +462,7 @@ export default function SpellTiles({
         <div
           role="status"
           aria-live="polite"
-          className="rounded-2xl border border-[var(--rescue-flash-warn)]/40 bg-[rgba(251,191,36,.08)] px-4 py-3 text-center text-[.88rem] font-bold text-[#fbbf24] animate-[fade-up_.2s_ease]"
+          className="animate-[fade-up_.2s_ease] rounded-2xl border border-[var(--rescue-flash-warn)]/40 bg-[rgba(251,191,36,.08)] px-4 py-3 text-center text-[.88rem] font-bold text-[#fbbf24]"
         >
           {retryHintSpell}
         </div>

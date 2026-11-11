@@ -13,9 +13,7 @@ import { masteryBadge } from './GrammarSearchResults'
 function UnitCard({ entry, mastery }: { entry: GrammarOverviewEntry; mastery: GrammarMasteryMap }) {
   const badge = masteryBadge(entry, mastery)
   // 书尾条目不显示延展位编号，以类别图标代替
-  const badgeContent = entry.locked
-    ? '🔒'
-    : (BACKMATTER_ICONS[entry.category] ?? entry.unitNumber)
+  const badgeContent = entry.locked ? '🔒' : (BACKMATTER_ICONS[entry.category] ?? entry.unitNumber)
   const hasSupp = (entry.suppEntries?.length ?? 0) > 0
   const hasGuide = (entry.studyGuideUnits?.length ?? 0) > 0
   const inner = (
@@ -24,7 +22,7 @@ function UnitCard({ entry, mastery }: { entry: GrammarOverviewEntry; mastery: Gr
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
           entry.locked
             ? 'bg-surface-dim text-text-muted ring-border-light ring-1'
-            : 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
+            : 'shadow-sticker bg-teal-600 text-white'
         }`}
       >
         {badgeContent}
@@ -86,7 +84,7 @@ function UnitCard({ entry, mastery }: { entry: GrammarOverviewEntry; mastery: Gr
   return (
     <Link
       href={`/english/grammar/${entry.book}/${entry.unitNumber}`}
-      className="bg-surface ring-border-light hover:ring-app-blue/40 flex items-center gap-3 rounded-xl p-3 ring-1 transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="bg-surface ring-border-light hover:ring-app-blue/40 hover:shadow-sticker flex items-center gap-3 rounded-xl p-3 ring-1 transition-all hover:-translate-y-0.5"
     >
       {inner}
     </Link>
@@ -141,14 +139,16 @@ export default function GrammarHomePage({
   // DB 的 category 粒度过细（一般现在时/现在进行时等），不适合作分区依据
   const groups = useMemo(() => {
     const byUnit = new Map(entries.map((e) => [e.unitNumber, e]))
-    return tocSectionsFor(book).map((section) => {
-      const items: GrammarOverviewEntry[] = []
-      for (let n = section.from; n <= section.to; n++) {
-        const entry = byUnit.get(n)
-        if (entry) items.push(entry)
-      }
-      return { section, items }
-    }).filter((g) => g.items.length > 0)
+    return tocSectionsFor(book)
+      .map((section) => {
+        const items: GrammarOverviewEntry[] = []
+        for (let n = section.from; n <= section.to; n++) {
+          const entry = byUnit.get(n)
+          if (entry) items.push(entry)
+        }
+        return { section, items }
+      })
+      .filter((g) => g.items.length > 0)
   }, [entries, book])
 
   return (
@@ -162,14 +162,17 @@ export default function GrammarHomePage({
         </div>
         <header className="text-center">
           <div className="animate-bounce-slow inline-block text-5xl">📗</div>
-          <h1 className="mt-2 bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
+          <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-sky-600">
             语法闯关
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm">
             {isLoading && entries.length === 0 ? (
-              <span className="bg-surface/70 ring-border-light inline-block h-3.5 w-52 animate-pulse rounded-full ring-1 align-middle" />
+              <span className="bg-surface/70 ring-border-light inline-block h-3.5 w-52 animate-pulse rounded-full align-middle ring-1" />
             ) : (
-              <>《{GRAMMAR_BOOKS[book].labelZh}》· 已解锁 {unlockedCount}/{totalCount} · 已掌握 {masteredCount}</>
+              <>
+                《{GRAMMAR_BOOKS[book].labelZh}》· 已解锁 {unlockedCount}/{totalCount} · 已掌握{' '}
+                {masteredCount}
+              </>
             )}
           </p>
         </header>
@@ -178,18 +181,16 @@ export default function GrammarHomePage({
           <HomePageSkeleton />
         ) : entries.length === 0 ? (
           <div className="bg-surface text-text-muted ring-border-light rounded-2xl p-8 text-center text-sm ring-1">
-            {book === 'essential' ? (
-              '还没有单元内容，先用提取脚本入库第一个单元吧 🌱'
-            ) : (
-              `《${GRAMMAR_BOOKS[book].labelZh}》内容准备中，敬请期待 🌱`
-            )}
+            {book === 'essential'
+              ? '还没有单元内容，先用提取脚本入库第一个单元吧 🌱'
+              : `《${GRAMMAR_BOOKS[book].labelZh}》内容准备中，敬请期待 🌱`}
           </div>
         ) : (
           <div className="flex flex-col gap-6">
             {groups.map(({ section, items }) => (
               <section key={section.id}>
                 <h2 className="text-text-primary mb-2.5 flex items-center gap-2 text-sm font-black">
-                  <span className="inline-block h-4 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-teal-500" />
+                  <span className="inline-block h-4 w-1 rounded-full bg-emerald-500" />
                   {section.titleZh}
                   {/* 书尾分区不显示延展位编号区间 */}
                   {!section.backmatter && (

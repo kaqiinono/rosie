@@ -10,6 +10,7 @@ import { useGrammarSearchIndex } from '../hooks/useGrammarSearchIndex'
 import { searchGrammarEntries, type GrammarSearchMode } from '../grammar-search'
 import { GRAMMAR_BOOKS, type GrammarBookId } from '../types'
 import GrammarSearchResults from './GrammarSearchResults'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 /** 书籍卡片 emoji（按 book id） */
 const BOOK_EMOJI: Record<GrammarBookId, string> = {
@@ -74,12 +75,12 @@ export default function GrammarBooksPage() {
         </div>
         <header className="text-center">
           <div className="animate-bounce-slow inline-block text-5xl">📚</div>
-          <h1 className="mt-2 bg-gradient-to-br from-emerald-700 via-teal-600 to-sky-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
+          <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-sky-600">
             语法闯关
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm">
             {isLoading && allEntries.length === 0 ? (
-              <span className="bg-surface/70 ring-border-light inline-block h-3.5 w-52 animate-pulse rounded-full ring-1 align-middle" />
+              <span className="bg-surface/70 ring-border-light inline-block h-3.5 w-52 animate-pulse rounded-full align-middle ring-1" />
             ) : (
               <>剑桥语法三件套 · 已解锁 {allEntries.length} 个单元 · 选择一本书开始吧</>
             )}
@@ -92,21 +93,27 @@ export default function GrammarBooksPage() {
             <span className="text-text-muted pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-sm">
               🔍
             </span>
-            <input
+            <TextField.Root
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={mode === 'normal' ? '搜全部语法书，如「进行时」' : '搜讲解内容，如「have been」'}
+              placeholder={
+                mode === 'normal' ? '搜全部语法书，如「进行时」' : '搜讲解内容，如「have been」'
+              }
               aria-label="语法全局检索关键字"
-              className="bg-surface ring-border-light focus:ring-app-blue/50 w-full rounded-full py-2.5 pr-10 pl-10 text-sm font-bold outline-none ring-1 transition-shadow focus:ring-2"
+              size="2"
+              className="w-full"
             />
             {query && (
-              <button
+              <IconButton
                 onClick={() => setQuery('')}
                 aria-label="清空搜索"
-                className="text-text-muted hover:text-text-primary absolute top-1/2 right-3 -translate-y-1/2 text-base font-black"
+                variant="ghost"
+                color="gray"
+                size="3"
+                className="absolute top-1/2 right-3"
               >
                 ×
-              </button>
+              </IconButton>
             )}
           </div>
           <div className="flex justify-center gap-1.5">
@@ -116,18 +123,16 @@ export default function GrammarBooksPage() {
                 { id: 'advanced', label: '🧠 高级检索' },
               ] as { id: GrammarSearchMode; label: string }[]
             ).map((m) => (
-              <button
+              <Button
                 key={m.id}
                 onClick={() => setMode(m.id)}
                 aria-pressed={mode === m.id}
-                className={`rounded-full px-3 py-1 text-xs font-bold transition-all ${
-                  mode === m.id
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
-                    : 'bg-surface-dim text-text-secondary'
-                }`}
+                variant={mode === m.id ? 'solid' : 'ghost'}
+                color={mode === m.id ? 'teal' : 'gray'}
+                size="1"
               >
                 {m.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -168,7 +173,7 @@ export default function GrammarBooksPage() {
                 <Link
                   key={b.id}
                   href={`/english/grammar/${b.id}`}
-                  className="bg-surface ring-border-light hover:ring-app-blue/40 flex flex-col gap-1.5 rounded-2xl p-5 ring-1 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  className="bg-surface ring-border-light hover:ring-app-blue/40 hover:shadow-sticker flex flex-col gap-1.5 rounded-2xl p-5 ring-1 transition-all hover:-translate-y-0.5"
                 >
                   <span className="text-4xl">{BOOK_EMOJI[b.id]}</span>
                   <span className="text-text-primary mt-1 text-base font-black">{b.labelZh}</span>

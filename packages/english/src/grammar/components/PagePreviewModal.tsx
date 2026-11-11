@@ -5,6 +5,7 @@ import { GrammarScanImage } from './GrammarScanImage'
 import { useCallback, useEffect, useState } from 'react'
 import type { GrammarPageImage } from '../types'
 import { grammarPageImageUrl } from '../types'
+import { IconButton } from '@rosie/ui/themes'
 
 interface PagePreviewModalProps {
   /** 当前要展示的书内页码 */
@@ -50,34 +51,31 @@ function PagePreview({ page, images, onClose }: PagePreviewModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={handleBackdropClick}
     >
-      <div className="relative mx-4 flex max-h-[90vh] w-full max-w-[600px] flex-col items-center gap-3 rounded-2xl bg-surface p-4 shadow-2xl ring-1 ring-border-light">
+      <div className="bg-surface shadow-sticker-lg ring-border-light relative mx-4 flex max-h-[90vh] w-full max-w-[600px] flex-col items-center gap-3 rounded-2xl p-4 ring-1">
         {/* Header */}
         <div className="flex w-full items-center justify-between">
-          <h3 className="text-sm font-bold text-text-primary">
+          <h3 className="text-text-primary text-sm font-bold">
             📄 原书 p.{page}
             {match ? (
-              <span className="ml-2 text-xs font-normal text-text-muted">
+              <span className="text-text-muted ml-2 text-xs font-normal">
                 {match.type === 'lesson' ? '讲解页' : '练习页'}
               </span>
             ) : null}
           </h3>
-          <button
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-surface-dim hover:text-text-primary"
-          >
+          <IconButton onClick={onClose} variant="ghost" color="gray" size="1" className="w-8">
             ✕
-          </button>
+          </IconButton>
         </div>
 
         {/* Image */}
         {imgUrl ? (
-          <div className="relative flex w-full flex-1 items-center justify-center overflow-auto rounded-xl bg-surface-dim">
+          <div className="bg-surface-dim relative flex w-full flex-1 items-center justify-center overflow-auto rounded-xl">
             {!loaded && !errored && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-3 border-app-blue border-t-transparent" />
+                <div className="border-app-blue h-8 w-8 animate-spin rounded-full border-3 border-t-transparent" />
               </div>
             )}
             <GrammarScanImage
@@ -88,14 +86,14 @@ function PagePreview({ page, images, onClose }: PagePreviewModalProps) {
               onError={() => setErrored(true)}
             />
             {errored && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-text-muted">
+              <div className="text-text-muted absolute inset-0 flex flex-col items-center justify-center gap-2">
                 <span className="text-3xl">🖼️</span>
                 <span className="text-xs">图片加载失败，请检查网络</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-2 py-12 text-text-muted">
+          <div className="text-text-muted flex flex-col items-center gap-2 py-12">
             <span className="text-3xl">📷</span>
             <span className="text-sm">该页原文图片尚未上传</span>
           </div>

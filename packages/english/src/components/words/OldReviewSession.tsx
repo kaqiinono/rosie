@@ -20,10 +20,11 @@ import DoneSummary from './DoneSummary'
 import { useWordsContext } from '../../WordsContext'
 import { useImmersive } from '@rosie/core'
 import { useStarHud } from '@rosie/rewards'
+import { Button } from '@rosie/ui/themes'
 
 interface OldReviewSessionProps {
-  words: WordEntry[]          // pre-computed due words, ordered by urgency
-  vocab: WordEntry[]          // full vocab for quiz distractors
+  words: WordEntry[] // pre-computed due words, ordered by urgency
+  vocab: WordEntry[] // full vocab for quiz distractors
   onBack: () => void
 }
 
@@ -55,7 +56,9 @@ function loadOldReviewSnapshot(): OldReviewSnapshot | null {
     if (snap.version !== 1) return null
     if (snap.phase !== 'study' && snap.phase !== 'quiz') return null
     return snap as OldReviewSnapshot
-  } catch { return null }
+  } catch {
+    return null
+  }
 }
 
 export default function OldReviewSession({ words, vocab, onBack }: OldReviewSessionProps) {
@@ -76,9 +79,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   // Session words are stored as keys so they're vocab-independent (persistence
   // never corrupts mid-load). Snapshot takes precedence over `words` prop so an
   // interrupted session resumes with the exact same word list.
-  const [sessionWordKeys] = useState<string[]>(
-    () => snap0?.wordKeys ?? words.map(wordKey),
-  )
+  const [sessionWordKeys] = useState<string[]>(() => snap0?.wordKeys ?? words.map(wordKey))
   const sessionWords = useMemo<WordEntry[]>(
     () =>
       sessionWordKeys
@@ -125,7 +126,11 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (phase === 'done') {
-      try { sessionStorage.removeItem(OLD_REVIEW_STORAGE_KEY) } catch { /* noop */ }
+      try {
+        sessionStorage.removeItem(OLD_REVIEW_STORAGE_KEY)
+      } catch {
+        /* noop */
+      }
       return
     }
     try {
@@ -143,7 +148,9 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
             .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
         } satisfies OldReviewSnapshot),
       )
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, [phase, studyIdx, sessionWordKeys, quizQKeys, curQ])
 
   // Flush any accumulated quiz results and exit — called on every exit path
@@ -152,7 +159,11 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
       recordBatch(quizResultBuffer.current)
       quizResultBuffer.current = []
     }
-    try { sessionStorage.removeItem(OLD_REVIEW_STORAGE_KEY) } catch { /* noop */ }
+    try {
+      sessionStorage.removeItem(OLD_REVIEW_STORAGE_KEY)
+    } catch {
+      /* noop */
+    }
     setIsImmersive(false)
     onBack()
   }, [recordBatch, setIsImmersive, onBack])
@@ -171,7 +182,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
 
   const handleAnswer = useCallback(
     (info: QuizCommitInfo) => {
-      if (info.finalCorrect) setScore(s => s + 1)
+      if (info.finalCorrect) setScore((s) => s + 1)
       const q = quizQs[curQ]
       if (q) {
         quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
@@ -216,7 +227,9 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         seen.add(k)
         wrongItems.push({ entry: r.entry, type: t })
       }
-      const wrongExtras = reinforcementAppended ? [] : buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
+      const wrongExtras = reinforcementAppended
+        ? []
+        : buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
       const extras = [...helpExtras, ...wrongExtras]
       if (extras.length > 0) {
         setQuizQKeys((prev) => [
@@ -271,11 +284,10 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         onStudyDefOnlyChange={setStudyDefOnly}
         isImmersive={isImmersive}
         onExitImmersive={() => setIsImmersive(false)}
-        progressGradientClasses="from-[#c084fc] via-[#a855f7] to-[#7c3aed]"
-        nextButtonGradientClasses="from-[#7c3aed] to-[#a855f7]"
-        nextButtonShadowClass="shadow-[0_3px_12px_rgba(124,58,237,.4)]"
+        progressColorClass="bg-[#a855f7]"
+        nextButtonColor="violet"
         wordBadge={
-          <span className="rounded-full border border-[rgba(167,139,250,.3)] bg-[rgba(167,139,250,.2)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider uppercase text-[#c4b5fd]">
+          <span className="rounded-full border border-[rgba(167,139,250,.3)] bg-[rgba(167,139,250,.2)] px-2 py-0.5 text-[.6rem] font-extrabold tracking-wider text-[#c4b5fd] uppercase">
             旧词复习
           </span>
         }
@@ -300,19 +312,25 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     return (
       <div className="mx-auto max-w-[1280px] px-4 py-5">
         <div className="mb-2 flex items-center gap-3 py-3">
-          <button
+          <Button
             onClick={() => setPhase('study')}
-            className="font-nunito shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
+            variant="outline"
+            color="gray"
+            size="2"
+            className="shrink-0"
           >
             ← 回到记忆
-          </button>
+          </Button>
           <div className="font-fredoka text-[1.1rem] text-[var(--wm-text)]">✏️ 旧词测试</div>
-          <button
+          <Button
             onClick={flushAndBack}
-            className="font-nunito ml-auto shrink-0 cursor-pointer rounded-full border-[1.5px] border-[var(--wm-border)] bg-transparent px-3.5 py-1.5 text-[0.875rem] font-bold text-[var(--wm-text-dim)] transition-all hover:border-[var(--wm-accent4)] hover:text-[var(--wm-accent4)]"
+            variant="outline"
+            color="gray"
+            size="2"
+            className="ml-auto shrink-0"
           >
             退出复习
-          </button>
+          </Button>
         </div>
         <QuizQuestionBody
           question={currentQuestion}
@@ -333,7 +351,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     const totalQs = quizQs.length
     const pct = totalQs ? Math.round((score / totalQs) * 100) : 0
     const masteredCount = sessionWords.filter(
-      w => getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) === 3,
+      (w) => getWordMasteryLevel(masteryMap[wordKey(w)]?.correct ?? 0) === 3,
     ).length
 
     return (
@@ -341,24 +359,26 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         <DoneSummary
           score={score}
           total={totalQs}
-          scoreGradientClasses="from-[#7c3aed] to-[#a855f7]"
+          scoreColorClass="text-[#7c3aed]"
           detailLine={`正确率 ${pct}% · 旧词复习 ${sessionWords.length} 个单词`}
           masteredCount={masteredCount}
           wordsCount={sessionWords.length}
           actions={
             <>
-              <button
-                onClick={() => startQuiz()}
-                className="font-nunito cursor-pointer rounded-[10px] border-0 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] px-6 py-2.5 text-[.88rem] font-extrabold text-white shadow-[0_3px_12px_rgba(124,58,237,.35)]"
-              >
+              <Button onClick={() => startQuiz()} variant="solid" color="violet" size="2">
                 🔄 重新测试
-              </button>
-              <button
-                onClick={() => { setIsImmersive(false); onBack() }}
-                className="font-nunito cursor-pointer rounded-[10px] border-[1.5px] border-[var(--wm-border)] bg-transparent px-5 py-2.5 text-[1rem] font-bold text-[var(--wm-text-dim)]"
+              </Button>
+              <Button
+                onClick={() => {
+                  setIsImmersive(false)
+                  onBack()
+                }}
+                variant="ghost"
+                color="gray"
+                size="2"
               >
                 ← 返回
-              </button>
+              </Button>
             </>
           }
         />

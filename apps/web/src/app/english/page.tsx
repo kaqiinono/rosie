@@ -21,7 +21,7 @@ export default function EnglishPage() {
         </div>
         <section className="max-w-[480px] text-center">
           <div className="animate-bounce-slow inline-block text-5xl">📚</div>
-          <h1 className="mt-2 bg-gradient-to-br from-rose-700 via-pink-600 to-sky-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
+          <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-sky-600">
             英语探险乐园
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm leading-relaxed">

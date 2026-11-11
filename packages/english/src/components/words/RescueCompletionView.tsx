@@ -29,9 +29,8 @@ export default function RescueCompletionView({ eatenList }: Props) {
     <div
       className="mt-5 rounded-3xl p-5"
       style={{
-        background: 'linear-gradient(135deg, #1a1200 0%, #0d0d0d 50%, #001a08 100%)',
-        boxShadow:
-          'inset 0 0 0 1px color-mix(in srgb, var(--rescue-flash-warn) 18%, transparent), 0 0 28px 0 color-mix(in srgb, var(--rescue-flash-warn) 7%, transparent)',
+        background: '#0d0d0d',
+        boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--rescue-flash-warn) 18%, transparent)',
         border: '1px solid color-mix(in srgb, var(--rescue-flash-warn) 35%, transparent)',
       }}
     >
@@ -41,8 +40,8 @@ export default function RescueCompletionView({ eatenList }: Props) {
       </div>
 
       {/* Headline */}
-      <div className="mb-4 flex items-start gap-1.5 text-[1rem] font-black leading-snug text-white">
-        <span className="inline-block animate-bounce-slow shrink-0">{headlineEmoji}</span>
+      <div className="mb-4 flex items-start gap-1.5 text-[1rem] leading-snug font-black text-white">
+        <span className="animate-bounce-slow inline-block shrink-0">{headlineEmoji}</span>
         <span>{headline}</span>
       </div>
 
@@ -56,7 +55,7 @@ export default function RescueCompletionView({ eatenList }: Props) {
               background: 'rgba(52,211,153,.14)',
               borderColor: 'rgba(52,211,153,.45)',
               color: 'var(--rescue-saved)',
-              boxShadow: '0 0 8px rgba(52,211,153,.22)',
+              boxShadow: '0 3px 0 rgba(52,211,153,.3)',
               animation: `fade-up .3s ease both ${idx * 40}ms`,
             }}
             title="已救回"

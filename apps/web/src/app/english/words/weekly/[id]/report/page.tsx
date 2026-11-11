@@ -10,6 +10,7 @@ import { loadWeeklyPlanById } from '@/lib/loadWeeklyPlanById'
 import { EnglishWeeklyReportView } from '@rosie/english'
 import { EnglishWeeklyReportWordTable } from '@rosie/english'
 import { buildWeeklyReportWordRows } from '@rosie/english'
+import { Button } from '@rosie/ui/themes'
 
 export default function WeeklyPlanReportPage() {
   const router = useRouter()
@@ -31,7 +32,9 @@ export default function WeeklyPlanReportPage() {
         setIsLoading(false)
       }
     })()
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [user, id])
 
   const wordRows = useMemo(
@@ -53,7 +56,7 @@ export default function WeeklyPlanReportPage() {
         <p className="text-sm text-[var(--wm-text-dim)]">计划不存在或已删除</p>
         <Link
           href="/english/words/daily"
-          className="mt-4 inline-block font-nunito text-[#fbbf24] underline"
+          className="font-nunito mt-4 inline-block text-[#fbbf24] underline"
         >
           返回多日计划列表
         </Link>
@@ -63,19 +66,26 @@ export default function WeeklyPlanReportPage() {
 
   const done = plan.weekCompletion
   const completedAtLabel = done
-    ? new Date(done.completedAt).toLocaleString('zh-CN', { dateStyle: 'medium', timeStyle: 'short' })
+    ? new Date(done.completedAt).toLocaleString('zh-CN', {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })
     : ''
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 pb-16">
       <div className="mb-6 flex flex-wrap items-center gap-3 text-[.8rem]">
-        <button
+        <Button
           type="button"
-          onClick={() => { router.back() }}
-          className="cursor-pointer rounded-full border border-[var(--wm-border)] px-3 py-1.5 font-bold text-[var(--wm-text-dim)] hover:border-[var(--wm-accent)]"
+          onClick={() => {
+            router.back()
+          }}
+          variant="outline"
+          color="gray"
+          size="2"
         >
           ← 返回
-        </button>
+        </Button>
         <Link
           href="/english/words/daily"
           className="rounded-full border border-[var(--wm-border)] px-3 py-1.5 font-bold text-[var(--wm-text-dim)] hover:border-[#fbbf24] hover:text-[#fbbf24]"
@@ -97,9 +107,12 @@ export default function WeeklyPlanReportPage() {
           <div className="mb-2 rounded-[16px] border border-[var(--wm-border)] bg-[var(--wm-surface)] p-5 sm:p-7">
             <EnglishWeeklyReportView report={done.report} completedAtLabel={completedAtLabel} />
           </div>
-          <h2 className="mb-1 font-fredoka text-lg text-[var(--wm-text)]">单词学习情况（核心数据）</h2>
+          <h2 className="font-fredoka mb-1 text-lg text-[var(--wm-text)]">
+            单词学习情况（核心数据）
+          </h2>
           <p className="mb-4 text-[.82rem] text-[var(--wm-text-dim)]">
-            下表含本计划每个词的判题次数、答对/错、正确率、复习轮次、SRS 阶段、下次复习时间与最近练习等；与词库里的掌握度一致，会随你继续学习实时更新。本周日测分仍然表示「该日整套测验」的一张成绩单，供对照。
+            下表含本计划每个词的判题次数、答对/错、正确率、复习轮次、SRS
+            阶段、下次复习时间与最近练习等；与词库里的掌握度一致，会随你继续学习实时更新。本周日测分仍然表示「该日整套测验」的一张成绩单，供对照。
           </p>
           <div className="rounded-[16px] border border-[var(--wm-border)] bg-[var(--wm-surface2)] p-3 sm:p-5">
             <EnglishWeeklyReportWordTable rows={wordRows} />
@@ -113,7 +126,7 @@ export default function WeeklyPlanReportPage() {
           </p>
           <Link
             href="/english/words/daily"
-            className="mt-5 inline-block rounded-[10px] bg-gradient-to-br from-[#d97706] to-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white"
+            className="mt-5 inline-block rounded-[10px] bg-[#f59e0b] px-6 py-2.5 text-[.88rem] font-extrabold text-white"
           >
             前往多日计划列表
           </Link>

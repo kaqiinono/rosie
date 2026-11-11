@@ -2,7 +2,8 @@
 
 import type { WordEntry } from '@rosie/core'
 import { helpRevealCount, letterCount } from '../../utils/english-helpers'
-import { JellyTile, DEFAULT_JELLY_ORDER } from '@rosie/ui'
+import { JellyTile, DEFAULT_JELLY_ORDER, AppDialog } from '@rosie/ui'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 interface WordHelpModalProps {
   open: boolean
@@ -87,18 +88,15 @@ export default function WordHelpModal({
   const inlineWordForm = split?.match ?? word.word
 
   return (
-    <div
-      className="fixed inset-0 z-[300] flex items-end justify-center bg-black/40 px-3 backdrop-blur-sm sm:items-center"
-      onClick={onClose}
+    <AppDialog
+      open
+      chrome="none"
+      title="单词帮助"
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
     >
-      <div
-        className="font-nunito animate-pop-in relative w-full max-w-md overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:max-w-xl sm:rounded-[28px] lg:max-w-2xl"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          backgroundImage:
-            'radial-gradient(ellipse at 0% 0%, rgba(125,211,252,.18) 0, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(244,114,182,.14) 0, transparent 55%)',
-        }}
-      >
+      <div className="font-nunito relative">
         {/* Confetti dots scattered behind everything for a sticker-book feel */}
         <div className="pointer-events-none absolute inset-0 select-none">
           <span className="absolute top-3 left-6 text-[10px] opacity-50">✨</span>
@@ -107,10 +105,13 @@ export default function WordHelpModal({
           <span className="absolute right-6 bottom-6 text-[10px] opacity-40">⭐</span>
         </div>
 
-        <button
+        <IconButton
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white text-gray-500 shadow-[0_2px_0_rgba(0,0,0,.08)] transition hover:bg-gray-100 hover:text-gray-700"
           aria-label="关闭"
+          variant="outline"
+          color="gray"
+          size="1"
+          className="absolute top-3 right-3 z-10 w-8"
         >
           <svg
             width="14"
@@ -122,12 +123,12 @@ export default function WordHelpModal({
           >
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
-        </button>
+        </IconButton>
 
         <div className="relative px-5 pt-5 pb-5">
           {/* Header: sticker-ribbon title — pr-10 reserves room for the absolute close button */}
           <div className="mb-4 flex items-center gap-2 pr-10">
-            <div className="font-fredoka inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#38bdf8] to-[#6366f1] px-3 py-1 text-[13px] font-black tracking-wide text-white shadow-[0_3px_0_rgba(0,0,0,.15)]">
+            <div className="font-fredoka inline-flex items-center gap-1.5 rounded-full bg-[#6366f1] px-3 py-1 text-[13px] font-black tracking-wide text-white shadow-[0_3px_0_rgba(0,0,0,.15)]">
               <span className="text-[15px]">🎈</span>
               <span>单词小帮手</span>
             </div>
@@ -147,12 +148,7 @@ export default function WordHelpModal({
                     aria-hidden={t.decoy}
                     className={i >= MOBILE_MYSTERY_COUNT ? 'max-sm:hidden' : undefined}
                   >
-                    <JellyTile
-                      size="big"
-                      mystery
-                      rotation={rot}
-                      animationDelay={i * 120}
-                    >
+                    <JellyTile size="big" mystery rotation={rot} animationDelay={i * 120}>
                       {MYSTERY_GLYPHS[i % MYSTERY_GLYPHS.length]}
                     </JellyTile>
                   </div>
@@ -176,14 +172,14 @@ export default function WordHelpModal({
 
           {/* Example sentence with inline candy mini-tiles instead of plain underscores */}
           {example && split && (
-            <div className="mb-4 rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-cyan-50 px-4 py-3">
+            <div className="mb-4 rounded-2xl border border-sky-200 bg-cyan-50 px-4 py-3">
               <div className="mb-1.5 text-[10px] font-extrabold tracking-[.16em] text-sky-700 uppercase">
                 📖 例句
               </div>
               <div className="text-[clamp(.95rem,3vw,1.05rem)] leading-[2] font-bold text-sky-950">
                 {split.before}
                 {split.match !== null ? (
-                  <span className="mx-1 inline-flex rounded-lg bg-white/75 px-2 py-0.5 align-baseline font-black tracking-wide text-indigo-600 shadow-sm">
+                  <span className="shadow-sticker-sm mx-1 inline-flex rounded-lg bg-white px-2 py-0.5 align-baseline font-black tracking-wide text-indigo-600">
                     {revealedExampleWord(inlineWordForm, safeRevealed)}
                   </span>
                 ) : null}
@@ -196,25 +192,31 @@ export default function WordHelpModal({
           {/* the amber hint slot swaps to a celebration banner but 学会了 stays put. */}
           <div className="flex gap-2.5">
             {canReveal ? (
-              <button
+              <Button
                 type="button"
                 onClick={onReveal}
-                className="font-fredoka flex-1 cursor-pointer rounded-2xl border border-amber-400 bg-amber-400 py-3 text-[clamp(.95rem,3vw,1.05rem)] font-bold tracking-wide text-white shadow-[0_2px_0_#d97706] transition-colors [-webkit-tap-highlight-color:transparent] hover:bg-amber-500 active:translate-y-[2px] active:shadow-[0_0_0_#d97706]"
+                variant="solid"
+                color="amber"
+                size="3"
+                className="flex-1"
               >
                 💡 帮帮我
-              </button>
+              </Button>
             ) : (
-              <div className="flex flex-1 items-center justify-center rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-green-50 px-3 py-3 text-center text-[clamp(.8rem,2.4vw,.92rem)] leading-tight font-extrabold text-emerald-800">
+              <div className="flex flex-1 items-center justify-center rounded-2xl border-2 border-emerald-300 bg-emerald-50 px-3 py-3 text-center text-[clamp(.8rem,2.4vw,.92rem)] leading-tight font-extrabold text-emerald-800">
                 🎉 全揭开啦，去默写它！
               </div>
             )}
-            <button
+            <Button
               type="button"
               onClick={onClose}
-              className="font-fredoka flex-1 cursor-pointer rounded-2xl border border-emerald-500 bg-emerald-500 py-3 text-[clamp(.95rem,3vw,1.05rem)] font-bold tracking-wide text-white shadow-[0_2px_0_#059669] transition-colors [-webkit-tap-highlight-color:transparent] hover:bg-emerald-600 active:translate-y-[2px] active:shadow-[0_0_0_#059669]"
+              variant="solid"
+              color="jade"
+              size="3"
+              className="flex-1"
             >
               🎯 知道了
-            </button>
+            </Button>
           </div>
 
           {/* Soft warning about reinforcement — friendly, not scary */}
@@ -224,6 +226,6 @@ export default function WordHelpModal({
           </div>
         </div>
       </div>
-    </div>
+    </AppDialog>
   )
 }

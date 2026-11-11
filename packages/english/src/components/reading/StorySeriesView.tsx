@@ -7,7 +7,7 @@ export default function StorySeriesView({ series }: { series: StorySeries }) {
       <Link href="/english/words/reading" className="text-sm font-bold text-amber-700">
         ← 返回 Story
       </Link>
-      <header className="mt-4 rounded-3xl bg-gradient-to-br from-amber-100 to-orange-50 p-6 ring-1 ring-amber-200">
+      <header className="mt-4 rounded-3xl bg-orange-50 p-6 ring-1 ring-amber-200">
         <p className="text-sm font-bold text-amber-700">{series.author}</p>
         <h1 className="font-fredoka mt-1 text-3xl font-black text-slate-900">{series.title}</h1>
         <p className="mt-3 max-w-2xl text-slate-600">{series.description}</p>
@@ -17,7 +17,7 @@ export default function StorySeriesView({ series }: { series: StorySeries }) {
           <li key={volume.slug}>
             <Link
               href={`/english/words/reading/story/${series.slug}/${volume.slug}`}
-              className="block rounded-2xl bg-white p-5 no-underline ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-amber-300"
+              className="ring-kid-line hover:shadow-sticker block rounded-2xl bg-white p-5 no-underline ring-1 transition hover:-translate-y-0.5 hover:ring-amber-300"
             >
               <p className="text-xs font-extrabold tracking-wider text-amber-600 uppercase">
                 第 {volume.number} 辑

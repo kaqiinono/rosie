@@ -13,6 +13,7 @@ import {
   adaptiveStageSortKey,
 } from '../../utils/adaptivePlanStages'
 import type { AdaptivePlanWordProgress } from '../../utils/adaptivePlanTypes'
+import { Button } from '@rosie/ui/themes'
 
 const PAGE_SIZE = 20
 
@@ -95,7 +96,11 @@ export default function AdaptivePlanStageBoard({
             progress,
             entry,
             stageEmoji: bossPending ? ADAPTIVE_BOSS_STAGE.emoji : ADAPTIVE_PENDING_STAGE.emoji,
-            stageName: bossPending ? ADAPTIVE_BOSS_STAGE.name : target ? `激活→${target.name}` : ADAPTIVE_PENDING_STAGE.name,
+            stageName: bossPending
+              ? ADAPTIVE_BOSS_STAGE.name
+              : target
+                ? `激活→${target.name}`
+                : ADAPTIVE_PENDING_STAGE.name,
             statusLabel: bossPending ? '等待 Boss 验收' : '排队中',
             weak: false,
           }
@@ -137,7 +142,11 @@ export default function AdaptivePlanStageBoard({
         if (row.weak) weak += 1
         continue
       }
-      if (row.progress.status === 'LEARNING_PENDING' && row.progress.targetBox == null && row.progress.boxIndex === 5) {
+      if (
+        row.progress.status === 'LEARNING_PENDING' &&
+        row.progress.targetBox == null &&
+        row.progress.boxIndex === 5
+      ) {
         bossPending += 1
       } else {
         queue += 1
@@ -208,7 +217,8 @@ export default function AdaptivePlanStageBoard({
                       <span className="text-green-400">{row.statusLabel}</span>
                     ) : row.weak ? (
                       <span className="text-red-400">{row.statusLabel}</span>
-                    ) : row.progress.status === 'NOT_STARTED' || row.progress.status === 'LEARNING_PENDING' ? (
+                    ) : row.progress.status === 'NOT_STARTED' ||
+                      row.progress.status === 'LEARNING_PENDING' ? (
                       <span className="text-[var(--wm-text-dim)]">{row.statusLabel}</span>
                     ) : (
                       <span className="text-[#93c5fd]">{row.statusLabel}</span>
@@ -219,7 +229,10 @@ export default function AdaptivePlanStageBoard({
             })}
             {panelRows.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-[12px] text-[var(--wm-text-dim)]">
+                <td
+                  colSpan={4}
+                  className="px-4 py-6 text-center text-[12px] text-[var(--wm-text-dim)]"
+                >
                   计划暂无单词进度
                 </td>
               </tr>
@@ -233,25 +246,29 @@ export default function AdaptivePlanStageBoard({
             第 {rangeStart}–{rangeEnd} 词 · 共 {panelRows.length} 词
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
               disabled={safePage <= 1}
               onClick={() => setPage(Math.max(1, safePage - 1))}
-              className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#a78bfa] hover:text-[#c4b5fd]"
+              variant="outline"
+              color="gray"
+              size="1"
             >
               ← 上一页
-            </button>
+            </Button>
             <span className="min-w-[4.5rem] text-center text-[11px] font-extrabold text-[var(--wm-text)]">
               {safePage} / {totalPages}
             </span>
-            <button
+            <Button
               type="button"
               disabled={safePage >= totalPages}
               onClick={() => setPage(Math.min(totalPages, safePage + 1))}
-              className="cursor-pointer rounded-full border border-[var(--wm-border)] bg-transparent px-3 py-1 text-[11px] font-extrabold text-[var(--wm-text-dim)] disabled:cursor-not-allowed disabled:opacity-40 hover:border-[#a78bfa] hover:text-[#c4b5fd]"
+              variant="outline"
+              color="gray"
+              size="1"
             >
               下一页 →
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -269,7 +286,10 @@ export default function AdaptivePlanStageBoard({
       </span>
       <span className="text-[var(--wm-border)]">·</span>
       <span>
-        排队 <strong className={counts.queue > 0 ? 'text-[#fbbf24]' : 'text-[var(--wm-text)]'}>{counts.queue}</strong>
+        排队{' '}
+        <strong className={counts.queue > 0 ? 'text-[#fbbf24]' : 'text-[var(--wm-text)]'}>
+          {counts.queue}
+        </strong>
       </span>
       {ADAPTIVE_BOX_STAGES.map((stage) =>
         counts.byBox[stage.box] > 0 ? (
@@ -312,7 +332,7 @@ export default function AdaptivePlanStageBoard({
   return (
     <div className={`px-4 pb-8 ${className ?? ''}`}>
       <div className="overflow-hidden rounded-[14px] border border-[var(--wm-border)]">
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           type="button"
           onClick={() => setOpen((v) => !v)}
           className="w-full cursor-pointer border-0 bg-[var(--wm-surface)] px-4 py-3 text-left transition-colors hover:bg-[var(--wm-surface2)]"
@@ -321,7 +341,9 @@ export default function AdaptivePlanStageBoard({
             <div className="flex w-full min-w-0 items-start justify-between gap-2">
               <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="shrink-0 text-[15px]">📊</span>
-                <span className="font-nunito text-[13px] font-bold text-[var(--wm-text)]">{panelTitle}</span>
+                <span className="font-nunito text-[13px] font-bold text-[var(--wm-text)]">
+                  {panelTitle}
+                </span>
                 <span className="text-[10px] font-bold text-[var(--wm-text-dim)]">
                   🥚→🐛→🦋→🌸→🌳
                 </span>

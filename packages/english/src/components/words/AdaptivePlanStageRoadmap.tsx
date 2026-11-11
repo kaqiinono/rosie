@@ -13,6 +13,7 @@ import {
   type AdaptivePlanFocusStage,
 } from '../../utils/adaptivePlanStageCounts'
 import type { AdaptivePlanWordProgress } from '../../utils/adaptivePlanTypes'
+import { Button } from '@rosie/ui/themes'
 
 type AdaptivePlanStageRoadmapProps = {
   rows: AdaptivePlanWordProgress[]
@@ -42,7 +43,8 @@ function displayWord(wordKey: string): string {
 
 function rowStageKey(row: AdaptivePlanWordProgress): string {
   if (row.status === 'MASTERED') return 'mastered'
-  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5) return 'boss'
+  if (row.status === 'LEARNING_PENDING' && row.targetBox == null && row.boxIndex === 5)
+    return 'boss'
   if (row.status === 'LEARNING_PENDING') return 'pending'
   if (row.status === 'LEARNING') return `box-${Math.min(5, Math.max(1, row.boxIndex ?? 1))}`
   return 'not_started'
@@ -146,10 +148,7 @@ export default function AdaptivePlanStageRoadmap({
   const displayCounts = useMemo(
     () => ({
       ...counts,
-      notStarted: Math.max(
-        0,
-        counts.notStarted + counts.pending - scheduledActivationKeys.length,
-      ),
+      notStarted: Math.max(0, counts.notStarted + counts.pending - scheduledActivationKeys.length),
       pending: scheduledActivationKeys.length,
     }),
     [counts, scheduledActivationKeys.length],
@@ -202,7 +201,7 @@ export default function AdaptivePlanStageRoadmap({
             <div key={node.key} className="flex items-end">
               {index > 0 && (
                 <div className="mb-8 flex w-3 shrink-0 items-center sm:w-4">
-                  <div className="h-px w-full bg-gradient-to-r from-white/10 via-white/25 to-white/10" />
+                  <div className="h-px w-full bg-white/10" />
                 </div>
               )}
               <div className="flex flex-col items-center">
@@ -211,6 +210,7 @@ export default function AdaptivePlanStageRoadmap({
                     当前
                   </div>
                 )}
+                {/* native-ok: 阶段路线图节点，多行块状内容（表情/名称/数量/提示）并按选中/聚焦状态着色 */}
                 <button
                   type="button"
                   disabled={node.count === 0 || node.key === 'not_started'}
@@ -228,10 +228,10 @@ export default function AdaptivePlanStageRoadmap({
                     node.key === selectedStage
                       ? 'border-[rgba(167,139,250,.75)] bg-[rgba(139,92,246,.2)] shadow-[0_0_0_2px_rgba(167,139,250,.22)]'
                       : node.focus
-                      ? 'border-[rgba(167,139,250,.55)] bg-[rgba(139,92,246,.12)] shadow-[0_0_0_1px_rgba(167,139,250,.2)]'
-                      : node.dimmed
-                        ? 'border-white/[.06] bg-white/[.02] opacity-55'
-                        : 'border-white/[.1] bg-white/[.04]'
+                        ? 'border-[rgba(167,139,250,.55)] bg-[rgba(139,92,246,.12)] shadow-[0_0_0_1px_rgba(167,139,250,.2)]'
+                        : node.dimmed
+                          ? 'border-white/[.06] bg-white/[.02] opacity-55'
+                          : 'border-white/[.1] bg-white/[.04]'
                   }`}
                 >
                   <div className={compact ? 'text-lg' : 'text-xl'}>{node.emoji}</div>
@@ -261,13 +261,15 @@ export default function AdaptivePlanStageRoadmap({
             <div className="text-[.72rem] font-extrabold text-[#e9d5ff]">
               {selectedNode.emoji} {selectedNode.name} · {selectedWords.length} 词
             </div>
-            <button
+            <Button
               type="button"
               onClick={() => setSelectedStage(null)}
-              className="min-h-8 cursor-pointer touch-manipulation rounded-lg px-2 text-[.68rem] font-bold text-[var(--wm-text-dim)] hover:bg-white/[.06] hover:text-[var(--wm-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa]"
+              variant="ghost"
+              color="gray"
+              size="1"
             >
               收起
-            </button>
+            </Button>
           </div>
           <div className="flex flex-wrap gap-1.5" aria-live="polite">
             {selectedWords.map(({ key, word }) => (

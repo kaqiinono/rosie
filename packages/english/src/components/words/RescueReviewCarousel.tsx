@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { WordEntry } from '@rosie/core'
 import SpeakButton from './SpeakButton'
+import { Button } from '@rosie/ui/themes'
 
 interface Props {
   /** Eaten words to review, in order. */
@@ -46,32 +47,30 @@ export default function RescueReviewCarousel({ words, onStartPractice }: Props) 
 
         <div
           key={idx}
-          className="relative flex min-h-[260px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[rgba(96,165,250,.1)] to-[rgba(167,139,250,.07)] p-6 animate-[fade-up_.25s_ease]"
+          className="relative flex min-h-[260px] animate-[fade-up_.25s_ease] flex-col items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-[rgba(167,139,250,.07)] p-6"
         >
           {/* soft glow behind the word */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
           >
-            <div className="h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(96,165,250,.16)_0%,transparent_70%)] blur-2xl" />
+            <div className="h-40 w-40 rounded-full bg-[rgba(96,165,250,.16)]" />
           </div>
 
           <div className="relative flex items-center gap-2">
             <span className="text-[clamp(2.4rem,9vw,3.4rem)] leading-tight font-black text-white">
               {word.word}
             </span>
-            <SpeakButton
-              word={word.word}
-              size="text-[1.3rem]"
-              className="h-10 w-10 bg-white/10 text-white hover:bg-white/20"
-            />
+            <SpeakButton entry={word} word={word.word} size="3" />
           </div>
 
           {word.ipa && (
             <div className="relative mt-1 text-[1.05rem] font-bold text-[#a78bfa]">{word.ipa}</div>
           )}
           {word.chineseDef && (
-            <div className="relative mt-3 text-[1rem] font-bold text-white/90">{word.chineseDef}</div>
+            <div className="relative mt-3 text-[1rem] font-bold text-white/90">
+              {word.chineseDef}
+            </div>
           )}
           <div className="relative mt-1 max-w-[16rem] text-center text-[.9rem] font-semibold text-white/65">
             {word.explanation}
@@ -102,30 +101,38 @@ export default function RescueReviewCarousel({ words, onStartPractice }: Props) 
 
       {/* nav */}
       <div className="mt-5 flex w-full items-center gap-3">
-        <button
+        <Button
           type="button"
           onClick={() => setIdx((i) => Math.max(0, i - 1))}
           disabled={isFirst}
-          className="rounded-xl border border-white/15 px-4 py-2.5 text-[.9rem] font-bold text-white/80 transition enabled:hover:bg-white/10 disabled:opacity-25"
+          variant="outline"
+          color="gray"
+          size="2"
         >
           ← 上一个
-        </button>
+        </Button>
         {isLast ? (
-          <button
+          <Button
             type="button"
             onClick={onStartPractice}
-            className="flex-1 rounded-xl bg-[#534AB7] px-5 py-2.5 text-[.95rem] font-extrabold text-white shadow-[0_6px_18px_rgba(83,74,183,.4)] transition hover:bg-[#3C3489]"
+            variant="solid"
+            color="indigo"
+            size="2"
+            className="flex-1"
           >
             ⚔️ 开始练习！
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             type="button"
             onClick={() => setIdx((i) => Math.min(total - 1, i + 1))}
-            className="flex-1 rounded-xl bg-[var(--rescue-half)] px-5 py-2.5 text-[.92rem] font-extrabold text-white transition hover:brightness-110"
+            variant="solid"
+            color="blue"
+            size="2"
+            className="flex-1"
           >
             下一个 →
-          </button>
+          </Button>
         )}
       </div>
     </div>

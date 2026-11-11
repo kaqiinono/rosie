@@ -5,12 +5,17 @@ import { useEffect, useMemo, useState } from 'react'
 import { todayStr, useAuth } from '@rosie/core'
 import { useAdaptiveWordPlan } from '../../hooks/useAdaptiveWordPlan'
 import { wordKey } from '../../utils/english-helpers'
-import { clampNewWordsPerDay, defaultReviewCap, defaultWeakReminderThreshold } from '../../utils/adaptivePlanDefaults'
+import {
+  clampNewWordsPerDay,
+  defaultReviewCap,
+  defaultWeakReminderThreshold,
+} from '../../utils/adaptivePlanDefaults'
 import { buildDailyTask } from '../../utils/adaptivePlanScheduler'
 import type { AdaptivePlanWordProgress, AdaptiveWordPlan } from '../../utils/adaptivePlanTypes'
 import { useWordsContext } from '../../WordsContext'
 import AdaptivePlanSettingsPanel from './AdaptivePlanSettingsPanel'
 import AdaptivePlanStageRoadmap from './AdaptivePlanStageRoadmap'
+import { Button } from '@rosie/ui/themes'
 
 function fmtDateTime(value: string): string {
   const date = new Date(value)
@@ -21,15 +26,26 @@ function fmtDateTime(value: string): string {
 export default function AdaptivePlanManage() {
   const { user } = useAuth()
   const { vocab } = useWordsContext()
-  const { plans, deletePlan, updatePlan, pausePlan, activatePlan, archiveOrphanWords, loadProgressForPlans, loadProgress, isLoading } =
-    useAdaptiveWordPlan(user)
+  const {
+    plans,
+    deletePlan,
+    updatePlan,
+    pausePlan,
+    activatePlan,
+    archiveOrphanWords,
+    loadProgressForPlans,
+    loadProgress,
+    isLoading,
+  } = useAdaptiveWordPlan(user)
   const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null)
   const [togglingPlanId, setTogglingPlanId] = useState<string | null>(null)
   const [settingsPlanId, setSettingsPlanId] = useState<string | null>(null)
   const [savingQuotaPlanId, setSavingQuotaPlanId] = useState<string | null>(null)
   const [savingTuningPlanId, setSavingTuningPlanId] = useState<string | null>(null)
   const [cleaningPlanId, setCleaningPlanId] = useState<string | null>(null)
-  const [progressByPlanId, setProgressByPlanId] = useState<Record<string, AdaptivePlanWordProgress[]>>({})
+  const [progressByPlanId, setProgressByPlanId] = useState<
+    Record<string, AdaptivePlanWordProgress[]>
+  >({})
   // Orphan rows (word deleted from the vocab) per active plan — the cleanup
   // button is an anomaly-repair tool and only shows when something is wrong.
   const [orphanCountByPlanId, setOrphanCountByPlanId] = useState<Record<string, number>>({})
@@ -38,12 +54,10 @@ export default function AdaptivePlanManage() {
 
   const sortedPlans = [...plans]
     .filter(
-      (plan) =>
-        plan.status === 'active' || plan.status === 'paused' || plan.status === 'completed',
+      (plan) => plan.status === 'active' || plan.status === 'paused' || plan.status === 'completed',
     )
     .sort((a, b) => {
-      const rank = (s: typeof a.status) =>
-        s === 'active' ? 0 : s === 'paused' ? 1 : 2
+      const rank = (s: typeof a.status) => (s === 'active' ? 0 : s === 'paused' ? 1 : 2)
       const diff = rank(a.status) - rank(b.status)
       if (diff !== 0) return diff
       return b.updatedAt.localeCompare(a.updatedAt)
@@ -155,7 +169,9 @@ export default function AdaptivePlanManage() {
     const nextWeakThreshold = Math.max(plan.backlogFuse, defaultWeakReminderThreshold(next))
     if (
       plan.status !== 'active' ||
-      (plan.newWordsPerDay === next && plan.reviewCap === nextReviewCap && plan.backlogFuse === nextWeakThreshold)
+      (plan.newWordsPerDay === next &&
+        plan.reviewCap === nextReviewCap &&
+        plan.backlogFuse === nextWeakThreshold)
     ) {
       return
     }
@@ -214,14 +230,12 @@ export default function AdaptivePlanManage() {
     <div>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-fredoka bg-gradient-to-br from-[#8b5cf6] to-[#3b82f6] bg-clip-text text-xl font-extrabold text-transparent">
-            自适应计划
-          </h2>
+          <h2 className="font-fredoka text-xl font-extrabold text-[#3b82f6]">自适应计划</h2>
           <p className="mt-0.5 text-[12px] text-[var(--wm-text-dim)]">按掌握度自动推进的单词挑战</p>
         </div>
         <Link
           href="/setting/plans/english/adaptive/new"
-          className="font-nunito shrink-0 cursor-pointer rounded-xl border-0 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline shadow-[0_3px_12px_rgba(124,58,237,.35)] transition-all hover:-translate-y-px hover:shadow-[0_5px_18px_rgba(124,58,237,.5)]"
+          className="font-nunito shadow-sticker-sm hover:shadow-sticker-sm shrink-0 cursor-pointer rounded-xl border-0 bg-[#7c3aed] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline transition-all hover:-translate-y-px"
         >
           + 创建自适应计划
         </Link>
@@ -239,7 +253,7 @@ export default function AdaptivePlanManage() {
           <div className="mb-4 text-[14px] font-bold text-[#c4b5fd]">还没有自适应计划</div>
           <Link
             href="/setting/plans/english/adaptive/new"
-            className="font-nunito inline-block rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#2563eb] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
+            className="font-nunito inline-block rounded-xl bg-[#7c3aed] px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
           >
             创建第一个计划
           </Link>
@@ -256,145 +270,171 @@ export default function AdaptivePlanManage() {
                 ? buildDailyTask(plan, planRows, todayStr()).activateKeys
                 : []
             return (
-            <article
-              key={plan.id}
-              className="overflow-hidden rounded-2xl border border-[var(--wm-border)] bg-[var(--wm-surface2)]"
-            >
-              <div className="h-1 bg-gradient-to-r from-[#7c3aed] via-[#8b5cf6] to-[#60a5fa]" />
-              <div className="px-5 py-4">
-                <div>
-                  {planRows.length > 0 ? (
-                    <AdaptivePlanStageRoadmap
-                      rows={planRows}
-                      activationKeys={activationKeys}
-                      today={todayStr()}
-                      compact
-                      className="border-0 bg-transparent px-0 py-0"
-                    />
-                  ) : progressByPlanId[plan.id] ? (
-                    <div className="text-[12px] font-bold text-[var(--wm-text-dim)]">
-                      暂无有效单词进度
-                    </div>
-                  ) : (
-                    <div className="text-[12px] font-bold text-[var(--wm-text-dim)]">
-                      加载词汇状态…
-                    </div>
-                  )}
-                </div>
-                <div className="mt-2.5 flex flex-wrap gap-2">
-                  <span
-                    className={`rounded-full border px-2.5 py-0.5 text-[12px] font-extrabold ${
-                      plan.status === 'completed'
-                        ? 'border-[rgba(74,222,128,.35)] bg-[rgba(74,222,128,.1)] text-[#86efac]'
+              <article
+                key={plan.id}
+                className="overflow-hidden rounded-2xl border border-[var(--wm-border)] bg-[var(--wm-surface2)]"
+              >
+                <div className="h-1 bg-[#60a5fa]" />
+                <div className="px-5 py-4">
+                  <div>
+                    {planRows.length > 0 ? (
+                      <AdaptivePlanStageRoadmap
+                        rows={planRows}
+                        activationKeys={activationKeys}
+                        today={todayStr()}
+                        compact
+                        className="border-0 bg-transparent px-0 py-0"
+                      />
+                    ) : progressByPlanId[plan.id] ? (
+                      <div className="text-[12px] font-bold text-[var(--wm-text-dim)]">
+                        暂无有效单词进度
+                      </div>
+                    ) : (
+                      <div className="text-[12px] font-bold text-[var(--wm-text-dim)]">
+                        加载词汇状态…
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
+                    <span
+                      className={`rounded-full border px-2.5 py-0.5 text-[12px] font-extrabold ${
+                        plan.status === 'completed'
+                          ? 'border-[rgba(74,222,128,.35)] bg-[rgba(74,222,128,.1)] text-[#86efac]'
+                          : plan.status === 'paused'
+                            ? 'border-[rgba(148,163,184,.4)] bg-[rgba(148,163,184,.1)] text-[#cbd5e1]'
+                            : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.1)] text-[#93c5fd]'
+                      }`}
+                    >
+                      {plan.status === 'completed'
+                        ? '已完成'
                         : plan.status === 'paused'
-                          ? 'border-[rgba(148,163,184,.4)] bg-[rgba(148,163,184,.1)] text-[#cbd5e1]'
-                          : 'border-[rgba(96,165,250,.35)] bg-[rgba(96,165,250,.1)] text-[#93c5fd]'
-                    }`}
-                  >
-                    {plan.status === 'completed'
-                      ? '已完成'
-                      : plan.status === 'paused'
-                        ? '已暂停'
-                        : '进行中'}
-                  </span>
-                  <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
-                    每批新词 {plan.newWordsPerDay} 词
-                  </span>
-                  <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
-                    更新 {fmtDateTime(plan.updatedAt)}
-                  </span>
+                          ? '已暂停'
+                          : '进行中'}
+                    </span>
+                    <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
+                      每批新词 {plan.newWordsPerDay} 词
+                    </span>
+                    <span className="rounded-full border border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] px-2.5 py-0.5 text-[12px] font-bold text-[var(--wm-text-dim)]">
+                      更新 {fmtDateTime(plan.updatedAt)}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {plan.status === 'active' && settingsOpen && (
-                <AdaptivePlanSettingsPanel
-                  plan={plan}
-                  loadProgress={loadProgress}
-                  onChangeNewWords={(n) => { void handleChangeNewWords(plan, n) }}
-                  onChangeReviewCap={(n) => { void handleChangeReviewCap(plan, n) }}
-                  onChangeBacklogFuse={(n) => { void handleChangeBacklogFuse(plan, n) }}
-                  onChangeBossEveryNNew={(n) => { void handleChangeBossEveryNNew(plan, n) }}
-                  savingQuota={savingQuotaPlanId === plan.id}
-                  savingTuning={savingTuningPlanId === plan.id}
-                />
-              )}
+                {plan.status === 'active' && settingsOpen && (
+                  <AdaptivePlanSettingsPanel
+                    plan={plan}
+                    loadProgress={loadProgress}
+                    onChangeNewWords={(n) => {
+                      void handleChangeNewWords(plan, n)
+                    }}
+                    onChangeReviewCap={(n) => {
+                      void handleChangeReviewCap(plan, n)
+                    }}
+                    onChangeBacklogFuse={(n) => {
+                      void handleChangeBacklogFuse(plan, n)
+                    }}
+                    onChangeBossEveryNNew={(n) => {
+                      void handleChangeBossEveryNNew(plan, n)
+                    }}
+                    savingQuota={savingQuotaPlanId === plan.id}
+                    savingTuning={savingTuningPlanId === plan.id}
+                  />
+                )}
 
-              <div className="flex flex-wrap items-center gap-2 border-t border-[var(--wm-border)] bg-[rgba(0,0,0,.12)] px-5 py-3">
-                <Link
-                  href={`/english/words/adaptive/${plan.id}/preview`}
-                  className="font-nunito rounded-xl border border-[rgba(139,92,246,.4)] bg-[rgba(139,92,246,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#c4b5fd] no-underline transition-colors hover:bg-[rgba(139,92,246,.15)]"
-                >
-                  轨迹预览
-                </Link>
-                <Link
-                  href={`/english/words/adaptive/${plan.id}`}
-                  className="font-nunito rounded-xl border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#93c5fd] no-underline transition-colors hover:bg-[rgba(96,165,250,.15)]"
-                >
-                  孩子端练习
-                </Link>
-                {plan.status === 'active' && (
-                  <button
-                    type="button"
-                    aria-expanded={settingsOpen}
-                    onClick={() => setSettingsPlanId(settingsOpen ? null : plan.id)}
-                    className={`cursor-pointer rounded-xl border px-3.5 py-2 text-[13px] font-extrabold transition-colors ${
-                      settingsOpen
-                        ? 'border-[rgba(139,92,246,.5)] bg-[rgba(139,92,246,.15)] text-[#c4b5fd]'
-                        : 'border-[var(--wm-border)] bg-[rgba(255,255,255,.04)] text-[var(--wm-text-dim)] hover:border-[rgba(139,92,246,.4)] hover:text-[#c4b5fd]'
-                    }`}
+                <div className="flex flex-wrap items-center gap-2 border-t border-[var(--wm-border)] bg-[rgba(0,0,0,.12)] px-5 py-3">
+                  <Link
+                    href={`/english/words/adaptive/${plan.id}/preview`}
+                    className="font-nunito rounded-xl border border-[rgba(139,92,246,.4)] bg-[rgba(139,92,246,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#c4b5fd] no-underline transition-colors hover:bg-[rgba(139,92,246,.15)]"
                   >
-                    {settingsOpen ? '收起设置' : '设置'}
-                  </button>
-                )}
-                {plan.status === 'active' && (
-                  <button
-                    type="button"
-                    disabled={togglingPlanId === plan.id}
-                    onClick={() => { void handlePause(plan) }}
-                    className="cursor-pointer rounded-xl border border-[rgba(148,163,184,.45)] bg-[rgba(148,163,184,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#cbd5e1] disabled:cursor-wait disabled:opacity-50"
+                    轨迹预览
+                  </Link>
+                  <Link
+                    href={`/english/words/adaptive/${plan.id}`}
+                    className="font-nunito rounded-xl border border-[rgba(96,165,250,.4)] bg-[rgba(96,165,250,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#93c5fd] no-underline transition-colors hover:bg-[rgba(96,165,250,.15)]"
                   >
-                    {togglingPlanId === plan.id ? '处理中…' : '暂停'}
-                  </button>
-                )}
-                {plan.status === 'paused' && (
-                  <button
+                    孩子端练习
+                  </Link>
+                  {plan.status === 'active' && (
+                    <Button
+                      type="button"
+                      aria-expanded={settingsOpen}
+                      onClick={() => setSettingsPlanId(settingsOpen ? null : plan.id)}
+                      variant="outline"
+                      color="gray"
+                      size="2"
+                    >
+                      {settingsOpen ? '收起设置' : '设置'}
+                    </Button>
+                  )}
+                  {plan.status === 'active' && (
+                    <Button
+                      type="button"
+                      disabled={togglingPlanId === plan.id}
+                      onClick={() => {
+                        void handlePause(plan)
+                      }}
+                      variant="outline"
+                      color="gray"
+                      size="2"
+                    >
+                      {togglingPlanId === plan.id ? '处理中…' : '暂停'}
+                    </Button>
+                  )}
+                  {plan.status === 'paused' && (
+                    <Button
+                      type="button"
+                      disabled={togglingPlanId === plan.id}
+                      onClick={() => {
+                        void handleActivate(plan)
+                      }}
+                      variant="outline"
+                      color="gray"
+                      size="2"
+                    >
+                      {togglingPlanId === plan.id ? '处理中…' : '恢复'}
+                    </Button>
+                  )}
+                  {plan.status === 'active' && (orphanCountByPlanId[plan.id] ?? 0) > 0 && (
+                    <Button
+                      type="button"
+                      disabled={cleaningPlanId === plan.id}
+                      onClick={() => {
+                        void handleCleanOrphans(plan)
+                      }}
+                      variant="outline"
+                      color="gray"
+                      size="2"
+                    >
+                      {cleaningPlanId === plan.id
+                        ? '清理中…'
+                        : `清理 ${orphanCountByPlanId[plan.id]} 个失效词`}
+                    </Button>
+                  )}
+                  <Button
                     type="button"
-                    disabled={togglingPlanId === plan.id}
-                    onClick={() => { void handleActivate(plan) }}
-                    className="cursor-pointer rounded-xl border border-[rgba(74,222,128,.45)] bg-[rgba(74,222,128,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#86efac] disabled:cursor-wait disabled:opacity-50"
+                    disabled={deletingPlanId === plan.id}
+                    onClick={() => {
+                      void handleDelete(plan)
+                    }}
+                    variant="outline"
+                    color="gray"
+                    size="2"
+                    className="ml-auto"
                   >
-                    {togglingPlanId === plan.id ? '处理中…' : '恢复'}
-                  </button>
-                )}
-                {plan.status === 'active' && (orphanCountByPlanId[plan.id] ?? 0) > 0 && (
-                  <button
-                    type="button"
-                    disabled={cleaningPlanId === plan.id}
-                    onClick={() => { void handleCleanOrphans(plan) }}
-                    className="cursor-pointer rounded-xl border border-[rgba(251,191,36,.45)] bg-[rgba(251,191,36,.08)] px-3.5 py-2 text-[13px] font-extrabold text-[#fbbf24] disabled:cursor-wait disabled:opacity-50"
-                  >
-                    {cleaningPlanId === plan.id
-                      ? '清理中…'
-                      : `清理 ${orphanCountByPlanId[plan.id]} 个失效词`}
-                  </button>
-                )}
-                <button
-                  type="button"
-                  disabled={deletingPlanId === plan.id}
-                  onClick={() => { void handleDelete(plan) }}
-                  className="ml-auto cursor-pointer rounded-xl border border-[var(--wm-border)] px-3.5 py-2 text-[13px] font-bold text-[var(--wm-text-dim)] transition-colors hover:border-[#f87171] hover:text-[#f87171] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {deletingPlanId === plan.id ? '删除中…' : '删除'}
-                </button>
-              </div>
-            </article>
+                    {deletingPlanId === plan.id ? '删除中…' : '删除'}
+                  </Button>
+                </div>
+              </article>
             )
           })}
         </div>
       )}
 
       <div className="mt-6 text-center">
-        <Link href="/english/words/daily" className="text-[12px] font-bold text-[#93c5fd] no-underline hover:underline">
+        <Link
+          href="/english/words/daily"
+          className="text-[12px] font-bold text-[#93c5fd] no-underline hover:underline"
+        >
           前往练习 →
         </Link>
       </div>

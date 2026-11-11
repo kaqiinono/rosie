@@ -33,7 +33,7 @@ export default function StoryChapterView({
         {previous ? (
           <Link
             href={`${base}/${previous.key}`}
-            className="rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 ring-1 ring-slate-200"
+            className="ring-kid-line rounded-full bg-white px-4 py-2 text-sm font-bold text-slate-700 ring-1"
           >
             ← {previous.title}
           </Link>

@@ -50,7 +50,7 @@ function ResultCard({ hit, mastery }: { hit: GrammarSearchHit; mastery: GrammarM
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
           entry.locked
             ? 'bg-surface-dim text-text-muted ring-border-light ring-1'
-            : 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-200'
+            : 'shadow-sticker bg-teal-600 text-white'
         }`}
       >
         {badgeContent}
@@ -89,7 +89,7 @@ function ResultCard({ hit, mastery }: { hit: GrammarSearchHit; mastery: GrammarM
   return (
     <Link
       href={`/english/grammar/${entry.book}/${entry.unitNumber}`}
-      className="bg-surface ring-border-light hover:ring-app-blue/40 flex items-center gap-3 rounded-xl p-3 ring-1 transition-all hover:-translate-y-0.5 hover:shadow-md"
+      className="bg-surface ring-border-light hover:ring-app-blue/40 hover:shadow-sticker flex items-center gap-3 rounded-xl p-3 ring-1 transition-all hover:-translate-y-0.5"
     >
       {inner}
     </Link>
@@ -120,7 +120,7 @@ export default function GrammarSearchResults({
         .map((b) => (
           <section key={b.id}>
             <h2 className="text-text-primary mb-2 flex items-center gap-2 text-sm font-black">
-              <span className="inline-block h-4 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-teal-500" />
+              <span className="inline-block h-4 w-1 rounded-full bg-emerald-500" />
               📗 {b.labelZh}
             </h2>
             <div className="flex flex-col gap-2.5">

@@ -23,6 +23,7 @@ import type { QuizCommitInfo } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'
 import type { SpellButtonStyle } from './SpellTiles'
 import ZoomableWordImage from './ZoomableWordImage'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 type ImmMode = 'vocab' | 'practice'
 
@@ -199,7 +200,9 @@ export default function ImmersiveMode({
         seen.add(k)
         wrongItems.push({ entry: r.entry, type: t })
       }
-      const wrongExtras = reinforcementAppended ? [] : buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
+      const wrongExtras = reinforcementAppended
+        ? []
+        : buildWrongAnswerReinforcement(wrongItems, Date.now() + 7)
       const extras = [...helpExtras, ...wrongExtras]
       if (extras.length > 0) {
         if (!reinforcementAppended) setMainPassTotal(quizQs.length)
@@ -266,7 +269,7 @@ export default function ImmersiveMode({
     const pct = Math.min(100, (earned / goal) * 100)
     const reached = earned >= goal
     return (
-      <div className="rounded-2xl border border-rose-400/20 bg-white/[.04] px-3.5 py-2.5 backdrop-blur">
+      <div className="rounded-2xl border border-rose-400/20 bg-white/[.04] px-3.5 py-2.5">
         <div className="mb-1.5 flex items-center gap-2">
           <ColoredStar color="red" size={16} glow={6} />
           <span className="text-[11px] font-extrabold tracking-[.14em] text-rose-300/80 uppercase">
@@ -289,27 +292,16 @@ export default function ImmersiveMode({
         </div>
         <div
           className="relative h-2 overflow-hidden rounded-full bg-white/[.06]"
-          style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,.4)' }}
+          style={{ boxShadow: 'inset 0 3px 0 rgba(0,0,0,.4)' }}
         >
           <div
             className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out"
             style={{
               width: `${pct}%`,
-              background: 'linear-gradient(90deg, #fb7185, #e11d48)',
-              boxShadow: '0 0 10px rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
+              background: '#fb7185',
+              boxShadow: '0 3px 0 rgba(244,63,94,.6), inset 0 1px 0 rgba(255,255,255,.35)',
             }}
           />
-          {pct > 0 && pct < 100 && (
-            <div
-              className="pointer-events-none absolute inset-y-0 w-1/3 opacity-50 mix-blend-overlay"
-              style={{
-                left: `${Math.max(0, pct - 18)}%`,
-                background:
-                  'linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent)',
-                animation: 'imm-moon-shimmer 1.6s linear infinite',
-              }}
-            />
-          )}
         </div>
         <style jsx>{`
           @keyframes imm-moon-shimmer {
@@ -331,18 +323,18 @@ export default function ImmersiveMode({
       <div className="z-10 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-white/[.07] bg-[rgba(9,9,20,.98)] px-4 py-2 md:px-5">
         <div className="inline-flex w-fit min-w-0 items-stretch overflow-hidden rounded-full border border-white/10 bg-white/[.04] p-1">
           {mode === 'practice' && inReinforcement && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 px-2.5 py-1.5 text-[10px] font-black tracking-wide text-white shadow-[0_2px_0_rgba(0,0,0,.25)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-teal-600 px-2.5 py-1.5 text-[10px] font-black tracking-wide text-white shadow-[0_2px_0_rgba(0,0,0,.25)]">
               🌱 巩固
             </span>
           )}
           {mode === 'vocab' && (
-            <button
+            <Button
               type="button"
               onClick={toggleDefOnly}
               aria-pressed={defOnly}
-              className={`flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 transition-all select-none ${
-                defOnly ? 'bg-[rgba(124,58,237,.24)]' : 'hover:bg-white/[.05]'
-              }`}
+              variant={defOnly ? 'soft' : 'ghost'}
+              color={defOnly ? 'violet' : 'gray'}
+              size="2"
             >
               <span aria-hidden className="text-[.88rem]">
                 👁
@@ -357,20 +349,20 @@ export default function ImmersiveMode({
                 className={`relative h-4 w-7 rounded-lg transition-colors ${defOnly ? 'bg-[#7c3aed]' : 'bg-white/[.14]'}`}
               >
                 <span
-                  className={`absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,.4)] transition-transform ${defOnly ? 'translate-x-3' : ''}`}
+                  className={`shadow-sticker-sm absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white transition-transform ${defOnly ? 'translate-x-3' : ''}`}
                 />
               </span>
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className={`font-nunito cursor-pointer rounded-full px-3.5 py-1.5 text-[.72rem] font-bold text-white/[.42] transition-all hover:bg-[rgba(248,113,113,.1)] hover:text-[#f87171] ${
-              mode === 'vocab' ? 'ml-1 border-l border-white/10' : ''
-            }`}
+            variant={mode === 'vocab' ? 'outline' : 'ghost'}
+            color="gray"
+            size="2"
           >
             ✕ 退出
-          </button>
+          </Button>
         </div>
         <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[.7rem] font-bold whitespace-nowrap text-white/[.38]">
           {mode === 'vocab'
@@ -384,7 +376,7 @@ export default function ImmersiveMode({
       {/* Progress bar */}
       <div className="h-0.5 shrink-0 bg-white/[.04]">
         <div
-          className="h-full bg-gradient-to-r from-[#6d28d9] via-[#a855f7] to-[#60a5fa] transition-[width] duration-[450ms] ease-[cubic-bezier(.4,0,.2,1)]"
+          className="h-full bg-[#60a5fa] transition-[width] duration-[450ms] ease-[cubic-bezier(.4,0,.2,1)]"
           style={{
             width:
               mode === 'vocab'
@@ -405,8 +397,7 @@ export default function ImmersiveMode({
             <div
               className="relative flex flex-col items-center justify-center gap-3.5 overflow-hidden"
               style={{
-                background:
-                  'radial-gradient(ellipse at 40% 45%, rgba(109,40,217,.13) 0, transparent 62%), #0e0e22',
+                background: '#0e0e22',
                 ...(isWide
                   ? {
                       position: 'absolute',
@@ -476,7 +467,7 @@ export default function ImmersiveMode({
                 )}
                 {v.example && (
                   <>
-                    <div className="h-px w-10 shrink-0 bg-gradient-to-r from-transparent via-[rgba(124,58,237,.5)] to-transparent" />
+                    <div className="h-px w-10 shrink-0 bg-[rgba(124,58,237,.5)]" />
                     <div className="w-full max-w-[520px] text-center">
                       <div className="mb-2 text-[.68rem] font-extrabold tracking-[.12em] text-[rgba(74,222,128,.55)] uppercase">
                         例句
@@ -504,8 +495,7 @@ export default function ImmersiveMode({
               onClick={handleRightClick}
               className="relative flex flex-col items-center justify-center overflow-y-auto px-10 py-8"
               style={{
-                background:
-                  'radial-gradient(ellipse at 60% 55%, rgba(96,165,250,.07) 0, transparent 60%), #0c0c1a',
+                background: '#0c0c1a',
                 cursor: defOnly ? 'pointer' : 'default',
                 ...(isWide
                   ? {
@@ -581,25 +571,31 @@ export default function ImmersiveMode({
             </div>
 
             {/* Viewport-edge navigation keeps the content area free on narrow screens. */}
-            <button
+            <IconButton
               type="button"
               onClick={goPrev}
               disabled={idx === 0}
               aria-label="上一个单词"
               title="上一个单词"
-              className="absolute top-1/2 left-2 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-[#090914]/75 text-2xl font-black text-white/65 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:border-[#60a5fa] hover:text-[#93c5fd] disabled:cursor-default disabled:opacity-15 sm:left-4 sm:h-12 sm:w-12"
+              variant="outline"
+              color="gray"
+              size="3"
+              className="absolute top-1/2 left-2 z-20 w-11 sm:left-4 sm:w-12"
             >
               ‹
-            </button>
-            <button
+            </IconButton>
+            <Button
               type="button"
               onClick={goNext}
               aria-label={idx === total - 1 ? '完成单词浏览' : '下一个单词'}
               title={idx === total - 1 ? '完成' : '下一个单词'}
-              className="absolute top-1/2 right-2 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-[#090914]/75 text-2xl font-black text-white/65 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:border-[#a78bfa] hover:text-[#c4b5fd] sm:right-4 sm:h-12 sm:w-12"
+              variant="outline"
+              color="gray"
+              size="3"
+              className="absolute top-1/2 right-2 z-20 w-11 sm:right-4 sm:w-12"
             >
               {idx === total - 1 ? '✓' : '›'}
-            </button>
+            </Button>
           </div>
         </>
       )}
@@ -609,8 +605,7 @@ export default function ImmersiveMode({
         <div
           className="flex flex-1 flex-col items-center justify-center overflow-auto px-5 py-7"
           style={{
-            background:
-              'radial-gradient(ellipse at 20% 30%, rgba(109,40,217,.09) 0, transparent 55%), #0c0c1d',
+            background: '#0c0c1d',
           }}
         >
           {!showResults && currentQ && (
@@ -631,7 +626,7 @@ export default function ImmersiveMode({
           {showResults && (
             <div className="w-full max-w-[460px] rounded-[20px] border border-white/[.08] bg-white/[.04] px-7 py-11 text-center">
               <div className="mb-2.5 text-[3.5rem]">{qEmoji}</div>
-              <div className="font-fredoka mb-1.5 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] bg-clip-text text-[3rem] text-transparent">
+              <div className="font-fredoka mb-1.5 text-[3rem] text-[#7c3aed]">
                 {qScore} / {qTotal}
               </div>
               <div className="mb-6 text-[.9rem] leading-loose text-white/45">
@@ -645,18 +640,12 @@ export default function ImmersiveMode({
                       ? '有进步，再练练吧！'
                       : '继续努力，你可以的！'}
               </div>
-              <button
-                onClick={startQuiz}
-                className="font-nunito mr-2 cursor-pointer rounded-full border-0 bg-gradient-to-br from-[#6d28d9] to-[#a855f7] px-6 py-2.5 text-[.86rem] font-extrabold text-white"
-              >
+              <Button onClick={startQuiz} variant="solid" color="violet" size="2" className="mr-2">
                 🔄 再练一次
-              </button>
-              <button
-                onClick={onClose}
-                className="font-nunito cursor-pointer rounded-full border-[1.5px] border-white/10 bg-transparent px-6 py-2.5 text-[.86rem] font-bold text-white/[.38]"
-              >
+              </Button>
+              <Button onClick={onClose} variant="outline" color="gray" size="2">
                 退出沉浸模式
-              </button>
+              </Button>
             </div>
           )}
         </div>
