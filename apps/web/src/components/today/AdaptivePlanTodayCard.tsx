@@ -72,7 +72,7 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
     <section className="mb-8">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-text-primary flex items-center gap-2 text-[15px] font-extrabold">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 text-sm shadow-[0_3px_10px_rgba(99,102,241,.3)]">
+          <span className="shadow-sticker-sm inline-flex h-7 w-7 items-center justify-center rounded-xl bg-indigo-500 text-sm">
             🧠
           </span>
           自适应单词计划
@@ -89,18 +89,18 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
         href={`/english/words/adaptive/${activePlan.id}`}
         className="block rounded-2xl px-4 py-4 no-underline transition-all hover:-translate-y-0.5"
         style={{
-          background: 'linear-gradient(135deg, #eef2ff, #f5f3ff)',
+          background: '#eef2ff',
           border: '1.5px solid rgba(99,102,241,.22)',
-          boxShadow: '0 4px 16px rgba(99,102,241,.08)',
+          boxShadow: '0 3px 0 rgba(99,102,241,.3)',
         }}
       >
         <div className="flex items-center gap-3">
           <div
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-[24px]"
             style={{
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              background: '#6366f1',
               color: 'white',
-              boxShadow: '0 3px 10px rgba(99,102,241,.3)',
+              boxShadow: '0 3px 0 rgba(99,102,241,.3)',
             }}
           >
             🧠
@@ -142,7 +142,7 @@ export default function AdaptivePlanTodayCard({ user, date }: AdaptivePlanTodayC
                     className="h-full rounded-full transition-all duration-700"
                     style={{
                       width: `${pct}%`,
-                      background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                      background: '#6366f1',
                     }}
                   />
                 </div>

@@ -11,6 +11,8 @@ import {
   type TodayPlanSubjectKey,
   type TodayPlanSyncStatus,
 } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
+import { StickerCard } from '@rosie/ui'
 
 export type TodayPlanCardModel = {
   key: 'calc' | 'english' | 'math' | 'chinese'
@@ -33,9 +35,9 @@ export type TodayPlanCardModel = {
 }
 
 const DONE_TONE = {
-  idleBg: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+  idleBg: '#dcfce7',
   idleBorder: 'rgba(34,197,94,.3)',
-  idleShadow: '0 4px 16px rgba(34,197,94,.12)',
+  idleShadow: '0 3px 0 rgba(34,197,94,.3)',
   label: '#16a34a',
   value: '#15803d',
   subtitle: '#16a34a',
@@ -98,9 +100,9 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       tone: calc.allDone
         ? DONE_TONE
         : {
-            idleBg: 'linear-gradient(135deg, #f3e8ff, #fae8ff)',
+            idleBg: '#f3e8ff',
             idleBorder: 'rgba(139,92,246,.25)',
-            idleShadow: '0 4px 16px rgba(139,92,246,.1)',
+            idleShadow: '0 3px 0 rgba(139,92,246,.3)',
             label: '#7c3aed',
             value: '#8b5cf6',
             subtitle: '#6d28d9',
@@ -119,18 +121,17 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
           ? `得分 ${english.lastScore}% 🎉`
           : (english.subtitle ?? '今日任务已完成 🎉')
         : (english.subtitle ?? `${english.total} 个词待练`),
-      pct:
-        english.allDone
-          ? 100
-          : english.total > 0
-            ? Math.min(100, (english.doneCount / english.total) * 100)
-            : 0,
+      pct: english.allDone
+        ? 100
+        : english.total > 0
+          ? Math.min(100, (english.doneCount / english.total) * 100)
+          : 0,
       tone: english.allDone
         ? DONE_TONE
         : {
-            idleBg: 'linear-gradient(135deg, #f0fdf4, #ecfdf5)',
+            idleBg: '#f0fdf4',
             idleBorder: 'rgba(16,185,129,.2)',
-            idleShadow: '0 4px 16px rgba(16,185,129,.08)',
+            idleShadow: '0 3px 0 rgba(16,185,129,.3)',
             label: '#0f766e',
             value: '#0d9488',
             subtitle: '#115e59',
@@ -149,9 +150,9 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       tone: math.allDone
         ? DONE_TONE
         : {
-            idleBg: 'linear-gradient(135deg, #fff7ed, #fef3c7)',
+            idleBg: '#fff7ed',
             idleBorder: 'rgba(251,146,60,.25)',
-            idleShadow: '0 4px 16px rgba(251,146,60,.1)',
+            idleShadow: '0 3px 0 rgba(251,146,60,.3)',
             label: '#c2410c',
             value: '#ea580c',
             subtitle: '#9a3412',
@@ -170,9 +171,9 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       tone: chinese.allDone
         ? DONE_TONE
         : {
-            idleBg: 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+            idleBg: '#fffbeb',
             idleBorder: 'rgba(245,158,11,.25)',
-            idleShadow: '0 4px 16px rgba(245,158,11,.1)',
+            idleShadow: '0 3px 0 rgba(245,158,11,.3)',
             label: '#b45309',
             value: '#d97706',
             subtitle: '#92400e',
@@ -187,7 +188,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
  * the oversized background right→left). */
 function shimmerStyle(color: string): CSSProperties {
   return {
-    background: `linear-gradient(90deg, ${color}59, ${color} 35%, rgba(255,255,255,.85) 50%, ${color} 65%, ${color}59)`,
+    background: `${color}80`,
     backgroundSize: '200% 100%',
     animationDirection: 'reverse',
   }
@@ -330,7 +331,10 @@ export function TodayPlanOverviewCards({
                 <div className="h-[26px] w-[72px] animate-pulse rounded-lg bg-black/10" />
               ) : (
                 card.done !== '' && (
-                  <div className="text-[26px] leading-none font-black" style={{ color: card.tone.value }}>
+                  <div
+                    className="text-[26px] leading-none font-black"
+                    style={{ color: card.tone.value }}
+                  >
                     {card.done}
                     {card.total !== null && (
                       <span className="text-[16px] font-semibold opacity-60">/{card.total}</span>
@@ -339,7 +343,7 @@ export function TodayPlanOverviewCards({
                 )
               )}
               <div
-                className="mb-2 mt-1 truncate text-[10px] font-medium"
+                className="mt-1 mb-2 truncate text-[10px] font-medium"
                 style={{ color: card.tone.subtitle }}
               >
                 {card.subtitle}
@@ -373,7 +377,10 @@ export function TodayPlanOverviewCards({
           const actionBar = showActions ? (
             <div
               className="relative z-[2] flex"
-              style={{ borderTop: `1px solid ${actionBorder}`, background: 'rgba(255,255,255,.45)' }}
+              style={{
+                borderTop: `1px solid ${actionBorder}`,
+                background: 'rgba(255,255,255,.45)',
+              }}
             >
               {card.href && (
                 <Link
@@ -386,6 +393,7 @@ export function TodayPlanOverviewCards({
                   <span>继续练习</span>
                 </Link>
               )}
+              {/* native-ok: 卡片底部分段操作条的单元格，需与相邻「继续练习」链接等宽等高并带分隔边线，Radix Button 不适用 */}
               <button
                 type="button"
                 title="清除本轮中途进度"
@@ -443,43 +451,55 @@ export function TodayPlanOverviewCards({
 
       {confirmSubject && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/40 px-4 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/40 px-4"
           role="presentation"
           onClick={closeResetConfirm}
         >
-          <div
+          <StickerCard
+            radius="md"
+            className="w-full max-w-[360px]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="today-plan-reset-title"
             aria-describedby="today-plan-reset-desc"
-            className="w-full max-w-[360px] rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,.18)]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-1 text-[15px] font-extrabold tracking-wide text-slate-800" id="today-plan-reset-title">
+            <div
+              className="mb-1 text-[15px] font-extrabold tracking-wide text-slate-800"
+              id="today-plan-reset-title"
+            >
               清除「{SUBJECT_LABEL[confirmSubject]}」中途进度？
             </div>
-            <p className="mb-5 text-[13px] leading-relaxed font-medium text-slate-500" id="today-plan-reset-desc">
+            <p
+              className="mb-5 text-[13px] leading-relaxed font-medium text-slate-500"
+              id="today-plan-reset-desc"
+            >
               只会丢掉这一轮还没练完的进度，今日已完成的任务不会动。清除后需要重新开始。
             </p>
             <div className="flex gap-2.5">
-              <button
+              <Button
                 type="button"
                 onClick={closeResetConfirm}
                 disabled={!!resettingKey}
-                className="inline-flex flex-1 cursor-pointer items-center justify-center rounded-full border border-slate-200/80 bg-slate-50 px-3 py-2.5 text-[13px] font-bold text-slate-600 transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-60"
+                variant="soft"
+                color="gray"
+                size="2"
+                className="flex-1"
               >
                 先留着
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => void confirmReset()}
                 disabled={!!resettingKey}
-                className="inline-flex flex-[1.2] cursor-pointer items-center justify-center rounded-full border border-rose-200/80 bg-rose-50 px-3 py-2.5 text-[13px] font-bold text-rose-700 transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-60"
+                variant="soft"
+                color="ruby"
+                size="2"
               >
                 {resettingKey ? '清除中…' : '确认清除'}
-              </button>
+              </Button>
             </div>
-          </div>
+          </StickerCard>
         </div>
       )}
     </>

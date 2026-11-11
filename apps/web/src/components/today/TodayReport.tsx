@@ -50,10 +50,7 @@ export default function TodayReport() {
 
   // ── English ──
   const { weeklyPlan: englishPlan } = useWeeklyPlan(user)
-  const {
-    activePlan: activeAdaptive,
-    summary: adaptiveToday,
-  } = useAdaptiveTodayProgress(user)
+  const { activePlan: activeAdaptive, summary: adaptiveToday } = useAdaptiveTodayProgress(user)
   const englishToday = englishPlan?.days.find((d) => d.date === today)
   const englishProgress = englishPlan?.progress[today]
   const newWordKeys = englishToday?.newWordKeys ?? []
@@ -64,7 +61,9 @@ export default function TodayReport() {
   const mathToday = mathPlan?.days.find((d) => d.date === today)
   const mathProgress = mathPlan?.progress[today] ?? { doneKeys: [] }
   const mathProblems = mathToday?.problems ?? []
-  const mathDoneCount = mathProblems.filter((p) => isPlanProblemDone(p, today, mathProgress.doneKeys)).length
+  const mathDoneCount = mathProblems.filter((p) =>
+    isPlanProblemDone(p, today, mathProgress.doneKeys),
+  ).length
 
   // ── Calc ──
   const calcDaily = useCalcDaily(user)
@@ -110,12 +109,32 @@ export default function TodayReport() {
     if (mathDoneCount > 0) list.push('数学')
     if (calcDaily.todayDone > 0) list.push('口算')
     return list
-  }, [chineseTodayRuns, englishDone, activeAdaptive, adaptiveToday, mathDoneCount, calcDaily.todayDone])
+  }, [
+    chineseTodayRuns,
+    englishDone,
+    activeAdaptive,
+    adaptiveToday,
+    mathDoneCount,
+    calcDaily.todayDone,
+  ])
 
   // ── Date label ──
   const dateLabel = useMemo(() => {
     const d = new Date()
-    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    const months = [
+      '1月',
+      '2月',
+      '3月',
+      '4月',
+      '5月',
+      '6月',
+      '7月',
+      '8月',
+      '9月',
+      '10月',
+      '11月',
+      '12月',
+    ]
     const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
     return `${months[d.getMonth()]}${d.getDate()}日 ${days[d.getDay()]}`
   }, [])
@@ -125,17 +144,17 @@ export default function TodayReport() {
   return (
     <div className="mx-auto max-w-[960px] px-4 py-6 sm:px-6">
       {/* Summary header */}
-      <div className="mb-6 rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 to-orange-50 p-4">
-        <div className="text-[11px] font-bold uppercase tracking-widest text-amber-600/80">
+      <div className="mb-6 rounded-2xl border border-amber-200/60 bg-amber-50 p-4">
+        <div className="text-[11px] font-bold tracking-widest text-amber-600/80 uppercase">
           今日练习报告
         </div>
         <div className="mt-1 text-[18px] font-extrabold text-slate-900">{dateLabel}</div>
         <div className="mt-3 flex flex-wrap gap-2">
-          <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-600 shadow-sm">
+          <span className="shadow-sticker-sm rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-600">
             练习科目 {subjectsPracticed.length}/4
           </span>
           {totalDuration > 0 && (
-            <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-600 shadow-sm">
+            <span className="shadow-sticker-sm rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-600">
               总时长 {formatDuration(totalDuration)}
             </span>
           )}
@@ -148,7 +167,7 @@ export default function TodayReport() {
       </div>
 
       {!hasAnyPractice && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <div className="border-kid-line rounded-2xl border-2 bg-white p-8 text-center">
           <div className="text-3xl">📝</div>
           <p className="mt-2 text-[14px] font-bold text-slate-600">今天还没有练习记录</p>
           <p className="mt-1 text-[12px] text-slate-400">完成练习后这里会显示详细报告</p>
@@ -164,7 +183,10 @@ export default function TodayReport() {
               {chineseTodayRuns.map((run) => {
                 const byTypeRows = formatPlanRunByType(run.byType)
                 return (
-                  <div key={run.id} className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-3">
+                  <div
+                    key={run.id}
+                    className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-3"
+                  >
                     <div className="flex items-center justify-between">
                       <span className="text-[13px] font-bold text-emerald-900">
                         {run.lessonTitle || run.lessonKey}
@@ -178,7 +200,11 @@ export default function TodayReport() {
                     <div className="mt-2 flex flex-col gap-1">
                       <StatRow
                         label="正确率"
-                        value={run.accuracy != null ? `${Math.round(run.accuracy * 100)}%` : `${run.correct}/${run.total}`}
+                        value={
+                          run.accuracy != null
+                            ? `${Math.round(run.accuracy * 100)}%`
+                            : `${run.correct}/${run.total}`
+                        }
                         color="#059669"
                       />
                       {run.durationSeconds != null && run.durationSeconds > 0 && (
@@ -187,14 +213,17 @@ export default function TodayReport() {
                     </div>
                     {byTypeRows.length > 0 && (
                       <div className="mt-2.5 border-t border-emerald-100 pt-2">
-                        <div className="mb-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600/70">
+                        <div className="mb-1 text-[10px] font-bold tracking-wide text-emerald-600/70 uppercase">
                           题型分项
                         </div>
                         <div className="flex flex-col gap-1">
                           {byTypeRows.map((row) => (
-                            <div key={row.key} className="flex items-center justify-between text-[11px]">
+                            <div
+                              key={row.key}
+                              className="flex items-center justify-between text-[11px]"
+                            >
                               <span className="font-medium text-emerald-800">{row.label}</span>
-                              <span className="tabular-nums font-semibold text-emerald-700">
+                              <span className="font-semibold text-emerald-700 tabular-nums">
                                 {row.correct}/{row.total}
                                 {row.accuracyPct != null ? ` (${row.accuracyPct}%)` : ''}
                               </span>
@@ -241,7 +270,11 @@ export default function TodayReport() {
               ) : (
                 <>
                   <StatRow label="今日新词" value={`${newWordKeys.length} 个`} color="#0d9488" />
-                  <StatRow label="测验" value={englishDone ? '已完成' : '未完成'} color={englishDone ? '#059669' : '#94a3b8'} />
+                  <StatRow
+                    label="测验"
+                    value={englishDone ? '已完成' : '未完成'}
+                    color={englishDone ? '#059669' : '#94a3b8'}
+                  />
                 </>
               )}
             </div>
@@ -277,7 +310,11 @@ export default function TodayReport() {
               />
               <StatRow
                 label="正确率"
-                value={calcDaily.todayDone > 0 ? `${Math.round((calcDaily.todayCorrect / calcDaily.todayDone) * 100)}%` : '—'}
+                value={
+                  calcDaily.todayDone > 0
+                    ? `${Math.round((calcDaily.todayCorrect / calcDaily.todayDone) * 100)}%`
+                    : '—'
+                }
                 color="#7c3aed"
               />
               {calcDaily.todayCoins > 0 && (
@@ -290,7 +327,7 @@ export default function TodayReport() {
 
       {/* Footer */}
       {hasAnyPractice && (
-        <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50/80 p-3 text-center text-[11px] text-slate-400">
+        <div className="border-kid-line mt-6 rounded-xl border-2 bg-slate-50/80 p-3 text-center text-[11px] text-slate-400">
           报告自动生成于练习完成后 · {dateLabel}
         </div>
       )}

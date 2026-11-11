@@ -7,6 +7,7 @@ import {
   syncAllLocalPendingToCloud,
   PRACTICE_PENDING_CHANGED_EVENT,
 } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
 
 export default function TodayProgressBackup() {
   const { user } = useAuth()
@@ -88,19 +89,16 @@ export default function TodayProgressBackup() {
   return (
     <div className="mx-auto mb-3 max-w-[960px] px-4 sm:px-6">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-bold text-text-primary">各科进度</h2>
-        <button
+        <h2 className="text-text-primary text-sm font-bold">各科进度</h2>
+        <Button
           type="button"
           onClick={() => void handleSync()}
           disabled={syncing}
           title={title}
-          className={`inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-60 ${
-            allSynced
-              ? 'border-emerald-200/80 bg-emerald-50 text-emerald-800'
-              : unsyncedCount > 0
-                ? 'border-amber-200/80 bg-amber-50 text-amber-800'
-                : 'border-slate-200/80 bg-slate-50 text-slate-600'
-          }`}
+          variant="soft"
+          color={allSynced ? 'green' : unsyncedCount > 0 ? 'amber' : 'gray'}
+          radius="full"
+          size="1"
         >
           <span aria-hidden>{syncing ? '⏳' : allSynced ? '✓' : '☁️'}</span>
           <span>{label}</span>
@@ -109,7 +107,7 @@ export default function TodayProgressBackup() {
               {unsyncedCount}
             </span>
           )}
-        </button>
+        </Button>
       </div>
       {toast && (
         <div

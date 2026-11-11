@@ -10,6 +10,7 @@ import {
   type MistakeModuleFilter,
   type MistakeStatusFilter,
 } from '@/hooks/useUnifiedMistakes'
+import { Button } from '@rosie/ui/themes'
 
 const STATUS_TABS: { key: MistakeStatusFilter; label: string }[] = [
   { key: 'unresolved', label: '未改正' },
@@ -53,21 +54,19 @@ function FilterChip({
   onClick: () => void
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-3 py-1.5 text-[12px] font-bold transition-all ${
-        active
-          ? 'bg-rose-500 text-white shadow-[0_2px_8px_rgba(244,63,94,.3)]'
-          : 'bg-white/80 text-gray-600 hover:bg-white'
-      }`}
-      style={active ? undefined : { border: '1px solid rgba(0,0,0,.08)' }}
+      variant={active ? 'solid' : 'soft'}
+      color={active ? 'ruby' : 'gray'}
+      radius="full"
+      size="1"
     >
       {label}
       {count != null && count > 0 && (
-        <span className={`ml-1 ${active ? 'text-white/90' : 'text-rose-500'}`}>{count}</span>
+        <span className={active ? 'text-white/90' : 'text-rose-500'}>{count}</span>
       )}
-    </button>
+    </Button>
   )
 }
 
@@ -82,9 +81,9 @@ export default function UnifiedMistakesPage() {
   )
 
   const grouped = useMemo(() => {
-    const math = filtered.filter(i => i.module === 'math')
-    const calc = filtered.filter(i => i.module === 'calc')
-    const english = filtered.filter(i => i.module === 'english')
+    const math = filtered.filter((i) => i.module === 'math')
+    const calc = filtered.filter((i) => i.module === 'calc')
+    const english = filtered.filter((i) => i.module === 'english')
     return { math, calc, english }
   }, [filtered])
 
@@ -101,9 +100,9 @@ export default function UnifiedMistakesPage() {
         <div
           className="mb-5 rounded-[18px] px-5 py-4"
           style={{
-            background: 'linear-gradient(135deg, #fff5f5 0%, #fee2e2 50%, #fce7f3 100%)',
+            background: '#fee2e2',
             border: '2px solid rgba(244,63,94,.2)',
-            boxShadow: '0 4px 20px rgba(244,63,94,.08)',
+            boxShadow: '0 3px 0 rgba(244,63,94,.3)',
           }}
         >
           <div className="flex items-center gap-2">
@@ -122,7 +121,7 @@ export default function UnifiedMistakesPage() {
 
         {/* Status filter */}
         <div className="mb-3 flex flex-wrap gap-2">
-          {STATUS_TABS.map(tab => (
+          {STATUS_TABS.map((tab) => (
             <FilterChip
               key={tab.key}
               active={statusFilter === tab.key}
@@ -141,7 +140,7 @@ export default function UnifiedMistakesPage() {
 
         {/* Module filter */}
         <div className="mb-5 flex flex-wrap gap-2">
-          {MODULE_TABS.map(tab => (
+          {MODULE_TABS.map((tab) => (
             <FilterChip
               key={tab.key}
               active={moduleFilter === tab.key}
@@ -151,12 +150,10 @@ export default function UnifiedMistakesPage() {
           ))}
         </div>
 
-        {isLoading && (
-          <div className="py-16 text-center text-[13px] text-gray-400">加载中…</div>
-        )}
+        {isLoading && <div className="py-16 text-center text-[13px] text-gray-400">加载中…</div>}
 
         {!isLoading && filtered.length === 0 && (
-          <div className="flex flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-rose-200 bg-white/60 py-16 text-center">
+          <div className="flex flex-col items-center gap-3 rounded-[16px] border-2 border-dashed border-rose-200 bg-white py-16 text-center">
             <div className="text-5xl">{statusFilter === 'unresolved' ? '🎉' : '📭'}</div>
             <div className="text-[15px] font-bold text-gray-700">
               {statusFilter === 'unresolved'
@@ -171,13 +168,16 @@ export default function UnifiedMistakesPage() {
                 : '完成练习并答对后，错题会移入「已改正」'}
             </p>
             {statusFilter !== 'unresolved' && (
-              <button
+              <Button
                 type="button"
                 onClick={() => setStatusFilter('unresolved')}
-                className="mt-1 rounded-full bg-rose-500 px-4 py-2 text-[12px] font-bold text-white"
+                variant="solid"
+                color="ruby"
+                size="1"
+                className="mt-1"
               >
                 查看未改正
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -190,26 +190,34 @@ export default function UnifiedMistakesPage() {
             {(moduleFilter === 'all' || moduleFilter === 'calc') && grouped.calc.length > 0 && (
               <MistakeSection module="calc" items={grouped.calc} />
             )}
-            {(moduleFilter === 'all' || moduleFilter === 'english') && grouped.english.length > 0 && (
-              <MistakeSection module="english" items={grouped.english} />
-            )}
+            {(moduleFilter === 'all' || moduleFilter === 'english') &&
+              grouped.english.length > 0 && (
+                <MistakeSection module="english" items={grouped.english} />
+              )}
           </div>
         )}
 
-        {!isLoading && counts.unresolved > 0 && statusFilter === 'unresolved' && moduleFilter !== 'math' && (
-          <div className="mt-6">
-            <Link
-              href="/calc/session?mode=mistakes&count=3&time=0"
-              className="block w-full rounded-2xl py-3.5 text-center text-[14px] font-extrabold text-white no-underline transition-all hover:-translate-y-0.5"
-              style={{
-                background: 'linear-gradient(135deg, #d97706, #f97316)',
-                boxShadow: '0 6px 20px rgba(249,115,22,.25)',
-              }}
-            >
-              📝 口算错题专项练（{counts.calc > 0 ? `${grouped.calc.filter(i => i.status === 'unresolved').length} 题` : '前往'}）
-            </Link>
-          </div>
-        )}
+        {!isLoading &&
+          counts.unresolved > 0 &&
+          statusFilter === 'unresolved' &&
+          moduleFilter !== 'math' && (
+            <div className="mt-6">
+              <Link
+                href="/calc/session?mode=mistakes&count=3&time=0"
+                className="block w-full rounded-2xl py-3.5 text-center text-[14px] font-extrabold text-white no-underline transition-all hover:-translate-y-0.5"
+                style={{
+                  background: '#d97706',
+                  boxShadow: '0 3px 0 rgba(249,115,22,.3)',
+                }}
+              >
+                📝 口算错题专项练（
+                {counts.calc > 0
+                  ? `${grouped.calc.filter((i) => i.status === 'unresolved').length} 题`
+                  : '前往'}
+                ）
+              </Link>
+            </div>
+          )}
       </div>
     </>
   )
@@ -235,7 +243,7 @@ function MistakeSection({
         <span className="text-[11px] font-medium text-gray-400">{items.length} 题</span>
       </div>
       <div className="space-y-2">
-        {items.map(item => (
+        {items.map((item) => (
           <MistakeRow key={item.id} item={item} />
         ))}
       </div>
@@ -247,7 +255,9 @@ function MistakeRow({ item }: { item: ReturnType<typeof filterMistakes>[number] 
   const isResolved = item.status === 'resolved'
   const style = MODULE_STYLE[item.module]
   const when = isResolved
-    ? (item.resolvedAt ? formatWhen(item.resolvedAt) : '已改正')
+    ? item.resolvedAt
+      ? formatWhen(item.resolvedAt)
+      : '已改正'
     : formatWhen(item.lastWrongAt)
 
   return (
@@ -255,12 +265,14 @@ function MistakeRow({ item }: { item: ReturnType<typeof filterMistakes>[number] 
       className="flex items-center gap-3 rounded-[14px] bg-white px-4 py-3 transition-shadow"
       style={{
         border: `1.5px solid ${isResolved ? 'rgba(34,197,94,.25)' : 'rgba(244,63,94,.2)'}`,
-        boxShadow: '0 2px 10px rgba(0,0,0,.04)',
+        boxShadow: '0 3px 0 rgba(0,0,0,.3)',
         opacity: isResolved ? 0.75 : 1,
       }}
     >
       <div className="min-w-0 flex-1">
-        <div className={`text-[13px] font-bold leading-snug ${isResolved ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+        <div
+          className={`text-[13px] leading-snug font-bold ${isResolved ? 'text-green-700 line-through' : 'text-gray-800'}`}
+        >
           {item.title}
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -285,7 +297,7 @@ function MistakeRow({ item }: { item: ReturnType<typeof filterMistakes>[number] 
         <Link
           href={item.href}
           className="shrink-0 rounded-full px-3.5 py-2 text-[12px] font-extrabold text-white no-underline transition-all hover:scale-105"
-          style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+          style={{ background: '#f97316' }}
         >
           去练 ✨
         </Link>

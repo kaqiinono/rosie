@@ -7,6 +7,7 @@ import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
 import { isPlanProblemDone } from '@rosie/math-kit/utils/math-helpers'
 import { useCalcSessionSummaries } from '@rosie/calc'
 import { useChineseRoadmapPlan } from '@rosie/chinese'
+import { IconButton } from '@rosie/ui/themes'
 import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
 
 type SubjectKey = 'calc' | 'english' | 'math' | 'chinese'
@@ -106,9 +107,7 @@ export default function PlanCalendar({ selectedDate, onSelectDate }: PlanCalenda
     return [...set].sort()
   }, [today, englishPlan, mathPlan, calcSessions, chineseRunDates, chineseActivePlan])
 
-  const [monthIdx, setMonthIdx] = useState(() =>
-    Math.max(0, months.indexOf(monthOf(today))),
-  )
+  const [monthIdx, setMonthIdx] = useState(() => Math.max(0, months.indexOf(monthOf(today))))
   // Keep index valid while data (and thus the month list) is still loading.
   const safeIdx = Math.min(monthIdx, Math.max(0, months.length - 1))
   const viewMonth = months[safeIdx] ?? monthOf(today)
@@ -151,8 +150,7 @@ export default function PlanCalendar({ selectedDate, onSelectDate }: PlanCalenda
       const doneCount = mathDay.problems.filter((p) => isPlanProblemDone(p, date, doneKeys)).length
       marks.push({
         key: 'math',
-        state:
-          doneCount === mathDay.problems.length ? 'done' : doneCount > 0 ? 'partial' : 'todo',
+        state: doneCount === mathDay.problems.length ? 'done' : doneCount > 0 ? 'partial' : 'todo',
         future,
       })
     }
@@ -190,31 +188,37 @@ export default function PlanCalendar({ selectedDate, onSelectDate }: PlanCalenda
       style={{
         background: 'rgba(255,255,255,.75)',
         border: '1.5px solid rgba(251,146,60,.18)',
-        boxShadow: '0 4px 16px rgba(251,146,60,.08)',
+        boxShadow: '0 3px 0 rgba(251,146,60,.3)',
       }}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
-        <button
+        <IconButton
           type="button"
           disabled={safeIdx === 0}
           onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
-          className="cursor-pointer rounded-full px-3 py-1 text-[13px] font-bold text-orange-400 disabled:cursor-default disabled:opacity-30"
-          style={{ background: 'rgba(251,146,60,.08)' }}
+          aria-label="上个月"
+          variant="soft"
+          color="orange"
+          radius="full"
+          size="1"
         >
           ‹
-        </button>
+        </IconButton>
         <span className="text-[14px] font-extrabold text-orange-900">
           {year}年{month}月
         </span>
-        <button
+        <IconButton
           type="button"
           disabled={safeIdx >= months.length - 1}
           onClick={() => setMonthIdx((i) => Math.min(months.length - 1, i + 1))}
-          className="cursor-pointer rounded-full px-3 py-1 text-[13px] font-bold text-orange-400 disabled:cursor-default disabled:opacity-30"
-          style={{ background: 'rgba(251,146,60,.08)' }}
+          aria-label="下个月"
+          variant="soft"
+          color="orange"
+          radius="full"
+          size="1"
         >
           ›
-        </button>
+        </IconButton>
       </div>
 
       <div className="mb-1.5 grid grid-cols-7 gap-1.5">
@@ -233,6 +237,7 @@ export default function PlanCalendar({ selectedDate, onSelectDate }: PlanCalenda
           const isToday = cell.date === today
           const allDone = marks.length > 0 && marks.every((m) => m.state === 'done')
           return (
+            // native-ok: 日历日期格，需按选中/今天/全部完成自定义底色描边并承载多个学科圆点，Radix Button 居中布局不适用
             <button
               key={cell.date}
               type="button"
@@ -249,11 +254,11 @@ export default function PlanCalendar({ selectedDate, onSelectDate }: PlanCalenda
                   : isToday
                     ? '1.5px solid rgba(251,146,60,.45)'
                     : '1px solid rgba(0,0,0,.06)',
-                boxShadow: isSelected ? '0 2px 10px rgba(249,115,22,.2)' : 'none',
+                boxShadow: isSelected ? '0 3px 0 rgba(249,115,22,.3)' : 'none',
               }}
             >
               <div
-                className="text-[11px] font-bold leading-none sm:text-[12px]"
+                className="text-[11px] leading-none font-bold sm:text-[12px]"
                 style={{ color: isToday ? '#ea580c' : '#64748b' }}
               >
                 {cell.dayNum}

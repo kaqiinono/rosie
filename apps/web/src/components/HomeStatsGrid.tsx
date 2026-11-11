@@ -23,7 +23,7 @@ function buildItems(stats: HomeStats): StatItem[] {
       value: String(stats.calcTotal),
       hint: stats.calcPracticeDays > 0 ? `累计题 · ${stats.calcPracticeDays} 天` : '累计题',
       accent: 'text-violet-700',
-      accentBg: 'from-violet-50 to-fuchsia-50 border-violet-100',
+      accentBg: 'bg-violet-50 border-violet-100',
     },
     {
       href: '/english',
@@ -32,7 +32,7 @@ function buildItems(stats: HomeStats): StatItem[] {
       value: String(stats.englishPracticed),
       hint: '已练单词',
       accent: 'text-emerald-700',
-      accentBg: 'from-emerald-50 to-cyan-50 border-emerald-100',
+      accentBg: 'bg-emerald-50 border-emerald-100',
     },
     {
       href: '/math',
@@ -41,7 +41,7 @@ function buildItems(stats: HomeStats): StatItem[] {
       value: `${stats.mathPracticed}/${stats.mathTotal}`,
       hint: '已练 / 总题',
       accent: 'text-indigo-700',
-      accentBg: 'from-blue-50 to-indigo-50 border-indigo-100',
+      accentBg: 'bg-blue-50 border-indigo-100',
     },
     {
       href: '/chinese',
@@ -53,7 +53,7 @@ function buildItems(stats: HomeStats): StatItem[] {
           : String(stats.chineseRecognized),
       hint: stats.chineseRecognizeTotal > 0 ? '已认 / 会认' : '已认字',
       accent: 'text-orange-700',
-      accentBg: 'from-orange-50 to-rose-50 border-orange-100',
+      accentBg: 'bg-orange-50 border-orange-100',
     },
     {
       href: '/mistakes',
@@ -62,7 +62,7 @@ function buildItems(stats: HomeStats): StatItem[] {
       value: String(stats.mistakesUnresolved),
       hint: stats.mistakesUnresolved > 0 ? '待改正' : '暂无待改',
       accent: 'text-amber-700',
-      accentBg: 'from-amber-50 to-orange-50 border-amber-100',
+      accentBg: 'bg-amber-50 border-amber-100',
     },
   ]
 }
@@ -78,7 +78,7 @@ export default function HomeStatsGrid() {
         <Link
           key={item.href}
           href={item.href}
-          className={`group rounded-2xl border bg-gradient-to-br p-3.5 no-underline transition-all hover:-translate-y-0.5 hover:shadow-md ${item.accentBg}`}
+          className={`group hover:shadow-sticker rounded-2xl border p-3.5 no-underline transition-all hover:-translate-y-0.5 ${item.accentBg}`}
         >
           <div className="mb-2 flex items-center gap-1.5">
             <span className="text-lg leading-none" aria-hidden>
@@ -93,7 +93,7 @@ export default function HomeStatsGrid() {
           >
             {isLoading ? '—' : item.value}
           </div>
-          <div className="text-text-muted mt-1.5 text-[10px] font-semibold leading-snug">
+          <div className="text-text-muted mt-1.5 text-[10px] leading-snug font-semibold">
             {isLoading ? '加载中' : item.hint}
           </div>
         </Link>

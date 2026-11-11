@@ -1,8 +1,10 @@
 'use client'
 
+import { Button } from '@rosie/ui/themes'
+
 export default function OfflinePage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gradient-to-br from-slate-50 to-blue-50 px-6 text-center">
+    <div className="bg-kid-paper flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
       <div className="text-6xl">📡</div>
       <h1 className="text-2xl font-bold text-slate-800">哎呀，没有网络</h1>
       <p className="max-w-sm text-sm leading-relaxed text-slate-500">
@@ -10,12 +12,15 @@ export default function OfflinePage() {
         <br />
         已缓存的页面仍可正常访问。
       </p>
-      <button
+      <Button
         onClick={() => window.location.reload()}
-        className="mt-2 rounded-xl bg-blue-500 px-6 py-2.5 text-sm font-bold text-white shadow-lg transition hover:bg-blue-600 active:scale-95"
+        variant="solid"
+        color="blue"
+        size="2"
+        className="mt-2"
       >
         重试
-      </button>
+      </Button>
     </div>
   )
 }

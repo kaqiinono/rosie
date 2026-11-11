@@ -46,12 +46,12 @@ const SECTION_COLORS: Record<string, string> = {
 
 function LoadingState() {
   return (
-    <div className="flex flex-col items-center justify-center py-24 gap-6">
+    <div className="flex flex-col items-center justify-center gap-6 py-24">
       <div className="relative flex items-center justify-center">
         <div
           className="absolute h-20 w-20 rounded-full opacity-20"
           style={{
-            background: 'conic-gradient(from 0deg, #f97316, #fbbf24, #10b981, #6366f1, #f97316)',
+            background: '#fbbf24',
             animation: 'spin 2s linear infinite',
           }}
         />
@@ -71,7 +71,9 @@ function LoadingState() {
           ))}
         </div>
       </div>
-      <div className="text-[13px] font-semibold text-text-muted tracking-wide">正在加载今日计划…</div>
+      <div className="text-text-muted text-[13px] font-semibold tracking-wide">
+        正在加载今日计划…
+      </div>
     </div>
   )
 }
@@ -84,23 +86,23 @@ interface WordCardProps {
 function WordCard({ entry, isNew }: WordCardProps) {
   return (
     <div
-      className="relative shrink-0 w-[200px] rounded-2xl overflow-hidden"
+      className="relative w-[200px] shrink-0 overflow-hidden rounded-2xl"
       style={{
-        background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 100%)',
+        background: '#0f172a',
         border: '1px solid rgba(99,102,241,.3)',
-        boxShadow: '0 8px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.06)',
+        boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.06)',
       }}
     >
       {/* Glow accent */}
       <div
-        className="absolute -top-4 -right-4 h-16 w-16 rounded-full blur-2xl opacity-30"
+        className="absolute -top-4 -right-4 h-16 w-16 rounded-full opacity-30"
         style={{ background: isNew ? '#6366f1' : '#10b981' }}
       />
 
       {/* Badge */}
       <div className="relative px-4 pt-3 pb-2">
         <span
-          className="inline-block rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest"
+          className="inline-block rounded-full px-2 py-0.5 text-[9px] font-bold tracking-widest uppercase"
           style={{
             background: isNew ? 'rgba(99,102,241,.2)' : 'rgba(16,185,129,.2)',
             color: isNew ? '#a5b4fc' : '#6ee7b7',
@@ -114,13 +116,13 @@ function WordCard({ entry, isNew }: WordCardProps) {
       {/* Word */}
       <div className="px-4 pb-1">
         <div
-          className="text-[22px] font-black leading-tight tracking-tight"
+          className="text-[22px] leading-tight font-black tracking-tight"
           style={{ color: '#f1f5f9', fontFamily: '"Nunito", sans-serif' }}
         >
           {entry.word}
         </div>
         {entry.ipa && (
-          <div className="text-[11px] font-medium mt-0.5" style={{ color: '#94a3b8' }}>
+          <div className="mt-0.5 text-[11px] font-medium" style={{ color: '#94a3b8' }}>
             {entry.ipa}
           </div>
         )}
@@ -131,7 +133,7 @@ function WordCard({ entry, isNew }: WordCardProps) {
 
       {/* Explanation */}
       <div className="px-4 pb-2">
-        <div className="text-[12px] font-bold leading-snug" style={{ color: '#cbd5e1' }}>
+        <div className="text-[12px] leading-snug font-bold" style={{ color: '#cbd5e1' }}>
           {entry.explanation}
         </div>
       </div>
@@ -165,14 +167,42 @@ interface ThreeStepRowProps {
   color: 'orange' | 'blue' | 'purple'
 }
 
-function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint, href, color }: ThreeStepRowProps) {
+function ThreeStepRow({
+  index,
+  done,
+  pendingDimmed,
+  icon,
+  title,
+  subtitle,
+  hint,
+  href,
+  color,
+}: ThreeStepRowProps) {
   const palette = {
-    orange: { bg: 'linear-gradient(135deg,#ffedd5,#fde68a)', border: 'rgba(251,146,60,.3)', text: '#c2410c', sub: '#9a3412', dot: 'linear-gradient(135deg,#f97316,#fbbf24)' },
-    blue:   { bg: 'linear-gradient(135deg,#dbeafe,#e0f2fe)', border: 'rgba(59,130,246,.28)', text: '#1d4ed8', sub: '#1e3a8a', dot: 'linear-gradient(135deg,#3b82f6,#60a5fa)' },
-    purple: { bg: 'linear-gradient(135deg,#ede9fe,#f5d0fe)', border: 'rgba(168,85,247,.28)', text: '#7c3aed', sub: '#5b21b6', dot: 'linear-gradient(135deg,#a855f7,#c084fc)' },
+    orange: {
+      bg: '#ffedd5',
+      border: 'rgba(251,146,60,.3)',
+      text: '#c2410c',
+      sub: '#9a3412',
+      dot: '#f97316',
+    },
+    blue: {
+      bg: '#dbeafe',
+      border: 'rgba(59,130,246,.28)',
+      text: '#1d4ed8',
+      sub: '#1e3a8a',
+      dot: '#3b82f6',
+    },
+    purple: {
+      bg: '#ede9fe',
+      border: 'rgba(168,85,247,.28)',
+      text: '#7c3aed',
+      sub: '#5b21b6',
+      dot: '#a855f7',
+    },
   }[color]
 
-  const greenBg = 'linear-gradient(135deg,#dcfce7,#bbf7d0)'
+  const greenBg = '#dcfce7'
   const greenBorder = 'rgba(34,197,94,.3)'
 
   return (
@@ -182,12 +212,12 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
       style={{
         background: done ? greenBg : palette.bg,
         border: `1.5px solid ${done ? greenBorder : palette.border}`,
-        boxShadow: done ? '0 4px 16px rgba(34,197,94,.1)' : '0 4px 16px rgba(0,0,0,.04)',
+        boxShadow: done ? '0 3px 0 rgba(34,197,94,.3)' : '0 3px 0 rgba(0,0,0,.3)',
       }}
     >
       <div
         className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[20px] text-white"
-        style={{ background: done ? 'linear-gradient(135deg,#22c55e,#4ade80)' : palette.dot }}
+        style={{ background: done ? '#22c55e' : palette.dot }}
       >
         {done ? '✓' : icon}
         <span
@@ -197,20 +227,23 @@ function ThreeStepRow({ index, done, pendingDimmed, icon, title, subtitle, hint,
           {index}
         </span>
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div
-          className="text-[14px] font-extrabold leading-tight"
+          className="text-[14px] leading-tight font-extrabold"
           style={{ color: done ? '#166534' : palette.text }}
         >
           {title}
         </div>
         {subtitle && (
-          <div className="text-[11px] font-medium mt-0.5 truncate" style={{ color: done ? '#16a34a' : palette.sub }}>
+          <div
+            className="mt-0.5 truncate text-[11px] font-medium"
+            style={{ color: done ? '#16a34a' : palette.sub }}
+          >
             {subtitle}
           </div>
         )}
         {hint && (
-          <div className="text-[10px] mt-0.5" style={{ color: done ? '#16a34a' : '#a16207' }}>
+          <div className="mt-0.5 text-[10px]" style={{ color: done ? '#16a34a' : '#a16207' }}>
             💡 {hint}
           </div>
         )}
@@ -275,11 +308,11 @@ export default function TodayDashboard({
   }, [resetToast])
 
   // English: today's word keys -> full WordEntry objects
-  const englishToday = englishPlan?.days.find(d => d.date === today)
+  const englishToday = englishPlan?.days.find((d) => d.date === today)
   const englishProgress = englishPlan?.progress[today]
   const newWordKeys = englishToday?.newWordKeys ?? []
-  const vocabByKey = Object.fromEntries(vocab.map(w => [wordKeyStr(w), w]))
-  const todayWords = newWordKeys.map(k => vocabByKey[k]).filter(Boolean) as WordEntry[]
+  const vocabByKey = Object.fromEntries(vocab.map((w) => [wordKeyStr(w), w]))
+  const todayWords = newWordKeys.map((k) => vocabByKey[k]).filter(Boolean) as WordEntry[]
   const englishDone = !!englishProgress?.quizDone
 
   // Reading prompt (Stage 1 of three-stage loop): surfaces when *any* of
@@ -296,7 +329,10 @@ export default function TodayDashboard({
       const parsed = parseFocusLessonKey(focusKey)
       if (parsed) {
         const focusP = findPassage(parsed.stage, parsed.unit, parsed.lesson)
-        if (focusP && todayWords.some(w => w.unit === focusP.unit && w.lesson === focusP.lesson)) {
+        if (
+          focusP &&
+          todayWords.some((w) => w.unit === focusP.unit && w.lesson === focusP.lesson)
+        ) {
           return focusP
         }
       }
@@ -321,24 +357,24 @@ export default function TodayDashboard({
   // Split today's words into consolidate vs preview using wordKinds (the plan's
   // per-word classification). Drives the ②③ counts in the three-step layout.
   const wordKinds = englishPlan?.wordKinds ?? {}
-  const consolidateNewCount = newWordKeys.filter(k => (wordKinds[k] ?? 'consolidate') === 'consolidate').length
-  const previewNewCount = newWordKeys.filter(k => wordKinds[k] === 'preview').length
+  const consolidateNewCount = newWordKeys.filter(
+    (k) => (wordKinds[k] ?? 'consolidate') === 'consolidate',
+  ).length
+  const previewNewCount = newWordKeys.filter((k) => wordKinds[k] === 'preview').length
   const consolidateDone = !!englishProgress?.consolidateDone
   const previewDone = !!englishProgress?.previewDone
 
   // Math: today's required problems
-  const mathToday = mathPlan?.days.find(d => d.date === today)
+  const mathToday = mathPlan?.days.find((d) => d.date === today)
   const mathProgress = mathPlan?.progress[today] ?? { doneKeys: [] }
   const mathProblems = mathToday?.problems ?? []
-  const mathDoneCount = mathProblems.filter(p => isPlanProblemDone(p, today, mathProgress.doneKeys)).length
+  const mathDoneCount = mathProblems.filter((p) =>
+    isPlanProblemDone(p, today, mathProgress.doneKeys),
+  ).length
   const mathAllDone = mathProblems.length > 0 && mathDoneCount >= mathProblems.length
 
   const chineseOrderedKeys = useMemo(
-    () =>
-      orderedPlanLessonKeys(
-        chinese.lessons,
-        chineseActivePlan?.bookSlug ?? chinese.bookSlug,
-      ),
+    () => orderedPlanLessonKeys(chinese.lessons, chineseActivePlan?.bookSlug ?? chinese.bookSlug),
     [chinese.lessons, chineseActivePlan?.bookSlug, chinese.bookSlug],
   )
   const chineseBatchKeys = useMemo(() => {
@@ -352,9 +388,7 @@ export default function TodayDashboard({
   }, [chineseActivePlan, chineseOrderedKeys])
   const chinesePlanLesson = useMemo(() => {
     if (!chineseActivePlan) return null
-    return (
-      chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null
-    )
+    return chinese.lessons.find((l) => l.lessonKey === chineseActivePlan.currentLessonKey) ?? null
   }, [chineseActivePlan, chinese.lessons])
 
   // Today's Chinese run: boolean check — has any run been recorded today?
@@ -369,7 +403,9 @@ export default function TodayDashboard({
     ? chineseHasTodayRun
     : chinesePlanCleared || chinese.allDone || chinese.lessonDone
   const chinesePct = chineseActivePlan
-    ? (chineseHasTodayRun ? 100 : 0)
+    ? chineseHasTodayRun
+      ? 100
+      : 0
     : chinesePlanCleared
       ? 100
       : chinese.total > 0
@@ -420,7 +456,8 @@ export default function TodayDashboard({
   const calcDoneCount = calcDaily.todayDone
   const calcTargetCount = calcDaily.todayTarget
   const calcAllDone = calcDoneCount >= calcTargetCount && calcTargetCount > 0
-  const calcAccuracy = calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
+  const calcAccuracy =
+    calcDoneCount > 0 ? Math.round((calcDaily.todayCorrect / calcDoneCount) * 100) : 0
 
   // Active adaptive wins over weekly.
   // Done today → detail/hub; incomplete → practice.
@@ -480,11 +517,14 @@ export default function TodayDashboard({
       href: mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice',
     },
     chinese: {
-      done: chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
-        ? '✓'
-        : chineseActivePlan
-          ? (chineseHasTodayRun ? '✓' : '')
-          : chinese.done,
+      done:
+        chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
+          ? '✓'
+          : chineseActivePlan
+            ? chineseHasTodayRun
+              ? '✓'
+              : ''
+            : chinese.done,
       total:
         chinesePlanCleared || (!chineseActivePlan && chinese.allDone)
           ? null
@@ -516,111 +556,134 @@ export default function TodayDashboard({
       }
     }
     if (subjectHasPlan[card.key]) return card
-    const hasWeeklyPlan = (card.key === 'english' && englishPlan) || (card.key === 'math' && mathPlan)
+    const hasWeeklyPlan =
+      (card.key === 'english' && englishPlan) || (card.key === 'math' && mathPlan)
     const subtitle = hasWeeklyPlan ? '当天没有安排练习' : '暂无计划'
     return { ...card, href: null, done: '', total: null, subtitle, pct: 0 }
   })
 
   const loadingDetails = englishLoading || mathLoading || subjectLoading.chinese || loadingHistory
-  const details = loadingDetails ? <LoadingState /> : (
+  const details = loadingDetails ? (
+    <LoadingState />
+  ) : (
     <>
       {/* English weekly section — shown only when a weekly plan has words today */}
       {hasWeeklyEnglish && (
-      <section className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-teal-600 to-emerald-500 shadow-[0_3px_10px_rgba(13,148,136,.3)]">
-              📖
-            </span>
-            英语单词预习
-          </h2>
-          {englishPlan?.id && (
-            <Link
-              href={`/english/words/weekly/${englishPlan.id}/practice`}
-              className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-teal-700"
-            >
-              前往练习
-            </Link>
-          )}
-        </div>
-
-        {hasEnglish ? (
-          <>
-            {/* Three-step task flow ①②③ (design 1A + 计划页三步式) */}
-            <div className="mb-3 space-y-2">
-              {todayHasFocusWords && suggestedPassage && (
-                <ThreeStepRow
-                  index={1}
-                  done={readingDoneToday}
-                  pendingDimmed={false}
-                  icon="📖"
-                  title="读课文"
-                  subtitle={readingDoneToday ? `已读 · ${suggestedPassage.title}` : `建议先读 · ${suggestedPassage.title}`}
-                  hint={readingDoneToday ? undefined : '先建立语境记忆，再练习效果更好'}
-                  href={`/english/words/reading/${suggestedPassage.key}?from=today`}
-                  color="orange"
-                />
-              )}
-              {consolidateNewCount > 0 && englishPlan?.id && (
-                <ThreeStepRow
-                  index={todayHasFocusWords ? 2 : 1}
-                  done={consolidateDone}
-                  pendingDimmed={todayHasFocusWords && !readingDoneToday && !consolidateDone}
-                  icon="🆕"
-                  title={`必记词练习 ${consolidateNewCount} 个`}
-                  subtitle={consolidateDone ? `已完成${englishProgress?.consolidateScore !== undefined ? ` · ${englishProgress.consolidateScore}%` : ''}` : '今日新增的必记单词'}
-                  hint={todayHasFocusWords && !readingDoneToday && !consolidateDone ? '建议先读课文' : undefined}
-                  href={`/english/words/weekly/${englishPlan.id}`}
-                  color="blue"
-                />
-              )}
-              {previewNewCount > 0 && englishPlan?.id && (
-                <ThreeStepRow
-                  index={
-                    (todayHasFocusWords ? 1 : 0) + (consolidateNewCount > 0 ? 1 : 0) + 1
-                  }
-                  done={previewDone}
-                  pendingDimmed={false}
-                  icon="🔖"
-                  title={`预习词练习 ${previewNewCount} 个`}
-                  subtitle={previewDone ? `已完成${englishProgress?.previewScore !== undefined ? ` · ${englishProgress.previewScore}%` : ''}` : '提前接触下周内容'}
-                  href={`/english/words/weekly/${englishPlan.id}`}
-                  color="purple"
-                />
-              )}
-            </div>
-
-            {todayWords.length > 0 ? (
-              <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-none -mx-4 px-4">
-                {todayWords.map((word) => (
-                  <WordCard key={`${word.unit}::${word.lesson}::${word.word}`} entry={word} isNew={true} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-[13px] text-text-muted py-3">今日暂无新词</div>
-            )}
-
-            {englishDone && (
-              <div
-                className="mt-3 rounded-xl px-4 py-2.5 flex items-center gap-2"
-                style={{ background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)', border: '1px solid rgba(34,197,94,.2)' }}
+        <section className="mb-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-text-primary flex items-center gap-2 text-[15px] font-extrabold">
+              <span className="shadow-sticker-sm inline-flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500 text-sm">
+                📖
+              </span>
+              英语单词预习
+            </h2>
+            {englishPlan?.id && (
+              <Link
+                href={`/english/words/weekly/${englishPlan.id}/practice`}
+                className="flex items-center gap-1 text-[12px] font-bold text-teal-700 no-underline transition-opacity hover:opacity-70"
               >
-                <span className="text-lg">🎉</span>
-                <span className="text-[12px] font-bold text-green-700">今日英语已完成，得分 {englishProgress?.lastScore ?? 0}%</span>
-              </div>
+                前往练习
+              </Link>
             )}
-          </>
-        ) : null}
-      </section>
+          </div>
+
+          {hasEnglish ? (
+            <>
+              {/* Three-step task flow ①②③ (design 1A + 计划页三步式) */}
+              <div className="mb-3 space-y-2">
+                {todayHasFocusWords && suggestedPassage && (
+                  <ThreeStepRow
+                    index={1}
+                    done={readingDoneToday}
+                    pendingDimmed={false}
+                    icon="📖"
+                    title="读课文"
+                    subtitle={
+                      readingDoneToday
+                        ? `已读 · ${suggestedPassage.title}`
+                        : `建议先读 · ${suggestedPassage.title}`
+                    }
+                    hint={readingDoneToday ? undefined : '先建立语境记忆，再练习效果更好'}
+                    href={`/english/words/reading/${suggestedPassage.key}?from=today`}
+                    color="orange"
+                  />
+                )}
+                {consolidateNewCount > 0 && englishPlan?.id && (
+                  <ThreeStepRow
+                    index={todayHasFocusWords ? 2 : 1}
+                    done={consolidateDone}
+                    pendingDimmed={todayHasFocusWords && !readingDoneToday && !consolidateDone}
+                    icon="🆕"
+                    title={`必记词练习 ${consolidateNewCount} 个`}
+                    subtitle={
+                      consolidateDone
+                        ? `已完成${englishProgress?.consolidateScore !== undefined ? ` · ${englishProgress.consolidateScore}%` : ''}`
+                        : '今日新增的必记单词'
+                    }
+                    hint={
+                      todayHasFocusWords && !readingDoneToday && !consolidateDone
+                        ? '建议先读课文'
+                        : undefined
+                    }
+                    href={`/english/words/weekly/${englishPlan.id}`}
+                    color="blue"
+                  />
+                )}
+                {previewNewCount > 0 && englishPlan?.id && (
+                  <ThreeStepRow
+                    index={(todayHasFocusWords ? 1 : 0) + (consolidateNewCount > 0 ? 1 : 0) + 1}
+                    done={previewDone}
+                    pendingDimmed={false}
+                    icon="🔖"
+                    title={`预习词练习 ${previewNewCount} 个`}
+                    subtitle={
+                      previewDone
+                        ? `已完成${englishProgress?.previewScore !== undefined ? ` · ${englishProgress.previewScore}%` : ''}`
+                        : '提前接触下周内容'
+                    }
+                    href={`/english/words/weekly/${englishPlan.id}`}
+                    color="purple"
+                  />
+                )}
+              </div>
+
+              {todayWords.length > 0 ? (
+                <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-3">
+                  {todayWords.map((word) => (
+                    <WordCard
+                      key={`${word.unit}::${word.lesson}::${word.word}`}
+                      entry={word}
+                      isNew={true}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-text-muted py-3 text-[13px]">今日暂无新词</div>
+              )}
+
+              {englishDone && (
+                <div
+                  className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5"
+                  style={{ background: '#dcfce7', border: '1px solid rgba(34,197,94,.2)' }}
+                >
+                  <span className="text-lg">🎉</span>
+                  <span className="text-[12px] font-bold text-green-700">
+                    今日英语已完成，得分 {englishProgress?.lastScore ?? 0}%
+                  </span>
+                </div>
+              )}
+            </>
+          ) : null}
+        </section>
       )}
 
       <AdaptivePlanTodayCard user={user} date={today} />
 
       {/* Chinese section — roadmap current level (same card as /chinese home) */}
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-amber-500 to-orange-400 shadow-[0_3px_10px_rgba(245,158,11,.3)]">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-text-primary flex items-center gap-2 text-[15px] font-extrabold">
+            <span className="shadow-sticker-sm inline-flex h-7 w-7 items-center justify-center rounded-xl bg-orange-400 text-sm">
               📜
             </span>
             今日语文
@@ -631,7 +694,7 @@ export default function TodayDashboard({
               if (chineseActivePlan) setActiveChineseBook(chineseActivePlan.bookSlug)
               else if (chineseCompletedPlan) setActiveChineseBook(chineseCompletedPlan.bookSlug)
             }}
-            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-amber-700"
+            className="flex items-center gap-1 text-[12px] font-bold text-amber-700 no-underline transition-opacity hover:opacity-70"
           >
             前往学习
           </Link>
@@ -643,9 +706,7 @@ export default function TodayDashboard({
           <div
             className="rounded-2xl px-4 py-4"
             style={{
-              background: chineseHasTodayRun
-                ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
-                : 'linear-gradient(135deg, #fffbeb, #fef3c7)',
+              background: chineseHasTodayRun ? '#dcfce7' : '#fffbeb',
               border: `1.5px solid ${chineseHasTodayRun ? 'rgba(34,197,94,.25)' : 'rgba(245,158,11,.2)'}`,
             }}
           >
@@ -667,16 +728,16 @@ export default function TodayDashboard({
 
       {/* Calc section */}
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-[0_3px_10px_rgba(139,92,246,.3)]">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-text-primary flex items-center gap-2 text-[15px] font-extrabold">
+            <span className="shadow-sticker-sm inline-flex h-7 w-7 items-center justify-center rounded-xl bg-fuchsia-500 text-sm">
               🧮
             </span>
             今日口算挑战
           </h2>
           <Link
             href="/calc/session?mode=daily&start=1"
-            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-violet-600"
+            className="flex items-center gap-1 text-[12px] font-bold text-violet-600 no-underline transition-opacity hover:opacity-70"
           >
             {calcAllDone ? '再练一组' : '前往练习'}
           </Link>
@@ -685,9 +746,7 @@ export default function TodayDashboard({
         <div
           className="rounded-2xl px-4 py-4"
           style={{
-            background: calcAllDone
-              ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
-              : 'linear-gradient(135deg, #f5f3ff, #fae8ff)',
+            background: calcAllDone ? '#dcfce7' : '#f5f3ff',
             border: `1.5px solid ${calcAllDone ? 'rgba(34,197,94,.25)' : 'rgba(139,92,246,.2)'}`,
           }}
         >
@@ -695,24 +754,28 @@ export default function TodayDashboard({
             <div
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-[24px]"
               style={{
-                background: calcAllDone
-                  ? 'linear-gradient(135deg, #22c55e, #4ade80)'
-                  : 'linear-gradient(135deg, #8b5cf6, #a855f7)',
+                background: calcAllDone ? '#22c55e' : '#8b5cf6',
                 color: 'white',
                 boxShadow: calcAllDone
-                  ? '0 3px 10px rgba(34,197,94,.3)'
-                  : '0 3px 10px rgba(139,92,246,.3)',
+                  ? '0 3px 0 rgba(34,197,94,.3)'
+                  : '0 3px 0 rgba(139,92,246,.3)',
               }}
             >
               {calcAllDone ? '✓' : '🧮'}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[14px] font-extrabold" style={{ color: calcAllDone ? '#15803d' : '#6d28d9' }}>
+            <div className="min-w-0 flex-1">
+              <div
+                className="text-[14px] font-extrabold"
+                style={{ color: calcAllDone ? '#15803d' : '#6d28d9' }}
+              >
                 {calcAllDone
                   ? `今日完成 ${calcDoneCount} 题`
                   : `进度 ${calcDoneCount} / ${calcTargetCount}`}
               </div>
-              <div className="text-[11px] mt-0.5" style={{ color: calcAllDone ? '#16a34a' : '#7c3aed' }}>
+              <div
+                className="mt-0.5 text-[11px]"
+                style={{ color: calcAllDone ? '#16a34a' : '#7c3aed' }}
+              >
                 {calcDoneCount > 0
                   ? `正确率 ${calcAccuracy}%${isActualToday ? ` · 已得 ⭐ ${calcDaily.todayCoins}` : ''}`
                   : isActualToday
@@ -727,16 +790,16 @@ export default function TodayDashboard({
 
       {/* Math section */}
       <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[15px] font-extrabold flex items-center gap-2 text-text-primary">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl text-sm bg-gradient-to-br from-orange-500 to-amber-400 shadow-[0_3px_10px_rgba(249,115,22,.3)]">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-text-primary flex items-center gap-2 text-[15px] font-extrabold">
+            <span className="shadow-sticker-sm inline-flex h-7 w-7 items-center justify-center rounded-xl bg-amber-400 text-sm">
               📐
             </span>
             今日数学题目
           </h2>
           <Link
             href={mathAllDone ? '/math/ny/plan' : '/math/ny/plan/practice'}
-            className="text-[12px] font-bold no-underline flex items-center gap-1 transition-opacity hover:opacity-70 text-orange-600"
+            className="flex items-center gap-1 text-[12px] font-bold text-orange-600 no-underline transition-opacity hover:opacity-70"
           >
             {mathAllDone ? '查看计划' : '前往做题'}
           </Link>
@@ -753,44 +816,44 @@ export default function TodayDashboard({
                   href={`/math/ny/${prob.lessonId}/${prob.section}/${prob.index}`}
                   className="flex items-center gap-3 rounded-2xl px-3.5 py-3 no-underline transition-all hover:-translate-y-0.5"
                   style={{
-                    background: done
-                      ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)'
-                      : 'linear-gradient(135deg, #ffffff, #fff7ed)',
+                    background: done ? '#f0fdf4' : '#ffffff',
                     border: `1.5px solid ${done ? 'rgba(34,197,94,.25)' : 'rgba(251,146,60,.2)'}`,
-                    boxShadow: done ? '0 2px 8px rgba(34,197,94,.08)' : '0 2px 8px rgba(251,146,60,.06)',
+                    boxShadow: done ? '0 3px 0 rgba(34,197,94,.3)' : '0 3px 0 rgba(251,146,60,.3)',
                   }}
                 >
                   {/* Status circle */}
                   <div
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[13px] font-black"
                     style={{
-                      background: done
-                        ? 'linear-gradient(135deg, #22c55e, #4ade80)'
-                        : 'linear-gradient(135deg, #fff7ed, #fef3c7)',
+                      background: done ? '#22c55e' : '#fff7ed',
                       border: done ? 'none' : '1.5px solid rgba(251,146,60,.3)',
                       color: done ? 'white' : '#c2410c',
-                      boxShadow: done ? '0 3px 8px rgba(34,197,94,.25)' : 'none',
+                      boxShadow: done ? '0 3px 0 rgba(34,197,94,.3)' : 'none',
                     }}
                   >
                     {done ? '✓' : i + 1}
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div
-                      className="text-[13px] font-semibold truncate leading-tight"
-                      style={{ color: done ? '#16a34a' : '#1e293b', textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.7 : 1 }}
+                      className="truncate text-[13px] leading-tight font-semibold"
+                      style={{
+                        color: done ? '#16a34a' : '#1e293b',
+                        textDecoration: done ? 'line-through' : 'none',
+                        opacity: done ? 0.7 : 1,
+                      }}
                     >
                       {prob.title}
                     </div>
-                    <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="mt-0.5 flex items-center gap-1.5">
                       <span
                         className="rounded-full px-1.5 py-px text-[9px] font-bold"
                         style={{ background: `${sectionColor}18`, color: sectionColor }}
                       >
                         {SECTION_LABELS[prob.section] ?? prob.section}
                       </span>
-                      <span className="text-[10px] text-text-muted">第 {prob.lessonId} 讲</span>
+                      <span className="text-text-muted text-[10px]">第 {prob.lessonId} 讲</span>
                     </div>
                   </div>
                 </Link>
@@ -801,11 +864,13 @@ export default function TodayDashboard({
               <div
                 className="mt-2 rounded-2xl px-4 py-3 text-center lg:col-span-2"
                 style={{
-                  background: 'linear-gradient(135deg, #dcfce7, #bbf7d0)',
+                  background: '#dcfce7',
                   border: '1.5px solid rgba(34,197,94,.25)',
                 }}
               >
-                <span className="text-[13px] font-extrabold text-green-700">🎉 今天所有数学题都完成啦！</span>
+                <span className="text-[13px] font-extrabold text-green-700">
+                  🎉 今天所有数学题都完成啦！
+                </span>
               </div>
             )}
           </div>
@@ -814,12 +879,12 @@ export default function TodayDashboard({
             className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
             style={{ borderColor: 'rgba(251,146,60,.25)', background: 'rgba(255,247,237,.5)' }}
           >
-            <div className="text-3xl mb-2">📐</div>
-            <div className="text-[13px] text-text-muted mb-3">还没有本周数学计划</div>
+            <div className="mb-2 text-3xl">📐</div>
+            <div className="text-text-muted mb-3 text-[13px]">还没有本周数学计划</div>
             <Link
               href="/math/ny/plan"
               className="inline-block rounded-xl px-4 py-2 text-[13px] font-bold text-white no-underline transition-opacity hover:opacity-80"
-              style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)', boxShadow: '0 4px 12px rgba(249,115,22,.3)' }}
+              style={{ background: '#f97316', boxShadow: '0 3px 0 rgba(249,115,22,.3)' }}
             >
               创建数学计划
             </Link>
@@ -829,8 +894,8 @@ export default function TodayDashboard({
             className="rounded-2xl border-2 border-dashed px-5 py-6 text-center"
             style={{ borderColor: 'rgba(251,146,60,.25)', background: 'rgba(255,247,237,.5)' }}
           >
-            <div className="text-3xl mb-2">📐</div>
-            <div className="text-[13px] text-text-muted">该日期没有数学计划</div>
+            <div className="mb-2 text-3xl">📐</div>
+            <div className="text-text-muted text-[13px]">该日期没有数学计划</div>
           </div>
         )}
       </section>
@@ -840,7 +905,10 @@ export default function TodayDashboard({
   return (
     <div className={containerClassName ?? 'mx-auto max-w-[960px] px-4 pb-12 sm:px-6'}>
       {resetToast && (
-        <div role="status" className="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900">
+        <div
+          role="status"
+          className="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900"
+        >
           {resetToast}
         </div>
       )}
