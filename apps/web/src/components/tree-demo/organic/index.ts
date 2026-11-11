@@ -1,0 +1,10 @@
+// 有机版时间树的公共出口：材质 / 动效 / 物理均可单独复用。
+export * from './barkMaterial'
+export * from './bubbleMaterial'
+export * from './ease'
+export * from './fruitPhysics'
+export * from './gemMaterial'
+export * from './rippleMaterial'
+export * from './rollover'
+export { TweenRunner } from './tween'
+export { OrganicTimeTreeWorld } from './world'

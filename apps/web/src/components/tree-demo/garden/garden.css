@@ -1,0 +1,660 @@
+/*
+ * 时间树原型：场景自己的动画和日夜配色。
+ * 这里是插画，不是 UI 控件：天空渐变、叶子明暗、泡泡高光、果实光晕沿用泡泡愿望树 demo 的画法，
+ * 渐变 / 光晕行带 visual-ok 标记。按钮、弹窗、卡片仍然走 @rosie/ui。
+ */
+
+.tg-scene {
+  --tg-sky-top: #6fc3f7;
+  --tg-sky-mid: #a5dcf9;
+  --tg-sky-low: #fdeec9;
+  --tg-hill-a: #b8e986;
+  --tg-hill-b: #8fd45e;
+  --tg-hill-c: #69b83e;
+  --tg-cloud: rgba(255, 255, 255, 0.92);
+  --tg-tree-dim: 1;
+  --tg-rail-width: clamp(8.75rem, 18vw, 11rem);
+  --tg-stage-right: calc(var(--tg-rail-width) + 0.75rem);
+  --tg-stage-top: 4.5rem;
+  --tg-spring: cubic-bezier(0.34, 1.5, 0.64, 1);
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  user-select: none;
+  touch-action: manipulation;
+}
+.tg-scene[data-daypart='morning'] {
+  --tg-sky-top: #9fd8f5;
+  --tg-sky-mid: #ffe3c2;
+  --tg-sky-low: #ffd1a1;
+  --tg-hill-a: #c4ec92;
+  --tg-hill-b: #98da66;
+  --tg-hill-c: #74bd45;
+}
+.tg-scene[data-daypart='dusk'] {
+  --tg-sky-top: #8b7cf0;
+  --tg-sky-mid: #ff9e7d;
+  --tg-sky-low: #ffd9a0;
+  --tg-hill-a: #a8d97e;
+  --tg-hill-b: #7fc25a;
+  --tg-hill-c: #5da33c;
+  --tg-cloud: rgba(255, 236, 220, 0.9);
+}
+.tg-scene[data-daypart='night'] {
+  --tg-sky-top: #1c2450;
+  --tg-sky-mid: #2e3a75;
+  --tg-sky-low: #565a9e;
+  --tg-hill-a: #4d7a52;
+  --tg-hill-b: #3d6844;
+  --tg-hill-c: #2f5537;
+  --tg-cloud: rgba(190, 200, 240, 0.35);
+  --tg-tree-dim: 0.82;
+}
+
+/* ---------- 天空 ---------- */
+.tg-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--tg-sky-top) 0%, var(--tg-sky-mid) 52%, var(--tg-sky-low) 100%); /* visual-ok: 插画 */
+}
+.tg-aurora {
+  position: absolute;
+  inset: -20% -10%;
+  background:
+    radial-gradient(60% 45% at 20% 18%, rgba(255, 255, 255, 0.28), transparent 70%), /* visual-ok: 插画 */
+    radial-gradient(50% 40% at 82% 12%, rgba(255, 236, 170, 0.3), transparent 70%), /* visual-ok: 插画 */
+    radial-gradient(45% 35% at 60% 40%, rgba(255, 182, 213, 0.16), transparent 70%); /* visual-ok: 插画 */
+  animation: tg-aurora 26s ease-in-out infinite alternate;
+}
+.tg-scene[data-daypart='night'] .tg-aurora {
+  opacity: 0.5;
+}
+@keyframes tg-aurora {
+  from {
+    transform: translateX(-3%);
+  }
+  to {
+    transform: translateX(3%);
+  }
+}
+.tg-sun {
+  position: absolute;
+  top: 9%;
+  left: 7%;
+  width: clamp(64px, 8vw, 92px);
+  aspect-ratio: 1;
+}
+.tg-sun i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #fff6c9, #ffd94a 58%, #ffb300); /* visual-ok: 插画 */
+  box-shadow: 0 0 16px 6px #fff3a8, 0 0 52px 20px #ffd94aaa, 0 0 90px 30px #ffc34a55; /* visual-ok: 插画 */
+  animation: tg-pulse 5s ease-in-out infinite;
+}
+.tg-sun::before {
+  content: '';
+  position: absolute;
+  inset: -26px;
+  border-radius: 50%;
+  border: 3px dashed rgba(255, 220, 110, 0.65);
+  animation: tg-spin 40s linear infinite;
+}
+.tg-moon {
+  position: absolute;
+  top: 9%;
+  left: 8%;
+  width: clamp(54px, 7vw, 74px);
+  aspect-ratio: 1;
+  transform: rotate(-15deg);
+  filter: drop-shadow(0 0 5px #fff8df) drop-shadow(0 0 16px #d6e6ff) drop-shadow(0 0 30px #b4caff88); /* visual-ok: 插画 */
+}
+.tg-moon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 32%, #fffbe8, #ffe9a8 70%); /* visual-ok: 插画 */
+  -webkit-mask: radial-gradient(ellipse 39% 39% at 74% 50%, transparent 96%, #000 100%); /* visual-ok: 插画 */
+  mask: radial-gradient(ellipse 39% 39% at 74% 50%, transparent 96%, #000 100%); /* visual-ok: 插画 */
+}
+.tg-stars {
+  position: absolute;
+  inset: 0;
+}
+.tg-stars::before,
+.tg-stars::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    12vw 8vh #fff,
+    24vw 16vh #ffe9a8,
+    38vw 6vh #fff,
+    52vw 14vh #fff,
+    66vw 9vh #ffe9a8,
+    78vw 18vh #fff,
+    88vw 7vh #fff,
+    30vw 26vh #fff,
+    58vw 24vh #ffe9a8,
+    82vw 28vh #fff,
+    16vw 30vh #ffe9a8,
+    44vw 34vh #fff;
+  animation: tg-twinkle 3.4s ease-in-out infinite;
+}
+.tg-stars::after {
+  transform: translate(6vw, 10vh) scale(0.7);
+  animation-delay: 1.7s;
+}
+.tg-cloud {
+  position: absolute;
+  width: 150px;
+  height: 46px;
+  border-radius: 999px;
+  background: var(--tg-cloud);
+  filter: drop-shadow(0 6px 10px rgba(90, 120, 180, 0.12));
+  animation: tg-cloud linear infinite;
+}
+.tg-cloud::before,
+.tg-cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+.tg-cloud::before {
+  width: 64px;
+  height: 64px;
+  top: -30px;
+  left: 26px;
+}
+.tg-cloud::after {
+  width: 44px;
+  height: 44px;
+  top: -20px;
+  right: 26px;
+}
+@keyframes tg-cloud {
+  from {
+    left: -180px;
+  }
+  to {
+    left: 110%;
+  }
+}
+.tg-hill-a {
+  fill: var(--tg-hill-a);
+}
+.tg-hill-b {
+  fill: var(--tg-hill-b);
+}
+.tg-hill-c {
+  fill: var(--tg-hill-c);
+}
+.tg-deco {
+  position: absolute;
+  font-size: 26px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.12));
+  animation: tg-deco 4s ease-in-out infinite;
+}
+@keyframes tg-deco {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes tg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tg-twinkle {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes tg-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* ---------- 树 ---------- */
+.tg-tree-wrap {
+  position: absolute;
+  inset: var(--tg-stage-top) var(--tg-stage-right) var(--tg-tree-bottom, 4rem) 0;
+  z-index: 2;
+}
+.tg-stone-rail {
+  position: absolute;
+  right: 0.5rem;
+  top: var(--tg-stage-top);
+  bottom: var(--tg-tree-bottom, 4rem);
+  margin-block: auto;
+  width: var(--tg-rail-width);
+  height: fit-content;
+  max-height: calc(100% - var(--tg-stage-top) - var(--tg-tree-bottom, 4rem));
+  overflow-y: auto;
+  padding-bottom: 5px;
+  z-index: 10;
+}
+.tg-bubble-area {
+  position: absolute;
+  inset: 0 var(--tg-stage-right) 0 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.tg-tree-sway {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 96%;
+  animation: tg-sway 8s ease-in-out infinite;
+  filter: brightness(var(--tg-tree-dim));
+}
+@keyframes tg-sway {
+  0%,
+  100% {
+    transform: rotate(-0.5deg);
+  }
+  50% {
+    transform: rotate(0.5deg);
+  }
+}
+.tg-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-blink 5.2s infinite;
+}
+@keyframes tg-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  96.5% {
+    transform: scaleY(0.08);
+  }
+}
+.tg-today-ring {
+  animation: tg-dash 6s linear infinite;
+}
+@keyframes tg-dash {
+  to {
+    stroke-dashoffset: -60;
+  }
+}
+.tg-region {
+  transition: opacity 0.4s;
+}
+.tg-item {
+  cursor: pointer;
+  outline: none;
+}
+.tg-item:focus-visible .tg-focus {
+  stroke: #2563eb;
+  stroke-width: 3;
+}
+.tg-item:hover .tg-item-body {
+  transform: scale(1.14);
+  filter: brightness(1.08);
+}
+.tg-item-body {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.25s var(--tg-spring);
+}
+
+/* 花：浇水阶段 0–3，越浇越大，盛开带光晕 */
+.tg-petals {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.55s var(--tg-spring);
+}
+.tg-flower[data-stage='0'] .tg-petals {
+  transform: scale(0.62);
+}
+.tg-flower[data-stage='1'] .tg-petals {
+  transform: scale(0.8);
+}
+.tg-flower[data-stage='2'] .tg-petals {
+  transform: scale(0.96);
+}
+.tg-flower[data-stage='3'] .tg-petals {
+  transform: scale(1.14);
+}
+.tg-halo {
+  opacity: 0;
+  transition: opacity 0.5s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.tg-flower[data-stage='3'] .tg-halo {
+  opacity: 1;
+  animation: tg-halo 2.4s ease-in-out infinite;
+}
+@keyframes tg-halo {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+  }
+}
+.tg-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-halo 2.4s ease-in-out infinite;
+}
+.tg-born {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-born 0.75s var(--tg-spring);
+}
+@keyframes tg-born {
+  from {
+    transform: scale(0) rotate(-50deg);
+  }
+  to {
+    transform: scale(1) rotate(0);
+  }
+}
+.tg-wiggle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-wiggle 0.6s ease-in-out;
+}
+@keyframes tg-wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  60% {
+    transform: rotate(9deg);
+  }
+}
+.tg-apple-bob {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-bob 2.6s ease-in-out infinite;
+}
+@keyframes tg-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+.tg-rainbow-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-spin 9s linear infinite;
+}
+
+/* ---------- 泡泡：空中四个固定位置 ---------- */
+.tg-bslot {
+  position: absolute;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+.tg-bslot[data-slot='0'] {
+  left: 13%;
+  top: 34%;
+}
+.tg-bslot[data-slot='1'] {
+  left: 87%;
+  top: 34%;
+}
+.tg-bslot[data-slot='2'] {
+  left: 30%;
+  top: 19%;
+}
+.tg-bslot[data-slot='3'] {
+  left: 70%;
+  top: 19%;
+}
+@media (max-width: 639px) {
+  .tg-scene {
+    --tg-rail-width: 7.25rem;
+  }
+}
+@media (max-width: 760px) {
+  .tg-scene {
+    --tg-stage-top: 8.5rem;
+  }
+  .tg-bslot[data-slot='0'] {
+    left: 15%;
+    top: 21%;
+  }
+  .tg-bslot[data-slot='1'] {
+    left: 85%;
+    top: 21%;
+  }
+  .tg-bslot[data-slot='2'] {
+    left: 38%;
+    top: 25%;
+  }
+  .tg-bslot[data-slot='3'] {
+    left: 62%;
+    top: 25%;
+  }
+}
+.tg-bubble {
+  position: relative;
+  width: var(--tg-size);
+  height: var(--tg-size);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 31% 26%, rgba(255, 255, 255, 0.95) 0 5%, rgba(255, 255, 255, 0.4) 11%, transparent 30%), /* visual-ok: 插画 */
+    radial-gradient(circle at 72% 80%, var(--tg-tint) 0%, transparent 58%), /* visual-ok: 插画 */
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.07) 62%, rgba(255, 255, 255, 0.25)); /* visual-ok: 插画 */
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset -6px -9px 16px rgba(255, 255, 255, 0.35), /* visual-ok: 插画 */
+    inset 5px 7px 14px rgba(255, 255, 255, 0.5), /* visual-ok: 插画 */
+    0 10px 26px rgba(80, 120, 200, 0.2); /* visual-ok: 插画 */
+  backdrop-filter: blur(2px); /* visual-ok: 插画 */
+  animation: tg-float var(--tg-dur, 4.2s) ease-in-out infinite;
+  animation-delay: var(--tg-delay, 0s);
+  transition: filter 0.18s;
+  outline: none;
+}
+.tg-bubble::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient( /* visual-ok: 插画 */
+    from 0deg,
+    transparent 0 30%,
+    rgba(255, 110, 180, 0.4) 42%,
+    rgba(90, 200, 255, 0.4) 55%,
+    rgba(255, 230, 120, 0.4) 66%,
+    transparent 78%
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); /* visual-ok: 插画 */
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); /* visual-ok: 插画 */
+  animation: tg-spin 7s linear infinite;
+}
+.tg-bubble:hover {
+  filter: brightness(1.1) saturate(1.15);
+}
+.tg-bubble:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+.tg-scene[data-daypart='night'] .tg-bubble {
+  background-color: rgba(228, 238, 255, 0.34);
+  box-shadow:
+    inset -6px -9px 16px rgba(255, 255, 255, 0.3), /* visual-ok: 插画 */
+    inset 5px 7px 14px rgba(255, 255, 255, 0.4), /* visual-ok: 插画 */
+    0 0 24px rgba(160, 200, 255, 0.35); /* visual-ok: 插画 */
+}
+@keyframes tg-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 5px -11px;
+  }
+  70% {
+    translate: -5px -4px;
+  }
+}
+.tg-bubble-in {
+  text-align: center;
+  pointer-events: none;
+  padding: 8px;
+  animation: tg-wobble 3.6s ease-in-out infinite;
+}
+@keyframes tg-wobble {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  30% {
+    transform: scale(1.03, 0.97);
+  }
+  60% {
+    transform: scale(0.98, 1.02);
+  }
+}
+
+/* ---------- 浮字、提示、顶栏标题 ---------- */
+.tg-float-text {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 22px;
+  color: #ffb300;
+  text-shadow:
+    0 2px 0 #ffffff,
+    0 0 12px rgba(255, 200, 60, 0.8); /* visual-ok: 插画 */
+  animation: tg-float-up 1.15s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes tg-float-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30%) scale(0.6);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -60%) scale(1.12);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -190%) scale(1);
+  }
+}
+.tg-toast {
+  animation:
+    tg-toast-in 0.3s var(--tg-spring),
+    tg-toast-out 0.35s ease 2.6s forwards;
+}
+@keyframes tg-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tg-toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.92);
+  }
+}
+.tg-bump {
+  animation: tg-bump 0.45s var(--tg-spring);
+}
+@keyframes tg-bump {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.tg-logo {
+  font-weight: 800;
+  font-size: clamp(20px, 2.6vw, 28px);
+  color: #ffffff;
+  text-shadow:
+    0 2px 0 rgba(122, 74, 46, 0.55),
+    0 4px 14px rgba(74, 55, 40, 0.3); /* visual-ok: 插画 */
+  transform: rotate(-2deg);
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+.tg-gem-glow {
+  animation: tg-halo 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tg-aurora,
+  .tg-sun i,
+  .tg-sun::before,
+  .tg-stars::before,
+  .tg-stars::after,
+  .tg-cloud,
+  .tg-deco,
+  .tg-tree-sway,
+  .tg-eye,
+  .tg-today-ring,
+  .tg-halo,
+  .tg-glow,
+  .tg-apple-bob,
+  .tg-rainbow-ring,
+  .tg-bubble,
+  .tg-bubble::after,
+  .tg-bubble-in,
+  .tg-gem-glow {
+    animation: none !important;
+  }
+}
+
+.tg-scene .tg-bubble[data-state] {
+  background-color: var(--tg-tint);
+}
+.tg-bubble[data-state='running'] {
+  border: 5px double #795000;
+}
+.tg-bubble[data-state='done'] {
+  border-color: #238943;
+}
