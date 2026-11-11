@@ -19,13 +19,20 @@ import { wordKey } from '@rosie/english'
 import type { MasteryLevel } from '@rosie/core'
 import { todayStr } from '@rosie/core'
 import type { WordEntry, WeekDayProgress } from '@rosie/core'
-import { ListeningDrawer, listeningClipsFor, PassageView } from '@rosie/english'
+import {
+  ListeningDrawer,
+  playableListeningClips,
+  lessonAudioUrl,
+  useAudioSlots,
+  PassageView,
+} from '@rosie/english'
 import { WordPopup } from '@rosie/english'
 import { ParagraphRecallQuiz } from '@rosie/english'
 import { UncoveredWordsReview } from '@rosie/english'
 import { PreReadingRecall } from '@rosie/english'
 import { GlossaryPanel } from '@rosie/english'
 import { ReadingLearningSections } from '@rosie/english'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 0, label: '未掌握', dot: 'bg-amber-400' },
@@ -54,21 +61,27 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
   const [loadingNarration, setLoadingNarration] = useState(false)
   const [narrationError, setNarrationError] = useState('')
   useEffect(() => stop, [stop])
-  const narrationActive = player.current?.refLink === `/english/words/reading/${key}`
+  const narrationActive = player.current?.url === audioUrl
   const narrationPlaying = narrationActive && player.isPlaying && !player.isPaused
   const searchParams = useSearchParams()
   const focusWord = searchParams.get('focus')
 
   const passage = findPassageByKey(key)
-  const clips = useMemo(() => listeningClipsFor(passage), [passage])
-  const [listening, setListening] = useState<{ key: string; index: number; open: boolean } | null>(null)
+  const { data: slots } = useAudioSlots(user)
+  const clips = useMemo(() => playableListeningClips(passage, slots), [passage, slots])
+  const [listening, setListening] = useState<{ key: string; index: number; open: boolean } | null>(
+    null,
+  )
   const [listeningCollapsed, setListeningCollapsed] = useState(false)
   const [listeningPaused, setListeningPaused] = useState(false)
   const [selectedClips, setSelectedClips] = useState<number[]>([])
-  const showClip = useCallback((index: number) => {
-    setListening({ key, index, open: true })
-    setSelectedClips(current => current.includes(index) ? current : [index])
-  }, [key])
+  const showClip = useCallback(
+    (index: number) => {
+      setListening({ key, index, open: true })
+      setSelectedClips((current) => (current.includes(index) ? current : [index]))
+    },
+    [key],
+  )
   const listeningOpen = listening?.key === key && listening.open
   const clipIndex = listening?.key === key ? listening.index : 0
   const target = listeningOpen ? clips[clipIndex]?.target : undefined
@@ -84,16 +97,32 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
   }
   const closeListening = () => setListening({ key, index: clipIndex, open: false })
   const clipButton = (cue: string) => {
-    const index = clips.findIndex(clip => clip.target === cue)
+    const index = clips.findIndex((clip) => clip.target === cue)
     if (index < 0) return null
     return (
-      <button type="button" aria-label={`听记第 ${index + 1} 段`} title="听记练习"
-        className={`inline-flex size-8 items-center justify-center align-middle hover:text-orange-600 ${target === cue ? 'text-orange-600' : 'text-slate-400'}`}
-        onClick={() => selectClip(index)}>
-        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M3 16v-4a9 9 0 0 1 18 0v4"/><rect x="3" y="12" width="4" height="8" rx="2"/><rect x="17" y="12" width="4" height="8" rx="2"/>
+      <IconButton
+        type="button"
+        aria-label={`听记第 ${index + 1} 段`}
+        title="听记练习"
+        onClick={() => selectClip(index)}
+        variant="ghost"
+        color={target === cue ? 'orange' : 'gray'}
+        size="2"
+      >
+        <svg
+          aria-hidden="true"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M3 16v-4a9 9 0 0 1 18 0v4" />
+          <rect x="3" y="12" width="4" height="8" rx="2" />
+          <rect x="17" y="12" width="4" height="8" rx="2" />
         </svg>
-      </button>
+      </IconButton>
     )
   }
   useEffect(() => {
@@ -106,7 +135,10 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       const bottom = drawer.getBoundingClientRect().top - 12
       const top = 80
       if (rect.top < top || rect.bottom > bottom) {
-        window.scrollBy({ top: rect.top - top - Math.max(0, (bottom - top - rect.height) / 2), behavior: 'instant' })
+        window.scrollBy({
+          top: rect.top - top - Math.max(0, (bottom - top - rect.height) / 2),
+          behavior: 'instant',
+        })
       }
     }
     follow()
@@ -270,38 +302,37 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
 
       {/* Page header */}
-      <div className="mb-5 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 p-4 ring-1 ring-orange-200/60 sm:p-5">
+      <div className="mb-5 rounded-2xl bg-amber-50 p-4 ring-1 ring-orange-200/60 sm:p-5">
         {/* Row 1 — 导航条:返回 ⇆ 模式切换。永远单行,模式 toggle 用短文案 + nowrap */}
         <div className="mb-3 flex items-center justify-between gap-3">
           <Link
             href="/english/words/reading"
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold text-orange-700 ring-1 ring-orange-200 transition hover:-translate-x-0.5 hover:bg-white"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-orange-700 ring-1 ring-orange-200 transition hover:-translate-x-0.5 hover:bg-white"
             aria-label="返回阅读列表"
           >
             <span className="text-[14px] leading-none">←</span>
             <span>返回</span>
           </Link>
-          <div className="inline-flex shrink-0 rounded-full bg-white/70 p-0.5 ring-1 ring-orange-200">
+          <div className="inline-flex shrink-0 rounded-full bg-white p-0.5 ring-1 ring-orange-200">
             {(['learn', 'focus'] as const).map((m) => {
               const active = readingMode === m
               return (
-                <button
+                <Button
                   key={m}
                   onClick={() => setReadingMode(m)}
-                  className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-extrabold whitespace-nowrap transition ${
-                    active
-                      ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white shadow-sm'
-                      : 'text-orange-700/70 hover:text-orange-800'
-                  }`}
                   title={
                     m === 'learn'
                       ? '段落末出现遮词回想题，掌握度会更新'
                       : '只显示词高亮，纯阅读不打断'
                   }
                   aria-label={m === 'learn' ? '学习模式' : '专注阅读模式'}
+                  variant={active ? 'solid' : 'ghost'}
+                  color={active ? 'orange' : 'gray'}
+                  size="1"
+                  className="whitespace-nowrap"
                 >
                   {m === 'learn' ? '🧠 学习' : '📖 专注'}
-                </button>
+                </Button>
               )
             })}
           </div>
@@ -309,34 +340,30 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
 
         {/* Row 2 — 信息+工具:Lesson 标识 + 前测/难点词芯片,允许自然换行 */}
         <div className="mb-3 flex flex-wrap items-center gap-1.5">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-orange-700 ring-1 ring-orange-200">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-orange-700 ring-1 ring-orange-200">
             📖 {passage.unit} · {passage.lesson}
           </div>
-          <button
+          <Button
             onClick={() => setPreReadingOpen((v) => !v)}
-            className={`inline-flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition hover:-translate-y-px ${
-              preReadingOpen
-                ? 'bg-gradient-to-br from-sky-500 to-indigo-500 text-white shadow-sm ring-1 ring-sky-300'
-                : 'bg-white/80 text-orange-700 ring-1 ring-orange-200 hover:bg-white'
-            }`}
             title="阅读前测 · 测一下全部词"
             aria-label="阅读前测"
             aria-pressed={preReadingOpen}
+            variant={preReadingOpen ? 'solid' : 'outline'}
+            color={preReadingOpen ? 'sky' : 'orange'}
+            size="1"
           >
             <span className="text-[13px] leading-none">📋</span>
             <span>预习</span>
-          </button>
+          </Button>
           {passage.glossary && passage.glossary.length > 0 && (
-            <button
+            <Button
               onClick={() => setGlossaryOpen((v) => !v)}
-              className={`inline-flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition hover:-translate-y-px ${
-                glossaryOpen
-                  ? 'bg-gradient-to-br from-slate-600 to-slate-700 text-white shadow-sm ring-1 ring-slate-400'
-                  : 'bg-white/80 text-orange-700 ring-1 ring-orange-200 hover:bg-white'
-              }`}
               title="难点词 · 阅读辅助查词"
               aria-label="难点词"
               aria-pressed={glossaryOpen}
+              variant={glossaryOpen ? 'solid' : 'outline'}
+              color={glossaryOpen ? 'gray' : 'orange'}
+              size="1"
             >
               <span className="text-[13px] leading-none">📒</span>
               <span>难点词</span>
@@ -349,12 +376,18 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
               >
                 {passage.glossary.length}
               </span>
-            </button>
+            </Button>
           )}
         </div>
 
         <h1 className="font-fredoka text-2xl font-bold text-gray-900 sm:text-3xl">
-          <span data-narration-cue="title" className={target === 'title' ? 'rounded bg-amber-100 text-[1.08em]' : undefined}>{passage.title}</span>{clipButton('title')}
+          <span
+            data-narration-cue="title"
+            className={target === 'title' ? 'rounded bg-amber-100 text-[1.08em]' : undefined}
+          >
+            {passage.title}
+          </span>
+          {clipButton('title')}
         </h1>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
@@ -366,26 +399,37 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
             ))}
           </div>
           <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
-            {clips.length > 0 && <button onClick={() => selectClip(clipIndex)} className="inline-flex min-h-11 items-center rounded-full bg-white px-3 text-xs font-bold text-orange-800 ring-1 ring-orange-200">🎧 听记</button>}
-            <button
+            {clips.length > 0 && (
+              <Button
+                onClick={() => selectClip(clipIndex)}
+                variant="outline"
+                color="orange"
+                size="3"
+              >
+                🎧 听记
+              </Button>
+            )}
+            <Button
               type="button"
               onClick={() => window.open(`/english/words/reading/${passage.key}/print`, '_blank')}
               title="打开适合打印的课文版"
-              className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full bg-white/80 px-3 text-xs font-extrabold text-gray-600 ring-1 ring-gray-200 transition hover:bg-white"
+              variant="outline"
+              color="gray"
+              size="3"
             >
-              <span aria-hidden className="text-sm">🖨️</span>
+              <span aria-hidden className="text-sm">
+                🖨️
+              </span>
               <span className="hidden whitespace-nowrap sm:inline">打印</span>
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setLessonFocus((current) => !current)}
               aria-pressed={lessonFocus}
               title={lessonFocus ? '关闭后显示厚海全部匹配词' : '开启后只显示本课词'}
-              className={`inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-3 text-xs font-extrabold ring-1 transition ${
-                lessonFocus
-                  ? 'bg-orange-100 text-orange-800 ring-orange-300'
-                  : 'bg-white/80 text-gray-600 ring-gray-200 hover:bg-white'
-              }`}
+              variant={lessonFocus ? 'soft' : 'outline'}
+              color={lessonFocus ? 'orange' : 'gray'}
+              size="3"
             >
               <span
                 aria-hidden
@@ -394,20 +438,30 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                  className={`shadow-sticker-sm absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
                     lessonFocus ? 'translate-x-4' : 'translate-x-0'
                   }`}
                 />
               </span>
               <span className="hidden whitespace-nowrap sm:inline">专注</span>
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               disabled={loadingNarration}
               aria-busy={loadingNarration}
-              aria-label={loadingNarration ? '正在加载朗读' : !audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '播放朗读'}
+              aria-label={
+                loadingNarration
+                  ? '正在加载朗读'
+                  : !audioUrl
+                    ? '暂无朗读音频'
+                    : narrationPlaying
+                      ? '暂停朗读'
+                      : '播放朗读'
+              }
               aria-pressed={narrationPlaying}
-              title={!audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'}
+              title={
+                !audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'
+              }
               onClick={async () => {
                 setListening(null)
                 setNarrationError('')
@@ -429,30 +483,81 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
                     })
                     if (started) setLoadingNarration(false)
                   } catch {
-                    const networkError = player.audioRef.current?.error?.code === 2 || !navigator.onLine
+                    const networkError =
+                      player.audioRef.current?.error?.code === 2 || !navigator.onLine
                     stop()
                     setLoadingNarration(false)
-                    setNarrationError(networkError ? '网络连接失败，请重试。' : '音频暂时无法播放，请重试。')
+                    setNarrationError(
+                      networkError ? '网络连接失败，请重试。' : '音频暂时无法播放，请重试。',
+                    )
                   }
                 }
               }}
-              className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] ring-1 transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:cursor-not-allowed disabled:opacity-40 ${
-                narrationPlaying
-                  ? 'bg-gradient-to-br from-orange-400 to-amber-400 text-white shadow-sm ring-orange-300'
-                  : 'cursor-pointer bg-white/90 text-orange-700 ring-orange-200 hover:bg-white'
-              }`}
+              variant={narrationPlaying ? 'solid' : 'outline'}
+              color="orange"
+              size="3"
+              className="w-11 shrink-0"
             >
               {loadingNarration ? (
-                <span aria-hidden className="size-5 animate-spin rounded-full border-2 border-orange-200 border-t-orange-700 motion-reduce:animate-none" />
+                <span
+                  aria-hidden
+                  className="size-5 animate-spin rounded-full border-2 border-orange-200 border-t-orange-700 motion-reduce:animate-none"
+                />
               ) : (
                 <span aria-hidden>{narrationPlaying ? '⏸' : '🔊'}</span>
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
-      {(playbackError || narrationError || (/^(4a|5a)-/.test(key) && baiduError)) && <p role="alert" className="my-3 text-sm text-red-700">{playbackError || narrationError || baiduError}</p>}
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            ['words', '全部单词音频'],
+            ['recitation', '背诵音频'],
+          ] as const
+        ).map(([slot, label]) => {
+          if (!slots.includes(key + '#' + slot)) return null
+          const url = lessonAudioUrl(key, slot)
+          const active = player.current?.url === url && player.isPlaying
+          return (
+            <Button
+              key={slot}
+              type="button"
+              aria-pressed={active && !player.isPaused}
+              onClick={async () => {
+                setListening(null)
+                setNarrationError('')
+                setLoadingNarration(false)
+                if (active) return player.togglePause()
+                try {
+                  await player.playWhenReady({
+                    url,
+                    label: passage.title + ' · ' + label,
+                    refLink: '/english/words/reading/' + key,
+                    mediaType: 'audio',
+                    source: null,
+                  })
+                } catch {
+                  setNarrationError('网盘音频暂时无法播放，请重试。')
+                }
+              }}
+              variant="outline"
+              color="orange"
+              size="3"
+            >
+              {active && !player.isPaused ? '暂停' : '播放'}
+              {label}
+            </Button>
+          )
+        })}
+      </div>
+      {(playbackError || narrationError || (/^(4a|5a)-/.test(key) && baiduError)) && (
+        <p role="alert" className="my-3 text-sm text-red-700">
+          {playbackError || narrationError || baiduError}
+        </p>
+      )}
 
       {/* 阅读前测 · 由标题卡内「📋 前测」芯片触发,关闭后页面回归纯粹 */}
       <PreReadingRecall
@@ -474,7 +579,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       />
 
       {/* Passage body */}
-      <div className="rounded-2xl bg-white p-5 ring-1 ring-gray-200 sm:p-7">
+      <div className="ring-kid-line rounded-2xl bg-white p-5 ring-1 sm:p-7">
         <PassageView
           passage={passage}
           lessonWords={visibleWords}
@@ -483,7 +588,11 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
           listeningTarget={target}
           listeningCollapsed={listeningCollapsed}
           renderClipButton={clips.length ? clipButton : undefined}
-          narrationRef={narrationActive && !listeningOpen && (listening?.key !== key || narrationPlaying) ? player.audioRef : undefined}
+          narrationRef={
+            narrationActive && !listeningOpen && (listening?.key !== key || narrationPlaying)
+              ? player.audioRef
+              : undefined
+          }
           recallOutcomes={recallOutcomes}
           recallCounts={recallCounts}
           mode={readingMode}
@@ -519,11 +628,24 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
         onEntryChange={setStripSelected}
         onClose={() => setStripSelected(null)}
       />
-      <div hidden={listeningOpen}><PlayerDock player={player} theme="light" showProgress /></div>
-      {listeningOpen && <ListeningDrawer passageKey={key} clips={clips} index={clipIndex} select={showClip} close={closeListening}
-        collapsed={listeningCollapsed} setCollapsed={setListeningCollapsed}
-        paused={listeningPaused} setPaused={setListeningPaused} selected={selectedClips} setSelected={setSelectedClips} />}
-
+      <div hidden={listeningOpen}>
+        <PlayerDock player={player} theme="light" showProgress />
+      </div>
+      {listeningOpen && clips[clipIndex] && (
+        <ListeningDrawer
+          passageKey={key}
+          clips={clips}
+          index={clipIndex}
+          select={showClip}
+          close={closeListening}
+          collapsed={listeningCollapsed}
+          setCollapsed={setListeningCollapsed}
+          paused={listeningPaused}
+          setPaused={setListeningPaused}
+          selected={selectedClips}
+          setSelected={setSelectedClips}
+        />
+      )}
     </main>
   )
 }

@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { isAdminUser, supabase, useAuth } from '@rosie/core'
-import type { BaiduOAuthTarget } from '@/lib/baidu-oauth'
-import BaiduOAuthStatus from './BaiduOAuthStatus'
+import { Button, Card, Flex, Heading, Text } from '@rosie/ui/themes'
+import BaiduOAuthStatus, { type useSyncAuthorization } from './BaiduOAuthStatus'
 
 const ERROR_MESSAGES: Record<string, string> = {
   unauthorized: '当前登录凭证未通过验证，请退出后重新登录。',
@@ -19,11 +19,15 @@ const ERROR_MESSAGES: Record<string, string> = {
   identity_failed: '未能获取百度网盘账户信息，请重新授权。',
 }
 
-type Props = { target: BaiduOAuthTarget; children?: ReactNode }
+type Props = { children?: ReactNode } & (
+  | { target: 'shared'; authorization: ReturnType<typeof useSyncAuthorization> }
+  | { target: 'personal'; authorization?: never }
+)
 
-export default function BaiduOAuthConnect({ target, children }: Props) {
+export default function BaiduOAuthConnect({ target, children, authorization }: Props) {
   const { user } = useAuth()
-  const [pending, setPending] = useState(false)
+  const [action, setAction] = useState<'authorize' | 'login' | null>(null)
+  const pending = action !== null
   const pendingRef = useRef(false)
   const [message, setMessage] = useState('')
   const [success, setSuccess] = useState(false)
@@ -36,9 +40,13 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
     const result = url.searchParams.get('baidu_oauth')
     if (!result) return
     setSuccess(result === 'success')
-    setMessage(result === 'success' ? (personal ? '你的百度网盘已绑定。' : '百度网盘授权已保存。') : (
-      ERROR_MESSAGES[result] ?? '授权未完成，请重新发起授权。'
-    ))
+    setMessage(
+      result === 'success'
+        ? personal
+          ? '你的百度网盘已绑定。'
+          : '百度网盘授权已保存。'
+        : (ERROR_MESSAGES[result] ?? '授权未完成，请重新发起授权。'),
+    )
     url.searchParams.delete('baidu_oauth')
     window.history.replaceState(window.history.state, '', url.toString())
   }, [canAuthorize, personal])
@@ -46,7 +54,7 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
   async function authorize(forceLogin = false) {
     if (pendingRef.current) return
     pendingRef.current = true
-    setPending(true)
+    setAction(forceLogin ? 'login' : 'authorize')
     setMessage('')
     setSuccess(false)
     try {
@@ -66,63 +74,82 @@ export default function BaiduOAuthConnect({ target, children }: Props) {
       if (!payload || typeof payload !== 'object') throw new Error('授权服务暂时不可用，请重试。')
       const result = payload as Record<string, unknown>
       if (!response.ok || typeof result.url !== 'string') {
-        throw new Error(typeof result.error === 'string'
-          ? ERROR_MESSAGES[result.error] ?? '授权服务暂时不可用，请重试。'
-          : '授权服务暂时不可用，请重试。')
+        throw new Error(
+          typeof result.error === 'string'
+            ? (ERROR_MESSAGES[result.error] ?? '授权服务暂时不可用，请重试。')
+            : '授权服务暂时不可用，请重试。',
+        )
       }
       const destination = new URL(result.url)
-      if (destination.origin !== 'https://openapi.baidu.com' ||
-        destination.pathname !== '/oauth/2.0/authorize') {
+      if (
+        destination.origin !== 'https://openapi.baidu.com' ||
+        destination.pathname !== '/oauth/2.0/authorize'
+      ) {
         throw new Error('授权地址无效，请重试。')
       }
       if (forceLogin) destination.searchParams.set('force_login', '1')
       window.location.assign(destination.toString())
     } catch (error) {
-      if (error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
+      if (
+        error instanceof Error &&
+        (error.name === 'TimeoutError' || error.name === 'AbortError')
+      ) {
         setMessage('授权接口响应超时，请检查本地服务端到登录验证服务的连接。')
       } else if (error instanceof SyntaxError) {
         setMessage('授权接口返回了异常响应，请查看本地服务端的错误日志。')
       } else {
-        setMessage(error instanceof Error && Object.values(ERROR_MESSAGES).includes(error.message)
-          ? error.message : '无法连接授权服务，请检查网络后重试。')
+        setMessage(
+          error instanceof Error && Object.values(ERROR_MESSAGES).includes(error.message)
+            ? error.message
+            : '无法连接授权服务，请检查网络后重试。',
+        )
       }
     } finally {
       pendingRef.current = false
-      setPending(false)
+      setAction(null)
     }
   }
 
   if (!canAuthorize) return null
 
   return (
-    <section key={user?.id} id="baidu-oauth" aria-labelledby="baidu-oauth-title"
-      className="mt-5 scroll-mt-20 rounded-3xl border border-blue-200 bg-white/85 p-5 shadow-sm">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h3 id="baidu-oauth-title" className="text-[16px] font-extrabold text-slate-800">
+    <Flex direction="column" gap="4" flexGrow="1">
+      <Card id="baidu-oauth" size="3">
+        <Flex direction="column" gap="3">
+          <Heading size="4" as="h2">
             {personal ? '我的百度网盘' : '共享百度网盘'}
-          </h3>
-          <p className="mt-1 text-[13px] leading-relaxed text-slate-600">
-            {personal ? '将你的百度网盘绑定到当前 Rosie 账户。' : '连接存放公共课文音频、数学视频和共享物料的网盘。'}
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-2 lg:shrink-0">
-          <button type="button" onClick={() => void authorize()} disabled={pending} aria-busy={pending}
-            className="min-h-11 min-w-0 rounded-xl bg-blue-600 px-2 sm:px-5 py-2 text-sm font-bold text-white transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-wait disabled:opacity-60">
-            {pending ? '正在前往百度…' : '授权百度网盘'}
-          </button>
-          <button type="button" onClick={() => void authorize(true)} disabled={pending}
-            className="min-h-11 min-w-0 rounded-xl border border-blue-200 px-2 sm:px-4 py-2 text-sm font-semibold text-app-blue-dark hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-60">
-            重新登录百度并授权
-          </button>
-        </div>
-      </div>
-      <p role="status" aria-live="polite" aria-atomic="true"
-        className={`mt-3 min-h-5 text-[13px] leading-relaxed ${success ? 'text-emerald-700' : 'text-red-700'}`}>
-        {message}
-      </p>
-      {!personal && <BaiduOAuthStatus key={user?.id} />}
+          </Heading>
+          <Text size="2" color="gray">
+            {personal
+              ? '将你的百度网盘绑定到当前 Rosie 账户。'
+              : '连接存放公共课文音频、数学视频和共享物料的网盘。'}
+          </Text>
+          <Flex wrap="wrap" gap="2">
+            <Button
+              onClick={() => void authorize()}
+              disabled={pending}
+              loading={action === 'authorize'}
+            >
+              授权百度网盘
+            </Button>
+            <Button
+              variant="soft"
+              loading={action === 'login'}
+              disabled={pending}
+              onClick={() => void authorize(true)}
+            >
+              重新登录百度并授权
+            </Button>
+          </Flex>
+          {message && (
+            <Text role="status" size="2" color={success ? 'green' : 'red'}>
+              {message}
+            </Text>
+          )}
+          {authorization && <BaiduOAuthStatus key={user?.id} authorization={authorization} />}
+        </Flex>
+      </Card>
       {children}
-    </section>
+    </Flex>
   )
 }

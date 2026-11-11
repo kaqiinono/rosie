@@ -1,23 +1,31 @@
 import { PageBreadcrumb } from '@rosie/ui'
-import BaiduOAuthConnect from '@/components/settings/BaiduOAuthConnect'
+import { Container, Flex, Heading, Separator } from '@rosie/ui/themes'
 import BaiduSyncDirectories from '@/components/settings/BaiduSyncDirectories'
 
 export default function SyncPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-rose-50 to-blue-50">
-      <header className="sticky top-0 z-30 border-b border-border-light bg-white/85 backdrop-blur">
-        <div className="mx-auto flex min-h-14 max-w-[860px] items-center gap-3 px-4">
+    <Flex direction="column" minHeight="100dvh">
+      <Container size="3" width="100%" px="4" flexGrow="0">
+        <Flex align="center" gap="3" py="2">
           <PageBreadcrumb variant="inline" />
-          <span className="text-base font-extrabold text-text-primary">同步管理</span>
-        </div>
-      </header>
-      <main className="mx-auto max-w-[860px] px-4 py-8 pb-24">
-        <h1 className="text-2xl font-black text-text-primary">同步管理</h1>
-        <p className="mt-1 text-sm text-text-secondary">管理共享网盘授权、浏览指定目录，并为数学题目绑定回放视频。</p>
-        <BaiduOAuthConnect target="shared">
-          <BaiduSyncDirectories />
-        </BaiduOAuthConnect>
-      </main>
-    </div>
+          <Heading as="h1" size="4">
+            同步管理
+          </Heading>
+        </Flex>
+      </Container>
+      <Separator size="4" />
+      <Flex
+        direction="column"
+        role="main"
+        width="100%"
+        maxWidth="960px"
+        mx="auto"
+        px="4"
+        py="4"
+        flexGrow="1"
+      >
+        <BaiduSyncDirectories />
+      </Flex>
+    </Flex>
   )
 }

@@ -1,7 +1,9 @@
+import { baiduReadingAudioUrl, lessonAudioUrl } from './reading-audio-types'
 import type { ReadingPassage } from './reading-data'
 
 export interface ListeningClip {
   singleRead: [number, number]
+  sourceUrl?: string
   target: string
   english: string
   chinese: string
@@ -9,25 +11,25 @@ export interface ListeningClip {
 
 // In recording order. Two sentences are practiced in separate clauses.
 const u3l2: [string, string, [number, number]][] = [
-  ['title', '大自然中的奇妙生物', [4.20, 6.40]],
-  ['0-0', '你可能已经学过不少有关动物的知识，', [0.60, 4.00]],
+  ['title', '大自然中的奇妙生物', [4.2, 6.4]],
+  ['0-0', '你可能已经学过不少有关动物的知识，', [0.6, 4.0]],
   ['0-1', '但我们猜你还没有研究过像下面这些一样奇特的动物。', [1.05, 5.36]],
   ['0-2', '下面是自然界中三种不同寻常的生物。', [1.09, 4.17]],
   ['heading-1', '鸭嘴兽', [1.32, 2.85]],
   ['1-0', '这种奇特的澳大利亚动物，身上的一些部位似乎来自其他更常见的物种：', [0.93, 6.53]],
-  ['1-1', '鸭子般的嘴、长满毛的身体，还有像河狸一样的尾巴。', [0.80, 5.41]],
+  ['1-1', '鸭子般的嘴、长满毛的身体，还有像河狸一样的尾巴。', [0.8, 5.41]],
   ['2-0', '鸭嘴兽很会游泳，但它也在陆地上生活。', [1.55, 5.24]],
   ['2-1', '上岸时，它带蹼的脚会发生变化，方便它奔跑。', [1.45, 5.01]],
   ['2-2', '鸭嘴兽是哺乳动物，妈妈会给宝宝喂大约四个月的奶。', [0.88, 5.81]],
-  ['2-3', '但这种哺乳动物特别的地方在于，它会下蛋！', [2.20, 6.04]],
+  ['2-3', '但这种哺乳动物特别的地方在于，它会下蛋！', [2.2, 6.04]],
   ['heading-3', '短角蜥蜴', [2.07, 3.44]],
   ['3-0', '短角蜥蜴生活在北美洲。', [1.16, 3.84]],
-  ['3-1', '它的头上和背上长着角，身体上覆盖着鳞片。', [1.50, 5.95]],
-  ['3-2', '短角蜥蜴与其他爬行动物的不同之处在于它保护自己的方式。', [1.20, 6.31]],
+  ['3-1', '它的头上和背上长着角，身体上覆盖着鳞片。', [1.5, 5.95]],
+  ['3-2', '短角蜥蜴与其他爬行动物的不同之处在于它保护自己的方式。', [1.2, 6.31]],
   ['3-3', '它能把身体鼓起来，看起来像个带刺的气球。', [1.65, 5.54]],
-  ['3-4', '如果这招不管用，它就从眼睛里喷出血来迷惑捕食者。', [1.40, 5.87]],
+  ['3-4', '如果这招不管用，它就从眼睛里喷出血来迷惑捕食者。', [1.4, 5.87]],
   ['3-5', '它喷出的血能射到一米（三英尺）远的地方！', [1.33, 5.28]],
-  ['heading-4', '王鹫', [1.30, 2.36]],
+  ['heading-4', '王鹫', [1.3, 2.36]],
   ['4-0', '别只凭这只鸟色彩鲜艳的外表就对它下判断。', [1.54, 4.61]],
   ['4-1', '尽管王鹫看上去鲜艳又欢快，它的工作却挺令人反胃：它吃死去的动物。', [0.79, 8.38]],
   ['4-2', '王鹫生活在中美洲和南美洲，它吃掉这些动物尸体，清理了森林地面。', [1.03, 7.94]],
@@ -86,9 +88,58 @@ export function listeningClipsFor(passage: ReadingPassage | undefined): Listenin
   if (!clips) return []
   return clips.map(([target, chinese, singleRead]) => {
     const [paragraph, sentence] = target.split('-')
-    const english = target === 'title' ? passage.title
-      : paragraph === 'heading' ? passage.paragraphTitles![Number(sentence)]
-      : readingSegments(passage, Number(paragraph))[Number(sentence)]
+    const english =
+      target === 'title'
+        ? passage.title
+        : paragraph === 'heading'
+          ? passage.paragraphTitles![Number(sentence)]
+          : readingSegments(passage, Number(paragraph))[Number(sentence)]
     return { target, english, chinese, singleRead }
+  })
+}
+
+export function lessonListeningTargets(passage: ReadingPassage) {
+  const targets = [{ target: 'title', english: passage.title }]
+  passage.paragraphs.forEach((_, index) => {
+    const heading = passage.paragraphTitles?.[index]
+    if (heading) targets.push({ target: 'heading-' + index, english: heading })
+    readingSegments(passage, index).forEach((english, sentence) => {
+      targets.push({ target: index + '-' + sentence, english })
+    })
+  })
+  return targets
+}
+
+export function playableListeningClips(
+  passage: ReadingPassage | undefined,
+  slots: string[],
+): ListeningClip[] {
+  if (!passage) return []
+  const legacy = listeningClipsFor(passage)
+  if (!slots.some((slot) => slot.startsWith(passage.key + '#clip:'))) return legacy
+  const byTarget = new Map(
+    legacy.map((clip, i) => [
+      clip.target,
+      {
+        ...clip,
+        sourceUrl: baiduReadingAudioUrl(passage.key) + '?clip=' + String(i + 1).padStart(2, '0'),
+      },
+    ]),
+  )
+  const available = new Set(slots)
+  return lessonListeningTargets(passage).flatMap((sentence) => {
+    const slot = 'clip:' + sentence.target
+    const old = byTarget.get(sentence.target)
+    if (available.has(passage.key + '#' + slot)) {
+      return [
+        {
+          ...sentence,
+          chinese: old?.chinese ?? '',
+          singleRead: [0, Infinity] as [number, number],
+          sourceUrl: lessonAudioUrl(passage.key, slot),
+        },
+      ]
+    }
+    return old ? [old] : []
   })
 }

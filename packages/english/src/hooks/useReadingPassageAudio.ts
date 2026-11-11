@@ -3,27 +3,30 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '@rosie/core'
-import { READING_AUDIO_BUCKET, readingPassageAudioPath, baiduReadingAudioUrl } from '../utils/reading-audio-types'
+import {
+  READING_AUDIO_BUCKET,
+  readingPassageAudioPath,
+  baiduReadingAudioUrl,
+  lessonAudioUrl,
+} from '../utils/reading-audio-types'
 import { useBaiduReadingAudio } from './useBaiduReadingAudio'
 
-/**
- * Detail-page hook: prefer discovered Baidu narration, otherwise emit Storage synchronously,
- * with an asynchronous `?v=<updatedAt>` cache-buster appended once the DB
- * lookup completes. Never lists the storage bucket, never scans all passages.
- */
+/** Prefer explicit Netdisk bindings, then legacy discovered files and unmigrated Storage narration. */
 export function useReadingPassageAudio(user: User | null, passageKey: string) {
-  const { hasAudio } = useBaiduReadingAudio(user)
+  const { hasAudio, isLoading } = useBaiduReadingAudio(user)
+  const bound = hasAudio(passageKey + '#narration')
   const [revision, setRevision] = useState<{ key: string; updatedAt: string } | null>(null)
   const updatedAt = revision?.key === passageKey ? revision.updatedAt : null
 
   const baseUrl = useMemo(() => {
+    if (bound || isLoading) return null
     const path = readingPassageAudioPath(passageKey)
     const { data } = supabase.storage.from(READING_AUDIO_BUCKET).getPublicUrl(path)
     return data.publicUrl ?? null
-  }, [passageKey])
+  }, [passageKey, bound, isLoading])
 
   useEffect(() => {
-    if (!user) return
+    if (!user || bound || isLoading || !passageKey) return
     let cancelled = false
     void (async () => {
       const { data } = await supabase
@@ -38,11 +41,13 @@ export function useReadingPassageAudio(user: User | null, passageKey: string) {
     return () => {
       cancelled = true
     }
-  }, [user, passageKey])
+  }, [user, passageKey, bound, isLoading])
 
   return useMemo(() => {
+    if (isLoading) return null
+    if (bound) return lessonAudioUrl(passageKey, 'narration')
     if (hasAudio(passageKey)) return baiduReadingAudioUrl(passageKey)
     if (!baseUrl) return null
     return updatedAt ? `${baseUrl}?v=${encodeURIComponent(updatedAt)}` : baseUrl
-  }, [hasAudio, passageKey, baseUrl, updatedAt])
+  }, [isLoading, bound, hasAudio, passageKey, baseUrl, updatedAt])
 }

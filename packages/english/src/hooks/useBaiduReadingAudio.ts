@@ -17,11 +17,16 @@ const audioKeysStore = createUserSessionStore<string[]>('baidu_reading_audio_key
     window.addEventListener('rosie-reading-audio-signout', abort, { once: true })
     try {
       const response = await fetch('/api/baidu/audio/session', {
-        method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
         headers: { Authorization: `Bearer ${session.access_token}` },
         signal: AbortSignal.any([controller.signal, AbortSignal.timeout(45_000)]),
       })
-      if (!response.ok) throw new Error(await baiduResponseMessage(response, '网盘音频暂时不可用，仍可使用已有备用音频。'))
+      if (!response.ok)
+        throw new Error(
+          await baiduResponseMessage(response, '网盘音频暂时不可用，仍可使用已有备用音频。'),
+        )
       const body: unknown = await response.json()
       if (controller.signal.aborted) throw new Error('audio_session_cancelled')
       if (!body || typeof body !== 'object') throw new Error('invalid_audio_manifest')
@@ -31,13 +36,19 @@ const audioKeysStore = createUserSessionStore<string[]>('baidu_reading_audio_key
         token: session.access_token,
         validUntil: Math.min(Date.now() + 50 * 60_000, (session.expires_at ?? 0) * 1000 - 60_000),
       }
-      return keys.filter((key): key is string =>
-        typeof key === 'string' && /^(4a|5a)-u[1-9]\d?l[1-9]\d?$/.test(key))
+      return keys.filter(
+        (key): key is string =>
+          typeof key === 'string' && /^[a-z0-9]+-u[1-9]\d*l[1-9]\d*(?:#.+)?$/.test(key),
+      )
     } finally {
       window.removeEventListener('rosie-reading-audio-signout', abort)
     }
   },
 })
+
+export function useAudioSlots(user: User | null) {
+  return audioKeysStore.useSessionData(user)
+}
 
 /** Session-store dedupe; remounts reuse the manifest. Periodic/token refreshes
  * renew the HttpOnly media cookie without putting credentials in audio URLs. */
@@ -47,19 +58,28 @@ export function useBaiduReadingAudioError(user: User | null) {
 }
 
 export function useBaiduReadingAudio(user: User | null) {
-  const { data: keys, error } = audioKeysStore.useSessionData(user)
+  const { data: keys, error, isLoading } = audioKeysStore.useSessionData(user)
   const userId = user?.id
   useEffect(() => {
     if (!userId) return
-    const renew = () => { void audioKeysStore.refreshInBackground(userId).catch(() => {}) }
+    const renew = () => {
+      void audioKeysStore.refreshInBackground(userId).catch(() => {})
+    }
     // Authentication-cookie expiry is independent of the cached directory data.
     // Re-establish only after expiry or a different login; ready remounts reuse it.
     const renewIfNeeded = () => {
-      void supabase.auth.getSession().then(({ data }) => {
-        if (data.session?.user.id === userId && (
-          !postedSession || postedSession.token !== data.session.access_token || postedSession.validUntil <= Date.now()
-        )) renew()
-      }).catch(() => {})
+      void supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          if (
+            data.session?.user.id === userId &&
+            (!postedSession ||
+              postedSession.token !== data.session.access_token ||
+              postedSession.validUntil <= Date.now())
+          )
+            renew()
+        })
+        .catch(() => {})
     }
     renewIfNeeded()
     window.addEventListener('focus', renewIfNeeded)
@@ -82,6 +102,9 @@ export function useBaiduReadingAudio(user: User | null) {
       data.subscription.unsubscribe()
     }
   }, [userId])
-  const hasAudio = useCallback((key: string) => Boolean(userId) && keys.includes(key), [keys, userId])
-  return { hasAudio, error: error instanceof Error ? error.message : '' }
+  const hasAudio = useCallback(
+    (key: string) => Boolean(userId) && keys.includes(key),
+    [keys, userId],
+  )
+  return { hasAudio, isLoading, error: error instanceof Error ? error.message : '' }
 }

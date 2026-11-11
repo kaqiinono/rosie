@@ -23,7 +23,17 @@ audio, flipbook).
   **their own audio** stored in `reading_passage_media` (hooks `useReadingPassageMedia` /
   `useReadingPassageAudio`). Reading playback was **decoupled from the audio module**: it builds its
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
-  Textbook narration now prefers discovered Baidu files under
+  Admins publish lesson audio from bookmarked Baidu directories in the 英语 tab of `/admin/sync`.
+  Select a lesson and its main directory (a bookmark or one of its descendants). The file panel
+  pages through that entire subtree and shows relative paths. Saving commits the directory and
+  all audio bindings together under one lesson revision. Previously published bindings outside
+  the selected directory remain available until explicitly replaced or removed.
+  The binding migration `20261109061544_english_lesson_audio_bindings.sql` stores account-scoped file
+  references and lesson revisions. New bindings stream from Netdisk. Reading queues and lesson
+  details prefer explicit narration bindings. Lesson details also play whole-vocabulary and
+  recitation tracks. Individual pronunciations use the entry's stage/unit/lesson and normalized
+  word. Listening clips use passage sentence targets and retain existing clips for unmigrated sentences.
+  For lessons awaiting migration, narration uses discovered Baidu files under
   `/airosie/english/audio/{4A|5A}/U{unit}L{lesson}.mp3`. `useBaiduReadingAudio` caches available
   keys per user through `createUserSessionStore` and establishes/renews an HttpOnly audio session;
   the detail hook and reading-list queues use the same-origin `/api/baidu/audio/{passageKey}`
@@ -106,7 +116,7 @@ audio, flipbook).
   questions where possible, and Stages 4–5 use C spelling. Any wrong/help keeps a word at its stage.
   Passing Stage 5 writes `LEARNING_PENDING + boxIndex=5 + targetBox=null` (Boss waiting); only Boss
   can mark it `MASTERED`. Boss triggers from `totalActivatedCount - lastBossActivatedCount >=
-  bossEveryNNew` once at least one waiting word exists, freezes **all** waiting words, uses formal C
+bossEveryNNew` once at least one waiting word exists, freezes **all** waiting words, uses formal C
   spelling only, and passes at first-pass independent accuracy ≥85% after the error sink is clear.
   Failure preserves the frozen cohort and never demotes words or lowers Boss difficulty. Settle does
   remote writes before local state and surfaces a「重试保存」button on failure. In-progress rounds
@@ -136,6 +146,7 @@ ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english
 旧 URL `/english/grammar/<N>` 由 `[book]` 段重定向到 essential。
 
 **多书维度**：`book` 列（`essential` / `intermediate` / `advanced`）已在 DB 和全链路中落地。
+
 - `grammar_units`：复合 PK `(book, unit_number)`，每本书 unit_number 从 1 开始。
 - `grammar_mastery`：复合 PK `(user_id, book, unit_number)`。
 - `types.ts`：`GrammarBookId` union + `GRAMMAR_BOOKS` 常量注册表（新书只需追加条目，无需 migration）。
@@ -203,6 +214,7 @@ ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english
 避免 offset 错位。
 
 **框架扩展四步流程**（新增内容块/题型时）：
+
 1. `types.ts` 加 union 成员 + `normalizeBlocks`/`normalizeExercises` 分支（未知 type 自动归一为
    `unsupported`，永不崩溃）；
 2. `LessonView` 的 `BlockView` 或 `ExerciseView` 加渲染分支；
