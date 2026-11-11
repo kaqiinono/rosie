@@ -4,9 +4,7 @@ import Link from 'next/link'
 import type { ProblemSet } from '@rosie/core'
 import { AccountBar } from '@rosie/ui'
 import type { LessonContextType } from './createLessonProvider'
-import {
-  LESSON_HEADER_TEXT_BTN,
-} from './lesson-header-chrome'
+import { LESSON_HEADER_TEXT_BTN } from './lesson-header-chrome'
 import LessonGradeSwitcher from './LessonGradeSwitcher'
 import LessonLectureSwitcher from './LessonLectureSwitcher'
 
@@ -45,22 +43,21 @@ const defaultBackIcon = (
 
 export default function LessonAppHeader({ config }: Props) {
   return (
-    <div className="border-border-light sticky top-0 z-30 shrink-0 overflow-visible border-b bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.06)] backdrop-blur-sm">
+    <div className="border-border-light shadow-sticker-sm sticky top-0 z-30 shrink-0 overflow-visible border-b bg-white">
       <div className="flex h-12 w-full items-center gap-1.5 px-3 sm:h-14 sm:gap-2 sm:px-4">
         <Link
           href="/math"
           className={`${LESSON_HEADER_TEXT_BTN} w-8 justify-center gap-0 p-0 sm:w-auto sm:justify-start sm:gap-1.5 sm:px-3`}
         >
-          <span className="flex items-center justify-center">{config.backIcon ?? defaultBackIcon}</span>
+          <span className="flex items-center justify-center">
+            {config.backIcon ?? defaultBackIcon}
+          </span>
           <span className="hidden sm:inline">课程列表</span>
         </Link>
 
         <div className="bg-border-light/70 mx-0.5 hidden h-5 w-px shrink-0 sm:block" aria-hidden />
 
-        <LessonGradeSwitcher
-          basePath={config.basePath}
-          activeColor={config.navActiveColor}
-        />
+        <LessonGradeSwitcher basePath={config.basePath} activeColor={config.navActiveColor} />
 
         <LessonLectureSwitcher basePath={config.basePath} activeColor={config.navActiveColor} />
 

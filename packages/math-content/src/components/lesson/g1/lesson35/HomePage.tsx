@@ -4,6 +4,7 @@ import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { ProblemSet } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g1/lesson35-data'
+import { StickerCard } from '@rosie/ui'
 
 const BASE = '/math/ny/1/35'
 
@@ -88,11 +89,13 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
   return (
     <div>
       {/* Hero */}
-      <div className="from-yellow-light relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br via-[#fde68a] to-[#fbbf24] p-6">
+      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-[#fbbf24] p-6">
         <div className="pointer-events-none absolute -top-2.5 -right-2.5 rotate-[15deg] text-[90px] opacity-[0.12]">
           🎯
         </div>
-        <LessonHomeTitle lessonKey="1-35" className="text-2xl font-extrabold text-[#78350f]">归一问题 🎯</LessonHomeTitle>
+        <LessonHomeTitle lessonKey="1-35" className="text-2xl font-extrabold text-[#78350f]">
+          归一问题 🎯
+        </LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-[#92400e]">
           第35讲 · 一年级目标班
           <br />
@@ -101,7 +104,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
       </div>
 
       {/* 5 Problem Types */}
-      <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+      <StickerCard elevation="sm" radius="md" className="mb-4">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">
           🧠 归一问题 · 5大题型
         </div>
@@ -119,7 +122,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
               <Link
                 key={t.tag}
                 href={`${BASE}/alltest?type=${t.tag}`}
-                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} transition-all hover:shadow-md`}
+                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} hover:shadow-sticker transition-all`}
               >
                 <div
                   className={`mb-1 flex items-center justify-between text-xs font-bold ${style.titleColor}`}
@@ -141,7 +144,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
             万能口诀：<strong>先归一（÷份数）→ 找每份量 → 再求多（×份数）</strong>
           </span>
         </div>
-      </div>
+      </StickerCard>
 
       {/* Module Cards */}
       <div className="text-text-secondary mb-2.5 text-[13px] font-bold">📂 学习模块</div>
@@ -154,7 +157,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
             <Link
               key={m.key}
               href={m.path}
-              className={`flex items-center gap-3 rounded-[14px] border-2 bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98] ${
+              className={`shadow-sticker-sm hover:shadow-sticker flex items-center gap-3 rounded-[14px] border-2 bg-white p-4 no-underline transition-all hover:-translate-y-px active:scale-[0.98] ${
                 m.borderColor || 'border-transparent'
               }`}
             >
@@ -189,40 +192,39 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
           )
         })}
         {/* All-test wide card */}
-        <Link
-          href={`${BASE}/alltest`}
-          className="flex items-center gap-3 rounded-[14px] border-2 border-[#e879f9] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
-        >
-          <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-[#fdf4ff] text-[22px]">
-            🎯
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-[#7e22ce]">综合测试题库</div>
-            <div className="text-text-muted mb-1 text-xs">
-              全部题目 · 按题型/来源筛选 · 综合训练
+        <StickerCard asChild interactive elevation="sm" radius="md">
+          <Link href={`${BASE}/alltest`} className="flex items-center gap-3 no-underline">
+            <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-[#fdf4ff] text-[22px]">
+              🎯
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
-                <div
-                  className="absolute inset-y-0 left-0 rounded-sm bg-[#c4b5fd] transition-[width] duration-500"
-                  style={{
-                    width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%`,
-                  }}
-                />
-                <div
-                  className="absolute inset-y-0 left-0 rounded-sm bg-[#a855f7] transition-[width] duration-500"
-                  style={{
-                    width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%`,
-                  }}
-                />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-bold text-[#7e22ce]">综合测试题库</div>
+              <div className="text-text-muted mb-1 text-xs">
+                全部题目 · 按题型/来源筛选 · 综合训练
               </div>
-              <div className="text-text-muted text-[11px] whitespace-nowrap">
-                ✅ {masteredAll}/{totalAll}
+              <div className="flex items-center gap-1.5">
+                <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-sm bg-[#c4b5fd] transition-[width] duration-500"
+                    style={{
+                      width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%`,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-sm bg-[#a855f7] transition-[width] duration-500"
+                    style={{
+                      width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%`,
+                    }}
+                  />
+                </div>
+                <div className="text-text-muted text-[11px] whitespace-nowrap">
+                  ✅ {masteredAll}/{totalAll}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="shrink-0 text-xl text-[#a855f7]">›</div>
-        </Link>
+            <div className="shrink-0 text-xl text-[#a855f7]">›</div>
+          </Link>
+        </StickerCard>
       </div>
     </div>
   )

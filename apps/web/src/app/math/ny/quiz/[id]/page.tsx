@@ -44,7 +44,10 @@ import { PROBLEMS as G2Lesson4PROBLEMS } from '@rosie/math-content/utils/g2/less
 import { PROBLEMS as G2Lesson3PROBLEMS } from '@rosie/math-content/utils/g2/lesson3-data'
 import type { Problem, ProblemSet } from '@rosie/core'
 import type { QuizPaper, QuizAnswerRecord } from '@rosie/math/hooks/useMathQuiz'
-import { checkProblemAnswer, isInteractiveProblem } from '@rosie/math-kit/utils/check-problem-answer'
+import {
+  checkProblemAnswer,
+  isInteractiveProblem,
+} from '@rosie/math-kit/utils/check-problem-answer'
 import { getProblemAnswerMode } from '@rosie/math-kit/utils/problem-answer-mode'
 import VerticalDigitPuzzlePanel from '@rosie/math-kit/components/shared/VerticalDigitPuzzlePanel'
 import ScratchPadCustomAnswerWidget from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadCustomAnswerWidget'
@@ -53,6 +56,7 @@ import QuizProblemSolution from '@rosie/math-kit/components/shared/QuizProblemSo
 import { submitPracticeAttempt } from '@rosie/math-kit/utils/submitPracticeAttempt'
 import { fetchAllScratchWorkingForPaper } from '@rosie/math-kit/utils/math-scratch-db'
 import { mathWrongStore } from '@rosie/math-kit/hooks/useMathWrong'
+import { Button, TextField } from '@rosie/ui/themes'
 
 // ── Problem lookup ─────────────────────────────────────────────────────────────
 
@@ -280,7 +284,11 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
         if (raw.trim() !== '') {
           const parsed = parseFloat(raw)
           record = {
-            userAnswer: problem.additionalQuestions?.length ? raw : Number.isFinite(parsed) ? parsed : null,
+            userAnswer: problem.additionalQuestions?.length
+              ? raw
+              : Number.isFinite(parsed)
+                ? parsed
+                : null,
             correct: existing?.correct ?? null,
           }
         }
@@ -331,26 +339,50 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
     setSaveMessage(null)
 
     try {
-
       const workingMap = await fetchAllScratchWorkingForPaper(user.id, paper.id)
       const newResults: Record<string, boolean> = {}
       const answerRecords: Record<string, QuizAnswerRecord> = {}
 
       for (const item of paper.problems) {
-      const entry = PROBLEM_MAP.get(item.problemId)
-      if (!entry) continue
-      const { problem } = entry
-      const working = workingMap.get(item.problemId)
+        const entry = PROBLEM_MAP.get(item.problemId)
+        if (!entry) continue
+        const { problem } = entry
+        const working = workingMap.get(item.problemId)
 
-      if (isInteractiveProblem(problem)) {
-        const state = interactiveStates[item.problemId]
-        const result = checkProblemAnswer(problem, state)
+        if (isInteractiveProblem(problem)) {
+          const state = interactiveStates[item.problemId]
+          const result = checkProblemAnswer(problem, state)
+          const correct = result.ok
+          newResults[item.problemId] = correct
+          answerRecords[item.problemId] = {
+            userAnswer: null,
+            correct,
+            interactiveState: state,
+          }
+          await submitPracticeAttempt({
+            userId: user.id,
+            problem,
+            section: 'quiz',
+            result: correct ? 'correct' : 'wrong',
+            objects: working?.objects ?? [],
+            answerSnapshot: state ?? null,
+            paperId: paper.id,
+          })
+          if (!correct) {
+            mathWrongStore.invalidate(user.id)
+          }
+          continue
+        }
+
+        const raw = answers[item.problemId] ?? ''
+        const userAnswer =
+          raw === '' ? null : problem.additionalQuestions?.length ? raw : parseFloat(raw)
+        const result = checkProblemAnswer(problem, userAnswer)
         const correct = result.ok
         newResults[item.problemId] = correct
         answerRecords[item.problemId] = {
-          userAnswer: null,
+          userAnswer,
           correct,
-          interactiveState: state,
         }
         await submitPracticeAttempt({
           userId: user.id,
@@ -358,49 +390,25 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
           section: 'quiz',
           result: correct ? 'correct' : 'wrong',
           objects: working?.objects ?? [],
-          answerSnapshot: state ?? null,
+          answerSnapshot: userAnswer,
           paperId: paper.id,
         })
         if (!correct) {
           mathWrongStore.invalidate(user.id)
         }
-        continue
       }
-
-      const raw = answers[item.problemId] ?? ''
-      const userAnswer = raw === '' ? null : problem.additionalQuestions?.length ? raw : parseFloat(raw)
-      const result = checkProblemAnswer(problem, userAnswer)
-      const correct = result.ok
-      newResults[item.problemId] = correct
-      answerRecords[item.problemId] = {
-        userAnswer,
-        correct,
-      }
-      await submitPracticeAttempt({
-        userId: user.id,
-        problem,
-        section: 'quiz',
-        result: correct ? 'correct' : 'wrong',
-        objects: working?.objects ?? [],
-        answerSnapshot: userAnswer,
-        paperId: paper.id,
-      })
-      if (!correct) {
-        mathWrongStore.invalidate(user.id)
-      }
-    }
 
       const score = paper.problems.reduce(
-      (sum, item, idx) => sum + (newResults[item.problemId] ? pointsArr[idx] : 0),
-      0,
-    )
+        (sum, item, idx) => sum + (newResults[item.problemId] ? pointsArr[idx] : 0),
+        0,
+      )
 
       await completePaper(paper.id, score, answerRecords)
 
       setResults(newResults)
       setSubmitted(true)
 
-    // ── Award blue stars: +1 per correct, +20% bonus if all correct
+      // ── Award blue stars: +1 per correct, +20% bonus if all correct
       const correctN = paper.problems.filter((item) => newResults[item.problemId]).length
       const allCorrect = correctN > 0 && correctN === paper.problems.length
       const bonus = allCorrect ? Math.round(correctN * 0.2) : 0
@@ -470,9 +478,9 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
   }).length
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-kid-paper min-h-screen">
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 border-b border-slate-100 bg-white/90 backdrop-blur-sm">
+      <div className="border-kid-line sticky top-0 z-20 border-b bg-white">
         <div className="mx-auto flex h-14 max-w-2xl items-center gap-3 pr-[168px] pl-4 lg:pr-4">
           <Link
             href="/math/ny/quiz"
@@ -509,15 +517,18 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
             </svg>
             <span className="hidden sm:inline">打印</span>
           </Link>
-          <button
+          <Button
             type="button"
             onClick={() => setAnswerUploadOpen(true)}
-            className="flex shrink-0 items-center gap-1 rounded-full bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-700 no-underline transition-colors hover:bg-teal-100"
             title="上传纸质答案并按题目切片"
+            variant="soft"
+            color="teal"
+            size="1"
+            className="shrink-0"
           >
             <span aria-hidden="true">📷</span>
             <span className="hidden sm:inline">上传答案</span>
-          </button>
+          </Button>
           {submitted && (
             <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-sm font-bold text-emerald-700">
               {finalScore}/{totalScore}分
@@ -529,7 +540,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
       <div className="mx-auto max-w-2xl px-4 py-5">
         {/* ── Star progress (live) ─────────────────────────────────────── */}
         {!submitted && paper.problems.length > 0 && (
-          <div className="mb-4 rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3">
+          <div className="bg-kid-paper/60 mb-4 rounded-2xl border border-blue-100 px-4 py-3">
             <StarProgressBar
               color="blue"
               target={paper.problems.length}
@@ -547,7 +558,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
           <div
             className="mb-5 overflow-hidden rounded-2xl"
             style={{
-              background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+              background: '#ecfdf5',
               border: '1.5px solid #a7f3d0',
             }}
           >
@@ -575,7 +586,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
 
             {/* Star reward breakdown */}
             {starBreakdown && starBreakdown.base + starBreakdown.bonus > 0 && (
-              <div className="border-t border-emerald-200 bg-white/60 px-5 py-3">
+              <div className="border-t border-emerald-200 bg-white px-5 py-3">
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] font-bold">
                   <span className="text-blue-700">
                     本次获得{' '}
@@ -638,7 +649,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                 style={{
                   background: cardBg,
                   border: cardBorder,
-                  boxShadow: '0 1px 8px rgba(0,0,0,.04)',
+                  boxShadow: '0 3px 0 rgba(0,0,0,.3)',
                 }}
               >
                 {/* ── Header row ── */}
@@ -651,9 +662,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     >
                       {i + 1}
                     </span>
-                    <span className="text-[13px] font-bold text-slate-700">
-                      {problem.title}
-                    </span>
+                    <span className="text-[13px] font-bold text-slate-700">{problem.title}</span>
                     {/* Lesson tag */}
                     <span
                       className="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
@@ -774,7 +783,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                       border: submitted ? 'none' : '1px solid #e2e8f0',
                     }}
                   >
-                    <div className="mb-4 overflow-x-auto rounded-lg border border-slate-100 bg-white p-2">
+                    <div className="border-kid-line mb-4 overflow-x-auto rounded-lg border-2 bg-white p-2">
                       <VerticalDigitPuzzlePanel
                         spec={problem.verticalPuzzle}
                         embedded
@@ -786,10 +795,12 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     )}
                     <div className="flex items-center gap-2">
                       <div className="relative max-w-[180px] flex-1">
-                        <input
+                        <TextField.Root
                           type="number"
+                          size="2"
                           disabled={submitted}
                           value={ans}
+                          color={submitted ? (isCorrect ? 'green' : 'red') : undefined}
                           onChange={(e) =>
                             setAnswers((prev) => ({
                               ...prev,
@@ -797,17 +808,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                             }))
                           }
                           placeholder="填写答案"
-                          className="w-full rounded-xl px-3 py-2 text-center text-sm font-semibold transition-colors focus:outline-none"
-                          style={{
-                            border: submitted
-                              ? isCorrect
-                                ? '1.5px solid #6ee7b7'
-                                : '1.5px solid #fca5a5'
-                              : '1.5px solid #c7d2fe',
-                            background: submitted ? (isCorrect ? '#d1fae5' : '#fee2e2') : '#ffffff',
-                            color: submitted ? (isCorrect ? '#065f46' : '#b91c1c') : '#1e293b',
-                            MozAppearance: 'textfield',
-                          }}
+                          className="w-full"
                         />
                       </div>
                       {problem.finalUnit && (
@@ -828,27 +829,40 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     )}
                   </div>
                 ) : problem.additionalQuestions?.length ? (
-                  <div className="grid gap-3 rounded-xl bg-slate-50 p-3">
+                  <div className="bg-kid-paper grid gap-3 rounded-xl p-3">
                     {[problem, ...problem.additionalQuestions].map((question, index, questions) => (
-                      <label key={question.finalQ} className="flex flex-wrap items-center gap-2 text-sm">
+                      <label
+                        key={question.finalQ}
+                        className="flex flex-wrap items-center gap-2 text-sm"
+                      >
                         {question.finalQ}
-                        <input
+                        <TextField.Root
                           type="number"
                           disabled={submitted}
-                          className="w-24 rounded-lg border border-slate-300 bg-white p-2"
                           value={ans.split('|')[index] ?? ''}
                           onChange={(event) => {
                             const value = event.target.value
-                            setAnswers(prev => ({
+                            setAnswers((prev) => ({
                               ...prev,
-                              [item.problemId]: questions.map((_, i) =>
-                                i === index ? value : (prev[item.problemId] ?? '').split('|')[i] ?? '',
-                              ).join('|'),
+                              [item.problemId]: questions
+                                .map((_, i) =>
+                                  i === index
+                                    ? value
+                                    : ((prev[item.problemId] ?? '').split('|')[i] ?? ''),
+                                )
+                                .join('|'),
                             }))
                           }}
+                          size="2"
+                          className="w-24"
                         />
                         {question.finalUnit}
-                        {submitted && <span>正确答案：{question.finalAns}{question.finalUnit}</span>}
+                        {submitted && (
+                          <span>
+                            正确答案：{question.finalAns}
+                            {question.finalUnit}
+                          </span>
+                        )}
                       </label>
                     ))}
                   </div>
@@ -867,10 +881,12 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                     {/* Input row */}
                     <div className="flex items-center gap-2">
                       <div className="relative max-w-[180px] flex-1">
-                        <input
+                        <TextField.Root
                           type="number"
+                          size="2"
                           disabled={submitted}
                           value={ans}
+                          color={submitted ? (isCorrect ? 'green' : 'red') : undefined}
                           onChange={(e) =>
                             setAnswers((prev) => ({
                               ...prev,
@@ -878,18 +894,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
                             }))
                           }
                           placeholder="填写答案"
-                          className="w-full rounded-xl px-3 py-2 text-center text-sm font-semibold transition-colors focus:outline-none"
-                          style={{
-                            border: submitted
-                              ? isCorrect
-                                ? '1.5px solid #6ee7b7'
-                                : '1.5px solid #fca5a5'
-                              : '1.5px solid #c7d2fe',
-                            background: submitted ? (isCorrect ? '#d1fae5' : '#fee2e2') : '#ffffff',
-                            color: submitted ? (isCorrect ? '#065f46' : '#b91c1c') : '#1e293b',
-                            // hide number input arrows
-                            MozAppearance: 'textfield',
-                          }}
+                          className="w-full"
                         />
                       </div>
                       {problem.finalUnit && (
@@ -926,40 +931,28 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
               <p className="text-center text-xs font-semibold text-indigo-600">{saveMessage}</p>
             )}
             <div className="flex gap-2">
-              <button
+              <Button
+                type="button"
                 onClick={() => void handleSaveDraft()}
                 disabled={!hasProgress || saving || submitting}
-                className="flex-1 rounded-2xl py-3.5 text-sm font-bold transition-all"
-                style={{
-                  background: hasProgress && !saving && !submitting ? '#ffffff' : '#f1f5f9',
-                  border:
-                    hasProgress && !saving && !submitting
-                      ? '1.5px solid #a5b4fc'
-                      : '1.5px solid #e2e8f0',
-                  color: hasProgress && !saving && !submitting ? '#4f46e5' : '#94a3b8',
-                  cursor: hasProgress && !saving && !submitting ? 'pointer' : 'not-allowed',
-                }}
+                variant="soft"
+                color="indigo"
+                size="3"
+                className="flex-1"
               >
                 {saving ? '暂存中…' : '暂存'}
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
                 onClick={() => void handleSubmit()}
                 disabled={!allAnswered || submitting || saving}
-                className="flex-[1.4] rounded-2xl py-3.5 text-sm font-bold text-white transition-all"
-                style={{
-                  background:
-                    allAnswered && !submitting && !saving
-                      ? 'linear-gradient(135deg, #6366f1, #4f46e5)'
-                      : '#cbd5e1',
-                  boxShadow:
-                    allAnswered && !submitting && !saving
-                      ? '0 4px 16px rgba(99,102,241,.35)'
-                      : 'none',
-                  cursor: allAnswered && !submitting && !saving ? 'pointer' : 'not-allowed',
-                }}
+                variant="solid"
+                color="indigo"
+                size="3"
+                className="flex-[1.4]"
               >
                 {submitting ? '提交中…' : allAnswered ? '交卷' : `还有 ${unansweredCount} 题未填写`}
-              </button>
+              </Button>
             </div>
             <p className="text-center text-[11px] text-slate-400">
               可先暂存进度，全部答完后再交卷判分
@@ -970,18 +963,21 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
 
       {answerUploadOpen && user && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-100">
-          <div className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm">
+          <div className="border-kid-line shadow-sticker-sm sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-white px-4">
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-slate-800">上传答案 · {paper.title}</p>
               <p className="text-[11px] text-slate-500">划片后匹配本卷题目并批量提交草稿</p>
             </div>
-            <button
+            <Button
               type="button"
               onClick={() => setAnswerUploadOpen(false)}
-              className="shrink-0 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200"
+              variant="soft"
+              color="gray"
+              size="1"
+              className="shrink-0"
             >
               关闭
-            </button>
+            </Button>
           </div>
           <div className="mx-auto max-w-[1200px] p-4">
             <MathPdfSliceMatcher

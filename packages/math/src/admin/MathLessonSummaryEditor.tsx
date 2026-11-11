@@ -9,6 +9,7 @@ import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProb
 import RichTextEditor from '@rosie/math-kit/components/shared/RichTextEditor'
 import LessonSummaryBody from '@rosie/math-kit/components/shared/LessonSummaryBody'
 import { isRichBodyEmpty, sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
+import { Button } from '@rosie/ui/themes'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 
@@ -45,7 +46,11 @@ export default function MathLessonSummaryEditor({
   const [showPreview, setShowPreview] = useState(false)
 
   const isControlled = controlledBodyHtml !== undefined && onBodyHtmlChange !== undefined
-  const bodyHtml = isControlled ? controlledBodyHtml : dirty ? internalBodyHtml : (existing?.bodyHtml ?? '<p></p>')
+  const bodyHtml = isControlled
+    ? controlledBodyHtml
+    : dirty
+      ? internalBodyHtml
+      : (existing?.bodyHtml ?? '<p></p>')
 
   useEffect(() => {
     onDirtyChange?.(dirty)
@@ -138,18 +143,16 @@ export default function MathLessonSummaryEditor({
   return (
     <div className={modal ? 'flex min-h-0 flex-1 flex-col gap-3 overflow-hidden' : 'space-y-3'}>
       <div
-        className={clsx(
-          modal ? 'flex min-h-0 flex-1 flex-col overflow-hidden' : 'overflow-hidden',
-        )}
+        className={clsx(modal ? 'flex min-h-0 flex-1 flex-col overflow-hidden' : 'overflow-hidden')}
       >
         {showPreview ? (
           <div
             className={clsx(
-              'overflow-y-auto rounded-xl border border-slate-200 bg-white',
+              'border-kid-line overflow-y-auto rounded-xl border-2 bg-white',
               modal ? 'min-h-0 flex-1' : 'max-h-[180px]',
             )}
           >
-            <div className="border-b border-slate-100 bg-slate-50 px-3 py-1.5 text-[10px] font-bold text-slate-500">
+            <div className="border-kid-line border-b bg-slate-50 px-3 py-1.5 text-[10px] font-bold text-slate-500">
               首页预览（紧凑显示）
             </div>
             <div className={clsx('p-2', modal && '[&_.lesson-summary-content]:max-h-none')}>
@@ -175,40 +178,43 @@ export default function MathLessonSummaryEditor({
       </div>
 
       <div className="flex shrink-0 flex-wrap gap-2">
-        <button
+        <Button
           type="button"
           disabled={admin.isSaving}
           onClick={() => void handleSave()}
-          className="min-w-0 flex-1 rounded-lg bg-violet-600 py-2 text-[12px] font-bold text-white transition hover:bg-violet-700 disabled:opacity-50"
+          variant="solid"
+          color="violet"
+          size="1"
+          className="min-w-0 flex-1"
         >
           {admin.isSaving ? '保存中…' : existing ? '保存总结' : '创建总结'}
-        </button>
+        </Button>
         {onOpenModal && (
-          <button
-            type="button"
-            onClick={onOpenModal}
-            className="rounded-lg border border-violet-200 px-3 py-2 text-[12px] font-semibold text-violet-700 transition hover:bg-violet-50"
-          >
+          <Button type="button" onClick={onOpenModal} variant="outline" color="violet" size="1">
             编辑
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="button"
           disabled={!showPreview && isRichBodyEmpty(bodyHtml)}
           onClick={() => setShowPreview((v) => !v)}
-          className="rounded-lg border border-teal-200 px-3 py-2 text-[12px] font-semibold text-teal-700 transition hover:bg-teal-50 disabled:cursor-default disabled:opacity-40"
+          variant="outline"
+          color="teal"
+          size="1"
         >
           {showPreview ? '返回编辑' : '预览'}
-        </button>
+        </Button>
         {(existing || dirty) && (
-          <button
+          <Button
             type="button"
             disabled={admin.isSaving}
             onClick={() => void handleClear()}
-            className="rounded-lg border border-red-200 px-3 py-2 text-[12px] font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+            variant="outline"
+            color="red"
+            size="1"
           >
             删除
-          </button>
+          </Button>
         )}
       </div>
     </div>

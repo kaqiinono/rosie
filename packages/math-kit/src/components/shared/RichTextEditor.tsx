@@ -8,6 +8,7 @@ import { Color } from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import { FontSize, TextStyle } from '@tiptap/extension-text-style'
 import clsx from 'clsx'
+import { Button } from '@rosie/ui/themes'
 import {
   RICH_HIGHLIGHT_PRESETS,
   RICH_TEXT_COLOR_PRESETS,
@@ -32,7 +33,13 @@ import {
   type RichImageAttrs,
 } from '@rosie/math-kit/components/shared/rich-text-image'
 
-const ACCEPTED_PASTE_TYPES = new Set(['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'])
+const ACCEPTED_PASTE_TYPES = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+  'image/gif',
+])
 
 const EDITOR_IMG_TW = [
   RICH_IMG_BASE_TW,
@@ -78,30 +85,35 @@ export default function RichTextEditor({
   const onUploadImageRef = useRef(onUploadImage)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imageSelected, setImageSelected] = useState(false)
-  const [activeImgWidthPct, setActiveImgWidthPct] = useState<RichImgWidthPct>(DEFAULT_RICH_IMG_WIDTH_PCT)
+  const [activeImgWidthPct, setActiveImgWidthPct] = useState<RichImgWidthPct>(
+    DEFAULT_RICH_IMG_WIDTH_PCT,
+  )
   const [activeImgAlign, setActiveImgAlign] = useState<RichImgAlign>(DEFAULT_RICH_IMG_ALIGN)
   const allowImages = Boolean(onUploadImage)
 
   onUploadImageRef.current = onUploadImage
 
-  const insertImageFile = useCallback(async (file: File) => {
-    const editor = editorRef.current
-    const upload = onUploadImageRef.current
-    if (!editor || !upload || disabled || uploadingImage) return
-    setUploadingImage(true)
-    try {
-      const url = await upload(file)
-      if (url) {
-        editor
-          .chain()
-          .focus()
-          .setImage(defaultRichImageAttrs(url) as RichImageAttrs)
-          .run()
+  const insertImageFile = useCallback(
+    async (file: File) => {
+      const editor = editorRef.current
+      const upload = onUploadImageRef.current
+      if (!editor || !upload || disabled || uploadingImage) return
+      setUploadingImage(true)
+      try {
+        const url = await upload(file)
+        if (url) {
+          editor
+            .chain()
+            .focus()
+            .setImage(defaultRichImageAttrs(url) as RichImageAttrs)
+            .run()
+        }
+      } finally {
+        setUploadingImage(false)
       }
-    } finally {
-      setUploadingImage(false)
-    }
-  }, [disabled, uploadingImage])
+    },
+    [disabled, uploadingImage],
+  )
 
   const insertImageFileRef = useRef(insertImageFile)
   insertImageFileRef.current = insertImageFile
@@ -182,11 +194,6 @@ export default function RichTextEditor({
 
   if (!editor) return null
 
-  const btn =
-    'rounded-md px-2 py-1 text-[11px] font-bold transition disabled:opacity-40'
-  const btnOn = 'bg-teal-600 text-white'
-  const btnOff = 'bg-white text-slate-600 hover:bg-slate-50'
-
   const busy = disabled || uploadingImage
 
   /** Keep text/image selection when clicking toolbar controls. */
@@ -195,7 +202,11 @@ export default function RichTextEditor({
   }
 
   function updateSelectedImage(attrs: Partial<RichImageAttrs>) {
-    editor!.chain().focus().updateAttributes('image', attrs as RichImageAttrs).run()
+    editor!
+      .chain()
+      .focus()
+      .updateAttributes('image', attrs as RichImageAttrs)
+      .run()
     if (attrs.imgWidthPct !== undefined) setActiveImgWidthPct(attrs.imgWidthPct)
     if (attrs.imgAlign !== undefined) setActiveImgAlign(attrs.imgAlign)
   }
@@ -203,28 +214,31 @@ export default function RichTextEditor({
   return (
     <div
       className={clsx(
-        'overflow-hidden rounded-xl border border-slate-200 bg-white',
+        'border-kid-line overflow-hidden rounded-xl border-2 bg-white',
         fillHeight && 'flex min-h-0 flex-1 flex-col',
         className,
       )}
     >
-      <div className="sticky top-0 z-10 flex shrink-0 flex-wrap gap-1 border-b border-slate-100 bg-slate-50 px-2 py-1.5">
-        <button
+      <div className="border-kid-line sticky top-0 z-10 flex shrink-0 flex-wrap gap-1 border-b bg-slate-50 px-2 py-1.5">
+        <Button
           type="button"
           disabled={busy}
           onMouseDown={keepEditorSelection}
           onClick={() => editor.chain().focus().toggleBold().run()}
-          className={clsx(btn, editor.isActive('bold') ? btnOn : btnOff)}
+          size="1"
+          radius="medium"
+          variant={editor.isActive('bold') ? 'solid' : 'soft'}
+          color="teal"
         >
           B
-        </button>
+        </Button>
         <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
         <span className="self-center text-[10px] font-semibold text-slate-500">字号</span>
         {RICH_FONT_SIZE_PRESETS.map(({ value, label }) => {
           const activeFontSize = editor.getAttributes('textStyle').fontSize as string | undefined
           const active = value ? activeFontSize === value : !activeFontSize
           return (
-            <button
+            <Button
               key={value || 'default'}
               type="button"
               disabled={busy}
@@ -234,10 +248,14 @@ export default function RichTextEditor({
                 if (!value) editor.chain().focus().unsetFontSize().run()
                 else editor.chain().focus().setFontSize(value).run()
               }}
-              className={clsx(btn, active ? btnOn : btnOff, 'min-w-[1.75rem]')}
+              size="1"
+              radius="medium"
+              variant={active ? 'solid' : 'soft'}
+              color="teal"
+              className="min-w-[1.75rem]"
             >
               {label}
-            </button>
+            </Button>
           )
         })}
         <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
@@ -247,6 +265,7 @@ export default function RichTextEditor({
             ? editor.isActive('textStyle', { color: value })
             : !editor.getAttributes('textStyle').color
           return (
+            // native-ok: 字色色板，背景色由预设 swatch 内联提供，需保留 onMouseDown 以保持编辑器选区
             <button
               key={value || 'default'}
               type="button"
@@ -259,7 +278,7 @@ export default function RichTextEditor({
               }}
               className={clsx(
                 'h-5 w-5 rounded border transition',
-                active ? 'border-teal-600 ring-2 ring-teal-400' : 'border-slate-300',
+                active ? 'border-teal-600 ring-2 ring-teal-400' : 'border-kid-line',
                 !value && 'flex items-center justify-center text-[9px] font-bold text-slate-600',
               )}
               style={value ? { backgroundColor: swatch } : undefined}
@@ -275,6 +294,7 @@ export default function RichTextEditor({
             ? editor.isActive('highlight', { color: value })
             : !editor.isActive('highlight')
           return (
+            // native-ok: 荧光色板，背景色由预设 swatch 内联提供，需保留 onMouseDown 以保持编辑器选区
             <button
               key={value || 'none'}
               type="button"
@@ -287,7 +307,7 @@ export default function RichTextEditor({
               }}
               className={clsx(
                 'h-5 w-5 rounded border transition',
-                active ? 'border-teal-600 ring-2 ring-teal-400' : 'border-slate-300',
+                active ? 'border-teal-600 ring-2 ring-teal-400' : 'border-kid-line',
                 !value && 'flex items-center justify-center text-[9px] text-slate-400',
               )}
               style={{ backgroundColor: swatch }}
@@ -297,24 +317,30 @@ export default function RichTextEditor({
           )
         })}
         <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
-        <button
+        <Button
           type="button"
           disabled={busy}
           onMouseDown={keepEditorSelection}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
-          className={clsx(btn, editor.isActive('bulletList') ? btnOn : btnOff)}
+          size="1"
+          radius="medium"
+          variant={editor.isActive('bulletList') ? 'solid' : 'soft'}
+          color="teal"
         >
           • 列表
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           disabled={busy}
           onMouseDown={keepEditorSelection}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          className={clsx(btn, editor.isActive('orderedList') ? btnOn : btnOff)}
+          size="1"
+          radius="medium"
+          variant={editor.isActive('orderedList') ? 'solid' : 'soft'}
+          color="teal"
         >
           1. 列表
-        </button>
+        </Button>
         {allowImages && (
           <>
             <input
@@ -328,43 +354,52 @@ export default function RichTextEditor({
                 if (file) void insertImageFile(file)
               }}
             />
-            <button
+            <Button
               type="button"
+              size="1"
+              radius="medium"
+              variant="soft"
+              color="teal"
               disabled={busy}
               onClick={() => fileInputRef.current?.click()}
-              className={clsx(btn, btnOff)}
             >
               {uploadingImage ? '上传中…' : '🖼 插图'}
-            </button>
+            </Button>
             {imageSelected && (
               <>
                 <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
                 <span className="self-center text-[10px] font-semibold text-slate-500">宽</span>
                 {RICH_IMG_WIDTH_PCTS.map((pct) => (
-                  <button
+                  <Button
                     key={pct}
                     type="button"
                     disabled={busy}
                     onMouseDown={keepEditorSelection}
                     onClick={() => updateSelectedImage({ imgWidthPct: pct })}
-                    className={clsx(btn, activeImgWidthPct === pct ? btnOn : btnOff)}
+                    size="1"
+                    radius="medium"
+                    variant={activeImgWidthPct === pct ? 'solid' : 'soft'}
+                    color="teal"
                   >
                     {RICH_IMG_WIDTH_PCT_LABELS[pct]}
-                  </button>
+                  </Button>
                 ))}
                 <span className="self-center px-0.5 text-[10px] text-slate-400">|</span>
                 <span className="self-center text-[10px] font-semibold text-slate-500">位</span>
                 {RICH_IMG_ALIGN_VALUES.map((align) => (
-                  <button
+                  <Button
                     key={align}
                     type="button"
                     disabled={busy}
                     onMouseDown={keepEditorSelection}
                     onClick={() => updateSelectedImage({ imgAlign: align })}
-                    className={clsx(btn, activeImgAlign === align ? btnOn : btnOff)}
+                    size="1"
+                    radius="medium"
+                    variant={activeImgAlign === align ? 'solid' : 'soft'}
+                    color="teal"
                   >
                     {RICH_IMG_ALIGN_LABELS[align]}
-                  </button>
+                  </Button>
                 ))}
               </>
             )}
@@ -379,7 +414,7 @@ export default function RichTextEditor({
       >
         <EditorContent editor={editor} />
         {editor.isEmpty && (
-          <div className="pointer-events-none absolute left-3 top-2 text-[13px] text-slate-400">
+          <div className="pointer-events-none absolute top-2 left-3 text-[13px] text-slate-400">
             {placeholder}
           </div>
         )}

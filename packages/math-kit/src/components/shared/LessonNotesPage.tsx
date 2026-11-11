@@ -41,7 +41,7 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
         </div>
       )}
 
-      <div className="mb-4 rounded-[14px] border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-4">
+      <div className="mb-4 rounded-[14px] border border-violet-100 bg-violet-50/80 p-4">
         <div className="flex items-center gap-2 text-sm font-extrabold text-violet-900">
           📝 笔记
           {!isLoading && entries.length > 0 && (
@@ -95,7 +95,7 @@ export default function LessonNotesPage({ basePath, lessonId, problems }: Props)
             )
 
             const cardClass =
-              'block rounded-[12px] border border-violet-100 bg-[#faf9ff] p-3.5 no-underline transition hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-[0_4px_16px_rgba(91,76,204,0.08)]'
+              'block rounded-[12px] border border-violet-100 bg-[#faf9ff] p-3.5 no-underline transition hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sticker-sm'
 
             if (href) {
               return (

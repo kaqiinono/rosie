@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button } from '@rosie/ui/themes'
 
 // ─────────────────────────────────────────────
 // FAQ data
@@ -130,7 +131,7 @@ const chapters = [
     id: 1,
     emoji: '✏️',
     title: '什么是一笔画？',
-    color: 'from-violet-400 to-purple-500',
+    color: 'bg-purple-600',
     bg: 'bg-violet-50',
     border: 'border-violet-300',
     accent: 'text-violet-700',
@@ -296,7 +297,7 @@ const chapters = [
     id: 2,
     emoji: '⭐',
     title: '奇点是什么？',
-    color: 'from-amber-400 to-orange-500',
+    color: 'bg-orange-600',
     bg: 'bg-amber-50',
     border: 'border-amber-300',
     accent: 'text-amber-700',
@@ -427,7 +428,7 @@ const chapters = [
     id: 3,
     emoji: '🗝️',
     title: '一笔画的秘诀',
-    color: 'from-emerald-400 to-teal-500',
+    color: 'bg-teal-600',
     bg: 'bg-emerald-50',
     border: 'border-emerald-300',
     accent: 'text-emerald-700',
@@ -522,7 +523,7 @@ const chapters = [
     id: 4,
     emoji: '✂️',
     title: '改造图形',
-    color: 'from-pink-400 to-rose-500',
+    color: 'bg-rose-600',
     bg: 'bg-pink-50',
     border: 'border-pink-300',
     accent: 'text-pink-700',
@@ -566,7 +567,7 @@ const chapters = [
     id: 5,
     emoji: '🧮',
     title: '最少几笔？',
-    color: 'from-cyan-400 to-blue-500',
+    color: 'bg-blue-600',
     bg: 'bg-cyan-50',
     border: 'border-cyan-300',
     accent: 'text-cyan-700',
@@ -602,7 +603,7 @@ const chapters = [
     id: 6,
     emoji: '🎯',
     title: '解题步骤',
-    color: 'from-indigo-400 to-violet-500',
+    color: 'bg-violet-600',
     bg: 'bg-indigo-50',
     border: 'border-indigo-300',
     accent: 'text-indigo-700',
@@ -658,7 +659,7 @@ const chapters = [
     id: 7,
     emoji: '🏆',
     title: '闯关大挑战！',
-    color: 'from-yellow-400 to-orange-500',
+    color: 'bg-orange-600',
     bg: 'bg-yellow-50',
     border: 'border-yellow-400',
     accent: 'text-yellow-700',
@@ -726,12 +727,9 @@ function FaqSection() {
         {pct === 100 && (
           <p className="text-sm font-black text-green-600">🎊 全对！你是一笔画大师！</p>
         )}
-        <button
-          onClick={handleReset}
-          className="w-full rounded-xl bg-gradient-to-r from-yellow-400 to-orange-400 py-3 text-sm font-black text-white"
-        >
+        <Button onClick={handleReset} variant="solid" color="yellow" size="3" className="w-full">
           🔄 再挑战一次！
-        </button>
+        </Button>
       </div>
     )
   }
@@ -745,7 +743,7 @@ function FaqSection() {
         </span>
         <div className="h-2 flex-1 overflow-hidden rounded-full bg-yellow-200">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 transition-all duration-300"
+            className="h-full rounded-full bg-orange-400 transition-all duration-300"
             style={{ width: `${(current / faqQuestions.length) * 100}%` }}
           />
         </div>
@@ -768,7 +766,7 @@ function FaqSection() {
             else if (selected === i) cls = 'border-red-400 bg-red-50 text-red-700'
           }
           return (
-            <button
+            <button // native-ok: 答题选项是左对齐的长文本选项，需要换行并按选中/对错显示多种状态，Radix Button 会单行居中裁切
               key={i}
               onClick={() => handleSelect(i)}
               className={`w-full rounded-xl border-2 px-3 py-2.5 text-left text-xs transition-all ${cls}`}
@@ -791,20 +789,20 @@ function FaqSection() {
 
       {/* Buttons */}
       {!confirmed ? (
-        <button
+        <Button
           onClick={handleConfirm}
           disabled={selected === null}
-          className={`w-full rounded-xl py-3 text-sm font-black transition-all ${selected !== null ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white' : 'bg-yellow-100 text-yellow-400'}`}
+          variant={selected !== null ? 'solid' : 'soft'}
+          color="yellow"
+          size="3"
+          className="w-full"
         >
           确认答案 ✔
-        </button>
+        </Button>
       ) : (
-        <button
-          onClick={handleNext}
-          className="w-full rounded-xl bg-gradient-to-r from-orange-400 to-rose-400 py-3 text-sm font-black text-white"
-        >
+        <Button onClick={handleNext} variant="solid" color="ruby" size="3" className="w-full">
           {current + 1 >= faqQuestions.length ? '查看结果 🏆' : '下一题 →'}
-        </button>
+        </Button>
       )}
     </div>
   )
@@ -828,7 +826,7 @@ export default function YibihaMagicBook() {
   const totalChapters = chapters.length
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 via-violet-50 to-pink-50 p-4 font-sans">
+    <div className="min-h-screen bg-pink-50 p-4 font-sans">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
         .magic-font { font-family: 'Noto Sans SC', sans-serif; }
@@ -862,16 +860,16 @@ export default function YibihaMagicBook() {
         {activeChapter === null && (
           <div className="grid grid-cols-2 gap-3">
             {chapters.map((ch) => (
-              <button
+              <button // native-ok: 章节卡片是多块内容（图标 + 标题 + 星标）的容器按钮，Radix Button 会居中挤压内容
                 key={ch.id}
                 onClick={() => handleOpen(ch.id)}
-                className={`chapter-card relative rounded-2xl border-2 ${ch.border} ${ch.bg} p-4 text-left shadow-sm active:shadow-none ${ch.isFaq ? 'col-span-2' : ''}`}
+                className={`chapter-card relative rounded-2xl border-2 ${ch.border} ${ch.bg} shadow-sticker-sm p-4 text-left active:shadow-none ${ch.isFaq ? 'col-span-2' : ''}`}
               >
                 {stars.includes(ch.id) && (
                   <span className="absolute top-2 right-2 text-sm">{ch.isFaq ? '🏆' : '⭐'}</span>
                 )}
                 <div
-                  className={`h-10 w-10 rounded-xl bg-gradient-to-br ${ch.color} mb-2 flex items-center justify-center text-xl`}
+                  className={`h-10 w-10 rounded-xl ${ch.color} mb-2 flex items-center justify-center text-xl`}
                 >
                   {ch.emoji}
                 </div>
@@ -892,17 +890,20 @@ export default function YibihaMagicBook() {
         {/* Chapter Detail */}
         {activeChapter !== null && active && (
           <div className="slide-up">
-            <button
+            <Button
               onClick={() => setActiveChapter(null)}
-              className="mb-4 flex items-center gap-1 text-sm font-bold text-violet-600"
+              variant="ghost"
+              color="violet"
+              size="2"
+              className="mb-4"
             >
               ← 返回目录
-            </button>
+            </Button>
 
             <div className={`rounded-2xl border-2 ${active.border} ${active.bg} mb-4 p-4`}>
               <div className="mb-4 flex items-center gap-3">
                 <div
-                  className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${active.color} flex items-center justify-center text-2xl shadow-sm`}
+                  className={`h-12 w-12 rounded-2xl ${active.color} shadow-sticker-sm flex items-center justify-center text-2xl`}
                 >
                   {active.emoji}
                 </div>
@@ -921,28 +922,37 @@ export default function YibihaMagicBook() {
             {!active.isFaq && (
               <div className="flex gap-3">
                 {activeChapter > 1 && (
-                  <button
+                  <Button
                     onClick={() => handleOpen(activeChapter - 1)}
-                    className="flex-1 rounded-xl border-2 border-violet-200 bg-white py-3 text-sm font-bold text-violet-700"
+                    variant="outline"
+                    color="violet"
+                    size="3"
+                    className="flex-1"
                   >
                     ← 上一招
-                  </button>
+                  </Button>
                 )}
                 {activeChapter < totalChapters - 1 && (
-                  <button
+                  <Button
                     onClick={() => handleOpen(activeChapter + 1)}
-                    className={`flex-1 rounded-xl bg-gradient-to-r py-3 ${active.color} text-sm font-bold text-white shadow-sm`}
+                    variant="solid"
+                    color="violet"
+                    size="3"
+                    className="flex-1"
                   >
                     下一招 →
-                  </button>
+                  </Button>
                 )}
                 {activeChapter === totalChapters - 1 && (
-                  <button
+                  <Button
                     onClick={() => handleOpen(totalChapters)}
-                    className="flex-1 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 py-3 text-sm font-bold text-white"
+                    variant="solid"
+                    color="orange"
+                    size="3"
+                    className="flex-1"
                   >
                     🏆 去闯关！
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -960,7 +970,7 @@ export default function YibihaMagicBook() {
             </div>
             <div className="h-3 overflow-hidden rounded-full border border-violet-200 bg-violet-100">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-violet-400 to-pink-400 transition-all duration-500"
+                className="h-full rounded-full bg-pink-400 transition-all duration-500"
                 style={{ width: `${(stars.length / totalChapters) * 100}%` }}
               />
             </div>

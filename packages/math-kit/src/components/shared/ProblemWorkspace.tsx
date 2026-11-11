@@ -10,6 +10,7 @@ import { useProblemScratchContext } from '@rosie/math-kit/components/shared/Scra
 import { findInProgressAttempt } from '@rosie/math-kit/utils/math-scratch-db'
 import { submitPracticeAttempt } from '@rosie/math-kit/utils/submitPracticeAttempt'
 import { useProblemWorkspaceRuntime } from '@rosie/math-kit/components/shared/ProblemWorkspaceRuntime'
+import { Button } from '@rosie/ui/themes'
 
 type Props = Omit<
   QuestionLayoutProps,
@@ -86,17 +87,21 @@ export default function ProblemWorkspace({
   const answerActions = attemptToolsEnabled ? (
     <>
       {!attempted ? (
-        <button
+        <Button
           type="button"
           disabled={settling}
           onClick={() => void handleDontKnow()}
-          className="cursor-pointer rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[13px] font-semibold text-rose-600 transition-all hover:bg-rose-100 active:scale-[0.96] disabled:cursor-wait disabled:opacity-60"
+          variant="soft"
+          color="ruby"
+          size="2"
         >
           {settling ? '记录中…' : '不会'}
-        </button>
-      ) : usedDontKnow
-        ? (dontKnowFollowup ?? runtime?.dontKnowFollowup)
-        : (runtime?.correctFollowup ?? null)}
+        </Button>
+      ) : usedDontKnow ? (
+        (dontKnowFollowup ?? runtime?.dontKnowFollowup)
+      ) : (
+        (runtime?.correctFollowup ?? null)
+      )}
     </>
   ) : null
 
@@ -114,7 +119,7 @@ export default function ProblemWorkspace({
         answerActions={answerActions}
       />
       {flash && (
-        <div className="pointer-events-none fixed top-16 left-1/2 z-[130] -translate-x-1/2 rounded-full bg-amber-800 px-4 py-2 text-[13px] font-semibold text-white shadow-lg">
+        <div className="shadow-sticker pointer-events-none fixed top-16 left-1/2 z-[130] -translate-x-1/2 rounded-full bg-amber-800 px-4 py-2 text-[13px] font-semibold text-white">
           {flash}
         </div>
       )}

@@ -7,10 +7,14 @@ import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import type { MathPracticeAttemptRow } from '@rosie/math-kit/hooks/math-scratch-types'
 import { fetchPracticeAttemptsForProblems } from '@rosie/math-kit/utils/math-scratch-db'
-import { attemptRowHasViewableCanvas, pickPracticeAttemptForRow } from '@rosie/math-kit/utils/math-practice-attempt'
+import {
+  attemptRowHasViewableCanvas,
+  pickPracticeAttemptForRow,
+} from '@rosie/math-kit/utils/math-practice-attempt'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
 import { resolveMathPlanProblem } from '@rosie/math/utils/practice-queue-from-plan'
 import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
+import { Button } from '@rosie/ui/themes'
 
 interface Props {
   problems: MathPlanProblem[]
@@ -71,13 +75,7 @@ function DueLabel({ due }: { due: { label: string; urgent: string } }) {
 
 type PracticeStatus = 'wrong' | 'practiced' | 'unseen'
 
-function PracticeStatusLabel({
-  status,
-  count,
-}: {
-  status: PracticeStatus
-  count: number
-}) {
+function PracticeStatusLabel({ status, count }: { status: PracticeStatus; count: number }) {
   if (status === 'wrong') {
     return <span className="text-[10px] font-bold text-red-500">错题</span>
   }
@@ -88,14 +86,10 @@ function PracticeStatusLabel({
       </span>
     )
   }
-  return <span className="text-[10px] font-bold text-text-muted">未练</span>
+  return <span className="text-text-muted text-[10px] font-bold">未练</span>
 }
 
-export default function ProblemMasteryPanel({
-  problems,
-  masteryMap,
-  problemSets,
-}: Props) {
+export default function ProblemMasteryPanel({ problems, masteryMap, problemSets }: Props) {
   const { user } = useAuth()
   const { practiceCount, lastAttemptedAt } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
@@ -158,10 +152,7 @@ export default function ProblemMasteryPanel({
   const rangeStart = rows.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1
   const rangeEnd = Math.min(safePage * PAGE_SIZE, rows.length)
 
-  const pageProblemIdsKey = useMemo(
-    () => pageRows.map((r) => r.p.problemId).join('\0'),
-    [pageRows],
-  )
+  const pageProblemIdsKey = useMemo(() => pageRows.map((r) => r.p.problemId).join('\0'), [pageRows])
 
   // Resolve attempts for the visible page (row → attempt id for the draft button).
   const userId = user?.id
@@ -195,9 +186,9 @@ export default function ProblemMasteryPanel({
 
   return (
     <div className="w-full px-0 pb-8">
-      <div className="overflow-hidden rounded-[14px] border border-gray-200 bg-white">
+      <div className="border-kid-line overflow-hidden rounded-[14px] border-2 bg-white">
         {/* Header / toggle */}
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           type="button"
           onClick={() => setOpen((v) => !v)}
           className="flex w-full cursor-pointer items-center justify-between bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50"
@@ -205,7 +196,7 @@ export default function ProblemMasteryPanel({
           <div className="flex items-center gap-2">
             <span className="text-[15px]">📊</span>
             <span className="text-text-primary text-[13px] font-bold">题目学习状态</span>
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold text-text-muted">
+            <span className="text-text-muted rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-bold">
               {rows.length} 道题
             </span>
           </div>
@@ -236,33 +227,33 @@ export default function ProblemMasteryPanel({
 
         {/* Table */}
         {open && (
-          <div className="border-t border-gray-200">
+          <div className="border-kid-line border-t">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[780px] border-collapse text-[12px]">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-left text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-4 py-2 text-left text-[10px] font-bold tracking-wider">
                       题目
                     </th>
-                    <th className="px-3 py-2 text-left text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-3 py-2 text-left text-[10px] font-bold tracking-wider">
                       类型
                     </th>
-                    <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-3 py-2 text-center text-[10px] font-bold tracking-wider">
                       阶段
                     </th>
-                    <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-3 py-2 text-center text-[10px] font-bold tracking-wider whitespace-nowrap">
                       练习时间
                     </th>
-                    <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-3 py-2 text-center text-[10px] font-bold tracking-wider whitespace-nowrap">
                       练习状态
                     </th>
-                    <th className="whitespace-nowrap px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-3 py-2 text-center text-[10px] font-bold tracking-wider whitespace-nowrap">
                       草稿
                     </th>
-                    <th className="px-3 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-3 py-2 text-center text-[10px] font-bold tracking-wider">
                       下次复习
                     </th>
-                    <th className="px-4 py-2 text-center text-[10px] font-bold tracking-wider text-text-muted">
+                    <th className="text-text-muted px-4 py-2 text-center text-[10px] font-bold tracking-wider">
                       掌握
                     </th>
                   </tr>
@@ -270,9 +261,7 @@ export default function ProblemMasteryPanel({
                 <tbody>
                   {pageRows.map(({ p, m, graduated, due, count, practiceStatus, practiceTime }) => {
                     const level = getMasteryLevel(m?.correct ?? 0)
-                    const draftProblem = problemSets
-                      ? resolveMathPlanProblem(p, problemSets)
-                      : null
+                    const draftProblem = problemSets ? resolveMathPlanProblem(p, problemSets) : null
                     const practiceAttempt = pickPracticeAttemptForRow(
                       attemptsByProblem[p.problemId] ?? [],
                       practiceTime,
@@ -281,14 +270,14 @@ export default function ProblemMasteryPanel({
                     const displayTime = practiceAttempt?.attemptedAt ?? practiceTime
                     const canOpenDraft = Boolean(
                       problemSets &&
-                        draftProblem &&
-                        practiceAttempt &&
-                        attemptRowHasViewableCanvas(practiceAttempt),
+                      draftProblem &&
+                      practiceAttempt &&
+                      attemptRowHasViewableCanvas(practiceAttempt),
                     )
                     return (
                       <tr
                         key={p.key}
-                        className="border-t border-gray-100"
+                        className="border-kid-line border-t"
                         style={{ opacity: graduated ? 0.6 : 1 }}
                       >
                         <td
@@ -297,11 +286,11 @@ export default function ProblemMasteryPanel({
                         >
                           {p.title}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-[11px] text-text-muted">
+                        <td className="text-text-muted px-3 py-2 text-[11px] whitespace-nowrap">
                           {lessonDisplayLabel(p.lessonId, true)} ·{' '}
                           {SECTION_LABEL[p.section] ?? p.section}
                         </td>
-                        <td className="px-3 py-2 text-center text-text-muted">
+                        <td className="text-text-muted px-3 py-2 text-center">
                           {m ? (
                             <>
                               {graduated ? '🦋' : MASTERY_ICON[level]} {m.stage ?? 0}
@@ -310,13 +299,13 @@ export default function ProblemMasteryPanel({
                             '—'
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-center text-[11px] text-text-muted">
+                        <td className="text-text-muted px-3 py-2 text-center text-[11px] whitespace-nowrap">
                           {formatPracticeTime(displayTime)}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-center">
+                        <td className="px-3 py-2 text-center whitespace-nowrap">
                           <PracticeStatusLabel status={practiceStatus} count={count} />
                         </td>
-                        <td className="whitespace-nowrap px-3 py-2 text-center">
+                        <td className="px-3 py-2 text-center whitespace-nowrap">
                           {canOpenDraft && practiceAttempt ? (
                             <PracticeViewDraftButton
                               problem={draftProblem ?? undefined}
@@ -348,7 +337,7 @@ export default function ProblemMasteryPanel({
                   })}
                   {rows.length === 0 && (
                     <tr>
-                      <td colSpan={8} className="px-4 py-6 text-center text-[12px] text-text-muted">
+                      <td colSpan={8} className="text-text-muted px-4 py-6 text-center text-[12px]">
                         还没有练习记录 — 完成题目后这里会显示状态
                       </td>
                     </tr>
@@ -357,30 +346,34 @@ export default function ProblemMasteryPanel({
               </table>
             </div>
             {rows.length > PAGE_SIZE && (
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2.5">
-                <div className="text-[11px] font-bold text-text-muted">
+              <div className="border-kid-line flex flex-wrap items-center justify-between gap-2 border-t bg-gray-50 px-4 py-2.5">
+                <div className="text-text-muted text-[11px] font-bold">
                   第 {rangeStart}–{rangeEnd} 题 · 共 {rows.length} 题
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
                     type="button"
                     disabled={safePage <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="cursor-pointer rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-extrabold text-text-muted disabled:cursor-not-allowed disabled:opacity-40 hover:border-orange-300 hover:text-orange-600"
+                    variant="outline"
+                    color="gray"
+                    size="1"
                   >
                     ← 上一页
-                  </button>
+                  </Button>
                   <span className="min-w-[4.5rem] text-center text-[11px] font-extrabold text-gray-700">
                     {safePage} / {totalPages}
                   </span>
-                  <button
+                  <Button
                     type="button"
                     disabled={safePage >= totalPages}
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className="cursor-pointer rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-extrabold text-text-muted disabled:cursor-not-allowed disabled:opacity-40 hover:border-orange-300 hover:text-orange-600"
+                    variant="outline"
+                    color="gray"
+                    size="1"
                   >
                     下一页 →
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

@@ -11,6 +11,7 @@ import {
   PROBLEM_TYPES,
   TAG_STYLE,
 } from '../../../../utils/g2/lesson13-data'
+import { StickerCard } from '@rosie/ui'
 
 const BASE = '/math/ny/2/13'
 type Props = {
@@ -26,18 +27,22 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
 
   return (
     <div>
-      <div className="mb-5 rounded-[14px] bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-100 p-6">
-        <LessonHomeTitle summaryInContent lessonKey="2-13" className="text-2xl font-extrabold text-amber-900">抽屉原理初步与植树问题 🌳</LessonHomeTitle>
+      <div className="mb-5 rounded-[14px] bg-amber-50 p-6">
+        <LessonHomeTitle
+          summaryInContent
+          lessonKey="2-13"
+          className="text-2xl font-extrabold text-amber-900"
+        >
+          抽屉原理初步与植树问题 🌳
+        </LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-amber-800">
           二年级目标班 · 第13讲
           <br />
           {LESSON_TIP}
         </p>
       </div>
-      <section className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
-        <h2 className="mb-3 text-[15px] font-bold text-amber-900">
-          本讲总结 · 分类与间隔
-        </h2>
+      <StickerCard as="section" elevation="sm" radius="md" className="mb-4">
+        <h2 className="mb-3 text-[15px] font-bold text-amber-900">本讲总结 · 分类与间隔</h2>
         <div className="text-text-secondary space-y-2 text-sm leading-relaxed">
           {LESSON_SUMMARY.slice(0, 2).map((line) => (
             <p key={line}>{line}</p>
@@ -59,16 +64,16 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
           </details>
         </div>
         <LessonSummaryVideos lessonKey="2-13" />
-      </section>
+      </StickerCard>
       <LessonSummary lessonId="2-13" />
-      <section className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+      <StickerCard as="section" elevation="sm" radius="md" className="mb-4">
         <h2 className="mb-3 text-[15px] font-bold">🧠 按题型练习</h2>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {PROBLEM_TYPES.map((type) => (
             <Link
               key={type.tag}
               href={`${BASE}/alltest?type=${type.tag}`}
-              className={`rounded-lg p-3 no-underline transition hover:shadow-md ${TAG_STYLE[type.tag]}`}
+              className={`hover:shadow-sticker rounded-lg p-3 no-underline transition ${TAG_STYLE[type.tag]}`}
             >
               <div className="mb-1 text-sm font-bold">
                 {type.icon} {type.label} · {all.filter((p) => p.tag === type.tag).length}题
@@ -77,31 +82,28 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
             </Link>
           ))}
         </div>
-      </section>
+      </StickerCard>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <Link
-          href={`${BASE}/lesson`}
-          className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
-        >
-          <div className="mb-1 text-sm font-bold">📖 课堂讲解</div>
-          <p className="text-text-muted text-xs">
-            11 道例题＋3 道练一练 · 共 {problems.lesson.length} 题
-          </p>
-        </Link>
-        <Link
-          href={`${BASE}/homework`}
-          className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
-        >
-          <div className="mb-1 text-sm font-bold">✏️ 课后巩固</div>
-          <p className="text-text-muted text-xs">共 {problems.homework.length} 题</p>
-        </Link>
-        <Link
-          href={`${BASE}/supplement`}
-          className="rounded-[14px] bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)]"
-        >
-          <div className="mb-1 text-sm font-bold">📒 附加题</div>
-          <p className="text-text-muted text-xs">共 {problems.supplement?.length ?? 0} 题</p>
-        </Link>
+        <StickerCard asChild elevation="sm" radius="md">
+          <Link href={`${BASE}/lesson`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">📖 课堂讲解</div>
+            <p className="text-text-muted text-xs">
+              11 道例题＋3 道练一练 · 共 {problems.lesson.length} 题
+            </p>
+          </Link>
+        </StickerCard>
+        <StickerCard asChild elevation="sm" radius="md">
+          <Link href={`${BASE}/homework`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">✏️ 课后巩固</div>
+            <p className="text-text-muted text-xs">共 {problems.homework.length} 题</p>
+          </Link>
+        </StickerCard>
+        <StickerCard asChild elevation="sm" radius="md">
+          <Link href={`${BASE}/supplement`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">📒 附加题</div>
+            <p className="text-text-muted text-xs">共 {problems.supplement?.length ?? 0} 题</p>
+          </Link>
+        </StickerCard>
         <Link
           href={`${BASE}/alltest`}
           className="rounded-[14px] border-2 border-amber-300 bg-white p-4 no-underline"

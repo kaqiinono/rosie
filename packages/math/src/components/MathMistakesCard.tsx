@@ -12,15 +12,15 @@ export default function MathMistakesCard() {
   return (
     <Link
       href="/math/mistakes"
-      className="group relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(239,68,68,.25)]"
+      className="group hover:shadow-sticker relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1"
       style={{
-        background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 50%, #fecaca 100%)',
+        background: '#fee2e2',
         border: '2px solid rgba(239,68,68,.3)',
-        boxShadow: '0 4px 20px rgba(239,68,68,.12)',
+        boxShadow: '0 3px 0 rgba(239,68,68,.3)',
       }}
     >
-      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-red-300/20 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-rose-300/25 blur-xl" />
+      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-red-300/20" />
+      <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-rose-300/25" />
 
       <div className="relative px-4 py-4">
         <div className="mb-2 flex items-center justify-between">
@@ -30,7 +30,7 @@ export default function MathMistakesCard() {
             {count > 0 && (
               <span
                 className="rounded-full px-1.5 py-px text-[10px] font-extrabold text-white"
-                style={{ background: 'linear-gradient(135deg, #ef4444, #f87171)' }}
+                style={{ background: '#ef4444' }}
               >
                 {count}
               </span>

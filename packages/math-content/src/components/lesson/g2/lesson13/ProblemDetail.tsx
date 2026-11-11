@@ -59,7 +59,7 @@ export default function ProblemDetail({
       onSubmit={submit}
       onCheck={check}
       onStateChange={clearFeedback}
-      buttonClassName="bg-amber-600 shadow-[0_3px_10px_rgba(217,119,6,0.3)]"
+      buttonClassName="bg-amber-600 shadow-sticker-sm"
       tip={
         <div className="mt-3 rounded-lg bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-800">
           💡 <strong>解题提示：</strong>

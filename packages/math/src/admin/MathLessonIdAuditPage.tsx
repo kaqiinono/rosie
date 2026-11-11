@@ -8,6 +8,8 @@ import {
   previewMigration,
   type MathLessonIdAuditReport,
 } from '@rosie/math/admin/math-lesson-id-audit'
+import { StatTile, StickerCard } from '@rosie/ui'
+import { Button } from '@rosie/ui/themes'
 
 const RISK_STYLES = {
   green: 'border-emerald-200 bg-emerald-50 text-emerald-900',
@@ -49,7 +51,7 @@ export default function MathLessonIdAuditPage() {
 
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+      <div className="bg-kid-paper flex min-h-screen items-center justify-center">
         <p className="text-slate-600">请先登录后访问</p>
       </div>
     )
@@ -58,7 +60,7 @@ export default function MathLessonIdAuditPage() {
   const affectedLessons = report?.byLesson.filter((r) => r.total > 0) ?? []
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 text-slate-800">
+    <div className="bg-kid-paper min-h-screen p-6 text-slate-800">
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -72,7 +74,7 @@ export default function MathLessonIdAuditPage() {
           </Link>
         </div>
 
-        <div className="rounded-xl bg-white p-4 text-sm text-slate-600 shadow-sm">
+        <StickerCard elevation="sm" radius="md" className="text-sm text-slate-600">
           <p>
             目标身份：<code className="rounded bg-slate-100 px-1">lessonKey</code>（如{' '}
             <code className="rounded bg-slate-100 px-1">2-4</code>）+{' '}
@@ -82,25 +84,23 @@ export default function MathLessonIdAuditPage() {
             完整收尾步骤见{' '}
             <code className="rounded bg-slate-100 px-1">docs/math/lesson-id-cleanup.md</code>。
           </p>
-        </div>
+        </StickerCard>
 
         <div className="flex flex-wrap gap-3">
-          <button
+          <Button
             type="button"
             onClick={run}
             disabled={loading}
-            className="rounded-lg bg-teal-600 px-5 py-2.5 font-medium text-white shadow-sm hover:bg-teal-700 disabled:opacity-50"
+            variant="solid"
+            color="teal"
+            size="2"
           >
             {loading ? '扫描中…' : '🔍 开始审计'}
-          </button>
+          </Button>
           {report && (
-            <button
-              type="button"
-              onClick={downloadReport}
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
+            <Button type="button" onClick={downloadReport} variant="outline" color="gray" size="2">
               下载 JSON 报告
-            </button>
+            </Button>
           )}
         </div>
 
@@ -110,11 +110,14 @@ export default function MathLessonIdAuditPage() {
 
         {report && (
           <div className="space-y-5">
-            <div className={`rounded-xl border p-5 shadow-sm ${RISK_STYLES[report.risk.level]}`}>
+            <div
+              className={`shadow-sticker-sm rounded-xl border p-5 ${RISK_STYLES[report.risk.level]}`}
+            >
               <h2 className="text-lg font-semibold">风险与可控性</h2>
               <p className="mt-2 font-medium">{report.risk.headline}</p>
               <p className="mt-1 text-sm opacity-90">
-                可控性判断：{report.risk.controllable ? '是 — 可按分阶段方案推进' : '需先处理阻塞项'}
+                可控性判断：
+                {report.risk.controllable ? '是 — 可按分阶段方案推进' : '需先处理阻塞项'}
               </p>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <StatCard label="DB 未清理（估算）" value={report.totals.dbUncleanedTotal} />
@@ -153,26 +156,85 @@ export default function MathLessonIdAuditPage() {
 
             <Section title="未清理数据总览">
               <h3 className="mb-2 text-sm font-semibold text-slate-700">Supabase（DB）</h3>
-              <KV k="legacy problem_id 相关行" v={report.totals.legacyProblemRows} warn={report.totals.legacyProblemRows > 0} />
-              <KV k="legacy lesson_id 列" v={report.totals.legacyLessonIdRows} warn={report.totals.legacyLessonIdRows > 0} />
-              <KV k="Storage 路径含 legacy 目录" v={report.totals.legacyStoragePathRows} warn={report.totals.legacyStoragePathRows > 0} />
-              <KV k="Storage 路径含 lessonNN slug" v={report.totals.legacySlugStorageRows} warn={report.totals.legacySlugStorageRows > 0} />
-              <KV k="JSON 字段 legacy 引用" v={report.totals.jsonLegacyHitRows} warn={report.totals.jsonLegacyHitRows > 0} />
-              <KV k="迁移主键冲突风险" v={report.conflicts.length} warn={report.conflicts.length > 0} />
-              <KV k="DB 小计" v={report.totals.dbUncleanedTotal} warn={report.totals.dbUncleanedTotal > 0} />
+              <KV
+                k="legacy problem_id 相关行"
+                v={report.totals.legacyProblemRows}
+                warn={report.totals.legacyProblemRows > 0}
+              />
+              <KV
+                k="legacy lesson_id 列"
+                v={report.totals.legacyLessonIdRows}
+                warn={report.totals.legacyLessonIdRows > 0}
+              />
+              <KV
+                k="Storage 路径含 legacy 目录"
+                v={report.totals.legacyStoragePathRows}
+                warn={report.totals.legacyStoragePathRows > 0}
+              />
+              <KV
+                k="Storage 路径含 lessonNN slug"
+                v={report.totals.legacySlugStorageRows}
+                warn={report.totals.legacySlugStorageRows > 0}
+              />
+              <KV
+                k="JSON 字段 legacy 引用"
+                v={report.totals.jsonLegacyHitRows}
+                warn={report.totals.jsonLegacyHitRows > 0}
+              />
+              <KV
+                k="迁移主键冲突风险"
+                v={report.conflicts.length}
+                warn={report.conflicts.length > 0}
+              />
+              <KV
+                k="DB 小计"
+                v={report.totals.dbUncleanedTotal}
+                warn={report.totals.dbUncleanedTotal > 0}
+              />
 
-              <h3 className="mb-2 mt-4 text-sm font-semibold text-slate-700">已打包源码（浏览器内扫描）</h3>
-              <KV k="模块键非 lessonKey" v={report.source.totals.moduleKeyDrift} warn={report.source.totals.moduleKeyDrift > 0} />
-              <KV k="题海 id 非 lessonKey" v={report.source.totals.seaNonLessonKeyIds} warn={report.source.totals.seaNonLessonKeyIds > 0} />
-              <KV k="题海错误链接" v={report.source.totals.seaBrokenHrefs} warn={report.source.totals.seaBrokenHrefs > 0} />
-              <KV k="lesson-source-btns 键漂移" v={report.source.totals.lessonSourceBtnDrift} warn={report.source.totals.lessonSourceBtnDrift > 0} />
-              <KV k="题目数据 canonical problem_id" v={report.source.totals.bundledProblemIdsCanonical} />
-              <KV k="题目数据 legacy problem_id" v={report.source.totals.bundledProblemIdsLegacy} warn={report.source.totals.bundledProblemIdsLegacy > 0} />
-              <KV k="源码小计" v={report.totals.sourceUncleanedTotal} warn={report.totals.sourceUncleanedTotal > 0} />
+              <h3 className="mt-4 mb-2 text-sm font-semibold text-slate-700">
+                已打包源码（浏览器内扫描）
+              </h3>
+              <KV
+                k="模块键非 lessonKey"
+                v={report.source.totals.moduleKeyDrift}
+                warn={report.source.totals.moduleKeyDrift > 0}
+              />
+              <KV
+                k="题海 id 非 lessonKey"
+                v={report.source.totals.seaNonLessonKeyIds}
+                warn={report.source.totals.seaNonLessonKeyIds > 0}
+              />
+              <KV
+                k="题海错误链接"
+                v={report.source.totals.seaBrokenHrefs}
+                warn={report.source.totals.seaBrokenHrefs > 0}
+              />
+              <KV
+                k="lesson-source-btns 键漂移"
+                v={report.source.totals.lessonSourceBtnDrift}
+                warn={report.source.totals.lessonSourceBtnDrift > 0}
+              />
+              <KV
+                k="题目数据 canonical problem_id"
+                v={report.source.totals.bundledProblemIdsCanonical}
+              />
+              <KV
+                k="题目数据 legacy problem_id"
+                v={report.source.totals.bundledProblemIdsLegacy}
+                warn={report.source.totals.bundledProblemIdsLegacy > 0}
+              />
+              <KV
+                k="源码小计"
+                v={report.totals.sourceUncleanedTotal}
+                warn={report.totals.sourceUncleanedTotal > 0}
+              />
 
-              <div className="mt-3 flex justify-between border-t border-slate-200 pt-2 font-semibold">
+              <div className="border-kid-line mt-3 flex justify-between border-t pt-2 font-semibold">
                 <span>未清理合计（估算）</span>
-                <span className={`font-mono ${report.totals.grandUncleanedTotal > 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
+                <span
+                  className={`font-mono ${report.totals.grandUncleanedTotal > 0 ? 'text-amber-700' : 'text-emerald-700'}`}
+                >
                   {report.totals.grandUncleanedTotal.toLocaleString()}
                 </span>
               </div>
@@ -185,16 +247,20 @@ export default function MathLessonIdAuditPage() {
                 {report.source.buckets.map((b) => (
                   <div
                     key={b.id}
-                    className={`rounded-lg border p-3 text-sm ${b.count > 0 ? 'border-amber-200 bg-amber-50/40' : 'border-slate-100'}`}
+                    className={`rounded-lg border-2 p-3 text-sm ${b.count > 0 ? 'border-amber-200 bg-amber-50/40' : 'border-kid-line'}`}
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="font-medium">{b.label}</span>
-                      <span className={`font-mono text-xs ${b.count > 0 ? 'text-amber-800' : 'text-slate-400'}`}>
+                      <span
+                        className={`font-mono text-xs ${b.count > 0 ? 'text-amber-800' : 'text-slate-400'}`}
+                      >
                         {b.count === 0 ? '✅ 0' : `${b.count} 处`}
                       </span>
                     </div>
                     {b.locations.length > 0 && (
-                      <p className="mt-1 font-mono text-xs text-slate-500">{b.locations.join(' · ')}</p>
+                      <p className="mt-1 font-mono text-xs text-slate-500">
+                        {b.locations.join(' · ')}
+                      </p>
                     )}
                     {b.samples.length > 0 && b.count > 0 && (
                       <ul className="mt-2 space-y-0.5 font-mono text-xs text-slate-600">
@@ -214,7 +280,7 @@ export default function MathLessonIdAuditPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-slate-200 text-left">
+                    <tr className="border-kid-line border-b text-left">
                       <th className="p-2">表</th>
                       <th className="p-2">存在</th>
                       <th className="p-2 text-right">行数</th>
@@ -222,7 +288,7 @@ export default function MathLessonIdAuditPage() {
                   </thead>
                   <tbody>
                     {report.tables.map((t) => (
-                      <tr key={t.table} className="border-b border-slate-100">
+                      <tr key={t.table} className="border-kid-line border-b">
                         <td className="p-2 font-mono text-xs">{t.table}</td>
                         <td className="p-2">{t.exists ? '✅' : '—'}</td>
                         <td className="p-2 text-right font-mono">{t.rowCount}</td>
@@ -237,7 +303,7 @@ export default function MathLessonIdAuditPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="border-b border-slate-200 text-left">
+                    <tr className="border-kid-line border-b text-left">
                       <th className="p-2">legacy（历史）</th>
                       <th className="p-2">lessonKey</th>
                       <th className="p-2">路由</th>
@@ -257,7 +323,10 @@ export default function MathLessonIdAuditPage() {
                         <td className="p-2 font-mono">{row.legacyId ?? '—'}</td>
                         <td className="p-2 font-mono">{row.entry.lessonKey}</td>
                         <td className="p-2 font-mono">
-                          {report.mapping.find((m) => m.lessonKey === row.entry.lessonKey)?.newRoute}
+                          {
+                            report.mapping.find((m) => m.lessonKey === row.entry.lessonKey)
+                              ?.newRoute
+                          }
                         </td>
                         <td className="p-2 text-right">{row.problemIds.solved}</td>
                         <td className="p-2 text-right">{row.problemIds.wrong}</td>
@@ -275,7 +344,7 @@ export default function MathLessonIdAuditPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr className="border-b border-slate-200 text-left">
+                    <tr className="border-kid-line border-b text-left">
                       <th className="p-2">年级</th>
                       <th className="p-2">seq</th>
                       <th className="p-2">lessonKey</th>
@@ -286,7 +355,7 @@ export default function MathLessonIdAuditPage() {
                   </thead>
                   <tbody>
                     {report.mapping.map((m) => (
-                      <tr key={m.lessonKey} className="border-b border-slate-100">
+                      <tr key={m.lessonKey} className="border-kid-line border-b">
                         <td className="p-2">g{m.grade}</td>
                         <td className="p-2">{m.seq}</td>
                         <td className="p-2 font-mono">{m.lessonKey}</td>
@@ -341,7 +410,7 @@ export default function MathLessonIdAuditPage() {
               ) : (
                 <ul className="max-h-64 space-y-2 overflow-auto text-xs">
                   {report.jsonLegacyHits.map((h, i) => (
-                    <li key={`${h.table}-${h.rowKey}-${i}`} className="rounded bg-slate-50 p-2">
+                    <li key={`${h.table}-${h.rowKey}-${i}`} className="bg-kid-paper rounded p-2">
                       <div className="font-mono font-semibold">
                         {h.table} · {h.rowKey} · {h.field}
                       </div>
@@ -371,14 +440,20 @@ export default function MathLessonIdAuditPage() {
                 <li>Supabase 备份</li>
                 <li>
                   清空可丢弃数据（组卷 + 周计划）：{' '}
-                  <code className="rounded bg-slate-100 px-1">docs/sql/math-lesson-id-delete-disposable.sql</code>
+                  <code className="rounded bg-slate-100 px-1">
+                    docs/sql/math-lesson-id-delete-disposable.sql
+                  </code>
                 </li>
                 <li>
-                  运行 <code className="rounded bg-slate-100 px-1">docs/sql/math-lesson-id-migrate.sql</code>
+                  运行{' '}
+                  <code className="rounded bg-slate-100 px-1">
+                    docs/sql/math-lesson-id-migrate.sql
+                  </code>
                 </li>
                 <li>
-                  <code className="rounded bg-slate-100 px-1">node scripts/migrate-math-lesson-ids.mjs --apply</code>
-                  {' '}
+                  <code className="rounded bg-slate-100 px-1">
+                    node scripts/migrate-math-lesson-ids.mjs --apply
+                  </code>{' '}
                   <code className="rounded bg-slate-100 px-1">--storage</code>
                 </li>
                 <li>本页重新审计，确认 DB + 源码未清理合计为 0</li>
@@ -393,16 +468,16 @@ export default function MathLessonIdAuditPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm">
+    <StickerCard elevation="sm" radius="md">
       <h2 className="mb-3 text-lg font-semibold">{title}</h2>
       {children}
-    </div>
+    </StickerCard>
   )
 }
 
 function KV({ k, v, warn }: { k: string; v: number; warn?: boolean }) {
   return (
-    <div className="flex justify-between border-b border-slate-100 py-1.5">
+    <div className="border-kid-line flex justify-between border-b py-1.5">
       <span className="text-slate-600">{k}</span>
       <span className={`font-mono ${warn ? 'text-amber-700' : ''}`}>{v.toLocaleString()}</span>
     </div>
@@ -411,9 +486,11 @@ function KV({ k, v, warn }: { k: string; v: number; warn?: boolean }) {
 
 function StatCard({ label, value, bold }: { label: string; value: number; bold?: boolean }) {
   return (
-    <div className="rounded-lg bg-white/60 px-3 py-2">
-      <div className="text-xs opacity-80">{label}</div>
-      <div className={`font-mono text-xl ${bold ? 'font-bold' : ''}`}>{value.toLocaleString()}</div>
-    </div>
+    <StatTile
+      label={label}
+      value={value.toLocaleString()}
+      size="sm"
+      tone={bold ? 'warning' : 'white'}
+    />
   )
 }

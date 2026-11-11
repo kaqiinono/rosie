@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import type { DualSceneConfig } from '@rosie/core'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 interface DualBlockDiagramProps {
   config: DualSceneConfig
@@ -25,21 +26,22 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
   const result = perUnit * expandGroups
   const rounded = Math.round(result)
 
-  const expectedAnswer = ds.isReverse && ds.targetTotal
-    ? ds.targetTotal
-    : Math.round((ds.totalBase / ds.initA / ds.initB) * ds.targetA * ds.targetB)
+  const expectedAnswer =
+    ds.isReverse && ds.targetTotal
+      ? ds.targetTotal
+      : Math.round((ds.totalBase / ds.initA / ds.initB) * ds.targetA * ds.targetB)
   const isAnswer = stage === 'expand' && rounded === expectedAnswer
 
   const clamp = (v: number) => Math.max(1, Math.min(999, v))
 
-  const spinSplitA = useCallback((d: number) => setSplitA(p => clamp(p + d)), [])
+  const spinSplitA = useCallback((d: number) => setSplitA((p) => clamp(p + d)), [])
   const inputSplitA = useCallback((v: string) => setSplitA(clamp(parseInt(v) || 1)), [])
-  const spinSplitB = useCallback((d: number) => setSplitB(p => clamp(p + d)), [])
+  const spinSplitB = useCallback((d: number) => setSplitB((p) => clamp(p + d)), [])
   const inputSplitB = useCallback((v: string) => setSplitB(clamp(parseInt(v) || 1)), [])
 
-  const spinExpandA = useCallback((d: number) => setExpandA(p => clamp(p + d)), [])
+  const spinExpandA = useCallback((d: number) => setExpandA((p) => clamp(p + d)), [])
   const inputExpandA = useCallback((v: string) => setExpandA(clamp(parseInt(v) || 1)), [])
-  const spinExpandB = useCallback((d: number) => setExpandB(p => clamp(p + d)), [])
+  const spinExpandB = useCallback((d: number) => setExpandB((p) => clamp(p + d)), [])
   const inputExpandB = useCallback((v: string) => setExpandB(clamp(parseInt(v) || 1)), [])
 
   const doGuiyi = useCallback(() => {
@@ -61,7 +63,7 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
       <div className="mb-2.5 flex items-center gap-1.5 text-xs font-bold text-[#4338ca]">
         🧩 双归一 · 份数联动图
         {ds.isReverse && (
-          <span className="ml-1.5 rounded-full bg-yellow-light px-2 py-0.5 text-[11px] text-[#92400e]">
+          <span className="bg-yellow-light ml-1.5 rounded-full px-2 py-0.5 text-[11px] text-[#92400e]">
             反向推理
           </span>
         )}
@@ -69,8 +71,13 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
 
       {/* ── Step 1: 拆解 ── */}
       <div className="mb-3">
-        <div className="mb-1.5 text-[11px] font-semibold text-text-muted">
-          📦 第一步：将 <strong className="text-[#4338ca]">{ds.totalBase}{ds.unitC}</strong> 沿两个维度拆分
+        <div className="text-text-muted mb-1.5 text-[11px] font-semibold">
+          📦 第一步：将{' '}
+          <strong className="text-[#4338ca]">
+            {ds.totalBase}
+            {ds.unitC}
+          </strong>{' '}
+          沿两个维度拆分
         </div>
 
         <DualSpinRow
@@ -119,34 +126,53 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
         </div>
 
         {stage === 'split' && (
-          <div className={`mt-2 rounded-lg px-3 py-2 text-xs leading-relaxed ${
-            splitA <= 1 && splitB <= 1
-              ? 'bg-[#eef2ff] text-[#3730a3]'
-              : canSplit
-                ? 'border border-app-green bg-app-green-light text-app-green-dark'
-                : 'border border-red-300 bg-red-50 text-red-700'
-          }`}>
-            {splitA <= 1 && splitB <= 1
-              ? <span>💡 请根据题目条件，设置 {ds.labelA} 和 {ds.labelB} 的份数</span>
-              : canSplit
-                ? <span>✅ {ds.totalBase} ÷ ({splitA}×{splitB}) = 每份 <strong>{Math.round(perUnit)}{ds.unitC}</strong>，可以平均分！</span>
-                : <span>❌ {ds.totalBase}{ds.unitC} 无法被 {splitA}×{splitB}={totalGroups} 平均分（余 {splitRem}），请调整</span>}
+          <div
+            className={`mt-2 rounded-lg px-3 py-2 text-xs leading-relaxed ${
+              splitA <= 1 && splitB <= 1
+                ? 'bg-[#eef2ff] text-[#3730a3]'
+                : canSplit
+                  ? 'border-app-green bg-app-green-light text-app-green-dark border'
+                  : 'border border-red-300 bg-red-50 text-red-700'
+            }`}
+          >
+            {splitA <= 1 && splitB <= 1 ? (
+              <span>
+                💡 请根据题目条件，设置 {ds.labelA} 和 {ds.labelB} 的份数
+              </span>
+            ) : canSplit ? (
+              <span>
+                ✅ {ds.totalBase} ÷ ({splitA}×{splitB}) = 每份{' '}
+                <strong>
+                  {Math.round(perUnit)}
+                  {ds.unitC}
+                </strong>
+                ，可以平均分！
+              </span>
+            ) : (
+              <span>
+                ❌ {ds.totalBase}
+                {ds.unitC} 无法被 {splitA}×{splitB}={totalGroups} 平均分（余 {splitRem}），请调整
+              </span>
+            )}
           </div>
         )}
       </div>
 
       {/* ── 归一 Button ── */}
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <button
+        <Button
           onClick={doGuiyi}
           disabled={!canSplit || stage !== 'split'}
-          className="cursor-pointer rounded-full bg-app-blue px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(59,130,246,0.3)] transition-all disabled:cursor-default disabled:opacity-40 disabled:shadow-none"
+          variant="solid"
+          color="blue"
+          size="2"
         >
           ① 归一 → 1{ds.unitA}·1{ds.unitB}
-        </button>
+        </Button>
         {stage === 'expand' && (
-          <span className="rounded-full bg-app-green-light px-2.5 py-1 text-xs font-bold text-app-green-dark">
-            ✅ 1{ds.unitA}·1{ds.unitB} = {Math.round(perUnit)}{ds.unitC}
+          <span className="bg-app-green-light text-app-green-dark rounded-full px-2.5 py-1 text-xs font-bold">
+            ✅ 1{ds.unitA}·1{ds.unitB} = {Math.round(perUnit)}
+            {ds.unitC}
           </span>
         )}
       </div>
@@ -154,8 +180,9 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
       {/* ── Step 2: 扩展 ── */}
       {stage === 'expand' && (
         <div className="mb-3">
-          <div className="mb-1.5 text-[11px] font-semibold text-text-muted">
-            🔢 第二步：扩展到目标（每份 = {Math.round(perUnit)}{ds.unitC}）
+          <div className="text-text-muted mb-1.5 text-[11px] font-semibold">
+            🔢 第二步：扩展到目标（每份 = {Math.round(perUnit)}
+            {ds.unitC}）
           </div>
 
           <DualSpinRow
@@ -204,21 +231,47 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
           </div>
 
           {/* Summary */}
-          <div className={`rounded-lg px-2.5 py-2 text-xs leading-relaxed ${
-            isAnswer
-              ? 'border border-app-green bg-app-green-light text-app-green-dark'
-              : 'bg-[#eef2ff] text-[#3730a3]'
-          }`}>
-            {isAnswer
-              ? <span>✅ <strong>{expandA}{ds.unitA} × {expandB}{ds.unitB} = {expandGroups}组 × {Math.round(perUnit)}{ds.unitC} = {rounded}{ds.unitC}</strong> — 找到答案！</span>
-              : <span>💡 当前：{expandA}{ds.unitA} × {expandB}{ds.unitB} = {expandGroups}组 × {Math.round(perUnit)}{ds.unitC} = <strong>{rounded}{ds.unitC}</strong>（继续调整）</span>}
+          <div
+            className={`rounded-lg px-2.5 py-2 text-xs leading-relaxed ${
+              isAnswer
+                ? 'border-app-green bg-app-green-light text-app-green-dark border'
+                : 'bg-[#eef2ff] text-[#3730a3]'
+            }`}
+          >
+            {isAnswer ? (
+              <span>
+                ✅{' '}
+                <strong>
+                  {expandA}
+                  {ds.unitA} × {expandB}
+                  {ds.unitB} = {expandGroups}组 × {Math.round(perUnit)}
+                  {ds.unitC} = {rounded}
+                  {ds.unitC}
+                </strong>{' '}
+                — 找到答案！
+              </span>
+            ) : (
+              <span>
+                💡 当前：{expandA}
+                {ds.unitA} × {expandB}
+                {ds.unitB} = {expandGroups}组 × {Math.round(perUnit)}
+                {ds.unitC} ={' '}
+                <strong>
+                  {rounded}
+                  {ds.unitC}
+                </strong>
+                （继续调整）
+              </span>
+            )}
           </div>
 
           {ds.isReverse && ds.targetTotal && (
             <div className="mt-1.5 rounded-lg border border-[#fde68a] bg-[#fffbeb] px-2.5 py-2 text-xs">
-              🎯 目标：{ds.targetTotal}{ds.unitC}｜当前结果：
+              🎯 目标：{ds.targetTotal}
+              {ds.unitC}｜当前结果：
               <span className={`font-bold ${isAnswer ? 'text-app-green' : 'text-[#6366f1]'}`}>
-                {rounded}{ds.unitC}
+                {rounded}
+                {ds.unitC}
               </span>
               {isAnswer && <span className="ml-1.5">✅ 找到答案！</span>}
             </div>
@@ -228,40 +281,114 @@ export default function DualBlockDiagram({ config: ds }: DualBlockDiagramProps) 
 
       {/* ── Footer ── */}
       <div className="mt-2 flex items-center gap-2">
-        <button
-          onClick={reset}
-          className="cursor-pointer rounded-full bg-gray-100 px-4 py-2 text-[13px] font-semibold text-text-secondary transition-all active:translate-y-px"
-        >
+        <Button onClick={reset} variant="soft" color="gray" size="2">
           重置
-        </button>
+        </Button>
       </div>
     </div>
   )
 }
 
 /* ── DualSpinRow: two +/- controls side by side ── */
-function DualSpinRow({ labelA, unitA, valueA, onSpinA, onInputA, labelB, unitB, valueB, onSpinB, onInputB, disabled }: {
-  labelA: string; unitA: string; valueA: number; onSpinA: (d: number) => void; onInputA: (v: string) => void
-  labelB: string; unitB: string; valueB: number; onSpinB: (d: number) => void; onInputB: (v: string) => void
+function DualSpinRow({
+  labelA,
+  unitA,
+  valueA,
+  onSpinA,
+  onInputA,
+  labelB,
+  unitB,
+  valueB,
+  onSpinB,
+  onInputB,
+  disabled,
+}: {
+  labelA: string
+  unitA: string
+  valueA: number
+  onSpinA: (d: number) => void
+  onInputA: (v: string) => void
+  labelB: string
+  unitB: string
+  valueB: number
+  onSpinB: (d: number) => void
+  onInputB: (v: string) => void
   disabled: boolean
 }) {
-  const btnCls = "flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-[1.5px] border-[#93c5fd] bg-white text-base font-bold transition-all active:scale-[0.92] disabled:cursor-default disabled:opacity-40"
-  const inputCls = "h-7 w-14 rounded-md border-[1.5px] border-[#a5b4fc] bg-white text-center text-sm font-bold outline-none focus:border-[#6366f1] focus:shadow-[0_0_0_2px_rgba(99,102,241,0.15)] disabled:opacity-40"
-
   return (
     <div className="mb-2 flex flex-wrap items-center gap-3 rounded-lg border border-[#c7d2fe] bg-[#f8faff] px-2.5 py-2">
       <div className="flex items-center gap-1.5">
-        <span className="whitespace-nowrap text-xs font-semibold text-[#1d4ed8]">{labelA}：</span>
-        <button onClick={() => onSpinA(-1)} disabled={disabled} className={btnCls}>－</button>
-        <input type="number" min="1" disabled={disabled} className={inputCls} value={valueA} onChange={e => onInputA(e.target.value)} />
-        <button onClick={() => onSpinA(1)} disabled={disabled} className={btnCls}>＋</button>
+        <span className="text-xs font-semibold whitespace-nowrap text-[#1d4ed8]">{labelA}：</span>
+        <IconButton
+          type="button"
+          aria-label={`减少${labelA}`}
+          onClick={() => onSpinA(-1)}
+          disabled={disabled}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
+          －
+        </IconButton>
+        <TextField.Root
+          type="number"
+          min="1"
+          size="1"
+          disabled={disabled}
+          className="w-16"
+          value={valueA}
+          onChange={(e) => onInputA(e.target.value)}
+        />
+        <IconButton
+          type="button"
+          aria-label={`增加${labelA}`}
+          onClick={() => onSpinA(1)}
+          disabled={disabled}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
+          ＋
+        </IconButton>
         <span className="text-[11px] text-[#1d4ed8]">{unitA}</span>
       </div>
       <div className="flex items-center gap-1.5">
-        <span className="whitespace-nowrap text-xs font-semibold text-[#6366f1]">{labelB}：</span>
-        <button onClick={() => onSpinB(-1)} disabled={disabled} className={btnCls}>－</button>
-        <input type="number" min="1" disabled={disabled} className={inputCls} value={valueB} onChange={e => onInputB(e.target.value)} />
-        <button onClick={() => onSpinB(1)} disabled={disabled} className={btnCls}>＋</button>
+        <span className="text-xs font-semibold whitespace-nowrap text-[#6366f1]">{labelB}：</span>
+        <IconButton
+          type="button"
+          aria-label={`减少${labelB}`}
+          onClick={() => onSpinB(-1)}
+          disabled={disabled}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
+          －
+        </IconButton>
+        <TextField.Root
+          type="number"
+          min="1"
+          size="1"
+          disabled={disabled}
+          className="w-16"
+          value={valueB}
+          onChange={(e) => onInputB(e.target.value)}
+        />
+        <IconButton
+          type="button"
+          aria-label={`增加${labelB}`}
+          onClick={() => onSpinB(1)}
+          disabled={disabled}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
+          ＋
+        </IconButton>
         <span className="text-[11px] text-[#6366f1]">{unitB}</span>
       </div>
     </div>
@@ -269,27 +396,53 @@ function DualSpinRow({ labelA, unitA, valueA, onSpinA, onInputA, labelB, unitB, 
 }
 
 /* ── GroupColumn: visual column showing groups ── */
-function GroupColumn({ label, sub, count, unit, blockClass, labelBg, labelColor, countColor }: {
-  label: string; sub: string; count: number; unit: string
-  blockClass: string; labelBg: string; labelColor: string; countColor: string
+function GroupColumn({
+  label,
+  sub,
+  count,
+  unit,
+  blockClass,
+  labelBg,
+  labelColor,
+  countColor,
+}: {
+  label: string
+  sub: string
+  count: number
+  unit: string
+  blockClass: string
+  labelBg: string
+  labelColor: string
+  countColor: string
 }) {
   const max = 8
   return (
     <div className="min-w-[120px] flex-1">
-      <div className={`mb-1.5 inline-block rounded px-2 py-0.5 text-[11px] font-bold ${labelBg} ${labelColor}`}>
+      <div
+        className={`mb-1.5 inline-block rounded px-2 py-0.5 text-[11px] font-bold ${labelBg} ${labelColor}`}
+      >
         {label}
       </div>
       <div className="flex min-h-[34px] flex-wrap items-center gap-[5px] rounded-[10px] bg-[#e5e7ff] px-2 py-1.5">
         {Array.from({ length: Math.min(count, max) }, (_, i) => (
-          <div key={i} className="relative mt-2.5 flex items-center gap-0.5 rounded-[5px] border border-dashed border-gray-800/25 bg-white/75 px-1 py-1">
-            <div className="absolute -top-2.5 left-0.5 whitespace-nowrap rounded-full bg-[#f0f1ff] px-1 text-[9px] text-text-secondary">
-              {i + 1}{unit}
+          <div
+            key={i}
+            className="relative mt-2.5 flex items-center gap-0.5 rounded-[5px] border border-dashed border-gray-800/25 bg-white px-1 py-1"
+          >
+            <div className="text-text-secondary absolute -top-2.5 left-0.5 rounded-full bg-[#f0f1ff] px-1 text-[9px] whitespace-nowrap">
+              {i + 1}
+              {unit}
             </div>
-            <div className={`h-[11px] w-[11px] shrink-0 rounded-[3px] transition-all duration-250 ${blockClass}`} />
+            <div
+              className={`h-[11px] w-[11px] shrink-0 rounded-[3px] transition-all duration-250 ${blockClass}`}
+            />
           </div>
         ))}
         {count > max && (
-          <div className={`px-1.5 py-1 text-[10px] font-bold ${labelColor}`}>共{count}{unit}</div>
+          <div className={`px-1.5 py-1 text-[10px] font-bold ${labelColor}`}>
+            共{count}
+            {unit}
+          </div>
         )}
       </div>
       <div className={`mt-1 text-[11px] ${countColor}`}>{sub}</div>
@@ -298,8 +451,18 @@ function GroupColumn({ label, sub, count, unit, blockClass, labelBg, labelColor,
 }
 
 /* ── ResultColumn: visual for result/quantity ── */
-function ResultColumn({ totalGroups, perUnit, unitC, labelC, isEven }: {
-  totalGroups: number; perUnit: number; unitC: string; labelC: string; isEven: boolean
+function ResultColumn({
+  totalGroups,
+  perUnit,
+  unitC,
+  labelC,
+  isEven,
+}: {
+  totalGroups: number
+  perUnit: number
+  unitC: string
+  labelC: string
+  isEven: boolean
 }) {
   const max = 8
   const total = isEven ? perUnit * totalGroups : 0
@@ -312,12 +475,18 @@ function ResultColumn({ totalGroups, perUnit, unitC, labelC, isEven }: {
         {isEven ? (
           <>
             {Array.from({ length: Math.min(totalGroups, max) }, (_, i) => (
-              <div key={i} className="relative mt-2.5 flex max-w-[110px] flex-wrap items-center gap-0.5 rounded-[5px] border border-dashed border-gray-800/25 bg-white/75 px-1 py-1">
-                <div className="absolute -top-2.5 left-0.5 whitespace-nowrap rounded-full bg-[#f0f1ff] px-1 text-[9px] text-text-secondary">
+              <div
+                key={i}
+                className="relative mt-2.5 flex max-w-[110px] flex-wrap items-center gap-0.5 rounded-[5px] border border-dashed border-gray-800/25 bg-white px-1 py-1"
+              >
+                <div className="text-text-secondary absolute -top-2.5 left-0.5 rounded-full bg-[#f0f1ff] px-1 text-[9px] whitespace-nowrap">
                   {i + 1}
                 </div>
                 {Array.from({ length: Math.min(perUnit, 6) }, (_, j) => (
-                  <div key={j} className="h-[11px] w-[11px] shrink-0 rounded-[3px] bg-app-orange transition-all duration-250" />
+                  <div
+                    key={j}
+                    className="bg-app-orange h-[11px] w-[11px] shrink-0 rounded-[3px] transition-all duration-250"
+                  />
                 ))}
                 {perUnit > 6 && (
                   <div className="px-0.5 text-[8px] font-bold text-[#c2410c]">×{perUnit}</div>
@@ -325,14 +494,16 @@ function ResultColumn({ totalGroups, perUnit, unitC, labelC, isEven }: {
               </div>
             ))}
             {totalGroups > max && (
-              <div className="px-1.5 py-1 text-[10px] font-semibold text-[#92400e]">共{totalGroups}组</div>
+              <div className="px-1.5 py-1 text-[10px] font-semibold text-[#92400e]">
+                共{totalGroups}组
+              </div>
             )}
           </>
         ) : (
-          <div className="px-2 py-1 text-[10px] text-text-muted">请先完成拆分</div>
+          <div className="text-text-muted px-2 py-1 text-[10px]">请先完成拆分</div>
         )}
       </div>
-      <div className="mt-1 text-[11px] text-text-secondary">
+      <div className="text-text-secondary mt-1 text-[11px]">
         {isEven ? `共${total}${unitC}` : '—'}
       </div>
     </div>

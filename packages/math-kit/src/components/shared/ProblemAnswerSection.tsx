@@ -34,7 +34,7 @@ export default function ProblemAnswerSection({
   onSubmit,
   onCheck,
   onStateChange,
-  buttonClassName = 'bg-sky-600 shadow-[0_3px_10px_rgba(14,165,233,0.3)]',
+  buttonClassName = 'bg-sky-600 shadow-sticker-sm',
   tip,
   puzzleWrapperClassName = 'rounded-xl border border-sky-100 bg-white p-3 sm:p-4',
   trailingActions,

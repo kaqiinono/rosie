@@ -4,15 +4,15 @@ export default function MathPriorityCard() {
   return (
     <Link
       href="/math/priority"
-      className="group relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(16,185,129,.25)]"
+      className="group hover:shadow-sticker relative block h-full w-full overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1"
       style={{
-        background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #ccfbf1 100%)',
+        background: '#d1fae5',
         border: '2px solid rgba(16,185,129,.3)',
-        boxShadow: '0 4px 20px rgba(16,185,129,.12)',
+        boxShadow: '0 3px 0 rgba(16,185,129,.3)',
       }}
     >
-      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-emerald-300/20 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-teal-300/25 blur-xl" />
+      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-emerald-300/20" />
+      <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-teal-300/25" />
 
       <div className="relative px-4 py-4">
         <div className="mb-2 flex items-center justify-between">

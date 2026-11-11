@@ -3,6 +3,7 @@
 import type { VerticalDigitPuzzleSpec, VerticalPuzzleSymbolCell } from '@rosie/core'
 import VerticalDigitPuzzlePanel from '@rosie/math-kit/components/shared/VerticalDigitPuzzlePanel'
 import type { VerticalPuzzleFills } from '@rosie/math-kit/utils/vertical-digit-puzzle'
+import { StickerCard } from '@rosie/ui'
 
 /** @deprecated Prefer `VerticalDigitPuzzleSpec` + `VerticalDigitPuzzlePanel`. */
 export interface MathCellConfig {
@@ -89,16 +90,12 @@ export function VerticalDigitPuzzle({ config, onSubmit }: VerticalDigitPuzzlePro
   const spec = quizConfigToSpec(config)
 
   return (
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <StickerCard elevation="sm" radius="md" className="flex flex-col">
       <h3 className="text-text-secondary mb-4 border-l-4 border-sky-500 pl-2 text-sm font-bold">
         {config.title}
       </h3>
-      <VerticalDigitPuzzlePanel
-        spec={spec}
-        embedded
-        onSubmit={onSubmit ?? (() => {})}
-      />
-    </div>
+      <VerticalDigitPuzzlePanel spec={spec} embedded onSubmit={onSubmit ?? (() => {})} />
+    </StickerCard>
   )
 }
 

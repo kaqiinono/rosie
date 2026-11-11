@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Button } from '@rosie/ui/themes'
 import { type Lesson, stars } from '@rosie/math/utils/catalog-data'
 import { buildMapData, collectIds, layoutMap, type PositionedNode } from './treeLayout'
 
@@ -111,30 +112,56 @@ export default function CatalogTree({ lessons, selectedTopics }: CatalogTreeProp
   const zoomOut = () => setZoom((z) => Math.max(0.4, z / 1.2))
 
   const empty = root.children.length === 0
-  const btn =
-    'rounded-lg border border-[#4361ee] bg-white px-2.5 py-1.5 text-xs text-[#4361ee] transition hover:bg-[#4361ee]/5'
-
   return (
-    <div className="rounded-2xl bg-white p-3.5 shadow-[0_2px_14px_rgba(30,40,80,.08)]">
+    <div className="shadow-sticker-sm rounded-2xl bg-white p-3.5">
       <div className="mb-1.5 flex flex-wrap items-center gap-2">
         <span className="flex-[1_1_260px] px-0 py-1 text-[13px] text-[#6b7688]">
-          XMind 思维导图：<b>中心 → 题型 → 书籍 → 讲次 → 难度</b>，按难度降序。点节点 ＋/− 展开收起，可横向/纵向滚动。
+          XMind 思维导图：<b>中心 → 题型 → 书籍 → 讲次 → 难度</b>，按难度降序。点节点 ＋/−
+          展开收起，可横向/纵向滚动。
         </span>
-        <button className={btn} onClick={expandTopics}>
+        <Button
+          type="button"
+          onClick={expandTopics}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
           展开到书
-        </button>
-        <button className={btn} onClick={expandAll}>
+        </Button>
+        <Button
+          type="button"
+          onClick={expandAll}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
           全部展开
-        </button>
-        <button className={btn} onClick={collapseAll}>
+        </Button>
+        <Button
+          type="button"
+          onClick={collapseAll}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
           全部收起
-        </button>
-        <button className={btn} onClick={zoomOut}>
+        </Button>
+        <Button
+          type="button"
+          onClick={zoomOut}
+          variant="soft"
+          color="indigo"
+          size="1"
+          radius="full"
+        >
           －
-        </button>
-        <button className={btn} onClick={zoomIn}>
+        </Button>
+        <Button type="button" onClick={zoomIn} variant="soft" color="indigo" size="1" radius="full">
           ＋
-        </button>
+        </Button>
       </div>
       <div className="px-3.5 pt-1 pb-3 text-[13px] text-[#6b7688]">
         {empty ? (
@@ -145,7 +172,7 @@ export default function CatalogTree({ lessons, selectedTopics }: CatalogTreeProp
           </>
         )}
       </div>
-      <div className="max-h-[74vh] overflow-auto rounded-xl border border-[#e6e9f0] bg-[#fafbfe] [background-image:radial-gradient(#e7ebf4_1px,transparent_1px)] [background-size:22px_22px]">
+      <div className="max-h-[74vh] overflow-auto rounded-xl border border-[#e6e9f0] bg-[#fafbfe]">
         {empty ? (
           <svg width={260} height={60} xmlns="http://www.w3.org/2000/svg">
             <text x={20} y={34} fill="#6b7688" fontSize={14}>
@@ -161,14 +188,7 @@ export default function CatalogTree({ lessons, selectedTopics }: CatalogTreeProp
             className="block"
           >
             {layout.edges.map((e, i) => (
-              <path
-                key={i}
-                d={e.d}
-                fill="none"
-                stroke={e.color}
-                strokeWidth={2}
-                opacity={0.55}
-              />
+              <path key={i} d={e.d} fill="none" stroke={e.color} strokeWidth={2} opacity={0.55} />
             ))}
             {layout.nodes.map((n) => (
               <NodeShape key={n.id} n={n} onToggle={toggle} />

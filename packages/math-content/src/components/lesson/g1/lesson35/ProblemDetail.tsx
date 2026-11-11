@@ -121,7 +121,7 @@ export default function ProblemDetail({
         onAnswerChange={setAnswer}
         onCheck={check}
         feedback={feedback}
-        buttonClassName="bg-app-blue shadow-[0_3px_10px_rgba(59,130,246,0.3)]"
+        buttonClassName="bg-app-blue shadow-sticker-sm"
       />
 
       {tip && (

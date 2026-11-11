@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { SegmentedControl } from '@rosie/ui/themes'
 import type { MathWeeklyPlan, MathPlanProblem, ProblemSet } from '@rosie/core'
 import {
   PlanPreviewCalendar,
@@ -105,33 +106,15 @@ export default function MathPlanMap({
         </div>
         <div className="flex items-center gap-2">
           {headerExtra}
-          <div
-            className="flex rounded-full p-0.5"
-            style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.06)' }}
+          <SegmentedControl.Root
+            value={mode}
+            onValueChange={(v) => setMode(v as MapMode)}
+            size="1"
+            radius="full"
           >
-          {([
-            { key: 'week' as const, label: '周' },
-            { key: 'month' as const, label: '月' },
-          ]).map((opt) => (
-            <button
-              key={opt.key}
-              type="button"
-              onClick={() => setMode(opt.key)}
-              className="cursor-pointer rounded-full px-3 py-1 text-[11px] font-extrabold transition-all"
-              style={
-                mode === opt.key
-                  ? {
-                      background: 'rgba(249,115,22,.15)',
-                      color: '#c2410c',
-                      boxShadow: '0 1px 4px rgba(249,115,22,.2)',
-                    }
-                  : { color: '#9ca3af' }
-              }
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
+            <SegmentedControl.Item value="week">周</SegmentedControl.Item>
+            <SegmentedControl.Item value="month">月</SegmentedControl.Item>
+          </SegmentedControl.Root>
         </div>
       </div>
 
@@ -155,7 +138,8 @@ export default function MathPlanMap({
               const hasPlan = Boolean(day)
               const prog = plan.progress[date] ?? { doneKeys: [] }
               const done = hasPlan
-                ? problems.filter((problem) => isPlanProblemDone(problem, date, prog.doneKeys)).length
+                ? problems.filter((problem) => isPlanProblemDone(problem, date, prog.doneKeys))
+                    .length
                 : 0
               const isToday = date === today
               const isPast = date < today
@@ -183,15 +167,15 @@ export default function MathPlanMap({
                 border = 'rgba(0,0,0,.04)'
                 textClr = '#d1d5db'
               } else if (isComplete) {
-                bg = 'linear-gradient(135deg,#86efac,#4ade80)'
+                bg = '#86efac'
                 border = '#22c55e'
                 textClr = '#166534'
-                shadow = '0 2px 8px rgba(34,197,94,.25)'
+                shadow = '0 3px 0 rgba(34,197,94,.3)'
               } else if (isToday) {
-                bg = 'linear-gradient(135deg,#fed7aa,#fbbf24)'
+                bg = '#fed7aa'
                 border = '#f97316'
                 textClr = '#92400e'
-                shadow = '0 3px 12px rgba(249,115,22,.3)'
+                shadow = '0 3px 0 rgba(249,115,22,.3)'
               } else if (isPast && total > 0 && done < total) {
                 bg = 'rgba(254,202,202,.5)'
                 border = 'rgba(239,68,68,.3)'
@@ -211,6 +195,7 @@ export default function MathPlanMap({
               }
 
               return (
+                // native-ok: 周历日格，多块内容（日期 + 进度 + 讲次标签栈）按完成状态着色
                 <button
                   key={date}
                   type="button"
@@ -218,7 +203,7 @@ export default function MathPlanMap({
                   onClick={() => {
                     if (hasPlan) onSelectDate(date)
                   }}
-                  className="flex min-h-24 flex-col rounded-[14px] px-1 py-1.5 text-left transition-all duration-200 disabled:cursor-default enabled:cursor-pointer md:min-h-28 md:px-1.5 md:py-2"
+                  className="flex min-h-24 flex-col rounded-[14px] px-1 py-1.5 text-left transition-all duration-200 enabled:cursor-pointer disabled:cursor-default md:min-h-28 md:px-1.5 md:py-2"
                   style={{
                     background: bg,
                     border: `2px solid ${border}`,
@@ -229,11 +214,12 @@ export default function MathPlanMap({
                   title={hasPlan ? dayLabel(date) : '本日无计划'}
                 >
                   <div className="flex items-baseline justify-between gap-0.5">
-                    <span className="text-[10px] font-bold md:text-[11px]" style={{ color: textClr }}>
+                    <span
+                      className="text-[10px] font-bold md:text-[11px]"
+                      style={{ color: textClr }}
+                    >
                       {dayLabel(date)}
-                      <span className="ml-0.5 font-extrabold">
-                        {fmtDate(date).split('/')[1]}
-                      </span>
+                      <span className="ml-0.5 font-extrabold">{fmtDate(date).split('/')[1]}</span>
                     </span>
                     {hasPlan && total > 0 && (
                       <span className="shrink-0 text-[9px] font-bold" style={{ color: textClr }}>
@@ -244,7 +230,17 @@ export default function MathPlanMap({
                   {hasPlan ? (
                     <>
                       <div className="mt-0.5 text-[8px] font-extrabold" style={{ color: textClr }}>
-                        {isComplete ? (isDeferredDay ? '延期完成' : '已完成') : isDeferredSourceDay ? '过期·已延期' : isPast ? '已过期' : isDeferredDay ? '延期任务' : '未执行'}
+                        {isComplete
+                          ? isDeferredDay
+                            ? '延期完成'
+                            : '已完成'
+                          : isDeferredSourceDay
+                            ? '过期·已延期'
+                            : isPast
+                              ? '已过期'
+                              : isDeferredDay
+                                ? '延期任务'
+                                : '未执行'}
                       </div>
                       {/* Mobile: 讲次短名 only, e.g. 7数字谜 */}
                       <WeekDayChipStack
@@ -264,7 +260,10 @@ export default function MathPlanMap({
                       />
                     </>
                   ) : (
-                    <div className="mt-2 text-center text-[10px] font-bold" style={{ color: textClr }}>
+                    <div
+                      className="mt-2 text-center text-[10px] font-bold"
+                      style={{ color: textClr }}
+                    >
                       —
                     </div>
                   )}

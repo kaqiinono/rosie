@@ -108,15 +108,17 @@ function formatUserAnswer(problem: Problem, record: QuizAnswerRecord | undefined
   }
   if (record.userAnswer == null) return '（未作答）'
   const values = String(record.userAnswer).split('|')
-  return [problem, ...(problem.additionalQuestions ?? [])].map((q, i) =>
-    values[i] ? values[i] + q.finalUnit : '（未作答）',
-  ).join('、')
+  return [problem, ...(problem.additionalQuestions ?? [])]
+    .map((q, i) => (values[i] ? values[i] + q.finalUnit : '（未作答）'))
+    .join('、')
 }
 
 function formatCorrectAnswer(problem: Problem): string | null {
   const mode = getProblemAnswerMode(problem)
   if (mode === 'custom-widget') return null
-  return [problem, ...(problem.additionalQuestions ?? [])].map(q => q.finalAns + q.finalUnit).join('、')
+  return [problem, ...(problem.additionalQuestions ?? [])]
+    .map((q) => q.finalAns + q.finalUnit)
+    .join('、')
 }
 
 function hasCustomPrintWidget(problem: Problem): boolean {
@@ -142,7 +144,7 @@ export function QuizPaperPrintSheet({
 
   return (
     <div
-      className={`print-sheet bg-white p-10 shadow-sm print:p-0 print:shadow-none ${
+      className={`print-sheet shadow-sticker-sm bg-white p-10 print:p-0 print:shadow-none ${
         pageBreakAfter ? 'print-volume-break' : ''
       }`}
     >
@@ -194,7 +196,7 @@ export function QuizPaperPrintSheet({
               {isComplete ? (
                 <>
                   {(userAnswer || record?.correct != null) && (
-                    <div className="answer-block mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                    <div className="answer-block border-kid-line mt-3 rounded-lg border-2 bg-slate-50 px-3 py-2 text-sm">
                       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                         {userAnswer && (
                           <>
@@ -242,9 +244,12 @@ export function QuizPaperPrintSheet({
                       {problem.finalUnit ? ` ${problem.finalUnit}` : ''}
                     </p>
                   )}
-                  {problem.additionalQuestions?.length && [problem, ...problem.additionalQuestions].map(q => (
-                    <p key={q.finalQ} className="mt-3 text-sm">{q.finalQ} ________________ {q.finalUnit}</p>
-                  ))}
+                  {problem.additionalQuestions?.length &&
+                    [problem, ...problem.additionalQuestions].map((q) => (
+                      <p key={q.finalQ} className="mt-3 text-sm">
+                        {q.finalQ} ________________ {q.finalUnit}
+                      </p>
+                    ))}
                   {!customWidget && <div className="solution-space" aria-hidden="true" />}
                 </>
               )}

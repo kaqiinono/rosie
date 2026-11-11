@@ -30,7 +30,7 @@ export default function LessonSummaryBody({
   return (
     <div
       className={clsx(
-        'overflow-hidden rounded-[14px] border border-teal-100 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.07)]',
+        'shadow-sticker-sm overflow-hidden rounded-[14px] border border-teal-100 bg-white',
         className,
       )}
     >

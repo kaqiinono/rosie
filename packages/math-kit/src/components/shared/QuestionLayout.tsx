@@ -121,8 +121,10 @@ export default function QuestionLayout({
   const answerActionsClaimed = answerActionsClaimCount > 0
 
   const [defaults, setDefaults] = useState({ defaultSolutionOpen, effectiveSolutionAvailable })
-  if (defaults.defaultSolutionOpen !== defaultSolutionOpen ||
-      defaults.effectiveSolutionAvailable !== effectiveSolutionAvailable) {
+  if (
+    defaults.defaultSolutionOpen !== defaultSolutionOpen ||
+    defaults.effectiveSolutionAvailable !== effectiveSolutionAvailable
+  ) {
     setDefaults({ defaultSolutionOpen, effectiveSolutionAvailable })
     setSolutionOpen(defaultSolutionOpen && effectiveSolutionAvailable)
   }
@@ -193,7 +195,7 @@ export default function QuestionLayout({
     return {
       claim,
       node: (
-        <button
+        <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
           type="button"
           className={`ql-toggle-btn ${solutionOpen ? 'ql-toggle-btn--open' : ''}`}
           onClick={toggleSolution}
@@ -213,48 +215,48 @@ export default function QuestionLayout({
   return (
     <SolutionToggleContext.Provider value={toggleCtx}>
       <AnswerActionsContext.Provider value={answerActionsCtx}>
-      <div
-        className="question-layout"
-        data-ai-active-problem-id={problemId}
-        data-ai-active-problem-title={problem?.title}
-        data-ai-problem-attempted={effectiveSolutionAvailable ? 'true' : 'false'}
-      >
-        {/* ── Section 1: 题目 ── */}
-        <section className="ql-question">
-          <div className="ql-question-body">{question}</div>
-        </section>
-
-        {/* ── Section 2: 答案（查看题解紧挨检查答案，由 NumericAnswerPanel 认领） ── */}
-        <section className="ql-answer">
-          <div className="ql-answer-body">{answer}</div>
-          {answerActions && !answerActionsClaimed ? (
-            <div className="ql-answer-actions">{answerActions}</div>
-          ) : null}
-          {toggleEnabled && !toggleClaimed ? (
-            <div className="ql-toggle-row">{toggleButton}</div>
-          ) : null}
-        </section>
-
-        {/* ── Section 3: 题解（答题区下方折叠展开） ── */}
-        {effectiveSolutionAvailable ? (
-          <section
-            className="ql-solution"
-            style={{
-              maxHeight: solutionOpen ? `${solutionHeight}px` : '0px',
-            }}
-            aria-hidden={!solutionOpen}
-          >
-            <div className="ql-solution-inner" ref={solutionRef}>
-              <div className="ql-solution-body">{solution}</div>
-            </div>
+        <div
+          className="question-layout"
+          data-ai-active-problem-id={problemId}
+          data-ai-active-problem-title={problem?.title}
+          data-ai-problem-attempted={effectiveSolutionAvailable ? 'true' : 'false'}
+        >
+          {/* ── Section 1: 题目 ── */}
+          <section className="ql-question">
+            <div className="ql-question-body">{question}</div>
           </section>
-        ) : null}
 
-        {problemId ? <ProblemNotesPanel problemId={problemId} problem={problem} /> : null}
+          {/* ── Section 2: 答案（查看题解紧挨检查答案，由 NumericAnswerPanel 认领） ── */}
+          <section className="ql-answer">
+            <div className="ql-answer-body">{answer}</div>
+            {answerActions && !answerActionsClaimed ? (
+              <div className="ql-answer-actions">{answerActions}</div>
+            ) : null}
+            {toggleEnabled && !toggleClaimed ? (
+              <div className="ql-toggle-row">{toggleButton}</div>
+            ) : null}
+          </section>
 
-        {problem && !externalActions && <ProblemCardActions problem={problem} />}
+          {/* ── Section 3: 题解（答题区下方折叠展开） ── */}
+          {effectiveSolutionAvailable ? (
+            <section
+              className="ql-solution"
+              style={{
+                maxHeight: solutionOpen ? `${solutionHeight}px` : '0px',
+              }}
+              aria-hidden={!solutionOpen}
+            >
+              <div className="ql-solution-inner" ref={solutionRef}>
+                <div className="ql-solution-body">{solution}</div>
+              </div>
+            </section>
+          ) : null}
 
-        <style>{`
+          {problemId ? <ProblemNotesPanel problemId={problemId} problem={problem} /> : null}
+
+          {problem && !externalActions && <ProblemCardActions problem={problem} />}
+
+          <style>{`
         /* ─── 容器 ─── */
         .question-layout {
           display: flex;
@@ -268,7 +270,7 @@ export default function QuestionLayout({
           border-radius: 12px;
           overflow: hidden;
           box-shadow:
-            0 1px 2px rgba(15,23,42,0.03),
+            0 3px 0 rgba(15,23,42,.3),
             0 0 0 1px #e2e8f0;
           background: #ffffff;
         }
@@ -418,7 +420,7 @@ export default function QuestionLayout({
           .ql-answer-body { font-size: 14.5px; }
         }
       `}</style>
-      </div>
+        </div>
       </AnswerActionsContext.Provider>
     </SolutionToggleContext.Provider>
   )

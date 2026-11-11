@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { addPlanDays } from '@rosie/math-kit/utils/math-helpers'
 import { todayStr } from '@rosie/core'
+import { IconButton } from '@rosie/ui/themes'
 
 const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六']
 
@@ -46,7 +47,12 @@ function rangeContainsOccupied(start: string, end: string, occupied: Set<string>
   return false
 }
 
-export default function PlanDateRangePicker({ startDate, endDate, occupiedDates, onRangeChange }: Props) {
+export default function PlanDateRangePicker({
+  startDate,
+  endDate,
+  occupiedDates,
+  onRangeChange,
+}: Props) {
   const today = todayStr()
   const initialMonth = startDate.slice(0, 7) || today.slice(0, 7)
   const [viewMonthKey, setViewMonthKey] = useState(initialMonth)
@@ -93,25 +99,29 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <button
+        <IconButton
           type="button"
           onClick={() => shiftMonth(-1)}
-          className="cursor-pointer rounded-lg px-2 py-1 text-[14px] font-bold text-gray-400 hover:bg-black/5 hover:text-gray-600"
+          variant="ghost"
+          color="gray"
+          size="1"
         >
           ‹
-        </button>
+        </IconButton>
         <span className="text-[13px] font-extrabold text-gray-700">{monthLabel(viewMonthKey)}</span>
-        <button
+        <IconButton
           type="button"
           onClick={() => shiftMonth(1)}
-          className="cursor-pointer rounded-lg px-2 py-1 text-[14px] font-bold text-gray-400 hover:bg-black/5 hover:text-gray-600"
+          variant="ghost"
+          color="gray"
+          size="1"
         >
           ›
-        </button>
+        </IconButton>
       </div>
 
       <div className="mb-1 grid grid-cols-7 gap-1">
-        {WEEKDAY_LABELS.map(label => (
+        {WEEKDAY_LABELS.map((label) => (
           <div key={label} className="py-1 text-center text-[10px] font-bold text-gray-400">
             {label}
           </div>
@@ -131,6 +141,7 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
           const isPending = cell.date === pendingStart
 
           return (
+            // native-ok: 日历日期格，方形格内按选区状态着色
             <button
               key={cell.date}
               type="button"
@@ -142,12 +153,18 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
                   ? 'rgba(0,0,0,.04)'
                   : inRange
                     ? isEdge
-                      ? 'linear-gradient(135deg, #f97316, #fbbf24)'
+                      ? '#f97316'
                       : 'rgba(249,115,22,.15)'
                     : isPending
                       ? 'rgba(249,115,22,.25)'
                       : 'rgba(255,255,255,.8)',
-                color: isOccupied ? '#d1d5db' : inRange && isEdge ? 'white' : inRange ? '#c2410c' : '#374151',
+                color: isOccupied
+                  ? '#d1d5db'
+                  : inRange && isEdge
+                    ? 'white'
+                    : inRange
+                      ? '#c2410c'
+                      : '#374151',
                 border: isToday
                   ? '2px solid rgba(249,115,22,.5)'
                   : isOccupied
@@ -170,7 +187,7 @@ export default function PlanDateRangePicker({ startDate, endDate, occupiedDates,
         </span>
         <span className="flex items-center gap-1.5">
           <span
-            className="inline-block h-3 w-3 rounded-sm border border-dashed border-gray-300 bg-gray-100"
+            className="border-kid-line inline-block h-3 w-3 rounded-sm border-2 border-dashed bg-gray-100"
             style={{ textDecoration: 'line-through' }}
           />
           已有计划（不可选）

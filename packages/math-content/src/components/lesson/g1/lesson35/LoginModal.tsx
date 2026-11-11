@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useAuth } from '@rosie/core'
+import { StickerCard } from '@rosie/ui'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 interface LoginModalProps {
   onClose: () => void
@@ -26,7 +28,10 @@ export default function LoginModal({ onClose }: LoginModalProps) {
     } else {
       const { error } = await signUp(email, password, email)
       if (error) setError(error)
-      else { setError(null); setTab('login') }
+      else {
+        setError(null)
+        setTab('login')
+      }
     }
     setLoading(false)
   }
@@ -34,65 +39,78 @@ export default function LoginModal({ onClose }: LoginModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
-      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
+      <StickerCard size="lg" elevation="lg" radius="md" className="w-full max-w-sm">
         <div className="mb-4 flex items-center justify-between">
-          <div className="text-[15px] font-bold text-text-primary">
+          <div className="text-text-primary text-[15px] font-bold">
             {tab === 'login' ? '☁️ 登录账户' : '☁️ 注册账户'}
           </div>
-          <button onClick={onClose} className="text-text-muted hover:text-text-primary text-lg leading-none">✕</button>
+          <IconButton onClick={onClose} variant="ghost" color="gray" size="3">
+            ✕
+          </IconButton>
         </div>
 
-        <div className="mb-4 rounded-lg bg-app-blue-light p-3 text-xs text-app-blue-dark">
+        <div className="bg-app-blue-light text-app-blue-dark mb-4 rounded-lg p-3 text-xs">
           登录后练习记录和错题本会自动云端同步，换设备不丢失。
         </div>
 
         {/* Tabs */}
         <div className="mb-4 flex rounded-lg bg-gray-100 p-0.5">
-          {(['login', 'register'] as const).map(t => (
-            <button
+          {(['login', 'register'] as const).map((t) => (
+            <Button
               key={t}
-              onClick={() => { setTab(t); setError(null) }}
-              className={`flex-1 rounded-md py-1.5 text-[13px] font-semibold transition-all ${
-                tab === t ? 'bg-white text-text-primary shadow-sm' : 'text-text-muted'
-              }`}
+              onClick={() => {
+                setTab(t)
+                setError(null)
+              }}
+              variant={tab === t ? 'outline' : 'ghost'}
+              color="gray"
+              size="2"
+              className="flex-1"
             >
               {t === 'login' ? '登录' : '注册'}
-            </button>
+            </Button>
           ))}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input
+          <TextField.Root
             type="email"
             placeholder="邮箱"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-lg border border-border-light px-3 py-2 text-sm outline-none focus:border-app-blue"
+            size="2"
+            className="w-full"
           />
-          <input
+          <TextField.Root
             type="password"
             placeholder="密码"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full rounded-lg border border-border-light px-3 py-2 text-sm outline-none focus:border-app-blue"
+            size="2"
+            className="w-full"
           />
           {error && (
             <div className="rounded-lg bg-[#fee2e2] px-3 py-2 text-xs text-[#dc2626]">{error}</div>
           )}
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-app-blue py-2 text-[13px] font-semibold text-white transition-opacity disabled:opacity-60"
+            variant="solid"
+            color="blue"
+            size="2"
+            className="w-full"
           >
             {loading ? '请稍候…' : tab === 'login' ? '登录' : '注册'}
-          </button>
+          </Button>
         </form>
-      </div>
+      </StickerCard>
     </div>
   )
 }

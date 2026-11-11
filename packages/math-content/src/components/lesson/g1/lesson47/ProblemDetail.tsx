@@ -40,10 +40,11 @@ export default function ProblemDetail({
   const level = getMasteryLevel(correctCount[problem.id] ?? 0)
   const interactive = isInteractiveProblem(problem)
 
-  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(problem, {
-    handleSolve,
-    addWrong,
-  })
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } =
+    useProblemAnswer(problem, {
+      handleSolve,
+      addWrong,
+    })
 
   const figure = useMemo(
     () =>
@@ -87,7 +88,7 @@ export default function ProblemDetail({
       onAnswerChange={setAnswer}
       onCheck={check}
       feedback={feedback}
-      buttonClassName="bg-fuchsia-600 shadow-[0_3px_10px_rgba(192,38,211,0.3)]"
+      buttonClassName="bg-fuchsia-600 shadow-sticker-sm"
     />
   )
 

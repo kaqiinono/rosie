@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import { SCRATCH_COLORS, type ScratchColorId } from './scratch-pad-types'
 import type { ScratchBounds } from './scratch-pad-types'
+import { Button } from '@rosie/ui/themes'
 
 type ScratchPadSelectionActionsProps = {
   bounds: ScratchBounds
@@ -73,10 +74,10 @@ export default function ScratchPadSelectionActions({
       style={{ left: 0, top: 0, width: containerWidth, height: containerHeight }}
     >
       <div
-        className="pointer-events-auto absolute flex max-w-[min(94vw,360px)] items-center gap-1.5 overflow-visible rounded-xl border border-indigo-200/80 bg-white/95 px-2 py-1.5 shadow-[0_4px_20px_rgba(79,70,229,0.18)] backdrop-blur-sm"
+        className="shadow-sticker-sm pointer-events-auto absolute flex max-w-[min(94vw,360px)] items-center gap-1.5 overflow-visible rounded-xl border border-indigo-200/80 bg-white px-2 py-1.5"
         style={{ left, top, transform }}
       >
-        <span className="shrink-0 whitespace-nowrap text-[10px] font-semibold text-indigo-600">
+        <span className="shrink-0 text-[10px] font-semibold whitespace-nowrap text-indigo-600">
           {count}项
         </span>
 
@@ -84,6 +85,7 @@ export default function ScratchPadSelectionActions({
           {SCRATCH_COLORS.map((c) => {
             const active = activeColorId === c.id
             return (
+              // native-ok: 选区改色色板，背景色由 swatch 十六进制值内联提供
               <button
                 key={c.id}
                 type="button"
@@ -93,7 +95,7 @@ export default function ScratchPadSelectionActions({
                   'h-5 w-5 shrink-0 cursor-pointer rounded-full border-2 transition-all active:scale-95',
                   active
                     ? 'scale-110 border-slate-800 shadow-[0_0_0_2px_#fff,0_0_0_4px_#6366f1]'
-                    : 'border-white/90 shadow-sm hover:scale-105',
+                    : 'shadow-sticker-sm border-white/90 hover:scale-105',
                 )}
                 style={{ backgroundColor: c.hex }}
               />
@@ -103,27 +105,36 @@ export default function ScratchPadSelectionActions({
 
         <div className="mx-0.5 h-5 w-px shrink-0 bg-slate-200" />
 
-        <button
+        <Button
           type="button"
           onClick={onDuplicate}
-          className="h-7 shrink-0 cursor-pointer rounded-lg bg-indigo-50 px-2 text-[11px] font-semibold text-indigo-600 transition-colors hover:bg-indigo-100 active:scale-95"
+          variant="soft"
+          color="indigo"
+          size="1"
+          className="shrink-0"
         >
           复制
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onDelete}
-          className="h-7 shrink-0 cursor-pointer rounded-lg bg-rose-500 px-2 text-[11px] font-bold text-white active:scale-95"
+          variant="solid"
+          color="ruby"
+          size="1"
+          className="shrink-0"
         >
           删除
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={onClearSelection}
-          className="h-7 shrink-0 cursor-pointer rounded-lg px-1.5 text-[11px] font-semibold text-slate-500 hover:bg-slate-100 active:scale-95"
+          variant="ghost"
+          color="gray"
+          size="1"
+          className="shrink-0"
         >
           取消
-        </button>
+        </Button>
       </div>
     </div>
   )

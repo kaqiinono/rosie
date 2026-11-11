@@ -1,6 +1,7 @@
 'use client'
 
 import AppleBag from './AppleBag'
+import { StickerCard } from '@rosie/ui'
 
 interface StageAreaProps {
   stageLabel: string
@@ -20,9 +21,7 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
   const showGroupRight = isMerge ? step >= 2 : step >= 4
   const showArrow = isMerge ? step >= 5 : step >= 4
   const showMergeZone = isMerge ? step >= 5 : step >= 1
-  const splitHighlighted = isMerge
-    ? step < 5 || step === 3
-    : step >= 4
+  const splitHighlighted = isMerge ? step < 5 || step === 3 : step >= 4
   const splitDimmed = isMerge ? step >= 5 : false
   const mergeHighlighted = isMerge ? step >= 5 : step < 4
   const mergeDimmed = isMerge ? false : step >= 4
@@ -39,7 +38,7 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
     : `爸爸的：<span class="text-red-600">${B}</span> 袋`
 
   return (
-    <div className="relative rounded-[20px] border-2 border-white/50 bg-white/88 p-4 shadow-[0_6px_28px_rgba(0,0,0,.07)]">
+    <StickerCard elevation="sm" className="relative">
       <div className="mb-1.5 text-center text-xs font-semibold tracking-wider text-slate-400">
         {stageLabel}
       </div>
@@ -49,9 +48,9 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
           <div
             className={`relative flex flex-wrap justify-center gap-6 rounded-2xl border-2 px-2 py-2.5 transition-all duration-600 ${
               splitHighlighted
-                ? 'border-blue-500 bg-blue-100/50 opacity-100 scale-100'
+                ? 'scale-100 border-blue-500 bg-blue-100/50 opacity-100'
                 : splitDimmed
-                  ? 'border-blue-300/40 bg-blue-100/30 opacity-55 scale-[.92]'
+                  ? 'scale-[.92] border-blue-300/40 bg-blue-100/30 opacity-55'
                   : 'border-blue-300/40 bg-blue-100/30'
             }`}
           >
@@ -62,7 +61,9 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
             {/* Left shelf group */}
             <div
               className={`flex flex-col items-center gap-1.5 transition-all duration-600 ${
-                showGroupLeft ? 'max-h-[300px] scale-100 opacity-100' : 'pointer-events-none max-h-0 scale-50 overflow-hidden opacity-0'
+                showGroupLeft
+                  ? 'max-h-[300px] scale-100 opacity-100'
+                  : 'pointer-events-none max-h-0 scale-50 overflow-hidden opacity-0'
               }`}
             >
               <div
@@ -86,7 +87,9 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
             {/* Right shelf group */}
             <div
               className={`flex flex-col items-center gap-1.5 transition-all duration-600 ${
-                showGroupRight ? 'max-h-[300px] scale-100 opacity-100' : 'pointer-events-none max-h-0 scale-50 overflow-hidden opacity-0'
+                showGroupRight
+                  ? 'max-h-[300px] scale-100 opacity-100'
+                  : 'pointer-events-none max-h-0 scale-50 overflow-hidden opacity-0'
               }`}
             >
               <div
@@ -125,9 +128,9 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
           className={`relative flex flex-col items-center gap-2 rounded-2xl border-2 px-2 py-2.5 transition-all duration-600 ${
             showMergeZone
               ? mergeHighlighted
-                ? 'border-amber-500 bg-amber-100/50 opacity-100 scale-100'
+                ? 'scale-100 border-amber-500 bg-amber-100/50 opacity-100'
                 : mergeDimmed
-                  ? 'border-amber-400/40 bg-amber-100/30 opacity-55 scale-[.92]'
+                  ? 'scale-[.92] border-amber-400/40 bg-amber-100/30 opacity-55'
                   : 'border-amber-400/40 bg-amber-100/30'
               : 'max-h-0 overflow-hidden border-none p-0 opacity-0'
           }`}
@@ -148,7 +151,9 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
                     price={price}
                     colorClass={
                       (isMerge && step >= 5) || (!isMerge && step >= 4)
-                        ? i < A ? 'blue' : 'pink'
+                        ? i < A
+                          ? 'blue'
+                          : 'pink'
                         : undefined
                     }
                     emoji={emoji}
@@ -160,6 +165,6 @@ export default function StageArea({ stageLabel, emoji, price, A, B, mode, step }
           )}
         </div>
       </div>
-    </div>
+    </StickerCard>
   )
 }

@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback, useMemo, memo } from 'react'
 import Month from '@rosie/math-content/components/lesson/g1/lesson36/WeekdayFlowChart/Month'
+import { StickerCard } from '@rosie/ui'
+import { Button, TextField } from '@rosie/ui/themes'
 
 // ── Re-export Month component inline (跨月部分) ────────────────────────────
 // (Paste the MonthlyWeekdayFlowChartProps / Month component here if co-locating;
@@ -109,7 +111,7 @@ const NumInput: React.FC<{
   className?: string
   style?: React.CSSProperties
 }> = ({ value, onChange, width = 36, placeholder = '?', className = '', style }) => (
-  <input
+  <input // native-ok: 星期流程图节点里的行内填空输入框，宽高由图形节点决定
     value={value}
     onChange={(e) => onChange(e.target.value)}
     placeholder={placeholder}
@@ -159,17 +161,19 @@ const WeekdayPill = memo(
           <>
             <span>{wdName}</span>
             {onChange && (
-              <input
+              <TextField.Root
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="absolute inset-0 z-10 h-full w-full cursor-text rounded-full opacity-0"
                 title="输入1-7（1=周一…7=周日）"
+                size="2"
+                className="absolute inset-0 z-10 w-full"
               />
             )}
           </>
         ) : (
           <div className="flex items-center gap-0.5">
             <span>周</span>
+            {/* native-ok: 星期流程图节点里的行内填空输入框，宽高由图形节点决定 */}
             <input
               value={value ?? ''}
               onChange={(e) => onChange?.(e.target.value)}
@@ -384,7 +388,7 @@ const MNum: React.FC<{
   width?: number
   cls?: string
 }> = ({ value, onChange, width = 28, cls = '' }) => (
-  <input
+  <input // native-ok: 星期流程图节点里的行内填空输入框，宽高由图形节点决定
     value={value}
     onChange={(e) => onChange(e.target.value)}
     placeholder="?"
@@ -412,7 +416,7 @@ const MDaysPill = memo(
     const ring = correct ? 'ring-2 ring-emerald-400' : wrong ? 'ring-2 ring-red-500' : ''
     return (
       <div
-        className={`flex items-center gap-1 rounded-full px-2.5 shadow-sm ${bg} ${ring}`}
+        className={`shadow-sticker-sm flex items-center gap-1 rounded-full px-2.5 ${bg} ${ring}`}
         style={{ height: M_PILL_H, fontFamily: FONT }}
       >
         <MNum
@@ -432,7 +436,7 @@ type MWdRole = 'start' | 'middle' | 'end'
 const M_WD_ROLE_CLS: Record<MWdRole, string> = {
   start: 'bg-blue-100 text-blue-700 border-2 border-blue-300',
   middle: 'bg-green-50 text-green-600 border-2 border-green-200',
-  end: 'bg-emerald-500 text-white border-2 border-emerald-600 shadow-md',
+  end: 'bg-emerald-500 text-white border-2 border-emerald-600 shadow-sticker',
 }
 const MWdPill = memo(
   ({
@@ -475,17 +479,19 @@ const MWdPill = memo(
           <>
             {wdName}
             {onChange && (
-              <input
+              <TextField.Root
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="absolute inset-0 z-10 h-full w-full cursor-text rounded-full opacity-0"
                 title="输入 1-7（1=周一…7=周日）"
+                size="2"
+                className="absolute inset-0 z-10 w-full"
               />
             )}
           </>
         ) : (
           <div className="flex items-center gap-0.5">
             <span>周</span>
+            {/* native-ok: 星期流程图节点里的行内填空输入框，宽高由图形节点决定 */}
             <input
               value={value}
               onChange={(e) => onChange?.(e.target.value)}
@@ -735,7 +741,7 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
       <div className="text-xs font-medium text-slate-400" style={{ fontFamily: FONT }}>
         ↓ 跨月计算（{startDate} → {endDate}）
       </div>
-      <div className="w-full overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow">
+      <div className="border-kid-line w-full overflow-x-auto rounded-2xl border-2 bg-white shadow">
         <div
           className="flex items-stretch px-4 py-5"
           style={{ width: 'max-content', margin: '0 auto' }}
@@ -750,7 +756,7 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
             ? 'border border-emerald-300 bg-emerald-50 text-emerald-800'
             : hints.length
               ? 'border border-red-200 bg-red-50 text-red-700'
-              : 'border border-slate-200 bg-slate-100 text-slate-500',
+              : 'border-kid-line border bg-slate-100 text-slate-500',
         ].join(' ')}
         style={{ fontFamily: FONT }}
       >
@@ -761,13 +767,17 @@ const MonthTail: React.FC<MonthTailProps> = ({ startDate, endDate, startWeekday 
               ? `✗ ${hints.slice(0, 2).join('；')}`
               : '填入跨月各段天数、÷7商余、节点星期'}
         </span>
-        <button
+        <Button
+          type="button"
           onClick={reset}
-          className="shrink-0 cursor-pointer rounded-full bg-white/50 px-2.5 py-0.5 text-[11px] font-medium transition-all hover:bg-white/80 active:scale-95"
-          style={{ border: '1px solid rgba(0,0,0,0.12)', fontFamily: FONT }}
+          variant="soft"
+          color="gray"
+          size="1"
+          radius="full"
+          className="shrink-0"
         >
           ↺ 重置
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -959,11 +969,11 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {/* Year chart */}
-      <div className="w-full overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-lg">
+      <StickerCard size="none" radius="md" className="w-full overflow-x-auto">
         <div className="flex flex-col px-8 py-6" style={{ width: 'max-content', margin: '0 auto' }}>
           {rows}
         </div>
-      </div>
+      </StickerCard>
 
       {/* Status bar + reset */}
       <div
@@ -975,7 +985,7 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({
               ? 'border border-amber-200 bg-amber-50 text-amber-700'
               : hints.length
                 ? 'border border-red-200 bg-red-50 text-red-700'
-                : 'border border-slate-200 bg-slate-100 text-slate-500',
+                : 'border-kid-line border bg-slate-100 text-slate-500',
         ].join(' ')}
         style={{ fontFamily: FONT }}
       >
@@ -992,13 +1002,17 @@ const Year: React.FC<YearlyWeekdayFlowChartProps> = ({
                   ? '填入每行天数（365/366）、余数（+N）、各节点星期（1–7）'
                   : '已知终点星期，从下往上倒推：填入天数、余数（−N）、各节点星期（1–7）'}
         </span>
-        <button
+        <Button
+          type="button"
           onClick={reset}
-          className="shrink-0 cursor-pointer rounded-full bg-white/50 px-2.5 py-0.5 text-[11px] font-medium transition-all hover:bg-white/80 active:scale-95"
-          style={{ border: '1px solid rgba(0,0,0,0.12)', fontFamily: FONT }}
+          variant="soft"
+          color="gray"
+          size="1"
+          radius="full"
+          className="shrink-0"
         >
           ↺ 重置
-        </button>
+        </Button>
       </div>
 
       {/* Cross-month tail — only when end date is NOT same month/day as start */}

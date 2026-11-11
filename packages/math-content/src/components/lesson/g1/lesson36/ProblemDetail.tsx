@@ -3,6 +3,7 @@
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 
 import { useState, useEffect } from 'react'
+import { TextField } from '@rosie/ui/themes'
 import type { Problem } from '@rosie/core'
 import { TAG_STYLE } from '@rosie/math-content/utils/g1/lesson36-data'
 import { useG1Lesson36 } from './G1Lesson36Provider'
@@ -54,11 +55,12 @@ function buildFlowChart(
       <div className="flex flex-col gap-3">
         <div className="border-border-light flex items-center gap-2 rounded-lg border bg-[#f9fafb] px-3.5 py-2.5">
           <span className="text-text-secondary text-sm">这个月有几天？</span>
-          <input
+          <TextField.Root
             type="number"
             min={28}
             max={31}
-            className="border-border-light w-16 rounded-lg border px-2 py-1.5 text-center text-sm"
+            size="1"
+            className="w-20"
             placeholder="28~31"
             value={manualTotalDays}
             onChange={(e) => setManualTotalDays(e.target.value)}
@@ -170,7 +172,7 @@ export default function ProblemDetail({
         onAnswerChange={setAnswer}
         onCheck={check}
         feedback={feedback}
-        buttonClassName="bg-app-blue shadow-[0_3px_10px_rgba(59,130,246,0.3)]"
+        buttonClassName="bg-app-blue shadow-sticker-sm"
       />
     </>
   )

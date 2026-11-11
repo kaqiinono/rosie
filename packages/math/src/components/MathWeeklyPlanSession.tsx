@@ -19,6 +19,7 @@ import {
 import { useMathRotatingReview } from '@rosie/math-kit/hooks/useMathRotatingReview'
 import { useMathWeeklyLessonReview } from '@rosie/math-kit/hooks/useMathWeeklyLessonReview'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
+import { Button } from '@rosie/ui/themes'
 import ProblemMasteryPanel from './ProblemMasteryPanel'
 import { todayStr, localDateStr } from '@rosie/core'
 import { compareLessonIds } from '@rosie/math-kit/utils/lesson-registry'
@@ -58,7 +59,10 @@ import MathPlanMap, { type MapMode } from './MathPlanMap'
 const OVERDUE_PAGE_SIZE = 5
 
 function calendarDayDiff(from: string, to: string): number {
-  return Math.max(0, Math.round((Date.parse(`${to}T00:00:00`) - Date.parse(`${from}T00:00:00`)) / 86400000))
+  return Math.max(
+    0,
+    Math.round((Date.parse(`${to}T00:00:00`) - Date.parse(`${from}T00:00:00`)) / 86400000),
+  )
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
@@ -87,9 +91,10 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   const { resume, isActive: practiceActive } = usePracticeQueue()
 
   const today = todayStr()
-  const weeklyPlan = activeWeeklyPlan ?? allPlans.find((plan) =>
-    collectOverduePlanProblems(plan, today).length > 0,
-  ) ?? null
+  const weeklyPlan =
+    activeWeeklyPlan ??
+    allPlans.find((plan) => collectOverduePlanProblems(plan, today).length > 0) ??
+    null
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [mapMode, setMapMode] = useState<MapMode>('week')
   const autoStartDoneRef = useRef(false)
@@ -175,7 +180,9 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     title: string
     preserveOrder: boolean
   } | null>(null)
-  const remainingCheckerRef = useRef<(() => { count: number; onStart: () => void } | null) | null>(null)
+  const remainingCheckerRef = useRef<(() => { count: number; onStart: () => void } | null) | null>(
+    null,
+  )
 
   const beginPractice = useCallback(
     (
@@ -193,7 +200,11 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           if (!assignmentId) return undefined
           for (const plan of allPlans) {
             for (const day of plan.days) {
-              if (day.problems.some((candidate) => planAssignmentId(candidate, day.date) === assignmentId)) {
+              if (
+                day.problems.some(
+                  (candidate) => planAssignmentId(candidate, day.date) === assignmentId,
+                )
+              ) {
                 return { planStart: plan.weekStart, date: day.date, assignmentId }
               }
             }
@@ -212,9 +223,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
         title,
         initialProblemId,
         preserveOrder,
-        checkRemaining: checkRemaining
-          ? () => remainingCheckerRef.current?.() ?? null
-          : undefined,
+        checkRemaining: checkRemaining ? () => remainingCheckerRef.current?.() ?? null : undefined,
         returnHref: mathPlanPracticeReturnHref(),
       })
       return true
@@ -239,8 +248,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
     let cancelled = false
 
-    const todayProblemIds = activePlans.flatMap((plan) =>
-      plan.days.find((d) => d.date === today)?.problems.map((p) => p.problemId) ?? [],
+    const todayProblemIds = activePlans.flatMap(
+      (plan) => plan.days.find((d) => d.date === today)?.problems.map((p) => p.problemId) ?? [],
     )
 
     const tryResume = (pending: NonNullable<ReturnType<typeof readMathPracticeSnapshot>>) => {
@@ -312,7 +321,19 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
       cancelled = true
       if (timer !== undefined) window.clearTimeout(timer)
     }
-  }, [autoStart, practiceActive, isLoading, resumeChecked, userId, problemSets, practiceCount, resume, weeklyPlan, activePlans, today])
+  }, [
+    autoStart,
+    practiceActive,
+    isLoading,
+    resumeChecked,
+    userId,
+    problemSets,
+    practiceCount,
+    resume,
+    weeklyPlan,
+    activePlans,
+    today,
+  ])
 
   // Practice route: jump straight into today's first unfinished required problem.
   useEffect(() => {
@@ -333,8 +354,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     if (!user) return
 
     // 「执行计划」always means today's required queue, not the calendar selection.
-    const todayProblems = activePlans.flatMap((plan) =>
-      plan.days.find((d) => d.date === today)?.problems ?? [],
+    const todayProblems = activePlans.flatMap(
+      (plan) => plan.days.find((d) => d.date === today)?.problems ?? [],
     )
     if (todayProblems.length === 0) {
       autoStartDoneRef.current = true
@@ -412,9 +433,9 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     if (!weeklyPlan) return {} as Record<string, MathPlanProblem[]>
     const result: Record<string, MathPlanProblem[]> = {}
     for (const day of weeklyPlan.days) {
-      const requiredIds = new Set(day.problems.map(p => p.problemId))
+      const requiredIds = new Set(day.problems.map((p) => p.problemId))
       result[day.date] = [...wrongIds]
-        .map(id => problemIdMap.get(id))
+        .map((id) => problemIdMap.get(id))
         .filter((p): p is MathPlanProblem => p != null && !requiredIds.has(p.problemId))
         .sort((a, b) => {
           const lc = compareLessonIds(a.lessonId, b.lessonId)
@@ -539,12 +560,17 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   const { draftProblemIds } = useViewableDraftIds(user, dayDraftProblemIds, draftRefreshKey)
 
   const overdueItems = useMemo(
-    () => allPlans.flatMap((plan) => collectOverduePlanProblems(plan, today))
-      .sort((a, b) => a.date.localeCompare(b.date)),
+    () =>
+      allPlans
+        .flatMap((plan) => collectOverduePlanProblems(plan, today))
+        .sort((a, b) => a.date.localeCompare(b.date)),
     [allPlans, today],
   )
   const overdueUndoneItems = overdueItems
-  const overduePool = useMemo(() => overdueUndoneItems.map((item) => item.problem), [overdueUndoneItems])
+  const overduePool = useMemo(
+    () => overdueUndoneItems.map((item) => item.problem),
+    [overdueUndoneItems],
+  )
 
   // Reset overdue page when list shrinks
   const overdueTotalPages = Math.max(1, Math.ceil(overdueUndoneItems.length / OVERDUE_PAGE_SIZE))
@@ -552,14 +578,18 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     if (overduePage >= overdueTotalPages) setOverduePage(0)
   }, [overdueTotalPages, overduePage])
   const overduePageItems = useMemo(
-    () => overdueUndoneItems.slice(overduePage * OVERDUE_PAGE_SIZE, (overduePage + 1) * OVERDUE_PAGE_SIZE),
+    () =>
+      overdueUndoneItems.slice(
+        overduePage * OVERDUE_PAGE_SIZE,
+        (overduePage + 1) * OVERDUE_PAGE_SIZE,
+      ),
     [overdueUndoneItems, overduePage],
   )
 
   // Always-fresh checker: pool comes from beginPractice / resume; correctCount
   // from this render so celebration never sees a stale closure.
   useEffect(() => {
-    remainingCheckerRef.current = (() => {
+    remainingCheckerRef.current = () => {
       const cfg = remainingPoolRef.current
       if (!cfg || cfg.pool.length === 0) return null
       const remaining = cfg.pool.filter((problem) => {
@@ -583,7 +613,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           }
         },
       }
-    })
+    }
   }, [correctCount, beginPractice, allPlans])
 
   // ── Loading overlay ──────────────────────────────────────────────────────────
@@ -591,7 +621,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
     return (
       <div
         className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4"
-        style={{ background: 'rgba(255,248,240,0.75)', backdropFilter: 'blur(6px)' }}
+        style={{ background: 'rgba(255,248,240,0.75)' }}
       >
         <div className="animate-bounce-slow text-5xl">⭐</div>
         <div className="text-[14px] font-bold text-orange-400">正在加载中…</div>
@@ -602,9 +632,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   // ── Empty-state View (no current-week plan) ─────────────────────────────────
   if (!weeklyPlan) {
     const today = todayStr()
-    const inactivePlans = allPlans.filter(
-      (p) => !(p.weekStart <= today && today <= planEndDate(p)),
-    )
+    const inactivePlans = allPlans.filter((p) => !(p.weekStart <= today && today <= planEndDate(p)))
 
     return (
       <>
@@ -631,8 +659,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               href="/setting/plans/math"
               className="inline-block rounded-xl px-6 py-3 text-[14px] font-extrabold text-white no-underline transition-all hover:scale-105"
               style={{
-                background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
-                boxShadow: '0 6px 18px rgba(249,115,22,.4)',
+                background: '#f97316',
+                boxShadow: '0 3px 0 rgba(249,115,22,.4)',
               }}
             >
               {allPlans.length === 0 ? '前往计划管理' : '查看 / 调整计划'}
@@ -692,7 +720,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
 
   // ── Week View ───────────────────────────────────────────────────────────────
   const planLessonIds = activePlanLessonIds
-  const lessonInfo = MATH_PLAN_LESSONS.find(l => l.id === weeklyPlan.lessonId) ?? MATH_PLAN_LESSONS[0]
+  const lessonInfo =
+    MATH_PLAN_LESSONS.find((l) => l.id === weeklyPlan.lessonId) ?? MATH_PLAN_LESSONS[0]
   const headerTitle = mathPlanDisplayName(weeklyPlan)
   const headerEmoji = planLessonIds.length === 1 ? lessonInfo.emoji : '📚'
   const dayPlan = selectedDate ? weeklyPlan.days.find((d) => d.date === selectedDate) : null
@@ -700,7 +729,9 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
   const doneKeys = new Set(dayProgress.doneKeys)
 
   const todayRequired = dayPlan?.problems ?? []
-  const todayDone = todayRequired.filter((p) => isPlanProblemDone(p, selectedDate ?? '', doneKeys)).length
+  const todayDone = todayRequired.filter((p) =>
+    isPlanProblemDone(p, selectedDate ?? '', doneKeys),
+  ).length
   const pct = todayRequired.length > 0 ? Math.round((todayDone / todayRequired.length) * 100) : 0
 
   return (
@@ -710,7 +741,7 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
         <div
           className="mb-5 rounded-2xl px-5 py-4"
           style={{
-            background: `linear-gradient(135deg, ${lessonInfo.bg}, rgba(255,255,255,.5))`,
+            background: `${lessonInfo.bg}`,
             border: `2px solid ${lessonInfo.border}`,
           }}
         >
@@ -718,19 +749,23 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
             <div className="flex min-w-0 items-center gap-3">
               <span className="shrink-0 text-3xl">{headerEmoji}</span>
               <div className="min-w-0">
-                <div className="truncate text-[16px] font-extrabold text-gray-800">{headerTitle}</div>
+                <div className="truncate text-[16px] font-extrabold text-gray-800">
+                  {headerTitle}
+                </div>
                 <div className="mt-0.5 text-[11px] font-medium text-gray-500">
                   {fmtPlanRange(weeklyPlan.weekStart, planEndDate(weeklyPlan))}
                   <span className="mx-1 text-gray-300">·</span>
                   每天约 {weeklyPlan.problemsPerDay} 题
-                  {weeklyPlan.originalPlanEnd && planEndDate(weeklyPlan) > weeklyPlan.originalPlanEnd && (
-                    <>
-                      <span className="mx-1 text-gray-300">·</span>
-                      <span className="font-bold text-violet-600">
-                        已延期 {calendarDayDiff(weeklyPlan.originalPlanEnd, planEndDate(weeklyPlan))} 天
-                      </span>
-                    </>
-                  )}
+                  {weeklyPlan.originalPlanEnd &&
+                    planEndDate(weeklyPlan) > weeklyPlan.originalPlanEnd && (
+                      <>
+                        <span className="mx-1 text-gray-300">·</span>
+                        <span className="font-bold text-violet-600">
+                          已延期{' '}
+                          {calendarDayDiff(weeklyPlan.originalPlanEnd, planEndDate(weeklyPlan))} 天
+                        </span>
+                      </>
+                    )}
                 </div>
               </div>
             </div>
@@ -739,8 +774,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                 href={MATH_PLAN_PRACTICE_HREF}
                 className="shrink-0 rounded-full px-3.5 py-1.5 text-[12px] font-extrabold text-white no-underline transition-all hover:scale-105 sm:px-4 sm:text-[13px]"
                 style={{
-                  background: 'linear-gradient(135deg, #ea580c, #f59e0b)',
-                  boxShadow: '0 2px 10px rgba(234,88,12,.35)',
+                  background: '#ea580c',
+                  boxShadow: '0 3px 0 rgba(234,88,12,.35)',
                 }}
               >
                 执行计划
@@ -789,8 +824,8 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                       className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
                       style={{
                         width: `${pct}%`,
-                        background: 'linear-gradient(90deg, #f97316, #fbbf24)',
-                        boxShadow: pct > 0 ? '0 0 8px rgba(249,115,22,.5)' : 'none',
+                        background: '#f97316',
+                        boxShadow: pct > 0 ? '0 3px 0 rgba(249,115,22,.5)' : 'none',
                       }}
                     />
                     {/* Star runner */}
@@ -828,18 +863,16 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
           }}
           headerExtra={
             selectedDate !== today && weeklyPlan.days.some((d) => d.date === today) ? (
-              <button
+              <Button
                 type="button"
                 onClick={() => setSelectedDate(today)}
-                className="cursor-pointer rounded-full px-3 py-1 text-[11px] font-bold transition-all hover:scale-105"
-                style={{
-                  background: 'rgba(249,115,22,.1)',
-                  color: '#ea580c',
-                  border: '1.5px solid rgba(249,115,22,.25)',
-                }}
+                variant="soft"
+                color="orange"
+                size="1"
+                radius="full"
               >
                 📍 跳到今天
-              </button>
+              </Button>
             ) : undefined
           }
         />
@@ -855,32 +888,49 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
               defaultExpanded={false}
               headerRight={
                 <div className="grid w-40 grid-cols-2 gap-1.5 sm:w-44">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => {
                       const first = overduePool[0]
                       if (first) beginPractice(overduePool, first.problemId, '待补做', true, true)
                     }}
-                    className="min-w-0 cursor-pointer rounded-full px-2 py-1 text-[10px] font-extrabold text-white transition-all hover:scale-105"
-                    style={{ background: 'linear-gradient(135deg, #ef4444, #f97316)' }}
+                    variant="solid"
+                    color="red"
+                    size="1"
+                    radius="full"
+                    className="min-w-0"
                   >
                     一键补做
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     disabled={isPostponing}
+                    loading={isPostponing}
                     onClick={async () => {
-                      const dates = new Set(overdueUndoneItems.map((item) => `${item.planStart}::${item.date}`))
+                      const dates = new Set(
+                        overdueUndoneItems.map((item) => `${item.planStart}::${item.date}`),
+                      )
                       const preview = allPlans.flatMap((plan) => {
-                        const batchDates = new Set(overdueUndoneItems.filter((item) => item.planStart === plan.weekStart).map((item) => item.date))
+                        const batchDates = new Set(
+                          overdueUndoneItems
+                            .filter((item) => item.planStart === plan.weekStart)
+                            .map((item) => item.date),
+                        )
                         if (batchDates.size === 0) return []
                         const currentEnd = planEndDate(plan)
                         const start = addPlanDays(currentEnd < today ? today : currentEnd, 1)
                         const nextEnd = addPlanDays(start, batchDates.size - 1)
                         const originalEnd = plan.originalPlanEnd ?? currentEnd
-                        return [`${mathPlanDisplayName(plan)}：延期至 ${fmtDate(nextEnd)}（累计 ${calendarDayDiff(originalEnd, nextEnd)} 天）`]
+                        return [
+                          `${mathPlanDisplayName(plan)}：延期至 ${fmtDate(nextEnd)}（累计 ${calendarDayDiff(originalEnd, nextEnd)} 天）`,
+                        ]
                       })
-                      if (!window.confirm(`将 ${overdueUndoneItems.length} 道欠题按 ${dates.size} 个任务日追加到各计划末尾，现有题单不会重排。\n\n${preview.join('\n')}\n\n确认延期吗？`)) return
+                      if (
+                        !window.confirm(
+                          `将 ${overdueUndoneItems.length} 道欠题按 ${dates.size} 个任务日追加到各计划末尾，现有题单不会重排。\n\n${preview.join('\n')}\n\n确认延期吗？`,
+                        )
+                      )
+                        return
                       setIsPostponing(true)
                       try {
                         await postponeAllOverdue()
@@ -888,11 +938,14 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                         setIsPostponing(false)
                       }
                     }}
-                    className="min-w-0 cursor-pointer rounded-full px-2 py-1 text-[10px] font-extrabold text-white transition-all hover:scale-105 disabled:opacity-60"
-                    style={{ background: 'linear-gradient(135deg, #7c3aed, #6366f1)' }}
+                    variant="solid"
+                    color="violet"
+                    size="1"
+                    radius="full"
+                    className="min-w-0"
                   >
                     {isPostponing ? '延期中' : '一键延期'}
-                  </button>
+                  </Button>
                 </div>
               }
             >
@@ -909,33 +962,39 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                     overdueDate={date}
                     problemSets={problemSets}
                     hasDraft={draftProblemIds.has(problem.problemId)}
-                    onPractice={() => beginPractice(overduePool, problem.problemId, '待补做', true, true)}
+                    onPractice={() =>
+                      beginPractice(overduePool, problem.problemId, '待补做', true, true)
+                    }
                   />
                 ))}
               </div>
               {overdueTotalPages > 1 && (
                 <div className="flex items-center justify-center gap-3 pt-1">
-                  <button
+                  <Button
                     type="button"
                     disabled={overduePage === 0}
                     onClick={() => setOverduePage((p) => Math.max(0, p - 1))}
-                    className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
-                    style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                    variant="soft"
+                    color="red"
+                    size="1"
+                    radius="full"
                   >
                     ← 上一页
-                  </button>
+                  </Button>
                   <span className="text-[12px] font-bold text-gray-400">
                     {overduePage + 1} / {overdueTotalPages}
                   </span>
-                  <button
+                  <Button
                     type="button"
                     disabled={overduePage >= overdueTotalPages - 1}
                     onClick={() => setOverduePage((p) => Math.min(overdueTotalPages - 1, p + 1))}
-                    className="cursor-pointer rounded-full border-0 px-3 py-1 text-[12px] font-bold transition-all disabled:cursor-default disabled:opacity-30"
-                    style={{ background: 'rgba(239,68,68,.08)', color: '#ef4444' }}
+                    variant="soft"
+                    color="red"
+                    size="1"
+                    radius="full"
                   >
                     下一页 →
-                  </button>
+                  </Button>
                 </div>
               )}
             </CollapsibleSection>
@@ -967,7 +1026,9 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                         batch.sourceAssignmentIds.includes(planAssignmentId(prob, selectedDate!)),
                       )}
                       overdueDate={
-                        selectedDate && selectedDate < today && !isPlanProblemDone(prob, selectedDate, doneKeys)
+                        selectedDate &&
+                        selectedDate < today &&
+                        !isPlanProblemDone(prob, selectedDate, doneKeys)
                           ? selectedDate
                           : undefined
                       }
@@ -979,7 +1040,14 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                           batch.sourceAssignmentIds.includes(planAssignmentId(prob, selectedDate!)),
                         )
                           ? undefined
-                          : () => beginPractice(dayPlan.problems, prob.problemId, '每日一练', true, true)
+                          : () =>
+                              beginPractice(
+                                dayPlan.problems,
+                                prob.problemId,
+                                '每日一练',
+                                true,
+                                true,
+                              )
                       }
                     />
                   ))}
@@ -992,7 +1060,9 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
             {/* Wrong-answer reinforcement */}
             {(() => {
               const extraWrong = wrongByDay[selectedDate!] ?? []
-              const wrongInRequired = dayPlan.problems.filter(p => wrongIds.has(p.problemId)).length
+              const wrongInRequired = dayPlan.problems.filter((p) =>
+                wrongIds.has(p.problemId),
+              ).length
               if (extraWrong.length === 0 && wrongInRequired === 0) return null
               return (
                 <CollapsibleSection
@@ -1132,7 +1202,6 @@ export default function MathWeeklyPlanSession({ problemSets, autoStart = false }
                 }
               />
             )}
-
           </div>
         )}
 

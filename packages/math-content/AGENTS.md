@@ -28,7 +28,7 @@ Consumed via deep subpaths, e.g. `@rosie/math-content/components/lesson/g1/lesso
 
 ## Dependencies
 
-`@rosie/core` and **`@rosie/math-kit`** (all shared primitives, hooks, ScratchPad). **Never imports
+`@rosie/core`, **`@rosie/math-kit`** (all shared primitives, hooks, ScratchPad) and `@rosie/ui` (`StickerCard`, Radix controls via `@rosie/ui/themes` — lesson pages must not hand-roll cards or native controls). **Never imports
 `@rosie/math`** — the top layer's aggregators (`sea-data`, `lesson-module-registry`) import content,
 so content must not import back (enforced by `scripts/check-package-cycles.mjs`). DAG:
 `math → math-content → math-kit → {core,ui,rewards,calc}`.

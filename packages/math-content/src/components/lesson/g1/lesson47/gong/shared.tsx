@@ -3,6 +3,7 @@
 import './gong.css'
 import { GONG_COLORS } from './utils/constants'
 import React from 'react'
+import { Button } from '@rosie/ui/themes'
 
 interface ColorPaletteProps {
   items: { key: string | number; label: string | number; colorIndex: number }[]
@@ -18,7 +19,7 @@ export function ColorPalette({ items, selected, onSelect }: ColorPaletteProps) {
         const col = GONG_COLORS[colorIndex % GONG_COLORS.length]
         const isSelected = selected === key
         return (
-          <button
+          <button // native-ok: 数字色块调色板：每个按钮是按数字配色的色块，选中时放大并换边框色，标准 Button 无法表达
             key={String(key)}
             type="button"
             onClick={() => onSelect(key)}
@@ -66,18 +67,17 @@ export function ActionButton({
   variant?: 'default' | 'primary' | 'danger'
   disabled?: boolean
 }) {
-  const base =
-    'rounded-[10px] border px-4 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50'
-  const variantCls =
-    variant === 'primary'
-      ? 'border-[var(--gong-accent)] bg-[var(--gong-accent)] text-white hover:opacity-90'
-      : variant === 'danger'
-        ? 'border-[var(--gong-border2)] bg-[var(--gong-bg)] text-[var(--gong-coral)] hover:bg-[var(--gong-bg3)]'
-        : 'border-[var(--gong-border2)] bg-[var(--gong-bg)] text-[var(--gong-text)] hover:bg-[var(--gong-bg3)]'
-
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={`${base} ${variantCls}`}>
+    <Button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      variant={variant === 'primary' ? 'solid' : variant === 'danger' ? 'soft' : 'outline'}
+      color={variant === 'danger' ? 'red' : variant === 'primary' ? 'amber' : 'gray'}
+      size="2"
+      radius="full"
+    >
       {children}
-    </button>
+    </Button>
   )
 }

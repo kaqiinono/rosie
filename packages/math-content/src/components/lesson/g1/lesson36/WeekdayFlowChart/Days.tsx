@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useId } from 'react'
+import { StickerCard } from '@rosie/ui'
+import { Button } from '@rosie/ui/themes'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 export interface WeekdayFlowChartProps {
@@ -31,16 +33,19 @@ const V = {
   // Division row y-center
   dY: 185,
   // Red box "经过多少天"
-  rbX: 162, rbY: 166, rbW: 120, rbH: 38,
+  rbX: 162,
+  rbY: 166,
+  rbW: 120,
+  rbH: 38,
   // Quotient yellow area center-x
   qCX: 365,
   // Remainder yellow area center-x
   rCX: 495,
   // Pill positions
-  spCX: 75,   // start weekday pill
-  qpCX: 365,  // quotient weekday pill
-  rpCX: 495,  // remainder weekday pill
-  epCX: 705,  // end weekday pill
+  spCX: 75, // start weekday pill
+  qpCX: 365, // quotient weekday pill
+  rpCX: 495, // remainder weekday pill
+  epCX: 705, // end weekday pill
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -55,24 +60,44 @@ function fmtDate(d: string): string {
   return `${y}年${m}月${day}日`
 }
 
-
 // ── Sub-components (SVG helpers) ───────────────────────────────────────────
 const FONT = "'PingFang SC','Microsoft YaHei',sans-serif"
 
 interface PillProps {
-  cx: number; cy: number; label: string; color: 'blue' | 'red'
+  cx: number
+  cy: number
+  label: string
+  color: 'blue' | 'red'
 }
 const Pill: React.FC<PillProps> = ({ cx, cy, label, color }) => {
-  const fill   = color === 'blue' ? '#d6e8f7' : '#fee2e2'
+  const fill = color === 'blue' ? '#d6e8f7' : '#fee2e2'
   const stroke = color === 'blue' ? '#6b9fd4' : '#e88a8a'
-  const tc     = color === 'blue' ? '#1a4a7c' : '#7c1a1a'
-  const w = 60, h = 28, rx = 14
+  const tc = color === 'blue' ? '#1a4a7c' : '#7c1a1a'
+  const w = 60,
+    h = 28,
+    rx = 14
   return (
     <g>
-      <rect x={cx - w / 2} y={cy - h / 2} width={w} height={h} rx={rx}
-        fill={fill} stroke={stroke} strokeWidth={1.5} />
-      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central"
-        fontSize={14} fontWeight={700} fill={tc} fontFamily={FONT}>
+      <rect
+        x={cx - w / 2}
+        y={cy - h / 2}
+        width={w}
+        height={h}
+        rx={rx}
+        fill={fill}
+        stroke={stroke}
+        strokeWidth={1.5}
+      />
+      <text
+        x={cx}
+        y={cy}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={14}
+        fontWeight={700}
+        fill={tc}
+        fontFamily={FONT}
+      >
         {label}
       </text>
     </g>
@@ -80,18 +105,46 @@ const Pill: React.FC<PillProps> = ({ cx, cy, label, color }) => {
 }
 
 interface KnownBoxProps {
-  x: number; y: number; w: number; h: number; line1: string; line2: string
+  x: number
+  y: number
+  w: number
+  h: number
+  line1: string
+  line2: string
 }
 const KnownBox: React.FC<KnownBoxProps> = ({ x, y, w, h, line1, line2 }) => (
   <g>
-    <rect x={x} y={y} width={w} height={h} rx={10}
-      fill="#d6e8f7" stroke="#6b9fd4" strokeWidth={1.5} />
-    <text x={x + w / 2} y={y + h / 2 - 8} textAnchor="middle" dominantBaseline="central"
-      fontSize={12} fontWeight={700} fill="#1a4a7c" fontFamily={FONT}>
+    <rect
+      x={x}
+      y={y}
+      width={w}
+      height={h}
+      rx={10}
+      fill="#d6e8f7"
+      stroke="#6b9fd4"
+      strokeWidth={1.5}
+    />
+    <text
+      x={x + w / 2}
+      y={y + h / 2 - 8}
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize={12}
+      fontWeight={700}
+      fill="#1a4a7c"
+      fontFamily={FONT}
+    >
       {line1}
     </text>
-    <text x={x + w / 2} y={y + h / 2 + 10} textAnchor="middle" dominantBaseline="central"
-      fontSize={11} fill="#4a7cb5" fontFamily={FONT}>
+    <text
+      x={x + w / 2}
+      y={y + h / 2 + 10}
+      textAnchor="middle"
+      dominantBaseline="central"
+      fontSize={11}
+      fill="#4a7cb5"
+      fontFamily={FONT}
+    >
       {line2}
     </text>
   </g>
@@ -108,17 +161,19 @@ interface SvgInputProps {
 }
 
 const svgInputStyles: Record<SvgInputProps['variant'], React.CSSProperties> = {
-  red:    { background: '#fff1f2', color: '#7c1a1a' },
+  red: { background: '#fff1f2', color: '#7c1a1a' },
   yellow: { background: '#fefce8', color: '#713f12' },
 }
 
 const SvgInput: React.FC<SvgInputProps> = ({ cx, cy, value, onChange, placeholder, variant }) => {
-  const w = 56, h = 36
+  const w = 56,
+    h = 36
   return (
     <foreignObject x={cx - w / 2} y={cy - h / 2} width={w} height={h}>
+      {/* native-ok: 星期流程图格子里的填空输入框，填满格子并按对错换底色 */}
       <input
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         style={{
           width: '100%',
@@ -150,37 +205,43 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
 
   // User input state
   const [total, setTotal] = useState('')
-  const [q, setQ]         = useState('')
-  const [r, setR]         = useState('')
+  const [q, setQ] = useState('')
+  const [r, setR] = useState('')
   const [unkWd, setUnkWd] = useState('') // the unknown weekday (end in forward, start in backward)
 
   // Derived values
-  const autoTotal   = calcDays(startDate, endDate)
-  const knownLabel  = WD[knownWd]
-  const unkWdLabel  = unkWd && +unkWd >= 1 && +unkWd <= 7 ? WD[+unkWd as 1|2|3|4|5|6|7] : '周?'
+  const autoTotal = calcDays(startDate, endDate)
+  const knownLabel = WD[knownWd]
+  const unkWdLabel =
+    unkWd && +unkWd >= 1 && +unkWd <= 7 ? WD[+unkWd as 1 | 2 | 3 | 4 | 5 | 6 | 7] : '周?'
 
   // Validation
-  const totalOk  = total !== '' && autoTotal !== null && +total === autoTotal
-  const divOk    = total !== '' && q !== '' && r !== '' && +q * 7 + +r === +total
-  const compUnkWd = r !== ''
-    ? mode === 'forward'
-      ? ((knownWd - 1 + +r) % 7) + 1
-      : ((knownWd - 1 - +r % 7 + 700) % 7) + 1
-    : null
-  const unkWdOk  = compUnkWd !== null && unkWd !== '' && +unkWd === compUnkWd
-  const allOk    = totalOk && divOk && unkWdOk
+  const totalOk = total !== '' && autoTotal !== null && +total === autoTotal
+  const divOk = total !== '' && q !== '' && r !== '' && +q * 7 + +r === +total
+  const compUnkWd =
+    r !== ''
+      ? mode === 'forward'
+        ? ((knownWd - 1 + +r) % 7) + 1
+        : ((knownWd - 1 - (+r % 7) + 700) % 7) + 1
+      : null
+  const unkWdOk = compUnkWd !== null && unkWd !== '' && +unkWd === compUnkWd
+  const allOk = totalOk && divOk && unkWdOk
 
   const handleReset = useCallback(() => {
-    setTotal(''); setQ(''); setR(''); setUnkWd('')
+    setTotal('')
+    setQ('')
+    setR('')
+    setUnkWd('')
   }, [])
 
   // Status bar content
   let statusMsg = '请依次填入红色和黄色框中的数值…'
-  let statusClass = 'bg-slate-100 text-slate-500 border border-slate-200'
+  let statusClass = 'bg-slate-100 text-slate-500 border border-kid-line'
   if (allOk) {
-    statusMsg = mode === 'forward'
-      ? `🎉 完全正确！结束日期是 ${WD[compUnkWd as number]}`
-      : `🎉 完全正确！开始日期是 ${WD[compUnkWd as number]}`
+    statusMsg =
+      mode === 'forward'
+        ? `🎉 完全正确！结束日期是 ${WD[compUnkWd as number]}`
+        : `🎉 完全正确！开始日期是 ${WD[compUnkWd as number]}`
     statusClass = 'bg-green-50 text-green-800 border border-green-300'
   } else {
     const hints: string[] = []
@@ -192,184 +253,344 @@ const Days: React.FC<WeekdayFlowChartProps> = ({
   }
 
   // Marker ids (scoped to avoid collision with multiple instances)
-  const mAB  = `ab-${uid}`
-  const mAR  = `ar-${uid}`
+  const mAB = `ab-${uid}`
+  const mAR = `ar-${uid}`
   const mAR2 = `ar2-${uid}`
-  const mAT  = `at-${uid}`
+  const mAT = `at-${uid}`
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex w-full flex-col items-center gap-4">
       {/* ── Chart Card ── */}
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-md px-6 py-8">
+      <StickerCard size="none" radius="md" className="w-full max-w-3xl px-6 py-8">
         <svg
-            width="100%"
-            viewBox={`0 0 ${V.W} ${V.H}`}
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ overflow: 'visible', display: 'block' }}
+          width="100%"
+          viewBox={`0 0 ${V.W} ${V.H}`}
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ overflow: 'visible', display: 'block' }}
+        >
+          <defs>
+            {/* Blue arrowhead */}
+            <marker
+              id={mAB}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M2 2L8 5L2 8"
+                fill="none"
+                stroke="#6b9fd4"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                transform="rotate(15 8 5)"
+              />
+            </marker>
+            {/* Red arrowhead 1 */}
+            <marker
+              id={mAR}
+              viewBox="0 0 10 10"
+              refX="10"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M2 2L8 5L2 10"
+                fill="none"
+                stroke="#e88a8a"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                transform="rotate(40 8 5)"
+              />
+            </marker>
+            {/* Red arrowhead 2 */}
+            <marker
+              id={mAR2}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="7"
+              markerHeight="7"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M2 2L8 5L2 10"
+                fill="none"
+                stroke="#e88a8a"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                transform="rotate(10 8 5)"
+              />
+            </marker>
+            {/* Black arrowhead (timeline) */}
+            <marker
+              id={mAT}
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="8"
+              markerHeight="8"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M1 1L9 5L1 9"
+                fill="none"
+                stroke="#1e293b"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </marker>
+          </defs>
+
+          {/* ── Timeline arrow ── */}
+          <line
+            x1="140"
+            y1="79"
+            x2="640"
+            y2="79"
+            stroke="#1e293b"
+            strokeWidth={2}
+            markerEnd={`url(#${mAT})`}
+          />
+
+          {/* ── Start / End known boxes ── */}
+          <KnownBox x={10} y={55} w={130} h={48} line1={fmtDate(startDate)} line2="开始日期" />
+          <KnownBox x={640} y={55} w={130} h={48} line1={fmtDate(endDate)} line2="结束日期" />
+
+          {/* ── Division row ── */}
+          {/* "经过多少天" red box */}
+          <rect
+            x={V.rbX}
+            y={V.rbY}
+            width={V.rbW}
+            height={V.rbH}
+            rx={9}
+            fill="#fee2e2"
+            stroke="#e88a8a"
+            strokeWidth={1.5}
+          />
+          <text
+            x={V.rbX + V.rbW / 2}
+            y={V.rbY + V.rbH / 2}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize={13}
+            fontWeight={600}
+            fill="#7c1a1a"
+            fontFamily={FONT}
           >
-            <defs>
-              {/* Blue arrowhead */}
-              <marker id={mAB} viewBox="0 0 10 10" refX="8" refY="5"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M2 2L8 5L2 8" fill="none" stroke="#6b9fd4"
-                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-                  transform="rotate(15 8 5)" />
-              </marker>
-              {/* Red arrowhead 1 */}
-              <marker id={mAR} viewBox="0 0 10 10" refX="10" refY="5"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M2 2L8 5L2 10" fill="none" stroke="#e88a8a"
-                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-                  transform="rotate(40 8 5)" />
-              </marker>
-              {/* Red arrowhead 2 */}
-              <marker id={mAR2} viewBox="0 0 10 10" refX="8" refY="5"
-                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M2 2L8 5L2 10" fill="none" stroke="#e88a8a"
-                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-                  transform="rotate(10 8 5)" />
-              </marker>
-              {/* Black arrowhead (timeline) */}
-              <marker id={mAT} viewBox="0 0 10 10" refX="8" refY="5"
-                markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M1 1L9 5L1 9" fill="none" stroke="#1e293b"
-                  strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </marker>
-            </defs>
+            经过多少天
+          </text>
 
-            {/* ── Timeline arrow ── */}
-            <line x1="140" y1="79" x2="640" y2="79"
-              stroke="#1e293b" strokeWidth={2} markerEnd={`url(#${mAT})`} />
+          {/* ÷ 7 = */}
+          <text
+            x={310}
+            y={185}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize={20}
+            fontWeight={700}
+            fill="#1e293b"
+            fontFamily={FONT}
+          >
+            ÷ 7 =
+          </text>
 
-            {/* ── Start / End known boxes ── */}
-            <KnownBox x={10} y={55} w={130} h={48}
-              line1={fmtDate(startDate)} line2="开始日期" />
-            <KnownBox x={640} y={55} w={130} h={48}
-              line1={fmtDate(endDate)} line2="结束日期" />
+          {/* Quotient underline */}
+          <line x1={333} y1={205} x2={397} y2={205} stroke="#1e293b" strokeWidth={1.5} />
 
-            {/* ── Division row ── */}
-            {/* "经过多少天" red box */}
-            <rect x={V.rbX} y={V.rbY} width={V.rbW} height={V.rbH} rx={9}
-              fill="#fee2e2" stroke="#e88a8a" strokeWidth={1.5} />
-            <text x={V.rbX + V.rbW / 2} y={V.rbY + V.rbH / 2}
-              textAnchor="middle" dominantBaseline="central"
-              fontSize={13} fontWeight={600} fill="#7c1a1a" fontFamily={FONT}>
-              经过多少天
-            </text>
+          {/* 周 label */}
+          <text
+            x={405}
+            y={185}
+            textAnchor="start"
+            dominantBaseline="central"
+            fontSize={20}
+            fontWeight={700}
+            fill="#1e293b"
+            fontFamily={FONT}
+          >
+            周
+          </text>
 
-            {/* ÷ 7 = */}
-            <text x={310} y={185} textAnchor="middle" dominantBaseline="central"
-              fontSize={20} fontWeight={700} fill="#1e293b" fontFamily={FONT}>
-              ÷ 7 =
-            </text>
+          {/* …… */}
+          <text
+            x={447}
+            y={185}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fontSize={18}
+            fill="#555"
+            fontFamily={FONT}
+          >
+            ……
+          </text>
 
-            {/* Quotient underline */}
-            <line x1={333} y1={205} x2={397} y2={205}
-              stroke="#1e293b" strokeWidth={1.5} />
+          {/* Remainder underline */}
+          <line x1={463} y1={205} x2={527} y2={205} stroke="#1e293b" strokeWidth={1.5} />
 
-            {/* 周 label */}
-            <text x={405} y={185} textAnchor="start" dominantBaseline="central"
-              fontSize={20} fontWeight={700} fill="#1e293b" fontFamily={FONT}>
-              周
-            </text>
+          {/* 天 label */}
+          <text
+            x={535}
+            y={185}
+            textAnchor="start"
+            dominantBaseline="central"
+            fontSize={20}
+            fontWeight={700}
+            fill="#1e293b"
+            fontFamily={FONT}
+          >
+            天
+          </text>
 
-            {/* …… */}
-            <text x={447} y={185} textAnchor="middle" dominantBaseline="central"
-              fontSize={18} fill="#555" fontFamily={FONT}>
-              ……
-            </text>
+          {/* ── Pill row ── */}
+          {/* Start weekday pill: blue+fixed (forward) or red+unknown (backward) */}
+          <Pill
+            cx={V.spCX}
+            cy={125}
+            label={mode === 'forward' ? knownLabel : unkWdLabel}
+            color={mode === 'forward' ? 'blue' : 'red'}
+          />
 
-            {/* Remainder underline */}
-            <line x1={463} y1={205} x2={527} y2={205}
-              stroke="#1e293b" strokeWidth={1.5} />
+          {/* Quotient weekday pill: always shows known weekday */}
+          <Pill cx={V.qpCX} cy={224} label={knownLabel} color="blue" />
 
-            {/* 天 label */}
-            <text x={535} y={185} textAnchor="start" dominantBaseline="central"
-              fontSize={20} fontWeight={700} fill="#1e293b" fontFamily={FONT}>
-              天
-            </text>
+          {/* Remainder weekday pill: always shows unknown weekday */}
+          <Pill cx={V.rpCX} cy={224} label={unkWdLabel} color="red" />
 
-            {/* ── Pill row ── */}
-            {/* Start weekday pill: blue+fixed (forward) or red+unknown (backward) */}
-            <Pill cx={V.spCX} cy={125}
-              label={mode === 'forward' ? knownLabel : unkWdLabel}
-              color={mode === 'forward' ? 'blue' : 'red'} />
+          {/* End weekday pill: red+unknown (forward) or blue+fixed (backward) */}
+          {mode === 'backward' && <Pill cx={V.epCX} cy={125} label={knownLabel} color="blue" />}
 
-            {/* Quotient weekday pill: always shows known weekday */}
-            <Pill cx={V.qpCX} cy={224} label={knownLabel} color="blue" />
+          {/* ── Dashed arrows ── */}
+          {/* Blue: known pill → quotient pill */}
+          <path
+            d={
+              mode === 'forward'
+                ? 'M 70 142 C 75 278, 365 308, 365 240'
+                : 'M 706 142 C 700 278, 365 308, 365 240'
+            }
+            fill="none"
+            stroke="#6b9fd4"
+            strokeWidth={2}
+            strokeDasharray="7 5"
+            markerEnd={`url(#${mAB})`}
+          />
 
-            {/* Remainder weekday pill: always shows unknown weekday */}
-            <Pill cx={V.rpCX} cy={224} label={unkWdLabel} color="red" />
+          {/* Red: total days → red box */}
+          <path
+            d="M 390 73 C 390 100, 232 136, 232 166"
+            fill="none"
+            stroke="#e88a8a"
+            strokeWidth={2}
+            strokeDasharray="7 5"
+            markerEnd={`url(#${mAR})`}
+          />
 
-            {/* End weekday pill: red+unknown (forward) or blue+fixed (backward) */}
-            {mode === 'backward' && (
-              <Pill cx={V.epCX} cy={125} label={knownLabel} color="blue" />
-            )}
+          {/* Red: remainder pill → unknown block */}
+          <path
+            d={
+              mode === 'forward'
+                ? 'M 495 242 C 495 308, 705 308, 705 144'
+                : 'M 495 242 C 495 308, 75 308, 75 144'
+            }
+            fill="none"
+            stroke="#e88a8a"
+            strokeWidth={2}
+            strokeDasharray="7 5"
+            markerEnd={`url(#${mAR2})`}
+          />
 
-            {/* ── Dashed arrows ── */}
-            {/* Blue: known pill → quotient pill */}
-            <path
-              d={mode === 'forward'
-                ? "M 70 142 C 75 278, 365 308, 365 240"
-                : "M 706 142 C 700 278, 365 308, 365 240"}
-              fill="none" stroke="#6b9fd4" strokeWidth={2}
-              strokeDasharray="7 5" markerEnd={`url(#${mAB})`} />
+          {/* ── Input overlays (foreignObject scales with SVG) ── */}
+          {/* Total days (red) — on timeline center */}
+          <SvgInput
+            cx={V.tdCX}
+            cy={V.tdY}
+            value={total}
+            onChange={setTotal}
+            placeholder="?"
+            variant="red"
+          />
 
-            {/* Red: total days → red box */}
-            <path d="M 390 73 C 390 100, 232 136, 232 166"
-              fill="none" stroke="#e88a8a" strokeWidth={2}
-              strokeDasharray="7 5" markerEnd={`url(#${mAR})`} />
+          {/* Quotient (yellow) */}
+          <SvgInput
+            cx={V.qCX}
+            cy={V.dY}
+            value={q}
+            onChange={setQ}
+            placeholder="?"
+            variant="yellow"
+          />
 
-            {/* Red: remainder pill → unknown block */}
-            <path
-              d={mode === 'forward'
-                ? "M 495 242 C 495 308, 705 308, 705 144"
-                : "M 495 242 C 495 308, 75 308, 75 144"}
-              fill="none" stroke="#e88a8a" strokeWidth={2}
-              strokeDasharray="7 5" markerEnd={`url(#${mAR2})`} />
+          {/* Remainder (yellow) */}
+          <SvgInput
+            cx={V.rCX}
+            cy={V.dY}
+            value={r}
+            onChange={setR}
+            placeholder="?"
+            variant="yellow"
+          />
 
-            {/* ── Input overlays (foreignObject scales with SVG) ── */}
-            {/* Total days (red) — on timeline center */}
-            <SvgInput cx={V.tdCX} cy={V.tdY} value={total} onChange={setTotal} placeholder="?" variant="red" />
+          {/* Unknown weekday input — at end (forward) or start (backward) */}
+          <SvgInput
+            cx={mode === 'forward' ? V.epCX : V.spCX}
+            cy={125}
+            value={unkWd}
+            onChange={setUnkWd}
+            placeholder="?"
+            variant="red"
+          />
 
-            {/* Quotient (yellow) */}
-            <SvgInput cx={V.qCX} cy={V.dY} value={q} onChange={setQ} placeholder="?" variant="yellow" />
-
-            {/* Remainder (yellow) */}
-            <SvgInput cx={V.rCX} cy={V.dY} value={r} onChange={setR} placeholder="?" variant="yellow" />
-
-            {/* Unknown weekday input — at end (forward) or start (backward) */}
-            <SvgInput
-              cx={mode === 'forward' ? V.epCX : V.spCX}
-              cy={125}
-              value={unkWd}
-              onChange={setUnkWd}
-              placeholder="?"
-              variant="red"
-            />
-
-            {/* ── "经过" label on timeline ── */}
-            <text x={334} y={63} textAnchor="middle" dominantBaseline="auto"
-              fontSize={14} fill="#555" fontFamily={FONT}>
-              经过
-            </text>
-            <text x={442} y={63} textAnchor="middle" dominantBaseline="auto"
-              fontSize={14} fill="#555" fontFamily={FONT}>
-              天
-            </text>
+          {/* ── "经过" label on timeline ── */}
+          <text
+            x={334}
+            y={63}
+            textAnchor="middle"
+            dominantBaseline="auto"
+            fontSize={14}
+            fill="#555"
+            fontFamily={FONT}
+          >
+            经过
+          </text>
+          <text
+            x={442}
+            y={63}
+            textAnchor="middle"
+            dominantBaseline="auto"
+            fontSize={14}
+            fill="#555"
+            fontFamily={FONT}
+          >
+            天
+          </text>
         </svg>
-      </div>
+      </StickerCard>
 
       {/* ── Status bar + reset ── */}
-      <div className={`w-full max-w-3xl flex items-center gap-3 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ${statusClass}`}>
+      <div
+        className={`flex w-full max-w-3xl items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${statusClass}`}
+      >
         <span className="flex-1">{statusMsg}</span>
-        <button
+        <Button
+          type="button"
           onClick={handleReset}
-          className="shrink-0 cursor-pointer rounded-full bg-white/50 px-2.5 py-0.5 text-[11px] font-medium hover:bg-white/80 transition-all active:scale-95"
-          style={{ border: '1px solid rgba(0,0,0,0.12)' }}
+          variant="soft"
+          color="gray"
+          size="1"
+          radius="full"
+          className="shrink-0"
         >
           ↺ 重置
-        </button>
+        </Button>
       </div>
     </div>
   )

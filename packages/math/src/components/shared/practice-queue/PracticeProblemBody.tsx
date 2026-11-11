@@ -13,6 +13,7 @@ import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
 import { lessonModuleByKey } from '@rosie/math/utils/lesson-module-registry'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
 import PracticeHelpPanel from './PracticeHelpPanel'
+import { Button } from '@rosie/ui/themes'
 
 type Props = {
   item: PracticeQueueItem
@@ -39,16 +40,18 @@ export default function PracticeProblemBody({
 
   const followup = useMemo(
     () => (
-      <button
+      <Button
         type="button"
         onClick={() => {
           if (correctUsed) void Promise.resolve(onAnswerCorrect())
           else onAdvance()
         }}
-        className="cursor-pointer rounded-full bg-app-blue px-4 py-2 text-[13px] font-semibold text-white shadow-[0_3px_10px_rgba(59,130,246,0.3)] transition-all hover:brightness-105 active:scale-[0.96]"
+        variant="solid"
+        color="blue"
+        size="2"
       >
         {isLast ? '完成' : '下一题'}
-      </button>
+      </Button>
     ),
     [correctUsed, onAnswerCorrect, onAdvance, isLast],
   )
@@ -106,20 +109,24 @@ export default function PracticeProblemBody({
         <Provider>
           <div className="practice-overlay-enter">
             <div className="mb-3 flex items-center gap-2">
-              <span className="shrink-0 whitespace-nowrap rounded-full bg-gray-100 px-2 py-1 text-xs font-bold text-text-secondary">
+              <span className="text-text-secondary shrink-0 rounded-full bg-gray-100 px-2 py-1 text-xs font-bold whitespace-nowrap">
                 {problemDisplayId(problem)}
               </span>
-              <div className="min-w-0 flex-1 text-[15px] font-bold text-text-primary">
+              <div className="text-text-primary min-w-0 flex-1 text-[15px] font-bold">
                 {problem.title}
               </div>
               <FavoriteHeart problemId={problem.id} size="sm" />
               <ProblemDraftActions problem={problem} />
             </div>
             <div className="mb-3 flex flex-wrap items-center gap-1.5">
-              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'}`}>
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.tagStyle?.[problem.tag] ?? 'bg-gray-100 text-gray-600'}`}
+              >
                 {problem.tagLabel}
               </span>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.badgeClass ?? 'bg-gray-100 text-gray-600'}`}>
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.badgeClass ?? 'bg-gray-100 text-gray-600'}`}
+              >
                 {lesson?.icon} {lesson?.shortTitle}
               </span>
               <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-500">

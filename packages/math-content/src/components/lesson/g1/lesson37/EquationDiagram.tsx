@@ -17,7 +17,7 @@ function HighlightText({ text }: { text: string }) {
         }
         if (/^[a-z]x?\b/.test(part) && part.length <= 3) {
           return (
-            <em key={i} className="not-italic font-bold text-violet-600">
+            <em key={i} className="font-bold text-violet-600 not-italic">
               {part}
             </em>
           )
@@ -38,18 +38,33 @@ function classifyLine(line: string): 'method' | 'equation' | 'verify' | 'result'
 }
 
 const LINE_STYLES: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-  method:   { bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-900',   icon: '💡' },
-  equation: { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-900', icon: '📝' },
-  verify:   { bg: 'bg-emerald-50',border: 'border-emerald-200',text: 'text-emerald-900',icon: '✅' },
-  result:   { bg: 'bg-emerald-50',border: 'border-emerald-200',text: 'text-emerald-900',icon: '🌟' },
-  step:     { bg: 'bg-gray-50',   border: 'border-gray-200',   text: 'text-gray-800',   icon: '▸' },
+  method: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', icon: '💡' },
+  equation: {
+    bg: 'bg-violet-50',
+    border: 'border-violet-200',
+    text: 'text-violet-900',
+    icon: '📝',
+  },
+  verify: {
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    text: 'text-emerald-900',
+    icon: '✅',
+  },
+  result: {
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    text: 'text-emerald-900',
+    icon: '🌟',
+  },
+  step: { bg: 'bg-gray-50', border: 'border-kid-line', text: 'text-gray-800', icon: '▸' },
 }
 
 export default function EquationDiagram({ problem }: { problem: Problem }) {
   return (
     <div className="mb-4">
       {/* Section label */}
-      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-gray-400 uppercase">
         <span>📐</span>
         <span>方程法 · 图解</span>
       </div>

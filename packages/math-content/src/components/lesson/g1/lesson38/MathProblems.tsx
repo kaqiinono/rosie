@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Button } from '@rosie/ui/themes'
+import { StickerCard } from '@rosie/ui'
 
 // ─── SVG figures ──────────────────────────────────────────────────────────────
 
@@ -379,7 +381,7 @@ export default function MathProblems() {
     <div className="min-h-screen bg-[#fdf2f8] font-sans">
       {/* PWA meta injection (handled outside in index.html normally) */}
       {/* Header */}
-      <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-pink-100 bg-white/80 px-4 py-3 backdrop-blur">
+      <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-pink-100 bg-white px-4 py-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-600">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <rect x="2" y="2" width="6" height="6" rx="1" fill="white" opacity="0.9" />
@@ -399,13 +401,16 @@ export default function MathProblems() {
         {problems.map((p) => {
           const isOpen = active === p.id
           return (
-            <div
+            <StickerCard
+              size="none"
+              elevation="sm"
+              radius="md"
+              className="overflow-hidden"
               key={p.id}
-              className="overflow-hidden rounded-2xl border border-pink-100 bg-white shadow-sm transition-all duration-300"
-              style={{ boxShadow: isOpen ? '0 4px 24px rgba(236,72,153,0.10)' : undefined }}
+              style={{ boxShadow: isOpen ? '0 3px 0 rgba(236,72,153,.3)' : undefined }}
             >
               {/* Card header */}
-              <button
+              <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                 onClick={() => setActive(isOpen ? null : p.id)}
                 className="group flex w-full items-center gap-4 px-5 py-4 text-left"
               >
@@ -458,19 +463,14 @@ export default function MathProblems() {
                   </div>
                 </div>
               )}
-            </div>
+            </StickerCard>
           )
         })}
       </main>
       {/* Bottom nav bar (PWA feel) */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-pink-100 bg-white/90 py-2 backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-pink-100 bg-white py-2">
         {['题目', '笔记', '练习'].map((label, i) => (
-          <button
-            key={label}
-            className={`flex flex-col items-center gap-0.5 rounded-lg px-4 py-1 text-[11px] font-medium transition-colors ${
-              i === 0 ? 'text-pink-600' : 'text-gray-400'
-            }`}
-          >
+          <Button key={label} variant="ghost" color={i === 0 ? 'pink' : 'gray'} size="1">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               {i === 0 && (
                 <path
@@ -491,7 +491,7 @@ export default function MathProblems() {
               {i === 2 && <circle cx="10" cy="10" r="6" stroke="currentColor" strokeWidth="1.6" />}
             </svg>
             {label}
-          </button>
+          </Button>
         ))}
       </nav>
       <div className="h-20" /> {/* spacer for bottom nav */}

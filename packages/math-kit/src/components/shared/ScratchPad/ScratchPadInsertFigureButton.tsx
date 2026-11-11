@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import type { Problem } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
 import { useProblemImageUrl } from '@rosie/math-kit/hooks/useProblemImageUrl'
 import {
   findSvgInHosts,
@@ -52,11 +53,7 @@ export default function ScratchPadInsertFigureButton({
         return
       }
 
-      const hosts = [
-        answerExportRef?.current,
-        figureHostRef?.current,
-        hiddenHostRef.current,
-      ]
+      const hosts = [answerExportRef?.current, figureHostRef?.current, hiddenHostRef.current]
 
       const svg = findSvgInHosts(hosts)
       if (svg) {
@@ -88,23 +85,12 @@ export default function ScratchPadInsertFigureButton({
 
   const label = inserting ? '加入中' : failed ? '重试' : '加入画布'
 
-  const defaultClass = header
-    ? `shrink-0 cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
-        failed
-          ? 'bg-rose-50 text-rose-600 ring-1 ring-rose-200 hover:bg-rose-100'
-          : 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200 hover:bg-indigo-100'
-      }`
+  const buttonProps = header
+    ? ({ size: '1', variant: 'soft' } as const)
     : compact
-      ? `cursor-pointer rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold ring-1 transition-colors disabled:cursor-wait disabled:opacity-60 ${
-          failed
-            ? 'text-rose-600 ring-rose-200 hover:bg-rose-50'
-            : 'text-indigo-600 ring-indigo-200 hover:bg-indigo-50'
-        }`
-      : `mt-2.5 w-full cursor-pointer rounded-xl border px-3 py-2 text-[13px] font-semibold transition-colors disabled:cursor-wait disabled:opacity-60 ${
-          failed
-            ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
-            : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-        }`
+      ? ({ size: '1', variant: 'outline' } as const)
+      : ({ size: '2', variant: 'soft' } as const)
+  const layoutClass = header || compact ? 'shrink-0' : 'mt-2.5 w-full'
 
   return (
     <>
@@ -117,14 +103,17 @@ export default function ScratchPadInsertFigureButton({
           {problem.figureNode}
         </div>
       )}
-      <button
+      <Button
         type="button"
+        {...buttonProps}
+        radius="full"
+        color={failed ? 'ruby' : 'indigo'}
+        className={className || layoutClass}
         disabled={inserting}
         onClick={() => void handleInsert()}
-        className={className || defaultClass}
       >
         {label}
-      </button>
+      </Button>
     </>
   )
 }

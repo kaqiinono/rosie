@@ -11,6 +11,7 @@ import {
   planProblemAnswerStatus,
   isPlanProblemDone,
 } from '@rosie/math-kit/utils/math-helpers'
+import { Button } from '@rosie/ui/themes'
 import FavoriteHeart from '@rosie/math-kit/components/shared/FavoriteHeart'
 import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
 import PracticeViewDraftButton from '@rosie/math/components/shared/practice-queue/PracticeViewDraftButton'
@@ -406,13 +407,13 @@ export function availableSections(ps: ProblemSet): string[] {
     if (key === 'homework') return ps.homework.length > 0
     if (key === 'pretest') return ps.pretest.length > 0
     return false
-  }).map(s => s.key)
+  }).map((s) => s.key)
 }
 
 export function defaultSectionsForLesson(ps: ProblemSet | undefined): string[] {
   if (!ps) return ['lesson', 'homework', 'pretest']
   const avail = availableSections(ps)
-  const preferred = ['lesson', 'homework', 'pretest'].filter(s => avail.includes(s))
+  const preferred = ['lesson', 'homework', 'pretest'].filter((s) => avail.includes(s))
   return preferred.length > 0 ? preferred : avail
 }
 
@@ -426,15 +427,23 @@ export function mathPlanDisplayName(plan: MathWeeklyPlan): string {
   if (trimmed) return trimmed
   const ids = plan.lessonIds ?? [plan.lessonId]
   if (ids.length === 1) {
-    return MATH_PLAN_LESSONS.find(l => l.id === ids[0])?.short
-      ?? MATH_PLAN_LESSONS.find(l => l.id === plan.lessonId)?.short
-      ?? ids[0]!
+    return (
+      MATH_PLAN_LESSONS.find((l) => l.id === ids[0])?.short ??
+      MATH_PLAN_LESSONS.find((l) => l.id === plan.lessonId)?.short ??
+      ids[0]!
+    )
   }
   return `${ids.length} 个关卡`
 }
 
 const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六']
-const LOOKUP_SECTIONS: MathPlanSectionKey[] = ['lesson', 'homework', 'pretest', 'workbook', 'supplement']
+const LOOKUP_SECTIONS: MathPlanSectionKey[] = [
+  'lesson',
+  'homework',
+  'pretest',
+  'workbook',
+  'supplement',
+]
 
 function monthsCoveredByPlan(start: string, end: string): string[] {
   const keys: string[] = []
@@ -584,9 +593,7 @@ function DayCellChipStack({
           {chip}
         </div>
       ))}
-      {extra > 0 && (
-        <div className="text-[9px] font-bold text-orange-500">+{extra}</div>
-      )}
+      {extra > 0 && <div className="text-[9px] font-bold text-orange-500">+{extra}</div>}
     </div>
   )
 }
@@ -678,27 +685,33 @@ export function PlanPreviewCalendar({
       style={{ background: 'rgba(255,255,255,.7)', border: '1px solid rgba(0,0,0,.06)' }}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
-        <button
+        <Button
           type="button"
           disabled={!canPrev}
           onClick={() => shiftMonth(-1)}
-          className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-bold text-gray-500 disabled:cursor-default disabled:opacity-30"
-          style={{ background: 'rgba(0,0,0,.04)' }}
+          variant="soft"
+          color="gray"
+          size="1"
+          radius="full"
+          aria-label="上个月"
         >
           ‹
-        </button>
+        </Button>
         <span className="text-[13px] font-extrabold text-gray-700">
           {year}年{month}月
         </span>
-        <button
+        <Button
           type="button"
           disabled={!canNext}
           onClick={() => shiftMonth(1)}
-          className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-bold text-gray-500 disabled:cursor-default disabled:opacity-30"
-          style={{ background: 'rgba(0,0,0,.04)' }}
+          variant="soft"
+          color="gray"
+          size="1"
+          radius="full"
+          aria-label="下个月"
         >
           ›
-        </button>
+        </Button>
       </div>
       <div className="mb-1.5 grid grid-cols-7 gap-1.5">
         {WEEKDAY_LABELS.map((w) => (
@@ -733,6 +746,7 @@ export function PlanPreviewCalendar({
               deferredSourceIds.has(problem.assignmentId ?? `${cell.date}::${problem.key}`),
             )
             return (
+              // native-ok: 月历日格，多块内容（日期 + 进度 + 标签栈）按完成状态着色
               <button
                 type="button"
                 key={cell.date}
@@ -753,9 +767,9 @@ export function PlanPreviewCalendar({
                         ? 'rgba(254,202,202,.55)'
                         : isDeferredDay
                           ? 'rgba(221,214,254,.6)'
-                    : problems.length > 0
-                      ? 'rgba(251,146,60,.1)'
-                      : 'rgba(251,146,60,.04)',
+                          : problems.length > 0
+                            ? 'rgba(251,146,60,.1)'
+                            : 'rgba(251,146,60,.04)',
                   border: isSelected
                     ? '2px solid rgba(234,88,12,.55)'
                     : isComplete
@@ -764,8 +778,8 @@ export function PlanPreviewCalendar({
                         ? '1.5px solid rgba(239,68,68,.5)'
                         : isDeferredDay
                           ? '1.5px solid rgba(124,58,237,.45)'
-                    : '1px solid rgba(251,146,60,.22)',
-                  boxShadow: isSelected ? '0 2px 10px rgba(249,115,22,.2)' : 'none',
+                          : '1px solid rgba(251,146,60,.22)',
+                  boxShadow: isSelected ? '0 3px 0 rgba(249,115,22,.3)' : 'none',
                 }}
               >
                 <div className="text-[11px] font-bold text-orange-700 md:text-[12px]">
@@ -777,8 +791,29 @@ export function PlanPreviewCalendar({
                   )}
                 </div>
                 {problems.length > 0 && (
-                  <div className="mt-0.5 text-[8px] font-extrabold" style={{ color: isComplete ? '#15803d' : isOverdueDay ? '#dc2626' : isDeferredDay ? '#7c3aed' : '#c2410c' }}>
-                    {isComplete ? (isDeferredDay ? '延期完成' : '已完成') : isDeferredSourceDay ? '过期·已延期' : isOverdueDay ? '已过期' : isDeferredDay ? '延期任务' : `未执行 ${doneCount}/${problems.length}`}
+                  <div
+                    className="mt-0.5 text-[8px] font-extrabold"
+                    style={{
+                      color: isComplete
+                        ? '#15803d'
+                        : isOverdueDay
+                          ? '#dc2626'
+                          : isDeferredDay
+                            ? '#7c3aed'
+                            : '#c2410c',
+                    }}
+                  >
+                    {isComplete
+                      ? isDeferredDay
+                        ? '延期完成'
+                        : '已完成'
+                      : isDeferredSourceDay
+                        ? '过期·已延期'
+                        : isOverdueDay
+                          ? '已过期'
+                          : isDeferredDay
+                            ? '延期任务'
+                            : `未执行 ${doneCount}/${problems.length}`}
                   </div>
                 )}
                 {/* Mobile: lesson only (e.g. 7数字谜). Desktop: include tagLabel. */}
@@ -810,14 +845,16 @@ export function PlanPreviewCalendar({
                 {selectedProblems.length} 道题
               </span>
             </div>
-            <button
+            <Button
               type="button"
               onClick={() => setSelectedDate(null)}
-              className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 hover:text-gray-600"
-              style={{ background: 'rgba(0,0,0,.05)' }}
+              variant="soft"
+              color="gray"
+              size="1"
+              radius="full"
             >
               关闭
-            </button>
+            </Button>
           </div>
           {selectedProblems.length === 0 ? (
             <div className="py-4 text-center text-[12px] font-bold text-gray-400">当日无必做题</div>
@@ -826,12 +863,16 @@ export function PlanPreviewCalendar({
               const full = resolveFullProblem(prob, problemSets)
               const typeChip = mathPlanProblemTypeChip(prob, problemSets)
               const sc = SECTION_COLOR[prob.section] ?? SECTION_COLOR.lesson
-              const exec = isPlanProblemDone(prob, selectedDate!, selectedDoneKeys) ? 'done' : 'pending'
+              const exec = isPlanProblemDone(prob, selectedDate!, selectedDoneKeys)
+                ? 'done'
+                : 'pending'
               const answer = planProblemAnswerStatus(prob.problemId, {
                 wrongIds,
                 practiceCount,
               })
-              const isOverdue = Boolean(selectedDate && selectedDate < todayStr() && exec === 'pending')
+              const isOverdue = Boolean(
+                selectedDate && selectedDate < todayStr() && exec === 'pending',
+              )
               return (
                 <article
                   key={prob.key}
@@ -846,15 +887,22 @@ export function PlanPreviewCalendar({
                     <span className="text-[13px] font-extrabold text-gray-800">{prob.title}</span>
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px] font-bold"
-                      style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}
+                      style={{
+                        background: sc.bg,
+                        color: sc.text,
+                        border: `1px solid ${sc.border}`,
+                      }}
                     >
-                      {MATH_PLAN_SECTIONS.find((s) => s.key === prob.section)?.label ?? prob.section}
+                      {MATH_PLAN_SECTIONS.find((s) => s.key === prob.section)?.label ??
+                        prob.section}
                     </span>
                     <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-bold text-orange-700">
                       {typeChip}
                     </span>
                     <StatusChip
-                      label={exec === 'done' ? '执行·已完成' : isOverdue ? '执行·过期未做' : '执行·未做'}
+                      label={
+                        exec === 'done' ? '执行·已完成' : isOverdue ? '执行·过期未做' : '执行·未做'
+                      }
                       bg={exec === 'done' ? 'rgba(34,197,94,.12)' : 'rgba(249,115,22,.12)'}
                       color={exec === 'done' ? '#15803d' : '#c2410c'}
                       border={exec === 'done' ? 'rgba(34,197,94,.35)' : 'rgba(249,115,22,.35)'}
@@ -869,7 +917,11 @@ export function PlanPreviewCalendar({
                     )}
                     <StatusChip
                       label={
-                        answer === 'wrong' ? '答题·错题' : answer === 'practiced' ? '答题·已练' : '答题·未练'
+                        answer === 'wrong'
+                          ? '答题·错题'
+                          : answer === 'practiced'
+                            ? '答题·已练'
+                            : '答题·未练'
                       }
                       bg={
                         answer === 'wrong'
@@ -879,7 +931,11 @@ export function PlanPreviewCalendar({
                             : 'rgba(0,0,0,.05)'
                       }
                       color={
-                        answer === 'wrong' ? '#dc2626' : answer === 'practiced' ? '#1d4ed8' : '#6b7280'
+                        answer === 'wrong'
+                          ? '#dc2626'
+                          : answer === 'practiced'
+                            ? '#1d4ed8'
+                            : '#6b7280'
                       }
                       border={
                         answer === 'wrong'
@@ -907,14 +963,17 @@ export function PlanPreviewCalendar({
                     </div>
                   )}
                   {onPracticeProblem && exec === 'pending' && (
-                    <button
+                    <Button
                       type="button"
                       onClick={() => onPracticeProblem(prob, selectedProblems)}
-                      className="mt-3 cursor-pointer rounded-md px-3 py-2 text-[12px] font-extrabold text-white transition-all hover:scale-105"
-                      style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+                      variant="solid"
+                      color="orange"
+                      size="2"
+                      radius="full"
+                      className="mt-3"
                     >
                       做题 ✨
-                    </button>
+                    </Button>
                   )}
                 </article>
               )
@@ -986,9 +1045,9 @@ export function CollapsibleSection({
   const [expanded, setExpanded] = useState(defaultExpanded)
   return (
     <div>
-      {/* Toggle is its own button; headerRight stays a sibling so nested <button> is illegal HTML. */}
+      {/* Toggle is its own control; headerRight stays a sibling so nested buttons are illegal HTML. */}
       <div className="flex w-full items-center gap-2 rounded-lg py-1">
-        <button
+        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
           type="button"
           onClick={() => setExpanded((e) => !e)}
           aria-expanded={expanded}
@@ -1067,32 +1126,42 @@ export function ProblemCard({
   const draftProblem = problemSets ? resolveMathPlanProblem(prob, problemSets) : undefined
   const answerLabel = isWrong ? '答题·错题' : problemPracticeCount > 0 ? '答题·已练' : '答题·未练'
   const execLabel = done
-    ? prob.isDeferred ? '执行·延期完成' : '执行·已完成'
-    : deferredSource ? '执行·过期已延期' : overdueDate ? '执行·过期未做' : prob.isDeferred ? '执行·延期任务' : '执行·未做'
+    ? prob.isDeferred
+      ? '执行·延期完成'
+      : '执行·已完成'
+    : deferredSource
+      ? '执行·过期已延期'
+      : overdueDate
+        ? '执行·过期未做'
+        : prob.isDeferred
+          ? '执行·延期任务'
+          : '执行·未做'
 
   return (
     <div
       className="group flex items-center gap-3 rounded-[14px] px-4 py-3 transition-all duration-300"
       style={{
-        background: done ? 'rgba(220,252,231,.6)' : prob.isDeferred ? 'rgba(245,243,255,.88)' : isWrong ? 'rgba(254,226,226,.5)' : 'rgba(255,255,255,.85)',
+        background: done
+          ? 'rgba(220,252,231,.6)'
+          : prob.isDeferred
+            ? 'rgba(245,243,255,.88)'
+            : isWrong
+              ? 'rgba(254,226,226,.5)'
+              : 'rgba(255,255,255,.85)',
         border: `1.5px solid ${done ? '#86efac' : prob.isDeferred ? 'rgba(124,58,237,.38)' : isWrong ? 'rgba(239,68,68,.35)' : overdueDate ? 'rgba(239,68,68,.28)' : 'rgba(0,0,0,.07)'}`,
-        boxShadow: done ? 'none' : '0 2px 10px rgba(0,0,0,.04)',
+        boxShadow: done ? 'none' : '0 3px 0 rgba(0,0,0,.3)',
       }}
     >
       {/* Done / wrong indicator — display only; completion comes from practice sync */}
       <div
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
         style={{
-          background: done
-            ? 'linear-gradient(135deg, #22c55e, #4ade80)'
-            : isWrong
-              ? 'linear-gradient(135deg, #ef4444, #f87171)'
-              : 'rgba(0,0,0,.05)',
+          background: done ? '#22c55e' : isWrong ? '#ef4444' : 'rgba(0,0,0,.05)',
           border: done || isWrong ? 'none' : '2px solid rgba(0,0,0,.1)',
           boxShadow: done
-            ? '0 2px 8px rgba(34,197,94,.4)'
+            ? '0 3px 0 rgba(34,197,94,.4)'
             : isWrong
-              ? '0 2px 8px rgba(239,68,68,.4)'
+              ? '0 3px 0 rgba(239,68,68,.4)'
               : 'none',
         }}
         aria-hidden
@@ -1129,7 +1198,10 @@ export function ProblemCard({
             </span>
           )}
           {prob.isDeferred && (
-            <span className="rounded-full px-1.5 py-px text-[9px] font-extrabold" style={{ background: 'rgba(124,58,237,.12)', color: '#6d28d9' }}>
+            <span
+              className="rounded-full px-1.5 py-px text-[9px] font-extrabold"
+              style={{ background: 'rgba(124,58,237,.12)', color: '#6d28d9' }}
+            >
               延期自 {fmtDate(prob.deferredFromDate ?? '')}
             </span>
           )}
@@ -1169,20 +1241,23 @@ export function ProblemCard({
 
       {/* Do button */}
       {!done && onPractice && (
-        <button
+        <Button
           type="button"
           onClick={onPractice}
-          className="flex shrink-0 cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(249,115,22,.4)]"
-          style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+          variant="solid"
+          color="orange"
+          size="2"
+          radius="full"
+          className="shrink-0"
         >
           做题 ✨
-        </button>
+        </Button>
       )}
       {!done && !onPractice && (
         <Link
           href={problemDetailHref(prob.lessonId, prob.section, prob.index)}
-          className="flex shrink-0 items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(249,115,22,.4)]"
-          style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+          className="hover:shadow-sticker-sm flex shrink-0 items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105"
+          style={{ background: '#f97316' }}
         >
           做题 ✨
         </Link>
@@ -1237,7 +1312,9 @@ export function WeeklyLessonSection({
         >
           本周旧讲
         </span>
-        <span className="text-[11px] font-bold text-purple-500">{lessonDisplayLabel(lessonId, true)}</span>
+        <span className="text-[11px] font-bold text-purple-500">
+          {lessonDisplayLabel(lessonId, true)}
+        </span>
         <span
           className="rounded-full px-2 py-0.5 text-[10px] font-extrabold"
           style={{ background: 'rgba(124,58,237,.1)', color: '#7c3aed' }}
@@ -1252,16 +1329,16 @@ export function WeeklyLessonSection({
         style={{
           background: isDone ? 'rgba(220,252,231,.6)' : 'rgba(255,255,255,.85)',
           border: `1.5px solid ${isDone ? '#86efac' : 'rgba(124,58,237,.2)'}`,
-          boxShadow: isDone ? 'none' : '0 2px 10px rgba(124,58,237,.06)',
+          boxShadow: isDone ? 'none' : '0 3px 0 rgba(124,58,237,.3)',
         }}
       >
         {/* Done indicator */}
         <div
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
           style={{
-            background: isDone ? 'linear-gradient(135deg, #22c55e, #4ade80)' : 'rgba(0,0,0,.05)',
+            background: isDone ? '#22c55e' : 'rgba(0,0,0,.05)',
             border: isDone ? 'none' : '2px solid rgba(0,0,0,.1)',
-            boxShadow: isDone ? '0 2px 8px rgba(34,197,94,.4)' : 'none',
+            boxShadow: isDone ? '0 3px 0 rgba(34,197,94,.4)' : 'none',
           }}
         >
           {isDone && <span className="text-[14px] font-extrabold text-white">✓</span>}
@@ -1307,7 +1384,11 @@ export function WeeklyLessonSection({
         {isDone ? (
           <div className="flex shrink-0 items-center gap-2">
             <PracticeViewDraftButton
-              problem={problemSets ? resolveMathPlanProblem(problem, problemSets) ?? undefined : undefined}
+              problem={
+                problemSets
+                  ? (resolveMathPlanProblem(problem, problemSets) ?? undefined)
+                  : undefined
+              }
               problemId={problem.problemId}
               section={problem.section}
               hasDraft={hasDraft}
@@ -1317,31 +1398,35 @@ export function WeeklyLessonSection({
         ) : (
           <div className="flex shrink-0 items-center gap-2">
             {onPractice ? (
-              <button
+              <Button
                 type="button"
                 onClick={onPractice}
-                className="flex cursor-pointer items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
-                style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
+                variant="solid"
+                color="violet"
+                size="2"
+                radius="full"
               >
                 做题 ✨
-              </button>
+              </Button>
             ) : (
               <Link
                 href={problemDetailHref(problem.lessonId, problem.section, problem.index)}
-                className="flex items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105 hover:shadow-[0_4px_12px_rgba(124,58,237,.4)]"
-                style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
+                className="hover:shadow-sticker-sm flex items-center gap-1 rounded-md px-3 py-2 text-[12px] font-extrabold text-white no-underline transition-all duration-200 hover:scale-105"
+                style={{ background: '#7c3aed' }}
               >
                 做题 ✨
               </Link>
             )}
-            <button
+            <Button
               type="button"
               onClick={onSkip}
-              className="cursor-pointer rounded-md px-2.5 py-2 text-[11px] font-bold text-gray-400 transition-all hover:scale-105 hover:text-gray-600"
-              style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.08)' }}
+              variant="soft"
+              color="gray"
+              size="1"
+              radius="full"
             >
               跳过
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -1369,6 +1454,7 @@ export function OptionalSection({
 
   return (
     <div>
+      {/* native-ok: 整行可点击的折叠头，含图标 / 标题 / 徽章 / 箭头多块内容，Radix Button 会居中挤压 */}
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
@@ -1401,7 +1487,9 @@ export function OptionalSection({
               problemSets={problemSets}
               hasDraft={draftProblemIds?.has(prob.problemId) ?? false}
               onPractice={
-                isPlanProblemDone(prob, date, doneKeys) || !onPractice ? undefined : () => onPractice(prob)
+                isPlanProblemDone(prob, date, doneKeys) || !onPractice
+                  ? undefined
+                  : () => onPractice(prob)
               }
             />
           ))}
@@ -1442,6 +1530,7 @@ export function AllPlansList({
 
   return (
     <div className="mb-5">
+      {/* native-ok: 整行可点击的折叠头，含图标 / 标题 / 箭头多块内容，Radix Button 会居中挤压 */}
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
@@ -1463,7 +1552,8 @@ export function AllPlansList({
         <div className="mt-2 space-y-2">
           {plans.map((plan) => {
             const ids = plan.lessonIds ?? [plan.lessonId]
-            const lessonInfo = MATH_PLAN_LESSONS.find(l => l.id === plan.lessonId) ?? MATH_PLAN_LESSONS[0]
+            const lessonInfo =
+              MATH_PLAN_LESSONS.find((l) => l.id === plan.lessonId) ?? MATH_PLAN_LESSONS[0]
             const title = mathPlanDisplayName(plan)
             const t = todayStr()
             const isCurrent = plan.weekStart <= t && t <= planEndDate(plan)
@@ -1477,15 +1567,15 @@ export function AllPlansList({
                 key={plan.weekStart}
                 className="rounded-lg px-3.5 py-3"
                 style={{
-                  background: isCurrent
-                    ? `linear-gradient(135deg, ${lessonInfo.bg}, rgba(255,255,255,.6))`
-                    : 'rgba(255,255,255,.7)',
+                  background: isCurrent ? `${lessonInfo.bg}` : 'rgba(255,255,255,.7)',
                   border: `1.5px solid ${isCurrent ? lessonInfo.border : 'rgba(0,0,0,.07)'}`,
                   opacity: isPast && !isCurrent ? 0.7 : 1,
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="shrink-0 text-xl">{ids.length === 1 ? lessonInfo.emoji : '📚'}</span>
+                  <span className="shrink-0 text-xl">
+                    {ids.length === 1 ? lessonInfo.emoji : '📚'}
+                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="text-[12px] font-bold text-gray-700">
                       {title}
@@ -1509,34 +1599,37 @@ export function AllPlansList({
                       {totalProblems} 题 · {dayCount} 天 · 每天约 {plan.problemsPerDay} 题
                     </div>
                   </div>
-                  <button
+                  <Button
                     type="button"
                     onClick={() => toggleDayPreview(plan.weekStart)}
-                    className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 transition-all hover:scale-105 hover:text-gray-600"
-                    style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.07)' }}
+                    variant="soft"
+                    color="gray"
+                    size="1"
+                    radius="full"
                     aria-expanded={daysOpen}
                   >
                     {daysOpen ? '收起' : '预览'}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={() => onEdit(plan)}
-                    className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-gray-400 transition-all hover:scale-105 hover:text-gray-600"
-                    style={{ background: 'rgba(0,0,0,.05)', border: '1px solid rgba(0,0,0,.07)' }}
+                    variant="soft"
+                    color="gray"
+                    size="1"
+                    radius="full"
                   >
                     编辑
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={() => onDelete(plan.weekStart)}
-                    className="cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-bold text-red-300 transition-all hover:scale-105 hover:text-red-500"
-                    style={{
-                      background: 'rgba(239,68,68,.06)',
-                      border: '1px solid rgba(239,68,68,.15)',
-                    }}
+                    variant="soft"
+                    color="red"
+                    size="1"
+                    radius="full"
                   >
                     删除
-                  </button>
+                  </Button>
                 </div>
                 {daysOpen && <PlanPreviewCalendar plan={plan} problemSets={problemSets} />}
               </div>

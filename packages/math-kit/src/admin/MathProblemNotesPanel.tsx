@@ -15,6 +15,7 @@ import {
   sanitizeRichHtml,
 } from '@rosie/math-kit/utils/sanitize-summary-html'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 
@@ -28,7 +29,7 @@ type Props = {
 
 function ProblemContextCard({ problem }: { problem: Problem }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+    <div className="border-kid-line rounded-xl border-2 bg-slate-50/80 p-3">
       <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
         <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-800">
           {problem.tagLabel}
@@ -70,22 +71,27 @@ function NoteEditor({
         disabled={isSaving}
       />
       <div className="flex gap-2">
-        <button
+        <Button
           type="button"
           disabled={isSaving}
           onClick={onSave}
-          className="flex-1 rounded-lg bg-violet-600 py-2 text-[12px] font-bold text-white transition hover:bg-violet-700 disabled:opacity-50"
+          variant="solid"
+          color="violet"
+          size="1"
+          className="flex-1"
         >
           {isSaving ? '保存中…' : saveLabel}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           disabled={isSaving}
           onClick={onCancel}
-          className="rounded-lg border border-violet-200 px-3 py-2 text-[12px] font-semibold text-violet-700 transition hover:bg-violet-50"
+          variant="outline"
+          color="violet"
+          size="1"
         >
           取消
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -145,43 +151,56 @@ function NoteRow({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3">
+    <div className="border-kid-line rounded-xl border-2 bg-white p-3">
       <div
-        className={`note-preview text-[12px] leading-relaxed text-slate-700 [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_strong]:font-bold ${RICH_CONTENT_IMG_TW} ${RICH_CONTENT_CLEARFIX_TW}`}
+        className={`note-preview text-[12px] leading-relaxed text-slate-700 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5 ${RICH_CONTENT_IMG_TW} ${RICH_CONTENT_CLEARFIX_TW}`}
         dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(note.bodyHtml) }}
       />
       <div className="mt-2 flex flex-wrap gap-1.5">
-        <button
+        <Button
           type="button"
-          onClick={() => { setBodyHtml(note.bodyHtml); setEditing(true) }}
-          className="rounded-lg border border-violet-200 px-2 py-1 text-[10px] font-semibold text-violet-700 hover:bg-violet-50"
+          onClick={() => {
+            setBodyHtml(note.bodyHtml)
+            setEditing(true)
+          }}
+          variant="outline"
+          color="violet"
+          size="1"
         >
           编辑
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={() => void handleDelete()}
-          className="rounded-lg border border-red-200 px-2 py-1 text-[10px] font-semibold text-red-600 hover:bg-red-50"
+          variant="outline"
+          color="red"
+          size="1"
         >
           删除
-        </button>
+        </Button>
         {!isFirst && (
-          <button
+          <IconButton
             type="button"
             onClick={() => void admin.moveNote(note, 'up').then((r) => r.error && onFlash(r.error))}
-            className="rounded-lg border border-slate-200 px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50"
+            variant="outline"
+            color="gray"
+            size="1"
           >
             ↑
-          </button>
+          </IconButton>
         )}
         {!isLast && (
-          <button
+          <IconButton
             type="button"
-            onClick={() => void admin.moveNote(note, 'down').then((r) => r.error && onFlash(r.error))}
-            className="rounded-lg border border-slate-200 px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-50"
+            onClick={() =>
+              void admin.moveNote(note, 'down').then((r) => r.error && onFlash(r.error))
+            }
+            variant="outline"
+            color="gray"
+            size="1"
           >
             ↓
-          </button>
+          </IconButton>
         )}
       </div>
     </div>
@@ -275,13 +294,16 @@ export default function MathProblemNotesPanel({
           saveLabel="添加"
         />
       ) : (
-        <button
+        <Button
           type="button"
           onClick={() => setAdding(true)}
-          className="w-full rounded-xl border border-dashed border-violet-300 py-2.5 text-[12px] font-bold text-violet-700 transition hover:bg-violet-50"
+          variant="outline"
+          color="violet"
+          size="1"
+          className="w-full"
         >
           + 添加笔记
-        </button>
+        </Button>
       )}
     </div>
   )

@@ -20,14 +20,25 @@ export default function MathDailyCard() {
   const done = todayAssignments.filter(({ problem, plan }) =>
     isPlanProblemDone(problem, today, plan.progress[today]?.doneKeys ?? []),
   ).length
-  const overdueCount = allPlans.reduce((count, plan) => count + plan.days.reduce((dayCount, day) => {
-    if (day.date >= today) return dayCount
-    const deferred = new Set((plan.deferredBatches ?? []).flatMap((batch) => batch.sourceAssignmentIds))
-    return dayCount + day.problems.filter((problem) =>
-      !deferred.has(problem.assignmentId ?? `${day.date}::${problem.key}`) &&
-      !isPlanProblemDone(problem, day.date, plan.progress[day.date]?.doneKeys ?? []),
-    ).length
-  }, 0), 0)
+  const overdueCount = allPlans.reduce(
+    (count, plan) =>
+      count +
+      plan.days.reduce((dayCount, day) => {
+        if (day.date >= today) return dayCount
+        const deferred = new Set(
+          (plan.deferredBatches ?? []).flatMap((batch) => batch.sourceAssignmentIds),
+        )
+        return (
+          dayCount +
+          day.problems.filter(
+            (problem) =>
+              !deferred.has(problem.assignmentId ?? `${day.date}::${problem.key}`) &&
+              !isPlanProblemDone(problem, day.date, plan.progress[day.date]?.doneKeys ?? []),
+          ).length
+        )
+      }, 0),
+    0,
+  )
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
   const allDone = total > 0 && done >= total
   const lessonInfo = weeklyPlan
@@ -38,17 +49,17 @@ export default function MathDailyCard() {
   return (
     <Link
       href="/math/ny/plan"
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_44px_rgba(251,146,60,.25)]"
+      className="group hover:shadow-sticker relative flex h-full w-full flex-col overflow-hidden rounded-[20px] no-underline transition-all duration-300 hover:-translate-y-1"
       style={{
-        background: 'linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #fce7f3 100%)',
+        background: '#fef3c7',
         border: '2px solid rgba(251,146,60,.3)',
-        boxShadow: '0 4px 20px rgba(251,146,60,.12)',
+        boxShadow: '0 3px 0 rgba(251,146,60,.3)',
       }}
     >
       {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-orange-300/20 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-yellow-300/25 blur-xl" />
-      <div className="pointer-events-none absolute right-12 bottom-2 h-10 w-10 rounded-full bg-pink-300/20 blur-lg" />
+      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-orange-300/20" />
+      <div className="pointer-events-none absolute -bottom-4 left-8 h-16 w-16 rounded-full bg-yellow-300/25" />
+      <div className="pointer-events-none absolute right-12 bottom-2 h-10 w-10 rounded-full bg-pink-300/20" />
 
       <div className="relative px-5 py-4">
         {/* Header row */}
@@ -60,7 +71,8 @@ export default function MathDailyCard() {
             </span>
             {displayName && (
               <span className="truncate rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-700">
-                {lessonInfo?.emoji ? `${lessonInfo.emoji} ` : ''}{displayName}
+                {lessonInfo?.emoji ? `${lessonInfo.emoji} ` : ''}
+                {displayName}
               </span>
             )}
           </div>
@@ -68,7 +80,11 @@ export default function MathDailyCard() {
             {(() => {
               if (isLoading) return '…'
               if (!weeklyPlan) return overdueCount > 0 ? `欠 ${overdueCount} 题` : '暂无计划'
-              return allDone ? '✅ 完成！' : activePlans.length > 1 ? `${activePlans.length} 个计划` : '去做题'
+              return allDone
+                ? '✅ 完成！'
+                : activePlans.length > 1
+                  ? `${activePlans.length} 个计划`
+                  : '去做题'
             })()}
             <span className="text-[14px]">→</span>
           </div>
@@ -85,9 +101,7 @@ export default function MathDailyCard() {
                   className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
                   style={{
                     width: `${pct}%`,
-                    background: allDone
-                      ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-                      : 'linear-gradient(90deg, #f97316, #fbbf24)',
+                    background: allDone ? '#22c55e' : '#f97316',
                   }}
                 />
                 {/* Shimmer on incomplete */}
@@ -96,8 +110,7 @@ export default function MathDailyCard() {
                     className="absolute inset-y-0 left-0 rounded-full opacity-50"
                     style={{
                       width: `${pct}%`,
-                      background:
-                        'linear-gradient(90deg, transparent 0%, rgba(255,255,255,.6) 50%, transparent 100%)',
+                      background: 'transparent',
                       backgroundSize: '200% 100%',
                       animation: 'shimmer 2s linear infinite',
                     }}
@@ -121,10 +134,11 @@ export default function MathDailyCard() {
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold transition-all ${
                       isDone
                         ? 'bg-green-100 text-green-700 line-through opacity-70'
-                        : 'border border-orange-200 bg-white/80 text-orange-700'
+                        : 'border border-orange-200 bg-white text-orange-700'
                     }`}
                   >
-                    {isDone ? '⭐' : `${i + 1}.`} {p.isDeferred ? '延期 · ' : ''}{p.title.split('·')[0].trim()}
+                    {isDone ? '⭐' : `${i + 1}.`} {p.isDeferred ? '延期 · ' : ''}
+                    {p.title.split('·')[0].trim()}
                   </span>
                 )
               })}

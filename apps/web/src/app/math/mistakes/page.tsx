@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { OrbBackground } from '@rosie/ui'
+import { OrbBackground, StickerCard } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
@@ -19,6 +19,7 @@ import { MistakeDraftButton } from '@rosie/math-kit/components/shared/ScratchPad
 import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practice-queue/useStartPracticeQueue'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import { SOURCE_LABELS } from '@rosie/core'
+import { Button, SegmentedControl } from '@rosie/ui/themes'
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
 
@@ -145,20 +146,17 @@ function MistakeFilterPanel({
   }
   const activeStatusLabel = STATUS_TABS.find((t) => t.key === statusFilter)?.label ?? '未订正'
 
-  const chipBase =
-    'relative cursor-pointer rounded-full border-[1.5px] px-2.5 py-1.5 text-[11px] font-semibold transition-all active:scale-95 sm:px-3 sm:py-1.5 sm:text-xs'
-  const chipOn = 'border-rose-400 bg-rose-500 text-white shadow-[0_1px_4px_rgba(244,63,94,0.25)]'
-  const chipOff = 'border-slate-200 bg-slate-50 text-slate-600 hover:border-rose-200 hover:bg-rose-50'
-
   return (
-    <div className="mb-2.5 w-full overflow-hidden rounded-2xl border border-rose-200/80 bg-white/95 shadow-[0_2px_14px_rgba(190,18,60,0.06)] backdrop-blur-sm">
-      <button
+    <StickerCard size="none" elevation="sm" radius="md" className="mb-2.5 w-full overflow-hidden">
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={onToggleExpanded}
         className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors hover:bg-rose-50/40 sm:px-4 sm:py-3"
         aria-expanded={expanded}
       >
-        <span className="text-[11px] font-extrabold tracking-wide text-rose-900 sm:text-xs">筛选</span>
+        <span className="text-[11px] font-extrabold tracking-wide text-rose-900 sm:text-xs">
+          筛选
+        </span>
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
           <span
             className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
@@ -193,46 +191,28 @@ function MistakeFilterPanel({
       </button>
 
       {expanded && (
-        <div className="space-y-3 border-t border-rose-100/80 px-3 pb-3.5 pt-3 sm:px-4 sm:pb-4">
+        <div className="space-y-3 border-t border-rose-100/80 px-3 pt-3 pb-3.5 sm:px-4 sm:pb-4">
           <div>
             <div className="mb-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
               订正状态
             </div>
-            <div
-              className="grid grid-cols-3 gap-1 rounded-xl bg-rose-50/70 p-1"
-              role="tablist"
+            <SegmentedControl.Root
+              value={statusFilter}
+              onValueChange={(next) => onStatusChange(next as MistakeStatusFilter)}
+              size="1"
+              className="w-full"
               aria-label="订正状态"
             >
               {STATUS_TABS.map((tab) => {
-                const active = statusFilter === tab.key
                 const count = statusCounts[tab.key]
                 return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    role="tab"
-                    aria-selected={active}
-                    onClick={() => onStatusChange(tab.key)}
-                    className={`rounded-lg px-2 py-2 text-[11px] font-bold transition-all active:scale-[0.98] sm:text-[12px] ${
-                      active
-                        ? tab.key === 'resolved'
-                          ? 'bg-white text-emerald-700 shadow-sm ring-1 ring-emerald-200/80'
-                          : 'bg-white text-rose-700 shadow-sm ring-1 ring-rose-200/80'
-                        : 'text-rose-600/70 hover:bg-white/60 hover:text-rose-800'
-                    }`}
-                  >
+                  <SegmentedControl.Item key={tab.key} value={tab.key}>
                     {tab.label}
-                    {count > 0 && (
-                      <span
-                        className={`ml-1 text-[10px] ${active ? 'opacity-70' : 'text-rose-400'}`}
-                      >
-                        {count}
-                      </span>
-                    )}
-                  </button>
+                    {count > 0 ? ` ${count}` : ''}
+                  </SegmentedControl.Item>
                 )
               })}
-            </div>
+            </SegmentedControl.Root>
           </div>
 
           <div className="border-t border-rose-50 pt-1">
@@ -240,13 +220,15 @@ function MistakeFilterPanel({
               <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                 讲次
               </span>
-              <button
+              <Button
                 type="button"
                 onClick={() => onChange(allSelected ? new Set() : new Set(ALL_LESSON_IDS))}
-                className="text-[11px] font-semibold text-rose-500 hover:text-rose-700"
+                variant="ghost"
+                color="ruby"
+                size="1"
               >
                 {allSelected ? '全不选' : '全选'}
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -269,25 +251,31 @@ function MistakeFilterPanel({
                           </span>
                         )}
                       </div>
-                      <button
+                      <Button
                         type="button"
                         onClick={() => toggleGrade(gradeIds, !allOn)}
-                        className="text-[11px] font-semibold text-rose-500 hover:text-rose-700"
+                        variant="ghost"
+                        color="ruby"
+                        size="1"
                       >
                         {allOn ? '全不选' : '全选'}
-                      </button>
+                      </Button>
                     </div>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {grp.lessons.map((lesson) => {
                         const isSelected = selectedLessons.has(lesson.id)
                         const wrongN = wrongCountByLesson.get(lesson.id) ?? 0
                         return (
-                          <button
+                          <Button
                             key={lesson.id}
                             type="button"
                             onClick={() => toggleLesson(lesson.id)}
-                            className={`${chipBase} ${isSelected ? chipOn : chipOff}`}
                             title={lesson.title}
+                            variant={isSelected ? 'solid' : 'soft'}
+                            color={isSelected ? 'ruby' : 'gray'}
+                            radius="full"
+                            size="1"
+                            className="relative"
                           >
                             <span className="inline-flex items-center gap-1">
                               <span>{lesson.icon}</span>
@@ -302,7 +290,7 @@ function MistakeFilterPanel({
                                 {wrongN}
                               </span>
                             )}
-                          </button>
+                          </Button>
                         )
                       })}
                     </div>
@@ -313,7 +301,7 @@ function MistakeFilterPanel({
           </div>
         </div>
       )}
-    </div>
+    </StickerCard>
   )
 }
 
@@ -363,10 +351,19 @@ function MistakeCard({
       : `border-[#fca5a5]/70 ${MASTERY_BORDER[level]}`
 
   return (
-    <button
-      type="button"
+    // 卡片内含收藏、草稿等真正的按钮，外层用 div[role=button]，避免 button 嵌套 button（hydration 报错）
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onPractice}
-      className={`flex h-full w-full cursor-pointer flex-col rounded-xl border bg-white p-2 text-left shadow-[0_1px_4px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-px hover:shadow-[0_6px_16px_rgba(190,18,60,0.08)] active:scale-[0.99] ${cardAccent} ${cardBorder}`}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onPractice()
+        }
+      }}
+      className={`shadow-sticker-sm hover:shadow-sticker-sm flex h-full w-full cursor-pointer flex-col rounded-xl border bg-white p-2 text-left transition-all hover:-translate-y-px active:scale-[0.99] ${cardAccent} ${cardBorder}`}
     >
       <div className="mb-1.5 flex items-start gap-1.5">
         <div
@@ -423,7 +420,7 @@ function MistakeCard({
           onResolved={onDraftResolved}
         />
       </div>
-    </button>
+    </div>
   )
 }
 
@@ -433,9 +430,7 @@ export default function GlobalMistakesPage() {
   const { rows, markResolved } = useMathWrong(user)
   const startPractice = useStartPracticeQueue()
 
-  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(
-    () => new Set(ALL_LESSON_IDS),
-  )
+  const [selectedLessons, setSelectedLessons] = useState<Set<string>>(() => new Set(ALL_LESSON_IDS))
   const [filterExpanded, setFilterExpanded] = useState(false)
   const [statusFilter, setStatusFilter] = useState<MistakeStatusFilter>('unresolved')
   const [draftProblemIds, setDraftProblemIds] = useState<Set<string>>(() => new Set())
@@ -500,7 +495,11 @@ export default function GlobalMistakesPage() {
   )
 
   const wrongProblemIdsKey = useMemo(
-    () => allWrongEntries.map((e) => e.id).sort().join('\0'),
+    () =>
+      allWrongEntries
+        .map((e) => e.id)
+        .sort()
+        .join('\0'),
     [allWrongEntries],
   )
 
@@ -510,9 +509,7 @@ export default function GlobalMistakesPage() {
       setDraftProblemIds(new Set())
       return
     }
-    const lookupIds = [
-      ...new Set(allWrongEntries.flatMap((e) => [e.id, e.problem.id])),
-    ]
+    const lookupIds = [...new Set(allWrongEntries.flatMap((e) => [e.id, e.problem.id]))]
     let cancelled = false
     void fetchWrongDraftProblemIds(user.id, lookupIds).then((ids) => {
       if (!cancelled) setDraftProblemIds(ids)
@@ -575,11 +572,11 @@ export default function GlobalMistakesPage() {
     <>
       <OrbBackground variant="math" />
 
-      <header className="fixed top-0 right-0 left-0 z-20 border-b border-rose-200/60 bg-[#fff8f8]/92 shadow-[0_4px_20px_rgba(190,18,60,0.05)] backdrop-blur-lg">
+      <header className="shadow-sticker-sm fixed top-0 right-0 left-0 z-20 border-b border-rose-200/60 bg-[#fff8f8]/92">
         <div className="flex items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-4 sm:py-2.5">
           <Link
             href="/math"
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-rose-100 bg-white px-3 text-[12px] font-bold text-rose-900/55 no-underline shadow-sm transition-all hover:border-rose-200 hover:text-rose-900 active:scale-95 sm:text-[13px]"
+            className="shadow-sticker-sm flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-rose-100 bg-white px-3 text-[12px] font-bold text-rose-900/55 no-underline transition-all hover:border-rose-200 hover:text-rose-900 active:scale-95 sm:text-[13px]"
           >
             <svg
               width="14"
@@ -611,14 +608,17 @@ export default function GlobalMistakesPage() {
           </div>
 
           {unresolvedPracticeList.length > 0 && (
-            <button
+            <Button
               type="button"
               onClick={() => beginPractice()}
-              className="shrink-0 cursor-pointer rounded-full bg-gradient-to-r from-rose-600 to-rose-500 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-[0_2px_10px_rgba(225,29,72,0.28)] active:scale-95 sm:px-4 sm:text-[12px]"
+              variant="solid"
+              color="ruby"
+              size="1"
+              className="shrink-0 sm:text-[12px]"
             >
               一键练习
               <span className="ml-0.5 opacity-90">({unresolvedPracticeList.length})</span>
-            </button>
+            </Button>
           )}
         </div>
 
@@ -632,7 +632,7 @@ export default function GlobalMistakesPage() {
             </span>
             <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-rose-200/70">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-rose-400 to-emerald-400 transition-[width] duration-500"
+                className="h-full rounded-full bg-emerald-400 transition-[width] duration-500"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
@@ -671,7 +671,7 @@ export default function GlobalMistakesPage() {
                     ? '🔍'
                     : '📭'}
             </div>
-            <div className="text-text-primary max-w-xs text-[14px] font-bold leading-snug">
+            <div className="text-text-primary max-w-xs text-[14px] leading-snug font-bold">
               {totalCount === 0
                 ? allLessonsSelected
                   ? '错题本是空的，继续保持！'
@@ -685,22 +685,26 @@ export default function GlobalMistakesPage() {
                       : '没有符合条件的错题'}
             </div>
             {statusFilter === 'unresolved' && unresolvedCount === 0 && resolvedCount > 0 && (
-              <button
+              <Button
                 type="button"
                 onClick={() => setStatusFilter('resolved')}
-                className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-semibold text-emerald-700"
+                variant="soft"
+                color="jade"
+                size="1"
               >
                 查看已订正 ({resolvedCount})
-              </button>
+              </Button>
             )}
             {filterActive && totalCount > 0 && (
-              <button
+              <Button
                 type="button"
                 onClick={() => setSelectedLessons(new Set(ALL_LESSON_IDS))}
-                className="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-semibold text-rose-700"
+                variant="soft"
+                color="ruby"
+                size="1"
               >
                 恢复全选
-              </button>
+              </Button>
             )}
             <Link
               href="/math"
@@ -716,49 +720,51 @@ export default function GlobalMistakesPage() {
                 共 {wrongList.length} 题
               </span>
               {!filterExpanded && (
-                <button
+                <Button
                   type="button"
                   onClick={() => setFilterExpanded(true)}
-                  className="text-[11px] font-semibold text-rose-500 hover:text-rose-700"
+                  variant="ghost"
+                  color="ruby"
+                  size="1"
                 >
                   调整筛选
-                </button>
+                </Button>
               )}
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-            {wrongList.map(
-              ({ id: storedId, problem, lessonId, section, href, resolved }, index) => (
-              <MistakeCard
-                key={storedId}
-                storedId={storedId}
-                problem={problem}
-                lessonId={lessonId}
-                section={section}
-                resolved={resolved}
-                count={practiceCount[storedId] ?? practiceCount[problem.id] ?? 0}
-                hasDraft={hasDraftForEntry(storedId, problem.id)}
-                draftLookupIds={[storedId, problem.id]}
-                wrongProblems={wrongProblems}
-                problemIndex={index}
-                onPractice={() => {
-                  if (resolved) {
-                    beginPractice(problem.id, [
-                      {
-                        problem,
-                        section,
-                        lessonId,
-                        detailHref: href,
-                      },
-                    ])
-                  } else {
-                    beginPractice(problem.id)
-                  }
-                }}
-                onSolve={handleDraftResolved}
-                onDraftResolved={handleDraftResolved}
-              />
-            ),
-            )}
+              {wrongList.map(
+                ({ id: storedId, problem, lessonId, section, href, resolved }, index) => (
+                  <MistakeCard
+                    key={storedId}
+                    storedId={storedId}
+                    problem={problem}
+                    lessonId={lessonId}
+                    section={section}
+                    resolved={resolved}
+                    count={practiceCount[storedId] ?? practiceCount[problem.id] ?? 0}
+                    hasDraft={hasDraftForEntry(storedId, problem.id)}
+                    draftLookupIds={[storedId, problem.id]}
+                    wrongProblems={wrongProblems}
+                    problemIndex={index}
+                    onPractice={() => {
+                      if (resolved) {
+                        beginPractice(problem.id, [
+                          {
+                            problem,
+                            section,
+                            lessonId,
+                            detailHref: href,
+                          },
+                        ])
+                      } else {
+                        beginPractice(problem.id)
+                      }
+                    }}
+                    onSolve={handleDraftResolved}
+                    onDraftResolved={handleDraftResolved}
+                  />
+                ),
+              )}
             </div>
           </>
         )}

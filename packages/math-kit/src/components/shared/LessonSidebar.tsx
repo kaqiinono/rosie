@@ -6,6 +6,7 @@ import { useLocalStorage } from '@rosie/core'
 import { STORAGE_KEYS } from '@rosie/core'
 import type { ProblemSet } from '@rosie/core'
 import type { LessonContextType } from './createLessonProvider'
+import { Button } from '@rosie/ui/themes'
 
 type SidebarSection = {
   key: string
@@ -85,18 +86,21 @@ export default function LessonSidebar({ config, problems, useLessonContext }: Pr
       }`}
     >
       <div className="flex h-full flex-col">
-        <button
+        <Button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
-          className="border-border-light text-text-muted hover:text-text-primary flex shrink-0 items-center justify-center border-b py-3 transition-colors hover:bg-gray-50"
           aria-label={collapsed ? '展开侧边栏' : '收起侧边栏'}
+          variant="ghost"
+          color="gray"
+          size="3"
+          className="shrink-0"
         >
           {collapsed ? (
             <span className="text-lg">☰</span>
           ) : (
             <span className="text-sm">{`<<`} </span>
           )}
-        </button>
+        </Button>
 
         {!collapsed && (
           <div className="flex-1 overflow-y-auto px-3 py-4">

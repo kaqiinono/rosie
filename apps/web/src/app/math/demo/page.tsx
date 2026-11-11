@@ -90,7 +90,7 @@ const MathDemoPage: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+    <div className="bg-kid-paper min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       {/* 页面顶部 Bar */}
       <div className="mx-auto mb-10 max-w-7xl text-center">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">

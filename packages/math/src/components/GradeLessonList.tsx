@@ -23,7 +23,7 @@ export default function GradeLessonList({ grade }: { grade: number }) {
           <PageBreadcrumb variant="inline" />
         </div>
         <section className="max-w-[480px] text-center">
-          <h1 className="mt-2 bg-gradient-to-br from-blue-900 via-violet-600 to-amber-500 bg-clip-text text-[clamp(26px,5vw,34px)] leading-tight font-black text-transparent">
+          <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-amber-700">
             {label}
           </h1>
           <p className="text-text-secondary mt-1.5 text-sm leading-relaxed">

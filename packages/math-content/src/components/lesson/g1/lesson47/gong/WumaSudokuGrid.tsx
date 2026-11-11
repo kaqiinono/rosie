@@ -13,6 +13,7 @@ import {
   resolveSudokuBoxDimensions,
 } from './utils'
 import { ActionButton } from './shared'
+import { Button } from '@rosie/ui/themes'
 
 function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]): string[][] {
   return Array.from({ length: rowCount }, (_, r) =>
@@ -22,7 +23,13 @@ function emptyValues(rowCount: number, colCount: number, givenGrid: number[][]):
   )
 }
 
-export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange, initialState }: WumaSudokuProps) {
+export function WumaSudokuGrid({
+  rows,
+  cells = [],
+  onSubmit,
+  onStateChange,
+  initialState,
+}: WumaSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const boxDims = useMemo(
     () => resolveSudokuBoxDimensions(rowCount, colCount),
@@ -110,23 +117,22 @@ export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange, init
   return (
     <div>
       <label className="mb-3 flex cursor-pointer items-center gap-2.5 text-sm text-[var(--gong-text2)]">
-        <button
+        <Button
           type="button"
           role="switch"
           aria-checked={knightMode}
           onClick={toggleKnightMode}
-          className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors ${
-            knightMode
-              ? 'border-[var(--gong-purple)] bg-[var(--gong-purple)]'
-              : 'border-[var(--gong-border2)] bg-[var(--gong-bg3)]'
-          }`}
+          variant="outline"
+          color="gray"
+          size="1"
+          className="relative w-11 shrink-0"
         >
           <span
             className={`absolute top-0.5 left-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-transform ${
               knightMode ? 'translate-x-5' : ''
             }`}
           />
-        </button>
+        </Button>
         <span>显示马步</span>
         {knightMode && (
           <span className="text-xs text-[var(--gong-text3)]">
@@ -180,7 +186,7 @@ export function WumaSudokuGrid({ rows, cells = [], onSubmit, onStateChange, init
                           {knightMode && isKnightTarget && !displayValue ? '★' : ''}
                         </span>
                       ) : (
-                        <input
+                        <input // native-ok: 数独格子里的单字填空输入框，填满 cell 且透明底
                           type="text"
                           maxLength={1}
                           value={values[r][c]}

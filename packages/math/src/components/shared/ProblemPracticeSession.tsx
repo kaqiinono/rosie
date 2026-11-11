@@ -23,10 +23,33 @@ import { useStarHud, StarProgressBar } from '@rosie/rewards'
 // ── Shared mastery helpers (single source of truth; SeaGrid re-imports these) ───
 
 export function getBadgeStyle(count: number): CSSProperties {
-  if (count === 0) return { background: 'rgba(0,229,255,0.07)', color: 'rgba(90,142,176,0.8)', border: '1.5px solid rgba(0,229,255,0.15)', boxShadow: 'none' }
-  if (count === 1) return { background: 'rgba(0,212,180,0.12)', color: '#00d4b4', border: '1.5px solid rgba(0,212,180,0.4)', boxShadow: '0 0 6px rgba(0,212,180,0.15)' }
-  if (count === 2) return { background: 'rgba(0,229,255,0.13)', color: '#00e5ff', border: '1.5px solid rgba(0,229,255,0.55)', boxShadow: '0 0 8px rgba(0,229,255,0.2)' }
-  return { background: 'rgba(255,209,102,0.14)', color: '#ffd166', border: '1.5px solid rgba(255,209,102,0.6)', boxShadow: '0 0 10px rgba(255,185,50,0.25)' }
+  if (count === 0)
+    return {
+      background: 'rgba(0,229,255,0.07)',
+      color: 'rgba(90,142,176,0.8)',
+      border: '1.5px solid rgba(0,229,255,0.15)',
+      boxShadow: 'none',
+    }
+  if (count === 1)
+    return {
+      background: 'rgba(0,212,180,0.12)',
+      color: '#00d4b4',
+      border: '1.5px solid rgba(0,212,180,0.4)',
+      boxShadow: '0 3px 0 rgba(0,212,180,.3)',
+    }
+  if (count === 2)
+    return {
+      background: 'rgba(0,229,255,0.13)',
+      color: '#00e5ff',
+      border: '1.5px solid rgba(0,229,255,0.55)',
+      boxShadow: '0 3px 0 rgba(0,229,255,.3)',
+    }
+  return {
+    background: 'rgba(255,209,102,0.14)',
+    color: '#ffd166',
+    border: '1.5px solid rgba(255,209,102,0.6)',
+    boxShadow: '0 3px 0 rgba(255,185,50,.3)',
+  }
 }
 
 export function getMasteryLabel(count: number): string {
@@ -47,10 +70,33 @@ export function formatDate(iso: string): string {
 
 // Light-theme badge for MATH_SKIN
 function mathBadgeStyle(count: number): CSSProperties {
-  if (count === 0) return { background: '#f1f5f9', color: '#94a3b8', border: '1.5px solid #e2e8f0', boxShadow: 'none' }
-  if (count === 1) return { background: '#d1fae5', color: '#059669', border: '1.5px solid #6ee7b7', boxShadow: 'none' }
-  if (count === 2) return { background: '#dbeafe', color: '#2563eb', border: '1.5px solid #93c5fd', boxShadow: 'none' }
-  return { background: '#fef3c7', color: '#d97706', border: '1.5px solid #fcd34d', boxShadow: 'none' }
+  if (count === 0)
+    return {
+      background: '#f1f5f9',
+      color: '#94a3b8',
+      border: '1.5px solid #e2e8f0',
+      boxShadow: 'none',
+    }
+  if (count === 1)
+    return {
+      background: '#d1fae5',
+      color: '#059669',
+      border: '1.5px solid #6ee7b7',
+      boxShadow: 'none',
+    }
+  if (count === 2)
+    return {
+      background: '#dbeafe',
+      color: '#2563eb',
+      border: '1.5px solid #93c5fd',
+      boxShadow: 'none',
+    }
+  return {
+    background: '#fef3c7',
+    color: '#d97706',
+    border: '1.5px solid #fcd34d',
+    boxShadow: 'none',
+  }
 }
 
 // ── Selection logic (unchanged from sea) ────────────────────────────────────────
@@ -146,18 +192,76 @@ export const SEA_SKIN: PracticeSkin = {
   titleColor: '#c8e6f5',
   bodyColor: 'rgba(90,142,176,0.8)',
   mutedColor: 'rgba(90,142,176,0.7)',
-  overlayBg: { className: 'sea-root', style: { background: 'rgba(2,16,30,0.96)', backdropFilter: 'blur(16px)' } },
-  panel: { className: '', style: { background: 'rgba(5,27,55,0.95)', border: '1px solid rgba(0,229,255,0.25)', boxShadow: '0 0 40px rgba(0,229,255,0.15)' } },
-  sessionBg: { className: 'sea-root', style: { background: 'linear-gradient(180deg, #020b1c 0%, #041630 50%, #051a3a 100%)', minHeight: '100dvh' } },
-  header: { className: '', style: { background: 'rgba(2,11,28,0.88)', backdropFilter: 'blur(16px)', borderBottom: '1px solid rgba(0,229,255,0.15)', boxShadow: '0 4px 20px rgba(0,0,0,0.3)' } },
-  headerTitle: { className: '', style: { color: '#00e5ff', textShadow: '0 0 12px rgba(0,229,255,0.5)' } },
-  progressBar: { className: '', style: { background: 'rgba(2,11,28,0.7)', borderBottom: '1px solid rgba(0,229,255,0.1)' } },
-  actionBar: { className: '', style: { background: 'rgba(2,11,28,0.92)', backdropFilter: 'blur(16px)', borderTop: '1px solid rgba(0,229,255,0.12)', boxShadow: '0 -4px 20px rgba(0,0,0,0.3)' } },
-  closeBtn: { className: '', style: { background: 'rgba(0,229,255,0.08)', color: 'rgba(0,229,255,0.7)', border: '1px solid rgba(0,229,255,0.2)' } },
-  emptyBtn: { className: 'lure-btn', style: { background: 'rgba(0,229,255,0.12)', color: '#00e5ff' } },
-  primaryBtn: { className: 'lure-btn', style: { background: 'rgba(0,229,255,0.10)', border: '1.5px solid rgba(0,229,255,0.6)', color: '#00e5ff' } },
-  secondaryBtn: { className: '', style: { background: 'rgba(255,255,255,0.05)', border: '1.5px solid rgba(255,255,255,0.15)', color: 'rgba(200,230,245,0.8)' } },
-  chip: { className: '', style: { background: 'rgba(0,229,255,0.12)', color: 'rgba(0,229,255,0.7)', border: '1px solid rgba(0,229,255,0.2)' } },
+  overlayBg: { className: 'sea-root', style: { background: 'rgb(2,16,30)' } },
+  panel: {
+    className: '',
+    style: {
+      background: 'rgb(5,27,55)',
+      border: '1px solid rgba(0,229,255,0.25)',
+      boxShadow: '0 3px 0 rgba(0,229,255,.3)',
+    },
+  },
+  sessionBg: { className: 'sea-root', style: { background: '#041630', minHeight: '100dvh' } },
+  header: {
+    className: '',
+    style: {
+      background: 'rgb(2,11,28)',
+      borderBottom: '1px solid rgba(0,229,255,0.15)',
+      boxShadow: '0 3px 0 rgba(0,0,0,0.3)',
+    },
+  },
+  headerTitle: {
+    className: '',
+    style: { color: '#00e5ff', textShadow: '0 0 12px rgba(0,229,255,0.5)' },
+  },
+  progressBar: {
+    className: '',
+    style: { background: 'rgba(2,11,28,0.7)', borderBottom: '1px solid rgba(0,229,255,0.1)' },
+  },
+  actionBar: {
+    className: '',
+    style: {
+      background: 'rgb(2,11,28)',
+      borderTop: '1px solid rgba(0,229,255,0.12)',
+      boxShadow: '0 3px 0 rgba(0,0,0,0.3)',
+    },
+  },
+  closeBtn: {
+    className: '',
+    style: {
+      background: 'rgba(0,229,255,0.08)',
+      color: 'rgba(0,229,255,0.7)',
+      border: '1px solid rgba(0,229,255,0.2)',
+    },
+  },
+  emptyBtn: {
+    className: 'lure-btn',
+    style: { background: 'rgba(0,229,255,0.12)', color: '#00e5ff' },
+  },
+  primaryBtn: {
+    className: 'lure-btn',
+    style: {
+      background: 'rgba(0,229,255,0.10)',
+      border: '1.5px solid rgba(0,229,255,0.6)',
+      color: '#00e5ff',
+    },
+  },
+  secondaryBtn: {
+    className: '',
+    style: {
+      background: 'rgba(255,255,255,0.05)',
+      border: '1.5px solid rgba(255,255,255,0.15)',
+      color: 'rgba(200,230,245,0.8)',
+    },
+  },
+  chip: {
+    className: '',
+    style: {
+      background: 'rgba(0,229,255,0.12)',
+      color: 'rgba(0,229,255,0.7)',
+      border: '1px solid rgba(0,229,255,0.2)',
+    },
+  },
   linkClassName: 'text-cyan-500 no-underline hover:text-cyan-300 transition-colors',
   particles: [
     { id: 1, x: '4%', size: 4, dur: 20, delay: -3, alt: false },
@@ -185,18 +289,61 @@ export const MATH_SKIN: PracticeSkin = {
   titleColor: 'var(--color-text-primary)',
   bodyColor: 'var(--color-text-secondary)',
   mutedColor: 'var(--color-text-muted)',
-  overlayBg: { className: '', style: { background: 'rgba(248,250,252,0.96)', backdropFilter: 'blur(8px)' } },
-  panel: { className: '', style: { background: '#ffffff', border: '1px solid #e2e8f0', boxShadow: '0 10px 40px rgba(0,0,0,0.12)' } },
+  overlayBg: { className: '', style: { background: 'rgb(248,250,252)' } },
+  panel: {
+    className: '',
+    style: {
+      background: '#ffffff',
+      border: '1px solid #e2e8f0',
+      boxShadow: '0 3px 0 rgba(0,0,0,.3)',
+    },
+  },
   sessionBg: { className: '', style: { background: '#f8fafc', minHeight: '100dvh' } },
-  header: { className: '', style: { background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' } },
+  header: {
+    className: '',
+    style: {
+      background: 'rgb(255,255,255)',
+      borderBottom: '1px solid #e2e8f0',
+      boxShadow: '0 3px 0 rgba(0,0,0,.3)',
+    },
+  },
   headerTitle: { className: '', style: { color: 'var(--color-app-blue)' } },
-  progressBar: { className: '', style: { background: 'rgba(255,255,255,0.7)', borderBottom: '1px solid #eef2f6' } },
-  actionBar: { className: '', style: { background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderTop: '1px solid #e2e8f0', boxShadow: '0 -2px 12px rgba(0,0,0,0.05)' } },
-  closeBtn: { className: '', style: { background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0' } },
-  emptyBtn: { className: '', style: { background: 'var(--color-app-blue)', color: '#ffffff', border: 'none' } },
-  primaryBtn: { className: '', style: { background: 'var(--color-app-blue)', border: 'none', color: '#ffffff' } },
-  secondaryBtn: { className: '', style: { background: '#f1f5f9', border: '1.5px solid #e2e8f0', color: '#64748b' } },
-  chip: { className: '', style: { background: 'var(--color-app-blue-light)', color: 'var(--color-app-blue-dark)', border: '1px solid #bfdbfe' } },
+  progressBar: {
+    className: '',
+    style: { background: 'rgba(255,255,255,0.7)', borderBottom: '1px solid #eef2f6' },
+  },
+  actionBar: {
+    className: '',
+    style: {
+      background: 'rgb(255,255,255)',
+      borderTop: '1px solid #e2e8f0',
+      boxShadow: '0 3px 0 rgba(0,0,0,.3)',
+    },
+  },
+  closeBtn: {
+    className: '',
+    style: { background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0' },
+  },
+  emptyBtn: {
+    className: '',
+    style: { background: 'var(--color-app-blue)', color: '#ffffff', border: 'none' },
+  },
+  primaryBtn: {
+    className: '',
+    style: { background: 'var(--color-app-blue)', border: 'none', color: '#ffffff' },
+  },
+  secondaryBtn: {
+    className: '',
+    style: { background: '#f1f5f9', border: '1.5px solid #e2e8f0', color: '#64748b' },
+  },
+  chip: {
+    className: '',
+    style: {
+      background: 'var(--color-app-blue-light)',
+      color: 'var(--color-app-blue-dark)',
+      border: '1px solid #bfdbfe',
+    },
+  },
   linkClassName: 'text-app-blue no-underline hover:text-app-blue-dark transition-colors',
   depthDivider: false,
   starColor: 'blue',
@@ -237,29 +384,35 @@ function PracticeProblem({
   const { addWrong } = useMathWrong(user)
   const { awardStars } = useStarHud()
 
-  const awardSeaStar = useCallback((origin?: HTMLElement) => {
-    const rect = origin?.getBoundingClientRect()
-    void awardStars(
-      'blue',
-      1,
-      rect ? { origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } } : undefined,
-    )
-  }, [awardStars])
-
-  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(
-    problem,
-    {
-      handleSolve: (id) => {
-        void onSolve(id)
-      },
-      addWrong,
+  const awardSeaStar = useCallback(
+    (origin?: HTMLElement) => {
+      const rect = origin?.getBoundingClientRect()
+      void awardStars(
+        'blue',
+        1,
+        rect
+          ? { origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } }
+          : undefined,
+      )
     },
-    {
-      onCorrect: () => {
-        if (interactive) awardSeaStar()
-      },
-    },
+    [awardStars],
   )
+
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } =
+    useProblemAnswer(
+      problem,
+      {
+        handleSolve: (id) => {
+          void onSolve(id)
+        },
+        addWrong,
+      },
+      {
+        onCorrect: () => {
+          if (interactive) awardSeaStar()
+        },
+      },
+    )
 
   const figure = useMemo(
     () =>
@@ -279,7 +432,9 @@ function PracticeProblem({
       }
     : null
 
-  function checkAnswer(e?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>) {
+  function checkAnswer(
+    e?: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>,
+  ) {
     const result = check()
     if (result.ok && !interactive) {
       const target = e && 'currentTarget' in e ? (e.currentTarget as HTMLElement) : undefined
@@ -289,11 +444,15 @@ function PracticeProblem({
 
   const question = (
     <div className="flex flex-col gap-1.5">
-      <div className="flex flex-wrap gap-1.5 mb-2">
-        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${tagStyle}`}>
+      <div className="mb-2 flex flex-wrap gap-1.5">
+        <span
+          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${tagStyle}`}
+        >
           {problem.tagLabel}
         </span>
-        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.badgeClass ?? 'bg-gray-100 text-gray-600'}`}>
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${lesson?.badgeClass ?? 'bg-gray-100 text-gray-600'}`}
+        >
           {lesson?.icon} {lesson?.shortTitle}
         </span>
         <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-500">
@@ -312,7 +471,10 @@ function PracticeProblem({
 
   const masteryRow = (
     <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
-      <span style={skin.badgeStyle(count)} className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
+      <span
+        style={skin.badgeStyle(count)}
+        className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
+      >
         {skin.masteryLabel(count)}
       </span>
       <span>练过 {count} 次</span>
@@ -330,9 +492,7 @@ function PracticeProblem({
     <>
       <InteractiveAnswerFeedback
         feedback={
-          displayFeedback
-            ? { ok: displayFeedback.ok, message: displayFeedback.text }
-            : null
+          displayFeedback ? { ok: displayFeedback.ok, message: displayFeedback.text } : null
         }
       />
       {masteryRow}
@@ -345,11 +505,9 @@ function PracticeProblem({
         onAnswerChange={setAnswer}
         onCheck={() => checkAnswer()}
         feedback={
-          displayFeedback
-            ? { ok: displayFeedback.ok, message: displayFeedback.text }
-            : null
+          displayFeedback ? { ok: displayFeedback.ok, message: displayFeedback.text } : null
         }
-        buttonClassName="bg-cyan-600 shadow-[0_3px_10px_rgba(8,145,178,0.35)]"
+        buttonClassName="bg-cyan-600 shadow-sticker-sm"
       />
       {masteryRow}
     </>
@@ -357,7 +515,9 @@ function PracticeProblem({
 
   return (
     <div className="practice-overlay-enter">
-      <div className="mb-3 text-[15px] font-bold text-gray-800">{problemDisplayId(problem)} · {problem.title}</div>
+      <div className="mb-3 text-[15px] font-bold text-gray-800">
+        {problemDisplayId(problem)} · {problem.title}
+      </div>
       <QuestionLayout
         question={question}
         solution={solution}
@@ -391,14 +551,14 @@ function FavoritesPoolProgress({
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between">
         <span className="text-[12px] font-bold text-rose-600">{label}</span>
-        <span className="font-fredoka text-[12px] font-black tabular-nums text-rose-600">
+        <span className="font-fredoka text-[12px] font-black text-rose-600 tabular-nums">
           {current}
           <span className="text-[10px] opacity-60">/{total}</span>
         </span>
       </div>
       <div className="relative h-3 overflow-hidden rounded-full bg-rose-100">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-rose-400 to-rose-500 transition-[width] duration-300"
+          className="absolute inset-y-0 left-0 rounded-full bg-rose-400 transition-[width] duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -470,8 +630,13 @@ export default function ProblemPracticeSession({
           style={skin.panel.style}
         >
           <div className="mb-3 text-5xl">{skin.emptyIcon}</div>
-          <div className="text-lg font-bold" style={{ color: skin.titleColor }}>{skin.emptyTitle}</div>
-          <div className="mt-1 text-sm" style={{ color: skin.bodyColor }}>{skin.emptySubtitle}</div>
+          <div className="text-lg font-bold" style={{ color: skin.titleColor }}>
+            {skin.emptyTitle}
+          </div>
+          <div className="mt-1 text-sm" style={{ color: skin.bodyColor }}>
+            {skin.emptySubtitle}
+          </div>
+          {/* native-ok: 外观由 skin（题海深色 + 页面 styled-jsx 的 lure-btn 发光类）整体驱动，Radix Button 无法承载 */}
           <button
             onClick={onEnd}
             className={`mt-6 cursor-pointer rounded-full border-none px-6 py-2.5 text-sm font-bold ${skin.emptyBtn.className ?? ''}`}
@@ -484,7 +649,7 @@ export default function ProblemPracticeSession({
     )
   }
 
-  const untriedCount = pool.filter(sp => (practiceCount[sp.problem.id] ?? 0) === 0).length
+  const untriedCount = pool.filter((sp) => (practiceCount[sp.problem.id] ?? 0) === 0).length
 
   return (
     <div
@@ -494,7 +659,7 @@ export default function ProblemPracticeSession({
       {/* Decorative particles — ocean-only */}
       {skin.particles && (
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          {skin.particles.map(p => (
+          {skin.particles.map((p) => (
             <div
               key={p.id}
               className="absolute bottom-0 rounded-full"
@@ -519,6 +684,7 @@ export default function ProblemPracticeSession({
         className={`relative z-10 flex shrink-0 items-center gap-3 px-4 py-3 ${skin.header.className ?? ''}`}
         style={skin.header.style}
       >
+        {/* native-ok: 外观由 skin 驱动的关闭钮（题海深色 / 数学浅色两套皮肤） */}
         <button
           onClick={onEnd}
           className={`flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-none text-lg font-bold transition-all hover:scale-105 ${skin.closeBtn.className ?? ''}`}
@@ -534,7 +700,10 @@ export default function ProblemPracticeSession({
             {skin.sessionTitle}
           </span>
           {count > 0 && (
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${skin.chip.className ?? ''}`} style={skin.chip.style}>
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${skin.chip.className ?? ''}`}
+              style={skin.chip.style}
+            >
               已做 {count} 题
             </span>
           )}
@@ -560,7 +729,12 @@ export default function ProblemPracticeSession({
               label={skin.progressLabel}
             />
           ) : (
-            <StarProgressBar color={skin.starColor} target={10} label={skin.progressLabel} compact />
+            <StarProgressBar
+              color={skin.starColor}
+              target={10}
+              label={skin.progressLabel}
+              compact
+            />
           )}
         </div>
       </div>
@@ -570,11 +744,14 @@ export default function ProblemPracticeSession({
         <div className="mx-auto max-w-[700px]">
           {skin.depthDivider && (
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex-1 h-px" style={{ background: 'rgba(0,229,255,0.1)' }} />
-              <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: 'rgba(0,229,255,0.35)' }}>
+              <div className="h-px flex-1" style={{ background: 'rgba(0,229,255,0.1)' }} />
+              <span
+                className="text-[10px] font-bold tracking-widest uppercase"
+                style={{ color: 'rgba(0,229,255,0.35)' }}
+              >
                 ≋ surfaced problem ≋
               </span>
-              <div className="flex-1 h-px" style={{ background: 'rgba(0,229,255,0.1)' }} />
+              <div className="h-px flex-1" style={{ background: 'rgba(0,229,255,0.1)' }} />
             </div>
           )}
           <PracticeProblem
@@ -592,14 +769,16 @@ export default function ProblemPracticeSession({
         className={`relative z-10 flex shrink-0 items-center gap-3 px-4 py-4 ${skin.actionBar.className ?? ''}`}
         style={{ ...skin.actionBar.style, paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
       >
+        {/* native-ok: 外观由 skin 驱动的次按钮（题海深色 / 数学浅色两套皮肤） */}
         <button
           onClick={onEnd}
-          className={`cursor-pointer rounded-full px-5 py-3 text-[13px] font-semibold transition-all active:scale-95 hover:scale-105 ${skin.secondaryBtn.className ?? ''}`}
+          className={`cursor-pointer rounded-full px-5 py-3 text-[13px] font-semibold transition-all hover:scale-105 active:scale-95 ${skin.secondaryBtn.className ?? ''}`}
           style={skin.secondaryBtn.style}
         >
           结束
         </button>
         {isFavorites && (
+          // native-ok: 外观由 skin 驱动的次按钮（题海深色 / 数学浅色两套皮肤）
           <button
             onClick={prevProblem}
             disabled={!canGoPrev}
@@ -613,9 +792,10 @@ export default function ProblemPracticeSession({
             ‹ 上一题
           </button>
         )}
+        {/* native-ok: 外观由 skin 驱动的主按钮（题海页 styled-jsx 的 lure-btn 发光类） */}
         <button
           onClick={nextProblem}
-          className={`flex-1 cursor-pointer rounded-full py-3 text-[14px] font-extrabold tracking-wide transition-all active:scale-95 hover:scale-[1.02] ${skin.primaryBtn.className ?? ''}`}
+          className={`flex-1 cursor-pointer rounded-full py-3 text-[14px] font-extrabold tracking-wide transition-all hover:scale-[1.02] active:scale-95 ${skin.primaryBtn.className ?? ''}`}
           style={skin.primaryBtn.style}
         >
           下一题 ›

@@ -4,6 +4,7 @@ import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g2/lesson5-data'
+import { StickerCard } from '@rosie/ui'
 
 const BASE = '/math/ny/2/5'
 
@@ -64,11 +65,13 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
 
   return (
     <div>
-      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-amber-50 via-amber-100 to-orange-100 p-6">
+      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-amber-50 p-6">
         <div className="pointer-events-none absolute -top-2.5 -right-2.5 rotate-[15deg] text-[90px] opacity-[0.12]">
           🔮
         </div>
-        <LessonHomeTitle lessonKey="2-5" className="text-2xl font-extrabold text-amber-900">找规律 🔮</LessonHomeTitle>
+        <LessonHomeTitle lessonKey="2-5" className="text-2xl font-extrabold text-amber-900">
+          找规律 🔮
+        </LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-amber-800">
           第53讲 · 二年级目标班 · 第5讲
           <br />
@@ -76,7 +79,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         </p>
       </div>
 
-      <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+      <StickerCard elevation="sm" radius="md" className="mb-4">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">
           🧠 找规律 · 4大题型
         </div>
@@ -94,7 +97,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
               <Link
                 key={t.tag}
                 href={`${BASE}/alltest?type=${t.tag}`}
-                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} transition-all hover:shadow-md`}
+                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} hover:shadow-sticker transition-all`}
               >
                 <div
                   className={`mb-1 flex items-center justify-between text-xs font-bold ${style.titleColor}`}
@@ -117,7 +120,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
             <strong>差不变看等差，比不变看等比；图形题先标位置，编码题先分内外层。</strong>
           </span>
         </div>
-      </div>
+      </StickerCard>
 
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {MODULES.map((m) => {
@@ -127,7 +130,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
             <Link
               key={m.key}
               href={m.path}
-              className={`block rounded-[14px] ${m.bg} p-4 no-underline shadow-sm transition-all hover:shadow-md`}
+              className={`block rounded-[14px] ${m.bg} shadow-sticker-sm hover:shadow-sticker p-4 no-underline transition-all`}
             >
               <div className="mb-1 text-2xl">{m.icon}</div>
               <div className="text-text-primary mb-0.5 text-[15px] font-bold">{m.title}</div>
@@ -140,12 +143,12 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         })}
       </div>
 
-      <div className="rounded-[14px] bg-white p-4 text-center shadow-sm">
+      <StickerCard elevation="sm" radius="md" className="text-center">
         <div className="text-text-secondary text-sm">
           全讲进度：已练 <strong className="text-text-primary">{attemptedAll}</strong> / {totalAll}{' '}
           题 · 已掌握 <strong className="text-emerald-600">{masteredAll}</strong> 题
         </div>
-      </div>
+      </StickerCard>
     </div>
   )
 }

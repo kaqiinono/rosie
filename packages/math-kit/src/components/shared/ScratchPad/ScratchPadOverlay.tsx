@@ -11,6 +11,7 @@ import ScratchPadEdgeNav from './ScratchPadEdgeNav'
 import type { ScratchObject } from './scratch-pad-types'
 import { useScratchPad } from './useScratchPad'
 import './scratch-pad.css'
+import { Button } from '@rosie/ui/themes'
 
 type EdgeNavConfig = {
   hasPrev: boolean
@@ -185,7 +186,7 @@ export default function ScratchPadOverlay({
         {showCanvas && (
           <div
             ref={containerRef}
-            className={`scratch-pad-draw-surface absolute inset-0 overflow-auto overscroll-contain select-none${tool !== 'pan' ? ' touch-none' : ''}`}
+            className={`scratch-pad-draw-surface absolute inset-0 overflow-auto overscroll-contain select-none${tool !== 'pan' ? 'touch-none' : ''}`}
           >
             <div
               className="scratch-pad-draw-surface relative select-none"
@@ -198,7 +199,7 @@ export default function ScratchPadOverlay({
             >
               <canvas
                 ref={canvasRef}
-                className={`block touch-none select-none${readOnly ? ' pointer-events-none' : ''}${tool === 'pan' ? ' cursor-grab active:cursor-grabbing' : ''}`}
+                className={`block touch-none select-none${readOnly ? 'pointer-events-none' : ''}${tool === 'pan' ? 'cursor-grab active:cursor-grabbing' : ''}`}
                 onPointerDown={readOnly ? undefined : handlePointerDown}
                 onPointerMove={readOnly ? undefined : handlePointerMove}
                 onPointerUp={readOnly ? undefined : handlePointerUp}
@@ -241,9 +242,7 @@ export default function ScratchPadOverlay({
         )}
 
         {!showCanvas && readOnly && (
-          <div className="px-4 text-center text-[13px] text-slate-500">
-            本题错时未使用草稿纸
-          </div>
+          <div className="px-4 text-center text-[13px] text-slate-500">本题错时未使用草稿纸</div>
         )}
 
         {!readOnly && showCanvas && (
@@ -281,18 +280,14 @@ export default function ScratchPadOverlay({
 
       {readOnly ? (
         <div
-          className="shrink-0 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md"
+          className="border-kid-line shrink-0 border-t bg-white px-4 py-3"
           style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}
         >
           <div className="flex items-center justify-between gap-3">
             <span className="text-[12px] font-semibold text-slate-500">草稿只读，不可修改</span>
-            <button
-              type="button"
-              onClick={handleClose}
-              className="cursor-pointer rounded-lg bg-indigo-500 px-4 py-2 text-[12px] font-bold text-white shadow-sm active:scale-95"
-            >
+            <Button type="button" onClick={handleClose} variant="solid" color="indigo" size="1">
               关闭
-            </button>
+            </Button>
           </div>
         </div>
       ) : showCanvas ? (
@@ -322,16 +317,19 @@ export default function ScratchPadOverlay({
         />
       ) : (
         <div
-          className="shrink-0 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-md"
+          className="border-kid-line shrink-0 border-t bg-white px-4 py-3"
           style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}
         >
-          <button
+          <Button
             type="button"
             onClick={handleClose}
-            className="w-full cursor-pointer rounded-lg bg-indigo-500 py-2.5 text-[13px] font-bold text-white shadow-sm active:scale-95"
+            variant="solid"
+            color="indigo"
+            size="2"
+            className="w-full"
           >
             {closeLabel}
-          </button>
+          </Button>
         </div>
       )}
     </div>

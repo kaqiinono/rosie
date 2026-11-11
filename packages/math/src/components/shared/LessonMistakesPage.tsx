@@ -14,6 +14,7 @@ import { useStartPracticeQueue } from '@rosie/math-kit/components/shared/practic
 import { lessonKeyFromHref } from '@rosie/math-kit/utils/lesson-grade'
 import type { PracticeQueueItem } from '@rosie/math-kit/utils/practice-queue-types'
 import { problemDisplayId } from '@rosie/math-kit/utils/problem-display-id'
+import { Button } from '@rosie/ui/themes'
 
 type TagStyleMap = Record<string, string>
 
@@ -27,7 +28,9 @@ type Props = {
   accentClass?: string
 }
 
-function buildProblemMap(problems: ProblemSet): Map<string, { p: Problem; setName: string; idx: number }> {
+function buildProblemMap(
+  problems: ProblemSet,
+): Map<string, { p: Problem; setName: string; idx: number }> {
   const map = new Map<string, { p: Problem; setName: string; idx: number }>()
   for (const [setName, list] of Object.entries(problems) as [string, Problem[]][]) {
     list.forEach((p, i) => map.set(p.id, { p, setName, idx: i }))
@@ -63,20 +66,27 @@ function MistakeRow({
   const srcLabel = SOURCE_LABELS[item.setName] || item.setName
 
   return (
+    // native-ok: 整行错题卡片（图标 + 标题 + 多枚标签），按掌握度着色，Radix Button 会居中挤压
     <button
       type="button"
       onClick={onPractice}
-      className={`flex w-full cursor-pointer items-center gap-3 rounded-[12px] border-[1.5px] bg-white p-3 text-left shadow-[0_2px_8px_rgba(0,0,0,0.06)] transition-all hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] active:scale-[0.99] ${
+      className={`shadow-sticker-sm hover:shadow-sticker-sm flex w-full cursor-pointer items-center gap-3 rounded-[12px] border-[1.5px] bg-white p-3 text-left transition-all active:scale-[0.99] ${
         isMastered ? 'border-app-green opacity-70' : `border-[#fca5a5] ${MASTERY_BORDER[level]}`
       }`}
     >
-      <div className={`flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full text-sm ${MASTERY_BADGE_BG[level]}`}>
+      <div
+        className={`flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full text-sm ${MASTERY_BADGE_BG[level]}`}
+      >
         {MASTERY_ICON[level]}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-[13px] font-semibold text-text-primary">{problemDisplayId(p)} · {p.title}</div>
+        <div className="text-text-primary text-[13px] font-semibold">
+          {problemDisplayId(p)} · {p.title}
+        </div>
         <div className="mt-0.5 flex flex-wrap gap-1">
-          <span className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagStyle[p.tag] || 'bg-gray-100 text-gray-600'}`}>
+          <span
+            className={`rounded-full px-2 py-px text-[10px] font-semibold ${tagStyle[p.tag] || 'bg-gray-100 text-gray-600'}`}
+          >
             {p.tagLabel}
           </span>
           <span className="rounded-full bg-orange-100 px-2 py-px text-[10px] font-semibold text-orange-700">
@@ -88,7 +98,7 @@ function MistakeRow({
             </span>
           )}
           {count > 0 && (
-            <span className="rounded-full bg-gray-100 px-2 py-px text-[10px] text-text-muted">
+            <span className="text-text-muted rounded-full bg-gray-100 px-2 py-px text-[10px]">
               已练 {count} 次
             </span>
           )}
@@ -126,20 +136,24 @@ export default function LessonMistakesPage({
   const lessonId = lessonKeyFromHref(basePath) ?? ''
 
   const problemMap = buildProblemMap(problems)
-  const wrongList = [...wrongIds]
-    .map((id) => problemMap.get(id))
-    .filter(Boolean) as { p: Problem; setName: string; idx: number }[]
+  const wrongList = [...wrongIds].map((id) => problemMap.get(id)).filter(Boolean) as {
+    p: Problem
+    setName: string
+    idx: number
+  }[]
   const wrongProblems = wrongList.map((x) => x.p)
   const masteredCount = wrongList.filter(({ p }) => (correctCount[p.id] ?? 0) >= 3).length
 
-  const mistakePool = useMemo((): PracticeQueueItem[] =>
-    wrongList.map(({ p, setName, idx }) => ({
-      problem: p,
-      section: setName,
-      lessonId,
-      detailHref: `${basePath}/${setName}/${idx + 1}`,
-    })),
-  [wrongList, lessonId, basePath])
+  const mistakePool = useMemo(
+    (): PracticeQueueItem[] =>
+      wrongList.map(({ p, setName, idx }) => ({
+        problem: p,
+        section: setName,
+        lessonId,
+        detailHref: `${basePath}/${setName}/${idx + 1}`,
+      })),
+    [wrongList, lessonId, basePath],
+  )
 
   const beginPractice = (initialProblemId?: string) => {
     if (mistakePool.length === 0) return
@@ -156,14 +170,17 @@ export default function LessonMistakesPage({
 
   const userId = user?.id
   const loadDrafts = useMemo(
-    () => userId && wrongIdsKey ? () => fetchWrongDraftProblemIds(userId, wrongIdsKey.split('\0')) : null,
+    () =>
+      userId && wrongIdsKey
+        ? () => fetchWrongDraftProblemIds(userId, wrongIdsKey.split('\0'))
+        : null,
     [userId, wrongIdsKey],
   )
   const draftProblemIds = useDraftQuery(loadDrafts)
 
   return (
     <div>
-      <div className="mb-3.5 rounded-[14px] border border-[#fecaca] bg-gradient-to-br from-[#fff5f5] to-[#ffedd5] p-4">
+      <div className="mb-3.5 rounded-[14px] border border-[#fecaca] bg-[#ffedd5] p-4">
         <div className="mb-1 flex items-center gap-2 text-sm font-extrabold text-[#991b1b]">
           📕 错题本
           {wrongList.length > 0 && (
@@ -187,24 +204,27 @@ export default function LessonMistakesPage({
           </div>
         )}
         {wrongList.length > 0 && (
-          <button
+          <Button
             type="button"
             onClick={() => beginPractice()}
-            className="mt-2 cursor-pointer rounded-full bg-[#ea580c] px-4 py-1.5 text-[12px] font-bold text-white shadow-sm active:scale-95"
+            variant="solid"
+            color="orange"
+            size="1"
+            className="mt-2"
           >
             一键练习（{wrongList.length} 题）
-          </button>
+          </Button>
         )}
       </div>
 
       {wrongList.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
           <div className="text-5xl">🎉</div>
-          <div className="text-[15px] font-bold text-text-primary">错题本是空的！</div>
-          <div className="text-[13px] text-text-muted">答错的题目会自动出现在这里</div>
+          <div className="text-text-primary text-[15px] font-bold">错题本是空的！</div>
+          <div className="text-text-muted text-[13px]">答错的题目会自动出现在这里</div>
           <Link
             href={basePath}
-            className="mt-2 rounded-full bg-orange-500 px-5 py-2 text-[13px] font-semibold text-white no-underline shadow-[0_3px_10px_rgba(234,88,12,0.3)]"
+            className="shadow-sticker-sm mt-2 rounded-full bg-orange-500 px-5 py-2 text-[13px] font-semibold text-white no-underline"
           >
             去做题 →
           </Link>

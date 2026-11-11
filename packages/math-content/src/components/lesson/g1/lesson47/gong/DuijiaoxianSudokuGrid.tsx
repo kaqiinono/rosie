@@ -14,7 +14,13 @@ import {
 } from './utils'
 import { ActionButton } from './shared'
 
-export function DuijiaoxianSudokuGrid({ rows, cells = [], onSubmit, onStateChange, initialState }: DuijiaoxianSudokuProps) {
+export function DuijiaoxianSudokuGrid({
+  rows,
+  cells = [],
+  onSubmit,
+  onStateChange,
+  initialState,
+}: DuijiaoxianSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const boxDims = useMemo(
     () => resolveSudokuBoxDimensions(rowCount, colCount),
@@ -80,7 +86,7 @@ export function DuijiaoxianSudokuGrid({ rows, cells = [], onSubmit, onStateChang
                         {isGiven ? (
                           <span className="font-semibold">{givenGrid[r][c]}</span>
                         ) : (
-                          <input
+                          <input // native-ok: 数独格子里的单字填空输入框，填满 cell 且透明底
                             type="text"
                             maxLength={1}
                             value={values[r][c]}

@@ -33,6 +33,7 @@ import {
   type QuizSection,
 } from '@rosie/math/utils/quiz-lesson-meta'
 import type { QuizProblemItem } from '@rosie/math/hooks/useMathQuiz'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -83,8 +84,17 @@ export default function QuizPage() {
   const { practiceCount } = useMathPracticeStats(user)
   const { wrongIds } = useMathWrong(user)
   const { masteryMap } = useProblemMastery(user)
-  const { papers, batches, savePaper, createBatch, appendToBatch, deletePaper, renamePaper, renameBatch, deleteBatch } =
-    useMathQuiz(user)
+  const {
+    papers,
+    batches,
+    savePaper,
+    createBatch,
+    appendToBatch,
+    deletePaper,
+    renamePaper,
+    renameBatch,
+    deleteBatch,
+  } = useMathQuiz(user)
 
   const allocationCtx = useMemo(
     () => ({ wrongIds, practiceCount, masteryMap }),
@@ -130,7 +140,12 @@ export default function QuizPage() {
 
   const modalPoolStats = useMemo(() => {
     if (modalLessons.length === 0) {
-      return { totalPool: 0, perVolume: 0, volumeCount: 0, lessonPoolSizes: {} as Record<string, number> }
+      return {
+        totalPool: 0,
+        perVolume: 0,
+        volumeCount: 0,
+        lessonPoolSizes: {} as Record<string, number>,
+      }
     }
     return computeQuizPoolStats(
       modalLessons,
@@ -142,7 +157,7 @@ export default function QuizPage() {
   }, [modalLessons, modalSections, modalTypes, modalCounts, draftProblemIds])
 
   const appendBatch = useMemo(
-    () => (appendBatchId ? batches.find((b) => b.id === appendBatchId) ?? null : null),
+    () => (appendBatchId ? (batches.find((b) => b.id === appendBatchId) ?? null) : null),
     [appendBatchId, batches],
   )
 
@@ -154,17 +169,12 @@ export default function QuizPage() {
   // Lessons that can be picked in the current modal mode. In random mode lessons
   // already in the draft are excluded; in precise mode every lesson is selectable
   // because individual problems are de-duplicated against the draft.
-  const selectableLessons = useMemo(
-    () => {
-      if (modalMode === 'append') {
-        return LESSON_META.filter((l) => !batchLessonIds.has(l.id))
-      }
-      return modalMode === 'random'
-        ? LESSON_META.filter((l) => !existingIds.has(l.id))
-        : LESSON_META
-    },
-    [modalMode, existingIds, batchLessonIds],
-  )
+  const selectableLessons = useMemo(() => {
+    if (modalMode === 'append') {
+      return LESSON_META.filter((l) => !batchLessonIds.has(l.id))
+    }
+    return modalMode === 'random' ? LESSON_META.filter((l) => !existingIds.has(l.id)) : LESSON_META
+  }, [modalMode, existingIds, batchLessonIds])
 
   // Step 2 of precise mode: filtered problems grouped per lesson.
   const preciseGroups = useMemo(() => {
@@ -205,17 +215,15 @@ export default function QuizPage() {
 
   const appendPoolStats = useMemo(() => {
     if (modalMode !== 'append' || modalLessons.length === 0) {
-      return { totalPool: 0, perVolume: 0, volumeCount: 0, lessonPoolSizes: {} as Record<string, number> }
+      return {
+        totalPool: 0,
+        perVolume: 0,
+        volumeCount: 0,
+        lessonPoolSizes: {} as Record<string, number>,
+      }
     }
-    const sections =
-      modalSections.length > 0 ? modalSections : appendBatch?.config.sections ?? []
-    return computeQuizPoolStats(
-      modalLessons,
-      sections,
-      modalTypes,
-      modalCounts,
-      batchUsedIds,
-    )
+    const sections = modalSections.length > 0 ? modalSections : (appendBatch?.config.sections ?? [])
+    return computeQuizPoolStats(modalLessons, sections, modalTypes, modalCounts, batchUsedIds)
   }, [modalMode, modalLessons, modalSections, modalTypes, modalCounts, batchUsedIds, appendBatch])
 
   const groupedRecords = useMemo(() => {
@@ -391,8 +399,7 @@ export default function QuizPage() {
       .sort((a, b) => (a.batchIndex ?? 0) - (b.batchIndex ?? 0))
 
     const countsWithDefaults = { ...modalCounts }
-    const defaultCount =
-      Object.values(appendBatch.config.lessons)[0]?.countPerVolume ?? 1
+    const defaultCount = Object.values(appendBatch.config.lessons)[0]?.countPerVolume ?? 1
     for (const lessonId of modalLessons) {
       if (!countsWithDefaults[lessonId]) {
         countsWithDefaults[lessonId] = defaultCount
@@ -414,8 +421,7 @@ export default function QuizPage() {
       allocationCtx,
     )
 
-    const sections =
-      modalSections.length > 0 ? modalSections : appendBatch.config.sections
+    const sections = modalSections.length > 0 ? modalSections : appendBatch.config.sections
 
     const updates = plan.updates.map((u) => {
       const paper = batchPapers.find((p) => p.id === u.paperId)!
@@ -588,13 +594,13 @@ export default function QuizPage() {
     return (
       <div
         key={paper.id}
-        className="flex cursor-pointer items-center gap-2 rounded-2xl bg-white py-3 pr-2 pl-4 transition-all hover:shadow-md"
-        style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,.04)' }}
+        className="hover:shadow-sticker flex cursor-pointer items-center gap-2 rounded-2xl bg-white py-3 pr-2 pl-4 transition-all"
+        style={{ border: '1px solid #e2e8f0', boxShadow: '0 3px 0 rgba(0,0,0,.3)' }}
         onClick={() => router.push(`/math/ny/quiz/${paper.id}`)}
       >
         <div className="min-w-0 flex-1">
           {editingId === paper.id ? (
-            <input
+            <TextField.Root
               autoFocus
               type="text"
               value={editingTitle}
@@ -605,8 +611,9 @@ export default function QuizPage() {
                 if (e.key === 'Enter') void commitRename()
                 else if (e.key === 'Escape') setEditingId(null)
               }}
-              className="w-full rounded-lg border border-indigo-300 bg-white px-2 py-1 text-sm font-bold text-slate-800 outline-none"
               aria-label="修改试卷标题"
+              size="1"
+              className="w-full"
             />
           ) : (
             <p className="truncate text-sm font-bold text-slate-800">{paper.title}</p>
@@ -624,8 +631,7 @@ export default function QuizPage() {
             <span className="text-slate-300">·</span>
             {paper.completedAt ? (
               <span className="font-semibold text-emerald-600">
-                {paper.score ?? 0}/{paper.totalScore} 分
-                {paper.batchId ? ' · 已提交' : ''}
+                {paper.score ?? 0}/{paper.totalScore} 分{paper.batchId ? ' · 已提交' : ''}
               </span>
             ) : paper.answers && Object.keys(paper.answers).length > 0 ? (
               <span className="font-semibold text-indigo-500">作答中</span>
@@ -634,14 +640,17 @@ export default function QuizPage() {
             )}
           </div>
         </div>
-        <button
+        <IconButton
           onClick={(e) => {
             e.stopPropagation()
             startRename(paper.id, paper.title)
           }}
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
           title="重命名"
           aria-label="重命名试卷"
+          variant="ghost"
+          color="gray"
+          size="2"
+          className="w-9 shrink-0"
         >
           <svg
             width="15"
@@ -657,8 +666,8 @@ export default function QuizPage() {
             <path d="M12 20h9" />
             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z" />
           </svg>
-        </button>
-        <button
+        </IconButton>
+        <IconButton
           onClick={(e) => {
             e.stopPropagation()
             window.open(
@@ -666,9 +675,12 @@ export default function QuizPage() {
               '_blank',
             )
           }}
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-indigo-50 hover:text-indigo-500"
           title="打印"
           aria-label="打印试卷"
+          variant="ghost"
+          color="gray"
+          size="2"
+          className="w-9 shrink-0"
         >
           <svg
             width="16"
@@ -685,15 +697,18 @@ export default function QuizPage() {
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
             <rect x="6" y="14" width="12" height="8" />
           </svg>
-        </button>
-        <button
+        </IconButton>
+        <IconButton
           onClick={(e) => {
             e.stopPropagation()
             void deletePaper(paper.id)
           }}
-          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-rose-50 hover:text-rose-500"
           title="删除"
           aria-label="删除试卷"
+          variant="ghost"
+          color="gray"
+          size="2"
+          className="w-9 shrink-0"
         >
           <svg
             width="15"
@@ -710,7 +725,7 @@ export default function QuizPage() {
             <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
             <path d="M10 11v6M14 11v6" />
           </svg>
-        </button>
+        </IconButton>
       </div>
     )
   }
@@ -719,9 +734,9 @@ export default function QuizPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-slate-50">
+      <div className="bg-kid-paper min-h-screen">
         {/* ── Top bar ─────────────────────────────────────────────────── */}
-        <div className="sticky top-0 z-20 border-b border-slate-100 bg-white/90 backdrop-blur-sm">
+        <div className="border-kid-line sticky top-0 z-20 border-b bg-white">
           <div className="mx-auto max-w-2xl">
             {/* Row 1: back + title (right padding reserves room for AccountBar on mobile) */}
             <div className="flex h-12 items-center justify-between pr-[168px] pl-4 lg:h-14 lg:pr-4">
@@ -752,18 +767,12 @@ export default function QuizPage() {
                 >
                   错题本
                 </Link>
-                <button
-                  onClick={() => openModal('precise')}
-                  className="cursor-pointer rounded-full bg-violet-100 px-3.5 py-1.5 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-200"
-                >
+                <Button onClick={() => openModal('precise')} variant="soft" color="violet" size="1">
                   精准出题
-                </button>
-                <button
-                  onClick={() => openModal('random')}
-                  className="cursor-pointer rounded-full bg-indigo-500 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-600"
-                >
+                </Button>
+                <Button onClick={() => openModal('random')} variant="solid" color="indigo" size="1">
                   随机出题
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -790,19 +799,12 @@ export default function QuizPage() {
                 错题本
               </Link>
               <div className="flex flex-1 items-center justify-end gap-2">
-                <button
-                  onClick={() => openModal('precise')}
-                  className="flex cursor-pointer items-center justify-center gap-1.5 rounded-full bg-violet-100 px-4 py-2 text-sm font-semibold text-violet-700 transition-colors hover:bg-violet-200"
-                >
+                <Button onClick={() => openModal('precise')} variant="soft" color="violet" size="2">
                   精准出题
-                </button>
-                <button
-                  onClick={() => openModal('random')}
-                  className="flex cursor-pointer items-center justify-center gap-1.5 rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-600"
-                  style={{ boxShadow: '0 4px 12px rgba(99,102,241,.25)' }}
-                >
+                </Button>
+                <Button onClick={() => openModal('random')} variant="solid" color="indigo" size="2">
                   随机出题
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -815,7 +817,7 @@ export default function QuizPage() {
               className="mb-6 rounded-2xl bg-white p-4"
               style={{
                 border: '1.5px solid rgba(99,102,241,.2)',
-                boxShadow: '0 4px 16px rgba(99,102,241,.08)',
+                boxShadow: '0 3px 0 rgba(99,102,241,.3)',
               }}
             >
               <div className="mb-3 flex items-center justify-between">
@@ -823,29 +825,29 @@ export default function QuizPage() {
                   当前试卷草稿 · {quizItems.length} 题
                 </p>
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => setQuizItems([])}
-                    className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500 transition-colors hover:bg-slate-200"
-                  >
+                  <Button onClick={() => setQuizItems([])} variant="soft" color="gray" size="1">
                     清空
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleSave}
                     disabled={saving}
-                    className="rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-600 disabled:opacity-50"
+                    variant="solid"
+                    color="jade"
+                    size="1"
                   >
                     {saving ? '保存中…' : '保存试卷'}
-                  </button>
+                  </Button>
                 </div>
               </div>
 
-              <input
+              <TextField.Root
                 type="text"
                 value={draftTitle}
                 onChange={(e) => setDraftTitle(e.target.value)}
                 placeholder={`综合测试卷${todayDateStr()}`}
-                className="mb-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 transition-colors outline-none focus:border-indigo-400 focus:bg-white"
                 aria-label="试卷标题"
+                size="2"
+                className="mb-3 w-full"
               />
 
               <div className="flex flex-col gap-2">
@@ -863,7 +865,7 @@ export default function QuizPage() {
                   return (
                     <div
                       key={item.uid}
-                      className="flex items-start gap-3 rounded-xl bg-slate-50 p-3"
+                      className="bg-kid-paper flex items-start gap-3 rounded-xl p-3"
                     >
                       <span className="mt-0.5 w-4 shrink-0 text-xs font-bold text-slate-400">
                         {i + 1}
@@ -892,18 +894,22 @@ export default function QuizPage() {
                         </p>
                       </div>
                       <div className="flex shrink-0 gap-1.5">
-                        <button
+                        <Button
                           onClick={() => handleSwap(item.uid)}
-                          className="rounded-full bg-violet-100 px-2.5 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-200"
+                          variant="soft"
+                          color="violet"
+                          size="1"
                         >
                           换题
-                        </button>
-                        <button
+                        </Button>
+                        <IconButton
                           onClick={() => handleRemove(item.uid)}
-                          className="rounded-full bg-rose-50 px-2.5 py-1 text-[11px] text-rose-500 hover:bg-rose-100"
+                          variant="soft"
+                          color="ruby"
+                          size="1"
                         >
                           ✕
-                        </button>
+                        </IconButton>
                       </div>
                     </div>
                   )
@@ -956,10 +962,10 @@ export default function QuizPage() {
                     <div
                       key={batch.id}
                       className="rounded-2xl bg-white p-3"
-                      style={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,.04)' }}
+                      style={{ border: '1px solid #e2e8f0', boxShadow: '0 3px 0 rgba(0,0,0,.3)' }}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <button
+                        <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                           type="button"
                           onClick={() => toggleBatchExpanded(batch.id)}
                           className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-xl px-1 py-0.5 text-left transition-colors hover:bg-slate-50"
@@ -983,9 +989,10 @@ export default function QuizPage() {
                           </svg>
                           <div className="min-w-0 flex-1">
                             {editingBatchId === batch.id ? (
-                              <input
+                              <TextField.Root
                                 autoFocus
                                 type="text"
+                                size="1"
                                 value={editingBatchTitle}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => setEditingBatchTitle(e.target.value)}
@@ -994,11 +1001,13 @@ export default function QuizPage() {
                                   if (e.key === 'Enter') void commitBatchRename()
                                   else if (e.key === 'Escape') setEditingBatchId(null)
                                 }}
-                                className="w-full max-w-xs rounded-lg border border-indigo-300 bg-white px-2 py-1 text-sm font-bold text-slate-800 outline-none"
+                                className="w-full max-w-xs"
                                 aria-label="修改批次标题"
                               />
                             ) : (
-                              <p className="truncate text-sm font-bold text-slate-700">{batch.titleBase}</p>
+                              <p className="truncate text-sm font-bold text-slate-700">
+                                {batch.titleBase}
+                              </p>
                             )}
                             <p className="mt-0.5 text-[11px] text-slate-400">
                               <span
@@ -1019,47 +1028,57 @@ export default function QuizPage() {
                           </div>
                         </button>
                         <div className="flex shrink-0 items-center gap-1.5">
-                          <button
+                          <Button
                             type="button"
                             disabled={batchBusyId === batch.id}
                             onClick={() => startBatchRename(batch)}
-                            className="cursor-pointer rounded-full bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200 disabled:opacity-50"
                             title="修改批次标题"
+                            variant="soft"
+                            color="gray"
+                            size="1"
                           >
                             改名
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="button"
                             disabled={batchBusyId === batch.id || batchPapers.length === 0}
                             onClick={() => {
                               window.open(`/math/ny/quiz/batch/${batch.id}/print`, '_blank')
                             }}
-                            className="cursor-pointer rounded-full bg-indigo-50 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-100 disabled:opacity-50"
                             title="按批次打印全部试卷"
+                            variant="soft"
+                            color="indigo"
+                            size="1"
                           >
                             打印
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="button"
                             disabled={batchBusyId === batch.id}
                             onClick={() => openAppendModal(batch)}
-                            className="cursor-pointer rounded-full bg-violet-100 px-3 py-1.5 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-200 disabled:opacity-50"
+                            variant="soft"
+                            color="violet"
+                            size="1"
                           >
                             追加讲次
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             type="button"
                             disabled={batchBusyId === batch.id}
                             onClick={() => void handleDeleteBatch(batch, batchPapers.length)}
-                            className="cursor-pointer rounded-full bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-500 transition-colors hover:bg-rose-100 disabled:opacity-50"
                             title="删除整批"
+                            variant="soft"
+                            color="ruby"
+                            size="1"
                           >
                             {batchBusyId === batch.id ? '…' : '删除'}
-                          </button>
+                          </Button>
                         </div>
                       </div>
                       {expanded && (
-                        <div className="mt-3 flex flex-col gap-2">{batchPapers.map(renderPaperRow)}</div>
+                        <div className="mt-3 flex flex-col gap-2">
+                          {batchPapers.map(renderPaperRow)}
+                        </div>
                       )}
                     </div>
                   )
@@ -1086,16 +1105,16 @@ export default function QuizPage() {
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
-          style={{ background: 'rgba(15,23,42,.5)', backdropFilter: 'blur(4px)' }}
+          style={{ background: 'rgba(15,23,42,.5)' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setModalOpen(false)
           }}
         >
           <div
             className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-white sm:max-w-[560px] sm:rounded-2xl"
-            style={{ boxShadow: '0 24px 60px rgba(0,0,0,.2)' }}
+            style={{ boxShadow: '0 3px 0 rgba(0,0,0,.3)' }}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-4">
+            <div className="border-kid-line sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-4">
               <h2 className="font-black text-slate-800">
                 {modalMode === 'random'
                   ? '随机出题'
@@ -1105,12 +1124,9 @@ export default function QuizPage() {
                       ? '精准出题 · 筛选'
                       : '精准出题 · 选题'}
               </h2>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="text-lg leading-none text-slate-400 hover:text-slate-600"
-              >
+              <IconButton onClick={() => setModalOpen(false)} variant="ghost" color="gray" size="3">
                 ✕
-              </button>
+              </IconButton>
             </div>
 
             <div className="flex flex-col gap-5 px-5 py-4">
@@ -1138,29 +1154,33 @@ export default function QuizPage() {
                                 ({group.entries.length})
                               </span>
                             </p>
-                            <button
+                            <Button
                               onClick={() => toggleGroupAll(group.entries)}
                               disabled={selectable.length === 0}
-                              className="shrink-0 text-[11px] text-indigo-500 hover:text-indigo-700 disabled:opacity-40"
+                              variant="ghost"
+                              color="indigo"
+                              size="1"
+                              className="shrink-0"
                             >
                               {allSel ? '取消全选' : '全选'}
-                            </button>
+                            </Button>
                           </div>
                           <div className="flex flex-col gap-1.5">
                             {group.entries.map((entry) => {
                               const inDraft = draftProblemIds.has(entry.problem.id)
                               const sel = preciseSelected.has(entry.problem.id)
                               return (
+                                // native-ok: 题目选择行是含标签与多行题干的容器按钮，Radix Button 会居中挤压
                                 <button
                                   key={entry.problem.id}
                                   disabled={inDraft}
                                   onClick={() => togglePrecise(entry.problem.id)}
                                   className={`flex items-start gap-2.5 rounded-xl p-2.5 text-left transition-all ${
                                     inDraft
-                                      ? 'cursor-not-allowed bg-slate-50 opacity-60'
+                                      ? 'bg-kid-paper cursor-not-allowed opacity-60'
                                       : sel
                                         ? 'bg-indigo-50'
-                                        : 'bg-slate-50 hover:bg-slate-100'
+                                        : 'bg-kid-paper hover:bg-slate-100'
                                   }`}
                                   style={
                                     sel && !inDraft
@@ -1172,7 +1192,7 @@ export default function QuizPage() {
                                     className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] font-bold ${
                                       sel
                                         ? 'border-indigo-500 bg-indigo-500 text-white'
-                                        : 'border-slate-300 bg-white text-transparent'
+                                        : 'border-kid-line bg-white text-transparent'
                                     }`}
                                   >
                                     ✓
@@ -1216,7 +1236,7 @@ export default function QuizPage() {
                       <p className="text-xs font-bold tracking-wider text-slate-400 uppercase">
                         选择课题
                       </p>
-                      <button
+                      <Button
                         onClick={() => {
                           const allSel = selectableLessons.every((l) => modalLessons.includes(l.id))
                           if (allSel) {
@@ -1227,12 +1247,14 @@ export default function QuizPage() {
                             setModalTypes({})
                           }
                         }}
-                        className="text-[11px] text-indigo-500 hover:text-indigo-700"
+                        variant="ghost"
+                        color="indigo"
+                        size="1"
                       >
                         {selectableLessons.every((l) => modalLessons.includes(l.id))
                           ? '取消全选'
                           : '全选'}
-                      </button>
+                      </Button>
                     </div>
                     <div className="space-y-4">
                       {lessonsByGrade.map((grp) => {
@@ -1247,12 +1269,14 @@ export default function QuizPage() {
                           <div key={grp.grade}>
                             <div className="mb-2 flex items-center justify-between">
                               <p className="text-[11px] font-bold text-slate-500">{grp.label}</p>
-                              <button
+                              <Button
                                 onClick={() => toggleGradeGroup(grp.lessons, !allSel)}
-                                className="text-[11px] text-indigo-500 hover:text-indigo-700"
+                                variant="ghost"
+                                color="indigo"
+                                size="1"
                               >
                                 {allSel ? '取消全选' : '全选'}
-                              </button>
+                              </Button>
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {grp.lessons.map(({ id, name }) => {
@@ -1261,21 +1285,19 @@ export default function QuizPage() {
                                   (modalMode === 'append' && batchLessonIds.has(id))
                                 const selected = modalLessons.includes(id)
                                 return (
-                                  <button
+                                  <Button
                                     key={id}
+                                    type="button"
                                     disabled={alreadyIn}
                                     onClick={() => toggleModalLesson(id)}
-                                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                                      alreadyIn
-                                        ? 'cursor-not-allowed bg-slate-50 text-slate-300'
-                                        : selected
-                                          ? 'bg-indigo-500 text-white shadow-sm'
-                                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                    }`}
+                                    variant={selected && !alreadyIn ? 'solid' : 'soft'}
+                                    color={selected && !alreadyIn ? 'indigo' : 'gray'}
+                                    radius="full"
+                                    size="1"
                                   >
                                     {lessonDisplayLabel(id, true)} · {name}
                                     {alreadyIn ? ' ✓' : ''}
-                                  </button>
+                                  </Button>
                                 )
                               })}
                             </div>
@@ -1291,34 +1313,34 @@ export default function QuizPage() {
                       <p className="text-xs font-bold tracking-wider text-slate-400 uppercase">
                         学习模块
                       </p>
-                      <button
+                      <Button
                         onClick={() =>
                           setModalSections((prev) =>
                             prev.length === ALL_SECTIONS.length ? [] : [...ALL_SECTIONS],
                           )
                         }
-                        className="text-[11px] text-indigo-500 hover:text-indigo-700"
+                        variant="ghost"
+                        color="indigo"
+                        size="1"
                       >
                         {modalSections.length === ALL_SECTIONS.length ? '取消全选' : '综合题库'}
-                      </button>
+                      </Button>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {ALL_SECTIONS.map((s) => {
                         const { label, icon } = SECTION_INFO[s]
                         const sel = modalSections.includes(s)
                         return (
-                          <button
+                          <Button
                             key={s}
                             onClick={() => toggleModalSection(s)}
-                            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                              sel
-                                ? 'bg-violet-500 text-white shadow-sm'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                            }`}
+                            variant={sel ? 'solid' : 'soft'}
+                            color={sel ? 'violet' : 'gray'}
+                            size="1"
                           >
                             <span>{icon}</span>
                             {label}
-                          </button>
+                          </Button>
                         )
                       })}
                     </div>
@@ -1331,7 +1353,9 @@ export default function QuizPage() {
                   {modalLessons.length > 0 && (
                     <section>
                       <p className="mb-2.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                        {modalMode === 'random' || modalMode === 'append' ? '数量与题型' : '题型筛选'}{' '}
+                        {modalMode === 'random' || modalMode === 'append'
+                          ? '数量与题型'
+                          : '题型筛选'}{' '}
                         <span className="font-normal normal-case">(题型可选)</span>
                       </p>
                       <div className="flex flex-col gap-3">
@@ -1341,33 +1365,39 @@ export default function QuizPage() {
                           const selectedTypes = modalTypes[lessonId] ?? []
                           const count = Math.max(1, modalCounts[lessonId] ?? 1)
                           return (
-                            <div key={lessonId} className="rounded-xl bg-slate-50 p-3">
+                            <div key={lessonId} className="bg-kid-paper rounded-xl p-3">
                               <div className="mb-2 flex items-center justify-between gap-2">
                                 <p className="min-w-0 truncate text-xs font-semibold text-slate-600">
                                   第{lessonId}讲 · {meta.name}
                                 </p>
                                 {(modalMode === 'random' || modalMode === 'append') && (
                                   <div className="flex shrink-0 items-center gap-1">
-                                    <button
+                                    <IconButton
                                       type="button"
                                       onClick={() => setModalCount(lessonId, count - 1)}
                                       disabled={count <= 1}
                                       aria-label="减少数量"
-                                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                                      variant="outline"
+                                      color="gray"
+                                      size="1"
+                                      className="w-6"
                                     >
                                       −
-                                    </button>
+                                    </IconButton>
                                     <span className="w-5 text-center text-xs font-bold text-slate-700 tabular-nums">
                                       {count}
                                     </span>
-                                    <button
+                                    <IconButton
                                       type="button"
                                       onClick={() => setModalCount(lessonId, count + 1)}
                                       aria-label="增加数量"
-                                      className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm font-bold text-slate-600 transition-colors hover:bg-slate-100"
+                                      variant="outline"
+                                      color="gray"
+                                      size="1"
+                                      className="w-6"
                                     >
                                       +
-                                    </button>
+                                    </IconButton>
                                     <span className="ml-0.5 text-[11px] text-slate-400">道</span>
                                   </div>
                                 )}
@@ -1376,17 +1406,15 @@ export default function QuizPage() {
                                 {meta.types.map(({ tag, label }) => {
                                   const sel = selectedTypes.includes(tag)
                                   return (
-                                    <button
+                                    <Button
                                       key={tag}
                                       onClick={() => toggleModalType(lessonId, tag)}
-                                      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                        sel
-                                          ? 'bg-indigo-500 text-white'
-                                          : 'border border-slate-200 bg-white text-slate-600 hover:border-indigo-300'
-                                      }`}
+                                      variant={sel ? 'solid' : 'outline'}
+                                      color={sel ? 'indigo' : 'gray'}
+                                      size="1"
                                     >
                                       {label}
-                                    </button>
+                                    </Button>
                                   )
                                 })}
                               </div>
@@ -1396,32 +1424,34 @@ export default function QuizPage() {
                       </div>
                     </section>
                   )}
-                  {(modalMode === 'random' || modalMode === 'append') && modalLessons.length > 0 && (
-                    <section>
-                      <p className="mb-2 text-xs font-bold tracking-wider text-slate-400 uppercase">
-                        试卷标题
-                      </p>
-                      <input
-                        type="text"
-                        value={modalTitle}
-                        onChange={(e) => setModalTitle(e.target.value)}
-                        readOnly={modalMode === 'append'}
-                        placeholder={`综合测试卷${todayDateStr()}`}
-                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 outline-none read-only:cursor-default read-only:opacity-80 focus:border-indigo-400 focus:bg-white"
-                        aria-label="试卷标题"
-                      />
-                      {modalMode === 'append' && (
-                        <p className="mt-1.5 text-[11px] text-slate-400">
-                          追加卷将沿用批次标题并自动续卷号
+                  {(modalMode === 'random' || modalMode === 'append') &&
+                    modalLessons.length > 0 && (
+                      <section>
+                        <p className="mb-2 text-xs font-bold tracking-wider text-slate-400 uppercase">
+                          试卷标题
                         </p>
-                      )}
-                    </section>
-                  )}
+                        <TextField.Root
+                          type="text"
+                          value={modalTitle}
+                          onChange={(e) => setModalTitle(e.target.value)}
+                          readOnly={modalMode === 'append'}
+                          placeholder={`综合测试卷${todayDateStr()}`}
+                          aria-label="试卷标题"
+                          size="2"
+                          className="w-full"
+                        />
+                        {modalMode === 'append' && (
+                          <p className="mt-1.5 text-[11px] text-slate-400">
+                            追加卷将沿用批次标题并自动续卷号
+                          </p>
+                        )}
+                      </section>
+                    )}
                 </>
               )}
             </div>
 
-            <div className="sticky bottom-0 flex flex-col gap-3 border-t border-slate-100 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="border-kid-line sticky bottom-0 flex flex-col gap-3 border-t bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               {modalMode === 'random' ? (
                 <>
                   <span className="text-xs text-slate-400">
@@ -1432,24 +1462,26 @@ export default function QuizPage() {
                     </span>
                   </span>
                   <div className="flex shrink-0 items-center gap-2">
-                    <button
+                    <Button
                       disabled={modalLessons.length === 0}
                       onClick={handleRandomConfirm}
-                      className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-600 transition-all hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+                      variant="soft"
+                      color="gray"
+                      size="2"
                     >
                       确认组卷
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       disabled={
-                        modalLessons.length === 0 ||
-                        modalPoolStats.volumeCount === 0 ||
-                        batchSaving
+                        modalLessons.length === 0 || modalPoolStats.volumeCount === 0 || batchSaving
                       }
                       onClick={() => void handleBatchCreate()}
-                      className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                      variant="solid"
+                      color="indigo"
+                      size="2"
                     >
                       {batchSaving ? '生成中…' : `批量出卷 (${modalPoolStats.volumeCount})`}
-                    </button>
+                    </Button>
                   </div>
                 </>
               ) : modalMode === 'append' ? (
@@ -1461,42 +1493,47 @@ export default function QuizPage() {
                       某讲次题不够时，后续卷自动复用该讲次题目
                     </span>
                   </span>
-                  <button
-                    disabled={modalLessons.length === 0 || appendPoolStats.totalPool === 0 || batchSaving}
+                  <Button
+                    disabled={
+                      modalLessons.length === 0 || appendPoolStats.totalPool === 0 || batchSaving
+                    }
                     onClick={() => void handleAppendConfirm()}
-                    className="rounded-full bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    variant="solid"
+                    color="indigo"
+                    size="2"
                   >
                     {batchSaving ? '追加中…' : '确认追加'}
-                  </button>
+                  </Button>
                 </>
               ) : preciseStep === 1 ? (
                 <>
                   <span className="text-xs text-slate-400">已选 {modalLessons.length} 个课题</span>
-                  <button
+                  <Button
                     disabled={modalLessons.length === 0}
                     onClick={() => setPreciseStep(2)}
-                    className="rounded-full bg-indigo-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+                    variant="solid"
+                    color="indigo"
+                    size="2"
                   >
                     下一步
-                  </button>
+                  </Button>
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => setPreciseStep(1)}
-                    className="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-500 transition-colors hover:bg-slate-200"
-                  >
+                  <Button onClick={() => setPreciseStep(1)} variant="soft" color="gray" size="2">
                     上一步
-                  </button>
+                  </Button>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-slate-400">已选 {preciseSelected.size} 题</span>
-                    <button
+                    <Button
                       disabled={preciseSelected.size === 0}
                       onClick={handlePreciseConfirm}
-                      className="rounded-full bg-emerald-500 px-6 py-2 text-sm font-semibold text-white transition-all hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
+                      variant="solid"
+                      color="jade"
+                      size="2"
                     >
                       完成出卷
-                    </button>
+                    </Button>
                   </div>
                 </>
               )}
@@ -1509,23 +1546,20 @@ export default function QuizPage() {
       {swapItem && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
-          style={{ background: 'rgba(15,23,42,.5)', backdropFilter: 'blur(4px)' }}
+          style={{ background: 'rgba(15,23,42,.5)' }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setSwapUid(null)
           }}
         >
           <div
             className="relative max-h-[90vh] w-full overflow-y-auto rounded-t-3xl bg-white sm:max-w-[560px] sm:rounded-2xl"
-            style={{ boxShadow: '0 24px 60px rgba(0,0,0,.2)' }}
+            style={{ boxShadow: '0 3px 0 rgba(0,0,0,.3)' }}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-4">
+            <div className="border-kid-line sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-4">
               <h2 className="font-black text-slate-800">换题 · 第{swapItem.lessonId}讲</h2>
-              <button
-                onClick={() => setSwapUid(null)}
-                className="text-lg leading-none text-slate-400 hover:text-slate-600"
-              >
+              <IconButton onClick={() => setSwapUid(null)} variant="ghost" color="gray" size="3">
                 ✕
-              </button>
+              </IconButton>
             </div>
 
             <div className="flex flex-col gap-1.5 px-5 py-4">
@@ -1537,16 +1571,17 @@ export default function QuizPage() {
                   // Disable problems already used by other draft items.
                   const usedElsewhere = !isCurrent && draftProblemIds.has(entry.problem.id)
                   return (
+                    // native-ok: 换题候选行是含标签与多行题干的容器按钮，Radix Button 会居中挤压
                     <button
                       key={entry.problem.id}
                       disabled={usedElsewhere}
                       onClick={() => handleSwapPick(entry.problem.id)}
                       className={`flex items-start gap-2.5 rounded-xl p-2.5 text-left transition-all ${
                         usedElsewhere
-                          ? 'cursor-not-allowed bg-slate-50 opacity-60'
+                          ? 'bg-kid-paper cursor-not-allowed opacity-60'
                           : isCurrent
                             ? 'bg-indigo-50'
-                            : 'bg-slate-50 hover:bg-slate-100'
+                            : 'bg-kid-paper hover:bg-slate-100'
                       }`}
                     >
                       <div className="min-w-0 flex-1">

@@ -13,7 +13,7 @@ type ScratchPadEdgeNavProps = {
 function VerticalNavLabel({ children }: { children: ReactNode }) {
   return (
     <span
-      className="select-none text-[12px] font-bold leading-none tracking-[0.2em]"
+      className="text-[12px] leading-none font-bold tracking-[0.2em] select-none"
       style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
     >
       {children}
@@ -29,13 +29,14 @@ export default function ScratchPadEdgeNav({
   onNext,
 }: ScratchPadEdgeNavProps) {
   const btnBase =
-    'pointer-events-auto flex w-9 shrink-0 items-center justify-center rounded-r-xl bg-white/90 py-5 shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95'
+    'pointer-events-auto flex w-9 shrink-0 items-center justify-center rounded-r-xl bg-white py-5 shadow-sticker transition-all hover:bg-white active:scale-95'
   const btnRight =
-    'pointer-events-auto flex w-9 shrink-0 items-center justify-center rounded-l-xl bg-white/90 py-5 shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-95'
+    'pointer-events-auto flex w-9 shrink-0 items-center justify-center rounded-l-xl bg-white py-5 shadow-sticker transition-all hover:bg-white active:scale-95'
   const btnDisabled = 'pointer-events-none cursor-not-allowed opacity-25'
 
   return (
     <>
+      {/* native-ok: 画布左缘贴边的竖排文字导航，绝对定位 + 竖排书写，Radix Button 无法承载 */}
       <button
         type="button"
         disabled={!hasPrev}
@@ -43,7 +44,7 @@ export default function ScratchPadEdgeNav({
           if (!hasPrev) return
           onPrev()
         }}
-        className={`absolute left-0 top-1/2 z-40 -translate-y-1/2 ${btnBase} ${
+        className={`absolute top-1/2 left-0 z-40 -translate-y-1/2 ${btnBase} ${
           !hasPrev ? btnDisabled : 'cursor-pointer text-indigo-700'
         }`}
         style={{ paddingLeft: 'max(0px, env(safe-area-inset-left))' }}
@@ -52,6 +53,7 @@ export default function ScratchPadEdgeNav({
         <VerticalNavLabel>‹上一题</VerticalNavLabel>
       </button>
 
+      {/* native-ok: 画布右缘贴边的竖排文字导航，绝对定位 + 竖排书写，Radix Button 无法承载 */}
       <button
         type="button"
         disabled={!hasNext}
@@ -59,7 +61,7 @@ export default function ScratchPadEdgeNav({
           if (!hasNext) return
           onNext()
         }}
-        className={`absolute right-0 top-1/2 z-40 -translate-y-1/2 ${btnRight} ${
+        className={`absolute top-1/2 right-0 z-40 -translate-y-1/2 ${btnRight} ${
           !hasNext ? btnDisabled : 'cursor-pointer text-indigo-700'
         }`}
         style={{ paddingRight: 'max(0px, env(safe-area-inset-right))' }}
@@ -68,7 +70,7 @@ export default function ScratchPadEdgeNav({
         <VerticalNavLabel>下一题›</VerticalNavLabel>
       </button>
 
-      <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-sm">
+      <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 -translate-x-1/2 rounded-full bg-black/40 px-3 py-1 text-[11px] font-semibold text-white/90">
         {positionLabel}
       </div>
     </>

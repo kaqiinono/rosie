@@ -18,7 +18,7 @@ export default createFilterPanel(
       btnOn: 'border-amber-600 bg-amber-600 text-white',
       btnOff: 'border-amber-300 bg-amber-50 text-amber-700',
       containerBorder: 'border-amber-200',
-      containerGradient: 'bg-gradient-to-br from-amber-50 to-orange-50',
+      containerGradient: 'bg-amber-50 ',
       titleColor: 'text-amber-800',
       labelColor: 'text-amber-700',
       toggleColor: 'text-amber-500 hover:text-amber-700',

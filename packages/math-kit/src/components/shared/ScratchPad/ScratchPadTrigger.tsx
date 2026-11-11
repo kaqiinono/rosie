@@ -7,7 +7,8 @@ import { useProblemScratchContext } from './ProblemScratchContext'
 import ScratchPadSession from './ScratchPadSession'
 import { resolveWrongAttemptId } from '@rosie/math-kit/utils/math-scratch-db'
 import type { ScratchSessionMode } from '@rosie/math-kit/hooks/math-scratch-types'
-import ProblemActionIcon, { PROBLEM_ACTION_BUTTON_CLASS } from '../ProblemActionIcon'
+import ProblemActionIcon from '../ProblemActionIcon'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 type ScratchPadTriggerProps = {
   problem: Problem
@@ -51,7 +52,10 @@ export default function ScratchPadTrigger({
   const problemIndex =
     problemIndexProp ??
     ctx?.problemIndex ??
-    Math.max(0, problems.findIndex((p) => p.id === problem.id))
+    Math.max(
+      0,
+      problems.findIndex((p) => p.id === problem.id),
+    )
   const section = sectionProp ?? ctx?.section ?? 'lesson'
 
   async function handleOpen() {
@@ -63,22 +67,40 @@ export default function ScratchPadTrigger({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => void handleOpen()}
-        title={readOnly ? '查看草稿' : '打草稿'}
-        aria-label={readOnly ? '查看草稿' : '打草稿'}
-        className={
-          variant === 'toolbar'
-            ? `${PROBLEM_ACTION_BUTTON_CLASS} text-text-secondary ${className}`
-            : variant === 'compact'
-            ? `flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-base transition-all hover:bg-indigo-100 active:scale-95 ${className}`
-            : `flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-indigo-200 bg-gradient-to-br from-indigo-50 to-violet-50 px-3 py-1.5 text-[12px] font-semibold text-indigo-700 shadow-sm transition-all hover:from-indigo-100 hover:to-violet-100 active:scale-95 ${className}`
-        }
-      >
-        {variant === 'toolbar' ? <ProblemActionIcon name="pencil" /> : <span className="text-sm leading-none">📝</span>}
-        {variant === 'default' && <span>{readOnly ? '查看草稿' : '草稿纸'}</span>}
-      </button>
+      {variant === 'default' ? (
+        <Button
+          type="button"
+          size="1"
+          radius="full"
+          variant="soft"
+          color="indigo"
+          className={className || undefined}
+          onClick={() => void handleOpen()}
+          title={readOnly ? '查看草稿' : '打草稿'}
+          aria-label={readOnly ? '查看草稿' : '打草稿'}
+        >
+          <span className="text-sm leading-none">📝</span>
+          <span>{readOnly ? '查看草稿' : '草稿纸'}</span>
+        </Button>
+      ) : (
+        <IconButton
+          type="button"
+          size="2"
+          radius="full"
+          variant={variant === 'toolbar' ? 'ghost' : 'soft'}
+          color={variant === 'toolbar' ? 'gray' : 'indigo'}
+          className={className || undefined}
+          onClick={() => void handleOpen()}
+          title={readOnly ? '查看草稿' : '打草稿'}
+          aria-label={readOnly ? '查看草稿' : '打草稿'}
+        >
+          {variant === 'toolbar' ? (
+            <ProblemActionIcon name="pencil" />
+          ) : (
+            <span className="text-sm leading-none">📝</span>
+          )}
+        </IconButton>
+      )}
       {open && (
         <ScratchPadSession
           problems={problems}
@@ -131,14 +153,19 @@ export function WrongDraftViewButton({
 
   return (
     <>
-      <button
+      <IconButton
         type="button"
+        size="2"
+        radius="full"
+        variant="soft"
+        color="indigo"
+        className={className || undefined}
         onClick={() => void handleOpen()}
         title="查看草稿"
-        className={`flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-sm transition-all hover:bg-indigo-100 active:scale-95 sm:h-8 sm:w-8 ${className}`}
+        aria-label="查看草稿"
       >
         📝
-      </button>
+      </IconButton>
       {open && viewId && (
         <ScratchPadSession
           problems={problems ?? [problem]}
@@ -193,14 +220,19 @@ export function MistakeDraftButton({
 
   return (
     <>
-      <button
+      <IconButton
         type="button"
+        size="2"
+        radius="full"
+        variant="soft"
+        color="indigo"
+        className={className || undefined}
         onClick={() => setOpen(true)}
         title="草稿纸"
-        className={`flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 text-sm transition-all hover:bg-indigo-100 active:scale-95 sm:h-8 sm:w-8 ${className}`}
+        aria-label="草稿纸"
       >
         📝
-      </button>
+      </IconButton>
       {open && (
         <ScratchPadSession
           problems={problems}
@@ -241,13 +273,9 @@ export function MistakeScratchButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-full bg-orange-500 px-3 py-1.5 text-[11px] font-semibold text-white no-underline"
-      >
+      <Button type="button" onClick={() => setOpen(true)} variant="solid" color="orange" size="1">
         继续练
-      </button>
+      </Button>
       {open && (
         <ScratchPadSession
           problems={problems}

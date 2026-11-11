@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { Button } from '@rosie/ui/themes'
 
 type TabKey = 'overview' | 'priority' | 'plan'
 
@@ -25,10 +26,14 @@ const Tag = ({ children }: { children: React.ReactNode }) => (
 )
 
 const Card = ({ children, href }: { children: React.ReactNode; href?: string }) => {
-  const cls = 'mb-2.5 rounded-xl border border-gray-200 bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-900'
+  const cls =
+    'mb-2.5 rounded-xl border-2 border-kid-line bg-white px-4 py-3.5 dark:border-gray-700 dark:bg-gray-900'
   if (href) {
     return (
-      <Link href={href} className={`${cls} block no-underline transition-all hover:border-blue-300 hover:shadow-md dark:hover:border-blue-700`}>
+      <Link
+        href={href}
+        className={`${cls} hover:shadow-sticker block no-underline transition-all hover:border-blue-300 dark:hover:border-blue-700`}
+      >
         {children}
       </Link>
     )
@@ -60,7 +65,7 @@ const SectionTitle = ({
 )
 
 const Tip = ({ children }: { children: React.ReactNode }) => (
-  <div className="mt-3 rounded-r-lg border-l-[3px] border-gray-300 bg-gray-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
+  <div className="border-kid-line bg-kid-paper mt-3 rounded-r-lg border-l-[3px] px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
     {children}
   </div>
 )
@@ -264,7 +269,7 @@ function PriorityPanel() {
         {priorityItems.map((item) => (
           <div
             key={item.num}
-            className="flex items-start gap-2.5 border-b border-gray-100 py-2.5 last:border-0 dark:border-gray-800"
+            className="border-kid-line flex items-start gap-2.5 border-b py-2.5 last:border-0 dark:border-gray-800"
           >
             <div className="min-w-[28px] text-xl font-medium text-gray-400">{item.num}</div>
             <div>
@@ -348,7 +353,7 @@ function PlanPanel() {
           </div>
         ))}
       </div>
-      <div className="mt-4 rounded-r-lg border-l-[3px] border-gray-300 bg-gray-50 px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
+      <div className="border-kid-line bg-kid-paper mt-4 rounded-r-lg border-l-[3px] px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
         💡 <strong className="text-gray-700 dark:text-gray-300">时间更短怎么办？</strong>
         <br />
         只有3天：专攻 ①和差倍 ②鸡兔同笼/盈亏 ③巧算，这三块是得分主力。
@@ -369,24 +374,22 @@ export default function MathStudyPriorityPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview')
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 py-6 dark:bg-gray-950">
+    <main className="bg-kid-paper min-h-screen px-4 py-6">
       <div className="mx-auto max-w-2xl">
         <h1 className="sr-only">纳约数学大纲知识点分析与复习计划</h1>
 
         {/* Tab Bar */}
         <div className="mb-4 flex flex-wrap gap-2">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`cursor-pointer rounded-full border px-3.5 py-1.5 text-[13px] transition-colors ${
-                activeTab === tab.key
-                  ? 'border-gray-300 bg-white font-medium text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100'
-                  : 'border-gray-200 bg-gray-100 text-gray-500 hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
-              }`}
+              variant={activeTab === tab.key ? 'outline' : 'soft'}
+              color="gray"
+              size="2"
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
 

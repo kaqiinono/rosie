@@ -6,7 +6,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom'
 import { GRADE_LABEL, gradesInOrder } from '@rosie/math-kit/utils/lesson-grade'
 import { firstLessonRouteForGrade, lessonFromHref } from '@rosie/math-kit/utils/lesson-registry'
-import { LESSON_HEADER_MORE_BTN } from './lesson-header-chrome'
+import { Button } from '@rosie/ui/themes'
 
 type Props = {
   basePath: string
@@ -68,9 +68,13 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
 
   return (
     <div className="relative shrink-0">
-      <button
+      <Button
         ref={buttonRef}
         type="button"
+        size="2"
+        variant="outline"
+        color="gray"
+        radius="large"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="切换年级"
@@ -78,7 +82,6 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
           if (!open) updateDropdownPos()
           setOpen(!open)
         }}
-        className={`${LESSON_HEADER_MORE_BTN} ${activeColor}`}
       >
         <span className="max-w-[4.5rem] truncate sm:max-w-none">{currentLabel}</span>
         <svg
@@ -94,7 +97,7 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
-      </button>
+      </Button>
 
       {open &&
         dropdownPos &&
@@ -103,7 +106,7 @@ export default function LessonGradeSwitcher({ basePath, activeColor }: Props) {
           <div
             ref={dropdownRef}
             role="menu"
-            className="border-border-light fixed z-[200] min-w-[8.5rem] overflow-hidden rounded-xl border bg-white py-1 shadow-lg"
+            className="border-border-light shadow-sticker fixed z-[200] min-w-[8.5rem] overflow-hidden rounded-xl border bg-white py-1"
             style={{ top: dropdownPos.top, left: dropdownPos.left }}
           >
             {grades.map((grade) => {

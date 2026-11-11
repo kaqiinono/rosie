@@ -11,6 +11,7 @@ import StageArea from '@rosie/math-content/components/lesson/g1/lesson34/StageAr
 import MathFormula from '@rosie/math-content/components/lesson/g1/lesson34/MathFormula'
 import SummaryCard from '@rosie/math-content/components/lesson/g1/lesson34/SummaryCard'
 import Controls from '@rosie/math-content/components/lesson/g1/lesson34/Controls'
+import { StickerCard } from '@rosie/ui'
 
 export default function Lesson34MagicDemo() {
   const [mode, setMode] = useState<Lesson34Mode>('merge')
@@ -88,12 +89,12 @@ export default function Lesson34MagicDemo() {
   const avatar = mode === 'merge' ? '🧒' : '🤔'
 
   return (
-    <div className="animate-bg-shift min-h-screen bg-gradient-to-br from-sky-100 via-amber-50 via-35% to-pink-100 to-70% bg-[length:400%_400%]">
+    <div className="animate-bg-shift min-h-screen bg-amber-50 via-35% to-70% bg-[length:400%_400%]">
       <div className="mx-auto flex min-h-screen max-w-[960px] flex-col gap-3.5 px-3.5 py-4 pb-10">
-        <div className="rounded-[20px] border-2 border-white/60 bg-white/85 px-3 py-3.5 text-center shadow-[0_8px_32px_rgba(0,0,0,.08)]">
+        <StickerCard size="none" className="px-3 py-3.5 text-center">
           <h1 className="mb-1 text-2xl font-bold text-red-600 max-[600px]:text-xl">买苹果学数学</h1>
           <p className="text-[13px] text-slate-500">合在一起算 和 分开算，结果一样多！</p>
-        </div>
+        </StickerCard>
 
         <ModeBar mode={mode} onSwitch={handleModeSwitch} />
         <StoryBox avatar={avatar} html={currentStep.story} />

@@ -14,7 +14,7 @@ export default function MathPlanPageShell({ autoStart = false }: MathPlanPageShe
     <div
       className="min-h-screen text-[15px]"
       style={{
-        background: 'linear-gradient(160deg, #fff8f0 0%, #fff3e0 30%, #fef9ec 60%, #f0f9ff 100%)',
+        background: '#fff8f0',
         fontFamily: '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
       }}
     >
@@ -60,10 +60,9 @@ export default function MathPlanPageShell({ autoStart = false }: MathPlanPageShe
       <div
         className="sticky top-0 z-30"
         style={{
-          background: 'rgba(255,248,240,0.92)',
-          backdropFilter: 'blur(12px)',
+          background: 'rgb(255,248,240)',
           borderBottom: '2px solid rgba(251,146,60,.2)',
-          boxShadow: '0 2px 20px rgba(251,146,60,.1)',
+          boxShadow: '0 3px 0 rgba(251,146,60,.3)',
         }}
       >
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 md:px-6">
@@ -85,7 +84,7 @@ export default function MathPlanPageShell({ autoStart = false }: MathPlanPageShe
             <span
               className="text-[18px] font-extrabold"
               style={{
-                background: 'linear-gradient(135deg, #ea580c, #f59e0b, #f97316)',
+                background: '#f59e0b',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}

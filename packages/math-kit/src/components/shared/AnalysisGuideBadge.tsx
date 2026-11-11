@@ -25,7 +25,13 @@ export default function AnalysisGuideBadge({
 
   if (variant === 'toolbar' && hasImage) {
     return (
-      <span title="本题有详细图解解析" className={clsx('inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center text-text-secondary', className)}>
+      <span
+        title="本题有详细图解解析"
+        className={clsx(
+          'text-text-secondary inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center',
+          className,
+        )}
+      >
         <ProblemActionIcon name="diagram" />
         <span className="sr-only">本题有详细图解解析</span>
       </span>
@@ -38,7 +44,7 @@ export default function AnalysisGuideBadge({
         title="本题有详细图解解析"
         aria-label="本题有详细图解解析"
         className={clsx(
-          'inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-app-blue-light text-[11px] font-semibold leading-none text-app-blue-dark',
+          'bg-app-blue-light text-app-blue-dark inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] leading-none font-semibold',
           className,
         )}
       >
@@ -47,10 +53,7 @@ export default function AnalysisGuideBadge({
     )
   }
 
-  const sizeClass =
-    size === 'md'
-      ? 'px-2 py-0.5 text-[11px]'
-      : 'px-1.5 py-px text-[10px]'
+  const sizeClass = size === 'md' ? 'px-2 py-0.5 text-[11px]' : 'px-1.5 py-px text-[10px]'
 
   if (hasImage) {
     return (
@@ -71,7 +74,7 @@ export default function AnalysisGuideBadge({
     <span
       title="尚未上传题解图"
       className={clsx(
-        'inline-flex shrink-0 items-center rounded-full border border-dashed border-slate-300 bg-slate-50 font-medium text-slate-400',
+        'border-kid-line inline-flex shrink-0 items-center rounded-full border-2 border-dashed bg-slate-50 font-medium text-slate-400',
         sizeClass,
         className,
       )}

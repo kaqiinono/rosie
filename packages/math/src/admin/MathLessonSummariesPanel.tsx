@@ -7,6 +7,7 @@ import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import MathLessonSummaryPanel from '@rosie/math/admin/MathLessonSummaryPanel'
 import { isRichBodyEmpty } from '@rosie/math-kit/utils/sanitize-summary-html'
+import { Button } from '@rosie/ui/themes'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 
@@ -21,9 +22,7 @@ function lessonTitle(id: string): string {
 }
 
 function lessonHasSummary(admin: AdminApi, lessonId: string): boolean {
-  return admin
-    .getNotes(lessonSummaryProblemId(lessonId))
-    .some((n) => !isRichBodyEmpty(n.bodyHtml))
+  return admin.getNotes(lessonSummaryProblemId(lessonId)).some((n) => !isRichBodyEmpty(n.bodyHtml))
 }
 
 function defaultOpenIds(sortedIds: string[], withSummary: string[]): Set<string> {
@@ -32,10 +31,7 @@ function defaultOpenIds(sortedIds: string[], withSummary: string[]): Set<string>
 }
 
 export default function MathLessonSummariesPanel({ lessonIds, admin, onFlash }: Props) {
-  const sortedIds = useMemo(
-    () => [...lessonIds].sort((a, b) => Number(a) - Number(b)),
-    [lessonIds],
-  )
+  const sortedIds = useMemo(() => [...lessonIds].sort((a, b) => Number(a) - Number(b)), [lessonIds])
 
   const sortedIdsKey = sortedIds.join(',')
 
@@ -100,22 +96,26 @@ export default function MathLessonSummariesPanel({ lessonIds, admin, onFlash }: 
           已选 {sortedIds.length} 讲 · 点击讲次展开编辑。支持加粗、列表、插图与粘贴图片。
         </p>
         <div className="flex shrink-0 gap-1.5">
-          <button
+          <Button
             type="button"
             onClick={expandAll}
             disabled={allExpanded}
-            className="rounded-lg border border-violet-200 px-2.5 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-50 disabled:cursor-default disabled:opacity-40"
+            variant="outline"
+            color="violet"
+            size="1"
           >
             全部展开
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={collapseAll}
             disabled={allCollapsed}
-            className="rounded-lg border border-violet-200 px-2.5 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-50 disabled:cursor-default disabled:opacity-40"
+            variant="outline"
+            color="violet"
+            size="1"
           >
             全部收起
-          </button>
+          </Button>
         </div>
       </div>
       <div className="max-h-[calc(100vh-11rem)] space-y-2 overflow-y-auto pr-0.5">
@@ -128,7 +128,7 @@ export default function MathLessonSummariesPanel({ lessonIds, admin, onFlash }: 
               key={id}
               className="overflow-hidden rounded-xl border border-violet-100 bg-violet-50/30"
             >
-              <button
+              <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                 type="button"
                 onClick={() => toggleOpen(id)}
                 className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition hover:bg-violet-50/80"
@@ -154,7 +154,7 @@ export default function MathLessonSummariesPanel({ lessonIds, admin, onFlash }: 
                 )}
               </button>
               {open && (
-                <div className="border-t border-violet-100 bg-white/90 p-3">
+                <div className="border-t border-violet-100 bg-white p-3">
                   <MathLessonSummaryPanel
                     lessonId={id}
                     lessonTitle={title}

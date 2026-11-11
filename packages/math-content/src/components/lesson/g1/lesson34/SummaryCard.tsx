@@ -24,14 +24,14 @@ export default function SummaryCard({ visible, emoji, A, B, P, mode }: SummaryCa
 
   return (
     <div
-      className={`rounded-2xl border-2 border-amber-400 bg-gradient-to-br from-amber-50 via-pink-100 to-blue-100 p-4 text-center shadow-[0_8px_32px_rgba(251,191,36,.2)] transition-all duration-600 ${
+      className={`shadow-sticker rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 text-center transition-all duration-600 ${
         visible
           ? 'max-h-[400px] translate-y-0 opacity-100'
           : 'max-h-0 translate-y-4 overflow-hidden border-none p-0 opacity-0'
       }`}
     >
       <h3 className="mb-1.5 text-lg font-bold text-red-600">{title}</h3>
-      <div className="mx-auto my-1.5 inline-block rounded-xl bg-white/70 px-3.5 py-2 text-xl font-bold text-slate-800">
+      <div className="mx-auto my-1.5 inline-block rounded-xl bg-white px-3.5 py-2 text-xl font-bold text-slate-800">
         {formula}
       </div>
       <div

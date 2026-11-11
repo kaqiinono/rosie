@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import type { AnswerCheckResult, Problem } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
 import { checkProblemAnswer } from '@rosie/math-kit/utils/check-problem-answer'
 import {
   getProblemAnswerMode,
@@ -18,6 +19,7 @@ type ScratchPadAnswerPanelProps = {
   initialAnswer?: unknown
   onAnswerDraftChange: (snapshot: unknown) => void
   onSubmitResult?: (correct: boolean, snapshot: unknown) => void | Promise<void>
+  /** @deprecated 按钮外观由 Radix Button 统一提供，该参数不再生效，仅为兼容调用方保留。 */
   buttonClassName?: string
   /** 答题区导出容器（由浮层顶栏「加入画布」使用） */
   exportHostRef?: RefObject<HTMLDivElement | null>
@@ -31,7 +33,7 @@ export default function ScratchPadAnswerPanel({
   initialAnswer,
   onAnswerDraftChange,
   onSubmitResult,
-  buttonClassName = 'bg-indigo-600 shadow-[0_3px_10px_rgba(79,70,229,0.3)]',
+  buttonClassName,
   exportHostRef: exportHostRefProp,
   padSlot,
 }: ScratchPadAnswerPanelProps) {
@@ -109,9 +111,17 @@ export default function ScratchPadAnswerPanel({
   if (answerMode === 'custom-widget') {
     const hasBuiltInCheck = Boolean(problem.verticalPuzzle)
     return (
-      <div className="mt-3 border-t border-slate-100 pt-3">
-        <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">作答</div>
-        <div className={mode === 'quiz' ? undefined : 'overflow-x-auto rounded-lg border border-slate-100 bg-slate-50/60 p-2'}>
+      <div className="border-kid-line mt-3 border-t pt-3">
+        <div className="mb-2 text-[11px] font-bold tracking-wide text-slate-400 uppercase">
+          作答
+        </div>
+        <div
+          className={
+            mode === 'quiz'
+              ? undefined
+              : 'border-kid-line overflow-x-auto rounded-lg border-2 bg-slate-50/60 p-2'
+          }
+        >
           <ScratchPadCustomAnswerWidget
             problem={problem}
             initialState={interactiveState ?? initialAnswer}
@@ -123,14 +133,19 @@ export default function ScratchPadAnswerPanel({
           />
         </div>
         {mode === 'practice' && !hasBuiltInCheck && (
-          <button
+          <Button
             type="button"
+            size="2"
+            radius="full"
+            variant="solid"
+            color="indigo"
+            className="mt-2 w-full"
+            loading={submitting}
             onClick={handleCheck}
             disabled={!interactiveTouched || submitting}
-            className={`mt-2 w-full cursor-pointer rounded-full px-4 py-2 text-[12px] font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-40 ${buttonClassName}`}
           >
             {submitting ? '记录中…' : '检查答案'}
-          </button>
+          </Button>
         )}
         {mode === 'quiz' && interactiveTouched && (
           <p className="mt-2 text-[11px] font-medium text-indigo-600">已记录作答，交卷后批阅</p>
@@ -147,8 +162,10 @@ export default function ScratchPadAnswerPanel({
   if (answerMode === 'readonly-puzzle-numeric') {
     const puzzle = problem.verticalPuzzle!
     return (
-      <div className="mt-3 border-t border-slate-100 pt-3">
-        <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">竖式</div>
+      <div className="border-kid-line mt-3 border-t pt-3">
+        <div className="mb-2 text-[11px] font-bold tracking-wide text-slate-400 uppercase">
+          竖式
+        </div>
         <VerticalDigitPuzzlePanel
           spec={puzzle}
           embedded
@@ -171,7 +188,7 @@ export default function ScratchPadAnswerPanel({
   }
 
   return (
-    <div className="mt-3 border-t border-slate-100 pt-3">
+    <div className="border-kid-line mt-3 border-t pt-3">
       <NumericAnswerPanel
         problem={problem}
         answer={answer}

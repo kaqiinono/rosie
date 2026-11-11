@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@rosie/ui/themes'
+
 interface ControlsProps {
   mode: 'merge' | 'split'
   step: number
@@ -11,21 +13,24 @@ interface ControlsProps {
   onRandom: () => void
 }
 
-export default function Controls({ mode, step, totalSteps, btnText, isLast, onNext, onReset, onRandom }: ControlsProps) {
+export default function Controls({
+  mode,
+  step,
+  totalSteps,
+  btnText,
+  isLast,
+  onNext,
+  onReset,
+  onRandom,
+}: ControlsProps) {
   return (
     <div className="flex flex-wrap items-center justify-center gap-2.5">
-      <button
-        className="inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] border-2 border-slate-200 bg-white px-5 py-2.5 text-[15px] font-bold text-slate-500 shadow-[0_4px_14px_rgba(0,0,0,.1)] transition-all duration-200 hover:border-slate-400 hover:text-slate-700 active:scale-[.96]"
-        onClick={onReset}
-      >
+      <Button onClick={onReset} variant="outline" color="gray" size="3">
         ↺ 重来
-      </button>
-      <button
-        className="inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] bg-gradient-to-br from-emerald-500 to-emerald-600 px-5 py-2.5 text-[15px] font-bold text-white shadow-[0_4px_14px_rgba(0,0,0,.1)] transition-all duration-200 hover:brightness-105 active:scale-[.96]"
-        onClick={onRandom}
-      >
+      </Button>
+      <Button onClick={onRandom} variant="solid" color="jade" size="3">
         🎲 换一题
-      </button>
+      </Button>
 
       {/* Step dots */}
       <div className="flex items-center gap-[5px]">
@@ -43,17 +48,15 @@ export default function Controls({ mode, step, totalSteps, btnText, isLast, onNe
         ))}
       </div>
 
-      <button
-        className={`inline-flex cursor-pointer items-center gap-1.5 rounded-[14px] px-7 py-3 text-[17px] font-bold text-white shadow-[0_4px_14px_rgba(0,0,0,.1)] transition-all duration-200 hover:brightness-105 active:scale-[.96] disabled:cursor-default disabled:opacity-40 disabled:brightness-100 ${
-          mode === 'split'
-            ? 'bg-gradient-to-br from-violet-500 to-indigo-500'
-            : 'bg-gradient-to-br from-orange-500 to-red-500'
-        }`}
+      <Button
         onClick={onNext}
         disabled={isLast}
+        variant="solid"
+        color={mode === 'split' ? 'indigo' : 'orange'}
+        size="3"
       >
         {btnText}
-      </button>
+      </Button>
     </div>
   )
 }

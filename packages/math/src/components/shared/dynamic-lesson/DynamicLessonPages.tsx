@@ -18,6 +18,7 @@ import { lessonDisplayLabelFromRegistry } from '@rosie/math-kit/utils/lesson-reg
 import { findHelpProblems } from '@rosie/math-kit/utils/practice-help-problems'
 import { useLessonRoute } from './LessonRouteContext'
 import type { MasteryFilter, PracticeFilter } from '@rosie/math-kit/components/shared/FilterPanel'
+import { Button } from '@rosie/ui/themes'
 
 type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
 
@@ -72,13 +73,13 @@ function SectionListPage({ section }: { section: SectionKey }) {
 
   return (
     <div>
-      <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.06)] sm:p-5">
+      <div className="border-kid-line shadow-sticker mb-4 rounded-2xl border-2 bg-white p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-base font-extrabold text-text-primary sm:text-lg">
+            <h2 className="text-text-primary text-base font-extrabold sm:text-lg">
               {SECTION_LABELS[section]} · {label}
             </h2>
-            <p className="mt-1 text-sm text-text-secondary">
+            <p className="text-text-secondary mt-1 text-sm">
               {total > 0 ? `共 ${total} 道题` : '本模块暂无题目'}
             </p>
           </div>
@@ -92,9 +93,11 @@ function SectionListPage({ section }: { section: SectionKey }) {
         {total > 0 && (
           <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <div className="min-w-0">
-              <div className="mb-2 flex items-center justify-between gap-3 text-xs font-semibold text-text-secondary">
+              <div className="text-text-secondary mb-2 flex items-center justify-between gap-3 text-xs font-semibold">
                 <span>学习进度</span>
-                <span>练过 {attempted} / {total}</span>
+                <span>
+                  练过 {attempted} / {total}
+                </span>
               </div>
               <div className="relative h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
@@ -108,36 +111,43 @@ function SectionListPage({ section }: { section: SectionKey }) {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:flex">
-              <button
+              <Button
                 type="button"
                 onClick={() => beginPractice()}
-                className="min-h-11 cursor-pointer rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(37,99,235,0.25)] transition-all hover:bg-blue-700 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                variant="solid"
+                color="blue"
+                size="3"
               >
                 开始练习
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 role="switch"
                 aria-checked={autoExpand}
                 onClick={() => setAutoExpand((v) => !v)}
-                className={`flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-bold transition-all active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${autoExpand ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-text-secondary hover:bg-slate-50'}`}
+                variant={autoExpand ? 'soft' : 'outline'}
+                color={autoExpand ? 'blue' : 'gray'}
+                size="3"
               >
                 <span
                   className={`h-2.5 w-2.5 shrink-0 rounded-full ${autoExpand ? 'bg-blue-600' : 'bg-slate-300'}`}
                   aria-hidden="true"
                 />
                 自动展开题解
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => {
                   setShowDetail((v) => !v)
                 }}
                 aria-expanded={showDetail}
-                className={`col-span-2 min-h-11 cursor-pointer rounded-xl border px-4 py-2.5 text-sm font-bold transition-all active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:col-span-1 ${showDetail ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-text-secondary hover:bg-slate-50'}`}
+                variant={showDetail ? 'soft' : 'outline'}
+                color={showDetail ? 'blue' : 'gray'}
+                size="3"
+                className="col-span-2 sm:col-span-1"
               >
                 {showDetail ? '收起 ↑' : '展开 ↓'}
-              </button>
+              </Button>
             </div>
           </div>
         )}

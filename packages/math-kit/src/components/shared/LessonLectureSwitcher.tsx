@@ -10,7 +10,7 @@ import {
   lessonsForGradeRegistry,
   routeForLesson,
 } from '@rosie/math-kit/utils/lesson-registry'
-import { LESSON_HEADER_MORE_BTN } from './lesson-header-chrome'
+import { Button } from '@rosie/ui/themes'
 
 type Props = {
   basePath: string
@@ -91,13 +91,19 @@ export default function LessonLectureSwitcher({ basePath, activeColor }: Props) 
 
   if (!current || lectures.length === 0) return null
 
-  const activeLecture = lectures.find((lecture) => pathname === lecture.href || pathname.startsWith(`${lecture.href}/`))
+  const activeLecture = lectures.find(
+    (lecture) => pathname === lecture.href || pathname.startsWith(`${lecture.href}/`),
+  )
 
   return (
     <div className="relative shrink-0">
-      <button
+      <Button
         ref={buttonRef}
         type="button"
+        size="2"
+        variant="outline"
+        color="gray"
+        radius="large"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="切换讲次"
@@ -105,7 +111,6 @@ export default function LessonLectureSwitcher({ basePath, activeColor }: Props) 
           if (!open) updateDropdownPos()
           setOpen(!open)
         }}
-        className={`${LESSON_HEADER_MORE_BTN} ${activeColor}`}
       >
         <span className="max-w-[5.5rem] truncate">{activeLecture?.label ?? '选择讲次'}</span>
         <svg
@@ -121,36 +126,43 @@ export default function LessonLectureSwitcher({ basePath, activeColor }: Props) 
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
-      </button>
+      </Button>
 
-      {open && dropdownPos && typeof document !== 'undefined' && createPortal(
-        <div
-          ref={dropdownRef}
-          role="menu"
-          className="border-border-light fixed z-[200] max-h-64 min-w-[10rem] overflow-y-auto rounded-xl border bg-white py-1 shadow-lg"
-          style={{ top: dropdownPos.top, left: dropdownPos.left }}
-        >
-          {lectures.map((lecture) => {
-            const isCurrent = lecture.href === activeLecture?.href
-            return (
-              <Link
-                key={lecture.href}
-                href={lecture.href}
-                role="menuitem"
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-2 px-3 py-2 text-[12px] font-medium no-underline transition-colors ${
-                  isCurrent ? `${activeColor} bg-gray-50 font-bold` : 'text-text-secondary hover:bg-gray-50'
-                }`}
-              >
-                <span className="text-base leading-none">{lecture.icon}</span>
-                <span className="min-w-0 truncate">{lecture.label} · {lecture.title}</span>
-                {isCurrent && <span className="text-text-muted ml-auto text-[10px]">当前</span>}
-              </Link>
-            )
-          })}
-        </div>,
-        document.body,
-      )}
+      {open &&
+        dropdownPos &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            ref={dropdownRef}
+            role="menu"
+            className="border-border-light shadow-sticker fixed z-[200] max-h-64 min-w-[10rem] overflow-y-auto rounded-xl border bg-white py-1"
+            style={{ top: dropdownPos.top, left: dropdownPos.left }}
+          >
+            {lectures.map((lecture) => {
+              const isCurrent = lecture.href === activeLecture?.href
+              return (
+                <Link
+                  key={lecture.href}
+                  href={lecture.href}
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2 text-[12px] font-medium no-underline transition-colors ${
+                    isCurrent
+                      ? `${activeColor} bg-gray-50 font-bold`
+                      : 'text-text-secondary hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="text-base leading-none">{lecture.icon}</span>
+                  <span className="min-w-0 truncate">
+                    {lecture.label} · {lecture.title}
+                  </span>
+                  {isCurrent && <span className="text-text-muted ml-auto text-[10px]">当前</span>}
+                </Link>
+              )
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

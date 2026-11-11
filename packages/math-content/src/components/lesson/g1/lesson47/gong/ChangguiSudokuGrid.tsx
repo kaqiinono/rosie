@@ -13,7 +13,13 @@ import {
 } from './utils'
 import { ActionButton } from './shared'
 
-export function ChangguiSudokuGrid({ rows, cells = [], onSubmit, onStateChange, initialState }: ChangguiSudokuProps) {
+export function ChangguiSudokuGrid({
+  rows,
+  cells = [],
+  onSubmit,
+  onStateChange,
+  initialState,
+}: ChangguiSudokuProps) {
   const { rowCount, colCount } = useMemo(() => resolveGridSize(rows), [rows])
   const boxSize = sudokuBoxSize(rowCount === colCount ? rowCount : 0)
   const digitPattern = useMemo(() => new RegExp(`[^1-${rowCount}]`, 'g'), [rowCount])
@@ -70,7 +76,7 @@ export function ChangguiSudokuGrid({ rows, cells = [], onSubmit, onStateChange, 
                       {isGiven ? (
                         <span className="font-semibold">{givenGrid[r][c]}</span>
                       ) : (
-                        <input
+                        <input // native-ok: 数独格子里的单字填空输入框，填满 cell 且透明底
                           type="text"
                           maxLength={1}
                           value={values[r][c]}

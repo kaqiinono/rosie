@@ -74,7 +74,7 @@ export default function ProblemDetail({
       onAnswerChange={setAnswer}
       onCheck={check}
       feedback={feedback}
-      buttonClassName="bg-teal-600 shadow-[0_3px_10px_rgba(13,148,136,0.3)]"
+      buttonClassName="bg-teal-600 shadow-sticker-sm"
     />
   )
 

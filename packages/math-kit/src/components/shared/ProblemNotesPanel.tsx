@@ -4,19 +4,13 @@ import { useCallback, useState } from 'react'
 import clsx from 'clsx'
 import type { Problem } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import {
-  lessonIdFromProblemId,
-  lessonSummaryProblemId,
-} from '@rosie/math-kit/constants'
+import { lessonIdFromProblemId, lessonSummaryProblemId } from '@rosie/math-kit/constants'
 import MathProblemNotesPanel from '@rosie/math-kit/admin/MathProblemNotesPanel'
 import LessonSummaryBody from '@rosie/math-kit/components/shared/LessonSummaryBody'
 import { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import { useProblemNotes } from '@rosie/math-kit/hooks/useProblemNotes'
 import { useLessonSummary } from '@rosie/math-kit/hooks/useLessonSummary'
-import {
-  isRichBodyEmpty,
-  sanitizeRichHtml,
-} from '@rosie/math-kit/utils/sanitize-summary-html'
+import { isRichBodyEmpty, sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
 
 type Props = {
   problemId: string
@@ -108,7 +102,7 @@ function NotesPanelStyles() {
         .ql-notes-tab--active {
           background: white;
           color: #4338ca;
-          box-shadow: 0 1px 4px rgba(67, 56, 202, 0.12);
+          box-shadow: 0 3px 0 rgba(67,56,202,.3);
         }
         .ql-problem-notes-title {
           margin: 4px 0 8px;
@@ -228,7 +222,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
   if (canEdit && problem) {
     return (
       <section className={clsx('ql-notes', className)}>
-        <button
+        <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
           type="button"
           onClick={() => setOpen((v) => !v)}
           className="ql-notes-toggle"
@@ -241,9 +235,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
           </span>
         </button>
         {flash && <div className="ql-notes-flash">{flash}</div>}
-        {open && panelLoading && (
-          <div className="ql-notes-loading">正在加载本讲笔记…</div>
-        )}
+        {open && panelLoading && <div className="ql-notes-loading">正在加载本讲笔记…</div>}
         {open && notesAdmin.loadError && (
           <div className="ql-notes-error">笔记加载失败，收起后再次展开即可重试。</div>
         )}
@@ -251,7 +243,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
           <div className="ql-notes-body--edit">
             {showSummary && (
               <div className="ql-notes-tabs" role="tablist" aria-label="笔记类型">
-                <button
+                <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
                   type="button"
                   role="tab"
                   aria-selected={activeTab === 'problem'}
@@ -260,7 +252,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
                 >
                   📝 本题笔记
                 </button>
-                <button
+                <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
                   type="button"
                   role="tab"
                   aria-selected={activeTab === 'lesson'}
@@ -273,10 +265,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
             )}
             {activeTab === 'lesson' && showSummary && summary ? (
               <div className="ql-lesson-summary">
-                <LessonSummaryBody
-                  bodyHtml={summary.bodyHtml}
-                  headerLabel="📋 本讲要点"
-                />
+                <LessonSummaryBody bodyHtml={summary.bodyHtml} headerLabel="📋 本讲要点" />
               </div>
             ) : (
               <>
@@ -298,7 +287,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
 
   return (
     <section className={clsx('ql-notes', className)}>
-      <button
+      <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="ql-notes-toggle"
@@ -306,14 +295,16 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
       >
         <span>📝 笔记</span>
         <span className="ql-notes-count">{notes.length || '＋'}</span>
-        <span className="ql-notes-chevron" aria-hidden="true">{open ? '▲' : '▼'}</span>
+        <span className="ql-notes-chevron" aria-hidden="true">
+          {open ? '▲' : '▼'}
+        </span>
       </button>
       {open && panelLoading && <div className="ql-notes-loading">正在加载本讲笔记…</div>}
       {open && !panelLoading && (
         <div className="ql-notes-body">
           {showSummary && (
             <div className="ql-notes-tabs" role="tablist" aria-label="笔记类型">
-              <button
+              <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
                 type="button"
                 role="tab"
                 aria-selected={activeTab === 'problem'}
@@ -322,7 +313,7 @@ export default function ProblemNotesPanel({ problemId, problem, className }: Pro
               >
                 📝 本题笔记
               </button>
-              <button
+              <button // native-ok: 使用本文件 styled-jsx 的自定义样式类（ql-*）
                 type="button"
                 role="tab"
                 aria-selected={activeTab === 'lesson'}

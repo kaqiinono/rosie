@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { PageBreadcrumb } from '@rosie/ui'
+import { PageBreadcrumb, StickerCard } from '@rosie/ui'
 import CatalogTree from '@rosie/math/components/catalog/CatalogTree'
 import {
   BOOKS,
@@ -20,6 +20,7 @@ import {
   TOPIC,
   topicBookCount,
 } from '@rosie/math/utils/catalog-data'
+import { Button, TextField } from '@rosie/ui/themes'
 
 type Tab = 'list' | 'graph' | 'advice'
 
@@ -106,8 +107,8 @@ export default function MathCatalogPage() {
     'm-[3px] inline-flex cursor-pointer select-none items-center gap-1.5 rounded-full border-[1.5px] px-2.5 py-[5px] text-[12.5px] transition hover:-translate-y-px'
 
   return (
-    <div className="min-h-screen bg-[#f4f6fb] text-[#1f2733]">
-      <header className="bg-gradient-to-r from-[#3a0ca3] via-[#4361ee] to-[#4895ef] px-7 py-[22px] text-white">
+    <div className="bg-kid-paper min-h-screen text-slate-800">
+      <header className="bg-[#4895ef] px-7 py-[22px] text-white">
         {/* 面包屑 inline 放在渐变 header 内（fixed 变体会贴视口左缘，与内容脱节） */}
         <div className="mb-3 w-fit">
           <PageBreadcrumb variant="inline" />
@@ -115,7 +116,8 @@ export default function MathCatalogPage() {
         <h1 className="m-0 text-[21px] font-bold">📚 小学数学思维教材 · 细分题型知识图谱</h1>
         <p className="mt-1.5 text-[13px] opacity-90">
           《学而思秘籍 1–7》·《大白本 1–3》·《高斯数学课本 一上–三下》·《高思竞赛数学导引》｜
-          从目录提取细分题型（不同书的同类异名已合并），跨 ≥2 本书的为正式题型，仅 1 本的标为「单本专题」
+          从目录提取细分题型（不同书的同类异名已合并），跨 ≥2 本书的为正式题型，仅 1
+          本的标为「单本专题」
         </p>
         <div className="mt-3 flex flex-wrap gap-3.5">
           {[
@@ -142,23 +144,21 @@ export default function MathCatalogPage() {
 
       <div className="mx-auto max-w-[1180px] p-5">
         {/* 检索条件 */}
-        <div className="mb-[18px] rounded-[14px] bg-white p-5 shadow-[0_2px_14px_rgba(30,40,80,.08)]">
+        <StickerCard elevation="sm" radius="md" className="mb-[18px]">
           <h3 className="m-0 mb-3 text-[13px] font-semibold tracking-wide text-[#6b7688]">
             检索条件（关键字 / 题型 / 书籍 / 难度，可组合）
           </h3>
           <div className="flex flex-wrap items-center gap-2.5">
-            <input
+            <TextField.Root
               value={kw}
               onChange={(e) => setKw(e.target.value)}
               placeholder="🔍 搜索目录标题：鸡兔、竖式、植树、数阵、相遇…"
-              className="min-w-[220px] flex-1 rounded-[10px] border border-[#e6e9f0] px-3.5 py-[11px] text-[15px] outline-none focus:border-[#4361ee] focus:shadow-[0_0_0_3px_rgba(67,97,238,.12)]"
+              size="3"
+              className="flex-1"
             />
-            <button
-              onClick={clearAll}
-              className="rounded-[10px] border border-[#4361ee] bg-white px-3 py-[9px] text-sm text-[#4361ee]"
-            >
+            <Button onClick={clearAll} variant="outline" color="gray" size="2">
               清空筛选
-            </button>
+            </Button>
           </div>
 
           {/* 题型家族分组 */}
@@ -219,7 +219,10 @@ export default function MathCatalogPage() {
                     className={`${chipBase} ${on ? 'border-transparent text-white' : 'border-[#e6e9f0] bg-white'}`}
                     style={on ? { background: SERIES_COLOR[s] } : undefined}
                   >
-                    <span className="h-2 w-2 rounded-full" style={{ background: SERIES_COLOR[s] }} />
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ background: SERIES_COLOR[s] }}
+                    />
                     {s}
                   </span>
                 )
@@ -246,7 +249,7 @@ export default function MathCatalogPage() {
               })}
             </div>
           </div>
-        </div>
+        </StickerCard>
 
         {/* Tabs */}
         <div className="mb-3.5 flex flex-wrap gap-1.5">
@@ -260,7 +263,7 @@ export default function MathCatalogPage() {
             <div
               key={key}
               onClick={() => setTab(key)}
-              className={`cursor-pointer rounded-[10px] px-[18px] py-2.5 text-sm font-semibold shadow-[0_2px_14px_rgba(30,40,80,.08)] ${
+              className={`shadow-sticker-sm cursor-pointer rounded-[10px] px-[18px] py-2.5 text-sm font-semibold ${
                 tab === key ? 'bg-[#4361ee] text-white' : 'bg-white text-[#6b7688]'
               }`}
             >
@@ -283,9 +286,12 @@ export default function MathCatalogPage() {
               byBook.map(({ bk, list }) => {
                 const b = BOOKS[bk]
                 return (
-                  <div
+                  <StickerCard
+                    size="none"
+                    elevation="sm"
+                    radius="md"
+                    className="mb-4 overflow-hidden"
                     key={bk}
-                    className="mb-4 overflow-hidden rounded-[14px] bg-white shadow-[0_2px_14px_rgba(30,40,80,.08)]"
                   >
                     <div className="flex flex-wrap items-center gap-2.5 border-b border-[#e6e9f0] px-[18px] py-3">
                       <span
@@ -323,14 +329,14 @@ export default function MathCatalogPage() {
                           </div>
                         </div>
                         <div
-                          className="whitespace-nowrap text-[13px] tracking-wide text-[#f5a623]"
+                          className="text-[13px] tracking-wide whitespace-nowrap text-[#f5a623]"
                           title={`难度 ${l.diff}/5`}
                         >
                           {stars(l.diff)}
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </StickerCard>
                 )
               })
             )}
@@ -350,7 +356,8 @@ export default function MathCatalogPage() {
                 </>
               ) : (
                 <>
-                  默认显示 <b>{adviceKeys.length}</b> 个跨书题型（点上方题型可单看；单本专题需手动选中）
+                  默认显示 <b>{adviceKeys.length}</b>{' '}
+                  个跨书题型（点上方题型可单看；单本专题需手动选中）
                 </>
               )}
             </div>
@@ -360,9 +367,12 @@ export default function MathCatalogPage() {
                 (a, b) => a.diff - b.diff || bookOrder(a.book) - bookOrder(b.book),
               )
               return (
-                <div
+                <StickerCard
+                  size="none"
+                  elevation="sm"
+                  radius="md"
+                  className="mb-3.5 overflow-hidden"
                   key={t}
-                  className="mb-3.5 overflow-hidden rounded-[14px] bg-white shadow-[0_2px_14px_rgba(30,40,80,.08)]"
                 >
                   <div
                     className="flex flex-wrap items-center gap-2.5 px-[18px] py-3 text-white"
@@ -382,7 +392,9 @@ export default function MathCatalogPage() {
                     <div className="mb-2.5 rounded-lg border-l-4 border-[#4361ee] bg-[#f6f8ff] px-3 py-2 text-[13.5px]">
                       💡 {TOPIC[t][1]}
                     </div>
-                    <div className="mb-1.5 text-xs text-[#6b7688]">推荐学习顺序（难度由易到难）：</div>
+                    <div className="mb-1.5 text-xs text-[#6b7688]">
+                      推荐学习顺序（难度由易到难）：
+                    </div>
                     {lessons.map((l, i) => {
                       const b = BOOKS[l.book]
                       return (
@@ -405,14 +417,14 @@ export default function MathCatalogPage() {
                           <span>
                             第{l.no}讲 {l.title}
                           </span>
-                          <span className="ml-auto whitespace-nowrap text-[13px] text-[#f5a623]">
+                          <span className="ml-auto text-[13px] whitespace-nowrap text-[#f5a623]">
                             {stars(l.diff)}
                           </span>
                         </div>
                       )
                     })}
                   </div>
-                </div>
+                </StickerCard>
               )
             })}
           </div>

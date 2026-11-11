@@ -1,12 +1,16 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Button } from '@rosie/ui/themes'
 import { useDraftQuery } from '@rosie/math-kit/hooks/useDraftQuery'
 import { useAuth } from '@rosie/core'
 import type { Problem } from '@rosie/core'
 import ScratchPadSession from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadSession'
 import { SEA_POOL } from '@rosie/math/utils/sea-data'
-import { problemHasViewableDraft, resolveViewableAttemptId } from '@rosie/math-kit/utils/math-scratch-db'
+import {
+  problemHasViewableDraft,
+  resolveViewableAttemptId,
+} from '@rosie/math-kit/utils/math-scratch-db'
 
 type Props = {
   /** Full problem (practice portal / plan card with resolved Problem). */
@@ -26,7 +30,10 @@ type Props = {
   section?: string
 }
 
-function resolveProblem(problem: Problem | undefined, problemId: string | undefined): Problem | null {
+function resolveProblem(
+  problem: Problem | undefined,
+  problemId: string | undefined,
+): Problem | null {
   if (problem) return problem
   if (!problemId) return null
   return SEA_POOL.find((sp) => sp.problem.id === problemId)?.problem ?? null
@@ -54,14 +61,8 @@ export default function PracticeViewDraftButton({
   section: sectionProp,
 }: Props) {
   const problemId = problemIdProp ?? problemProp?.id
-  const problem = useMemo(
-    () => resolveProblem(problemProp, problemId),
-    [problemProp, problemId],
-  )
-  const section = useMemo(
-    () => resolveSection(problemId, sectionProp),
-    [problemId, sectionProp],
-  )
+  const problem = useMemo(() => resolveProblem(problemProp, problemId), [problemProp, problemId])
+  const section = useMemo(() => resolveSection(problemId, sectionProp), [problemId, sectionProp])
   const { user } = useAuth()
   const fromAttempt = Boolean(attemptIdProp)
   const batched = hasDraftProp !== undefined
@@ -70,10 +71,11 @@ export default function PracticeViewDraftButton({
   const [viewAttemptId, setViewAttemptId] = useState<string | null>(null)
 
   const userId = user?.id
-  const loadDraft = useMemo(() =>
-    !batched && !fromAttempt && userId && problemId
-      ? () => problemHasViewableDraft(userId, problemId)
-      : null,
+  const loadDraft = useMemo(
+    () =>
+      !batched && !fromAttempt && userId && problemId
+        ? () => problemHasViewableDraft(userId, problemId)
+        : null,
     [batched, fromAttempt, userId, problemId],
   )
   const draftFound = useDraftQuery(loadDraft, JSON.stringify([refreshKey, soloRefresh]))
@@ -102,14 +104,18 @@ export default function PracticeViewDraftButton({
 
   return (
     <>
-      <button
+      <Button
         type="button"
         onClick={handleOpen}
         title="查看草稿"
-        className={`cursor-pointer rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-700 transition-all hover:bg-indigo-100 active:scale-95 ${className}`}
+        variant="soft"
+        color="indigo"
+        size="1"
+        radius="full"
+        className={className}
       >
         📝 草稿
-      </button>
+      </Button>
       {open && viewAttemptId && (
         <ScratchPadSession
           problems={[problem]}

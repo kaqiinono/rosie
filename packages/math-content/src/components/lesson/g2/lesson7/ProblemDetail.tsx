@@ -37,16 +37,17 @@ export default function ProblemDetail({
   const count = practiceCount[problem.id] ?? 0
   const level = getMasteryLevel(correctCount[problem.id] ?? 0)
 
-  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(
-    problem,
-    {
-      handleSolve,
-      addWrong,
-    },
-    {
-      wrongHint: '❌ 不对哦，再想想？提示：从个位起看进位/退位，相同符号代表相同数字。',
-    },
-  )
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } =
+    useProblemAnswer(
+      problem,
+      {
+        handleSolve,
+        addWrong,
+      },
+      {
+        wrongHint: '❌ 不对哦，再想想？提示：从个位起看进位/退位，相同符号代表相同数字。',
+      },
+    )
 
   const solution = <ProblemSolutionPanel problem={problem} variant="yellow" />
 
@@ -82,7 +83,7 @@ export default function ProblemDetail({
       onSubmit={submit}
       onCheck={check}
       onStateChange={clearFeedback}
-      buttonClassName="bg-sky-600 shadow-[0_3px_10px_rgba(14,165,233,0.3)]"
+      buttonClassName="bg-sky-600 shadow-sticker-sm"
       tip={tipBlock}
     />
   )

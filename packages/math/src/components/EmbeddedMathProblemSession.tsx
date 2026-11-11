@@ -7,6 +7,7 @@ import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import PracticeProblemBody from '@rosie/math/components/shared/practice-queue/PracticeProblemBody'
 import { SEA_POOL } from '@rosie/math/utils/sea-data'
 import { lookupMathProblem } from '@rosie/math/utils/math-problem-lookup'
+import { Button } from '@rosie/ui/themes'
 
 type EmbeddedMathProblemSessionProps = {
   problemId: string
@@ -38,19 +39,22 @@ export default function EmbeddedMathProblemSession({ problemId }: EmbeddedMathPr
     return (
       <div className="rounded-2xl bg-emerald-50 p-4 text-center ring-1 ring-emerald-100">
         <p className="font-bold text-emerald-800">本题练习已记录 ✓</p>
-        <button
+        <Button
           type="button"
           onClick={() => setFinished(false)}
-          className="mt-3 rounded-xl bg-white px-4 py-2 text-sm font-bold text-emerald-700 ring-1 ring-emerald-200"
+          variant="outline"
+          color="jade"
+          size="2"
+          className="mt-3"
         >
           再做一次
-        </button>
+        </Button>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-slate-100 sm:p-3">
+    <div className="ring-kid-line rounded-2xl bg-slate-50 p-2 ring-1 sm:p-3">
       <div className="mb-2 flex flex-wrap gap-2 px-1 text-xs font-bold">
         <span className="rounded-full bg-indigo-100 px-2.5 py-1 text-indigo-700">
           已正确完成 {correctCount[entry.problem.id] ?? 0} 次

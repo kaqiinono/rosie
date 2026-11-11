@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react'
 import type { useMathProblemNotesAdmin } from '@rosie/math-kit/hooks/useMathProblemNotesAdmin'
 import { lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 import MathLessonSummaryEditor from '@rosie/math/admin/MathLessonSummaryEditor'
+import { StickerCard } from '@rosie/ui'
+import { IconButton } from '@rosie/ui/themes'
 
 type AdminApi = ReturnType<typeof useMathProblemNotesAdmin>
 
@@ -58,12 +60,15 @@ function OpenSummaryModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-3"
-      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      style={{ background: 'rgba(0,0,0,0.45)' }}
       onClick={requestClose}
       role="presentation"
     >
-      <div
-        className="flex h-[96vh] w-full max-w-[min(96vw,1280px)] flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+      <StickerCard
+        size="none"
+        elevation="lg"
+        radius="md"
+        className="flex h-[96vh] w-full max-w-[min(96vw,1280px)] flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -78,14 +83,17 @@ function OpenSummaryModal({
               图文录入本讲要点。支持加粗、列表、插图与粘贴图片。
             </p>
           </div>
-          <button
+          <IconButton
             type="button"
             onClick={requestClose}
-            className="shrink-0 rounded-lg px-2 py-1 text-[18px] leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
             aria-label="关闭"
+            variant="ghost"
+            color="gray"
+            size="3"
+            className="shrink-0"
           >
             ×
-          </button>
+          </IconButton>
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-5 py-4">
           <MathLessonSummaryEditor
@@ -100,7 +108,7 @@ function OpenSummaryModal({
             modal
           />
         </div>
-      </div>
+      </StickerCard>
     </div>
   )
 }

@@ -89,14 +89,14 @@ export default function AssumptionDiagram({ problem }: { problem: Problem }) {
   return (
     <div className="mb-4">
       {/* Section label */}
-      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-gray-400 uppercase">
         <span>🧮</span>
         <span>假设法 · 图解</span>
       </div>
 
       {/* Preamble chips */}
       {preamble.length > 0 && (
-        <div className="mb-2.5 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-[11px] leading-[1.8] text-gray-600">
+        <div className="border-kid-line mb-2.5 rounded-xl border-2 bg-gray-50 px-3 py-2 text-[11px] leading-[1.8] text-gray-600">
           {preamble.map((line, i) => (
             <div key={i}>
               <HighlightText text={line} cls="text-gray-800" />

@@ -4,17 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { Button } from '@rosie/ui/themes'
 import { COURSES } from '@rosie/math-kit/utils/courses-data'
 import {
   lessonFromHref,
   lessonsForGradeRegistry,
   routeForLesson,
 } from '@rosie/math-kit/utils/lesson-registry'
-import {
-  lessonHeaderNavActive,
-  LESSON_HEADER_MORE_BTN,
-  LESSON_HEADER_NAV_IDLE,
-} from './lesson-header-chrome'
+import { lessonHeaderNavActive, LESSON_HEADER_NAV_IDLE } from './lesson-header-chrome'
 
 type Props = {
   basePath: string
@@ -51,7 +48,7 @@ function NavItemLink({ item, active, activeColor, onNavigate }: NavItemLinkProps
     >
       <span className="text-sm leading-none sm:text-base">{item.icon}</span>
       <span>{item.lectureNum}</span>
-      <span className="hidden text-text-secondary xl:inline">· {item.shortTitle}</span>
+      <span className="text-text-secondary hidden xl:inline">· {item.shortTitle}</span>
     </Link>
   )
 }
@@ -104,9 +101,7 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
     const moreWidth = moreBtn?.offsetWidth ?? 52
 
     const itemsWidth = (count: number) =>
-      widths
-        .slice(0, count)
-        .reduce((sum, width, index) => sum + width + (index > 0 ? gap : 0), 0)
+      widths.slice(0, count).reduce((sum, width, index) => sum + width + (index > 0 ? gap : 0), 0)
 
     if (itemsWidth(items.length) <= totalWidth) {
       setVisibleCount(items.length)
@@ -192,20 +187,19 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
 
       {hasOverflow && (
         <div className="relative shrink-0">
-          <button
+          <Button
             ref={moreButtonRef}
             type="button"
+            size="2"
+            radius="large"
+            variant={overflowHasActive ? 'soft' : 'outline'}
+            color={overflowHasActive ? 'amber' : 'gray'}
             aria-expanded={moreOpen}
             aria-haspopup="menu"
             onClick={() => {
               if (!moreOpen) updateDropdownPos()
               setMoreOpen(!moreOpen)
             }}
-            className={`${LESSON_HEADER_MORE_BTN} ${
-              overflowHasActive
-                ? `${activeColor} border-gray-300 font-bold shadow-sm`
-                : ''
-            }`}
           >
             更多
             <svg
@@ -221,7 +215,7 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
             >
               <path d="m6 9 6 6 6-6" />
             </svg>
-          </button>
+          </Button>
         </div>
       )}
 
@@ -231,14 +225,17 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
         className="pointer-events-none absolute top-0 left-0 -z-10 flex h-0 gap-1 overflow-hidden opacity-0 sm:gap-1.5"
       >
         {items.map((item) => (
-          <NavItemLink
-            key={item.href}
-            item={item}
-            active={false}
-            activeColor={activeColor}
-          />
+          <NavItemLink key={item.href} item={item} active={false} activeColor={activeColor} />
         ))}
-        <button ref={moreMeasureRef} type="button" tabIndex={-1} className={LESSON_HEADER_MORE_BTN}>
+        <Button
+          ref={moreMeasureRef}
+          type="button"
+          size="2"
+          radius="large"
+          variant="outline"
+          color="gray"
+          tabIndex={-1}
+        >
           更多
           <svg
             width="12"
@@ -252,7 +249,7 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
           >
             <path d="m6 9 6 6 6-6" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       {moreOpen &&
@@ -262,7 +259,7 @@ export default function LessonGradeNav({ basePath, activeColor }: Props) {
           <div
             ref={dropdownRef}
             role="menu"
-            className="border-border-light fixed z-[200] max-h-64 min-w-[11rem] overflow-y-auto rounded-xl border bg-white py-1 shadow-lg"
+            className="border-border-light shadow-sticker fixed z-[200] max-h-64 min-w-[11rem] overflow-y-auto rounded-xl border bg-white py-1"
             style={{ top: dropdownPos.top, right: dropdownPos.right }}
           >
             {overflowItems.map((item) => (

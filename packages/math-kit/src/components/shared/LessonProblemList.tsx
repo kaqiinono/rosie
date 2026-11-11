@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import type { Problem } from '@rosie/core'
 import { getMasteryLevel, MASTERY_ICON } from '@rosie/core'
-import ExpandedProblemCard, { type ProblemDetailInlineComponent } from '@rosie/math-kit/components/shared/ExpandedProblemCard'
+import ExpandedProblemCard, {
+  type ProblemDetailInlineComponent,
+} from '@rosie/math-kit/components/shared/ExpandedProblemCard'
 import MasonryGrid from '@rosie/math-kit/components/shared/MasonryGrid'
 import PracticeCountBadge from '@rosie/math-kit/components/shared/PracticeCountBadge'
 import { useLessonAnalysisImageIds } from '@rosie/math-kit/hooks/useLessonAnalysisImageIds'
@@ -14,6 +16,7 @@ import { problemCardDisplayId } from '../../utils/problem-display-id'
 import { problemPracticeStyle } from '../../utils/problem-practice-style'
 import ProblemCardActions from './ProblemCardActions'
 import { ProblemScratchProvider } from './ScratchPad/ProblemScratchContext'
+import { Button } from '@rosie/ui/themes'
 
 type Props = {
   problems: Problem[]
@@ -36,7 +39,11 @@ type Props = {
 }
 
 function MetaDot() {
-  return <span className="shrink-0 text-[10px] text-slate-300" aria-hidden="true">·</span>
+  return (
+    <span className="shrink-0 text-[10px] text-slate-300" aria-hidden="true">
+      ·
+    </span>
+  )
 }
 
 export default function LessonProblemList({
@@ -75,7 +82,7 @@ export default function LessonProblemList({
   }, [])
 
   const cardClass = (count: number) =>
-    `group relative top-0 flex h-full min-w-0 flex-col rounded-xl border bg-white text-left shadow-[0_1px_2px_rgba(15,23,42,0.03)] transition-[top,box-shadow] duration-200 hover:-top-0.5 hover:shadow-[0_5px_16px_rgba(59,130,246,0.09)] motion-reduce:transition-none motion-reduce:hover:top-0 ${problemPracticeStyle(count).border}`
+    `group relative top-0 flex h-full min-w-0 flex-col rounded-xl border bg-white text-left shadow-sticker-sm transition-[top,box-shadow] duration-200 hover:-top-0.5 hover:shadow-sticker-sm motion-reduce:transition-none motion-reduce:hover:top-0 ${problemPracticeStyle(count).border}`
 
   if (showExpanded && ProblemDetail) {
     return (
@@ -86,7 +93,12 @@ export default function LessonProblemList({
               key={p.id}
               problem={p}
               index={i}
-              scratchContext={{ sectionProblems: problems, section: basePath.split('/').filter(Boolean).pop() ?? 'lesson', problemIndex: i, basePath }}
+              scratchContext={{
+                sectionProblems: problems,
+                section: basePath.split('/').filter(Boolean).pop() ?? 'lesson',
+                problemIndex: i,
+                basePath,
+              }}
               practiceCount={practiceCount}
               correctCount={correctCount}
               hasAnalysis={problemHasAnalysisImage(p, dbAnalysisIds)}
@@ -102,9 +114,7 @@ export default function LessonProblemList({
           ))}
         </MasonryGrid>
         {problems.length === 0 && (
-          <div className="py-6 text-center text-[13px] text-text-muted">
-            没有符合筛选条件的题目
-          </div>
+          <div className="text-text-muted py-6 text-center text-[13px]">没有符合筛选条件的题目</div>
         )}
       </>
     )
@@ -121,9 +131,7 @@ export default function LessonProblemList({
         const inner = (
           <>
             <div className="flex shrink-0 flex-col items-center gap-0.5 pt-0.5">
-              <div
-                className="flex h-8 min-w-8 items-center justify-center whitespace-nowrap rounded-lg bg-app-blue-light px-2 text-xs font-semibold tabular-nums text-app-blue-dark"
-              >
+              <div className="bg-app-blue-light text-app-blue-dark flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-semibold whitespace-nowrap tabular-nums">
                 {problemCardDisplayId(p)}
               </div>
               <span className={`text-sm leading-none ${level === 0 ? 'text-text-muted' : ''}`}>
@@ -133,12 +141,12 @@ export default function LessonProblemList({
 
             <div className="min-w-0 flex-1">
               <div className="flex min-w-0 items-center gap-1">
-                <div className="min-w-0 flex-1 text-sm font-semibold leading-snug break-words text-text-primary">
+                <div className="text-text-primary min-w-0 flex-1 text-sm leading-snug font-semibold break-words">
                   {p.title}
                 </div>
               </div>
 
-              <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px] text-text-secondary">
+              <div className="text-text-secondary mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px]">
                 <span
                   onClick={(e) => {
                     e.preventDefault()
@@ -157,39 +165,56 @@ export default function LessonProblemList({
                 {showSource && sourceLabel && (
                   <>
                     <MetaDot />
-                    <span className="max-w-full truncate font-medium text-text-secondary">{sourceLabel}</span>
+                    <span className="text-text-secondary max-w-full truncate font-medium">
+                      {sourceLabel}
+                    </span>
                   </>
                 )}
               </div>
             </div>
-
           </>
         )
 
         return (
           <div key={p.id} className={cardClass(count)}>
-            <span aria-hidden="true" className={`pointer-events-none absolute inset-x-4 top-0 h-[3px] rounded-b-full ${practiceStyle.accent}`} />
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-x-4 top-0 h-[3px] rounded-b-full ${practiceStyle.accent}`}
+            />
             {onPractice ? (
-              <button
+              <Button
                 type="button"
                 onClick={() => onPractice(p.id)}
-                className="flex w-full min-w-0 flex-1 cursor-pointer items-start gap-3 rounded-lg p-4 text-left focus-visible:outline-2 focus-visible:outline-app-blue"
+                variant="ghost"
+                color="gray"
+                size="2"
+                className="w-full min-w-0 flex-1"
               >
                 {inner}
-              </button>
+              </Button>
             ) : (
-              <Link href={`${basePath}/${i + 1}`} className="flex min-w-0 flex-1 items-start gap-3 rounded-lg p-4 text-left no-underline focus-visible:outline-2 focus-visible:outline-app-blue">
+              <Link
+                href={`${basePath}/${i + 1}`}
+                className="focus-visible:outline-app-blue flex min-w-0 flex-1 items-start gap-3 rounded-lg p-4 text-left no-underline focus-visible:outline-2"
+              >
                 {inner}
               </Link>
             )}
-            <ProblemScratchProvider value={{ sectionProblems: problems, section: basePath.split('/').filter(Boolean).pop() ?? 'lesson', problemIndex: i, basePath }}>
+            <ProblemScratchProvider
+              value={{
+                sectionProblems: problems,
+                section: basePath.split('/').filter(Boolean).pop() ?? 'lesson',
+                problemIndex: i,
+                basePath,
+              }}
+            >
               <ProblemCardActions problem={p} hasAnalysis={hasAnalysis} practiceCount={count} />
             </ProblemScratchProvider>
           </div>
         )
       })}
       {problems.length === 0 && (
-        <div className="col-span-full py-6 text-center text-[13px] text-text-muted">
+        <div className="text-text-muted col-span-full py-6 text-center text-[13px]">
           没有符合筛选条件的题目
         </div>
       )}

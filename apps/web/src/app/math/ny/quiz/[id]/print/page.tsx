@@ -12,6 +12,7 @@ import {
 import type { QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 import { fetchQuizScratchObjectsMap } from '@rosie/math-kit/utils/math-scratch-db'
+import { Button } from '@rosie/ui/themes'
 
 export default function QuizPrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -21,9 +22,10 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
   const [paper, setPaper] = useState<QuizPaper | null>(null)
   const [scratchByProblem, setScratchByProblem] = useState<Map<string, ScratchObject[]>>(new Map())
   const [loading, setLoading] = useState(true)
-  const [userPrintMode, setUserPrintMode] = useState<{ paperId: string; mode: QuizPrintMode } | null>(
-    null,
-  )
+  const [userPrintMode, setUserPrintMode] = useState<{
+    paperId: string
+    mode: QuizPrintMode
+  } | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -93,7 +95,7 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
 
   return (
     <div className="print-root min-h-screen bg-slate-100">
-      <div className="no-print sticky top-0 z-50 border-b border-slate-100 bg-white/90 backdrop-blur-sm">
+      <div className="no-print border-kid-line sticky top-0 z-50 border-b bg-white">
         <div className="mx-auto flex h-14 max-w-[800px] items-center gap-2 px-3 sm:gap-3 sm:px-4">
           <Link
             href={`/math/ny/quiz/${id}`}
@@ -115,37 +117,36 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
           </h1>
           <div className="flex-1 sm:hidden" />
           <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
-            <button
+            <Button
               type="button"
               onClick={() => setUserPrintMode({ paperId: paper.id, mode: 'blank' })}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                printMode === 'blank'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
+              variant={printMode === 'blank' ? 'outline' : 'ghost'}
+              color="gray"
+              size="1"
             >
               空白卷
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={() => setUserPrintMode({ paperId: paper.id, mode: 'complete' })}
               disabled={!submitted}
               title={submitted ? '含作答、草稿与题解' : '交卷后可打印完整答卷'}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                printMode === 'complete'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
+              variant={printMode === 'complete' ? 'outline' : 'ghost'}
+              color="gray"
+              size="1"
             >
               完整答卷
-            </button>
+            </Button>
           </div>
-          <button
+          <Button
             onClick={() => window.print()}
-            className="shrink-0 rounded-full bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-indigo-600 sm:px-4"
+            variant="solid"
+            color="indigo"
+            size="1"
+            className="shrink-0"
           >
             🖨 <span className="hidden sm:inline">打印</span>
-          </button>
+          </Button>
         </div>
       </div>
 

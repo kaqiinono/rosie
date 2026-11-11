@@ -38,13 +38,14 @@ export default function ProblemDetail({
   const count = practiceCount[problem.id] ?? 0
   const level = getMasteryLevel(correctCount[problem.id] ?? 0)
 
-  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(
-    problem,
-    { handleSolve, addWrong },
-    {
-      wrongHint: '❌ 不对哦，再想想？提示：先看相邻项的差、比或和。',
-    },
-  )
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } =
+    useProblemAnswer(
+      problem,
+      { handleSolve, addWrong },
+      {
+        wrongHint: '❌ 不对哦，再想想？提示：先看相邻项的差、比或和。',
+      },
+    )
 
   const solution = <ProblemSolutionPanel problem={problem} variant="yellow" />
 
@@ -81,7 +82,7 @@ export default function ProblemDetail({
       onSubmit={submit}
       onCheck={check}
       onStateChange={clearFeedback}
-      buttonClassName="bg-amber-600 shadow-[0_3px_10px_rgba(245,158,11,0.3)]"
+      buttonClassName="bg-amber-600 shadow-sticker-sm"
       tip={tipBlock}
     />
   )

@@ -9,6 +9,7 @@ import ScratchPadSelectionActions from './ScratchPadSelectionActions'
 import ScratchPadToolbar from './ScratchPadToolbar'
 import { useScratchPad } from './useScratchPad'
 import './scratch-pad.css'
+import { Button } from '@rosie/ui/themes'
 
 type ScratchPadInlineProps = {
   problem: Problem
@@ -41,13 +42,9 @@ function ScratchPadInlineHeader({
           <ScratchPadInsertFigureButton problem={problem} onInsertFigure={onInsertFigure} compact />
         )}
         {onCollapse && (
-          <button
-            type="button"
-            onClick={onCollapse}
-            className="cursor-pointer rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200 transition-colors hover:bg-slate-50"
-          >
+          <Button type="button" onClick={onCollapse} variant="outline" color="gray" size="1">
             收起
-          </button>
+          </Button>
         )}
       </div>
     </div>

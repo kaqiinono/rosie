@@ -36,8 +36,8 @@ export default function MathWeeklyPlanManage({ problemSets }: Props) {
           href="/setting/plans/math/new"
           className="shrink-0 rounded-xl px-4 py-2.5 text-[13px] font-extrabold text-white no-underline transition-all hover:scale-105"
           style={{
-            background: 'linear-gradient(135deg, #f97316 0%, #fbbf24 100%)',
-            boxShadow: '0 4px 14px rgba(249,115,22,.35)',
+            background: '#f97316',
+            boxShadow: '0 3px 0 rgba(249,115,22,.35)',
           }}
         >
           + 新建计划
@@ -57,7 +57,7 @@ export default function MathWeeklyPlanManage({ problemSets }: Props) {
           <Link
             href="/setting/plans/math/new"
             className="inline-block rounded-xl px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
-            style={{ background: 'linear-gradient(135deg, #f97316, #fbbf24)' }}
+            style={{ background: '#f97316' }}
           >
             创建第一个计划
           </Link>
@@ -76,7 +76,10 @@ export default function MathWeeklyPlanManage({ problemSets }: Props) {
       )}
 
       <div className="mt-6 text-center">
-        <Link href="/math/ny/plan" className="text-[12px] font-bold text-orange-500 no-underline hover:underline">
+        <Link
+          href="/math/ny/plan"
+          className="text-[12px] font-bold text-orange-500 no-underline hover:underline"
+        >
           前往做题 →
         </Link>
       </div>

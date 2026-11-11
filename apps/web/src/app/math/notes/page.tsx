@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { OrbBackground } from '@rosie/ui'
+import { OrbBackground, StickerCard } from '@rosie/ui'
 import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math-kit/components/shared/rich-text-image'
 import LessonSummaryBody from '@rosie/math-kit/components/shared/LessonSummaryBody'
 import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
@@ -34,6 +34,7 @@ import {
   RICH_CONTENT_IMG_TW_COMPACT,
   sanitizeRichHtml,
 } from '@rosie/math-kit/utils/sanitize-summary-html'
+import { Button } from '@rosie/ui/themes'
 
 type LessonNotesGroup = {
   lessonId: string
@@ -74,11 +75,6 @@ function NotesFilterPanel({
   const allSelected = totalCount > 0 && selectedCount === totalCount
   const totalNotes = gradeLessonIds.reduce((n, id) => n + (noteCountByLesson.get(id) ?? 0), 0)
 
-  const chipBase =
-    'relative cursor-pointer rounded-full border-[1.5px] px-2.5 py-1.5 text-[11px] font-semibold transition-all active:scale-95 sm:px-3 sm:py-1.5 sm:text-xs'
-  const chipOn = 'border-violet-400 bg-violet-500 text-white shadow-[0_1px_4px_rgba(139,92,246,0.25)]'
-  const chipOff = 'border-slate-200 bg-slate-50 text-slate-600 hover:border-violet-200 hover:bg-violet-50'
-
   const toggleLesson = useCallback(
     (lessonId: string) => {
       const next = new Set(selectedLessons)
@@ -90,14 +86,16 @@ function NotesFilterPanel({
   )
 
   return (
-    <div className="mb-2.5 w-full overflow-hidden rounded-2xl border border-violet-200/80 bg-white/95 shadow-[0_2px_14px_rgba(109,40,217,0.06)] backdrop-blur-sm">
-      <button
+    <StickerCard size="none" elevation="sm" radius="md" className="mb-2.5 w-full overflow-hidden">
+      <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={onToggleExpanded}
         className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors hover:bg-violet-50/40 sm:px-4 sm:py-3"
         aria-expanded={expanded}
       >
-        <span className="text-[11px] font-extrabold tracking-wide text-violet-900 sm:text-xs">筛选</span>
+        <span className="text-[11px] font-extrabold tracking-wide text-violet-900 sm:text-xs">
+          筛选
+        </span>
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
           <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold text-violet-800">
             {GRADE_LABEL[selectedGrade] ?? `${selectedGrade} 年级`}
@@ -121,7 +119,7 @@ function NotesFilterPanel({
       </button>
 
       {expanded && (
-        <div className="space-y-3 border-t border-violet-100/80 px-3 pb-3.5 pt-3 sm:px-4 sm:pb-4">
+        <div className="space-y-3 border-t border-violet-100/80 px-3 pt-3 pb-3.5 sm:px-4 sm:pb-4">
           <div>
             <div className="mb-2 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
               年级
@@ -134,19 +132,20 @@ function NotesFilterPanel({
                   0,
                 )
                 return (
-                  <button
+                  <Button
                     key={grade}
                     type="button"
                     onClick={() => onGradeChange(grade)}
-                    className={`${chipBase} ${active ? chipOn : chipOff}`}
+                    variant={active ? 'solid' : 'soft'}
+                    color={active ? 'violet' : 'gray'}
+                    radius="full"
+                    size="1"
                   >
                     {GRADE_LABEL[grade] ?? `${grade} 年级`}
                     {count > 0 && (
-                      <span className={`ml-1 text-[10px] ${active ? 'opacity-80' : 'text-violet-400'}`}>
-                        {count}
-                      </span>
+                      <span className={active ? 'opacity-80' : 'text-violet-400'}>{count}</span>
                     )}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -157,27 +156,31 @@ function NotesFilterPanel({
               <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                 讲次
               </span>
-              <button
+              <Button
                 type="button"
-                onClick={() =>
-                  onChangeLessons(allSelected ? new Set() : new Set(gradeLessonIds))
-                }
-                className="text-[11px] font-semibold text-violet-500 hover:text-violet-700"
+                onClick={() => onChangeLessons(allSelected ? new Set() : new Set(gradeLessonIds))}
+                variant="ghost"
+                color="violet"
+                size="1"
               >
                 {allSelected ? '全不选' : '全选'}
-              </button>
+              </Button>
             </div>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {gradeLessons.map((lesson) => {
                 const isSelected = selectedLessons.has(lesson.id)
                 const noteN = noteCountByLesson.get(lesson.id) ?? 0
                 return (
-                  <button
+                  <Button
                     key={lesson.id}
                     type="button"
                     onClick={() => toggleLesson(lesson.id)}
-                    className={`${chipBase} ${isSelected ? chipOn : chipOff}`}
                     title={lesson.title}
+                    variant={isSelected ? 'solid' : 'soft'}
+                    color={isSelected ? 'violet' : 'gray'}
+                    radius="full"
+                    size="1"
+                    className="relative"
                   >
                     <span className="inline-flex items-center gap-1">
                       <span>{lesson.icon}</span>
@@ -192,14 +195,14 @@ function NotesFilterPanel({
                         {noteN}
                       </span>
                     )}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
           </div>
         </div>
       )}
-    </div>
+    </StickerCard>
   )
 }
 
@@ -212,12 +215,14 @@ function NoteEntryCard({ entry }: { entry: LessonNoteEntry }) {
             {entry.sourceLabel}
           </span>
         )}
-        <span className="truncate text-[13px] font-bold text-text-primary">{entry.problemTitle}</span>
+        <span className="text-text-primary truncate text-[13px] font-bold">
+          {entry.problemTitle}
+        </span>
       </div>
       <div
         className={clsx(
-          'lesson-note-preview text-[12px] leading-relaxed text-text-secondary',
-          '[&_strong]:font-bold [&_strong]:text-text-primary',
+          'lesson-note-preview text-text-secondary text-[12px] leading-relaxed',
+          '[&_strong]:text-text-primary [&_strong]:font-bold',
           '[&_ul]:my-0.5 [&_ul]:list-disc [&_ul]:pl-4',
           '[&_ol]:my-0.5 [&_ol]:list-decimal [&_ol]:pl-4',
           '[&_p]:my-0.5 [&_p:last-child]:mb-0',
@@ -230,7 +235,7 @@ function NoteEntryCard({ entry }: { entry: LessonNoteEntry }) {
   )
 
   const cardClass =
-    'block rounded-[12px] border border-violet-100 bg-[#faf9ff] p-3.5 no-underline transition hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-[0_4px_16px_rgba(91,76,204,0.08)]'
+    'block rounded-[12px] border border-violet-100 bg-[#faf9ff] p-3.5 no-underline transition hover:border-violet-200 hover:bg-violet-50/60 hover:shadow-sticker-sm'
 
   if (entry.href) {
     return (
@@ -250,13 +255,15 @@ function LessonNotesSection({ group }: { group: LessonNotesGroup }) {
   const noteCount = entries.length + (showSummary ? 1 : 0)
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-violet-100/80 bg-white shadow-[0_2px_14px_rgba(109,40,217,0.06)]">
-      <div className="flex flex-wrap items-center gap-2 border-b border-violet-50 bg-gradient-to-r from-violet-50/80 to-indigo-50/50 px-4 py-3">
+    <StickerCard as="section" size="none" elevation="sm" radius="md" className="overflow-hidden">
+      <div className="flex flex-wrap items-center gap-2 border-b border-violet-50 bg-indigo-50/50 px-4 py-3">
         <span className="text-lg" aria-hidden>
           {meta.icon}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="m-0 text-[14px] font-extrabold text-violet-950 sm:text-[15px]">{meta.title}</h2>
+          <h2 className="m-0 text-[14px] font-extrabold text-violet-950 sm:text-[15px]">
+            {meta.title}
+          </h2>
         </div>
         <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold text-violet-700">
           {noteCount} 条
@@ -279,7 +286,7 @@ function LessonNotesSection({ group }: { group: LessonNotesGroup }) {
           </div>
         )}
       </div>
-    </section>
+    </StickerCard>
   )
 }
 
@@ -311,7 +318,9 @@ export default function MathNotesPage() {
     () => new Set(lessonsForGrade(defaultGrade)),
   )
   const [filterExpanded, setFilterExpanded] = useState(false)
-  const [notesByLesson, setNotesByLesson] = useState<Map<string, MathProblemNote[]>>(() => new Map())
+  const [notesByLesson, setNotesByLesson] = useState<Map<string, MathProblemNote[]>>(
+    () => new Map(),
+  )
   const [loadedKey, setLoadedKey] = useState('')
 
   const handleGradeChange = useCallback((grade: number) => {
@@ -369,8 +378,8 @@ export default function MathNotesPage() {
       const basePath = routeForLesson(entry)
       const summaryNotes = notesForProblem(notes, lessonSummaryProblemId(lessonId))
       const summary = summaryNotes[0] ?? null
-      const entries = buildLessonNoteEntries(notes, lessonId, basePath, meta.problems).sort((a, b) =>
-        compareNotesByCreatedAtDesc(a.note, b.note),
+      const entries = buildLessonNoteEntries(notes, lessonId, basePath, meta.problems).sort(
+        (a, b) => compareNotesByCreatedAtDesc(a.note, b.note),
       )
       const showSummary = summary != null && !isRichBodyEmpty(summary.bodyHtml)
       if (!showSummary && entries.length === 0) continue
@@ -388,26 +397,26 @@ export default function MathNotesPage() {
   }, [selectedLessonIds, notesByLesson])
 
   const totalNoteCount = useMemo(
-    () => groups.reduce((n, g) => {
-      const summaryN = g.summary && !isRichBodyEmpty(g.summary.bodyHtml) ? 1 : 0
-      return n + g.entries.length + summaryN
-    }, 0),
+    () =>
+      groups.reduce((n, g) => {
+        const summaryN = g.summary && !isRichBodyEmpty(g.summary.bodyHtml) ? 1 : 0
+        return n + g.entries.length + summaryN
+      }, 0),
     [groups],
   )
 
   const allLessonsSelected =
-    selectedLessons.size === seaLessonsForGrade(selectedGrade).length &&
-    selectedLessons.size > 0
+    selectedLessons.size === seaLessonsForGrade(selectedGrade).length && selectedLessons.size > 0
 
   return (
     <>
       <OrbBackground variant="math" />
 
-      <header className="fixed top-0 right-0 left-0 z-20 border-b border-violet-200/60 bg-[#faf8ff]/92 shadow-[0_4px_20px_rgba(109,40,217,0.05)] backdrop-blur-lg">
+      <header className="shadow-sticker-sm fixed top-0 right-0 left-0 z-20 border-b border-violet-200/60 bg-[#faf8ff]/92">
         <div className="flex items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-4 sm:py-2.5">
           <Link
             href="/math"
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-violet-100 bg-white px-3 text-[12px] font-bold text-violet-900/55 no-underline shadow-sm transition-all hover:border-violet-200 hover:text-violet-900 active:scale-95 sm:text-[13px]"
+            className="shadow-sticker-sm flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-violet-100 bg-white px-3 text-[12px] font-bold text-violet-900/55 no-underline transition-all hover:border-violet-200 hover:text-violet-900 active:scale-95 sm:text-[13px]"
           >
             <svg
               width="14"
@@ -452,41 +461,45 @@ export default function MathNotesPage() {
         />
 
         {isLoading ? (
-          <p className="py-16 text-center text-[13px] text-text-muted">加载中…</p>
+          <p className="text-text-muted py-16 text-center text-[13px]">加载中…</p>
         ) : selectedLessons.size === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-violet-200/80 bg-white/50 px-4 py-12 text-center">
             <div className="text-4xl" aria-hidden>
               🔍
             </div>
-            <div className="text-text-primary max-w-xs text-[14px] font-bold leading-snug">
+            <div className="text-text-primary max-w-xs text-[14px] leading-snug font-bold">
               请至少选择一个讲次
             </div>
-            <button
+            <Button
               type="button"
               onClick={() => setSelectedLessons(new Set(lessonsForGrade(selectedGrade)))}
-              className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700"
+              variant="soft"
+              color="violet"
+              size="1"
             >
               全选本年级讲次
-            </button>
+            </Button>
           </div>
         ) : groups.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-violet-200/80 bg-white/50 px-4 py-12 text-center">
             <div className="text-4xl" aria-hidden>
               📭
             </div>
-            <div className="text-text-primary max-w-xs text-[14px] font-bold leading-snug">
+            <div className="text-text-primary max-w-xs text-[14px] leading-snug font-bold">
               {allLessonsSelected
                 ? `${GRADE_LABEL[selectedGrade] ?? ''}暂无笔记`
                 : '所选讲次暂无笔记'}
             </div>
             {!allLessonsSelected && (
-              <button
+              <Button
                 type="button"
                 onClick={() => setSelectedLessons(new Set(lessonsForGrade(selectedGrade)))}
-                className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700"
+                variant="soft"
+                color="violet"
+                size="1"
               >
                 查看本年级全部讲次
-              </button>
+              </Button>
             )}
             <Link
               href="/math"
@@ -502,13 +515,15 @@ export default function MathNotesPage() {
                 共 {totalNoteCount} 条 · {groups.length} 讲
               </span>
               {!filterExpanded && (
-                <button
+                <Button
                   type="button"
                   onClick={() => setFilterExpanded(true)}
-                  className="text-[11px] font-semibold text-violet-500 hover:text-violet-700"
+                  variant="ghost"
+                  color="violet"
+                  size="1"
                 >
                   调整筛选
-                </button>
+                </Button>
               )}
             </div>
             <div className="flex flex-col gap-4">

@@ -68,7 +68,7 @@ export default function ProblemDetail({
       onAnswerChange={setAnswer}
       onCheck={check}
       feedback={feedback}
-      buttonClassName="bg-amber-600 shadow-[0_3px_10px_rgba(217,119,6,0.3)]"
+      buttonClassName="bg-amber-600 shadow-sticker-sm"
     />
   )
 

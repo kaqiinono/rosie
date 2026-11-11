@@ -4,7 +4,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDraftQuery } from '../../../hooks/useDraftQuery'
 import { useAuth } from '@rosie/core'
 import type { MathPracticeAttemptRow } from '@rosie/math-kit/hooks/math-scratch-types'
-import { fetchPracticeAttemptsForProblem, fetchAttemptCanvas } from '@rosie/math-kit/utils/math-scratch-db'
+import {
+  fetchPracticeAttemptsForProblem,
+  fetchAttemptCanvas,
+} from '@rosie/math-kit/utils/math-scratch-db'
 import { attemptRowHasViewableCanvas } from '@rosie/math-kit/utils/math-practice-attempt'
 import ScratchPadContentPreview from './ScratchPadContentPreview'
 
@@ -27,7 +30,10 @@ export default function PracticeAttemptTimeline({
   const { user } = useAuth()
   const [previewId, setPreviewId] = useState<string | null>(null)
   const userId = user?.id
-  const load = useMemo(() => userId ? () => fetchPracticeAttemptsForProblem(userId, problemId) : null, [userId, problemId])
+  const load = useMemo(
+    () => (userId ? () => fetchPracticeAttemptsForProblem(userId, problemId) : null),
+    [userId, problemId],
+  )
   const attempts = useDraftQuery(load, refreshKey)
 
   if (!attempts?.length) return null
@@ -35,12 +41,14 @@ export default function PracticeAttemptTimeline({
   const previewAttempt = previewId ? attempts.find((a) => a.id === previewId) : null
 
   return (
-    <div className="mt-3 border-t border-slate-100 pt-3">
-      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-400">练习记录</div>
+    <div className="border-kid-line mt-3 border-t pt-3">
+      <div className="mb-2 text-[11px] font-bold tracking-wide text-slate-400 uppercase">
+        练习记录
+      </div>
       <ul className="flex flex-col gap-1.5">
         {attempts.map((a, i) => (
           <li key={a.id}>
-            <button
+            <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
               type="button"
               onClick={() => {
                 if (attemptRowHasViewableCanvas(a)) {
@@ -63,18 +71,20 @@ export default function PracticeAttemptTimeline({
                 </span>
               )}
             </button>
-            {previewId === a.id && attemptRowHasViewableCanvas(a) && previewAttempt?.id === a.id && (
-              <div
-                className={`mt-1.5 overflow-hidden rounded-lg border bg-white p-1 ${a.correct ? 'border-slate-100' : 'border-rose-200'}`}
-              >
-                {!a.correct && (
-                  <p className="mb-1 rounded bg-rose-50 px-2 py-1 text-[10px] font-semibold text-rose-700">
-                    这次做错了，仅供参考演算过程，勿当作正确答案。
-                  </p>
-                )}
-                <DraftPreview attempt={a} />
-              </div>
-            )}
+            {previewId === a.id &&
+              attemptRowHasViewableCanvas(a) &&
+              previewAttempt?.id === a.id && (
+                <div
+                  className={`mt-1.5 overflow-hidden rounded-lg border-2 bg-white p-1 ${a.correct ? 'border-kid-line' : 'border-rose-200'}`}
+                >
+                  {!a.correct && (
+                    <p className="mb-1 rounded bg-rose-50 px-2 py-1 text-[10px] font-semibold text-rose-700">
+                      这次做错了，仅供参考演算过程，勿当作正确答案。
+                    </p>
+                  )}
+                  <DraftPreview attempt={a} />
+                </div>
+              )}
           </li>
         ))}
       </ul>

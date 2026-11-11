@@ -50,7 +50,13 @@ import {
   invalidateLessonNotesCache,
   type MathProblemNote,
 } from '@rosie/math-kit/hooks/useMathProblemNotes'
-import { appendRichInlineImage, richInlineImageHtml, sanitizeRichHtml } from '@rosie/math-kit/utils/sanitize-summary-html'
+import {
+  appendRichInlineImage,
+  richInlineImageHtml,
+  sanitizeRichHtml,
+} from '@rosie/math-kit/utils/sanitize-summary-html'
+import { StickerCard } from '@rosie/ui'
+import { Button, SegmentedControl, TextField } from '@rosie/ui/themes'
 
 type QuizDraftContext = {
   paperId: string
@@ -211,12 +217,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
       return raw.filter((item) => problemIds.has(item.problem.id))
     }
     return filterProblemPool(raw, sourceFilter, typeFilter)
-  }, [
-    quizDraft,
-    selectedLessons,
-    sourceFilter,
-    typeFilter,
-  ])
+  }, [quizDraft, selectedLessons, sourceFilter, typeFilter])
 
   const dbAnalysisIds = useMemo(() => {
     const ids = new Set<string>()
@@ -286,7 +287,8 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
   const allMatched = slices.length > 0 && matchedCount === slices.length
   const draftsMarked = draftSlicesFullyMarked(slices)
   const canSubmit = allMatched && draftsMarked
-  const canSlice = (quizDraft ? quizDraft.lessonIds.length > 0 : selectedLessons.length > 0) && pageUrls.length > 0
+  const canSlice =
+    (quizDraft ? quizDraft.lessonIds.length > 0 : selectedLessons.length > 0) && pageUrls.length > 0
   const activeIsSummary = activeSlice?.sliceKind === 'summary'
 
   const showFlash = useCallback((msg: string) => {
@@ -295,11 +297,14 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
   }, [])
 
   /** Keep default + localStorage in sync so the next划片 inherits the same kind. */
-  const applySessionSliceKind = useCallback((kind: PdfSliceKind) => {
-    if (quizDraft) return
-    setDefaultKind(kind)
-    persistPdfSliceKind(kind)
-  }, [quizDraft])
+  const applySessionSliceKind = useCallback(
+    (kind: PdfSliceKind) => {
+      if (quizDraft) return
+      setDefaultKind(kind)
+      persistPdfSliceKind(kind)
+    },
+    [quizDraft],
+  )
 
   const setSliceKind = useCallback(
     (sliceId: string, kind: PdfSliceKind) => {
@@ -330,7 +335,8 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
           return {
             ...s,
             sliceKind: kind,
-            draftCorrect: kind === 'draft' ? (s.sliceKind === 'draft' ? s.draftCorrect : null) : null,
+            draftCorrect:
+              kind === 'draft' ? (s.sliceKind === 'draft' ? s.draftCorrect : null) : null,
           }
         }),
       )
@@ -339,9 +345,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
   )
 
   const setDraftSliceCorrect = useCallback((sliceId: string, correct: boolean) => {
-    setSlices((prev) =>
-      prev.map((s) => (s.id === sliceId ? { ...s, draftCorrect: correct } : s)),
-    )
+    setSlices((prev) => prev.map((s) => (s.id === sliceId ? { ...s, draftCorrect: correct } : s)))
   }, [])
 
   useEffect(() => {
@@ -726,7 +730,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
   return (
     <div className="space-y-4">
       {flash && (
-        <div className="pointer-events-none fixed top-16 left-1/2 z-50 -translate-x-1/2 rounded-full bg-teal-800 px-4 py-2 text-[13px] font-semibold text-white shadow-lg">
+        <div className="shadow-sticker pointer-events-none fixed top-16 left-1/2 z-50 -translate-x-1/2 rounded-full bg-teal-800 px-4 py-2 text-[13px] font-semibold text-white">
           {flash}
         </div>
       )}
@@ -735,7 +739,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
         {/* Left: grade + lessons + filters + upload + slice list */}
         <div className="space-y-3">
           {quizDraft ? (
-            <section className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-3 shadow-sm">
+            <section className="shadow-sticker-sm rounded-2xl border border-indigo-100 bg-indigo-50/70 p-3">
               <div className="text-[12px] font-bold text-indigo-800">试卷答案草稿</div>
               <p className="mt-1 text-[11px] leading-relaxed text-indigo-700">
                 {quizDraft.title} · 仅可匹配本卷的 {quizDraft.problemIds.length} 道题
@@ -759,37 +763,40 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
             />
           )}
 
-          {!quizDraft && <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
-            <div className="mb-2 text-[12px] font-bold text-slate-500">默认类型（新划片沿用）</div>
-            <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
-              {PDF_SLICE_KINDS.map((kind) => (
-                <button
-                  key={kind}
-                  type="button"
-                  onClick={() => {
-                    if (activeSliceId) setSliceKind(activeSliceId, kind)
-                    else applySessionSliceKind(kind)
-                  }}
-                  className={clsx(
-                    'rounded-lg py-1.5 text-[11px] font-bold transition',
-                    defaultKind === kind ? 'bg-white text-teal-800 shadow-sm' : 'text-slate-500',
-                  )}
-                >
-                  {PDF_SLICE_KIND_LABEL[kind]}
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-[10px] leading-relaxed text-teal-700">
-              {PDF_SLICE_KIND_HINT[defaultKind]}
-              {defaultKind === 'figure' || defaultKind === 'analysis'
-                ? '。教材原题截图请选「题面图」，手写解析请选「题解图」。'
-                : defaultKind === 'draft'
-                  ? '。补录纸上练习时选「草稿」，匹配题目后须标记做对/做错。'
-                  : null}
-            </p>
-          </section>}
+          {!quizDraft && (
+            <StickerCard as="section" size="sm" elevation="sm" radius="md">
+              <div className="mb-2 text-[12px] font-bold text-slate-500">
+                默认类型（新划片沿用）
+              </div>
+              <SegmentedControl.Root
+                value={defaultKind}
+                onValueChange={(v) => {
+                  const kind = v as PdfSliceKind
+                  if (activeSliceId) setSliceKind(activeSliceId, kind)
+                  else applySessionSliceKind(kind)
+                }}
+                size="1"
+                radius="full"
+                className="w-full"
+              >
+                {PDF_SLICE_KINDS.map((kind) => (
+                  <SegmentedControl.Item key={kind} value={kind}>
+                    {PDF_SLICE_KIND_LABEL[kind]}
+                  </SegmentedControl.Item>
+                ))}
+              </SegmentedControl.Root>
+              <p className="mt-2 text-[10px] leading-relaxed text-teal-700">
+                {PDF_SLICE_KIND_HINT[defaultKind]}
+                {defaultKind === 'figure' || defaultKind === 'analysis'
+                  ? '。教材原题截图请选「题面图」，手写解析请选「题解图」。'
+                  : defaultKind === 'draft'
+                    ? '。补录纸上练习时选「草稿」，匹配题目后须标记做对/做错。'
+                    : null}
+              </p>
+            </StickerCard>
+          )}
 
-          <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
+          <StickerCard as="section" size="sm" elevation="sm" radius="md">
             <div className="mb-2 text-[12px] font-bold text-slate-500">上传素材</div>
             <input
               ref={materialInputRef}
@@ -815,11 +822,15 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                 if (picked.length > 0) void handleMaterialUpload(picked)
               }}
             />
-            <button
+            <Button
               type="button"
               disabled={pdfLoading}
               onClick={() => materialInputRef.current?.click()}
-              className="w-full rounded-xl bg-teal-600 py-2 text-[12px] font-bold text-white disabled:opacity-60"
+              variant="solid"
+              color="teal"
+              size="2"
+              radius="full"
+              className="w-full"
             >
               {pdfLoading
                 ? pdfProgress
@@ -830,26 +841,32 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                 : pageUrls.length > 0
                   ? '更换素材（PDF / 图片）'
                   : '选择 PDF 或图片（可多选）'}
-            </button>
+            </Button>
             {quizDraft && (
-              <button
+              <Button
                 type="button"
                 disabled={pdfLoading}
                 onClick={() => cameraInputRef.current?.click()}
-                className="mt-2 w-full rounded-xl border border-teal-200 bg-teal-50 py-2 text-[12px] font-bold text-teal-700 disabled:opacity-60"
+                variant="soft"
+                color="teal"
+                size="2"
+                radius="full"
+                className="mt-2 w-full"
               >
                 用相机拍照
-              </button>
+              </Button>
             )}
-            {!canSlice && (quizDraft ? quizDraft.lessonIds.length > 0 : selectedLessons.length > 0) && pageUrls.length === 0 && (
-              <p className="mt-2 text-[10px] text-slate-400">上传 PDF 或图片后即可划片</p>
-            )}
+            {!canSlice &&
+              (quizDraft ? quizDraft.lessonIds.length > 0 : selectedLessons.length > 0) &&
+              pageUrls.length === 0 && (
+                <p className="mt-2 text-[10px] text-slate-400">上传 PDF 或图片后即可划片</p>
+              )}
             {selectedLessons.length === 0 && (
               <p className="mt-2 text-[10px] text-amber-600">请先选择至少一个讲次</p>
             )}
-          </section>
+          </StickerCard>
 
-          <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
+          <StickerCard as="section" size="sm" elevation="sm" radius="md">
             <div className="mb-2 flex items-center justify-between">
               <div className="text-[12px] font-bold text-slate-500">划片列表</div>
               <span className="text-[10px] text-slate-400">
@@ -903,49 +920,48 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                         </div>
                         {s.sliceKind === 'draft' && (
                           <div className="mt-1 flex gap-1">
-                            <button
+                            <Button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setDraftSliceCorrect(s.id, true)
                               }}
-                              className={clsx(
-                                'rounded px-1.5 py-0.5 text-[9px] font-bold',
-                                s.draftCorrect === true
-                                  ? 'bg-emerald-100 text-emerald-700'
-                                  : 'bg-slate-100 text-slate-500',
-                              )}
+                              variant={s.draftCorrect === true ? 'solid' : 'soft'}
+                              color={s.draftCorrect === true ? 'green' : 'gray'}
+                              size="1"
+                              radius="full"
                             >
                               做对
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setDraftSliceCorrect(s.id, false)
                               }}
-                              className={clsx(
-                                'rounded px-1.5 py-0.5 text-[9px] font-bold',
-                                s.draftCorrect === false
-                                  ? 'bg-rose-100 text-rose-700'
-                                  : 'bg-slate-100 text-slate-500',
-                              )}
+                              variant={s.draftCorrect === false ? 'solid' : 'soft'}
+                              color={s.draftCorrect === false ? 'red' : 'gray'}
+                              size="1"
+                              radius="full"
                             >
                               做错
-                            </button>
+                            </Button>
                           </div>
                         )}
                       </div>
-                      <button
+                      <Button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation()
                           removeSlice(s.id)
                         }}
-                        className="shrink-0 rounded px-1 text-[10px] text-red-500 hover:bg-red-50"
+                        variant="ghost"
+                        color="red"
+                        size="1"
+                        className="shrink-0"
                       >
                         删
-                      </button>
+                      </Button>
                     </div>
                   </li>
                 ))}
@@ -953,11 +969,14 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
             )}
 
             {slices.length > 0 && (
-              <button
+              <Button
                 type="button"
                 disabled={!canSubmit || submitting}
                 onClick={() => void handleSubmit()}
-                className="mt-3 w-full rounded-xl bg-emerald-600 py-2.5 text-[12px] font-bold text-white disabled:opacity-50"
+                variant="solid"
+                color="jade"
+                size="1"
+                className="mt-3 w-full"
               >
                 {submitting
                   ? '提交中…'
@@ -966,13 +985,13 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                     : allMatched
                       ? '请标记每条草稿的对错'
                       : `还有 ${slices.length - matchedCount} 个未匹配`}
-              </button>
+              </Button>
             )}
-          </section>
+          </StickerCard>
         </div>
 
         {/* Center: PDF pages */}
-        <section className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
+        <StickerCard as="section" size="sm" elevation="sm" radius="md">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-[14px] font-extrabold text-slate-800">PDF 预览</h2>
             {pageUrls.length > 0 && (
@@ -992,121 +1011,124 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
               {pageUrls.map((url, pageIndex) => {
                 const meta = pageMeta[pageIndex]
                 return (
-                <div key={url} className="relative">
-                  <div className="mb-1 text-[10px] font-bold text-slate-400">
-                    第 {pageIndex + 1} 页
-                    {meta && (
-                      <span className="font-normal text-slate-400">
-                        {' '}
-                        · {meta.fileName} 第 {meta.pageInFile} 页
-                      </span>
-                    )}
-                  </div>
-                  <div
-                    data-page-index={pageIndex}
-                    className={clsx(
-                      'relative overflow-hidden rounded-lg border border-slate-200 select-none',
-                      canSlice ? 'cursor-crosshair' : 'cursor-not-allowed opacity-80',
-                    )}
-                    onPointerDown={(e) => onPagePointerDown(e, pageIndex)}
-                    onPointerMove={(e) => onPagePointerMove(e, pageIndex)}
-                    onPointerUp={onPagePointerUp}
-                    onPointerCancel={onPagePointerUp}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={url}
-                      alt={`PDF 第 ${pageIndex + 1} 页`}
-                      className="block w-full"
-                      draggable={false}
-                    />
+                  <div key={url} className="relative">
+                    <div className="mb-1 text-[10px] font-bold text-slate-400">
+                      第 {pageIndex + 1} 页
+                      {meta && (
+                        <span className="font-normal text-slate-400">
+                          {' '}
+                          · {meta.fileName} 第 {meta.pageInFile} 页
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      data-page-index={pageIndex}
+                      className={clsx(
+                        'border-kid-line relative overflow-hidden rounded-lg border-2 select-none',
+                        canSlice ? 'cursor-crosshair' : 'cursor-not-allowed opacity-80',
+                      )}
+                      onPointerDown={(e) => onPagePointerDown(e, pageIndex)}
+                      onPointerMove={(e) => onPagePointerMove(e, pageIndex)}
+                      onPointerUp={onPagePointerUp}
+                      onPointerCancel={onPagePointerUp}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt={`PDF 第 ${pageIndex + 1} 页`}
+                        className="block w-full"
+                        draggable={false}
+                      />
 
-                    {slices
-                      .filter((s) => s.pageIndex === pageIndex)
-                      .map((s) => (
+                      {slices
+                        .filter((s) => s.pageIndex === pageIndex)
+                        .map((s) => (
+                          // native-ok: PDF 画布上按百分比绝对定位的划片覆盖层，非标准控件
+                          <button
+                            key={s.id}
+                            type="button"
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActiveSliceId(s.id)
+                              setSearchQuery('')
+                            }}
+                            className={clsx(
+                              'absolute border-2 transition',
+                              activeSliceId === s.id
+                                ? 'border-teal-500 bg-teal-400/20'
+                                : sliceIsMatched(s)
+                                  ? 'border-emerald-500 bg-emerald-400/15'
+                                  : 'border-amber-500 bg-amber-400/15',
+                            )}
+                            style={{
+                              left: `${s.rect.x * 100}%`,
+                              top: `${s.rect.y * 100}%`,
+                              width: `${s.rect.w * 100}%`,
+                              height: `${s.rect.h * 100}%`,
+                            }}
+                            title={sliceMatchLabel(
+                              s,
+                              s.lessonId
+                                ? SEA_LESSONS.find((l) => l.id === s.lessonId)?.title
+                                : undefined,
+                            )}
+                          >
+                            {sliceIsMatched(s) && (
+                              <span className="absolute -top-5 left-0 max-w-[120px] truncate rounded bg-emerald-600 px-1 py-0.5 text-[9px] text-white">
+                                {sliceMatchLabel(
+                                  s,
+                                  s.lessonId
+                                    ? SEA_LESSONS.find((l) => l.id === s.lessonId)?.title
+                                    : undefined,
+                                )}
+                              </span>
+                            )}
+                          </button>
+                        ))}
+
+                      {activeSlice?.pageIndex === pageIndex && (
+                        // native-ok: 贴在 PDF 画布划片右上角、按百分比绝对定位的删除角标
                         <button
-                          key={s.id}
                           type="button"
+                          aria-label="删除当前划片"
+                          title="删除当前划片"
                           onPointerDown={(e) => e.stopPropagation()}
                           onClick={(e) => {
                             e.stopPropagation()
-                            setActiveSliceId(s.id)
-                            setSearchQuery('')
+                            removeSlice(activeSlice.id)
                           }}
-                          className={clsx(
-                            'absolute border-2 transition',
-                            activeSliceId === s.id
-                              ? 'border-teal-500 bg-teal-400/20'
-                              : sliceIsMatched(s)
-                                ? 'border-emerald-500 bg-emerald-400/15'
-                                : 'border-amber-500 bg-amber-400/15',
-                          )}
+                          className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-bl-md bg-red-600 text-[11px] font-bold text-white hover:bg-red-700"
                           style={{
-                            left: `${s.rect.x * 100}%`,
-                            top: `${s.rect.y * 100}%`,
-                            width: `${s.rect.w * 100}%`,
-                            height: `${s.rect.h * 100}%`,
+                            right: `${(1 - activeSlice.rect.x - activeSlice.rect.w) * 100}%`,
+                            top: `${activeSlice.rect.y * 100}%`,
                           }}
-                          title={sliceMatchLabel(
-                            s,
-                            s.lessonId
-                              ? SEA_LESSONS.find((l) => l.id === s.lessonId)?.title
-                              : undefined,
-                          )}
                         >
-                          {sliceIsMatched(s) && (
-                            <span className="absolute -top-5 left-0 max-w-[120px] truncate rounded bg-emerald-600 px-1 py-0.5 text-[9px] text-white">
-                              {sliceMatchLabel(
-                                s,
-                                s.lessonId
-                                  ? SEA_LESSONS.find((l) => l.id === s.lessonId)?.title
-                                  : undefined,
-                              )}
-                            </span>
-                          )}
+                          删
                         </button>
-                      ))}
+                      )}
 
-                    {activeSlice?.pageIndex === pageIndex && (
-                      <button
-                        type="button"
-                        aria-label="删除当前划片"
-                        title="删除当前划片"
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          removeSlice(activeSlice.id)
-                        }}
-                        className="absolute z-10 flex h-6 w-6 items-center justify-center rounded-bl-md bg-red-600 text-[11px] font-bold text-white hover:bg-red-700"
-                        style={{
-                          right: `${(1 - activeSlice.rect.x - activeSlice.rect.w) * 100}%`,
-                          top: `${activeSlice.rect.y * 100}%`,
-                        }}
-                      >
-                        删
-                      </button>
-                    )}
-
-                    {draftRect?.pageIndex === pageIndex && (
-                      <div
-                        className="pointer-events-none absolute border-2 border-dashed border-teal-500 bg-teal-300/20"
-                        style={{
-                          left: `${draftRect.rect.x * 100}%`,
-                          top: `${draftRect.rect.y * 100}%`,
-                          width: `${draftRect.rect.w * 100}%`,
-                          height: `${draftRect.rect.h * 100}%`,
-                        }}
-                      />
-                    )}
+                      {draftRect?.pageIndex === pageIndex && (
+                        <div
+                          className="pointer-events-none absolute border-2 border-dashed border-teal-500 bg-teal-300/20"
+                          style={{
+                            left: `${draftRect.rect.x * 100}%`,
+                            top: `${draftRect.rect.y * 100}%`,
+                            width: `${draftRect.rect.w * 100}%`,
+                            height: `${draftRect.rect.h * 100}%`,
+                          }}
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              )})}
+                )
+              })}
             </div>
           )}
-        </section>
+        </StickerCard>
 
         {/* Right: match panel */}
-        <aside className="rounded-2xl border border-teal-100 bg-white/90 p-3 shadow-sm">
+        <StickerCard as="aside" size="sm" elevation="sm" radius="md">
           {!activeSlice ? (
             <div className="flex flex-col items-center justify-center gap-2 py-20 text-center">
               <div className="text-3xl opacity-40">✂️</div>
@@ -1122,62 +1144,56 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                 <img
                   src={activeSlice.cropUrl}
                   alt="划片预览"
-                  className="w-full rounded-lg border border-slate-200 object-contain"
+                  className="border-kid-line w-full rounded-lg border-2 object-contain"
                 />
               </div>
 
-              {!quizDraft && <div>
-                <div className="mb-1 text-[11px] font-bold text-slate-500">类型</div>
-                <p className="mb-1.5 text-[10px] leading-relaxed text-teal-700">
-                  {PDF_SLICE_KIND_HINT[activeSlice.sliceKind]}
-                </p>
-                <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
-                  {PDF_SLICE_KINDS.map((kind) => (
-                    <button
-                      key={kind}
-                      type="button"
-                      onClick={() => setSliceKind(activeSlice.id, kind)}
-                      className={clsx(
-                        'rounded-lg py-1.5 text-[11px] font-bold transition',
-                        activeSlice.sliceKind === kind
-                          ? 'bg-white text-teal-800 shadow-sm'
-                          : 'text-slate-500',
-                      )}
-                    >
-                      {PDF_SLICE_KIND_LABEL[kind]}
-                    </button>
-                  ))}
+              {!quizDraft && (
+                <div>
+                  <div className="mb-1 text-[11px] font-bold text-slate-500">类型</div>
+                  <p className="mb-1.5 text-[10px] leading-relaxed text-teal-700">
+                    {PDF_SLICE_KIND_HINT[activeSlice.sliceKind]}
+                  </p>
+                  <SegmentedControl.Root
+                    value={activeSlice.sliceKind}
+                    onValueChange={(v) => setSliceKind(activeSlice.id, v as PdfSliceKind)}
+                    size="1"
+                    radius="full"
+                    className="w-full"
+                  >
+                    {PDF_SLICE_KINDS.map((kind) => (
+                      <SegmentedControl.Item key={kind} value={kind}>
+                        {PDF_SLICE_KIND_LABEL[kind]}
+                      </SegmentedControl.Item>
+                    ))}
+                  </SegmentedControl.Root>
                 </div>
-              </div>}
+              )}
 
               {activeSlice.sliceKind === 'draft' && (
                 <div>
                   <div className="mb-1 text-[11px] font-bold text-slate-500">练习结果（必填）</div>
                   <div className="grid grid-cols-2 gap-2">
-                    <button
+                    <Button
                       type="button"
                       onClick={() => setDraftSliceCorrect(activeSlice.id, true)}
-                      className={clsx(
-                        'rounded-xl border py-2.5 text-[12px] font-bold transition',
-                        activeSlice.draftCorrect === true
-                          ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                          : 'border-slate-200 bg-white text-slate-500',
-                      )}
+                      variant={activeSlice.draftCorrect === true ? 'solid' : 'soft'}
+                      color={activeSlice.draftCorrect === true ? 'green' : 'gray'}
+                      size="2"
+                      radius="full"
                     >
                       ✅ 做对了
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
                       onClick={() => setDraftSliceCorrect(activeSlice.id, false)}
-                      className={clsx(
-                        'rounded-xl border py-2.5 text-[12px] font-bold transition',
-                        activeSlice.draftCorrect === false
-                          ? 'border-rose-300 bg-rose-50 text-rose-800'
-                          : 'border-slate-200 bg-white text-slate-500',
-                      )}
+                      variant={activeSlice.draftCorrect === false ? 'solid' : 'soft'}
+                      color={activeSlice.draftCorrect === false ? 'red' : 'gray'}
+                      size="2"
+                      radius="full"
                     >
                       ❌ 做错了
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -1187,9 +1203,10 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                   <div className="text-[11px] font-bold text-slate-500">
                     {activeIsSummary ? '选择讲次' : '搜索题目'}
                     <span className="ml-1.5 font-normal text-slate-400">
-                      （
-                      {activeIsSummary ? lessonPool.length : searchResults.length}
-                      {!activeIsSummary && onlyMissingAnalysis && activeSlice.sliceKind === 'analysis'
+                      （{activeIsSummary ? lessonPool.length : searchResults.length}
+                      {!activeIsSummary &&
+                      onlyMissingAnalysis &&
+                      activeSlice.sliceKind === 'analysis'
                         ? ` / ${problemPool.length}`
                         : ''}
                       {activeIsSummary ? ' 讲' : ' 题'}）
@@ -1201,28 +1218,24 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                         type="checkbox"
                         checked={onlyMissingAnalysis}
                         onChange={(e) => setOnlyMissingAnalysis(e.target.checked)}
-                        className="rounded border-slate-300"
+                        className="border-kid-line rounded"
                       />
                       仅无题解图
                     </label>
                   )}
                 </div>
-                <input
+                <TextField.Root
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={
-                    activeIsSummary ? '讲次号 / 标题搜索…' : '题目标题 / 题干模糊搜索…'
-                  }
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-[12px] outline-none focus:border-teal-400"
+                  placeholder={activeIsSummary ? '讲次号 / 标题搜索…' : '题目标题 / 题干模糊搜索…'}
+                  size="1"
+                  className="w-full"
                 />
               </div>
 
               {activeIsSummary ? (
-                <ul
-                  key={selectedLessonsKey}
-                  className="max-h-[32vh] space-y-1 overflow-y-auto"
-                >
+                <ul key={selectedLessonsKey} className="max-h-[32vh] space-y-1 overflow-y-auto">
                   {lessonPool.length === 0 ? (
                     <li className="py-6 text-center text-[11px] text-slate-400">
                       {selectedLessons.length === 0 ? '请先选择讲次' : '无匹配讲次，试试其他关键词'}
@@ -1235,6 +1248,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                       )
                       return (
                         <li key={lesson.lessonId}>
+                          {/* native-ok: 多行内容的讲次列表行，Radix Button 会居中挤压 */}
                           <button
                             type="button"
                             onClick={() => applyLessonMatch(activeSlice.id, lesson)}
@@ -1253,7 +1267,9 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                                 </span>
                               )}
                             </div>
-                            <div className="line-clamp-2 text-[11px] text-slate-700">{lesson.title}</div>
+                            <div className="line-clamp-2 text-[11px] text-slate-700">
+                              {lesson.title}
+                            </div>
                           </button>
                         </li>
                       )
@@ -1279,10 +1295,14 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
                       const hasAnalysis = problemHasAnalysisImage(item.problem, dbAnalysisIds)
                       const noteCount = existingNotes.get(item.problem.id)?.length ?? 0
                       const displayTitle = item.relatedExampleTitle
-                        ? item.problem.title.replace(/^练一练/, `练一练（${item.relatedExampleTitle.split(' · ')[0]}）`)
+                        ? item.problem.title.replace(
+                            /^练一练/,
+                            `练一练（${item.relatedExampleTitle.split(' · ')[0]}）`,
+                          )
                         : item.problem.title
                       return (
                         <li key={`${item.lessonId}-${item.problem.id}`}>
+                          {/* native-ok: 多行内容的题目列表行，Radix Button 会居中挤压 */}
                           <button
                             type="button"
                             onClick={() => applyProblemMatch(activeSlice.id, item)}
@@ -1332,7 +1352,7 @@ export default function MathPdfSliceMatcher({ user, lessonFilter, quizDraft, onC
               )}
             </div>
           )}
-        </aside>
+        </StickerCard>
       </div>
 
       {overlapPrompt && (
@@ -1382,19 +1402,19 @@ function ComparisonPanel({
       <div className="rounded-xl border border-teal-100 bg-teal-50/40 p-2.5">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[11px] font-bold text-teal-800">比对</span>
-          <button
-            type="button"
-            onClick={onClear}
-            className="text-[10px] text-red-500 hover:underline"
-          >
+          <Button type="button" onClick={onClear} variant="ghost" color="red" size="1">
             取消匹配
-          </button>
+          </Button>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <div className="mb-1 text-[10px] font-semibold text-slate-500">划片</div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={slice.cropUrl} alt="划片" className="max-h-28 w-full rounded object-contain" />
+            <img
+              src={slice.cropUrl}
+              alt="划片"
+              className="max-h-28 w-full rounded object-contain"
+            />
           </div>
           <div>
             <div className="mb-1 text-[10px] font-semibold text-slate-500">讲次</div>
@@ -1437,13 +1457,9 @@ function ComparisonPanel({
     <div className="rounded-xl border border-teal-100 bg-teal-50/40 p-2.5">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[11px] font-bold text-teal-800">比对</span>
-        <button
-          type="button"
-          onClick={onClear}
-          className="text-[10px] text-red-500 hover:underline"
-        >
+        <Button type="button" onClick={onClear} variant="ghost" color="red" size="1">
           取消匹配
-        </button>
+        </Button>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
@@ -1573,9 +1589,9 @@ function OverlapDialog({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      style={{ background: 'rgba(0,0,0,0.45)' }}
     >
-      <div className="max-w-lg rounded-2xl bg-white p-5 shadow-xl">
+      <StickerCard elevation="lg" radius="md" className="max-w-lg">
         <h3 className="mb-1 text-[15px] font-extrabold text-slate-800">区域重叠 — 是否覆盖？</h3>
         <p className="mb-4 text-[12px] text-slate-500">
           新划片与已匹配
@@ -1590,7 +1606,7 @@ function OverlapDialog({
             <img
               src={existingSlice.cropUrl}
               alt="原划片"
-              className="w-full rounded-lg border border-slate-200 object-contain"
+              className="border-kid-line w-full rounded-lg border-2 object-contain"
             />
             <div className="mt-1 text-center text-[10px] text-teal-700">{matchLabel}</div>
           </div>
@@ -1608,22 +1624,14 @@ function OverlapDialog({
           </div>
         </div>
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-xl border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600"
-          >
+          <Button type="button" onClick={onCancel} variant="outline" color="gray" size="1">
             取消
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="rounded-xl bg-teal-600 px-4 py-2 text-[12px] font-bold text-white"
-          >
+          </Button>
+          <Button type="button" onClick={onConfirm} variant="solid" color="teal" size="1">
             覆盖并重新匹配
-          </button>
+          </Button>
         </div>
-      </div>
+      </StickerCard>
     </div>
   )
 }
@@ -1648,9 +1656,9 @@ function CloudOverwriteDialog({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      style={{ background: 'rgba(0,0,0,0.45)' }}
     >
-      <div className="max-w-lg rounded-2xl bg-white p-5 shadow-xl">
+      <StickerCard elevation="lg" radius="md" className="max-w-lg">
         <h3 className="mb-1 text-[15px] font-extrabold text-slate-800">
           {isImageKind ? '已有图片 — 是否覆盖？' : '已有内容 — 是否继续？'}
         </h3>
@@ -1667,15 +1675,15 @@ function CloudOverwriteDialog({
               <img
                 src={existingUrl}
                 alt="现有"
-                className="w-full rounded-lg border border-slate-200 object-contain"
+                className="border-kid-line w-full rounded-lg border-2 object-contain"
               />
             ) : existingNotePreview ? (
               <div
-                className="max-h-40 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-2 text-[11px] text-slate-600"
+                className="border-kid-line max-h-40 overflow-y-auto rounded-lg border-2 bg-slate-50 p-2 text-[11px] text-slate-600"
                 dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(existingNotePreview) }}
               />
             ) : (
-              <div className="rounded-lg border border-dashed border-slate-200 py-8 text-center text-[11px] text-slate-400">
+              <div className="border-kid-line rounded-lg border-2 border-dashed py-8 text-center text-[11px] text-slate-400">
                 已有记录
               </div>
             )}
@@ -1703,22 +1711,14 @@ function CloudOverwriteDialog({
           </div>
         )}
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-xl border border-slate-200 px-4 py-2 text-[12px] font-semibold text-slate-600"
-          >
+          <Button type="button" onClick={onCancel} variant="outline" color="gray" size="1">
             取消
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="rounded-xl bg-teal-600 px-4 py-2 text-[12px] font-bold text-white"
-          >
+          </Button>
+          <Button type="button" onClick={onConfirm} variant="solid" color="teal" size="1">
             确认匹配
-          </button>
+          </Button>
         </div>
-      </div>
+      </StickerCard>
     </div>
   )
 }

@@ -38,13 +38,14 @@ export default function ProblemDetail({
   const count = practiceCount[problem.id] ?? 0
   const level = getMasteryLevel(correctCount[problem.id] ?? 0)
 
-  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } = useProblemAnswer(
-    problem,
-    { handleSolve, addWrong },
-    {
-      wrongHint: '❌ 不对哦，再想想？提示：可以用凑整、去括号、基准数等方法巧算。',
-    },
-  )
+  const { answer, setAnswer, feedback, submit, check, clearFeedback, hasAttempted } =
+    useProblemAnswer(
+      problem,
+      { handleSolve, addWrong },
+      {
+        wrongHint: '❌ 不对哦，再想想？提示：可以用凑整、去括号、基准数等方法巧算。',
+      },
+    )
 
   const solution = <ProblemSolutionPanel problem={problem} variant="yellow" />
 
@@ -81,7 +82,7 @@ export default function ProblemDetail({
       onSubmit={submit}
       onCheck={check}
       onStateChange={clearFeedback}
-      buttonClassName="bg-teal-600 shadow-[0_3px_10px_rgba(15,118,110,0.3)]"
+      buttonClassName="bg-teal-600 shadow-sticker-sm"
       tip={tipBlock}
     />
   )

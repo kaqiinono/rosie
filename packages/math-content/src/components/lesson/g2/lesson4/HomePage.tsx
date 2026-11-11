@@ -4,6 +4,7 @@ import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import Link from 'next/link'
 import type { ProblemSet, Problem } from '@rosie/core'
 import { PROBLEM_TYPES, TYPE_STYLE } from '@rosie/math-content/utils/g2/lesson4-data'
+import { StickerCard } from '@rosie/ui'
 
 const BASE = '/math/ny/2/4'
 
@@ -72,11 +73,13 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
 
   return (
     <div>
-      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-gradient-to-br from-sky-50 via-sky-100 to-cyan-100 p-6">
+      <div className="relative mb-5 overflow-hidden rounded-[14px] bg-sky-50 p-6">
         <div className="pointer-events-none absolute -top-2.5 -right-2.5 rotate-[15deg] text-[90px] opacity-[0.12]">
           📊
         </div>
-        <LessonHomeTitle lessonKey="2-4" className="text-2xl font-extrabold text-sky-900">差倍问题 📊</LessonHomeTitle>
+        <LessonHomeTitle lessonKey="2-4" className="text-2xl font-extrabold text-sky-900">
+          差倍问题 📊
+        </LessonHomeTitle>
         <p className="text-[13px] leading-relaxed text-sky-800">
           第52讲 · 二年级目标班 · 第4讲
           <br />
@@ -84,7 +87,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
         </p>
       </div>
 
-      <div className="mb-4 rounded-[14px] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.07)]">
+      <StickerCard elevation="sm" radius="md" className="mb-4">
         <div className="mb-2.5 flex items-center gap-1.5 text-[15px] font-bold">
           🧠 差倍问题 · 5大题型
         </div>
@@ -102,7 +105,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
               <Link
                 key={t.tag}
                 href={`${BASE}/alltest?type=${t.tag}`}
-                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} transition-all hover:shadow-md`}
+                className={`rounded-r-lg border-l-3 p-3 no-underline ${style.bg} ${style.border} hover:shadow-sticker transition-all`}
               >
                 <div
                   className={`mb-1 flex items-center justify-between text-xs font-bold ${style.titleColor}`}
@@ -124,7 +127,7 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
             万能口诀：<strong>和差先求半，差倍先求份；移多补少看变化，年龄问题差不变。</strong>
           </span>
         </div>
-      </div>
+      </StickerCard>
 
       <div className="text-text-secondary mb-2.5 text-[13px] font-bold">📂 学习模块</div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -133,74 +136,71 @@ export default function HomePage({ problems, practiceCount, correctCount }: Home
           const masteredPct = prog.total > 0 ? Math.round((prog.mastered / prog.total) * 100) : 0
           const attemptedPct = prog.total > 0 ? Math.round((prog.attempted / prog.total) * 100) : 0
           return (
-            <Link
-              key={m.key}
-              href={m.path}
-              className="flex items-center gap-3 rounded-[14px] border-2 border-transparent bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
-            >
-              <div
-                className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl text-[22px] ${m.bg}`}
-              >
-                {m.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-text-primary text-sm font-bold">{m.title}</div>
-                <div className="text-text-muted mb-1 text-xs">{m.desc}</div>
-                <div className="flex items-center gap-1.5">
-                  <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
-                    <div
-                      className="absolute inset-y-0 left-0 rounded-sm bg-gray-300 transition-[width] duration-500"
-                      style={{ width: `${attemptedPct}%` }}
-                    />
-                    <div
-                      className="bg-app-green absolute inset-y-0 left-0 rounded-sm transition-[width] duration-500"
-                      style={{ width: `${masteredPct}%` }}
-                    />
-                  </div>
-                  <div className="text-text-muted text-[11px] whitespace-nowrap">
-                    ✅ {prog.mastered}/{prog.total}
+            <StickerCard asChild key={m.key} interactive elevation="sm" radius="md">
+              <Link href={m.path} className="flex items-center gap-3 no-underline">
+                <div
+                  className={`flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl text-[22px] ${m.bg}`}
+                >
+                  {m.icon}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-text-primary text-sm font-bold">{m.title}</div>
+                  <div className="text-text-muted mb-1 text-xs">{m.desc}</div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+                      <div
+                        className="absolute inset-y-0 left-0 rounded-sm bg-gray-300 transition-[width] duration-500"
+                        style={{ width: `${attemptedPct}%` }}
+                      />
+                      <div
+                        className="bg-app-green absolute inset-y-0 left-0 rounded-sm transition-[width] duration-500"
+                        style={{ width: `${masteredPct}%` }}
+                      />
+                    </div>
+                    <div className="text-text-muted text-[11px] whitespace-nowrap">
+                      ✅ {prog.mastered}/{prog.total}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-text-muted shrink-0 text-xl">›</div>
-            </Link>
+                <div className="text-text-muted shrink-0 text-xl">›</div>
+              </Link>
+            </StickerCard>
           )
         })}
 
-        <Link
-          href={`${BASE}/alltest`}
-          className="flex items-center gap-3 rounded-[14px] border-2 border-sky-300 bg-white p-4 no-underline shadow-[0_2px_12px_rgba(0,0,0,0.07)] transition-all hover:-translate-y-px hover:shadow-[0_8px_30px_rgba(0,0,0,0.1)] active:scale-[0.98]"
-        >
-          <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-sky-50 text-[22px]">
-            🎯
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-sky-700">综合题库</div>
-            <div className="text-text-muted mb-1 text-xs">
-              全部题目 · 按题型/来源筛选 · 综合训练
+        <StickerCard asChild interactive elevation="sm" radius="md">
+          <Link href={`${BASE}/alltest`} className="flex items-center gap-3 no-underline">
+            <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-sky-50 text-[22px]">
+              🎯
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
-                <div
-                  className="absolute inset-y-0 left-0 rounded-sm bg-sky-200 transition-[width] duration-500"
-                  style={{
-                    width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%`,
-                  }}
-                />
-                <div
-                  className="absolute inset-y-0 left-0 rounded-sm bg-sky-500 transition-[width] duration-500"
-                  style={{
-                    width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%`,
-                  }}
-                />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-bold text-sky-700">综合题库</div>
+              <div className="text-text-muted mb-1 text-xs">
+                全部题目 · 按题型/来源筛选 · 综合训练
               </div>
-              <div className="text-text-muted text-[11px] whitespace-nowrap">
-                ✅ {masteredAll}/{totalAll}
+              <div className="flex items-center gap-1.5">
+                <div className="relative h-1 flex-1 overflow-hidden rounded-sm bg-gray-100">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-sm bg-sky-200 transition-[width] duration-500"
+                    style={{
+                      width: `${totalAll > 0 ? Math.round((attemptedAll / totalAll) * 100) : 0}%`,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-sm bg-sky-500 transition-[width] duration-500"
+                    style={{
+                      width: `${totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0}%`,
+                    }}
+                  />
+                </div>
+                <div className="text-text-muted text-[11px] whitespace-nowrap">
+                  ✅ {masteredAll}/{totalAll}
+                </div>
               </div>
             </div>
-          </div>
-          <div className="shrink-0 text-xl text-sky-500">›</div>
-        </Link>
+            <div className="shrink-0 text-xl text-sky-500">›</div>
+          </Link>
+        </StickerCard>
       </div>
     </div>
   )

@@ -84,7 +84,7 @@ function lightCellStyle(opts: {
       borderColor: '#38bdf8',
       background: '#e0f2fe',
       color: '#0369a1',
-      boxShadow: '0 0 0 2px rgba(56,189,248,0.25)',
+      boxShadow: '0 0 0 1px rgba(56,189,248,.3)',
     }
   }
   return {
@@ -187,7 +187,7 @@ function renderRow(
           return (
             <div
               key={`${rowKeyStr}-${col}`}
-              className="flex items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 font-black text-slate-400"
+              className="border-kid-line flex items-center justify-center rounded-xl border-2 border-dashed bg-slate-50 font-black text-slate-400"
               style={{
                 ...GEO.cell,
                 fontSize: label ? GEO.labelFont : GEO.digitFont,
@@ -199,6 +199,7 @@ function renderRow(
         }
 
         return (
+          // native-ok: 竖式谜题的数字格，尺寸/配色由 GEO 几何与判题状态逐格内联计算
           <button
             key={`${rowKeyStr}-${col}`}
             type="button"
@@ -226,7 +227,14 @@ function renderRow(
 function renderEquation(
   spec: Pick<
     VerticalDigitPuzzleSpec,
-    'op' | 'operands' | 'result' | 'chainSubtract' | 'chainResult' | 'knownSymbols' | 'solutionFills' | 'readonly'
+    | 'op'
+    | 'operands'
+    | 'result'
+    | 'chainSubtract'
+    | 'chainResult'
+    | 'knownSymbols'
+    | 'solutionFills'
+    | 'readonly'
   >,
   prefix: string,
   totalCols: number,
@@ -374,12 +382,18 @@ export default function VerticalDigitPuzzlePanel({
   const [locked, setLocked] = useState(false)
 
   const [previous, setPrevious] = useState({ spec, readonly, initialFills })
-  if (previous.spec !== spec || previous.readonly !== readonly || previous.initialFills !== initialFills) {
+  if (
+    previous.spec !== spec ||
+    previous.readonly !== readonly ||
+    previous.initialFills !== initialFills
+  ) {
     setPrevious({ spec, readonly, initialFills })
     setFills(initialFills ?? {})
     setGraded(false)
     setLocked(false)
-    setActive(!readonly && blanks.length > 0 ? { rowKey: blanks[0].rowKey, col: blanks[0].col } : null)
+    setActive(
+      !readonly && blanks.length > 0 ? { rowKey: blanks[0].rowKey, col: blanks[0].col } : null,
+    )
   }
 
   const complete = readonly || allBlanksFilled(spec, fills)
@@ -450,7 +464,7 @@ export default function VerticalDigitPuzzlePanel({
     <div
       ref={exportGridRef}
       data-scratch-puzzle-grid=""
-      className={`mx-auto w-fit rounded-2xl border border-sky-100 bg-white p-3 shadow-sm sm:p-4 ${embedded ? 'shadow-none' : ''}`}
+      className={`shadow-sticker-sm mx-auto w-fit rounded-2xl border border-sky-100 bg-white p-3 sm:p-4 ${embedded ? 'shadow-none' : ''}`}
     >
       {renderEquation(spec, '', totalCols, blanks, fills, active, graded, onSelect)}
       {spec.blocks && spec.blocks.length > 0 && (
@@ -483,11 +497,11 @@ export default function VerticalDigitPuzzlePanel({
 
   const padNode =
     pad &&
-    (padTarget
-      ? createPortal(pad, padTarget)
-      : useExternalPad
-        ? null
-        : <div className="mt-3">{pad}</div>)
+    (padTarget ? (
+      createPortal(pad, padTarget)
+    ) : useExternalPad ? null : (
+      <div className="mt-3">{pad}</div>
+    ))
 
   if (embedded) {
     return (
@@ -509,9 +523,11 @@ export default function VerticalDigitPuzzlePanel({
     <div className="flex flex-col gap-4">
       {!readonly && (
         <div className="mb-1 flex items-center gap-2">
-          <div className="h-px flex-1 bg-border-light" />
-          <div className="text-text-muted whitespace-nowrap text-xs font-semibold">✏️ 填入竖式方格</div>
-          <div className="h-px flex-1 bg-border-light" />
+          <div className="bg-border-light h-px flex-1" />
+          <div className="text-text-muted text-xs font-semibold whitespace-nowrap">
+            ✏️ 填入竖式方格
+          </div>
+          <div className="bg-border-light h-px flex-1" />
         </div>
       )}
 

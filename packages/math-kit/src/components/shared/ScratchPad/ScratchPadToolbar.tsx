@@ -18,6 +18,7 @@ import {
   SCRATCH_STROKE_WIDTHS,
   SCRATCH_TRIANGLE_VARIANTS,
 } from './scratch-pad-types'
+import { Button, SegmentedControl } from '@rosie/ui/themes'
 
 type ToolDef = { id: ScratchTool; label: string; icon: string }
 
@@ -73,6 +74,7 @@ function ToolButton({
   onClick: () => void
 }) {
   return (
+    // native-ok: 绘图工具面板按钮，图标 + 文字上下两行排布，Radix Button 为单行居中会被挤压
     <button
       type="button"
       title={label}
@@ -80,8 +82,8 @@ function ToolButton({
       className={clsx(
         'flex h-9 min-w-9 shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl px-1.5 text-[10px] font-semibold transition-all active:scale-95',
         active
-          ? 'bg-indigo-500 text-white shadow-[0_4px_12px_rgba(99,102,241,0.35)]'
-          : 'bg-white/80 text-slate-600 hover:bg-white',
+          ? 'shadow-sticker-sm bg-indigo-500 text-white'
+          : 'bg-white text-slate-600 hover:bg-white',
       )}
     >
       <span className="text-[15px] leading-none">{icon}</span>
@@ -120,7 +122,7 @@ export default function ScratchPadToolbar({
 
   return (
     <div
-      className="relative z-30 shrink-0 border-t border-slate-200/80 bg-white/95 backdrop-blur-md"
+      className="border-kid-line relative z-30 shrink-0 border-t bg-white"
       style={{ paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}
     >
       <div className="flex items-center gap-1.5 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -135,12 +137,13 @@ export default function ScratchPadToolbar({
         ))}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-slate-100 px-3 py-2">
+      <div className="border-kid-line flex items-center gap-2 border-t px-3 py-2">
         {tool === 'eraser' ? (
           <>
             <span className="shrink-0 text-[11px] font-semibold text-slate-500">橡皮大小</span>
             <div className="flex items-center gap-1.5">
               {SCRATCH_ERASER_WIDTHS.map((w) => (
+                // native-ok: 橡皮粗细圆点选择器，按钮内容是按像素绘制的预览圆点
                 <button
                   key={w}
                   type="button"
@@ -148,11 +151,13 @@ export default function ScratchPadToolbar({
                   onClick={() => onEraserWidthChange(w)}
                   className={clsx(
                     'flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg transition-all active:scale-95',
-                    eraserWidth === w ? 'bg-slate-200 ring-2 ring-slate-500' : 'bg-slate-50 hover:bg-slate-100',
+                    eraserWidth === w
+                      ? 'bg-slate-200 ring-2 ring-slate-500'
+                      : 'bg-slate-50 hover:bg-slate-100',
                   )}
                 >
                   <span
-                    className="rounded-full border border-slate-400/60 bg-white/80"
+                    className="rounded-full border border-slate-400/60 bg-white"
                     style={{ width: Math.min(w, 28), height: Math.min(w, 28) }}
                   />
                 </button>
@@ -161,11 +166,14 @@ export default function ScratchPadToolbar({
             <span className="hidden text-[11px] text-slate-400 sm:inline">按住拖动擦除</span>
           </>
         ) : tool === 'pan' ? (
-          <span className="text-[11px] font-semibold text-slate-500">在画布上拖动可平移，查看更大作画区域</span>
+          <span className="text-[11px] font-semibold text-slate-500">
+            在画布上拖动可平移，查看更大作画区域
+          </span>
         ) : tool === 'highlighter' ? (
           <>
             <div className="flex items-center gap-1.5">
               {SCRATCH_HIGHLIGHT_COLORS.map((c) => (
+                // native-ok: 荧光笔色板，背景色由 swatch 十六进制值内联提供
                 <button
                   key={c.id}
                   type="button"
@@ -174,8 +182,8 @@ export default function ScratchPadToolbar({
                   className={clsx(
                     'h-6 w-6 shrink-0 cursor-pointer rounded-full border-2 transition-transform active:scale-90',
                     highlightColorId === c.id
-                      ? 'scale-110 border-slate-800 shadow-md'
-                      : 'border-white shadow-sm',
+                      ? 'shadow-sticker scale-110 border-slate-800'
+                      : 'shadow-sticker-sm border-white',
                     hasSelection && 'ring-1 ring-amber-200',
                   )}
                   style={{ backgroundColor: c.hex }}
@@ -187,6 +195,7 @@ export default function ScratchPadToolbar({
 
             <div className="flex items-center gap-1">
               {SCRATCH_HIGHLIGHT_WIDTHS.map((w) => (
+                // native-ok: 荧光笔粗细圆点选择器，按钮内容是按像素绘制的预览圆点
                 <button
                   key={w}
                   type="button"
@@ -194,7 +203,9 @@ export default function ScratchPadToolbar({
                   onClick={() => onHighlightWidthChange(w)}
                   className={clsx(
                     'flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-all active:scale-95',
-                    highlightWidth === w ? 'bg-amber-100 ring-2 ring-amber-400' : 'bg-slate-50 hover:bg-slate-100',
+                    highlightWidth === w
+                      ? 'bg-amber-100 ring-2 ring-amber-400'
+                      : 'bg-slate-50 hover:bg-slate-100',
                   )}
                 >
                   <span
@@ -205,12 +216,15 @@ export default function ScratchPadToolbar({
               ))}
             </div>
 
-            <span className="hidden text-[11px] text-slate-400 sm:inline">半透明圈画，不遮挡题面</span>
+            <span className="hidden text-[11px] text-slate-400 sm:inline">
+              半透明圈画，不遮挡题面
+            </span>
           </>
         ) : (
           <>
             <div className="flex items-center gap-1.5">
               {SCRATCH_COLORS.map((c) => (
+                // native-ok: 画笔色板，背景色由 swatch 十六进制值内联提供
                 <button
                   key={c.id}
                   type="button"
@@ -218,7 +232,9 @@ export default function ScratchPadToolbar({
                   onClick={() => onColorChange(c.id)}
                   className={clsx(
                     'h-6 w-6 shrink-0 cursor-pointer rounded-full border-2 transition-transform active:scale-90',
-                    colorId === c.id ? 'scale-110 border-slate-800 shadow-md' : 'border-white shadow-sm',
+                    colorId === c.id
+                      ? 'shadow-sticker scale-110 border-slate-800'
+                      : 'shadow-sticker-sm border-white',
                     hasSelection && 'ring-1 ring-indigo-200',
                   )}
                   style={{ backgroundColor: c.hex }}
@@ -230,6 +246,7 @@ export default function ScratchPadToolbar({
 
             <div className="flex items-center gap-1">
               {SCRATCH_STROKE_WIDTHS.map((w) => (
+                // native-ok: 画笔粗细圆点选择器，按钮内容是按像素绘制的预览圆点
                 <button
                   key={w}
                   type="button"
@@ -237,7 +254,9 @@ export default function ScratchPadToolbar({
                   onClick={() => onStrokeWidthChange(w)}
                   className={clsx(
                     'flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-all active:scale-95',
-                    strokeWidth === w ? 'bg-indigo-100 ring-2 ring-indigo-400' : 'bg-slate-50 hover:bg-slate-100',
+                    strokeWidth === w
+                      ? 'bg-indigo-100 ring-2 ring-indigo-400'
+                      : 'bg-slate-50 hover:bg-slate-100',
                   )}
                 >
                   <span
@@ -251,81 +270,64 @@ export default function ScratchPadToolbar({
             {showShapeFillToggle && (
               <>
                 <div className="mx-1 h-5 w-px shrink-0 bg-slate-200" />
-                <button
+                <Button
                   type="button"
+                  size="1"
+                  className="shrink-0"
+                  variant={shapeFillEnabled ? 'solid' : 'soft'}
+                  color={shapeFillEnabled ? 'indigo' : 'gray'}
                   title="为矩形/圆/三角添加半透明填充"
+                  aria-pressed={shapeFillEnabled}
                   onClick={() => onShapeFillChange(!shapeFillEnabled)}
-                  className={clsx(
-                    'shrink-0 cursor-pointer rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition-all active:scale-95',
-                    shapeFillEnabled
-                      ? 'bg-indigo-500 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200',
-                  )}
                 >
                   填充
-                </button>
+                </Button>
               </>
             )}
 
             {tool === 'triangle' && (
               <>
                 <div className="mx-1 h-5 w-px shrink-0 bg-slate-200" />
-                <div className="flex shrink-0 items-center gap-0.5 rounded-lg bg-slate-100 p-0.5">
+                <SegmentedControl.Root
+                  size="1"
+                  className="shrink-0"
+                  value={triangleVariant}
+                  onValueChange={(next) => onTriangleVariantChange(next as ScratchTriangleVariant)}
+                >
                   {SCRATCH_TRIANGLE_VARIANTS.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      title={`${v.label}三角形`}
-                      onClick={() => onTriangleVariantChange(v.id)}
-                      className={clsx(
-                        'cursor-pointer rounded-md px-2 py-1 text-[11px] font-semibold transition-all active:scale-95',
-                        triangleVariant === v.id
-                          ? 'bg-white text-indigo-600 shadow-sm'
-                          : 'text-slate-500 hover:text-slate-700',
-                      )}
-                    >
+                    <SegmentedControl.Item key={v.id} value={v.id} title={`${v.label}三角形`}>
                       {v.label}
-                    </button>
+                    </SegmentedControl.Item>
                   ))}
-                </div>
+                </SegmentedControl.Root>
               </>
             )}
           </>
         )}
 
         <div className="ml-auto flex items-center gap-1.5">
-          <button
+          <Button
             type="button"
             disabled={!canUndo}
             onClick={onUndo}
-            className="cursor-pointer rounded-lg bg-slate-100 px-2.5 py-1.5 text-[12px] font-semibold text-slate-600 transition-all hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+            variant="soft"
+            color="gray"
+            size="1"
           >
             撤销
-          </button>
-          <button
-            type="button"
-            onClick={onClear}
-            className="cursor-pointer rounded-lg bg-slate-100 px-2.5 py-1.5 text-[12px] font-semibold text-slate-600 transition-all hover:bg-slate-200"
-          >
+          </Button>
+          <Button type="button" onClick={onClear} variant="soft" color="gray" size="1">
             清空
-          </button>
+          </Button>
           {onEmbedBelow && (
-            <button
-              type="button"
-              onClick={onEmbedBelow}
-              className="cursor-pointer rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[12px] font-semibold text-indigo-600 transition-all hover:bg-indigo-100 active:scale-95"
-            >
+            <Button type="button" onClick={onEmbedBelow} variant="soft" color="indigo" size="1">
               附在题目下
-            </button>
+            </Button>
           )}
           {variant === 'overlay' && onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              className="cursor-pointer rounded-lg bg-indigo-500 px-3 py-1.5 text-[12px] font-bold text-white shadow-[0_4px_12px_rgba(99,102,241,0.3)] transition-all hover:bg-indigo-600 active:scale-95"
-            >
+            <Button type="button" onClick={onClose} variant="solid" color="indigo" size="1">
               {closeLabel}
-            </button>
+            </Button>
           )}
         </div>
       </div>
