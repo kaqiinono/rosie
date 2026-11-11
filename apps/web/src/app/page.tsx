@@ -7,6 +7,7 @@ import { DrawCard } from '@rosie/rewards'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
 
 const modules = [
+  { href: '/time-tree', title: '生命树', icon: '🌳', tint: 'bg-emerald-100' },
   { href: '/today', title: '今日计划', icon: '🎯', tint: 'bg-amber-100' },
   { href: '/tasks/timetable', title: '课程表', icon: '🗓️', tint: 'bg-sky-100' },
   { href: '/calc', title: '口算天地', icon: '🧮', tint: 'bg-violet-100' },
@@ -52,7 +53,7 @@ export default function HomePage() {
           <div className="text-text-secondary mt-2 text-[15px] font-semibold tracking-wide">
             {greeting}
           </div>
-          <h1 className="mt-1.5 bg-gradient-to-br from-slate-800 via-indigo-500 to-emerald-500 bg-clip-text text-[clamp(28px,5vw,38px)] leading-tight font-black text-transparent">
+          <h1 className="mt-1.5 text-[clamp(28px,5vw,38px)] leading-tight font-black text-[var(--accent-11)]">
             {username ?? 'Rosie'} 的炸弹乐园
           </h1>
         </section>
@@ -65,12 +66,15 @@ export default function HomePage() {
             <NavigationLink
               key={href}
               href={href}
-              className="flex min-h-14 items-center gap-2 rounded-xl border border-border-light bg-surface px-3 py-2 shadow-sm transition hover:border-indigo-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-indigo-500"
+              className="border-kid-line shadow-sticker-sm ease-spring hover:shadow-sticker-accent active:shadow-sticker-pressed flex min-h-14 items-center gap-2 rounded-full border-2 bg-white px-3 py-2 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--accent-8)] focus-visible:outline-2 focus-visible:outline-[var(--focus-8)] active:translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
-              <span aria-hidden className={`grid size-8 shrink-0 place-items-center rounded-lg text-lg ${tint}`}>
+              <span
+                aria-hidden
+                className={`grid size-9 shrink-0 place-items-center rounded-full text-lg ${tint}`}
+              >
                 {icon}
               </span>
-              <span className="text-sm font-bold text-text-primary">{title}</span>
+              <span className="text-text-primary text-sm font-bold">{title}</span>
             </NavigationLink>
           ))}
         </nav>

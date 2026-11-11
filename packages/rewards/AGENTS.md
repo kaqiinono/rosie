@@ -16,3 +16,7 @@ Personal draw pools power the home DrawCard and /setting/draw-pools. Pool mutati
 use change_draw_pool, which serializes changes per account and pool. Accept with
 the draw ticket, not the entry ID. Penalties track accepted rounds independently
 of the wallet and voucher system.
+
+The parent can mark reward entries tree_eligible in /setting/draw-pools. The life-tree blind box
+reserves a separate tree_ticket under the same owner/reward pool lock as the home draw.
+Both draws skip each other's reservation and acceptance consumes the shared entry.
