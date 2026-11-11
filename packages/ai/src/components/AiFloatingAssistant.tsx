@@ -18,6 +18,7 @@ import type { AgentBlock, AiSubject, ChatContext, LessonNote, SimilarProblem } f
 import { findManifestByHref, findManifestByProblemId } from '../server/tools/resolve-links'
 import AiChatPanel from './AiChatPanel'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
+import { IconButton } from '@rosie/ui/themes'
 
 export function shouldShowAiAssistant(pathname: string, isImmersive: boolean): boolean {
   if (isImmersive) return false
@@ -344,6 +345,7 @@ export default function AiFloatingAssistant({
 
   return (
     <>
+      {/* native-ok: 可拖动、键盘微调位置的悬浮启动器，依赖 pointer 事件与内联定位，Radix Button 无法承载 */}
       <button
         ref={launcherRef}
         type="button"
@@ -364,7 +366,7 @@ export default function AiFloatingAssistant({
         onPointerMove={handleLauncherPointerMove}
         onPointerUp={finishLauncherDrag}
         onPointerCancel={cancelLauncherDrag}
-        className={`group [body:has(#reading-listening-drawer)_&]:hidden fixed right-4 bottom-24 z-50 flex min-h-14 touch-none items-center gap-2 rounded-full bg-gradient-to-br from-violet-500 to-sky-500 p-2.5 text-white shadow-[0_10px_30px_rgba(59,130,246,0.35)] ring-2 ring-white/80 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 md:right-6 md:bottom-6 ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
+        className={`group fixed right-4 bottom-24 z-50 flex min-h-14 touch-none items-center gap-2 rounded-full border-2 border-amber-600 bg-amber-400 p-2.5 text-amber-950 shadow-[0_4px_0_#b45309] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 md:right-6 md:bottom-6 [body:has(#reading-listening-drawer)_&]:hidden ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
       >
         <span
           aria-hidden="true"
@@ -375,23 +377,24 @@ export default function AiFloatingAssistant({
         <span className="text-sm font-bold whitespace-nowrap">{open ? '收起' : '问问我'}</span>
       </button>
 
+      {/* native-ok: 全屏半透明遮罩，点击关闭对话框，不是视觉按钮 */}
       <button
         type="button"
         aria-label="关闭不不"
         tabIndex={open ? 0 : -1}
         onClick={closeAssistant}
-        className={`fixed inset-0 z-60 bg-slate-950/25 backdrop-blur-[2px] transition-opacity duration-300 ${open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
+        className={`fixed inset-0 z-60 bg-amber-950/30 transition-opacity duration-300 ${open ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'}`}
       />
 
       <aside
         aria-label="不不对话框"
         aria-hidden={!open}
         inert={!open}
-        className={`fixed inset-x-2 top-2 bottom-2 z-70 flex flex-col overflow-hidden rounded-[28px] border border-white/80 bg-[#f9faff]/96 shadow-[0_28px_90px_rgba(15,23,42,0.3)] backdrop-blur-2xl transition duration-300 ease-out sm:inset-x-auto sm:top-4 sm:right-4 sm:bottom-4 sm:w-[440px] md:w-[480px] lg:w-[520px] ${open ? 'pointer-events-auto translate-x-0 opacity-100' : 'pointer-events-none translate-x-[110%] opacity-0'}`}
+        className={`border-kid-line bg-kid-paper shadow-sticker-lg fixed inset-x-2 top-2 bottom-2 z-70 flex flex-col overflow-hidden rounded-[28px] border-[3px] transition duration-300 ease-out sm:inset-x-auto sm:top-4 sm:right-4 sm:bottom-4 sm:w-[440px] md:w-[480px] lg:w-[520px] ${open ? 'pointer-events-auto translate-x-0 opacity-100' : 'pointer-events-none translate-x-[110%] opacity-0'}`}
       >
-        <header className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white/85 px-4 py-3 backdrop-blur-xl">
+        <header className="border-kid-line flex shrink-0 items-center justify-between border-b-2 bg-white px-4 py-3">
           <div className="flex items-center gap-3">
-            <RosieAssistantAvatar className="size-10 rounded-2xl shadow-sm ring-1 ring-rose-100" />
+            <RosieAssistantAvatar className="size-10 rounded-2xl ring-2 ring-rose-100" />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-black text-slate-900">不不</h2>
@@ -410,14 +413,16 @@ export default function AiFloatingAssistant({
             >
               ↗
             </Link>
-            <button
+            <IconButton
               type="button"
               aria-label="收起不不"
               onClick={closeAssistant}
-              className="grid size-9 place-items-center rounded-xl text-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+              variant="ghost"
+              color="gray"
+              size="3"
             >
               ×
-            </button>
+            </IconButton>
           </div>
         </header>
         <div className="min-h-0 flex-1">

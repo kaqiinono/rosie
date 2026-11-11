@@ -25,15 +25,12 @@ function LessonNotesCards({ notes }: { notes: Array<{ title: string | null; body
         </span>
       </div>
       {notes.map((note, i) => (
-        <div
-          key={i}
-          className="rounded-xl border border-violet-100 bg-[#faf9ff] p-3"
-        >
+        <div key={i} className="rounded-xl border border-violet-100 bg-[#faf9ff] p-3">
           {note.title ? (
             <div className="mb-1 text-[12px] font-bold text-violet-800">{note.title}</div>
           ) : null}
           <div
-            className="text-[12px] leading-relaxed text-slate-700 [&_strong]:font-bold [&_strong]:text-slate-900 [&_ul]:my-0.5 [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:my-0.5 [&_ol]:list-decimal [&_ol]:pl-4 [&_p]:my-0.5 [&_p:last-child]:mb-0 [&_img]:max-w-full [&_img]:rounded-lg"
+            className="text-[12px] leading-relaxed text-slate-700 [&_img]:max-w-full [&_img]:rounded-lg [&_ol]:my-0.5 [&_ol]:list-decimal [&_ol]:pl-4 [&_p]:my-0.5 [&_p:last-child]:mb-0 [&_strong]:font-bold [&_strong]:text-slate-900 [&_ul]:my-0.5 [&_ul]:list-disc [&_ul]:pl-4"
             dangerouslySetInnerHTML={{ __html: sanitizeNoteHtml(note.bodyHtml) }}
           />
         </div>
@@ -91,8 +88,8 @@ function MathSolutionBlock({ block }: { block: Extract<AgentBlock, { type: 'math
     return (
       <div className="space-y-2">
         <div className="text-sm font-bold text-indigo-950">{block.title}</div>
-        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <div className="text-xs font-bold text-slate-600 mb-1">📝 题目</div>
+        <div className="border-kid-line rounded-lg border-2 bg-slate-50 p-3">
+          <div className="mb-1 text-xs font-bold text-slate-600">📝 题目</div>
           <div className="text-sm leading-relaxed text-slate-800">{problemText}</div>
         </div>
         <ProblemSolutionView
@@ -107,7 +104,9 @@ function MathSolutionBlock({ block }: { block: Extract<AgentBlock, { type: 'math
           }
         />
         {block.finalAnswer ? (
-          <div className="mt-2 text-sm font-semibold text-indigo-800">答案：{block.finalAnswer}</div>
+          <div className="mt-2 text-sm font-semibold text-indigo-800">
+            答案：{block.finalAnswer}
+          </div>
         ) : null}
       </div>
     )
@@ -195,13 +194,13 @@ export default function AiMessageRenderer({
   return (
     <div className={`flex items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser ? (
-        <RosieAssistantAvatar className="size-8 rounded-xl shadow-sm ring-1 ring-rose-100" />
+        <RosieAssistantAvatar className="shadow-sticker-sm size-8 rounded-xl ring-1 ring-rose-100" />
       ) : null}
       <div
         className={`max-w-[88%] px-4 py-3 sm:max-w-[82%] ${
           isUser
-            ? 'rounded-[20px_20px_6px_20px] bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-[0_7px_18px_rgba(99,102,241,0.18)]'
-            : 'rounded-[20px_20px_20px_6px] bg-white text-slate-800 shadow-[0_6px_22px_rgba(51,65,85,0.07)] ring-1 ring-slate-100'
+            ? 'shadow-sticker-sm rounded-[20px_20px_6px_20px] bg-violet-600 text-white'
+            : 'shadow-sticker-sm ring-kid-line rounded-[20px_20px_20px_6px] bg-white text-slate-800 ring-1'
         }`}
       >
         {isUser ? (
@@ -292,7 +291,9 @@ export default function AiMessageRenderer({
                 {streaming ? <StreamingCursor /> : null}
               </p>
             )}
-            {!isUser ? <AgentActionBar actions={actions} renderMathProblem={renderMathProblem} /> : null}
+            {!isUser ? (
+              <AgentActionBar actions={actions} renderMathProblem={renderMathProblem} />
+            ) : null}
           </div>
         )}
       </div>

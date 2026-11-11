@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import type { AgentAction } from '../../types'
+import { Button } from '@rosie/ui/themes'
 
 type AgentActionBarProps = {
   actions: AgentAction[]
@@ -23,14 +24,16 @@ export default function AgentActionBar({ actions, renderMathProblem }: AgentActi
     return (
       <div className="mt-2 flex flex-wrap gap-2">
         {visible.map((action, index) => (
-          <button
+          <Button
             key={`${action.type}-${'problemId' in action ? action.problemId : index}`}
             type="button"
             onClick={() => handleClick(action)}
-            className="rounded-full bg-sky-100 px-3 py-1.5 text-xs font-semibold text-sky-800 transition hover:bg-sky-200"
+            variant="soft"
+            color="sky"
+            size="1"
           >
             {action.label}
-          </button>
+          </Button>
         ))}
       </div>
     )
@@ -64,14 +67,16 @@ export default function AgentActionBar({ actions, renderMathProblem }: AgentActi
   return (
     <div className="mt-3 flex flex-wrap gap-2">
       {actions.map((action, index) => (
-        <button
+        <Button
           key={`${action.type}-${'problemId' in action ? action.problemId : index}`}
           type="button"
           onClick={() => handleClick(action)}
-          className="rounded-full bg-sky-100 px-3 py-1.5 text-sm font-semibold text-sky-800 transition hover:bg-sky-200"
+          variant="soft"
+          color="sky"
+          size="2"
         >
           {action.label}
-        </button>
+        </Button>
       ))}
     </div>
   )

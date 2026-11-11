@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { compressAudioToMp3 } from '@rosie/player'
 import { supabase } from '@rosie/core'
+import { Button, IconButton } from '@rosie/ui/themes'
 
 type AiVoiceInputProps = {
   onTranscribed: (text: string) => void
@@ -144,11 +145,7 @@ export default function AiVoiceInput({
   if (!supported) return null
 
   const phaseLabel =
-    phase === 'recording'
-      ? '点击结束'
-      : phase === 'transcribing'
-        ? '正在识别…'
-        : '点击说话'
+    phase === 'recording' ? '点击结束' : phase === 'transcribing' ? '正在识别…' : '点击说话'
 
   const toggleRecording = () => {
     if (phase === 'recording') {
@@ -164,7 +161,7 @@ export default function AiVoiceInput({
         {(phase !== 'idle' || error) && (
           <div
             role="status"
-            className={`absolute bottom-[calc(100%+0.75rem)] left-0 z-10 w-max max-w-52 rounded-xl px-3 py-2 text-xs font-semibold shadow-lg ring-1 ${
+            className={`shadow-sticker absolute bottom-[calc(100%+0.75rem)] left-0 z-10 w-max max-w-52 rounded-xl px-3 py-2 text-xs font-semibold ring-1 ${
               error
                 ? 'bg-rose-50 text-rose-600 ring-rose-100'
                 : 'bg-slate-900 text-white ring-slate-800'
@@ -173,41 +170,38 @@ export default function AiVoiceInput({
             {error ?? phaseLabel}
           </div>
         )}
-        <button
+        <Button
           type="button"
           disabled={disabled || phase === 'transcribing'}
           onClick={toggleRecording}
-          className={`grid size-10 place-items-center rounded-xl text-lg transition ${
-            phase === 'recording'
-              ? 'scale-105 bg-rose-500 text-white ring-4 ring-rose-100'
-              : 'bg-sky-50 text-sky-600 hover:bg-sky-100'
-          } disabled:opacity-50`}
           aria-label={phase === 'recording' ? '结束录音' : '开始录音'}
           aria-pressed={phase === 'recording'}
           title={phaseLabel}
+          variant={phase === 'recording' ? 'solid' : 'soft'}
+          color={phase === 'recording' ? 'ruby' : 'sky'}
+          size="3"
         >
           {phase === 'transcribing' ? '…' : '🎤'}
-        </button>
+        </Button>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col items-center gap-1.5">
-      <button
+      <IconButton
         type="button"
         disabled={disabled || phase === 'transcribing'}
         onClick={toggleRecording}
-        className={`flex h-14 w-14 items-center justify-center rounded-[20px] text-xl shadow-md transition ${
-          phase === 'recording'
-            ? 'scale-105 bg-rose-500 text-white ring-4 ring-rose-100'
-            : 'bg-gradient-to-br from-sky-400 to-indigo-500 text-white hover:-translate-y-0.5'
-        } disabled:opacity-50`}
         aria-label={phase === 'recording' ? '结束录音' : '开始录音'}
         aria-pressed={phase === 'recording'}
+        variant="solid"
+        color={phase === 'recording' ? 'ruby' : 'sky'}
+        size="3"
+        className="w-14"
       >
         🎤
-      </button>
+      </IconButton>
       <p className="text-xs font-medium text-slate-500">{phaseLabel}</p>
       {error ? <p className="text-xs text-rose-600">{error}</p> : null}
     </div>

@@ -6,35 +6,35 @@ import AiChatPanel from './AiChatPanel'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
 
 const SUBJECTS = [
-  { icon: 'A', label: '英语', note: '单词 · 阅读', color: 'from-emerald-400 to-teal-500' },
-  { icon: 'π', label: '数学', note: '理解 · 解题', color: 'from-blue-400 to-indigo-500' },
-  { icon: '文', label: '语文', note: '生字 · 课文', color: 'from-orange-400 to-rose-400' },
+  { icon: 'A', label: '英语', note: '单词 · 阅读', color: 'bg-emerald-600' },
+  { icon: 'π', label: '数学', note: '理解 · 解题', color: 'bg-indigo-600' },
+  { icon: '文', label: '语文', note: '生字 · 课文', color: 'bg-orange-600' },
 ] as const
 
 export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f6f7ff] px-3 py-3 sm:px-5 sm:py-5 lg:px-8">
-      <div className="pointer-events-none absolute -top-32 -left-32 size-80 rounded-full bg-violet-300/35 blur-3xl" />
-      <div className="pointer-events-none absolute top-1/3 -right-40 size-96 rounded-full bg-sky-300/30 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-44 left-1/4 size-96 rounded-full bg-emerald-200/25 blur-3xl" />
+    <main className="bg-kid-paper relative min-h-screen overflow-hidden px-3 py-3 sm:px-5 sm:py-5 lg:px-8">
+      <div className="pointer-events-none absolute -top-32 -left-32 size-72 rounded-full bg-amber-200/60" />
+      <div className="pointer-events-none absolute top-1/3 -right-40 size-72 rounded-full bg-sky-200/50" />
+      <div className="pointer-events-none absolute -bottom-44 left-1/4 size-72 rounded-full bg-rose-200/50" />
 
       <div className="relative mx-auto max-w-[1280px]">
         <header className="mb-4 flex items-center justify-between gap-3 sm:mb-5">
           <Link
             href="/"
-            className="flex size-11 items-center justify-center rounded-2xl border border-white/80 bg-white/75 text-xl text-slate-700 shadow-sm backdrop-blur-xl transition hover:-translate-x-0.5 hover:bg-white"
+            className="shadow-sticker-sm flex size-11 items-center justify-center rounded-2xl border border-white/80 bg-white text-xl text-slate-700 transition hover:-translate-x-0.5 hover:bg-white"
             aria-label="返回炸弹乐园"
           >
             ←
           </Link>
-          <div className="flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur-xl">
+          <div className="shadow-sticker-sm flex items-center gap-2 rounded-full border border-white/80 bg-white px-3 py-2 text-xs font-semibold text-slate-600">
             <span className="size-2 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.15)]" />
             不不 在线
           </div>
         </header>
 
         <div className="grid items-stretch gap-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-5">
-          <aside className="hidden overflow-hidden rounded-[32px] bg-gradient-to-br from-[#25245e] via-[#383488] to-[#4d61bd] p-6 text-white shadow-[0_24px_70px_rgba(41,45,100,0.22)] lg:flex lg:flex-col">
+          <aside className="shadow-sticker-lg hidden overflow-hidden rounded-[32px] bg-violet-700 p-6 text-white lg:flex lg:flex-col">
             <div className="relative mb-7">
               <div className="absolute -top-9 -right-9 size-28 rounded-full border border-white/10 bg-white/5" />
               <p className="relative text-xs font-bold tracking-[0.2em] text-indigo-200 uppercase">
@@ -57,10 +57,10 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
               {SUBJECTS.map((subject) => (
                 <div
                   key={subject.label}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 p-3 backdrop-blur"
+                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 p-3"
                 >
                   <span
-                    className={`grid size-10 place-items-center rounded-xl bg-gradient-to-br ${subject.color} text-base font-black shadow-lg`}
+                    className={`grid size-10 place-items-center rounded-xl ${subject.color} shadow-sticker text-base font-black`}
                   >
                     {subject.icon}
                   </span>
@@ -82,10 +82,10 @@ export default function AiAssistantPage({ chatPanel }: { chatPanel?: ReactNode }
             </div>
           </aside>
 
-          <section className="min-w-0 overflow-hidden rounded-[28px] border border-white/90 bg-white/72 shadow-[0_24px_80px_rgba(69,75,130,0.15)] backdrop-blur-2xl sm:rounded-[32px]">
-            <div className="border-b border-slate-100/90 px-5 py-4 sm:px-7 sm:py-5">
+          <section className="shadow-sticker-lg min-w-0 overflow-hidden rounded-[28px] border border-white/90 bg-white sm:rounded-[32px]">
+            <div className="border-kid-line border-b px-5 py-4 sm:px-7 sm:py-5">
               <div className="flex items-center gap-3">
-                <RosieAssistantAvatar className="size-12 rounded-2xl shadow-[0_8px_20px_rgba(251,113,133,0.22)] ring-1 ring-rose-100 lg:hidden" />
+                <RosieAssistantAvatar className="shadow-sticker size-12 rounded-2xl ring-1 ring-rose-100 lg:hidden" />
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">

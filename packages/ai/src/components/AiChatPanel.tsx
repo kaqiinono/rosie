@@ -14,6 +14,7 @@ import AiMessageRenderer from './agent/AiMessageRenderer'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
 import AiVoiceInput from './AiVoiceInput'
 import '../ai-chat.css'
+import { Button, TextField } from '@rosie/ui/themes'
 
 type ChatMessage = {
   id: string
@@ -160,15 +161,18 @@ export default function AiChatPanel({
         const token = await getAccessToken()
 
         // DEBUG: trace what context is sent
-        console.log('[AiChatPanel] sending context:', JSON.stringify({
-          subject: context?.subject,
-          lessonId: context?.lessonId,
-          lessonPage: context?.lessonPage,
-          hasLessonNotes: Array.isArray(context?.lessonNotes),
-          lessonNotesLen: Array.isArray(context?.lessonNotes) ? context.lessonNotes.length : 0,
-          hasSimilarProblem: !!context?.similarProblem,
-          activeContent: context?.activeContent,
-        }))
+        console.log(
+          '[AiChatPanel] sending context:',
+          JSON.stringify({
+            subject: context?.subject,
+            lessonId: context?.lessonId,
+            lessonPage: context?.lessonPage,
+            hasLessonNotes: Array.isArray(context?.lessonNotes),
+            lessonNotesLen: Array.isArray(context?.lessonNotes) ? context.lessonNotes.length : 0,
+            hasSimilarProblem: !!context?.similarProblem,
+            activeContent: context?.activeContent,
+          }),
+        )
 
         const res = await fetch('/api/ai/chat', {
           method: 'POST',
@@ -328,7 +332,7 @@ export default function AiChatPanel({
         {context?.subject === 'math' && (context.activeContent?.problemId || context.lessonPage) ? (
           <section
             aria-labelledby="ai-math-context-title"
-            className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-sky-50 p-3.5 text-left shadow-[0_5px_18px_rgba(79,70,229,0.08)]"
+            className="shadow-sticker-sm rounded-2xl border border-indigo-100 bg-indigo-50 p-3.5 text-left"
           >
             <p className="text-[11px] font-black tracking-wider text-indigo-500 uppercase">
               {context.activeContent?.problemId ? '已识别当前题目' : '已识别当前讲次'}
@@ -348,25 +352,30 @@ export default function AiChatPanel({
             </p>
             <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {MATH_PROBLEM_PROMPTS.map((prompt) => (
-                <button
+                <Button
                   key={prompt}
                   type="button"
                   disabled={loading}
                   onClick={() => void sendMessage(prompt)}
-                  className="min-h-11 cursor-pointer rounded-xl border border-white bg-white px-3 py-2.5 text-left text-xs leading-5 font-bold text-indigo-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 active:scale-[0.98] disabled:cursor-wait disabled:opacity-50"
+                  variant="outline"
+                  color="indigo"
+                  size="3"
                 >
                   {prompt}
-                </button>
+                </Button>
               ))}
               {context.activeContent?.problemId && context.activeContent.hasAttempted ? (
-                <button
+                <Button
                   type="button"
                   disabled={loading}
                   onClick={() => void sendMessage(COMPLETED_MATH_PROMPT)}
-                  className="min-h-11 cursor-pointer rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2.5 text-left text-xs leading-5 font-bold text-emerald-700 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-100 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 active:scale-[0.98] disabled:cursor-wait disabled:opacity-50 sm:col-span-2"
+                  variant="soft"
+                  color="jade"
+                  size="3"
+                  className="sm:col-span-2"
                 >
                   {COMPLETED_MATH_PROMPT}
-                </button>
+                </Button>
               ) : null}
             </div>
           </section>
@@ -375,8 +384,8 @@ export default function AiChatPanel({
         {messages.length === 0 && !context?.activeContent?.problemId && !context?.lessonPage ? (
           <div className="mx-auto flex w-full max-w-2xl flex-col items-center py-3 text-center sm:py-8">
             <div className="relative">
-              <div className="absolute inset-0 scale-125 rounded-full bg-violet-300/30 blur-xl" />
-              <RosieAssistantAvatar className="relative size-20 rounded-[28px] shadow-[0_16px_35px_rgba(251,113,133,0.25)] ring-4 ring-white" />
+              <div className="absolute inset-0 scale-110 rounded-full bg-amber-200/60" />
+              <RosieAssistantAvatar className="shadow-sticker relative size-20 rounded-[28px] ring-4 ring-white" />
             </div>
             <h3 className="mt-5 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
               嗨，很高兴和你一起学习！
@@ -386,12 +395,14 @@ export default function AiChatPanel({
             </p>
             <div className="mt-6 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-3">
               {EXAMPLE_PROMPTS.map((item) => (
-                <button
+                <Button
                   key={item.prompt}
                   type="button"
                   aria-label={item.prompt}
                   onClick={() => void sendMessage(item.prompt)}
-                  className="group rounded-2xl border border-slate-100 bg-white p-3.5 text-left shadow-[0_5px_18px_rgba(51,65,85,0.06)] transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_10px_24px_rgba(99,102,241,0.12)]"
+                  variant="outline"
+                  color="gray"
+                  size="2"
                 >
                   <span
                     className={`grid size-9 place-items-center rounded-xl text-xs font-black ring-1 ${PROMPT_TONES[item.tone]}`}
@@ -404,7 +415,7 @@ export default function AiChatPanel({
                   <span className="mt-1 block text-sm leading-5 font-bold text-slate-700 group-hover:text-violet-700">
                     {item.prompt}
                   </span>
-                </button>
+                </Button>
               ))}
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[11px] font-semibold text-slate-400">
@@ -441,7 +452,7 @@ export default function AiChatPanel({
       ) : null}
 
       {teachingSession ? (
-        <div className="mx-2 mb-3 rounded-2xl bg-gradient-to-r from-sky-50 to-indigo-50 p-4 ring-1 ring-sky-100">
+        <div className="mx-2 mb-3 rounded-2xl bg-sky-50 p-4 ring-1 ring-sky-100">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm font-semibold text-sky-900">
               当前阶段：{STAGE_LABELS[teachingSession.teachingStage]}
@@ -452,44 +463,52 @@ export default function AiChatPanel({
           </div>
           {teachingSession.status === 'active' ? (
             <div className="mt-2 flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
                 disabled={actionLoading || loading}
                 onClick={async () => {
                   const session = await advanceTeaching({ type: 'request_hint' })
                   if (session) await sendMessage('请给我一个提示', session.id)
                 }}
-                className="rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-sky-800 ring-1 ring-sky-200 disabled:opacity-50"
+                variant="outline"
+                color="sky"
+                size="1"
               >
                 给我提示
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 disabled={actionLoading || loading}
                 onClick={async () => {
                   const session = await advanceTeaching({ type: 'mark_correct' })
                   if (session) await sendMessage('我会了，请给我一道类似的小题', session.id)
                 }}
-                className="rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-sky-800 ring-1 ring-sky-200 disabled:opacity-50"
+                variant="outline"
+                color="sky"
+                size="1"
               >
                 我会了，举一反三
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 disabled={actionLoading || loading}
                 onClick={() => void verifyTeaching()}
-                className="rounded-xl bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                variant="solid"
+                color="jade"
+                size="1"
               >
                 验证练习结果
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 disabled={actionLoading || loading}
                 onClick={() => void advanceTeaching({ type: 'abandon' })}
-                className="rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 disabled:opacity-50"
+                variant="outline"
+                color="gray"
+                size="1"
               >
                 暂停本次学习
-              </button>
+              </Button>
             </div>
           ) : (
             <p className="mt-2 text-xs text-sky-700">
@@ -504,9 +523,9 @@ export default function AiChatPanel({
         </div>
       ) : null}
 
-      <div className="sticky bottom-0 mt-auto border-t border-slate-100/90 bg-white/90 px-1 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl sm:px-2">
+      <div className="border-kid-line sticky bottom-0 mt-auto border-t bg-white px-1 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-2">
         <form
-          className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white p-1.5 shadow-[0_8px_30px_rgba(51,65,85,0.08)] focus-within:border-violet-300 focus-within:ring-4 focus-within:ring-violet-100/70"
+          className="border-kid-line shadow-sticker flex items-center gap-2 rounded-2xl border-2 bg-white p-1.5 focus-within:border-violet-300 focus-within:ring-4 focus-within:ring-violet-100/70"
           onSubmit={(e) => {
             e.preventDefault()
             void sendMessage(input)
@@ -520,22 +539,25 @@ export default function AiChatPanel({
               void sendMessage(text)
             }}
           />
-          <input
+          <TextField.Root
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="输入问题，或按住麦克风…"
-            className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400"
             disabled={loading}
+            size="2"
+            className="min-w-0 flex-1"
           />
-          <button
+          <Button
             type="submit"
             disabled={loading || !input.trim()}
-            className="rounded-xl bg-gradient-to-r from-violet-500 to-indigo-500 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:brightness-105 disabled:opacity-40"
+            variant="solid"
+            color="violet"
+            size="2"
           >
             发送
-          </button>
+          </Button>
           {teachingSession?.status === 'active' ? (
-            <button
+            <Button
               type="button"
               disabled={loading || actionLoading || !input.trim()}
               onClick={async () => {
@@ -544,10 +566,12 @@ export default function AiChatPanel({
                 const session = await advanceTeaching({ type: 'record_attempt', answer })
                 if (session) await sendMessage(answer, session.id)
               }}
-              className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              variant="solid"
+              color="jade"
+              size="2"
             >
               提交作答
-            </button>
+            </Button>
           ) : null}
         </form>
       </div>

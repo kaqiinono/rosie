@@ -46,6 +46,7 @@ import { loadLessonNotes } from '@rosie/math-kit/hooks/useMathProblemNotes'
 import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
 import AdaptivePlanTodayCard from '@/components/today/AdaptivePlanTodayCard'
+import { Button } from '@rosie/ui/themes'
 
 type WordCardBlock = Extract<AgentBlock, { type: 'word_card' }>
 type CharCardBlock = Extract<AgentBlock, { type: 'char_card' }>
@@ -109,21 +110,23 @@ function EnglishLearningStatus({ view }: { view: LearningStatusBlock['view'] }) 
         <StatusMetric label="待巩固" value={wrongKeys.size} tone="bg-amber-100 text-amber-900" />
       </div>
       {view === 'mistakes' && wrongKeys.size > 0 ? (
-        <div className="mt-3 rounded-xl bg-white/80 p-3">
+        <div className="mt-3 rounded-xl bg-white p-3">
           <p className="text-xs font-bold text-emerald-800">最近待巩固单词</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {rows
               .filter((row) => !row.resolved)
               .slice(0, 5)
               .map((row) => (
-                <button
+                <Button
                   key={row.wordKey}
                   type="button"
                   onClick={() => setSelectedWrongKey(row.wordKey)}
-                  className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800"
+                  variant="soft"
+                  color="amber"
+                  size="1"
                 >
                   {row.wordKey.split('::').at(-1)}
-                </button>
+                </Button>
               ))}
           </div>
         </div>
@@ -164,18 +167,20 @@ function MathLearningStatus({ view }: { view: LearningStatusBlock['view'] }) {
         <StatusMetric label="待巩固" value={wrongIds.size} tone="bg-amber-100 text-amber-900" />
       </div>
       {view === 'mistakes' && wrongIds.size > 0 ? (
-        <div className="mt-3 rounded-xl bg-white/80 p-3">
+        <div className="mt-3 rounded-xl bg-white p-3">
           <p className="text-xs font-bold text-indigo-800">选择一道错题继续练习</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {[...wrongIds].slice(0, 5).map((problemId) => (
-              <button
+              <Button
                 key={problemId}
                 type="button"
                 onClick={() => setSelectedProblemId(problemId)}
-                className="rounded-full bg-indigo-100 px-2.5 py-1 text-xs font-bold text-indigo-700"
+                variant="soft"
+                color="indigo"
+                size="1"
               >
                 {problemId}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -220,21 +225,23 @@ function ChineseLearningStatus({ view }: { view: LearningStatusBlock['view'] }) 
         <StatusMetric label="待巩固" value={unresolved.length} tone="bg-amber-100 text-amber-900" />
       </div>
       {view === 'mistakes' && unresolved.length > 0 ? (
-        <div className="mt-3 rounded-xl bg-white/80 p-3">
+        <div className="mt-3 rounded-xl bg-white p-3">
           <p className="text-xs font-bold text-orange-800">最近待巩固内容</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {unresolved.slice(0, 5).map((row) =>
               row.itemType === 'char' ? (
-                <button
+                <Button
                   key={`${row.itemKey}-${row.wrongKind}`}
                   type="button"
                   onClick={() =>
                     setSelectedWrong({ itemKey: row.itemKey, wrongKind: row.wrongKind })
                   }
-                  className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-800"
+                  variant="soft"
+                  color="amber"
+                  size="1"
                 >
                   {row.itemKey.split('::').at(-1)}
-                </button>
+                </Button>
               ) : (
                 <Link
                   key={`${row.itemKey}-${row.wrongKind}`}
@@ -291,7 +298,7 @@ function EmbeddedTodayTasks({ block }: { block: TodayTasksBlock }) {
   return (
     <div className="space-y-3">
       {(!block.subject || block.subject === 'english') && (
-        <div className="rounded-2xl bg-white p-2 ring-1 ring-slate-100">
+        <div className="ring-kid-line rounded-2xl bg-white p-2 ring-1">
           <AdaptivePlanTodayCard user={user} />
         </div>
       )}
@@ -342,7 +349,7 @@ function EmbeddedWordCard({
           masteryInfo={masteryInfo}
         />
       ) : (
-        <div className="rounded-2xl bg-indigo-950 p-4 text-white shadow-sm">
+        <div className="shadow-sticker-sm rounded-2xl bg-indigo-950 p-4 text-white">
           <p className="mb-3 text-center text-sm font-bold text-indigo-200">听读并拼出这个单词</p>
           <SpellTiles
             key={spellRound}
@@ -360,27 +367,33 @@ function EmbeddedWordCard({
               <p className={spellResult ? 'font-bold text-emerald-300' : 'font-bold text-rose-300'}>
                 {spellResult ? '拼写正确！' : `再看看：${block.word}`}
               </p>
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setSpellResult(null)
                   setSpellRound((value) => value + 1)
                 }}
-                className="mt-2 rounded-xl bg-white/10 px-3 py-1.5 text-xs font-bold text-white"
+                variant="outline"
+                color="gray"
+                size="1"
+                className="mt-2"
               >
                 再练一次
-              </button>
+              </Button>
             </div>
           ) : null}
         </div>
       )}
-      <button
+      <Button
         type="button"
         onClick={() => setMode((value) => (value === 'card' ? 'spell' : 'card'))}
-        className="w-full rounded-xl bg-indigo-50 px-3 py-2 text-sm font-bold text-indigo-700 ring-1 ring-indigo-100"
+        variant="soft"
+        color="indigo"
+        size="2"
+        className="w-full"
       >
         {mode === 'card' ? '开始拼写练习' : '返回单词卡'}
-      </button>
+      </Button>
       {masteryInfo ? (
         <p className="text-center text-xs font-semibold text-indigo-700">
           已答对 {masteryInfo.correct} 次 · 答错 {masteryInfo.incorrect} 次
@@ -454,21 +467,19 @@ function EmbeddedCharCard({
           ['animate', '看笔顺'],
           ['quiz', '练写字'],
         ].map(([value, label]) => (
-          <button
+          <Button
             key={value}
             type="button"
             onClick={() => {
               setWritingResult(null)
               setMode(value as 'card' | 'animate' | 'quiz')
             }}
-            className={`rounded-xl px-2 py-2 text-xs font-bold ring-1 ${
-              mode === value
-                ? 'bg-orange-500 text-white ring-orange-500'
-                : 'bg-orange-50 text-orange-700 ring-orange-100'
-            }`}
+            variant={mode === value ? 'solid' : 'soft'}
+            color="orange"
+            size="1"
           >
             {label}
-          </button>
+          </Button>
         ))}
       </div>
       {recognizeInfo || writeInfo ? (
@@ -528,17 +539,20 @@ function EmbeddedPoemRecite({ block }: { block: PoemReciteBlock }) {
     <div className="rounded-2xl bg-violet-50/70 p-3 ring-1 ring-violet-100">
       <PoemRecite key={round} poem={poem} onComplete={(nextScore) => void recordScore(nextScore)} />
       {score !== null ? (
-        <button
+        <Button
           type="button"
           onClick={() => {
             setScore(null)
             setRound((value) => value + 1)
             setStartedAt(new Date().toISOString())
           }}
-          className="mx-auto mt-3 block rounded-xl bg-violet-600 px-4 py-2 text-sm font-bold text-white"
+          variant="solid"
+          color="violet"
+          size="2"
+          className="mx-auto mt-3"
         >
           再背一次
-        </button>
+        </Button>
       ) : null}
     </div>
   )
@@ -571,7 +585,7 @@ function EmbeddedEnglishPassage({ block }: { block: PassageBlock }) {
   )
 
   return (
-    <div className="max-h-[58vh] overflow-y-auto rounded-2xl bg-slate-50 p-3 ring-1 ring-slate-100">
+    <div className="ring-kid-line max-h-[58vh] overflow-y-auto rounded-2xl bg-slate-50 p-3 ring-1">
       <div className="mb-3">
         <div className="flex items-start justify-between gap-2">
           <div>
@@ -693,10 +707,10 @@ function EmbeddedMathProblemCard({
   return (
     <div className="space-y-2">
       <div className="text-sm font-bold text-indigo-950">{problem.title}</div>
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-        <div className="text-xs font-bold text-slate-600 mb-1">📝 题目</div>
+      <div className="border-kid-line rounded-lg border-2 bg-slate-50 p-3">
+        <div className="mb-1 text-xs font-bold text-slate-600">📝 题目</div>
         <div
-          className="text-sm leading-relaxed text-slate-800 [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-1"
+          className="text-sm leading-relaxed text-slate-800 [&_img]:my-1 [&_img]:max-w-full [&_img]:rounded-lg"
           dangerouslySetInnerHTML={{ __html: problemHtml }}
         />
       </div>
@@ -786,10 +800,13 @@ function useMathEnrichment(
     return match ? `${match[1]}-${match[2]}` : undefined
   }, [pathname, isMath])
 
-  const [fetched, setFetched] = useState<{
-    lessonNotes?: LessonNote[]
-    similarProblem?: SimilarProblem
-  } | undefined>(undefined)
+  const [fetched, setFetched] = useState<
+    | {
+        lessonNotes?: LessonNote[]
+        similarProblem?: SimilarProblem
+      }
+    | undefined
+  >(undefined)
 
   useEffect(() => {
     if (!lessonId) return
