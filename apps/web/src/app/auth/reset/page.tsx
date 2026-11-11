@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@rosie/core'
+import { Button, TextField } from '@rosie/ui/themes'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -49,7 +50,7 @@ export default function ResetPasswordPage() {
       <div
         className="flex min-h-screen items-center justify-center"
         style={{
-          background: 'linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f1a2e 100%)',
+          background: '#1a1a2e',
         }}
       >
         <p className="text-sm text-white/40">正在验证链接…</p>
@@ -61,7 +62,7 @@ export default function ResetPasswordPage() {
     <div
       className="flex min-h-screen items-center justify-center px-4"
       style={{
-        background: 'linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f1a2e 100%)',
+        background: '#1a1a2e',
       }}
     >
       <div className="w-full max-w-[400px]">
@@ -74,7 +75,7 @@ export default function ResetPasswordPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-[0.8rem] font-medium text-white/50">新密码</label>
-              <input
+              <TextField.Root
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -82,19 +83,21 @@ export default function ResetPasswordPage() {
                 required
                 minLength={6}
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-white/[.1] bg-white/[.06] px-4 py-2.5 text-[0.9rem] text-white placeholder-white/20 transition-colors outline-none focus:border-indigo-400/50"
+                size="2"
+                className="w-full"
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-[0.8rem] font-medium text-white/50">确认密码</label>
-              <input
+              <TextField.Root
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="再输一次"
                 required
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-white/[.1] bg-white/[.06] px-4 py-2.5 text-[0.9rem] text-white placeholder-white/20 transition-colors outline-none focus:border-indigo-400/50"
+                size="2"
+                className="w-full"
               />
             </div>
             {error && (
@@ -102,13 +105,16 @@ export default function ResetPasswordPage() {
                 {error}
               </div>
             )}
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="mt-1 w-full cursor-pointer rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 py-2.5 text-[0.9rem] font-semibold text-white shadow-lg transition-all hover:-translate-y-px disabled:cursor-default disabled:opacity-50"
+              variant="solid"
+              color="blue"
+              size="2"
+              className="mt-1 w-full"
             >
               {loading ? '保存中…' : '保存新密码'}
-            </button>
+            </Button>
           </form>
         </div>
       </div>

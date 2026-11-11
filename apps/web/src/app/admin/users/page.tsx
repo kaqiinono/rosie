@@ -1,8 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { supabase } from '@rosie/core'
+import { AppDialog, PageShell, StickerCard } from '@rosie/ui'
+import { Button, TextField } from '@rosie/ui/themes'
 
 interface ManagedUser {
   id: string
@@ -153,175 +154,191 @@ export default function UsersAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-amber-50">
-      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4">
-          <Link
-            href="/admin"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-200 bg-indigo-50 font-bold text-indigo-700"
-            aria-label="返回管理后台"
-          >
-            ←
-          </Link>
-          <div>
-            <h1 className="font-extrabold text-slate-900">用户管理</h1>
-            <p className="text-[11px] text-slate-500">账户、权限与密码</p>
+    <PageShell
+      tone="rose"
+      width="default"
+      backHref="/admin"
+      backLabel="返回管理后台"
+      title="用户管理"
+      subtitle="账户、权限与密码"
+    >
+      <StickerCard
+        elevation="sm"
+        radius="md"
+        className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center"
+      >
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-bold text-slate-800">共 {data?.total ?? 0} 个账户</div>
+          <div className="mt-0.5 text-xs text-slate-500">
+            修改管理员角色后，目标用户需重新登录才能刷新权限。
           </div>
         </div>
-      </header>
+        <TextField.Root
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="搜索登录邮箱、恢复邮箱或 ID"
+          size="2"
+          className="w-full sm:w-80"
+        />
+        <Button
+          type="button"
+          onClick={() => void loadUsers()}
+          disabled={loading}
+          variant="solid"
+          color="indigo"
+          size="2"
+        >
+          刷新
+        </Button>
+      </StickerCard>
 
-      <main className="mx-auto max-w-5xl px-4 py-7 pb-20">
-        <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-white bg-white/80 p-4 shadow-sm sm:flex-row sm:items-center">
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-bold text-slate-800">共 {data?.total ?? 0} 个账户</div>
-            <div className="mt-0.5 text-xs text-slate-500">
-              修改管理员角色后，目标用户需重新登录才能刷新权限。
-            </div>
-          </div>
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="搜索登录邮箱、恢复邮箱或 ID"
-            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-400 sm:w-80"
-          />
-          <button
-            type="button"
-            onClick={() => void loadUsers()}
-            disabled={loading}
-            className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            刷新
-          </button>
+      {error && (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
         </div>
+      )}
+      {notice && (
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {notice}
+        </div>
+      )}
 
-        {error && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-        {notice && (
-          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            {notice}
-          </div>
-        )}
-
-        {loading && !data ? (
-          <div className="py-16 text-center text-sm text-slate-500">正在加载用户…</div>
-        ) : (
-          <div className="grid gap-3">
-            {users.map((user) => (
-              <article
-                key={user.id}
-                className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm"
-              >
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="truncate font-bold text-slate-900">{user.email}</h2>
-                      {user.isAdmin && (
-                        <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold text-violet-700">
-                          管理员
-                        </span>
-                      )}
-                      {user.isCurrent && (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-bold text-blue-700">
-                          当前账户
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-1 text-xs text-slate-500">
-                      恢复邮箱：{user.recoveryEmail || '未设置'}
-                    </div>
-                    <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-400">
-                      <span>注册：{formatTime(user.createdAt)}</span>
-                      <span>最近登录：{formatTime(user.lastSignInAt)}</span>
-                      <span className="font-mono">{user.id}</span>
-                    </div>
+      {loading && !data ? (
+        <div className="py-16 text-center text-sm text-slate-500">正在加载用户…</div>
+      ) : (
+        <div className="grid gap-3">
+          {users.map((user) => (
+            <StickerCard as="article" elevation="sm" radius="md" key={user.id}>
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="truncate font-bold text-slate-900">{user.email}</h2>
+                    {user.isAdmin && (
+                      <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold text-violet-700">
+                        管理员
+                      </span>
+                    )}
+                    {user.isCurrent && (
+                      <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-bold text-blue-700">
+                        当前账户
+                      </span>
+                    )}
                   </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => openProfile(user)}
-                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                    >
-                      修改邮箱
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openPassword(user)}
-                      className="rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-700 hover:bg-amber-50"
-                    >
-                      重置密码
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openParentPin(user)}
-                      className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
-                    >
-                      {user.hasCustomParentPin ? '修改家长 PIN' : '设置家长 PIN'}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={user.isCurrent || busyId === user.id}
-                      onClick={() => {
-                        const nextAdmin = !user.isAdmin
-                        const confirmed = window.confirm(
-                          nextAdmin
-                            ? `确定授予 ${user.email} 管理员权限吗？`
-                            : `确定取消 ${user.email} 的管理员权限吗？`,
-                        )
-                        if (!confirmed) return
-                        void runAction(user.id, async () => {
-                          await adminFetch('/api/admin/users', {
-                            method: 'PATCH',
-                            body: JSON.stringify({
-                              action: 'admin',
-                              userId: user.id,
-                              isAdmin: nextAdmin,
-                            }),
-                          })
-                          setNotice(nextAdmin ? '已授予管理员权限。' : '已取消管理员权限。')
-                        })
-                      }}
-                      className="rounded-lg border border-violet-200 px-3 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {user.isAdmin ? '取消管理员' : '设为管理员'}
-                    </button>
-                    <button
-                      type="button"
-                      disabled={user.isCurrent || busyId === user.id}
-                      onClick={() => {
-                        const confirmed = window.confirm(
-                          `确定永久注销 ${user.email} 吗？\n\n关联的学习数据可能会因外键级联一并删除，此操作不可恢复。`,
-                        )
-                        if (!confirmed) return
-                        void runAction(user.id, async () => {
-                          await adminFetch(`/api/admin/users?id=${encodeURIComponent(user.id)}`, {
-                            method: 'DELETE',
-                          })
-                          setNotice('用户已注销。')
-                        })
-                      }}
-                      className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      注销用户
-                    </button>
+                  <div className="mt-1 text-xs text-slate-500">
+                    恢复邮箱：{user.recoveryEmail || '未设置'}
+                  </div>
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-400">
+                    <span>注册：{formatTime(user.createdAt)}</span>
+                    <span>最近登录：{formatTime(user.lastSignInAt)}</span>
+                    <span className="font-mono">{user.id}</span>
                   </div>
                 </div>
-              </article>
-            ))}
-            {users.length === 0 && (
-              <div className="py-16 text-center text-sm text-slate-500">没有匹配的用户</div>
-            )}
-          </div>
-        )}
-      </main>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => openProfile(user)}
+                    variant="outline"
+                    color="gray"
+                    size="1"
+                  >
+                    修改邮箱
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => openPassword(user)}
+                    variant="outline"
+                    color="amber"
+                    size="1"
+                  >
+                    重置密码
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => openParentPin(user)}
+                    variant="outline"
+                    color="jade"
+                    size="1"
+                  >
+                    {user.hasCustomParentPin ? '修改家长 PIN' : '设置家长 PIN'}
+                  </Button>
+                  <Button
+                    type="button"
+                    disabled={user.isCurrent || busyId === user.id}
+                    onClick={() => {
+                      const nextAdmin = !user.isAdmin
+                      const confirmed = window.confirm(
+                        nextAdmin
+                          ? `确定授予 ${user.email} 管理员权限吗？`
+                          : `确定取消 ${user.email} 的管理员权限吗？`,
+                      )
+                      if (!confirmed) return
+                      void runAction(user.id, async () => {
+                        await adminFetch('/api/admin/users', {
+                          method: 'PATCH',
+                          body: JSON.stringify({
+                            action: 'admin',
+                            userId: user.id,
+                            isAdmin: nextAdmin,
+                          }),
+                        })
+                        setNotice(nextAdmin ? '已授予管理员权限。' : '已取消管理员权限。')
+                      })
+                    }}
+                    variant="outline"
+                    color="violet"
+                    size="1"
+                  >
+                    {user.isAdmin ? '取消管理员' : '设为管理员'}
+                  </Button>
+                  <Button
+                    type="button"
+                    disabled={user.isCurrent || busyId === user.id}
+                    onClick={() => {
+                      const confirmed = window.confirm(
+                        `确定永久注销 ${user.email} 吗？\n\n关联的学习数据可能会因外键级联一并删除，此操作不可恢复。`,
+                      )
+                      if (!confirmed) return
+                      void runAction(user.id, async () => {
+                        await adminFetch(`/api/admin/users?id=${encodeURIComponent(user.id)}`, {
+                          method: 'DELETE',
+                        })
+                        setNotice('用户已注销。')
+                      })
+                    }}
+                    variant="outline"
+                    color="red"
+                    size="1"
+                  >
+                    注销用户
+                  </Button>
+                </div>
+              </div>
+            </StickerCard>
+          ))}
+          {users.length === 0 && (
+            <div className="py-16 text-center text-sm text-slate-500">没有匹配的用户</div>
+          )}
+        </div>
+      )}
 
       {editing && editMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4">
+        <AppDialog
+          open
+          title={
+            editMode === 'profile'
+              ? '修改用户邮箱'
+              : editMode === 'password'
+                ? '重置用户密码'
+                : '设置家长 PIN'
+          }
+          description={editing.email}
+          closeDisabled={busyId === editing.id}
+          onOpenChange={(open) => {
+            if (!open) closeEditor()
+          }}
+        >
           <form
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
             onSubmit={(event) => {
               event.preventDefault()
               void runAction(editing.id, async () => {
@@ -361,21 +378,16 @@ export default function UsersAdminPage() {
               })
             }}
           >
-            <h2 className="text-lg font-extrabold text-slate-900">
-              {editMode === 'profile' ? '修改用户邮箱' : editMode === 'password' ? '重置用户密码' : '设置家长 PIN'}
-            </h2>
-            <p className="mt-1 text-xs text-slate-500">{editing.email}</p>
-
             {editMode === 'profile' ? (
               <div className="mt-5">
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   登录邮箱
-                  <input
+                  <TextField.Root
                     type="email"
                     required
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="rounded-xl border border-slate-200 px-3 py-2 font-normal outline-none focus:border-indigo-400"
+                    size="2"
                   />
                   <span className="text-[11px] font-normal text-amber-600">
                     修改后，用户必须用新邮箱登录。
@@ -383,18 +395,18 @@ export default function UsersAdminPage() {
                 </label>
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   恢复邮箱
-                  <input
+                  <TextField.Root
                     type="email"
                     value={recoveryEmail}
                     onChange={(event) => setRecoveryEmail(event.target.value)}
-                    className="rounded-xl border border-slate-200 px-3 py-2 font-normal outline-none focus:border-indigo-400"
+                    size="2"
                   />
                 </label>
               </div>
             ) : editMode === 'password' ? (
               <label className="mt-5 grid gap-1.5 text-sm font-semibold text-slate-700">
                 新密码
-                <input
+                <TextField.Root
                   type="password"
                   required
                   minLength={8}
@@ -402,7 +414,7 @@ export default function UsersAdminPage() {
                   autoComplete="new-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="rounded-xl border border-slate-200 px-3 py-2 font-normal outline-none focus:border-indigo-400"
+                  size="2"
                 />
                 <span className="text-[11px] font-normal text-slate-500">至少 8 位。</span>
               </label>
@@ -410,7 +422,7 @@ export default function UsersAdminPage() {
               <div className="mt-5 grid gap-4">
                 <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
                   新家长 PIN
-                  <input
+                  <TextField.Root
                     type="password"
                     required
                     inputMode="numeric"
@@ -419,34 +431,42 @@ export default function UsersAdminPage() {
                     maxLength={6}
                     autoComplete="new-password"
                     value={parentPin}
-                    onChange={(event) => setParentPin(event.target.value.replace(/\D/g, '').slice(0, 6))}
-                    className="rounded-xl border border-slate-200 px-3 py-2 font-mono text-lg tracking-[0.3em] outline-none focus:border-emerald-400"
+                    onChange={(event) =>
+                      setParentPin(event.target.value.replace(/\D/g, '').slice(0, 6))
+                    }
+                    size="3"
                   />
-                  <span className="text-[11px] font-normal text-slate-500">仅限 6 位数字；默认 PIN 为 666666。</span>
+                  <span className="text-[11px] font-normal text-slate-500">
+                    仅限 6 位数字；默认 PIN 为 666666。
+                  </span>
                 </label>
               </div>
             )}
 
             <div className="mt-6 flex justify-end gap-2">
-              <button
+              <Button
                 type="button"
                 onClick={closeEditor}
                 disabled={busyId === editing.id}
-                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600"
+                variant="outline"
+                color="gray"
+                size="2"
               >
                 取消
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 disabled={busyId === editing.id}
-                className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                variant="solid"
+                color="indigo"
+                size="2"
               >
                 {busyId === editing.id ? '保存中…' : '确认保存'}
-              </button>
+              </Button>
             </div>
           </form>
-        </div>
+        </AppDialog>
       )}
-    </div>
+    </PageShell>
   )
 }

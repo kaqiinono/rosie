@@ -4,6 +4,8 @@ import { useState, Suspense } from 'react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
+import { DarkScope } from '@rosie/ui'
+import { Button, TextField } from '@rosie/ui/themes'
 
 function toEmail(username: string) {
   return `${username.trim().toLowerCase()}@rosie.app`
@@ -48,7 +50,7 @@ function AuthContent() {
     reset()
     setLoading(true)
     const { error } = await signIn(toEmail(username), password)
-    if (error) setError('用户名或密码错误')
+    if (error) setError(error)
     else router.replace('/')
     setLoading(false)
   }
@@ -95,151 +97,158 @@ function AuthContent() {
   }
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center px-4 py-10 font-sans"
-      style={{ background: 'linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f1a2e 100%)' }}
-    >
-      <div className="w-[400px] max-w-full">
-        {/* Header */}
-        <div className="mb-4 text-center">
-          <Image
-            src="/brand/rosie-fun-horizontal.png"
-            alt="Rosie Fun"
-            width={400}
-            height={133}
-            priority
-            className="mx-auto mb-3 h-auto drop-shadow-[0_12px_20px_rgba(251,113,133,0.2)]"
-          />
-        </div>
+    <DarkScope>
+      <div
+        className="flex min-h-screen items-center justify-center px-4 py-10 font-sans"
+        style={{ background: '#1a1a2e' }}
+      >
+        <div className="w-[400px] max-w-full">
+          {/* Header */}
+          <div className="mb-4 text-center">
+            <Image
+              src="/brand/rosie-fun-horizontal.png"
+              alt="Rosie Fun"
+              width={400}
+              height={133}
+              priority
+              className="mx-auto mb-3 h-auto drop-shadow-[0_12px_20px_rgba(251,113,133,0.2)]"
+            />
+          </div>
 
-        <div className="rounded-2xl border border-white/[.08] bg-white/[.05] p-6">
-          {/* Tabs */}
-          {view !== 'forgot' && (
-            <div className="mb-6 flex gap-1.5 rounded-xl bg-white/[.04] p-1">
-              {(['login', 'signup'] as const).map((v) => (
-                <button
-                  key={v}
+          <div className="rounded-2xl border border-white/[.08] bg-white/[.05] p-6">
+            {/* Tabs */}
+            {view !== 'forgot' && (
+              <div className="mb-6 flex gap-1.5 rounded-xl bg-white/[.04] p-1">
+                {(['login', 'signup'] as const).map((v) => (
+                  <Button
+                    key={v}
+                    onClick={() => {
+                      setView(v)
+                      reset()
+                    }}
+                    variant={view === v ? 'outline' : 'ghost'}
+                    color="gray"
+                    size="2"
+                    className="flex-1"
+                  >
+                    {v === 'login' ? '登录' : '注册'}
+                  </Button>
+                ))}
+              </div>
+            )}
+
+            {/* LOGIN */}
+            {view === 'login' && (
+              <form onSubmit={handleLogin} className="flex flex-col gap-4">
+                <Field
+                  label="用户名"
+                  value={username}
+                  onChange={setUsername}
+                  placeholder="输入你的用户名"
+                  autoComplete="username"
+                />
+                <Field
+                  label="密码"
+                  type="password"
+                  value={password}
+                  onChange={setPassword}
+                  placeholder="输入密码"
+                  autoComplete="current-password"
+                  minLength={6}
+                />
+                <Feedback error={error} message={message} />
+                <SubmitBtn loading={loading} label="登录" />
+                <Button
+                  type="button"
                   onClick={() => {
-                    setView(v)
+                    setView('forgot')
                     reset()
                   }}
-                  className={`flex-1 cursor-pointer rounded-lg py-2 text-[0.85rem] transition-all ${
-                    view === v
-                      ? 'bg-white/10 font-semibold text-white'
-                      : 'text-white/40 hover:text-white/60'
-                  }`}
+                  variant="outline"
+                  color="gray"
+                  size="2"
                 >
-                  {v === 'login' ? '登录' : '注册'}
-                </button>
-              ))}
-            </div>
-          )}
+                  忘记密码？
+                </Button>
+              </form>
+            )}
 
-          {/* LOGIN */}
-          {view === 'login' && (
-            <form onSubmit={handleLogin} className="flex flex-col gap-4">
-              <Field
-                label="用户名"
-                value={username}
-                onChange={setUsername}
-                placeholder="输入你的用户名"
-                autoComplete="username"
-              />
-              <Field
-                label="密码"
-                type="password"
-                value={password}
-                onChange={setPassword}
-                placeholder="输入密码"
-                autoComplete="current-password"
-                minLength={6}
-              />
-              <Feedback error={error} message={message} />
-              <SubmitBtn loading={loading} label="登录" />
-              <button
-                type="button"
-                onClick={() => {
-                  setView('forgot')
-                  reset()
-                }}
-                className="cursor-pointer pt-0.5 text-center text-[0.8rem] text-white/30 transition-colors hover:text-white/50"
-              >
-                忘记密码？
-              </button>
-            </form>
-          )}
-
-          {/* SIGNUP */}
-          {view === 'signup' && (
-            <form onSubmit={handleSignup} className="flex flex-col gap-4">
-              <Field
-                label="用户名"
-                value={username}
-                onChange={setUsername}
-                placeholder="设置你的用户名"
-                autoComplete="username"
-              />
-              <Field
-                label="密码"
-                type="password"
-                value={password}
-                onChange={setPassword}
-                placeholder="至少 6 位"
-                autoComplete="new-password"
-                minLength={6}
-              />
-              <div className="flex flex-col gap-1">
+            {/* SIGNUP */}
+            {view === 'signup' && (
+              <form onSubmit={handleSignup} className="flex flex-col gap-4">
                 <Field
-                  label="恢复邮箱"
+                  label="用户名"
+                  value={username}
+                  onChange={setUsername}
+                  placeholder="设置你的用户名"
+                  autoComplete="username"
+                />
+                <Field
+                  label="密码"
+                  type="password"
+                  value={password}
+                  onChange={setPassword}
+                  placeholder="至少 6 位"
+                  autoComplete="new-password"
+                  minLength={6}
+                />
+                <div className="flex flex-col gap-1">
+                  <Field
+                    label="恢复邮箱"
+                    type="email"
+                    value={recoveryEmail}
+                    onChange={setRecoveryEmail}
+                    placeholder="用于找回密码的真实邮箱"
+                    autoComplete="email"
+                  />
+                  <p className="px-1 text-[0.75rem] text-white/25">
+                    仅用于找回密码，登录时无需填写
+                  </p>
+                </div>
+                <Feedback error={error} message={message} />
+                <SubmitBtn loading={loading} label="注册" />
+              </form>
+            )}
+
+            {/* FORGOT */}
+            {view === 'forgot' && (
+              <form onSubmit={handleForgot} className="flex flex-col gap-4">
+                <p className="mb-1 text-[0.9rem] font-medium text-white/70">找回密码</p>
+                <Field
+                  label="用户名"
+                  value={username}
+                  onChange={setUsername}
+                  placeholder="你的用户名"
+                  autoComplete="username"
+                />
+                <Field
+                  label="注册时填写的恢复邮箱"
                   type="email"
                   value={recoveryEmail}
                   onChange={setRecoveryEmail}
-                  placeholder="用于找回密码的真实邮箱"
+                  placeholder="your@email.com"
                   autoComplete="email"
                 />
-                <p className="px-1 text-[0.75rem] text-white/25">仅用于找回密码，登录时无需填写</p>
-              </div>
-              <Feedback error={error} message={message} />
-              <SubmitBtn loading={loading} label="注册" />
-            </form>
-          )}
-
-          {/* FORGOT */}
-          {view === 'forgot' && (
-            <form onSubmit={handleForgot} className="flex flex-col gap-4">
-              <p className="mb-1 text-[0.9rem] font-medium text-white/70">找回密码</p>
-              <Field
-                label="用户名"
-                value={username}
-                onChange={setUsername}
-                placeholder="你的用户名"
-                autoComplete="username"
-              />
-              <Field
-                label="注册时填写的恢复邮箱"
-                type="email"
-                value={recoveryEmail}
-                onChange={setRecoveryEmail}
-                placeholder="your@email.com"
-                autoComplete="email"
-              />
-              <Feedback error={error} message={message} />
-              <SubmitBtn loading={loading} label="验证并重置密码" />
-              <button
-                type="button"
-                onClick={() => {
-                  setView('login')
-                  reset()
-                }}
-                className="cursor-pointer pt-0.5 text-center text-[0.8rem] text-white/30 transition-colors hover:text-white/50"
-              >
-                ← 返回登录
-              </button>
-            </form>
-          )}
+                <Feedback error={error} message={message} />
+                <SubmitBtn loading={loading} label="验证并重置密码" />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setView('login')
+                    reset()
+                  }}
+                  variant="outline"
+                  color="gray"
+                  size="2"
+                >
+                  ← 返回登录
+                </Button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </DarkScope>
   )
 }
 
@@ -255,7 +264,7 @@ function Field({
   label: string
   value: string
   onChange: (v: string) => void
-  type?: string
+  type?: 'text' | 'password' | 'email'
   placeholder?: string
   autoComplete?: string
   minLength?: number
@@ -263,15 +272,16 @@ function Field({
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-[0.8rem] font-medium text-white/50">{label}</label>
-      <input
+      <TextField.Root
         type={type}
+        size="2"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required
         autoComplete={autoComplete}
         minLength={minLength}
-        className="w-full rounded-xl border border-white/[.1] bg-white/[.06] px-4 py-2.5 text-[0.9rem] text-white placeholder-white/20 transition-colors outline-none focus:border-indigo-400/50"
+        className="w-full"
       />
     </div>
   )
@@ -295,12 +305,15 @@ function Feedback({ error, message }: { error: string | null; message: string | 
 
 function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
   return (
-    <button
+    <Button
       type="submit"
       disabled={loading}
-      className="mt-1 w-full cursor-pointer rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 py-2.5 text-[0.9rem] font-semibold text-white shadow-lg transition-all hover:-translate-y-px disabled:cursor-default disabled:opacity-50"
+      variant="solid"
+      color="blue"
+      size="2"
+      className="mt-1 w-full"
     >
       {loading ? '请稍候…' : label}
-    </button>
+    </Button>
   )
 }
