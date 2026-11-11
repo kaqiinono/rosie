@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { PageBreadcrumb } from '@rosie/ui'
-import { supabase, todayStr, useAuth } from '@rosie/core'
+import { supabase, todayStr, useAuth, voucherSolidClass } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcVouchers } from '@rosie/rewards'
 import { templateTotalPrice, useVoucherCatalog } from '@rosie/rewards'
@@ -52,9 +52,9 @@ export default function VouchersPage() {
   }, [vouchers])
 
   const canAffordTemplate = (t: VoucherTemplate): boolean =>
-    wallet.yellowBalance >= t.priceYellow
-    && wallet.redBalance >= t.priceRed
-    && wallet.blueBalance >= t.priceBlue
+    wallet.yellowBalance >= t.priceYellow &&
+    wallet.redBalance >= t.priceRed &&
+    wallet.blueBalance >= t.priceBlue
 
   const affordableCount = shopTemplates.filter(canAffordTemplate).length
 
@@ -133,8 +133,7 @@ export default function VouchersPage() {
       <div
         className="fixed inset-0 -z-10"
         style={{
-          background:
-            'radial-gradient(ellipse 70% 50% at 50% -5%, rgba(251,191,36,0.10) 0%, transparent 60%), linear-gradient(160deg, #fffbeb 0%, #fff1f2 45%, #eff6ff 100%)',
+          background: 'rgba(251,191,36,0.10), #fff1f2',
         }}
       />
 
@@ -142,14 +141,12 @@ export default function VouchersPage() {
       <header
         className="sticky top-0 z-30"
         style={{
-          background: 'rgba(255,255,255,0.85)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
+          background: 'rgb(255,255,255)',
           borderBottom: '1px solid rgba(245,158,11,0.18)',
-          boxShadow: '0 2px 14px rgba(251,191,36,0.08)',
+          boxShadow: '0 3px 0 rgba(251,191,36,.3)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pl-3 pr-3 sm:gap-3 sm:pl-4 sm:pr-4">
+        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pr-3 pl-3 sm:gap-3 sm:pr-4 sm:pl-4">
           <PageBreadcrumb variant="inline" />
 
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -173,23 +170,22 @@ export default function VouchersPage() {
         <section
           className="relative overflow-hidden rounded-3xl p-4 sm:p-6"
           style={{
-            background:
-              'linear-gradient(135deg, rgba(251,191,36,0.10) 0%, rgba(244,63,94,0.08) 50%, rgba(59,130,246,0.10) 100%)',
+            background: 'rgba(244,63,94,0.08)',
             border: '1.5px solid rgba(245,158,11,0.22)',
-            boxShadow: '0 12px 40px rgba(251,191,36,0.10), inset 0 1px 0 rgba(255,255,255,0.6)',
+            boxShadow: '0 3px 0 rgba(251,191,36,.3), inset 0 1px 0 rgba(255,255,255,0.6)',
           }}
         >
           {/* Decorative glow orbs */}
           <div
             className="pointer-events-none absolute -top-10 -right-10 h-36 w-36 rounded-full"
             style={{
-              background: 'radial-gradient(circle, rgba(251,191,36,0.28) 0%, transparent 70%)',
+              background: 'rgba(251,191,36,0.28)',
             }}
           />
           <div
             className="pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full"
             style={{
-              background: 'radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%)',
+              background: 'rgba(59,130,246,0.22)',
             }}
           />
 
@@ -208,7 +204,10 @@ export default function VouchersPage() {
               </div>
               <div className="text-right">
                 <div className="text-[10px] font-bold text-slate-500">合计面值</div>
-                <div className="font-fredoka text-[24px] leading-none font-black tabular-nums sm:text-[28px]" style={{ color: '#92400e' }}>
+                <div
+                  className="font-fredoka text-[24px] leading-none font-black tabular-nums sm:text-[28px]"
+                  style={{ color: '#92400e' }}
+                >
                   {formatYuan(totalValueYuan)}
                 </div>
               </div>
@@ -252,7 +251,7 @@ export default function VouchersPage() {
                     aria-label={`去${c.label}赚${hex.shapeLabel}`}
                     className="group relative block cursor-pointer overflow-hidden rounded-2xl px-1.5 py-2.5 no-underline transition-all hover:-translate-y-0.5 sm:px-2 sm:py-3"
                     style={{
-                      background: `linear-gradient(160deg, ${c.bg}, rgba(255,255,255,0.55))`,
+                      background: `${c.bg}`,
                       border: `1.5px solid ${c.border}`,
                       boxShadow: `0 4px 16px ${hex.primary}33, inset 0 1px 0 rgba(255,255,255,0.6)`,
                     }}
@@ -261,7 +260,7 @@ export default function VouchersPage() {
                     <div
                       className="pointer-events-none absolute -top-2 -right-2 h-12 w-12 rounded-full opacity-55"
                       style={{
-                        background: `radial-gradient(circle, ${hex.primary}, transparent 70%)`,
+                        background: `${hex.primary}`,
                       }}
                       aria-hidden
                     />
@@ -276,7 +275,11 @@ export default function VouchersPage() {
                     </div>
                     <div
                       className="mx-auto mt-1 inline-flex rounded-full px-1.5 py-0.5 text-[9px] font-extrabold tabular-nums sm:text-[10px]"
-                      style={{ background: `${hex.primary}18`, color: hex.outline, border: `1px solid ${hex.border}` }}
+                      style={{
+                        background: `${hex.primary}18`,
+                        color: hex.outline,
+                        border: `1px solid ${hex.border}`,
+                      }}
                     >
                       {STAR_UNIT_PRICE_LABEL[c.color]}
                     </div>
@@ -297,7 +300,9 @@ export default function VouchersPage() {
                       >
                         <span aria-hidden>{c.emoji}</span>
                         <span>去{c.label}</span>
-                        <span aria-hidden className="font-black">→</span>
+                        <span aria-hidden className="font-black">
+                          →
+                        </span>
                       </span>
                     </div>
                   </Link>
@@ -376,6 +381,7 @@ export default function VouchersPage() {
                 { color: 'blue' as const, miss: missB },
               ].filter((c) => c.miss > 0)
               return (
+                // native-ok: 兑换券卡片是多层叠加（着色底、悬停光、多行内容）的容器按钮，Radix Button 会居中挤压
                 <button
                   key={t.category}
                   type="button"
@@ -388,21 +394,21 @@ export default function VouchersPage() {
                       ? '1.5px solid rgba(15,23,42,0.10)'
                       : '1.5px solid rgba(15,23,42,0.06)',
                     cursor: canAfford && !redeeming ? 'pointer' : 'not-allowed',
-                    boxShadow: canAfford ? '0 4px 18px rgba(15,23,42,0.08)' : 'none',
+                    boxShadow: canAfford ? '0 3px 0 rgba(15,23,42,.3)' : 'none',
                     transform: isRedeeming ? 'scale(0.95)' : undefined,
                   }}
                 >
                   {/* Static tinted base */}
                   {canAfford && (
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-[0.18]`}
+                      className={`absolute inset-0 ${voucherSolidClass(meta.gradient)} opacity-[0.18]`}
                     />
                   )}
 
                   {/* Hover glow */}
                   {canAfford && (
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-0 transition-opacity duration-200 group-hover:opacity-30`}
+                      className={`absolute inset-0 ${voucherSolidClass(meta.gradient)} opacity-0 transition-opacity duration-200 group-hover:opacity-30`}
                     />
                   )}
 
@@ -462,7 +468,10 @@ export default function VouchersPage() {
                             )
                           })}
                         </div>
-                        <div className="mt-1 text-[11px] font-extrabold tabular-nums" style={{ color: '#047857' }}>
+                        <div
+                          className="mt-1 text-[11px] font-extrabold tabular-nums"
+                          style={{ color: '#047857' }}
+                        >
                           ≈ {formatYuan(priceYuan)}
                         </div>
                       </>
@@ -481,7 +490,7 @@ export default function VouchersPage() {
                             </span>
                           ))}
                         </div>
-                        <div className="mt-0.5 text-[10px] font-bold tabular-nums text-slate-400">
+                        <div className="mt-0.5 text-[10px] font-bold text-slate-400 tabular-nums">
                           ≈ {formatYuan(priceYuan)}
                         </div>
                       </>

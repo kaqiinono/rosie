@@ -121,7 +121,7 @@ function BurstView({ event, onDone }: BurstViewProps) {
           top: '50%',
           width: 220,
           height: 220,
-          background: `radial-gradient(circle, ${hex.glow} 0%, transparent 60%)`,
+          background: `${hex.glow}`,
         }}
       />
 
@@ -157,11 +157,11 @@ function BurstView({ event, onDone }: BurstViewProps) {
         <div
           className="font-fredoka animate-[burst-rise_1.2s_ease-out_forwards] rounded-full px-4 py-1.5 font-black"
           style={{
-            background: `linear-gradient(135deg, ${hex.soft}, ${hex.primary})`,
+            background: hex.primary,
             color: '#fff',
             fontSize: event.bonus ? 28 : 22,
             border: `2px solid #ffffff`,
-            boxShadow: `0 8px 24px ${hex.glow}, inset 0 1px 0 rgba(255,255,255,0.6)`,
+            boxShadow: `0 4px 0 ${hex.outline}`,
             textShadow: `0 1px 2px rgba(0,0,0,0.25)`,
             letterSpacing: '0.02em',
           }}
@@ -175,7 +175,7 @@ function BurstView({ event, onDone }: BurstViewProps) {
           style={{
             background: 'rgba(255,255,255,0.95)',
             border: `2px solid ${hex.primary}80`,
-            boxShadow: `0 8px 20px rgba(0,0,0,0.18)`,
+            boxShadow: `0 3px 0 rgba(0,0,0,.3)`,
             opacity: 0,
           }}
         >
@@ -198,7 +198,6 @@ function BurstView({ event, onDone }: BurstViewProps) {
           </span>
         </div>
       </div>
-
     </div>
   )
 }

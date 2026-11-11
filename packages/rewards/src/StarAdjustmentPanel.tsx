@@ -64,7 +64,7 @@ export default function StarAdjustmentPanel({
           return (
             <div
               key={color}
-              className="rounded-2xl bg-white/85 p-4 shadow-sm"
+              className="border-kid-line shadow-sticker-sm rounded-3xl border-2 bg-white p-4"
               style={{ border: `1.5px solid ${theme.border}` }}
             >
               <div className="mb-1 flex items-center justify-between gap-2">
@@ -76,11 +76,16 @@ export default function StarAdjustmentPanel({
                 </div>
                 <span
                   className="rounded-full px-2 py-0.5 text-[10px] font-extrabold tabular-nums"
-                  style={{ background: `${theme.primary}14`, color: theme.outline, border: `1px solid ${theme.border}` }}
+                  style={{
+                    background: `${theme.primary}14`,
+                    color: theme.outline,
+                    border: `1px solid ${theme.border}`,
+                  }}
                 >
                   {STAR_UNIT_PRICE_LABEL[color]}
                 </span>
               </div>
+              {/* native-ok: 该包不能依赖 @rosie/ui */}
               <input
                 type="number"
                 min={1}
@@ -93,39 +98,51 @@ export default function StarAdjustmentPanel({
                     [color]: raw === '' ? '' : Math.max(1, Number(raw) || 1),
                   }))
                 }}
-                onBlur={() => setAmounts((previous) => ({
-                  ...previous,
-                  [color]: previous[color] === '' ? 1 : previous[color],
-                }))}
-                className="font-fredoka mb-1 w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-1.5 text-center text-[18px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
+                onBlur={() =>
+                  setAmounts((previous) => ({
+                    ...previous,
+                    [color]: previous[color] === '' ? 1 : previous[color],
+                  }))
+                }
+                className="font-fredoka border-kid-line mb-1 w-full rounded-lg border-2 bg-white px-3 py-1.5 text-center text-[18px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
                 style={{ color: theme.outline }}
               />
               <div className="mb-2 text-center text-[11px] font-bold text-slate-500 tabular-nums">
                 本次 {amount} 颗 ≈ {formatYuan(draftValue)}
               </div>
               <div className="flex gap-2">
-                {(showAdd ? ['add', 'spend'] as const : ['spend'] as const).map((mode) => {
+                {(showAdd ? (['add', 'spend'] as const) : (['spend'] as const)).map((mode) => {
                   const isBusy = busyKey === `${mode}:${color}`
                   return (
-                    <button
+                    <button // native-ok: 该包不能依赖 @rosie/ui
                       key={mode}
                       type="button"
-                      disabled={disabled || !!busyKey || (mode === 'spend' && amount > balances[color])}
+                      disabled={
+                        disabled || !!busyKey || (mode === 'spend' && amount > balances[color])
+                      }
                       onClick={() => void run(color, amount, mode)}
-                      className="min-h-11 flex-1 cursor-pointer rounded-lg py-2 text-[13px] font-extrabold shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-                      style={mode === 'add'
-                        ? {
-                            background: `linear-gradient(135deg,${theme.primary},${theme.outline})`,
-                            boxShadow: `0 3px 12px ${theme.glow}`,
-                            color: '#fff',
-                          }
-                        : {
-                            background: 'rgba(255,255,255,0.9)',
-                            border: `1.5px solid ${theme.outline}`,
-                            color: theme.outline,
-                          }}
+                      className="min-h-11 flex-1 cursor-pointer rounded-full py-2 text-[13px] font-extrabold transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+                      style={
+                        mode === 'add'
+                          ? {
+                              background: theme.primary,
+                              boxShadow: `0 3px 0 ${theme.outline}`,
+                              color: '#fff',
+                            }
+                          : {
+                              background: 'rgba(255,255,255,0.9)',
+                              border: `1.5px solid ${theme.outline}`,
+                              color: theme.outline,
+                            }
+                      }
                     >
-                      {isBusy ? (mode === 'add' ? '添加中…' : '消费中…') : mode === 'add' ? '添加' : '消费'}
+                      {isBusy
+                        ? mode === 'add'
+                          ? '添加中…'
+                          : '消费中…'
+                        : mode === 'add'
+                          ? '添加'
+                          : '消费'}
                     </button>
                   )
                 })}

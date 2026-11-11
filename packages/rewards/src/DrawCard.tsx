@@ -49,30 +49,95 @@ export function DrawCard({ userId }: { userId: string }) {
     }
   }
 
-  return <section className="w-full max-w-[1040px] rounded-3xl bg-linear-to-br from-indigo-950 via-violet-950 to-slate-900 p-5 text-white shadow-lg sm:p-6">
-    <h2 className="text-xl font-black">✦ 幸运抽奖</h2>
-    <div className="mt-4 grid grid-cols-2 gap-3">
-      <button onClick={() => void draw('reward')} className="rounded-2xl bg-linear-to-r from-amber-200 to-yellow-400 py-3 font-black text-amber-950">✦ 抽奖励</button>
-      <button onClick={() => void draw('penalty')} className="rounded-2xl bg-linear-to-r from-violet-300 to-fuchsia-300 py-3 font-black text-violet-950">ϟ 抽惩罚</button>
-    </div>
-    <dialog ref={dialog} aria-labelledby="draw-title" onCancel={event => { if (accepting.current) event.preventDefault() }}
-      className="fixed inset-0 m-auto w-[min(90vw,23rem)] rounded-3xl border border-white/25 bg-slate-950 p-6 text-center text-white shadow-2xl backdrop:bg-indigo-950/70 backdrop:backdrop-blur-sm">
-      <div className="flex items-center justify-between">
-        <h3 id="draw-title" className="font-bold">{poolLabels[kind]}抽取</h3>
-        <button aria-label="关闭" disabled={busy && !!result} onClick={() => dialog.current?.close()} className="size-10 rounded-full bg-white/10 text-xl">×</button>
+  return (
+    <section className="shadow-sticker-accent w-full max-w-[1040px] rounded-3xl border-2 border-[var(--accent-7)] bg-[var(--accent-3)] p-5 text-[var(--gray-12)] sm:p-6">
+      <h2 className="text-xl font-black">✦ 幸运抽奖</h2>
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        {/* native-ok: 该包不能依赖 @rosie/ui */}
+        <button
+          onClick={() => void draw('reward')}
+          className="ease-spring rounded-full border-2 border-amber-500 bg-amber-300 py-3 font-black text-amber-950 shadow-[0_4px_0_var(--amber-10)] transition duration-200 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_0_0_var(--amber-10)] motion-reduce:transition-none"
+        >
+          ✦ 抽奖励
+        </button>
+        {/* native-ok: 该包不能依赖 @rosie/ui */}
+        <button
+          onClick={() => void draw('penalty')}
+          className="ease-spring rounded-full border-2 border-violet-400 bg-violet-200 py-3 font-black text-violet-950 shadow-[0_4px_0_var(--violet-9)] transition duration-200 hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_0_0_var(--violet-9)] motion-reduce:transition-none"
+        >
+          ϟ 抽惩罚
+        </button>
       </div>
-      <div aria-live="polite">
-        {result ? <div className={'rosie-draw-reveal my-5 rounded-2xl border p-6 ' + (reward
-          ? 'border-amber-300/60 bg-linear-to-br from-amber-200 via-yellow-100 to-amber-300 text-amber-950'
-          : 'border-violet-300/60 bg-linear-to-br from-indigo-300 via-violet-100 to-purple-300 text-violet-950')}>
-          <div aria-hidden className="text-5xl">{reward ? '🌟' : '⚡'}</div>
-          <p className="mt-4 text-xs font-bold tracking-widest">{reward ? '星光奖励' : '闪电惩罚'}</p>
-          <p className="mt-2 break-all text-2xl font-black">{result.name}</p>
-        </div> : <p className="py-8">{busy ? '正在抽取…' : error || (poolLabels[kind] + '池还是空的')}</p>}
-      </div>
-      {result && error && <p role="alert" className="mb-3 text-rose-200">{error}</p>}
-      {result ? <button disabled={busy} onClick={() => void accept()} className="w-full rounded-xl bg-white py-3 font-black text-indigo-950 disabled:opacity-60">{busy ? '接受中…' : '接受'}</button>
-        : !busy && (error ? <button onClick={() => void draw(kind)}>重新抽取</button> : <Link className="text-amber-200 underline" href="/setting/draw-pools">去奖惩管理添加</Link>)}
-    </dialog>
-  </section>
+      <dialog
+        ref={dialog}
+        aria-labelledby="draw-title"
+        onCancel={(event) => {
+          if (accepting.current) event.preventDefault()
+        }}
+        className="border-kid-line bg-kid-paper shadow-sticker-lg fixed inset-0 m-auto w-[min(90vw,23rem)] rounded-[28px] border-[3px] p-6 text-center text-[var(--gray-12)] backdrop:bg-amber-950/40"
+      >
+        <div className="flex items-center justify-between">
+          <h3 id="draw-title" className="font-bold">
+            {poolLabels[kind]}抽取
+          </h3>
+          {/* native-ok: 该包不能依赖 @rosie/ui */}
+          <button
+            aria-label="关闭"
+            disabled={busy && !!result}
+            onClick={() => dialog.current?.close()}
+            className="size-10 rounded-full bg-[var(--gray-4)] text-xl"
+          >
+            ×
+          </button>
+        </div>
+        <div aria-live="polite">
+          {result ? (
+            <div
+              className={
+                'rosie-draw-reveal my-5 rounded-3xl border-2 p-6 ' +
+                (reward
+                  ? 'border-amber-400 bg-amber-200 text-amber-950'
+                  : 'border-violet-400 bg-violet-200 text-violet-950')
+              }
+            >
+              <div aria-hidden className="text-5xl">
+                {reward ? '🌟' : '⚡'}
+              </div>
+              <p className="mt-4 text-xs font-bold tracking-widest">
+                {reward ? '星光奖励' : '闪电惩罚'}
+              </p>
+              <p className="mt-2 text-2xl font-black break-all">{result.name}</p>
+            </div>
+          ) : (
+            <p className="py-8">{busy ? '正在抽取…' : error || poolLabels[kind] + '池还是空的'}</p>
+          )}
+        </div>
+        {result && error && (
+          <p role="alert" className="mb-3 text-rose-600">
+            {error}
+          </p>
+        )}
+        {result ? (
+          <button // native-ok: 该包不能依赖 @rosie/ui
+            disabled={busy}
+            onClick={() => void accept()}
+            className="w-full rounded-full border-2 border-amber-500 bg-amber-300 py-3 font-black text-amber-950 shadow-[0_4px_0_var(--amber-10)] disabled:opacity-60"
+          >
+            {busy ? '接受中…' : '接受'}
+          </button>
+        ) : (
+          !busy &&
+          (error ? (
+            <button /* native-ok: 该包不能依赖 @rosie/ui */ onClick={() => void draw(kind)}>
+              重新抽取
+            </button>
+          ) : (
+            <Link className="text-[var(--accent-11)] underline" href="/setting/draw-pools">
+              去奖惩管理添加
+            </Link>
+          ))
+        )}
+      </dialog>
+    </section>
+  )
 }

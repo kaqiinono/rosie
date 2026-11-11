@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import type { VoucherTemplate } from '@rosie/core'
+import { useState } from 'react'
+import { voucherSolidClass, type VoucherTemplate } from '@rosie/core'
 import type { VoucherTemplateDraft } from '@rosie/rewards'
 import { GRADIENT_PRESETS, DEFAULT_GRADIENT } from '@/utils/voucher-gradients'
 import { ColoredStar } from '@rosie/rewards'
+import { AppDialog } from '@rosie/ui'
+import { Button, TextField } from '@rosie/ui/themes'
 
 interface Props {
   /** When provided, modal is in "edit" mode; otherwise "create". */
@@ -25,14 +27,6 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
   const [priceRed, setPriceRed] = useState(initial?.priceRed ?? 0)
   const [priceBlue, setPriceBlue] = useState(initial?.priceBlue ?? 0)
   const [submitting, setSubmitting] = useState(false)
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !submitting) onCancel()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onCancel, submitting])
 
   const canSubmit = label.trim().length > 0 && emoji.trim().length > 0 && !submitting
 
@@ -65,40 +59,31 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(8px)' }}
-      onClick={() => !submitting && onCancel()}
+    <AppDialog
+      open
+      title={initial ? '编辑兑换券模版' : '新增兑换券模版'}
+      description={initial ? `分类：${initial.category}` : undefined}
+      closeDisabled={submitting}
+      onOpenChange={(open) => {
+        if (!open && !submitting) onCancel()
+      }}
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="max-h-[92vh] w-full max-w-[480px] overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl"
-      >
-        <div className="mb-4 flex items-baseline justify-between">
-          <h3 className="text-[16px] font-extrabold text-slate-800">
-            {initial ? '编辑兑换券模版' : '新增兑换券模版'}
-          </h3>
-          {initial && (
-            <span className="font-mono text-[10px] text-slate-400 tabular-nums">{initial.category}</span>
-          )}
-        </div>
-
+      <div>
         {/* Live preview card */}
         <div
           className="relative mb-4 overflow-hidden rounded-2xl p-3"
           style={{
             border: '1.5px solid rgba(15,23,42,0.10)',
-            boxShadow: '0 4px 18px rgba(15,23,42,0.12)',
+            boxShadow: '0 3px 0 rgba(15,23,42,.3)',
           }}
         >
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} aria-hidden />
+          <div className={`absolute inset-0 ${voucherSolidClass(gradient)}`} aria-hidden />
           <div className="relative flex items-center gap-3">
             <div
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[22px]"
               style={{
                 background: 'rgba(255,255,255,0.28)',
-                backdropFilter: 'blur(6px)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+                boxShadow: '0 3px 0 rgba(0,0,0,.3)',
               }}
             >
               {emoji || '?'}
@@ -136,12 +121,13 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
             <label className="mb-1 block text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">
               名称
             </label>
-            <input
+            <TextField.Root
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="比如：周末免作业券"
-              className="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-[14px] font-bold focus:border-amber-400 focus:outline-none"
+              size="2"
+              className="w-full"
             />
           </div>
 
@@ -150,12 +136,12 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
               <label className="mb-1 block text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">
                 Emoji
               </label>
-              <input
+              <TextField.Root
                 type="text"
                 value={emoji}
                 onChange={(e) => setEmoji(e.target.value)}
                 maxLength={6}
-                className="w-full rounded-lg border-2 border-slate-200 bg-white px-3 py-2 text-center text-[20px] focus:border-amber-400 focus:outline-none"
+                size="2"
               />
             </div>
             <div>
@@ -166,14 +152,14 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
                 {GRADIENT_PRESETS.map((g) => {
                   const active = g.value === gradient
                   return (
-                    <button
+                    <button // native-ok: 纯色色板方块，非标准按钮
                       key={g.value}
                       type="button"
                       title={g.label}
                       onClick={() => setGradient(g.value)}
                       className="aspect-square cursor-pointer rounded-md transition"
                       style={{
-                        background: `linear-gradient(135deg, ${g.swatch[0]}, ${g.swatch[1]})`,
+                        background: `${g.swatch[0]}`,
                         outline: active ? '2px solid #0f172a' : '1px solid rgba(15,23,42,0.12)',
                         outlineOffset: active ? '2px' : '0',
                         transform: active ? 'scale(1.06)' : undefined,
@@ -198,12 +184,11 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
                     <ColoredStar color={c} size={12} glow={3} />
                     {COLOR_LABEL[c]}
                   </div>
-                  <input
+                  <TextField.Root
                     type="number"
                     min={0}
                     value={price[c]}
                     onChange={(e) => setPrice[c](Math.max(0, Number(e.target.value) || 0))}
-                    className="w-full rounded border border-slate-200 bg-white px-2 py-1 text-center text-[14px] font-black tabular-nums focus:border-amber-400 focus:outline-none"
                   />
                 </div>
               ))}
@@ -212,28 +197,28 @@ export default function VoucherTemplateModal({ initial, onCancel, onSubmit }: Pr
         </div>
 
         <div className="mt-5 flex gap-2">
-          <button
+          <Button
             type="button"
             onClick={onCancel}
             disabled={submitting}
-            className="flex-1 cursor-pointer rounded-lg border border-slate-200 bg-white py-2 text-[13px] font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            variant="outline"
+            color="gray"
+            size="2"
+            className="flex-1"
           >
             取消
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={handleSave}
             disabled={!canSubmit}
-            className="flex-[2] cursor-pointer rounded-lg py-2 text-[13px] font-extrabold text-white shadow transition hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-            style={{
-              background: 'linear-gradient(135deg, #f59e0b, #b45309)',
-              boxShadow: '0 3px 12px rgba(245,158,11,0.4)',
-            }}
+            size="2"
+            className="flex-[2]"
           >
             {submitting ? '保存中…' : initial ? '保存修改' : '创建模版'}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </AppDialog>
   )
 }
