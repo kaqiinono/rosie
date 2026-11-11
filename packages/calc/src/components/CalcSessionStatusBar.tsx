@@ -51,7 +51,8 @@ export default function CalcSessionStatusBar({
   lastResult,
 }: Props) {
   const inMakeupTail = idx >= planned
-  const progress = planned > 0 ? Math.min(100, Math.round((Math.min(idx, planned) / planned) * 100)) : 0
+  const progress =
+    planned > 0 ? Math.min(100, Math.round((Math.min(idx, planned) / planned) * 100)) : 0
 
   return (
     <>
@@ -67,12 +68,12 @@ export default function CalcSessionStatusBar({
             !showTimer
               ? { visibility: 'hidden' }
               : timerOvertime
-              ? {
-                  color: '#f87171',
-                  textShadow:
-                    '0 0 8px rgba(248,113,113,0.95), 0 0 18px rgba(239,68,68,0.7), 0 0 28px rgba(220,38,38,0.45)',
-                }
-              : undefined
+                ? {
+                    color: '#f87171',
+                    textShadow:
+                      '0 3px 0 rgba(248,113,113,0.95), 0 3px 0 rgba(239,68,68,0.7), 0 3px 0 rgba(220,38,38,0.45)',
+                  }
+                : undefined
           }
         >
           {showTimer && (remainingSec !== null ? `⏱ ${formatTimer(remainingSec)}` : '⏱ ∞')}
@@ -147,8 +148,8 @@ export default function CalcSessionStatusBar({
           className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${progress}%`,
-            background: 'linear-gradient(90deg, #7c3aed, #d946ef)',
-            boxShadow: '0 0 8px rgba(139,92,246,0.5)',
+            background: '#7c3aed',
+            boxShadow: '0 3px 0 rgba(139,92,246,0.5)',
           }}
         />
       </div>

@@ -13,14 +13,14 @@ const DARK_DIGIT = {
   background: 'rgba(255,255,255,0.05)',
   color: '#f5f3ff',
   border: '1px solid rgba(255,255,255,0.1)',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+  boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
 }
 
 const LIGHT_DIGIT = {
   background: '#ffffff',
   color: '#0f172a',
   border: '1px solid #e2e8f0',
-  boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+  boxShadow: '0 3px 0 rgba(0,0,0,.3)',
 }
 
 const DARK_DEL = {
@@ -110,12 +110,12 @@ export default function VerticalDigitPad({
                   background: 'rgba(139,92,246,0.18)',
                   color: '#c4b5fd',
                   border: '1px solid rgba(139,92,246,0.4)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+                  boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
                 }
             : {
-                background: 'linear-gradient(135deg, #059669, #10b981)',
+                background: '#059669',
                 color: '#ffffff',
-                boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
+                boxShadow: '0 3px 0 rgba(16,185,129,0.35)',
                 border: '1px solid rgba(16,185,129,0.25)',
               }
         }

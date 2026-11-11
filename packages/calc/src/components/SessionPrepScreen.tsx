@@ -56,18 +56,18 @@ export default function SessionPrepScreen({
   const [customOpen, setCustomOpen] = useState(!BONUS_PRESETS.includes(bonusSec))
 
   return (
-    <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-5 relative">
+    <main className="relative mx-auto max-w-[640px] space-y-5 px-4 pt-5 pb-12">
       {/* Session preview */}
       <section
         className="rounded-2xl p-5"
         style={{
           background: 'rgba(139,92,246,0.08)',
           border: '1px solid rgba(139,92,246,0.22)',
-          boxShadow: '0 4px 24px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
+          boxShadow: '0 3px 0 rgba(139,92,246,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
         }}
       >
         <div
-          className="text-[10px] font-extrabold tracking-widest uppercase mb-0.5"
+          className="mb-0.5 text-[10px] font-extrabold tracking-widest uppercase"
           style={{ color: 'rgba(196,181,253,0.5)' }}
         >
           本次练习
@@ -75,7 +75,7 @@ export default function SessionPrepScreen({
         <div
           className="font-fredoka mb-3 text-[22px] leading-none font-black"
           style={{
-            background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
+            background: '#c4b5fd',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}
@@ -145,11 +145,15 @@ export default function SessionPrepScreen({
                   >
                     {meta.label}
                   </div>
-                  <div className="text-[11px] mt-0.5" style={{ color: 'rgba(245,243,255,0.35)' }}>
+                  <div className="mt-0.5 text-[11px]" style={{ color: 'rgba(245,243,255,0.35)' }}>
                     {meta.desc}
                   </div>
                 </div>
-                {on && <span className="mt-0.5 shrink-0 text-[13px]" style={{ color: '#c4b5fd' }}>✓</span>}
+                {on && (
+                  <span className="mt-0.5 shrink-0 text-[13px]" style={{ color: '#c4b5fd' }}>
+                    ✓
+                  </span>
+                )}
               </button>
             )
           })}
@@ -158,9 +162,15 @@ export default function SessionPrepScreen({
         {timingMode === 'bonus' && (
           <div
             className="mt-2 flex flex-wrap items-center gap-1.5 rounded-xl px-3 py-2.5"
-            style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}
+            style={{
+              background: 'rgba(139,92,246,0.08)',
+              border: '1px solid rgba(139,92,246,0.2)',
+            }}
           >
-            <span className="mr-1 text-[10px] font-extrabold uppercase" style={{ color: 'rgba(196,181,253,0.5)' }}>
+            <span
+              className="mr-1 text-[10px] font-extrabold uppercase"
+              style={{ color: 'rgba(196,181,253,0.5)' }}
+            >
               加成秒数
             </span>
             {BONUS_PRESETS.map((n) => {
@@ -169,7 +179,10 @@ export default function SessionPrepScreen({
                 <button
                   key={n}
                   type="button"
-                  onClick={() => { setCustomOpen(false); onChangeBonus(clampBonusSec(n)) }}
+                  onClick={() => {
+                    setCustomOpen(false)
+                    onChangeBonus(clampBonusSec(n))
+                  }}
                   className="rounded-lg px-2.5 py-1 text-[11px] font-extrabold transition-all active:scale-95"
                   style={{
                     background: on ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
@@ -205,9 +218,16 @@ export default function SessionPrepScreen({
                     if (Number.isFinite(v)) onChangeBonus(clampBonusSec(v))
                   }}
                   className="w-14 rounded-md px-2 py-1 text-right text-[12px] font-extrabold tabular-nums"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.4)', color: '#c4b5fd', outline: 'none' }}
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(139,92,246,0.4)',
+                    color: '#c4b5fd',
+                    outline: 'none',
+                  }}
                 />
-                <span className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>秒（0–15）</span>
+                <span className="text-[10px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+                  秒（0–15）
+                </span>
               </span>
             )}
           </div>
@@ -244,8 +264,8 @@ export default function SessionPrepScreen({
           onClick={onStart}
           className="min-w-0 flex-[2] rounded-2xl px-4 py-3.5 text-[16px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
           style={{
-            background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
-            boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
+            background: '#a855f7',
+            boxShadow: '0 3px 0 rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
           }}
         >
           🚀 开始练习 →

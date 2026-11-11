@@ -138,14 +138,12 @@ function SessionLoadingPanel({
       <div className="mb-5 text-[34px]" aria-hidden="true">
         {error ? '⚠️' : '🧮'}
       </div>
-      <p className="text-[15px] font-black text-violet-100">
-        {error ?? progress.label}
-      </p>
+      <p className="text-[15px] font-black text-violet-100">{error ?? progress.label}</p>
       {!error && <p className="mt-2 text-[12px] text-violet-200/50">{progress.detail}</p>}
 
       <div className="mt-6 overflow-hidden rounded-full bg-white/[.07]" aria-hidden="true">
         <div
-          className="h-2 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-400 to-amber-300 transition-[width] duration-500 ease-out"
+          className="h-2 rounded-full bg-amber-300 transition-[width] duration-500 ease-out"
           style={{ width: `${error ? 100 : percent}%` }}
         />
       </div>
@@ -1737,7 +1735,7 @@ export default function CalcSessionPage() {
         finalStats &&
         (finishError ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-6">
-            <div className="w-full max-w-sm rounded-3xl border border-amber-300/30 bg-slate-900 p-6 text-center shadow-2xl">
+            <div className="shadow-sticker-lg w-full max-w-sm rounded-3xl border border-amber-300/30 bg-slate-900 p-6 text-center">
               <h2 className="text-xl font-black text-amber-200">保存未完成</h2>
               <p className="mt-3 text-sm leading-6 text-slate-300">{finishError}</p>
               <button

@@ -32,7 +32,13 @@ function playKeyPressEffect(button: HTMLButtonElement) {
   })
 }
 
-export default function NumberPad({ value, onChange, onSubmit, disabled, allowDecimal = false }: Props) {
+export default function NumberPad({
+  value,
+  onChange,
+  onSubmit,
+  disabled,
+  allowDecimal = false,
+}: Props) {
   const maxDigits = allowDecimal ? 6 : 4
   // In decimal mode the 12th grid slot is '.', and ✓ becomes a separate full-width button.
   const gridKeys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0', allowDecimal ? '.' : '✓']
@@ -62,9 +68,9 @@ export default function NumberPad({ value, onChange, onSubmit, disabled, allowDe
     const inactive = disabled || (isSubmit && value.length === 0)
     if (isSubmit) {
       return {
-        background: inactive ? 'rgba(16,185,129,0.15)' : 'linear-gradient(135deg, #059669, #10b981)',
+        background: inactive ? 'rgba(16,185,129,0.15)' : '#059669',
         color: inactive ? 'rgba(16,185,129,0.35)' : '#ffffff',
-        boxShadow: inactive ? 'none' : '0 4px 16px rgba(16,185,129,0.35)',
+        boxShadow: inactive ? 'none' : '0 3px 0 rgba(16,185,129,0.35)',
         border: '1px solid rgba(16,185,129,0.25)',
         cursor: inactive ? 'not-allowed' : 'pointer',
       }
@@ -80,7 +86,7 @@ export default function NumberPad({ value, onChange, onSubmit, disabled, allowDe
       background: 'rgba(255,255,255,0.05)',
       color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
       border: '1px solid rgba(255,255,255,0.1)',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+      boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
     }
   }
 

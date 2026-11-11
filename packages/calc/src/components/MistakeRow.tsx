@@ -53,7 +53,7 @@ export default function MistakeRow({ mistake }: Props) {
               className="inline-block h-2 w-2 rounded-full"
               style={{
                 background: on ? '#22c55e' : 'rgba(255,255,255,0.1)',
-                boxShadow: on ? '0 0 4px rgba(34,197,94,0.5)' : 'none',
+                boxShadow: on ? '0 3px 0 rgba(34,197,94,0.5)' : 'none',
               }}
             />
           ))}

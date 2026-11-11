@@ -16,7 +16,7 @@ export function editableCellStyle(opts: {
       background: opts.isActive ? 'rgba(248,113,113,0.25)' : 'rgba(248,113,113,0.15)',
       color: '#f87171',
       boxShadow: opts.isActive
-        ? '0 0 16px rgba(248,113,113,0.5), 0 0 6px rgba(248,113,113,0.35)'
+        ? '0 3px 0 rgba(248,113,113,0.5), 0 3px 0 rgba(248,113,113,0.35)'
         : undefined,
     }
   }
@@ -25,7 +25,7 @@ export function editableCellStyle(opts: {
       borderColor: opts.isActive ? 'rgba(74,222,128,0.7)' : 'rgba(74,222,128,0.5)',
       background: opts.isActive ? 'rgba(74,222,128,0.22)' : 'rgba(74,222,128,0.15)',
       color: '#4ade80',
-      boxShadow: opts.isActive ? '0 0 12px rgba(74,222,128,0.35)' : undefined,
+      boxShadow: opts.isActive ? '0 3px 0 rgba(74,222,128,0.35)' : undefined,
     }
   }
   if (opts.isActive) {
@@ -33,7 +33,7 @@ export function editableCellStyle(opts: {
       borderColor: 'rgba(139,92,246,0.7)',
       background: 'rgba(139,92,246,0.2)',
       color: '#c4b5fd',
-      boxShadow: '0 0 16px rgba(139,92,246,0.45), 0 0 6px rgba(139,92,246,0.35)',
+      boxShadow: '0 3px 0 rgba(139,92,246,0.45), 0 3px 0 rgba(139,92,246,0.35)',
     }
   }
   return {

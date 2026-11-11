@@ -342,134 +342,141 @@ function VerticalCalc({
               border: '1px solid rgba(255,255,255,0.08)',
             }}
           >
-          {/* First operand row */}
-          <div className="flex justify-end gap-1">
-            <div style={{ width: geo.lead }} />
-            {aPad.map((d, i) => (
-              <div
-                key={`a${i}`}
-                className="flex items-center justify-center font-black"
-                style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}
-              >
-                {d !== null ? d : ''}
-              </div>
-            ))}
-          </div>
-
-          {/* Operator + second operand */}
-          <div className="flex justify-end gap-1">
-            <div
-              className="flex items-center justify-center font-black"
-              style={{
-                width: geo.lead,
-                height: geo.cell.height,
-                fontSize: geo.digitFont,
-                color: 'rgba(196,181,253,0.6)',
-              }}
-            >
-              {op}
-            </div>
-            {bPad.map((d, i) => (
-              <div
-                key={`b${i}`}
-                className="flex items-center justify-center font-black"
-                style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}
-              >
-                {d !== null ? d : ''}
-              </div>
-            ))}
-          </div>
-
-          {/* 进位/退位 — sit flush on the divider (paper habit: above the line, not in it) */}
-          {showCarry && (
-            <div className="mt-0.5 mb-0 flex justify-end gap-1">
+            {/* First operand row */}
+            <div className="flex justify-end gap-1">
               <div style={{ width: geo.lead }} />
-              {userCarries.map((val, i) => {
-                const isActive = activeCell.type === 'carry' && activeCell.idx === i
+              {aPad.map((d, i) => (
+                <div
+                  key={`a${i}`}
+                  className="flex items-center justify-center font-black"
+                  style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}
+                >
+                  {d !== null ? d : ''}
+                </div>
+              ))}
+            </div>
+
+            {/* Operator + second operand */}
+            <div className="flex justify-end gap-1">
+              <div
+                className="flex items-center justify-center font-black"
+                style={{
+                  width: geo.lead,
+                  height: geo.cell.height,
+                  fontSize: geo.digitFont,
+                  color: 'rgba(196,181,253,0.6)',
+                }}
+              >
+                {op}
+              </div>
+              {bPad.map((d, i) => (
+                <div
+                  key={`b${i}`}
+                  className="flex items-center justify-center font-black"
+                  style={{ ...geo.cell, fontSize: geo.digitFont, color: '#f5f3ff' }}
+                >
+                  {d !== null ? d : ''}
+                </div>
+              ))}
+            </div>
+
+            {/* 进位/退位 — sit flush on the divider (paper habit: above the line, not in it) */}
+            {showCarry && (
+              <div className="mt-0.5 mb-0 flex justify-end gap-1">
+                <div style={{ width: geo.lead }} />
+                {userCarries.map((val, i) => {
+                  const isActive = activeCell.type === 'carry' && activeCell.idx === i
+                  return (
+                    <button
+                      key={`c${i}`}
+                      type="button"
+                      onClick={() =>
+                        !disabled && !locked && setActiveCell({ type: 'carry', idx: i })
+                      }
+                      className="flex items-center justify-center rounded-t leading-none font-black transition-all select-none active:scale-[0.93]"
+                      style={{
+                        width: geo.cell.width,
+                        height: geo.carryH,
+                        fontSize: geo.carryFont,
+                        borderTop: isActive
+                          ? '1px solid rgba(139,92,246,0.6)'
+                          : '1px dashed rgba(196,181,253,0.4)',
+                        borderLeft: isActive
+                          ? '1px solid rgba(139,92,246,0.6)'
+                          : '1px dashed rgba(196,181,253,0.4)',
+                        borderRight: isActive
+                          ? '1px solid rgba(139,92,246,0.6)'
+                          : '1px dashed rgba(196,181,253,0.4)',
+                        borderBottom: 'none',
+                        borderRadius: '6px 6px 0 0',
+                        background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
+                        color: isActive
+                          ? '#c4b5fd'
+                          : val !== null
+                            ? '#c4b5fd'
+                            : 'rgba(196,181,253,0.4)',
+                      }}
+                    >
+                      {val !== null ? (
+                        <>
+                          <span style={{ opacity: 0.5, marginRight: '2px', marginBottom: '2px' }}>
+                            {carrySign}
+                          </span>
+                          {val}
+                        </>
+                      ) : (
+                        '·'
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Divider — flush under carry cells when shown */}
+            <div
+              className={showCarry ? 'mb-1 border-t-2' : 'my-1 border-t-2'}
+              style={{ borderColor: 'rgba(196,181,253,0.25)' }}
+            />
+
+            {/* Result row */}
+            <div className="flex justify-end gap-1">
+              <div style={{ width: geo.lead }} />
+              {userResult.map((val, i) => {
+                // The result occupies only the rightmost `resultLen` columns; leading
+                // columns (e.g. above the minuend's extra digit) are blank spacers.
+                const editable = i >= totalCols - resultLen
+                if (!editable) {
+                  return <div key={`r${i}`} style={geo.cell} />
+                }
+                const correctVal = correctResultPad[i] ?? 0
+                const isActive = activeCell?.type === 'result' && activeCell.idx === i
+                const cellStyle = editableCellStyle({
+                  isActive,
+                  graded: graded && !immersive,
+                  val,
+                  correctVal,
+                })
+
                 return (
                   <button
-                    key={`c${i}`}
+                    key={`r${i}`}
                     type="button"
                     onClick={() =>
-                      !disabled && !locked && setActiveCell({ type: 'carry', idx: i })
+                      !disabled && !locked && setActiveCell({ type: 'result', idx: i })
                     }
-                    className="flex items-center justify-center rounded-t leading-none font-black transition-all select-none active:scale-[0.93]"
+                    className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
                     style={{
-                      width: geo.cell.width,
-                      height: geo.carryH,
-                      fontSize: geo.carryFont,
-                      borderTop: isActive
-                        ? '1px solid rgba(139,92,246,0.6)'
-                        : '1px dashed rgba(196,181,253,0.4)',
-                      borderLeft: isActive
-                        ? '1px solid rgba(139,92,246,0.6)'
-                        : '1px dashed rgba(196,181,253,0.4)',
-                      borderRight: isActive
-                        ? '1px solid rgba(139,92,246,0.6)'
-                        : '1px dashed rgba(196,181,253,0.4)',
-                      borderBottom: 'none',
-                      borderRadius: '6px 6px 0 0',
-                      background: isActive ? 'rgba(139,92,246,0.25)' : 'rgba(139,92,246,0.08)',
-                      color: isActive
-                        ? '#c4b5fd'
-                        : val !== null
-                          ? '#c4b5fd'
-                          : 'rgba(196,181,253,0.4)',
+                      ...geo.cell,
+                      fontSize: geo.digitFont,
+                      ...cellStyle,
                     }}
                   >
-                    {val !== null ? (
-                      <>
-                        <span style={{ opacity: 0.5, marginRight: '2px', marginBottom: '2px' }}>
-                          {carrySign}
-                        </span>
-                        {val}
-                      </>
-                    ) : (
-                      '·'
-                    )}
+                    {val !== null ? val : ''}
                   </button>
                 )
               })}
             </div>
-          )}
-
-          {/* Divider — flush under carry cells when shown */}
-          <div
-            className={showCarry ? 'mb-1 border-t-2' : 'my-1 border-t-2'}
-            style={{ borderColor: 'rgba(196,181,253,0.25)' }}
-          />
-
-          {/* Result row */}
-          <div className="flex justify-end gap-1">
-            <div style={{ width: geo.lead }} />
-            {userResult.map((val, i) => {
-              // The result occupies only the rightmost `resultLen` columns; leading
-              // columns (e.g. above the minuend's extra digit) are blank spacers.
-              const editable = i >= totalCols - resultLen
-              if (!editable) {
-                return <div key={`r${i}`} style={geo.cell} />
-              }
-              const correctVal = correctResultPad[i] ?? 0
-              const isActive = activeCell?.type === 'result' && activeCell.idx === i
-              const cellStyle = editableCellStyle({ isActive, graded: graded && !immersive, val, correctVal })
-
-              return (
-                <button
-                  key={`r${i}`}
-                  type="button"
-                  onClick={() => !disabled && !locked && setActiveCell({ type: 'result', idx: i })}
-                  className="flex items-center justify-center rounded-xl border-2 font-black transition-all select-none active:scale-[0.93]"
-                  style={{
-                    ...geo.cell,
-                    fontSize: geo.digitFont,
-                    ...cellStyle,
-                  }}
-                >
-                  {val !== null ? val : ''}
-                </button>
-              )
-            })}
-          </div>
           </div>
           {modeSwitch}
         </div>
@@ -481,75 +488,75 @@ function VerticalCalc({
       <div
         className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}
       >
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
-            <button
-              key={d}
-              type="button"
-              disabled={disabled}
-              onClick={() => handleDigitInput(d)}
-              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-              }}
-            >
-              {d}
-            </button>
-          ))}
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
           <button
+            key={d}
             type="button"
             disabled={disabled}
-            onClick={handleDelete}
-            className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-            style={{
-              background: 'rgba(239,68,68,0.1)',
-              color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
-              border: '1px solid rgba(239,68,68,0.2)',
-            }}
-            aria-label="删除"
-          >
-            ⌫
-          </button>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => handleDigitInput(0)}
+            onClick={() => handleDigitInput(d)}
             className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
             style={{
               background: 'rgba(255,255,255,0.05)',
               color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
               border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+              boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
             }}
           >
-            0
+            {d}
           </button>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={handleAction}
-            className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!resultComplete ? 'text-[15px]' : 'text-[24px]'}`}
-            style={
-              !resultComplete
-                ? {
-                    background: 'rgba(139,92,246,0.18)',
-                    color: '#c4b5fd',
-                    border: '1px solid rgba(139,92,246,0.4)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-                  }
-                : {
-                    background: 'linear-gradient(135deg, #059669, #10b981)',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
-                    border: '1px solid rgba(16,185,129,0.25)',
-                  }
-            }
-          >
-            {!resultComplete ? 'Enter' : '✓'}
-          </button>
-        </div>
+        ))}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleDelete}
+          className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          style={{
+            background: 'rgba(239,68,68,0.1)',
+            color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
+            border: '1px solid rgba(239,68,68,0.2)',
+          }}
+          aria-label="删除"
+        >
+          ⌫
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => handleDigitInput(0)}
+          className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+          }}
+        >
+          0
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleAction}
+          className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!resultComplete ? 'text-[15px]' : 'text-[24px]'}`}
+          style={
+            !resultComplete
+              ? {
+                  background: 'rgba(139,92,246,0.18)',
+                  color: '#c4b5fd',
+                  border: '1px solid rgba(139,92,246,0.4)',
+                  boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+                }
+              : {
+                  background: '#059669',
+                  color: '#ffffff',
+                  boxShadow: '0 3px 0 rgba(16,185,129,0.35)',
+                  border: '1px solid rgba(16,185,129,0.25)',
+                }
+          }
+        >
+          {!resultComplete ? 'Enter' : '✓'}
+        </button>
+      </div>
     </div>
   )
 }

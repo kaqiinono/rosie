@@ -237,7 +237,7 @@ export default function CalcHomePage() {
           style={{
             background: 'rgba(139,92,246,0.08)',
             border: '1px solid rgba(139,92,246,0.22)',
-            boxShadow: '0 4px 24px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06)',
+            boxShadow: '0 3px 0 rgba(139,92,246,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
           }}
         >
           <div className="mb-3 flex items-start justify-between gap-3">
@@ -356,8 +356,8 @@ export default function CalcHomePage() {
                   className="h-full rounded-full transition-all duration-700"
                   style={{
                     width: `${todayProgressPct}%`,
-                    background: 'linear-gradient(90deg, #7c3aed, #a855f7)',
-                    boxShadow: '0 0 8px rgba(139,92,246,0.6)',
+                    background: '#7c3aed',
+                    boxShadow: '0 3px 0 rgba(139,92,246,0.6)',
                   }}
                 />
               </div>
@@ -511,8 +511,8 @@ export default function CalcHomePage() {
             onClick={handleStart}
             className="w-full rounded-2xl px-5 py-4 text-[17px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
             style={{
-              background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #d946ef 100%)',
-              boxShadow: '0 6px 28px rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
+              background: '#a855f7',
+              boxShadow: '0 3px 0 rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
             }}
           >
             🚀 开始口算 · 预计 {expandedSessionCount} 题 →

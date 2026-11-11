@@ -37,11 +37,9 @@ function StrategyCard({
     <article
       className="rounded-2xl p-4 transition-all hover:-translate-y-0.5"
       style={{
-        background: strategy.isActive
-          ? 'linear-gradient(145deg, rgba(124,58,237,.22), rgba(217,70,239,.10))'
-          : 'rgba(255,255,255,.045)',
+        background: strategy.isActive ? 'rgba(124,58,237,.22)' : 'rgba(255,255,255,.045)',
         border: `1.5px solid ${strategy.isActive ? 'rgba(167,139,250,.62)' : 'rgba(255,255,255,.10)'}`,
-        boxShadow: strategy.isActive ? '0 12px 36px rgba(76,29,149,.24)' : 'none',
+        boxShadow: strategy.isActive ? '0 3px 0 rgba(76,29,149,.3)' : 'none',
       }}
     >
       <div className="flex items-start gap-3">
@@ -60,11 +58,13 @@ function StrategyCard({
         </div>
         <div className="flex shrink-0 items-center gap-2.5">
           <div
-            className="flex h-7 items-center gap-0.5 whitespace-nowrap text-[10px] font-bold text-violet-200/40"
+            className="flex h-7 items-center gap-0.5 text-[10px] font-bold whitespace-nowrap text-violet-200/40"
             aria-label={`题目总数 ${questionCount} 题`}
           >
             总题数
-            <strong className="ml-1 text-[15px] font-black text-amber-300 tabular-nums">{questionCount}</strong>
+            <strong className="ml-1 text-[15px] font-black text-amber-300 tabular-nums">
+              {questionCount}
+            </strong>
             <span>题</span>
           </div>
           <span className="h-5 w-px bg-white/10" aria-hidden="true" />
@@ -79,7 +79,7 @@ function StrategyCard({
             style={{ background: strategy.isActive ? '#10b981' : 'rgba(255,255,255,.13)' }}
           >
             <span
-              className="absolute top-1 h-5 w-5 rounded-full bg-white shadow-md transition-all"
+              className="shadow-sticker absolute top-1 h-5 w-5 rounded-full bg-white transition-all"
               style={{ left: strategy.isActive ? 24 : 4 }}
             />
           </button>
@@ -91,18 +91,18 @@ function StrategyCard({
           运算标签 · {labels.length} 项
         </div>
         <div className="flex flex-wrap gap-1.5" aria-label="完整运算标签列表">
-        {labels.length > 0 ? (
-          labels.map((label, index) => (
-            <span
-              key={`${label}-${index}`}
-              className="rounded-lg border border-violet-300/15 bg-violet-300/10 px-2 py-1 text-[10px] font-bold text-violet-100/75"
-            >
-              {label}
-            </span>
-          ))
-        ) : (
-          <span className="text-[11px] text-violet-200/35">尚未选择运算</span>
-        )}
+          {labels.length > 0 ? (
+            labels.map((label, index) => (
+              <span
+                key={`${label}-${index}`}
+                className="rounded-lg border border-violet-300/15 bg-violet-300/10 px-2 py-1 text-[10px] font-bold text-violet-100/75"
+              >
+                {label}
+              </span>
+            ))
+          ) : (
+            <span className="text-[11px] text-violet-200/35">尚未选择运算</span>
+          )}
         </div>
       </div>
 
@@ -128,7 +128,8 @@ function StrategyCard({
 
 export default function CalcStrategyListPage() {
   const { user } = useAuth()
-  const { strategies, setStrategyEnabled, deleteStrategy, isLoading, error } = useCalcStrategies(user)
+  const { strategies, setStrategyEnabled, deleteStrategy, isLoading, error } =
+    useCalcStrategies(user)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [actionError, setActionError] = useState('')
 
@@ -138,7 +139,9 @@ export default function CalcStrategyListPage() {
     try {
       await action()
     } catch (actionFailure: unknown) {
-      setActionError(actionFailure instanceof Error ? actionFailure.message : '操作失败，请稍后重试')
+      setActionError(
+        actionFailure instanceof Error ? actionFailure.message : '操作失败，请稍后重试',
+      )
     } finally {
       setBusyId(null)
     }
@@ -153,7 +156,7 @@ export default function CalcStrategyListPage() {
         rightExtra={
           <Link
             href="/setting/calc/new"
-            className="rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-3 py-2 text-xs font-black text-white shadow-lg shadow-violet-950/30 transition-transform hover:-translate-y-0.5"
+            className="shadow-sticker rounded-xl bg-violet-600 px-3 py-2 text-xs font-black text-white transition-transform hover:-translate-y-0.5"
           >
             ＋ 新增策略
           </Link>
@@ -168,7 +171,10 @@ export default function CalcStrategyListPage() {
         </div>
 
         {(error || actionError) && (
-          <p role="alert" className="mb-4 rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-xs font-bold text-red-300">
+          <p
+            role="alert"
+            className="mb-4 rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-xs font-bold text-red-300"
+          >
             {actionError || '策略加载失败，请刷新页面重试'}
           </p>
         )}
@@ -179,10 +185,12 @@ export default function CalcStrategyListPage() {
           <section className="rounded-3xl border border-dashed border-violet-300/25 bg-violet-400/[.06] px-6 py-14 text-center">
             <div className="text-4xl">🧮</div>
             <h2 className="mt-4 text-lg font-black text-violet-50">还没有口算策略</h2>
-            <p className="mt-2 text-xs leading-5 text-violet-200/45">创建第一条策略后，它会自动成为默认策略。</p>
+            <p className="mt-2 text-xs leading-5 text-violet-200/45">
+              创建第一条策略后，它会自动成为默认策略。
+            </p>
             <Link
               href="/setting/calc/new"
-              className="mt-6 inline-flex min-h-11 items-center rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 text-sm font-black text-white shadow-lg shadow-violet-950/30"
+              className="shadow-sticker mt-6 inline-flex min-h-11 items-center rounded-xl bg-violet-600 px-5 text-sm font-black text-white"
             >
               创建第一条策略
             </Link>

@@ -30,9 +30,11 @@ const GROUP_ICONS: { add: string; sub: string; mul: string; div: string } = {
 }
 
 /** needs ('add'|'sub'|'mul'|'div') → 要展示的积木分组（去重，保持 BLOCK_GROUPS 顺序） */
-function groupsForNeeds(needs: ('add' | 'sub' | 'mul' | 'div')[]): ('add' | 'sub' | 'mul' | 'div')[] {
-  return BLOCK_GROUPS.map((g) => g.group).filter(
-    (g): g is 'add' | 'sub' | 'mul' | 'div' => needs.includes(g as 'add' | 'sub' | 'mul' | 'div'),
+function groupsForNeeds(
+  needs: ('add' | 'sub' | 'mul' | 'div')[],
+): ('add' | 'sub' | 'mul' | 'div')[] {
+  return BLOCK_GROUPS.map((g) => g.group).filter((g): g is 'add' | 'sub' | 'mul' | 'div' =>
+    needs.includes(g as 'add' | 'sub' | 'mul' | 'div'),
   )
 }
 
@@ -55,7 +57,9 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
   const meta = skeleton ? skeletonMeta(skeleton) : null
   const groups = meta ? groupsForNeeds(meta.needs) : []
 
-  const valid = skeleton !== null && isMixedOpValid({ id: '_', skeleton, blockIds, enabled: true, count: 20, seconds: null })
+  const valid =
+    skeleton !== null &&
+    isMixedOpValid({ id: '_', skeleton, blockIds, enabled: true, count: 20, seconds: null })
 
   const toggleBlock = (id: string) => {
     setBlockIds((prev) => (prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]))
@@ -84,7 +88,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(14px)' }}
+      style={{ background: 'rgba(0,0,0,0.75)' }}
       onClick={onClose}
     >
       <div
@@ -92,7 +96,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
         style={{
           background: 'rgba(10,9,30,0.98)',
           border: '1px solid rgba(139,92,246,0.25)',
-          boxShadow: '0 -8px 40px rgba(139,92,246,0.15), 0 0 80px rgba(139,92,246,0.12)',
+          boxShadow: '0 3px 0 rgba(139,92,246,.3), 0 3px 0 rgba(139,92,246,.3)',
           animation: 'slide-up 0.3s cubic-bezier(.34,1.56,.64,1)',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -109,7 +113,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
           <div
             className="font-fredoka text-[17px] leading-tight font-black"
             style={{
-              background: 'linear-gradient(90deg, #c4b5fd, #f9a8d4)',
+              background: '#c4b5fd',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -160,7 +164,7 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
                   style={{
                     background: on ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
                     border: `1.5px solid ${on ? 'rgba(196,181,253,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                    boxShadow: on ? '0 0 16px rgba(139,92,246,0.25)' : 'none',
+                    boxShadow: on ? '0 3px 0 rgba(139,92,246,.3)' : 'none',
                   }}
                 >
                   <div
@@ -275,10 +279,8 @@ export default function MixedOpComposer({ initial, onSave, onClose }: Props) {
               disabled={!valid}
               className="flex-[2] rounded-2xl py-3 text-[15px] font-black text-white transition-all disabled:cursor-not-allowed disabled:opacity-40"
               style={{
-                background: valid
-                  ? 'linear-gradient(135deg, #8b5cf6, #ec4899)'
-                  : 'rgba(255,255,255,0.06)',
-                boxShadow: valid ? '0 6px 20px rgba(139,92,246,0.35)' : 'none',
+                background: valid ? '#8b5cf6' : 'rgba(255,255,255,0.06)',
+                boxShadow: valid ? '0 3px 0 rgba(139,92,246,0.35)' : 'none',
               }}
             >
               {initial ? '保存修改' : '✨ 添加'}

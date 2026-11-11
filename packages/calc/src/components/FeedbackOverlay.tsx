@@ -24,13 +24,13 @@ export default function FeedbackOverlay({ kind, coinDelta = 0, revealAnswer }: P
             style={
               isChallenge
                 ? {
-                    background: 'linear-gradient(135deg, #f59e0b, #ec4899)',
-                    boxShadow: '0 0 40px rgba(245,158,11,0.6), 0 0 80px rgba(236,72,153,0.3)',
+                    background: '#f59e0b',
+                    boxShadow: '0 3px 0 rgba(245,158,11,0.6), 0 3px 0 rgba(236,72,153,0.3)',
                     color: '#fff',
                   }
                 : {
-                    background: 'linear-gradient(135deg, #059669, #22c55e)',
-                    boxShadow: '0 0 40px rgba(34,197,94,0.6), 0 0 80px rgba(34,197,94,0.2)',
+                    background: '#059669',
+                    boxShadow: '0 3px 0 rgba(34,197,94,0.6), 0 3px 0 rgba(34,197,94,.3)',
                     color: '#fff',
                   }
             }
@@ -44,7 +44,7 @@ export default function FeedbackOverlay({ kind, coinDelta = 0, revealAnswer }: P
                 background: 'rgba(245,158,11,0.2)',
                 border: '1px solid rgba(245,158,11,0.4)',
                 color: '#fbbf24',
-                boxShadow: '0 0 20px rgba(245,158,11,0.3)',
+                boxShadow: '0 3px 0 rgba(245,158,11,0.3)',
                 animation: 'float-up 0.6s ease-out forwards',
               }}
             >
@@ -65,7 +65,7 @@ export default function FeedbackOverlay({ kind, coinDelta = 0, revealAnswer }: P
             background: 'rgba(245,158,11,0.15)',
             border: '1.5px solid rgba(245,158,11,0.35)',
             color: '#fbbf24',
-            boxShadow: '0 0 30px rgba(245,158,11,0.25)',
+            boxShadow: '0 3px 0 rgba(245,158,11,.3)',
             animation: 'wiggle 0.5s cubic-bezier(.36,.07,.19,.97) both',
           }}
         >
@@ -83,15 +83,15 @@ export default function FeedbackOverlay({ kind, coinDelta = 0, revealAnswer }: P
         style={{
           background: 'rgba(15,10,35,0.92)',
           border: '1.5px solid rgba(239,68,68,0.3)',
-          boxShadow: '0 8px 40px rgba(239,68,68,0.2)',
+          boxShadow: '0 3px 0 rgba(239,68,68,.3)',
           animation: 'pop-in 0.3s cubic-bezier(.34,1.56,.64,1)',
         }}
       >
         <div
           className="flex h-20 w-20 items-center justify-center rounded-full text-[44px]"
           style={{
-            background: 'linear-gradient(135deg, #b91c1c, #ef4444)',
-            boxShadow: '0 0 30px rgba(239,68,68,0.4)',
+            background: '#b91c1c',
+            boxShadow: '0 3px 0 rgba(239,68,68,0.4)',
             color: '#fff',
           }}
         >
@@ -101,7 +101,7 @@ export default function FeedbackOverlay({ kind, coinDelta = 0, revealAnswer }: P
           正确答案是
         </div>
         <div
-          className="font-fredoka text-[44px] font-black leading-none"
+          className="font-fredoka text-[44px] leading-none font-black"
           style={{
             color: '#c4b5fd',
             textShadow: '0 0 20px rgba(196,181,253,0.4)',

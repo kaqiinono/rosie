@@ -29,29 +29,19 @@ export default function CalcAppHeader({
     <header
       className="sticky top-0 z-30"
       style={{
-        background: 'rgba(10,9,30,0.85)',
-        backdropFilter: 'blur(20px)',
+        background: 'rgb(10,9,30)',
         borderBottom: '1px solid rgba(139,92,246,0.18)',
-        boxShadow: '0 2px 24px rgba(139,92,246,0.12)',
+        boxShadow: '0 3px 0 rgba(139,92,246,.3)',
       }}
     >
       <div className="mx-auto flex h-14 max-w-[640px] items-center gap-3 px-4">
         {onBack ? (
-          <button
-            type="button"
-            onClick={onBack}
-            className={backClassName}
-            style={backStyle}
-          >
+          <button type="button" onClick={onBack} className={backClassName} style={backStyle}>
             <span className="text-[14px] leading-none font-bold">←</span>
             <span className="hidden text-[12px] font-bold sm:inline">{backLabel}</span>
           </button>
         ) : (
-          <Link
-            href={backHref}
-            className={`${backClassName} no-underline`}
-            style={backStyle}
-          >
+          <Link href={backHref} className={`${backClassName} no-underline`} style={backStyle}>
             <span className="text-[14px] leading-none font-bold">←</span>
             <span className="hidden text-[12px] font-bold sm:inline">{backLabel}</span>
           </Link>
@@ -62,7 +52,7 @@ export default function CalcAppHeader({
           <div
             className="font-fredoka truncate text-[17px] leading-tight font-extrabold tracking-tight"
             style={{
-              background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
+              background: '#c4b5fd',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}

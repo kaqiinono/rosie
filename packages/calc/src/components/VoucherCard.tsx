@@ -1,6 +1,6 @@
 'use client'
 
-import type { Voucher, VoucherTemplate } from '@rosie/core'
+import { voucherSolidClass, type Voucher, type VoucherTemplate } from '@rosie/core'
 import { ColoredStar } from '@rosie/rewards'
 
 interface Props {
@@ -43,22 +43,19 @@ export default function VoucherCard({ voucher, template, onMarkUsed }: Props) {
       style={
         used
           ? {
-              background: 'linear-gradient(160deg, #e2e8f0, #cbd5e1)',
+              background: '#e2e8f0',
               border: '1.5px solid rgba(15,23,42,0.12)',
-              boxShadow: '0 2px 8px rgba(15,23,42,0.06)',
+              boxShadow: '0 3px 0 rgba(15,23,42,.3)',
             }
           : {
               border: '1.5px solid rgba(15,23,42,0.10)',
-              boxShadow: '0 10px 28px rgba(15,23,42,0.18), inset 0 1px 0 rgba(255,255,255,0.35)',
+              boxShadow: '0 3px 0 rgba(15,23,42,.3), inset 0 1px 0 rgba(255,255,255,0.35)',
             }
       }
     >
       {/* Solid vibrant gradient for active vouchers — full opacity so white text is legible */}
       {!used && (
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${meta.gradient}`}
-          aria-hidden
-        />
+        <div className={`absolute inset-0 ${voucherSolidClass(meta.gradient)}`} aria-hidden />
       )}
 
       {/* Subtle dot-pattern overlay for tactile "ticket" feel */}
@@ -66,18 +63,10 @@ export default function VoucherCard({ voucher, template, onMarkUsed }: Props) {
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.10]"
           style={{
+            // visual-ok: 票券圆点纹理
             backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
             backgroundSize: '14px 14px',
           }}
-          aria-hidden
-        />
-      )}
-
-      {/* Top sheen for depth */}
-      {!used && (
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-1/2"
-          style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.18), transparent)' }}
           aria-hidden
         />
       )}
@@ -92,8 +81,7 @@ export default function VoucherCard({ voucher, template, onMarkUsed }: Props) {
                 ? { background: 'rgba(255,255,255,0.6)' }
                 : {
                     background: 'rgba(255,255,255,0.28)',
-                    backdropFilter: 'blur(8px)',
-                    boxShadow: '0 4px 14px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.5)',
+                    boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.5)',
                   }
             }
           >
@@ -172,7 +160,7 @@ export default function VoucherCard({ voucher, template, onMarkUsed }: Props) {
             style={{
               background: 'rgba(255,255,255,0.92)',
               color: '#0f172a',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+              boxShadow: '0 3px 0 rgba(0,0,0,.3)',
               border: '1px solid rgba(255,255,255,0.6)',
             }}
           >

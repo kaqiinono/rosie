@@ -13,7 +13,7 @@ export default function WalletBadge({ balance, className = '' }: Props) {
         background: 'rgba(245,158,11,0.15)',
         border: '1px solid rgba(245,158,11,0.35)',
         color: '#fbbf24',
-        boxShadow: '0 0 10px rgba(245,158,11,0.15)',
+        boxShadow: '0 3px 0 rgba(245,158,11,.3)',
       }}
     >
       <span className="text-[13px] leading-none">⭐</span>

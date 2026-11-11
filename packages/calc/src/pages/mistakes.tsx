@@ -22,7 +22,8 @@ export default function CalcMistakesPage() {
     for (const m of mistakes) {
       if (m.resolved && !showResolved) continue
       // Hide hanging !resolved that reconcile treats as mastered (unresolved list)
-      if (!m.resolved && !unresolved.some((u) => u.signature === m.signature) && !showResolved) continue
+      if (!m.resolved && !unresolved.some((u) => u.signature === m.signature) && !showResolved)
+        continue
       buckets[m.category].push(m)
     }
     return buckets
@@ -39,24 +40,18 @@ export default function CalcMistakesPage() {
 
   return (
     <>
-      <CalcAppHeader
-        title="错题本"
-        backHref="/calc"
-        backLabel="口算"
-      />
+      <CalcAppHeader title="错题本" backHref="/calc" backLabel="口算" />
 
-      <main className="mx-auto max-w-[640px] px-4 pt-5 pb-12 space-y-4 relative">
+      <main className="relative mx-auto max-w-[640px] space-y-4 px-4 pt-5 pb-12">
         {/* CTA */}
         <button
           type="button"
           onClick={startPractice}
           disabled={unresolvedCount === 0}
-          className="w-full rounded-2xl px-5 py-3.5 text-[16px] font-black text-white transition-all hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          className="w-full rounded-2xl px-5 py-3.5 text-[16px] font-black text-white transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           style={{
-            background: unresolvedCount > 0
-              ? 'linear-gradient(135deg, #d97706, #f97316)'
-              : 'rgba(255,255,255,0.05)',
-            boxShadow: unresolvedCount > 0 ? '0 6px 24px rgba(245,158,11,0.3)' : 'none',
+            background: unresolvedCount > 0 ? '#d97706' : 'rgba(255,255,255,0.05)',
+            boxShadow: unresolvedCount > 0 ? '0 3px 0 rgba(245,158,11,0.3)' : 'none',
             border: unresolvedCount > 0 ? 'none' : '1px solid rgba(255,255,255,0.08)',
           }}
         >
@@ -69,41 +64,42 @@ export default function CalcMistakesPage() {
           </div>
         )}
 
-        {!isLoading && (['addsub', 'muldiv', 'mixed'] as CalcCategory[]).map((cat) => {
-          const list = grouped[cat]
-          if (list.length === 0) return null
-          return (
-            <section key={cat}>
-              <div className="mb-2 flex items-center gap-2">
-                <h3
-                  className="text-[11px] font-extrabold tracking-widest uppercase"
-                  style={{ color: 'rgba(196,181,253,0.45)' }}
-                >
-                  {categoryLabel(cat)}
-                </h3>
-                <span
-                  className="rounded-full px-1.5 py-0.5 text-[10px] font-extrabold"
-                  style={{
-                    background: 'rgba(139,92,246,0.18)',
-                    color: '#a78bfa',
-                  }}
-                >
-                  {list.length}
-                </span>
-              </div>
-              <div className="space-y-1.5">
-                {list.map((m) => (
-                  <MistakeRow key={m.signature} mistake={m} />
-                ))}
-              </div>
-            </section>
-          )
-        })}
+        {!isLoading &&
+          (['addsub', 'muldiv', 'mixed'] as CalcCategory[]).map((cat) => {
+            const list = grouped[cat]
+            if (list.length === 0) return null
+            return (
+              <section key={cat}>
+                <div className="mb-2 flex items-center gap-2">
+                  <h3
+                    className="text-[11px] font-extrabold tracking-widest uppercase"
+                    style={{ color: 'rgba(196,181,253,0.45)' }}
+                  >
+                    {categoryLabel(cat)}
+                  </h3>
+                  <span
+                    className="rounded-full px-1.5 py-0.5 text-[10px] font-extrabold"
+                    style={{
+                      background: 'rgba(139,92,246,0.18)',
+                      color: '#a78bfa',
+                    }}
+                  >
+                    {list.length}
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {list.map((m) => (
+                    <MistakeRow key={m.signature} mistake={m} />
+                  ))}
+                </div>
+              </section>
+            )
+          })}
 
         {!isLoading && resolvedCount > 0 && (
           <button
             type="button"
-            onClick={() => setShowResolved(v => !v)}
+            onClick={() => setShowResolved((v) => !v)}
             className="w-full rounded-xl py-2 text-[12px] font-extrabold transition-all"
             style={{
               background: showResolved ? 'rgba(34,197,94,0.1)' : 'rgba(34,197,94,0.06)',
@@ -111,7 +107,9 @@ export default function CalcMistakesPage() {
               color: '#4ade80',
             }}
           >
-            {showResolved ? `🙈 隐藏已掌握（${resolvedCount}）` : `🦋 查看已掌握（${resolvedCount}）`}
+            {showResolved
+              ? `🙈 隐藏已掌握（${resolvedCount}）`
+              : `🦋 查看已掌握（${resolvedCount}）`}
           </button>
         )}
 
@@ -123,11 +121,11 @@ export default function CalcMistakesPage() {
               border: '2px dashed rgba(139,92,246,0.2)',
             }}
           >
-            <div className="text-4xl mb-2">🌟</div>
+            <div className="mb-2 text-4xl">🌟</div>
             <div className="text-[13px] font-bold" style={{ color: '#c4b5fd' }}>
               还没有错题，太厉害啦！
             </div>
-            <div className="text-[11px] mt-1" style={{ color: 'rgba(196,181,253,0.4)' }}>
+            <div className="mt-1 text-[11px]" style={{ color: 'rgba(196,181,253,0.4)' }}>
               继续保持～
             </div>
           </div>

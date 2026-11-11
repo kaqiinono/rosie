@@ -128,13 +128,15 @@ function MultiplicationVertical({
   const [userResult, setUserResult] = useState<(number | null)[]>(() =>
     Array<number | null>(totalCols).fill(null),
   )
-  const [active, setActive] = useState<ActiveCell>(() => cellOrder[0] ?? { row: 0, idx: totalCols - 1 })
+  const [active, setActive] = useState<ActiveCell>(
+    () => cellOrder[0] ?? { row: 0, idx: totalCols - 1 },
+  )
   const [graded, setGraded] = useState(false)
   const [locked, setLocked] = useState(false)
   const autoSubmittedRef = useRef(false)
 
   const getVal = (c: ActiveCell): number | null =>
-    c.row === resultRowIdx ? userResult[c.idx] : userPartials[c.row]?.[c.idx] ?? null
+    c.row === resultRowIdx ? userResult[c.idx] : (userPartials[c.row]?.[c.idx] ?? null)
 
   const setVal = (c: ActiveCell, digit: number | null) => {
     if (c.row === resultRowIdx) {
@@ -152,7 +154,8 @@ function MultiplicationVertical({
     }
   }
 
-  const orderIndex = (c: ActiveCell) => cellOrder.findIndex((o) => o.row === c.row && o.idx === c.idx)
+  const orderIndex = (c: ActiveCell) =>
+    cellOrder.findIndex((o) => o.row === c.row && o.idx === c.idx)
 
   const handleDigitInput = (digit: number) => {
     if (disabled || locked) return
@@ -218,7 +221,7 @@ function MultiplicationVertical({
     if (!allCorrect) {
       const wrong = cellOrder.find((c) => {
         const correctDigit =
-          c.row === resultRowIdx ? resultRow[c.idx] : partials[c.row]?.[c.idx] ?? null
+          c.row === resultRowIdx ? resultRow[c.idx] : (partials[c.row]?.[c.idx] ?? null)
         if (correctDigit === null) return false
         return getVal(c) !== correctDigit
       })
@@ -248,7 +251,12 @@ function MultiplicationVertical({
   ) => {
     if (correctDigit === null) return <div key={col} style={geo.cell} />
     const isActive = active.row === rowIdx && active.idx === col
-    const cellStyle = editableCellStyle({ isActive, graded: graded && !immersive, val, correctVal: correctDigit })
+    const cellStyle = editableCellStyle({
+      isActive,
+      graded: graded && !immersive,
+      val,
+      correctVal: correctDigit,
+    })
     return (
       <button
         key={col}
@@ -270,7 +278,12 @@ function MultiplicationVertical({
     <div className="flex justify-end gap-1">
       <div
         className="flex items-center justify-center font-black"
-        style={{ width: geo.lead, height: geo.cell.height, fontSize: geo.digitFont, color: 'rgba(196,181,253,0.6)' }}
+        style={{
+          width: geo.lead,
+          height: geo.cell.height,
+          fontSize: geo.digitFont,
+          color: 'rgba(196,181,253,0.6)',
+        }}
       >
         {lead}
       </div>
@@ -299,42 +312,53 @@ function MultiplicationVertical({
         <div className="flex items-center justify-center gap-2.5">
           <div
             className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
           >
-          {/* Factors */}
-          {fixedRow(aPad, '')}
-          {fixedRow(bPad, '×')}
+            {/* Factors */}
+            {fixedRow(aPad, '')}
+            {fixedRow(bPad, '×')}
 
-          {/* Divider above the partial products */}
-          <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
+            {/* Divider above the partial products */}
+            <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
 
-          {/* Partial-product rows — '+' on the last one when there's a sum to do */}
-          {partials.map((row, r) => (
-            <div key={`p${r}`} className="flex justify-end gap-1">
-              <div
-                className="flex items-center justify-center font-black"
-                style={{ width: geo.lead, height: geo.cell.height, fontSize: geo.digitFont, color: 'rgba(196,181,253,0.6)' }}
-              >
-                {hasSumRow && r === numPartials - 1 ? '+' : ''}
-              </div>
-              {row.map((correctDigit, col) =>
-                renderCell(r, col, correctDigit, userPartials[r][col]),
-              )}
-            </div>
-          ))}
-
-          {/* Sum divider + final result row (only when there are ≥2 partials) */}
-          {hasSumRow && (
-            <>
-              <div className="my-1 border-t-2" style={{ borderColor: 'rgba(196,181,253,0.25)' }} />
-              <div className="flex justify-end gap-1">
-                <div style={{ width: geo.lead }} />
-                {resultRow.map((correctDigit, col) =>
-                  renderCell(resultRowIdx, col, correctDigit, userResult[col]),
+            {/* Partial-product rows — '+' on the last one when there's a sum to do */}
+            {partials.map((row, r) => (
+              <div key={`p${r}`} className="flex justify-end gap-1">
+                <div
+                  className="flex items-center justify-center font-black"
+                  style={{
+                    width: geo.lead,
+                    height: geo.cell.height,
+                    fontSize: geo.digitFont,
+                    color: 'rgba(196,181,253,0.6)',
+                  }}
+                >
+                  {hasSumRow && r === numPartials - 1 ? '+' : ''}
+                </div>
+                {row.map((correctDigit, col) =>
+                  renderCell(r, col, correctDigit, userPartials[r][col]),
                 )}
               </div>
-            </>
-          )}
+            ))}
+
+            {/* Sum divider + final result row (only when there are ≥2 partials) */}
+            {hasSumRow && (
+              <>
+                <div
+                  className="my-1 border-t-2"
+                  style={{ borderColor: 'rgba(196,181,253,0.25)' }}
+                />
+                <div className="flex justify-end gap-1">
+                  <div style={{ width: geo.lead }} />
+                  {resultRow.map((correctDigit, col) =>
+                    renderCell(resultRowIdx, col, correctDigit, userResult[col]),
+                  )}
+                </div>
+              </>
+            )}
           </div>
           {modeSwitch}
         </div>
@@ -343,76 +367,78 @@ function MultiplicationVertical({
       <QuestionFeedbackHint feedback={immersive ? null : feedback} revealAnswer={revealAnswer} />
 
       {/* Number pad — keep slot when locked so the layout does not jump */}
-      <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
-            <button
-              key={d}
-              type="button"
-              disabled={disabled}
-              onClick={() => handleDigitInput(d)}
-              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-              }}
-            >
-              {d}
-            </button>
-          ))}
+      <div
+        className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}
+      >
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
           <button
+            key={d}
             type="button"
             disabled={disabled}
-            onClick={handleDelete}
-            className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-            style={{
-              background: 'rgba(239,68,68,0.1)',
-              color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
-              border: '1px solid rgba(239,68,68,0.2)',
-            }}
-            aria-label="删除"
-          >
-            ⌫
-          </button>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => handleDigitInput(0)}
+            onClick={() => handleDigitInput(d)}
             className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
             style={{
               background: 'rgba(255,255,255,0.05)',
               color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
               border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+              boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
             }}
           >
-            0
+            {d}
           </button>
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={handleAction}
-            className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!allFilled ? 'text-[15px]' : 'text-[24px]'}`}
-            style={
-              !allFilled
-                ? {
-                    background: 'rgba(139,92,246,0.18)',
-                    color: '#c4b5fd',
-                    border: '1px solid rgba(139,92,246,0.4)',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
-                  }
-                : {
-                    background: 'linear-gradient(135deg, #059669, #10b981)',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
-                    border: '1px solid rgba(16,185,129,0.25)',
-                  }
-            }
-          >
-            {!allFilled ? 'Enter' : '✓'}
-          </button>
-        </div>
+        ))}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleDelete}
+          className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          style={{
+            background: 'rgba(239,68,68,0.1)',
+            color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
+            border: '1px solid rgba(239,68,68,0.2)',
+          }}
+          aria-label="删除"
+        >
+          ⌫
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => handleDigitInput(0)}
+          className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+          }}
+        >
+          0
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleAction}
+          className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!allFilled ? 'text-[15px]' : 'text-[24px]'}`}
+          style={
+            !allFilled
+              ? {
+                  background: 'rgba(139,92,246,0.18)',
+                  color: '#c4b5fd',
+                  border: '1px solid rgba(139,92,246,0.4)',
+                  boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+                }
+              : {
+                  background: '#059669',
+                  color: '#ffffff',
+                  boxShadow: '0 3px 0 rgba(16,185,129,0.35)',
+                  border: '1px solid rgba(16,185,129,0.25)',
+                }
+          }
+        >
+          {!allFilled ? 'Enter' : '✓'}
+        </button>
+      </div>
     </div>
   )
 }

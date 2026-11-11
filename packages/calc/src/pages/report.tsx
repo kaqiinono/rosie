@@ -36,27 +36,14 @@ const ANIMATIONS = `
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes drawLine { to { stroke-dashoffset: 0; } }
-@keyframes sprintFlow {
-  /* 光带从左向右冲刺 */
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
 @keyframes sprintPulse {
   0%, 100% { filter: drop-shadow(0 0 4px rgba(74,222,128,0.5)); }
   50% { filter: drop-shadow(0 0 10px rgba(74,222,128,0.95)); }
 }
 .calc-sprint-bar {
-  background: linear-gradient(
-    90deg,
-    rgba(22,163,74,0.85) 0%,
-    rgba(74,222,128,0.95) 35%,
-    rgba(187,247,208,1) 50%,
-    rgba(74,222,128,0.95) 65%,
-    rgba(22,163,74,0.85) 100%
-  );
-  background-size: 200% 100%;
-  animation: sprintFlow 1.2s linear infinite, sprintPulse 1.8s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(74,222,128,0.65), 0 0 14px rgba(34,197,94,0.4);
+  background: #4ade80;
+  animation: sprintPulse 1.8s ease-in-out infinite;
+  box-shadow: 0 3px 0 rgba(74,222,128,0.65), 0 3px 0 rgba(34,197,94,0.4);
 }
 `
 
@@ -156,8 +143,7 @@ function Section1({
           style={{
             position: 'absolute',
             inset: 0,
-            background:
-              'radial-gradient(ellipse 70% 100% at 0% 50%,rgba(251,191,36,0.09) 0%,transparent 70%)',
+            background: 'rgba(251,191,36,0.05)',
             pointerEvents: 'none',
           }}
         />
@@ -1417,7 +1403,7 @@ function Section5({
                   width: `${rate}%`,
                   height: '100%',
                   borderRadius: 3,
-                  background: 'linear-gradient(90deg,#4ade80,rgba(74,222,128,0.45))',
+                  background: '#4ade80',
                 }}
               />
             </div>

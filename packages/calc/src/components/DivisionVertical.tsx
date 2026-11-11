@@ -209,152 +209,199 @@ function DivisionVertical({
         }
         style={fill ? { containerType: 'size' } : undefined}
       >
-      {/* 厂字形 long division */}
-      <div className="flex items-center justify-center gap-2.5">
-        <div
-          className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-        <div className="flex items-start">
-          {/* 除数 — pushed down to line up with the 被除数 row */}
-          <div className="flex flex-col">
-            <div style={{ height: divisorPad }} />
-            <div className="flex items-center pr-2.5 font-black" style={{ height: cellPx, fontSize: cellFont, color: '#e9d5ff' }}>
-              {divisor}
-            </div>
-          </div>
-
-          {/* 商 (top) + 厂 bracket over 被除数 + work */}
-          <div className="flex flex-col">
-            {/* 商 */}
-            <div className="flex pl-2 mb-1">
-              {Array.from({ length: n }, (_, c) => {
-                if (quotient[c] === null) return <div key={`q${c}`} style={cellSize} />
-                const idx = quotientCols.indexOf(c)
-                const isActive = !locked && idx === activeIdx
-                const val = userQuotient[c]
-                const correctVal = quotient[c] ?? 0
-                const cellStyle = editableCellStyle({
-                  isActive,
-                  graded: graded && !immersive,
-                  val,
-                  correctVal,
-                })
-                return (
-                  <button
-                    key={`q${c}`}
-                    type="button"
-                    onClick={() => !disabled && !locked && setActiveIdx(idx)}
-                    className={`${CELL_BASE} rounded-lg border-2 transition-all select-none active:scale-[0.93] ml-1`}
-                    style={{
-                      ...cellSize,
-                      fontSize: cellFont,
-                      ...cellStyle,
-                    }}
-                  >
-                    {val !== null ? val : ''}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* 厂 bracket: top line over 被除数 + left line; 被除数 and work sit inside */}
-            <div className="rounded-tl-lg border-t-2 border-l-2 pl-2 pt-1" style={{ borderColor: BORDER }}>
-              {/* 被除数 */}
-              <div className="flex">
-                {digits.map((d, c) => (
-                  <div key={`d${c}`} className={CELL_BASE} style={{ ...cellSize, fontSize: cellFont, color: '#f5f3ff' }}>
-                    {d}
-                  </div>
-                ))}
+        {/* 厂字形 long division */}
+        <div className="flex items-center justify-center gap-2.5">
+          <div
+            className={`rounded-2xl ${fill ? 'p-3' : 'p-4'}`}
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <div className="flex items-start">
+              {/* 除数 — pushed down to line up with the 被除数 row */}
+              <div className="flex flex-col">
+                <div style={{ height: divisorPad }} />
+                <div
+                  className="flex items-center pr-2.5 font-black"
+                  style={{ height: cellPx, fontSize: cellFont, color: '#e9d5ff' }}
+                >
+                  {divisor}
+                </div>
               </div>
 
-              {/* subtraction work — only after a correct answer */}
-              {locked && lastCorrect && (
-                <div className="flex flex-col">
-                  {workRows.map((row, ri) =>
-                    row.kind === 'digits' ? (
-                      <div key={`w${ri}`} className="flex">
-                        {row.cells.map((ch, c) => (
-                          <div key={c} className={CELL_BASE} style={{ ...cellSize, fontSize: cellFont, color: 'rgba(196,181,253,0.85)' }}>
-                            {ch ?? ''}
+              {/* 商 (top) + 厂 bracket over 被除数 + work */}
+              <div className="flex flex-col">
+                {/* 商 */}
+                <div className="mb-1 flex pl-2">
+                  {Array.from({ length: n }, (_, c) => {
+                    if (quotient[c] === null) return <div key={`q${c}`} style={cellSize} />
+                    const idx = quotientCols.indexOf(c)
+                    const isActive = !locked && idx === activeIdx
+                    const val = userQuotient[c]
+                    const correctVal = quotient[c] ?? 0
+                    const cellStyle = editableCellStyle({
+                      isActive,
+                      graded: graded && !immersive,
+                      val,
+                      correctVal,
+                    })
+                    return (
+                      <button
+                        key={`q${c}`}
+                        type="button"
+                        onClick={() => !disabled && !locked && setActiveIdx(idx)}
+                        className={`${CELL_BASE} ml-1 rounded-lg border-2 transition-all select-none active:scale-[0.93]`}
+                        style={{
+                          ...cellSize,
+                          fontSize: cellFont,
+                          ...cellStyle,
+                        }}
+                      >
+                        {val !== null ? val : ''}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* 厂 bracket: top line over 被除数 + left line; 被除数 and work sit inside */}
+                <div
+                  className="rounded-tl-lg border-t-2 border-l-2 pt-1 pl-2"
+                  style={{ borderColor: BORDER }}
+                >
+                  {/* 被除数 */}
+                  <div className="flex">
+                    {digits.map((d, c) => (
+                      <div
+                        key={`d${c}`}
+                        className={CELL_BASE}
+                        style={{ ...cellSize, fontSize: cellFont, color: '#f5f3ff' }}
+                      >
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* subtraction work — only after a correct answer */}
+                  {locked && lastCorrect && (
+                    <div className="flex flex-col">
+                      {workRows.map((row, ri) =>
+                        row.kind === 'digits' ? (
+                          <div key={`w${ri}`} className="flex">
+                            {row.cells.map((ch, c) => (
+                              <div
+                                key={c}
+                                className={CELL_BASE}
+                                style={{
+                                  ...cellSize,
+                                  fontSize: cellFont,
+                                  color: 'rgba(196,181,253,0.85)',
+                                }}
+                              >
+                                {ch ?? ''}
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div key={`w${ri}`} className="flex">
-                        {Array.from({ length: n }, (_, c) => (
-                          <div
-                            key={c}
-                            className="h-1"
-                            style={
-                              c >= row.from && c <= row.to
-                                ? { width: cellPx, borderTop: `2px solid ${BORDER}` }
-                                : { width: cellPx }
-                            }
-                          />
-                        ))}
-                      </div>
-                    ),
+                        ) : (
+                          <div key={`w${ri}`} className="flex">
+                            {Array.from({ length: n }, (_, c) => (
+                              <div
+                                key={c}
+                                className="h-1"
+                                style={
+                                  c >= row.from && c <= row.to
+                                    ? { width: cellPx, borderTop: `2px solid ${BORDER}` }
+                                    : { width: cellPx }
+                                }
+                              />
+                            ))}
+                          </div>
+                        ),
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
+          {modeSwitch}
         </div>
-        </div>
-        {modeSwitch}
-      </div>
       </div>
 
       <QuestionFeedbackHint feedback={immersive ? null : feedback} revealAnswer={revealAnswer} />
 
       {/* keypad — keep slot when locked so the layout does not jump */}
-      <div className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
-              <button
-                key={d}
-                type="button"
-                disabled={disabled}
-                onClick={() => handleDigit(d)}
-                className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-                style={{ background: 'rgba(255,255,255,0.05)', color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}
-              >
-                {d}
-              </button>
-            ))}
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={handleDelete}
-              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-              style={{ background: 'rgba(239,68,68,0.1)', color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5', border: '1px solid rgba(239,68,68,0.2)' }}
-            >
-              ⌫
-            </button>
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={() => handleDigit(0)}
-              className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
-              style={{ background: 'rgba(255,255,255,0.05)', color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }}
-            >
-              0
-            </button>
-            <button
-              type="button"
-              disabled={disabled}
-              onClick={handleAction}
-              className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!quotientComplete ? 'text-[15px]' : 'text-[24px]'}`}
-              style={
-                !quotientComplete
-                  ? { background: 'rgba(139,92,246,0.18)', color: '#c4b5fd', border: '1px solid rgba(139,92,246,0.4)', boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)' }
-                  : { background: 'linear-gradient(135deg, #059669, #10b981)', color: '#ffffff', boxShadow: '0 4px 16px rgba(16,185,129,0.35)', border: '1px solid rgba(16,185,129,0.25)' }
-              }
-            >
-              {!quotientComplete ? 'Enter' : '✓'}
-            </button>
-        </div>
+      <div
+        className={`mx-auto grid w-full max-w-[320px] grid-cols-3 gap-2.5 ${fill ? 'shrink-0 pt-4' : 'mt-4'} ${locked ? VERTICAL_KEYPAD_LOCKED_CLASS : ''}`}
+      >
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
+          <button
+            key={d}
+            type="button"
+            disabled={disabled}
+            onClick={() => handleDigit(d)}
+            className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+            }}
+          >
+            {d}
+          </button>
+        ))}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleDelete}
+          className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          style={{
+            background: 'rgba(239,68,68,0.1)',
+            color: disabled ? 'rgba(252,165,165,0.3)' : '#fca5a5',
+            border: '1px solid rgba(239,68,68,0.2)',
+          }}
+        >
+          ⌫
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => handleDigit(0)}
+          className="h-14 rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.93]"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            color: disabled ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+          }}
+        >
+          0
+        </button>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={handleAction}
+          className={`h-14 rounded-2xl font-black transition-all select-none active:scale-[0.93] ${!quotientComplete ? 'text-[15px]' : 'text-[24px]'}`}
+          style={
+            !quotientComplete
+              ? {
+                  background: 'rgba(139,92,246,0.18)',
+                  color: '#c4b5fd',
+                  border: '1px solid rgba(139,92,246,0.4)',
+                  boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+                }
+              : {
+                  background: '#059669',
+                  color: '#ffffff',
+                  boxShadow: '0 3px 0 rgba(16,185,129,0.35)',
+                  border: '1px solid rgba(16,185,129,0.25)',
+                }
+          }
+        >
+          {!quotientComplete ? 'Enter' : '✓'}
+        </button>
+      </div>
     </div>
   )
 }

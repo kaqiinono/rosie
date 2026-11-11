@@ -28,7 +28,7 @@ export default function RemainderPad({ onSubmit, disabled }: Props) {
     else setRemainder(next)
   }
 
-  const handleKey = (key: typeof DIGIT_KEYS[number]) => {
+  const handleKey = (key: (typeof DIGIT_KEYS)[number]) => {
     if (disabled || submitted) return
     if (key === 'Enter') {
       // Current cell done → jump to the next cell; on the last cell, submit.
@@ -56,12 +56,12 @@ export default function RemainderPad({ onSubmit, disabled }: Props) {
         <button
           type="button"
           onClick={() => !disabled && !submitted && setActive(which)}
-          className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 font-fredoka text-[28px] font-black tabular-nums transition-all select-none active:scale-[0.93] sm:h-18 sm:w-18"
+          className="font-fredoka flex h-16 w-16 items-center justify-center rounded-2xl border-2 text-[28px] font-black tabular-nums transition-all select-none active:scale-[0.93] sm:h-18 sm:w-18"
           style={{
             borderColor: on ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)',
             background: on ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)',
             color: on ? '#c4b5fd' : '#f5f3ff',
-            boxShadow: on ? '0 0 16px rgba(139,92,246,0.25)' : 'none',
+            boxShadow: on ? '0 3px 0 rgba(139,92,246,.3)' : 'none',
           }}
         >
           {value || (on ? '·' : '')}
@@ -117,11 +117,9 @@ export default function RemainderPad({ onSubmit, disabled }: Props) {
                 isAction
                   ? onLastCell
                     ? {
-                        background: inactive
-                          ? 'rgba(16,185,129,0.15)'
-                          : 'linear-gradient(135deg, #059669, #10b981)',
+                        background: inactive ? 'rgba(16,185,129,0.15)' : '#059669',
                         color: inactive ? 'rgba(16,185,129,0.35)' : '#ffffff',
-                        boxShadow: inactive ? 'none' : '0 4px 16px rgba(16,185,129,0.35)',
+                        boxShadow: inactive ? 'none' : '0 3px 0 rgba(16,185,129,0.35)',
                         border: '1px solid rgba(16,185,129,0.25)',
                         cursor: inactive ? 'not-allowed' : 'pointer',
                       }
@@ -129,7 +127,7 @@ export default function RemainderPad({ onSubmit, disabled }: Props) {
                         background: 'rgba(139,92,246,0.18)',
                         color: '#c4b5fd',
                         border: '1px solid rgba(139,92,246,0.4)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+                        boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
                         cursor: 'pointer',
                       }
                   : isDel
@@ -142,7 +140,7 @@ export default function RemainderPad({ onSubmit, disabled }: Props) {
                         background: 'rgba(255,255,255,0.05)',
                         color: disabled || submitted ? 'rgba(245,243,255,0.25)' : '#f5f3ff',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)',
+                        boxShadow: '0 3px 0 rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
                       }
               }
             >

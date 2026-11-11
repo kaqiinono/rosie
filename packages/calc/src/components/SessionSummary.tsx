@@ -22,7 +22,14 @@ interface Props {
   /** Optional caption shown when a level transitioned to abc_passed / review_r1 / review_r2 etc. */
   reviewMilestone?: string | null
   /** Per-source (building block / mixed op) performance breakdown for this session. */
-  bySource?: { label: string; total: number; firstTryCorrect: number; perMinute: number; avgSec: number; targetSec: number | null }[]
+  bySource?: {
+    label: string
+    total: number
+    firstTryCorrect: number
+    perMinute: number
+    avgSec: number
+    targetSec: number | null
+  }[]
   /** Distinct wrong-final question displays exposed this session (already stripped of "= ?"). */
   newWeak?: string[]
   /** Source labels the next session will focus on, weakest-first. */
@@ -80,7 +87,7 @@ export default function SessionSummary({
   return (
     <div
       className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4"
-      style={{ background: 'rgba(6,7,26,0.85)', backdropFilter: 'blur(16px)' }}
+      style={{ background: 'rgb(6,7,26)' }}
       onClick={history ? onClose : undefined}
     >
       <div className="flex min-h-full items-center justify-center py-4">
@@ -89,454 +96,530 @@ export default function SessionSummary({
           style={{
             background: 'rgba(13,11,38,0.98)',
             border: '1px solid rgba(139,92,246,0.25)',
-            boxShadow: '0 24px 60px rgba(139,92,246,0.2), 0 0 0 1px rgba(255,255,255,0.04)',
+            boxShadow: '0 3px 0 rgba(139,92,246,.3)',
             animation: 'pop-in 0.35s cubic-bezier(.34,1.56,.64,1)',
           }}
           onClick={history ? (e) => e.stopPropagation() : undefined}
         >
-        {history && (
-          <div className="mb-2 flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="关闭"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[16px] font-black transition-all active:scale-90"
-              style={{
-                background: 'rgba(255,255,255,0.06)',
-                color: 'rgba(245,243,255,0.5)',
-              }}
-            >
-              ×
-            </button>
-          </div>
-        )}
-        {history ? (() => {
-          const deltaMs = avgMs != null && prevAvgMs != null ? prevAvgMs - avgMs : null
-          const faster = deltaMs !== null && deltaMs > 0
-          const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100
-          let avgHint: string | null = null
-          let avgHintColor = 'rgba(125,211,252,0.5)'
-          if (avgMs != null) {
-            if (meaningful) {
-              avgHint = `${faster ? '↑' : '↓'} 每题${faster ? '快' : '慢'} ${formatSeconds(Math.abs(deltaMs!))}`
-              avgHintColor = faster ? '#4ade80' : '#fbbf24'
-            } else if (prevAvgMs != null) {
-              avgHint = '≈ 与上次持平'
-            } else {
-              avgHint = '首场基准'
-            }
-          }
-          return (
-            <div className="grid grid-cols-2 gap-2">
-              <div
-                className="rounded-xl px-3 py-2.5"
+          {history && (
+            <div className="mb-2 flex justify-end">
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="关闭"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-[16px] font-black transition-all active:scale-90"
                 style={{
-                  background: 'rgba(125,211,252,0.1)',
-                  border: '1px solid rgba(125,211,252,0.22)',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: 'rgba(245,243,255,0.5)',
                 }}
               >
-                <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(125,211,252,0.55)' }}>
-                  总用时
-                </div>
-                <div className="font-fredoka text-[20px] font-black tabular-nums" style={{ color: '#7dd3fc' }}>
-                  {formatTimeChinese(timeSpentSec)}
-                </div>
-              </div>
-              <div
-                className="rounded-xl px-3 py-2.5"
-                style={{
-                  background: 'rgba(125,211,252,0.1)',
-                  border: '1px solid rgba(125,211,252,0.22)',
-                }}
-              >
-                <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(125,211,252,0.55)' }}>
-                  平均每题
-                </div>
-                <div className="font-fredoka text-[20px] font-black tabular-nums" style={{ color: '#7dd3fc' }}>
-                  {avgMs != null ? formatSeconds(avgMs) : '—'}
-                </div>
-                {avgHint && (
-                  <div className="mt-0.5 text-[10px] font-bold" style={{ color: avgHintColor }}>
-                    {avgHint}
-                  </div>
-                )}
-              </div>
+                ×
+              </button>
             </div>
-          )
-        })() : (
-          <>
-            <div className="text-[48px]">{trophy}</div>
-            <div
-              className="mt-1 font-fredoka text-[26px] font-black"
-              style={{
-                background: 'linear-gradient(90deg, #c4b5fd, #f0abfc)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              练习完成！
-            </div>
-            <div className="text-[12px] mt-0.5" style={{ color: 'rgba(245,243,255,0.4)' }}>
-              用时 {formatTime(timeSpentSec)}
-            </div>
-          </>
-        )}
-
-        {levelUpTo && (
-          <div
-            className="mt-3 rounded-xl px-3 py-2 text-[13px] font-extrabold"
-            style={{
-              background: 'rgba(245,158,11,0.12)',
-              border: '1px solid rgba(245,158,11,0.3)',
-              color: '#fbbf24',
-              animation: 'float-up 0.6s ease-out forwards',
-            }}
-          >
-            🎉 升级到 Lv.{levelUpTo} 啦！
-          </div>
-        )}
-
-        {levelDownTo && (
-          <div
-            className="mt-3 rounded-xl px-3 py-2 text-[12px] font-extrabold"
-            style={{
-              background: 'rgba(239,68,68,0.1)',
-              border: '1px solid rgba(239,68,68,0.28)',
-              color: '#fca5a5',
-            }}
-          >
-            📉 暂时回到 Lv.{levelDownTo} 多练几次再上来
-          </div>
-        )}
-
-        {reviewMilestone && (
-          <div
-            className="mt-3 rounded-xl px-3 py-2 text-[12px] font-extrabold"
-            style={{
-              background: 'rgba(34,197,94,0.1)',
-              border: '1px solid rgba(34,197,94,0.28)',
-              color: '#4ade80',
-            }}
-          >
-            ✨ {reviewMilestone}
-          </div>
-        )}
-
-        {nextSessionAssault && (
-          <div
-            className="mt-3 rounded-xl px-3 py-2 text-[11px] font-extrabold"
-            style={{
-              background: 'rgba(245,158,11,0.08)',
-              border: '1px solid rgba(245,158,11,0.22)',
-              color: '#fbbf24',
-            }}
-          >
-            ⚔️ 下次进入攻坚模式，重点突破薄弱题
-          </div>
-        )}
-
-        {/* Stats grid */}
-        <div className="mt-5 grid grid-cols-3 gap-2">
-          {[
-            { label: '一次对', value: correctCount, color: '#22c55e', bg: 'rgba(34,197,94,0.1)', border: 'rgba(34,197,94,0.2)' },
-            { label: '再试对', value: retryCount, color: '#fbbf24', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.2)' },
-            { label: '未答对', value: wrongCount, color: '#f87171', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.2)' },
-          ].map(({ label, value, color, bg, border }) => (
-            <div
-              key={label}
-              className="rounded-xl px-2 py-3"
-              style={{ background: bg, border: `1px solid ${border}` }}
-            >
-              <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: `${color}99` }}>
-                {label}
-              </div>
-              <div className="font-fredoka text-[24px] font-black" style={{ color }}>
-                {value}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <div
-            className="rounded-xl px-3 py-2.5"
-            style={{
-              background: 'rgba(139,92,246,0.1)',
-              border: '1px solid rgba(139,92,246,0.2)',
-            }}
-          >
-            <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(196,181,253,0.5)' }}>
-              正确率
-            </div>
-            <div className="font-fredoka text-[20px] font-black" style={{ color: '#c4b5fd' }}>
-              {accuracy}%
-            </div>
-          </div>
-          <div
-            className="rounded-xl px-3 py-2.5"
-            style={{
-              background: 'rgba(245,158,11,0.1)',
-              border: '1px solid rgba(245,158,11,0.2)',
-            }}
-          >
-            <div className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgba(251,191,36,0.5)' }}>
-              星星
-            </div>
-            <div className="font-fredoka text-[20px] font-black" style={{ color: '#fbbf24' }}>
-              +{totalCoins} ⭐
-            </div>
-          </div>
-        </div>
-
-        {/* Timing analysis — live only; history folds avg + trend into the top「平均每题」cell */}
-        {!history && avgMs !== null && (() => {
-          const deltaMs = prevAvgMs !== null ? prevAvgMs - avgMs : null // +ve = faster = 进步
-          const faster = deltaMs !== null && deltaMs > 0
-          const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100 // ignore <0.1s noise
-          return (
-            <div
-              className="mt-3 rounded-xl px-4 py-3 text-left"
-              style={{
-                background: 'rgba(125,211,252,0.07)',
-                border: '1px solid rgba(125,211,252,0.2)',
-              }}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
+          )}
+          {history ? (
+            (() => {
+              const deltaMs = avgMs != null && prevAvgMs != null ? prevAvgMs - avgMs : null
+              const faster = deltaMs !== null && deltaMs > 0
+              const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100
+              let avgHint: string | null = null
+              let avgHintColor = 'rgba(125,211,252,0.5)'
+              if (avgMs != null) {
+                if (meaningful) {
+                  avgHint = `${faster ? '↑' : '↓'} 每题${faster ? '快' : '慢'} ${formatSeconds(Math.abs(deltaMs!))}`
+                  avgHintColor = faster ? '#4ade80' : '#fbbf24'
+                } else if (prevAvgMs != null) {
+                  avgHint = '≈ 与上次持平'
+                } else {
+                  avgHint = '首场基准'
+                }
+              }
+              return (
+                <div className="grid grid-cols-2 gap-2">
                   <div
-                    className="text-[10px] font-extrabold uppercase tracking-widest"
-                    style={{ color: 'rgba(125,211,252,0.6)' }}
-                  >
-                    ⏱ 本次计时
-                  </div>
-                  <div className="font-fredoka text-[18px] font-black leading-tight mt-0.5" style={{ color: '#7dd3fc' }}>
-                    总用时 {formatTimeChinese(timeSpentSec)}
-                  </div>
-                  <div className="text-[11px] font-semibold" style={{ color: 'rgba(125,211,252,0.6)' }}>
-                    平均每题 {formatSeconds(avgMs)}
-                  </div>
-                </div>
-                {meaningful ? (
-                  <div
-                    className="shrink-0 rounded-xl px-3 py-2 text-center"
+                    className="rounded-xl px-3 py-2.5"
                     style={{
-                      background: faster ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
-                      border: `1px solid ${faster ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                      background: 'rgba(125,211,252,0.1)',
+                      border: '1px solid rgba(125,211,252,0.22)',
                     }}
                   >
-                    <div className="font-fredoka text-[16px] font-black leading-none" style={{ color: faster ? '#4ade80' : '#fbbf24' }}>
-                      {faster ? '↑ 进步' : '↓ 退步'}
+                    <div
+                      className="text-[10px] font-bold tracking-wider uppercase"
+                      style={{ color: 'rgba(125,211,252,0.55)' }}
+                    >
+                      总用时
                     </div>
-                    <div className="text-[10px] font-bold mt-0.5" style={{ color: faster ? 'rgba(74,222,128,0.7)' : 'rgba(251,191,36,0.7)' }}>
-                      每题{faster ? '快' : '慢'} {formatSeconds(Math.abs(deltaMs))}
+                    <div
+                      className="font-fredoka text-[20px] font-black tabular-nums"
+                      style={{ color: '#7dd3fc' }}
+                    >
+                      {formatTimeChinese(timeSpentSec)}
                     </div>
                   </div>
-                ) : prevAvgMs !== null ? (
-                  <div className="shrink-0 text-[11px] font-bold" style={{ color: 'rgba(125,211,252,0.5)' }}>
-                    ≈ 与上次持平
-                  </div>
-                ) : (
-                  <div className="shrink-0 text-[10px] font-semibold" style={{ color: 'rgba(125,211,252,0.4)' }}>
-                    首场基准
-                  </div>
-                )}
-              </div>
-            </div>
-          )
-        })()}
-
-        {(maxStreak >= 3 || challengeCorrect > 0) && (
-          <div className="mt-3 flex justify-center gap-3 text-[11px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
-            {maxStreak >= 3 && <span>🔥 最长连对 {maxStreak}</span>}
-            {challengeCorrect > 0 && <span>⭐ 挑战题 {challengeCorrect} 道</span>}
-          </div>
-        )}
-
-        {/* Per-source performance breakdown */}
-        {bySource && bySource.length > 0 && (
-          <div
-            className="mt-3 rounded-xl px-4 py-3 text-left"
-            style={{
-              background: 'rgba(139,92,246,0.06)',
-              border: '1px solid rgba(139,92,246,0.18)',
-            }}
-          >
-            <div
-              className="text-[10px] font-extrabold uppercase tracking-widest"
-              style={{ color: 'rgba(196,181,253,0.55)' }}
-            >
-              📊 本次各项表现
-            </div>
-            <div className="mt-2 flex flex-col gap-2">
-              {bySource.map((s) => {
-                const needsAttention = s.firstTryCorrect < s.total
-                const missedCount = s.total - s.firstTryCorrect
-
-                return (
                   <div
-                    key={s.label}
-                    className="rounded-lg px-2.5 py-2"
-                    style={needsAttention ? {
-                      background: 'linear-gradient(90deg, rgba(245,158,11,0.16), rgba(239,68,68,0.07))',
-                      border: '1px solid rgba(251,191,36,0.38)',
-                      boxShadow: 'inset 3px 0 0 #fbbf24, 0 3px 12px rgba(245,158,11,0.08)',
-                    } : {
-                      background: 'rgba(255,255,255,0.015)',
-                      border: '1px solid transparent',
+                    className="rounded-xl px-3 py-2.5"
+                    style={{
+                      background: 'rgba(125,211,252,0.1)',
+                      border: '1px solid rgba(125,211,252,0.22)',
                     }}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div
-                          className="truncate text-[12px] font-bold"
-                          style={{ color: needsAttention ? '#fef3c7' : '#e9d5ff' }}
-                        >
-                          {s.label}
-                        </div>
-                        {needsAttention && (
-                          <span
-                            className="mt-1 inline-block rounded-full px-1.5 py-0.5 text-[9px] font-black leading-none"
-                            style={{
-                              color: '#fde68a',
-                              background: 'rgba(245,158,11,0.2)',
-                              border: '1px solid rgba(251,191,36,0.38)',
-                            }}
-                          >
-                            需留意 · 少对{missedCount}题
-                          </span>
-                        )}
-                      </div>
-                      <div
-                        className="shrink-0 text-[11px] font-extrabold tabular-nums"
-                        style={{ color: needsAttention ? '#fbbf24' : 'rgba(245,243,255,0.5)' }}
-                      >
-                        {s.firstTryCorrect}/{s.total} 对
-                      </div>
-                      <div className="shrink-0 text-[11px] font-extrabold tabular-nums" style={{ color: '#7dd3fc' }}>
-                        {s.perMinute} 题/分
-                      </div>
-                      <div className="shrink-0 text-[10px] tabular-nums" style={{ color: 'rgba(245,243,255,0.45)' }}>
-                        {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
-                      </div>
+                    <div
+                      className="text-[10px] font-bold tracking-wider uppercase"
+                      style={{ color: 'rgba(125,211,252,0.55)' }}
+                    >
+                      平均每题
                     </div>
-                    {s.targetSec != null && s.targetSec > 0 && s.avgSec > 0 && (
-                      <div className="mt-1.5">
-                        <ActualVsTargetBar actualSec={s.avgSec} targetSec={s.targetSec} />
+                    <div
+                      className="font-fredoka text-[20px] font-black tabular-nums"
+                      style={{ color: '#7dd3fc' }}
+                    >
+                      {avgMs != null ? formatSeconds(avgMs) : '—'}
+                    </div>
+                    {avgHint && (
+                      <div className="mt-0.5 text-[10px] font-bold" style={{ color: avgHintColor }}>
+                        {avgHint}
                       </div>
                     )}
                   </div>
-                )
-              })}
+                </div>
+              )
+            })()
+          ) : (
+            <>
+              <div className="text-[48px]">{trophy}</div>
+              <div
+                className="font-fredoka mt-1 text-[26px] font-black"
+                style={{
+                  background: '#c4b5fd',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                练习完成！
+              </div>
+              <div className="mt-0.5 text-[12px]" style={{ color: 'rgba(245,243,255,0.4)' }}>
+                用时 {formatTime(timeSpentSec)}
+              </div>
+            </>
+          )}
+
+          {levelUpTo && (
+            <div
+              className="mt-3 rounded-xl px-3 py-2 text-[13px] font-extrabold"
+              style={{
+                background: 'rgba(245,158,11,0.12)',
+                border: '1px solid rgba(245,158,11,0.3)',
+                color: '#fbbf24',
+                animation: 'float-up 0.6s ease-out forwards',
+              }}
+            >
+              🎉 升级到 Lv.{levelUpTo} 啦！
+            </div>
+          )}
+
+          {levelDownTo && (
+            <div
+              className="mt-3 rounded-xl px-3 py-2 text-[12px] font-extrabold"
+              style={{
+                background: 'rgba(239,68,68,0.1)',
+                border: '1px solid rgba(239,68,68,0.28)',
+                color: '#fca5a5',
+              }}
+            >
+              📉 暂时回到 Lv.{levelDownTo} 多练几次再上来
+            </div>
+          )}
+
+          {reviewMilestone && (
+            <div
+              className="mt-3 rounded-xl px-3 py-2 text-[12px] font-extrabold"
+              style={{
+                background: 'rgba(34,197,94,0.1)',
+                border: '1px solid rgba(34,197,94,0.28)',
+                color: '#4ade80',
+              }}
+            >
+              ✨ {reviewMilestone}
+            </div>
+          )}
+
+          {nextSessionAssault && (
+            <div
+              className="mt-3 rounded-xl px-3 py-2 text-[11px] font-extrabold"
+              style={{
+                background: 'rgba(245,158,11,0.08)',
+                border: '1px solid rgba(245,158,11,0.22)',
+                color: '#fbbf24',
+              }}
+            >
+              ⚔️ 下次进入攻坚模式，重点突破薄弱题
+            </div>
+          )}
+
+          {/* Stats grid */}
+          <div className="mt-5 grid grid-cols-3 gap-2">
+            {[
+              {
+                label: '一次对',
+                value: correctCount,
+                color: '#22c55e',
+                bg: 'rgba(34,197,94,0.1)',
+                border: 'rgba(34,197,94,0.2)',
+              },
+              {
+                label: '再试对',
+                value: retryCount,
+                color: '#fbbf24',
+                bg: 'rgba(245,158,11,0.1)',
+                border: 'rgba(245,158,11,0.2)',
+              },
+              {
+                label: '未答对',
+                value: wrongCount,
+                color: '#f87171',
+                bg: 'rgba(239,68,68,0.1)',
+                border: 'rgba(239,68,68,0.2)',
+              },
+            ].map(({ label, value, color, bg, border }) => (
+              <div
+                key={label}
+                className="rounded-xl px-2 py-3"
+                style={{ background: bg, border: `1px solid ${border}` }}
+              >
+                <div
+                  className="text-[10px] font-bold tracking-wider uppercase"
+                  style={{ color: `${color}99` }}
+                >
+                  {label}
+                </div>
+                <div className="font-fredoka text-[24px] font-black" style={{ color }}>
+                  {value}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div
+              className="rounded-xl px-3 py-2.5"
+              style={{
+                background: 'rgba(139,92,246,0.1)',
+                border: '1px solid rgba(139,92,246,0.2)',
+              }}
+            >
+              <div
+                className="text-[10px] font-bold tracking-wider uppercase"
+                style={{ color: 'rgba(196,181,253,0.5)' }}
+              >
+                正确率
+              </div>
+              <div className="font-fredoka text-[20px] font-black" style={{ color: '#c4b5fd' }}>
+                {accuracy}%
+              </div>
+            </div>
+            <div
+              className="rounded-xl px-3 py-2.5"
+              style={{
+                background: 'rgba(245,158,11,0.1)',
+                border: '1px solid rgba(245,158,11,0.2)',
+              }}
+            >
+              <div
+                className="text-[10px] font-bold tracking-wider uppercase"
+                style={{ color: 'rgba(251,191,36,0.5)' }}
+              >
+                星星
+              </div>
+              <div className="font-fredoka text-[20px] font-black" style={{ color: '#fbbf24' }}>
+                +{totalCoins} ⭐
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Newly-exposed weak spots */}
-        {newWeak && newWeak.length > 0 && (
-          <div
-            className="mt-3 rounded-xl px-4 py-3 text-left"
-            style={{
-              background: 'rgba(245,158,11,0.06)',
-              border: '1px solid rgba(245,158,11,0.18)',
-            }}
-          >
-            <div
-              className="text-[10px] font-extrabold uppercase tracking-widest"
-              style={{ color: 'rgba(251,191,36,0.6)' }}
-            >
-              🌱 新冒出的薄弱
-            </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {newWeak.map((d) => (
-                <span
-                  key={d}
-                  className="rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums"
+          {/* Timing analysis — live only; history folds avg + trend into the top「平均每题」cell */}
+          {!history &&
+            avgMs !== null &&
+            (() => {
+              const deltaMs = prevAvgMs !== null ? prevAvgMs - avgMs : null // +ve = faster = 进步
+              const faster = deltaMs !== null && deltaMs > 0
+              const meaningful = deltaMs !== null && Math.abs(deltaMs) >= 100 // ignore <0.1s noise
+              return (
+                <div
+                  className="mt-3 rounded-xl px-4 py-3 text-left"
                   style={{
-                    color: '#fbbf24',
-                    background: 'rgba(245,158,11,0.12)',
-                    border: '1px solid rgba(245,158,11,0.25)',
+                    background: 'rgba(125,211,252,0.07)',
+                    border: '1px solid rgba(125,211,252,0.2)',
                   }}
                 >
-                  {d}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <div
+                        className="text-[10px] font-extrabold tracking-widest uppercase"
+                        style={{ color: 'rgba(125,211,252,0.6)' }}
+                      >
+                        ⏱ 本次计时
+                      </div>
+                      <div
+                        className="font-fredoka mt-0.5 text-[18px] leading-tight font-black"
+                        style={{ color: '#7dd3fc' }}
+                      >
+                        总用时 {formatTimeChinese(timeSpentSec)}
+                      </div>
+                      <div
+                        className="text-[11px] font-semibold"
+                        style={{ color: 'rgba(125,211,252,0.6)' }}
+                      >
+                        平均每题 {formatSeconds(avgMs)}
+                      </div>
+                    </div>
+                    {meaningful ? (
+                      <div
+                        className="shrink-0 rounded-xl px-3 py-2 text-center"
+                        style={{
+                          background: faster ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
+                          border: `1px solid ${faster ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                        }}
+                      >
+                        <div
+                          className="font-fredoka text-[16px] leading-none font-black"
+                          style={{ color: faster ? '#4ade80' : '#fbbf24' }}
+                        >
+                          {faster ? '↑ 进步' : '↓ 退步'}
+                        </div>
+                        <div
+                          className="mt-0.5 text-[10px] font-bold"
+                          style={{
+                            color: faster ? 'rgba(74,222,128,0.7)' : 'rgba(251,191,36,0.7)',
+                          }}
+                        >
+                          每题{faster ? '快' : '慢'} {formatSeconds(Math.abs(deltaMs))}
+                        </div>
+                      </div>
+                    ) : prevAvgMs !== null ? (
+                      <div
+                        className="shrink-0 text-[11px] font-bold"
+                        style={{ color: 'rgba(125,211,252,0.5)' }}
+                      >
+                        ≈ 与上次持平
+                      </div>
+                    ) : (
+                      <div
+                        className="shrink-0 text-[10px] font-semibold"
+                        style={{ color: 'rgba(125,211,252,0.4)' }}
+                      >
+                        首场基准
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
 
-        {/* Next-focus preview */}
-        {nextFocus && nextFocus.length > 0 && (
-          <div
-            className="mt-3 rounded-xl px-4 py-3 text-left"
-            style={{
-              background: 'rgba(139,92,246,0.06)',
-              border: '1px solid rgba(139,92,246,0.18)',
-            }}
-          >
+          {(maxStreak >= 3 || challengeCorrect > 0) && (
             <div
-              className="text-[10px] font-extrabold uppercase tracking-widest"
-              style={{ color: 'rgba(196,181,253,0.55)' }}
+              className="mt-3 flex justify-center gap-3 text-[11px]"
+              style={{ color: 'rgba(245,243,255,0.4)' }}
             >
-              下次重点练
+              {maxStreak >= 3 && <span>🔥 最长连对 {maxStreak}</span>}
+              {challengeCorrect > 0 && <span>⭐ 挑战题 {challengeCorrect} 道</span>}
             </div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {nextFocus.map((label) => (
-                <span
-                  key={label}
-                  className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                  style={{
-                    color: '#c4b5fd',
-                    background: 'rgba(139,92,246,0.12)',
-                    border: '1px solid rgba(139,92,246,0.25)',
-                  }}
-                >
-                  🎯 {label}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
 
-        {history ? (
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-6 w-full rounded-xl py-2.5 text-[14px] font-extrabold transition-all"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(245,243,255,0.7)',
-            }}
-          >
-            关闭
-          </button>
-        ) : (
-          <div className="mt-6 flex gap-2">
-            <Link
-              href="/calc"
-              className="flex-1 rounded-xl py-2.5 text-[14px] font-extrabold no-underline transition-all"
+          {/* Per-source performance breakdown */}
+          {bySource && bySource.length > 0 && (
+            <div
+              className="mt-3 rounded-xl px-4 py-3 text-left"
+              style={{
+                background: 'rgba(139,92,246,0.06)',
+                border: '1px solid rgba(139,92,246,0.18)',
+              }}
+            >
+              <div
+                className="text-[10px] font-extrabold tracking-widest uppercase"
+                style={{ color: 'rgba(196,181,253,0.55)' }}
+              >
+                📊 本次各项表现
+              </div>
+              <div className="mt-2 flex flex-col gap-2">
+                {bySource.map((s) => {
+                  const needsAttention = s.firstTryCorrect < s.total
+                  const missedCount = s.total - s.firstTryCorrect
+
+                  return (
+                    <div
+                      key={s.label}
+                      className="rounded-lg px-2.5 py-2"
+                      style={
+                        needsAttention
+                          ? {
+                              background: 'rgba(245,158,11,0.16)',
+                              border: '1px solid rgba(251,191,36,0.38)',
+                              boxShadow: 'inset 3px 0 0 #fbbf24, 0 3px 0 rgba(245,158,11,.3)',
+                            }
+                          : {
+                              background: 'rgba(255,255,255,0.015)',
+                              border: '1px solid transparent',
+                            }
+                      }
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div
+                            className="truncate text-[12px] font-bold"
+                            style={{ color: needsAttention ? '#fef3c7' : '#e9d5ff' }}
+                          >
+                            {s.label}
+                          </div>
+                          {needsAttention && (
+                            <span
+                              className="mt-1 inline-block rounded-full px-1.5 py-0.5 text-[9px] leading-none font-black"
+                              style={{
+                                color: '#fde68a',
+                                background: 'rgba(245,158,11,0.2)',
+                                border: '1px solid rgba(251,191,36,0.38)',
+                              }}
+                            >
+                              需留意 · 少对{missedCount}题
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          className="shrink-0 text-[11px] font-extrabold tabular-nums"
+                          style={{ color: needsAttention ? '#fbbf24' : 'rgba(245,243,255,0.5)' }}
+                        >
+                          {s.firstTryCorrect}/{s.total} 对
+                        </div>
+                        <div
+                          className="shrink-0 text-[11px] font-extrabold tabular-nums"
+                          style={{ color: '#7dd3fc' }}
+                        >
+                          {s.perMinute} 题/分
+                        </div>
+                        <div
+                          className="shrink-0 text-[10px] tabular-nums"
+                          style={{ color: 'rgba(245,243,255,0.45)' }}
+                        >
+                          {s.avgSec}s{s.targetSec ? `/目标${s.targetSec}s` : ''}
+                        </div>
+                      </div>
+                      {s.targetSec != null && s.targetSec > 0 && s.avgSec > 0 && (
+                        <div className="mt-1.5">
+                          <ActualVsTargetBar actualSec={s.avgSec} targetSec={s.targetSec} />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Newly-exposed weak spots */}
+          {newWeak && newWeak.length > 0 && (
+            <div
+              className="mt-3 rounded-xl px-4 py-3 text-left"
+              style={{
+                background: 'rgba(245,158,11,0.06)',
+                border: '1px solid rgba(245,158,11,0.18)',
+              }}
+            >
+              <div
+                className="text-[10px] font-extrabold tracking-widest uppercase"
+                style={{ color: 'rgba(251,191,36,0.6)' }}
+              >
+                🌱 新冒出的薄弱
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {newWeak.map((d) => (
+                  <span
+                    key={d}
+                    className="rounded-full px-2.5 py-1 text-[11px] font-bold tabular-nums"
+                    style={{
+                      color: '#fbbf24',
+                      background: 'rgba(245,158,11,0.12)',
+                      border: '1px solid rgba(245,158,11,0.25)',
+                    }}
+                  >
+                    {d}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Next-focus preview */}
+          {nextFocus && nextFocus.length > 0 && (
+            <div
+              className="mt-3 rounded-xl px-4 py-3 text-left"
+              style={{
+                background: 'rgba(139,92,246,0.06)',
+                border: '1px solid rgba(139,92,246,0.18)',
+              }}
+            >
+              <div
+                className="text-[10px] font-extrabold tracking-widest uppercase"
+                style={{ color: 'rgba(196,181,253,0.55)' }}
+              >
+                下次重点练
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {nextFocus.map((label) => (
+                  <span
+                    key={label}
+                    className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                    style={{
+                      color: '#c4b5fd',
+                      background: 'rgba(139,92,246,0.12)',
+                      border: '1px solid rgba(139,92,246,0.25)',
+                    }}
+                  >
+                    🎯 {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {history ? (
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-6 w-full rounded-xl py-2.5 text-[14px] font-extrabold transition-all"
               style={{
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)',
-                color: 'rgba(245,243,255,0.6)',
+                color: 'rgba(245,243,255,0.7)',
               }}
             >
-              返回
-            </Link>
-            <button
-              type="button"
-              onClick={onAgain}
-              className="flex-[2] rounded-xl py-2.5 text-[14px] font-extrabold text-white transition-all hover:-translate-y-0.5"
-              style={{
-                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-                boxShadow: '0 4px 20px rgba(139,92,246,0.4)',
-              }}
-            >
-              再来一组 →
+              关闭
             </button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="mt-6 flex gap-2">
+              <Link
+                href="/calc"
+                className="flex-1 rounded-xl py-2.5 text-[14px] font-extrabold no-underline transition-all"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  color: 'rgba(245,243,255,0.6)',
+                }}
+              >
+                返回
+              </Link>
+              <button
+                type="button"
+                onClick={onAgain}
+                className="flex-[2] rounded-xl py-2.5 text-[14px] font-extrabold text-white transition-all hover:-translate-y-0.5"
+                style={{
+                  background: '#7c3aed',
+                  boxShadow: '0 3px 0 rgba(139,92,246,0.4)',
+                }}
+              >
+                再来一组 →
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

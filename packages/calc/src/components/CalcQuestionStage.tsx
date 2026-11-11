@@ -40,7 +40,7 @@ export function EquationHeader({
   const expr = display.replace(/\s*=\s*\?\s*$/, '').trim()
   const fontSize = size === 'lg' ? 'clamp(30px, 9vw, 44px)' : 'clamp(24px, 6.5vw, 34px)'
   return (
-    <div className="flex select-none justify-center">
+    <div className="flex justify-center select-none">
       <span
         className="font-fredoka leading-none font-black tracking-tight"
         style={{ fontSize, color: '#f5f3ff', textShadow: '0 0 20px rgba(139,92,246,0.25)' }}
@@ -63,7 +63,7 @@ export function AnswerBox({ value }: { value: string }) {
         height: 'clamp(52px, 14vw, 68px)',
         border: `2px solid ${filled ? 'rgba(168,139,250,0.75)' : 'rgba(168,139,250,0.3)'}`,
         background: filled ? 'rgba(139,92,246,0.16)' : 'rgba(139,92,246,0.05)',
-        boxShadow: filled ? '0 0 22px rgba(139,92,246,0.3)' : 'none',
+        boxShadow: filled ? '0 3px 0 rgba(139,92,246,0.3)' : 'none',
       }}
     >
       <span
@@ -95,13 +95,28 @@ function AnswerModeButton({ mode, onClick }: { mode: 'vertical' | 'pad'; onClick
       <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none">
         {isVertical ? (
           <>
-            <path d="M5 3.5h10M5 8h10M5 12.5h10M5 17h10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            <path
+              d="M5 3.5h10M5 8h10M5 12.5h10M5 17h10"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
             <path d="M7.5 2v16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
           </>
         ) : (
           <>
-            <path d="M3 6.5h14M3 13.5h14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-            <path d="M6 3v7M14 10v7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            <path
+              d="M3 6.5h14M3 13.5h14"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
+            <path
+              d="M6 3v7M14 10v7"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
           </>
         )}
       </svg>
@@ -124,7 +139,11 @@ export function EquationLine({
   const bigNum = (text: string) => (
     <span
       className="font-fredoka leading-none font-black tracking-tight"
-      style={{ fontSize: 'clamp(30px, 9vw, 44px)', color: '#f5f3ff', textShadow: '0 0 20px rgba(139,92,246,0.25)' }}
+      style={{
+        fontSize: 'clamp(30px, 9vw, 44px)',
+        color: '#f5f3ff',
+        textShadow: '0 0 20px rgba(139,92,246,0.25)',
+      }}
     >
       {text}
     </span>
@@ -148,9 +167,7 @@ export function EquationLine({
       {bigNum(left)}
       <span className="flex items-center gap-2">
         <AnswerBox value={input} />
-        {onSwitchToVertical && (
-          <AnswerModeButton mode="vertical" onClick={onSwitchToVertical} />
-        )}
+        {onSwitchToVertical && <AnswerModeButton mode="vertical" onClick={onSwitchToVertical} />}
       </span>
       {right && bigNum(right)}
     </div>
@@ -209,8 +226,8 @@ function ChallengeBadge() {
     <div
       className="mb-3 inline-block rounded-full px-3 py-0.5 text-[10px] font-extrabold tracking-widest text-white uppercase"
       style={{
-        background: 'linear-gradient(90deg, #f59e0b, #ec4899)',
-        boxShadow: '0 0 16px rgba(245,158,11,0.4)',
+        background: '#f59e0b',
+        boxShadow: '0 3px 0 rgba(245,158,11,0.4)',
       }}
     >
       ⭐ 挑战题 ×2
@@ -298,9 +315,9 @@ export default function CalcQuestionStage({
       immersive={immersive}
       autoSubmitOnMatch={autoSubmitOnMatch}
       modeSwitch={
-        onSwitchToPad && !disabled
-          ? <AnswerModeButton mode="pad" onClick={onSwitchToPad} />
-          : undefined
+        onSwitchToPad && !disabled ? (
+          <AnswerModeButton mode="pad" onClick={onSwitchToPad} />
+        ) : undefined
       }
     />
   )

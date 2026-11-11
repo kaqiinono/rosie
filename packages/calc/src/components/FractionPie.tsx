@@ -112,7 +112,7 @@ export default function FractionPie({ operands, den, op, onSubmit, disabled }: P
         type="button"
         onClick={submit}
         disabled={locked}
-        className="h-14 w-full max-w-[320px] rounded-2xl font-fredoka text-[24px] font-black transition-all select-none active:scale-[0.97]"
+        className="font-fredoka h-14 w-full max-w-[320px] rounded-2xl text-[24px] font-black transition-all select-none active:scale-[0.97]"
         style={
           locked
             ? {
@@ -122,9 +122,9 @@ export default function FractionPie({ operands, den, op, onSubmit, disabled }: P
                 cursor: 'not-allowed',
               }
             : {
-                background: 'linear-gradient(135deg, #059669, #10b981)',
+                background: '#059669',
                 color: '#ffffff',
-                boxShadow: '0 4px 16px rgba(16,185,129,0.35)',
+                boxShadow: '0 3px 0 rgba(16,185,129,0.35)',
                 border: '1px solid rgba(16,185,129,0.25)',
                 cursor: 'pointer',
               }

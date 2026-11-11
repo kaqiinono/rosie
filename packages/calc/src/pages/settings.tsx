@@ -5,10 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import type { CalcSettings, CalcTimingMode } from '@rosie/core'
-import {
-  DEFAULT_CALC_SETTINGS,
-  useCalcStrategies,
-} from '../hooks/useCalcSettings'
+import { DEFAULT_CALC_SETTINGS, useCalcStrategies } from '../hooks/useCalcSettings'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
 import CalcAppHeader from '../components/CalcAppHeader'
 import BlockPicker from '../components/BlockPicker'
@@ -113,7 +110,9 @@ function PerTypeConfigCard({
               }}
               className="w-16 rounded-md border border-violet-400/35 bg-white/[.04] py-0.5 pr-5 pl-2 text-right text-[11px] font-extrabold text-violet-200 outline-none focus:border-violet-400"
             />
-            <span className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[10px] font-bold text-violet-200/45">%</span>
+            <span className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-[10px] font-bold text-violet-200/45">
+              %
+            </span>
           </label>
         </div>
       )}
@@ -494,7 +493,10 @@ export default function CalcSettingsPage() {
         <CalcAppHeader title="策略不存在" backHref="/setting/calc" backLabel="策略列表" />
         <main className="mx-auto max-w-[640px] px-4 py-12 text-center">
           <p className="text-sm text-violet-200/60">这条口算策略可能已被删除。</p>
-          <Link href="/setting/calc" className="mt-5 inline-flex rounded-xl bg-violet-500 px-4 py-2 font-bold text-white">
+          <Link
+            href="/setting/calc"
+            className="mt-5 inline-flex rounded-xl bg-violet-500 px-4 py-2 font-bold text-white"
+          >
             返回策略列表
           </Link>
         </main>
@@ -576,14 +578,16 @@ export default function CalcSettingsPage() {
                 if (saveError) setSaveError('')
               }}
               placeholder="例如：工作日 20 题"
-              className="h-12 w-full rounded-xl px-4 text-[15px] font-bold text-violet-50 outline-none transition-all placeholder:text-violet-200/25 focus:ring-2 focus:ring-violet-400/50"
+              className="h-12 w-full rounded-xl px-4 text-[15px] font-bold text-violet-50 transition-all outline-none placeholder:text-violet-200/25 focus:ring-2 focus:ring-violet-400/50"
               style={{
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(139,92,246,0.32)',
               }}
             />
           </label>
-          <p className="mt-1.5 text-[11px] text-violet-200/35">名称会显示在策略列表中，最多 40 个字符。</p>
+          <p className="mt-1.5 text-[11px] text-violet-200/35">
+            名称会显示在策略列表中，最多 40 个字符。
+          </p>
         </section>
         {/* 单运算 — multi-select building blocks */}
         <section>
@@ -704,7 +708,7 @@ export default function CalcSettingsPage() {
                     color: on ? '#c4b5fd' : 'rgba(196,181,253,0.5)',
                   }}
                 >
-                {m === 'auto' ? '自适应分配' : '按占比分配'}
+                  {m === 'auto' ? '自适应分配' : '按占比分配'}
                 </button>
               )
             })}
@@ -731,14 +735,14 @@ export default function CalcSettingsPage() {
               >
                 {settings.countMode === 'manual'
                   ? settings.timedAnswerEnabled
-                ? '每个题型的占比 · 目标时间'
+                    ? '每个题型的占比 · 目标时间'
                     : '每个题型的占比'
                   : '每个题型的目标时间'}
               </div>
               {settings.countMode === 'manual' && (
                 <div
                   aria-live="polite"
-                  className="sticky top-[60px] z-20 mb-2 flex items-center justify-between rounded-xl px-3 py-2.5 text-[11px] font-bold shadow-lg backdrop-blur-xl"
+                  className="shadow-sticker sticky top-[60px] z-20 mb-2 flex items-center justify-between rounded-xl px-3 py-2.5 text-[11px] font-bold"
                   style={{
                     background:
                       configuredPercentageTotal === 100
@@ -823,7 +827,10 @@ export default function CalcSettingsPage() {
         {/* Actions */}
         <div className="space-y-2.5">
           {saveError && (
-            <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-center text-xs font-bold text-red-300">
+            <p
+              role="alert"
+              className="rounded-xl border border-red-400/25 bg-red-400/10 px-3 py-2 text-center text-xs font-bold text-red-300"
+            >
               {saveError}
             </p>
           )}
@@ -834,20 +841,18 @@ export default function CalcSettingsPage() {
             >
               取消
             </Link>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="min-w-0 flex-[2] rounded-2xl px-3 py-3.5 text-[15px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
-            style={{
-              background: saved
-                ? 'rgba(34,197,94,0.18)'
-                : 'linear-gradient(135deg, #7c3aed 0%, #a855f7 55%, #d946ef 100%)',
-              boxShadow: saved ? 'none' : '0 6px 24px rgba(139,92,246,0.38)',
-              color: saved ? '#4ade80' : '#fff',
-            }}
-          >
-            {saved ? '已保存 ✓' : strategyId ? '💾 保存修改' : '✨ 创建策略'}
-          </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="min-w-0 flex-[2] rounded-2xl px-3 py-3.5 text-[15px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
+              style={{
+                background: saved ? 'rgba(34,197,94,0.18)' : '#a855f7',
+                boxShadow: saved ? 'none' : '0 3px 0 rgba(139,92,246,0.38)',
+                color: saved ? '#4ade80' : '#fff',
+              }}
+            >
+              {saved ? '已保存 ✓' : strategyId ? '💾 保存修改' : '✨ 创建策略'}
+            </button>
           </div>
         </div>
       </main>

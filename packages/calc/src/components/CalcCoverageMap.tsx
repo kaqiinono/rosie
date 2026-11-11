@@ -150,7 +150,7 @@ function BlockCard({ block, concept }: { block: BlockCoverage; concept?: Concept
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400"
+            className="h-full rounded-full bg-emerald-400"
             style={{ width: percent(block.covered, block.total) }}
           />
         </div>
@@ -323,7 +323,7 @@ function StructureCard({ coverage }: { coverage: StructureCoverage }) {
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400"
+            className="h-full rounded-full bg-fuchsia-400"
             style={{ width: percent(coverage.covered, coverage.total) }}
           />
         </div>

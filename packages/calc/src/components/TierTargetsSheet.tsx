@@ -28,7 +28,7 @@ export default function TierTargetsSheet({ items, onClose }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(14px)' }}
+      style={{ background: 'rgba(0,0,0,0.75)' }}
       onClick={onClose}
     >
       <div
@@ -36,7 +36,7 @@ export default function TierTargetsSheet({ items, onClose }: Props) {
         style={{
           background: 'rgba(10,9,30,0.98)',
           border: '1px solid rgba(139,92,246,0.25)',
-          boxShadow: '0 -8px 40px rgba(139,92,246,0.15), 0 0 80px rgba(139,92,246,0.12)',
+          boxShadow: '0 3px 0 rgba(139,92,246,.3), 0 3px 0 rgba(139,92,246,.3)',
           animation: 'slide-up 0.3s cubic-bezier(.34,1.56,.64,1)',
         }}
         onClick={(e) => e.stopPropagation()}
@@ -53,7 +53,7 @@ export default function TierTargetsSheet({ items, onClose }: Props) {
           <div
             className="font-fredoka text-[17px] leading-tight font-black"
             style={{
-              background: 'linear-gradient(90deg, #c4b5fd, #f9a8d4)',
+              background: '#c4b5fd',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}

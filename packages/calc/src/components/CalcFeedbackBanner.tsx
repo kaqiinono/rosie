@@ -58,7 +58,7 @@ export default function CalcFeedbackBanner({
         <div
           className="rounded-xl py-3 text-center text-[15px] font-extrabold"
           style={{
-            background: 'linear-gradient(135deg, rgba(245,158,11,0.2), rgba(236,72,153,0.15))',
+            background: 'rgba(245,158,11,0.2)',
             border: '1px solid rgba(245,158,11,0.4)',
             color: '#fbbf24',
             animation: 'pop-in 0.3s cubic-bezier(.34,1.56,.64,1)',
