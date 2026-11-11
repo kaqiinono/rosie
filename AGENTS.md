@@ -39,7 +39,7 @@ packages/
 ```
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
-`math`→ui,rewards; `english`→player,ui,rewards; `chinese`→ui,rewards; `ai`→core,ui,player;
+`math`→ui,rewards; `math-content`→math-kit,ui; `english`→player,ui,rewards; `chinese`→ui,rewards; `ai`→core,ui,player;
 `flipbook`→english,player; `audio`→flipbook, english,player. A package must never import another subject module outside this DAG, and
 `core`/`ui`/`rewards`/`player` never import a subject module.
 
@@ -67,6 +67,16 @@ Supabase migration history. Earlier files are archived in
 is retired. Use `scripts/supabase-migrations.mjs` for remote migration
 list/dry-run/push through the session pooler. See `supabase/README.md`.
 
+**Visual guidelines:** the app follows the 「软糖贴纸」 visual language for a 7-year-old user — solid colors,
+2px warm borders, flat bottom-edge shadows (`shadow-sticker*`), large radii, spring motion. Gradients, soft
+blurred shadows (`shadow-sm/md/lg/xl`), glass blur and highlight layers are forbidden. Read
+[`docs/visual-guidelines.md`](docs/visual-guidelines.md) before touching UI. `pnpm lint:visual` (part of
+`pnpm lint` and CI) blocks new violations; legacy debt lives in `scripts/visual-style-baseline.json` and may only
+shrink — never raise the baseline to get a change through. Cards/panels use `StickerCard` and tags use
+Radix `Badge` (see the 场景→组件速查 table in the guide and `packages/ui/AGENTS.md`); hand-rolled card
+class recipes are blocked by the `hand-card` rule, and hand-written native `<button>/<input>/<select>/<textarea>`
+by the `native-control` rule (use `@rosie/ui/themes`; dark immersive areas wrap in `DarkScope`).
+
 **Styling ownership:** `apps/web/src/app/globals.css` holds ONLY global/shared styles — the Tailwind
 import + `@source` scan list, theme tokens (`@theme`, design-token `:root`), shared `@keyframes`
 exposed as `animate-*` utilities, and cross-package animations. **Module-specific CSS (custom
@@ -93,6 +103,7 @@ pnpm build                                # production build (turbo)
 pnpm start                                # preview production build
 pnpm lint                                 # lint all packages
 pnpm lint:theme                           # reject accidental system-dark styles on light pages
+pnpm lint:visual                          # reject new gradients / soft shadows / glass (docs/visual-guidelines.md)
 pnpm typecheck                            # type-check all packages
 
 # scoped to one module (the AI-context / fast-feedback win):
@@ -119,7 +130,7 @@ at `/admin/sync` through `POST /api/baidu/oauth/start`.
 Both flows use a ten-minute, single-use state whose hash binds the target and initiator. Configure
 `BAIDU_APP_KEY`, `BAIDU_SECRET_KEY`, `BAIDU_REDIRECT_URI` and the existing
 `SUPABASE_SERVICE_ROLE_KEY`. The state table and both credential tables are
-service-role-only, with no browser grants or RLS policies. Textbook narration maps keys such as
+service-role-only, with no browser grants or RLS policies. New shared course media files belong on Baidu Netdisk. Supabase stores binding metadata. Existing Storage resources migrate incrementally. Legacy textbook narration maps keys such as
 `5a-u3l1` to `/airosie/english/audio/5A/U3L1.mp3`. Authenticated audio-session POST establishes
 an HttpOnly cookie; each audio stream validates its Supabase session and supports Range requests,
 with public Storage fallback. Token refresh uses a database lease and compare-and-set persistence;
@@ -229,7 +240,7 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 Global admin sub-pages include:
 
 - `/admin/sync` — shared Baidu authorization, account-scoped directory bookmarks and read-only file browsing,
-  per-lesson math replay synchronization and matching reports. Directory APIs require an administrator.
+  on-demand 路径 / 数学 / 英语 panels, per-lesson math replay and English lesson audio bindings. Directory APIs require an administrator.
   Shared callbacks return here. Legacy personal callbacks still return to `/setting`, which no longer displays a Netdisk card.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
@@ -263,6 +274,28 @@ Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils),
 `@rosie/rewards` (stars/wallet/vouchers), `@rosie/player` (playback engine + `PlayerDock`).
 `@rosie/tasks` reads owner-scoped timetable data through core. See `packages/tasks/AGENTS.md`.
 Adding a new math lesson is a guided flow — see `.Codex/skills/add-lesson` + `docs/add-new-lesson.md`.
+
+### Life tree
+
+`/time-tree`, the execution list at `/tasks/homework` and the homework view of `/today/calendar`
+share the account's versioned Supabase garden via `POST /api/time-tree`. The route derives the
+owner and timestamps on the server, snapshots homework occurrences, and atomically commits
+timing, rewards and blind-box reservations. Parent PIN gates time entry, wish redemption and
+next-day settings at `/setting/time-tree`. See `tree.md` for the live rules.
+
+### Dev previews
+
+`apps/web/src/app/dev-preview/**` holds visual-only demo pages with static mock data (no Supabase).
+`/dev-preview/time-tree` is a playable, in-memory prototype of the 时间成长树 (rules in `tree.md`), adapted
+from the standalone 泡泡愿望树 demo: a full-viewport 2D SVG tree whose canopy is split into leaf regions
+(today + 6 days + faded history regions), floating bubbles, flowers/apples/stones, day/night sky, canvas
+particles and WebAudio. Code lives in `apps/web/src/components/tree-demo/garden/` (`model.ts` rules,
+`store.ts` external store + `useSyncExternalStore`, `layout.ts` region geometry, `TreeScene.tsx` / `Sky.tsx` /
+`Bubbles.tsx` art, `garden.css` scene styles, `GardenDialogs.tsx` dialogs); `TimeTreeDemo.tsx` loads it with
+`next/dynamic` (`ssr: false`). The illustration (sky, leaves, bubbles, fruit glow) intentionally uses gradients
+and glow, marked `visual-ok: 插画`; buttons, cards and dialogs still come from `@rosie/ui`. State is never
+persisted. `data.ts` / `TimeTreeScene.tsx` (the older R3F tree, `three` + `@react-three/*`) now only back the
+`/dev-preview/time-tree-organic` experiment.
 
 ### Data Flow
 
@@ -321,7 +354,7 @@ Both math and English share a weekly plan system with the same Thursday-start we
 
 ### Task Execution Workflow
 
-1. Before modifying UI, check theme tokens in `src/app/globals.css` (Tailwind v4 uses CSS variables — there is no `tailwind.config.js`)
+1. Before modifying UI, read `docs/visual-guidelines.md` and check theme tokens in `src/app/globals.css` (Tailwind v4 uses CSS variables — there is no `tailwind.config.js`)
 2. After any logic change, run `pnpm lint` to confirm no type errors
 3. When modifying offline / Service Worker behavior, test in `pnpm start` (preview) mode, not `pnpm dev`
 4. When adding a new page route, check `packages/ui/src/breadcrumb-map.ts` and add a breadcrumb entry — otherwise the page only shows a plain 返回首页 button (no level-by-level back navigation)
@@ -353,8 +386,10 @@ Both math and English share a weekly plan system with the same Thursday-start we
 
 ### 受控 UI 组件
 
+- 所有页面的数据请求都必须展示与真实请求状态同步的加载反馈。页面级等待统一使用 `@rosie/ui` 的 `LoadingOverlay`，传入 `placement="content"` 展示 Rosie 转圈动画。页面布局为加载区域分配页头、导航等占用后的剩余视口高度，动画在该区域水平、垂直居中。局部请求和提交操作按受控组件清单处理。
+- 请求成功、失败或取消时及时结束对应的加载态。并行请求按各自影响的内容区管理；同一区域依赖多个请求时，等待所需数据就绪再展示结果。成功返回空数据后才显示空态。已有缓存可继续展示，后台请求期间使用局部加载提示。
 - 业务页及业务包新增或修改控件时，先查阅 [受控组件入口清单](packages/ui/AGENTS.md#受控组件入口清单)。命中适用场景时必须从指定入口导入，通过公开属性选择变体、尺寸和状态。
-- 清单未覆盖且需要通用控件时，优先评估 shadcn/ui 原语，由 `@rosie/ui` 封装并提供公开入口，业务侧通过该入口引用。
-- 发现多个页面重复实现同一控件，或新需求适合沉淀为共享组件时，主动提醒用户，列出复用场景、可复用的现有组件或 shadcn/ui 原语，以及建议的公开接口；用户确认后再封装并登记。
+- 新增或修改通用控件时，必须优先使用 Radix Themes 提供的组件和样式，通过 `@rosie/ui/themes` 导入；已有业务封装使用清单指定入口。禁止用原生标签搭配 Tailwind 类、手写 CSS 或内联样式自行实现控件，包括按钮、下拉框、输入框、Tab 和弹窗。
+- 发现多个页面重复实现同一控件，或新需求适合沉淀为共享组件时，主动提醒用户，列出复用场景、可复用的现有组件或 Radix Themes 组件，以及建议的公开接口；用户确认后再封装并登记。
 - 调用处可安排控件在页面中的位置与外部间距。禁止通过 `className`、`style`、父级选择器或事件拦截覆盖受控组件的外观，以及悬停、按下、焦点、禁用、加载等交互状态。
 - 组件能力不足时，先说明具体使用场景、现有接口的限制和建议扩展的接口，等待用户确认后再实施。确认前禁止在业务页复制组件、直接使用底层原语或临时覆盖样式绕过限制。

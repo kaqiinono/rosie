@@ -35,6 +35,11 @@ jobs:
       - name: Package cycle check
         run: node scripts/check-package-cycles.mjs
 
+      # Visual guidelines (docs/visual-guidelines.md): no new gradients / soft shadows / glass.
+      # Dependency-free and fast; legacy debt is tracked in scripts/visual-style-baseline.json.
+      - name: Visual style check
+        run: node scripts/check-visual-style.mjs
+
       - name: Typecheck
         run: pnpm typecheck
 

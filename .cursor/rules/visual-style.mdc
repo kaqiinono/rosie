@@ -1,0 +1,38 @@
+---
+description: Rosie 视觉规范「软糖贴纸」— 纯色、粗描边、平底边、大圆角；禁止渐变、柔和投影、毛玻璃
+alwaysApply: true
+---
+
+# 视觉规范：软糖贴纸
+
+面向 7 岁儿童：暖、圆、厚实、会弹。完整规范见 `docs/visual-guidelines.md`，改 UI 前先看一遍。
+
+## 必须
+
+- 控件用 `@rosie/ui/themes`（Radix）和 `packages/ui/AGENTS.md` 登记的入口，**不要覆盖**外观。
+- 卡片 / 面板 / 统计块 / 列表项容器：用 `<StickerCard>`（`@rosie/ui`），外观走 `tone` `size` `elevation` `radius` `interactive`，`className` 只写布局；**不要手写** `rounded-* border-2 bg-white shadow-sticker*`（`hand-card` 规则会拦截）。
+- 业务页的整页外壳（底色 + 粘性页头 + 内容宽度）：用 `<PageShell>`（`@rosie/ui`），不要手写 `min-h-screen` + sticky header；数据概览小块用 `<StatTile>`。
+- 标签 / 徽章：`Badge variant="soft" radius="full" color=…`（`@rosie/ui/themes`），不要手写 `rounded-full px-2 bg-X-100`。
+- 写 UI 前先查 `docs/visual-guidelines.md` 的「3.5 场景 → 组件速查」，有现成组件就直接用。缺能力时给共享组件加有名字的 prop，不在调用处覆盖外观。
+- 控件一律用 `@rosie/ui/themes`（Button / IconButton / TextField.Root / TextArea / Select）；**不要手写** 原生 `<button>` `<input>` `<select>` `<textarea>`（`native-control` 规则会拦截，非标准控件加 `native-ok: 原因`）。弹窗 / 底部卡片用 `AppDialog`，不要手写 `fixed inset-0` 遮罩。
+- 深色区域是刻意保留的（口算、题海、全屏做题、英语计划管理 `/setting/plans/english/**`），不要改成浅色或套 `PageShell`，用 `<DarkScope>`（`@rosie/ui`）包裹让 Radix 控件自动取深色；在里面仍然不用渐变、柔和投影、毛玻璃。
+- `rewards` / `player` / `core` 不能依赖 `@rosie/ui`，这几个包里的卡片按文档第 3 节配方手写。
+- 按钮、输入、导航胶囊：`rounded-full`；弹窗用 `AppDialog`。
+- 学科身份色只用**纯色**：浅底 `bg-X-100 text-X-800`，实心 `bg-X-600` + 白字（浅色实心配深色字）。
+- 弹性动效用 `ease-spring`，并带 `motion-reduce:transition-none`。
+- 令牌（`shadow-sticker*`、`border-kid-line*`、`bg-kid-paper`、`--accent-*`）优先，不手写色值和阴影。
+
+## 禁止（塑料感）
+
+- 渐变：`bg-gradient-*`、`bg-linear-*`、`linear-gradient()` / `radial-gradient()`
+- 柔和模糊投影：`shadow-sm/md/lg/xl/2xl`、`shadow-[0_8px_24px_…]`
+- 毛玻璃：`backdrop-blur`、`backdrop-filter`
+- 高光层、白色 `inset` 内阴影
+- 1px 冷灰细线（`border border-slate-*`）作为卡片 / 控件边框
+
+`pnpm lint:visual` 会拦截新增的渐变 / 柔和投影 / 毛玻璃；历史债务记录在 `scripts/visual-style-baseline.json`，只减不增。
+**不要通过上调基线来绕过检查。** 确需保留（深色沉浸场景、插画自带阴影），在同一行或上一行写 `visual-ok: 原因`。
+
+## 顺手清债
+
+修改某个文件时，若其中有基线内的旧写法，按文档第 4 节的对照表顺带替换，再运行 `pnpm lint:visual --update` 收紧基线。

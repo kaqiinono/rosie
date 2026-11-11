@@ -1,0 +1,159 @@
+{
+  "apps/web/src/app/admin/awards/page.tsx": {
+    "hand-card": 1
+  },
+  "apps/web/src/app/flipbook/page.tsx": {
+    "native-control": 3
+  },
+  "apps/web/src/app/math/mistakes/page.tsx": {
+    "hand-card": 2
+  },
+  "apps/web/src/app/math/notes/page.tsx": {
+    "hand-card": 1
+  },
+  "apps/web/src/app/math/ny/quiz/page.tsx": {
+    "hand-card": 1
+  },
+  "apps/web/src/components/admin/words/WordImagesPage.tsx": {
+    "hand-header": 1,
+    "hand-card": 1
+  },
+  "apps/web/src/components/settings/SettingsHub.tsx": {
+    "hand-card": 1
+  },
+  "packages/ai/src/components/AiAssistantPage.tsx": {
+    "hand-card": 2
+  },
+  "packages/ai/src/components/AiChatPanel.tsx": {
+    "hand-card": 1
+  },
+  "packages/ai/src/components/AiFloatingAssistant.tsx": {
+    "hand-card": 1
+  },
+  "packages/audio/src/admin/CollectionView.tsx": {
+    "hand-card": 1
+  },
+  "packages/audio/src/admin/StandaloneAudioTab.tsx": {
+    "hand-card": 1
+  },
+  "packages/chinese/src/components/chars/ChineseCharsFilterBar.tsx": {
+    "hand-card": 1
+  },
+  "packages/chinese/src/components/chars/ChinesePinyinWritePrintPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/chinese/src/components/ChineseDailyPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/chinese/src/components/ChineseHomePage.tsx": {
+    "hand-card": 1
+  },
+  "packages/chinese/src/components/reading/ChineseReadingIndexPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/chinese/src/components/reading/ChineseReadingRecordingsPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/english/src/components/reading/ReadingPassagePrintPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/english/src/components/reading/StorySeriesView.tsx": {
+    "hand-card": 1
+  },
+  "packages/english/src/components/words/AppHeader.tsx": {
+    "hand-header": 1
+  },
+  "packages/english/src/components/words/EnglishPracticePrintPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/english/src/components/words/WordHelpModal.tsx": {
+    "hand-card": 1
+  },
+  "packages/english/src/components/words/ZoomableWordImage.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-content/src/components/lesson/g1/lesson34/MathFormula.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-content/src/components/lesson/g1/lesson34/StoryBox.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-content/src/components/lesson/g1/lesson35/CongratsModal.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-content/src/components/lesson/g1/lesson35/HomePage.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-content/src/components/lesson/g1/lesson36/WeekdayMagic.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-content/src/components/lesson/g1/lesson38/MathProblems.tsx": {
+    "hand-header": 1
+  },
+  "packages/math-kit/src/components/shared/ExpandedProblemCard.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/lesson-header-chrome.ts": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/LessonDraftsPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/LessonGradeNav.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/LessonGradeSwitcher.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/LessonLectureSwitcher.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/LessonProblemList.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/LessonSummaryBody.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/ScratchPad/ScratchPadQuestionFloat.tsx": {
+    "hand-card": 2
+  },
+  "packages/math-kit/src/components/shared/ScratchPad/ScratchPadSelectionActions.tsx": {
+    "hand-card": 1
+  },
+  "packages/math-kit/src/components/shared/VerticalDigitPuzzlePanel.tsx": {
+    "hand-card": 1
+  },
+  "packages/math/src/components/catalog/CatalogTree.tsx": {
+    "hand-card": 1
+  },
+  "packages/math/src/components/CourseCard.tsx": {
+    "hand-card": 1
+  },
+  "packages/math/src/components/GradeCard.tsx": {
+    "hand-card": 1
+  },
+  "packages/math/src/components/shared/dynamic-lesson/DynamicLessonPages.tsx": {
+    "hand-card": 1
+  },
+  "packages/math/src/components/shared/LessonMistakesPage.tsx": {
+    "hand-card": 1
+  },
+  "packages/math/src/components/shared/practice-queue/PracticeHelpPanel.tsx": {
+    "hand-card": 1
+  },
+  "packages/rewards/src/DrawCard.tsx": {
+    "hand-card": 1
+  },
+  "packages/rewards/src/StarAdjustmentPanel.tsx": {
+    "hand-card": 1
+  },
+  "packages/tasks/src/components/Timetable.tsx": {
+    "hand-card": 1
+  },
+  "packages/tasks/src/components/timetable/CourseEditor.tsx": {
+    "hand-header": 1
+  },
+  "packages/tasks/src/components/timetable/CourseTimeWheel.tsx": {
+    "hand-header": 1
+  }
+}
