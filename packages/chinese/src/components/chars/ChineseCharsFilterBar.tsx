@@ -1,11 +1,12 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import type { ChineseLessonRow } from '../../types/chineseCharData'
 import type { CharQuizType } from '../../utils/chinese-chars-session-helpers'
 import { ALL_CHAR_QUIZ_TYPES } from '../../utils/chinese-chars-session-helpers'
 import type { UnitOption } from '../../utils/chinese-chars-session-helpers'
 import { getLessonDisplayInfo } from '../../utils/chinese-lesson-display'
+import { Button, Switch } from '@rosie/ui/themes'
 
 const QUIZ_TYPE_LABEL: Record<CharQuizType, string> = {
   recognize: '认字',
@@ -39,33 +40,11 @@ interface ChineseCharsFilterBarProps {
   canPrint: boolean
 }
 
-function PreviewToggle({
-  enabled,
-  onToggle,
-}: {
-  enabled: boolean
-  onToggle: () => void
-}) {
+function PreviewToggle({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) {
   return (
     <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 select-none">
       <span className="text-[11px] font-extrabold tracking-wide text-amber-900/50">卡片预览</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={enabled}
-        onClick={onToggle}
-        className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors ${
-          enabled
-            ? 'border-emerald-500 bg-emerald-500'
-            : 'border-amber-200/80 bg-amber-100/60'
-        }`}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-transform ${
-            enabled ? 'translate-x-5' : ''
-          }`}
-        />
-      </button>
+      <Switch checked={enabled} onCheckedChange={onToggle} color="jade" size="1" />
     </label>
   )
 }
@@ -78,36 +57,33 @@ function FilterLabel({ children }: { children: ReactNode }) {
   )
 }
 
+type PillColor = ComponentProps<typeof Button>['color']
+
 function PillButton({
   active,
   disabled,
   onClick,
-  activeClass,
+  color,
   children,
 }: {
   active: boolean
   disabled?: boolean
   onClick: () => void
-  activeClass: string
+  color: PillColor
   children: ReactNode
 }) {
   return (
-    <button
+    <Button
       type="button"
       disabled={disabled}
-      onClick={disabled ? undefined : onClick}
-      className={`min-h-9 rounded-lg border-[1.5px] px-2.5 py-1 text-[13px] font-bold whitespace-nowrap transition-all select-none sm:min-h-10 ${
-        disabled
-          ? 'cursor-not-allowed opacity-40'
-          : 'cursor-pointer'
-      } ${
-        active
-          ? activeClass
-          : 'border-amber-200/70 bg-white/80 text-amber-900/55 hover:border-amber-300 hover:text-amber-900'
-      }`}
+      onClick={onClick}
+      variant={active ? 'solid' : 'soft'}
+      color={color}
+      size="2"
+      radius="full"
     >
       {children}
-    </button>
+    </Button>
   )
 }
 
@@ -133,11 +109,13 @@ export default function ChineseCharsFilterBar({
   canStart,
   canPrint,
 }: ChineseCharsFilterBarProps) {
-  const lessonsByUnit = [...selUnits].sort((a, b) => a - b).map((unit) => ({
-    unit,
-    title: units.find((u) => u.unit === unit)?.title ?? `第${unit}单元`,
-    lessons: lessons.filter((l) => l.unit === unit),
-  }))
+  const lessonsByUnit = [...selUnits]
+    .sort((a, b) => a - b)
+    .map((unit) => ({
+      unit,
+      title: units.find((u) => u.unit === unit)?.title ?? `第${unit}单元`,
+      lessons: lessons.filter((l) => l.unit === unit),
+    }))
 
   const visibleLessons =
     selUnits.size > 0
@@ -150,7 +128,7 @@ export default function ChineseCharsFilterBar({
 
   return (
     <div className="cn-filter-bar px-4 py-3 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1280px] rounded-3xl border border-amber-200/60 bg-white/80 p-3 shadow-sm sm:p-5">
+      <div className="shadow-sticker-sm mx-auto max-w-[1280px] rounded-3xl border border-amber-200/60 bg-white p-3 sm:p-5">
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <FilterLabel>单元</FilterLabel>
@@ -159,7 +137,7 @@ export default function ChineseCharsFilterBar({
                 key={u.unit}
                 active={selUnits.has(u.unit)}
                 onClick={() => onToggleUnit(u.unit)}
-                activeClass="border-orange-500 bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-[0_2px_8px_rgba(234,88,12,.28)]"
+                color="amber"
               >
                 {u.title}
               </PillButton>
@@ -181,7 +159,7 @@ export default function ChineseCharsFilterBar({
                       key={l.lessonKey}
                       active={selLessons.has(l.lessonKey)}
                       onClick={() => onToggleLesson(l.lessonKey)}
-                      activeClass="border-indigo-400 bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,.28)]"
+                      color="violet"
                     >
                       {getLessonDisplayInfo(l, unitLessons).label}
                     </PillButton>
@@ -203,7 +181,7 @@ export default function ChineseCharsFilterBar({
                   active={quizTypes.has(type)}
                   disabled={disabled}
                   onClick={() => onToggleQuizType(type)}
-                  activeClass="border-emerald-500 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_2px_8px_rgba(16,185,129,.25)]"
+                  color="jade"
                 >
                   {QUIZ_TYPE_LABEL[type]}
                 </PillButton>
@@ -215,11 +193,7 @@ export default function ChineseCharsFilterBar({
             {hasTeacherWords && (
               <>
                 <FilterLabel>词库</FilterLabel>
-                <PillButton
-                  active={teacherOnly}
-                  onClick={onToggleTeacherOnly}
-                  activeClass="border-fuchsia-500 bg-gradient-to-br from-fuchsia-500 to-purple-600 text-white shadow-[0_2px_8px_rgba(217,70,239,.25)]"
-                >
+                <PillButton active={teacherOnly} onClick={onToggleTeacherOnly} color="purple">
                   老师词语 📝
                 </PillButton>
                 {teacherOnly && (
@@ -237,21 +211,21 @@ export default function ChineseCharsFilterBar({
               <PillButton
                 active={selDisplayType === 'cards'}
                 onClick={() => onSelectDisplayType('cards')}
-                activeClass="border-amber-500 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-[0_2px_8px_rgba(245,158,11,.28)]"
+                color="orange"
               >
                 生字卡
               </PillButton>
               <PillButton
                 active={selDisplayType === 'library'}
                 onClick={() => onSelectDisplayType('library')}
-                activeClass="border-indigo-500 bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-[0_2px_8px_rgba(99,102,241,.28)]"
+                color="violet"
               >
                 生字库
               </PillButton>
               <PillButton
                 active={selDisplayType === 'all'}
                 onClick={() => onSelectDisplayType('all')}
-                activeClass="border-emerald-500 bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-[0_2px_8px_rgba(16,185,129,.25)]"
+                color="jade"
               >
                 全部
               </PillButton>
@@ -260,25 +234,29 @@ export default function ChineseCharsFilterBar({
             <PreviewToggle enabled={cardPreviewEnabled} onToggle={onToggleCardPreview} />
 
             <div className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-2 sm:ml-auto sm:flex sm:w-auto">
-              <span className="inline-flex min-h-11 items-center rounded-lg border border-amber-200/70 bg-white/80 px-2.5 py-1 text-[13px] font-bold whitespace-nowrap text-amber-900/55">
+              <span className="inline-flex min-h-11 items-center rounded-lg border border-amber-200/70 bg-white px-2.5 py-1 text-[13px] font-bold whitespace-nowrap text-amber-900/55">
                 {contentCount} 项内容
               </span>
-              <button
+              <Button
                 type="button"
                 disabled={!canStart}
                 onClick={onStartPractice}
-                className="cn-start-btn min-h-11 cursor-pointer rounded-xl border-0 px-4 py-2 text-[13px] font-extrabold text-white transition hover:-translate-y-px disabled:translate-y-0 sm:px-5"
+                variant="solid"
+                color="orange"
+                size="3"
               >
                 开始练习
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 disabled={!canPrint}
                 onClick={onPrintAll}
-                className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-amber-300/80 bg-white/90 px-3 py-2 text-[13px] font-extrabold text-amber-900/70 transition hover:border-amber-400 hover:text-amber-900 disabled:cursor-not-allowed disabled:opacity-45 sm:px-4"
+                variant="outline"
+                color="gray"
+                size="3"
               >
                 打印
-              </button>
+              </Button>
             </div>
           </div>
         </div>

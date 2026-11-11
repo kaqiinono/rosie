@@ -29,9 +29,7 @@ export default function LessonPassageView({ lessonKey, group }: Props) {
   const write = useMemo(() => new Set(group?.write ?? []), [group])
 
   if (!passage?.paragraphs.length) {
-    return (
-      <p className="text-xs text-slate-400 italic">课文原文待录入</p>
-    )
+    return <p className="text-xs text-slate-400 italic">课文原文待录入</p>
   }
 
   return (
@@ -46,7 +44,7 @@ export default function LessonPassageView({ lessonKey, group }: Props) {
           会写
         </span>
         <span className="flex items-center gap-1 text-slate-500">
-          <span className="inline-block h-3 w-3 rounded border border-violet-400 bg-gradient-to-br from-sky-100 to-rose-100" />
+          <span className="inline-block h-3 w-3 rounded border border-violet-400 bg-rose-100" />
           认+写
         </span>
       </div>
@@ -55,7 +53,7 @@ export default function LessonPassageView({ lessonKey, group }: Props) {
         return (
           <p
             key={`${lessonKey}-p-${i}`}
-            className="whitespace-pre-line text-base leading-loose tracking-wide text-slate-800"
+            className="text-base leading-loose tracking-wide whitespace-pre-line text-slate-800"
           >
             {segments.map((seg, j) => (
               <span

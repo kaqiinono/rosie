@@ -15,31 +15,31 @@ function bookQuickLinks(bookSlug: ChineseBookSlug) {
       href: chineseRoute(bookSlug, 'chars'),
       label: '生字',
       description: '认读 · 会写 · 字卡',
-      className: 'from-rose-50 to-orange-50 border-rose-200 text-rose-900',
+      className: 'bg-rose-50 border-rose-200 text-rose-900',
     },
     {
       href: chineseRoute(bookSlug, 'reading'),
       label: '阅读',
       description: '课文 · 高亮 · 回想',
-      className: 'from-amber-50 to-orange-50 border-amber-200 text-amber-900',
+      className: 'bg-amber-50 border-amber-200 text-amber-900',
     },
     {
       href: chineseRoute(bookSlug, 'poems'),
       label: '古诗',
       description: '听读 · 填空 · 背诵',
-      className: 'from-violet-50 to-fuchsia-50 border-violet-200 text-violet-900',
+      className: 'bg-violet-50 border-violet-200 text-violet-900',
     },
     {
       href: chineseRoute(bookSlug, 'daily'),
       label: '今日',
       description: '每日新字 · 测验',
-      className: 'from-sky-50 to-indigo-50 border-sky-200 text-sky-900',
+      className: 'bg-sky-50 border-sky-200 text-sky-900',
     },
     {
       href: chineseRoute(bookSlug, 'accumulation'),
       label: '积累',
       description: '园地 · 谚语名言',
-      className: 'from-teal-50 to-cyan-50 border-teal-200 text-teal-900',
+      className: 'bg-teal-50 border-teal-200 text-teal-900',
     },
   ] as const
 }
@@ -77,7 +77,7 @@ export default function ChineseHomePage({ bookSlug: bookSlugProp }: ChineseHomeP
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 bg-gradient-to-br p-4 text-center no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 ${link.className}`}
+                className={`shadow-sticker-sm hover:shadow-sticker flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 p-4 text-center no-underline transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 ${link.className}`}
               >
                 <span className="text-sm font-extrabold">{link.label}</span>
                 <span className="text-[10px] leading-snug opacity-75">{link.description}</span>
@@ -86,7 +86,7 @@ export default function ChineseHomePage({ bookSlug: bookSlugProp }: ChineseHomeP
             {unresolvedWrong.length > 0 && (
               <Link
                 href="/chinese/wrong"
-                className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-pink-50 p-4 text-center text-rose-900 no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2"
+                className="shadow-sticker-sm hover:shadow-sticker flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border-2 border-rose-200 bg-pink-50 p-4 text-center text-rose-900 no-underline transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2"
               >
                 <span className="text-sm font-extrabold">错题本</span>
                 <span className="text-[10px] leading-snug opacity-75">
@@ -106,7 +106,7 @@ export default function ChineseHomePage({ bookSlug: bookSlugProp }: ChineseHomeP
               <Link
                 key={unit.unit}
                 href={chineseRoute(bookSlug, 'units', String(unit.unit))}
-                className="block min-h-32 rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
+                className="border-kid-line shadow-sticker-sm hover:shadow-sticker block min-h-32 rounded-2xl border-2 bg-white p-4 no-underline transition hover:-translate-y-0.5 hover:border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
               >
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="font-extrabold text-slate-800">{unit.title}</h3>

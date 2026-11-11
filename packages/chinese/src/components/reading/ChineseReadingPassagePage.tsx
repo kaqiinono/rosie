@@ -12,6 +12,7 @@ import CharRecognizeRecall, { type RecognizeRecallChar } from './CharRecognizeRe
 import CharWriteRecall, { type WriteRecallChar } from './CharWriteRecall'
 import LessonPassageReader from './LessonPassageReader'
 import PassageRecorder from './PassageRecorder'
+import { Button } from '@rosie/ui/themes'
 
 interface Props {
   lessonKey: string
@@ -70,7 +71,10 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
   }, [group, getCharProfile, charKeyForBook])
 
   const pinyinPool = useMemo(
-    () => [...new Set([...(group?.recognizePinyin ?? []), ...(group?.writePinyin ?? [])])].filter(Boolean),
+    () =>
+      [...new Set([...(group?.recognizePinyin ?? []), ...(group?.writePinyin ?? [])])].filter(
+        Boolean,
+      ),
     [group],
   )
 
@@ -131,7 +135,7 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
         headerStart={
           <Link
             href={chineseRoute(bookSlug, 'reading')}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-bold text-amber-700 no-underline ring-1 ring-amber-200 transition hover:-translate-x-0.5"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-amber-700 no-underline ring-1 ring-amber-200 transition hover:-translate-x-0.5"
           >
             <span className="text-[14px] leading-none">←</span>
             <span>返回</span>
@@ -146,10 +150,10 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
             />
             {recallCount > 0 ? (
               !recallOpen ? (
-                <button
+                <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                   type="button"
                   onClick={() => setRecallOpen(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 px-6 py-4 text-white shadow-[0_4px_14px_rgba(16,185,129,.3)] transition hover:-translate-y-0.5"
+                  className="shadow-sticker-sm flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-6 py-4 text-white transition hover:-translate-y-0.5"
                 >
                   <span className="text-[20px]">🧠</span>
                   <div className="text-center">
@@ -161,18 +165,20 @@ export default function ChineseReadingPassagePage({ lessonKey }: Props) {
                   <span className="text-[18px] font-extrabold">→</span>
                 </button>
               ) : (
-                <div className="space-y-6 rounded-2xl border border-emerald-200/70 bg-white/70 p-4 sm:p-5">
+                <div className="space-y-6 rounded-2xl border border-emerald-200/70 bg-white p-4 sm:p-5">
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="text-sm font-extrabold tracking-wide text-emerald-700 uppercase">
                       🧠 回想测试
                     </h2>
-                    <button
+                    <Button
                       type="button"
                       onClick={() => setRecallOpen(false)}
-                      className="cursor-pointer text-[11px] font-bold text-slate-400 hover:text-slate-600"
+                      variant="ghost"
+                      color="gray"
+                      size="1"
                     >
                       收起
-                    </button>
+                    </Button>
                   </div>
                   <CharRecognizeRecall
                     chars={recognizeChars}

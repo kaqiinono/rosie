@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
+import { Button } from '@rosie/ui/themes'
 import { hashSeed, shuffle } from '../../utils/chinese-helpers'
 import CharSpeakButton from '../chars/CharSpeakButton'
 
@@ -63,7 +64,7 @@ function RecognizeCard({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-2 rounded-2xl border-[1.5px] bg-white/85 p-3 transition',
+        'flex flex-col gap-2 rounded-2xl border-[1.5px] bg-white p-3 transition',
         result === true
           ? 'border-emerald-300 bg-emerald-50/70'
           : result === false
@@ -73,9 +74,7 @@ function RecognizeCard({
     >
       <div className="flex items-center justify-center gap-1">
         <span className="cn-grid-cell-sm">{item.char}</span>
-        {locked && (
-          <CharSpeakButton text={item.char} size="sm" className="text-sky-700" />
-        )}
+        {locked && <CharSpeakButton text={item.char} size="sm" />}
       </div>
 
       {locked && (
@@ -94,21 +93,21 @@ function RecognizeCard({
           const isCorrect = opt === item.pinyin
           const isChosen = picked === opt
           return (
-            <button
+            <Button
               key={opt}
               type="button"
-              disabled={locked}
-              onClick={() => handlePick(opt)}
-              className={clsx(
-                'rounded-lg border-[1.5px] px-2 py-1.5 text-[13px] font-bold transition',
-                !locked && 'cursor-pointer border-sky-200 bg-white text-sky-900 hover:border-sky-400 hover:bg-sky-50',
-                locked && isCorrect && 'border-emerald-400 bg-emerald-100 text-emerald-800',
-                locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-100 text-rose-700',
-                locked && !isCorrect && !isChosen && 'border-slate-200 bg-slate-50 text-slate-400',
-              )}
+              aria-disabled={locked}
+              onClick={() => {
+                if (!locked) handlePick(opt)
+              }}
+              variant={!locked ? 'outline' : isCorrect || isChosen ? 'solid' : 'soft'}
+              color={!locked ? 'sky' : isCorrect ? 'jade' : isChosen ? 'red' : 'gray'}
+              size="1"
+              radius="full"
+              className="w-full"
             >
               {opt}
-            </button>
+            </Button>
           )
         })}
       </div>

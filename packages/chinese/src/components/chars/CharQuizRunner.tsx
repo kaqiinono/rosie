@@ -1,8 +1,8 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import clsx from 'clsx'
 import { hashSeed, shuffle } from '../../utils/chinese-helpers'
+import { Button } from '@rosie/ui/themes'
 
 export interface CharQuizItem {
   char: string
@@ -113,33 +113,29 @@ export default function CharQuizRunner({ items, pinyinPool, onComplete }: CharQu
           const isCorrect = opt === current.pinyin
           const isChosen = selected === opt
           return (
-            <button
+            <Button
               key={opt}
               type="button"
-              disabled={answered}
-              onClick={() => handleSelect(opt)}
-              className={clsx(
-                'rounded-xl border-2 px-4 py-3 text-lg font-semibold transition-colors',
-                !answered && 'border-slate-200 bg-white hover:border-sky-300 hover:bg-sky-50',
-                answered && isCorrect && 'border-emerald-400 bg-emerald-50 text-emerald-800',
-                answered && isChosen && !isCorrect && 'border-rose-400 bg-rose-50 text-rose-700',
-                answered && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-              )}
+              aria-disabled={answered}
+              onClick={() => {
+                if (!answered) handleSelect(opt)
+              }}
+              variant={!answered ? 'outline' : isCorrect || isChosen ? 'solid' : 'soft'}
+              color={!answered ? 'gray' : isCorrect ? 'jade' : isChosen ? 'red' : 'gray'}
+              size="3"
+              radius="full"
+              className="w-full"
             >
               {opt}
-            </button>
+            </Button>
           )
         })}
       </div>
 
       {answered && (
-        <button
-          type="button"
-          onClick={handleNext}
-          className="rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold text-white hover:bg-sky-700"
-        >
+        <Button type="button" onClick={handleNext} variant="solid" color="sky" size="3">
           {idx + 1 >= items.length ? '查看结果' : '下一题'}
-        </button>
+        </Button>
       )}
     </div>
   )

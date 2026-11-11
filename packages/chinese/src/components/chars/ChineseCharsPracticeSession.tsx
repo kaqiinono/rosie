@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import clsx from 'clsx'
 import { todayStr, useAuth, useImmersive, usePracticePendingLifecycle } from '@rosie/core'
 import { useStarHud, StarProgressBar, ColoredStar } from '@rosie/rewards'
-import { CandyButton, CANDY_PRESETS, type CandyButtonConfig } from '@rosie/ui'
+import { CandyButton, CANDY_PRESETS, type CandyButtonConfig, StickerCard } from '@rosie/ui'
 import { useChineseContext } from '../../context/ChineseContext'
 import { useChineseRoadmapPlan } from '../../hooks/useChineseRoadmapPlan'
 import {
@@ -20,7 +19,13 @@ import {
   type PracticeSessionPlan,
 } from '../../utils/chinese-chars-session-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
-import { findLessonRow, getLessonGroup, hashSeed, parseBookSlug, shuffle } from '../../utils/chinese-helpers'
+import {
+  findLessonRow,
+  getLessonGroup,
+  hashSeed,
+  parseBookSlug,
+  shuffle,
+} from '../../utils/chinese-helpers'
 import { getLessonPassage } from '../../utils/chinese-lesson-passage-helpers'
 import { getLessonDisplayInfo, sortLessonsPedagogically } from '../../utils/chinese-lesson-display'
 import {
@@ -50,6 +55,7 @@ import LessonPassageReader from '../reading/LessonPassageReader'
 import PassageRecorder from '../reading/PassageRecorder'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'
 import { chineseRoute } from '../../utils/chinese-routes'
+import { Button } from '@rosie/ui/themes'
 
 const PHASE_LABEL: Record<PracticePhase, string> = {
   cards: '生字卡片',
@@ -78,10 +84,7 @@ function parseLessons(raw: string | null): Set<string> {
   return new Set(raw.split(',').filter(Boolean))
 }
 
-function lessonKeyForCharQuestion(
-  q: CharPracticeQuestion,
-  cards: CharCardItem[],
-): string | null {
+function lessonKeyForCharQuestion(q: CharPracticeQuestion, cards: CharCardItem[]): string | null {
   if (q.kind === 'phrase-char') return q.item.lessonKey
   const card =
     cards.find((c) => c.charKey === q.charKey && c.lessonTitle === q.lessonTitle) ??
@@ -110,30 +113,30 @@ function enrichPlanForPhases(plan: PracticeSessionPlan) {
   }
 }
 
-function lessonKeyForPoem(poem: PoemEntry, lessons: { lessonKey: string; unit: number; lesson: number; lessonKind: string }[]): string | null {
+function lessonKeyForPoem(
+  poem: PoemEntry,
+  lessons: { lessonKey: string; unit: number; lesson: number; lessonKind: string }[],
+): string | null {
   const match = lessons.find((lesson) =>
     poemMatchesLessonMeta(poem, lesson.lessonKind, { unit: lesson.unit, lesson: lesson.lesson }),
   )
   return match?.lessonKey ?? null
 }
 
-function WrongAnswerPanel({
-  correct,
-  onNext,
-}: {
-  correct: string
-  onNext: () => void
-}) {
+function WrongAnswerPanel({ correct, onNext }: { correct: string; onNext: () => void }) {
   return (
     <div className="rounded-2xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-center">
       <p className="text-sm font-bold text-rose-700">再想想看～正确答案是「{correct}」</p>
-      <button
+      <Button
         type="button"
         onClick={onNext}
-        className="cn-start-btn mt-3 cursor-pointer rounded-xl border-0 px-5 py-2 text-sm font-bold text-white"
+        variant="solid"
+        color="orange"
+        size="2"
+        className="mt-3"
       >
         下一题
-      </button>
+      </Button>
     </div>
   )
 }
@@ -160,9 +163,8 @@ function CandyChoiceButton({
   onClick: () => void
   compact?: boolean
 }) {
-  const preset = CANDY_PRESETS[
-    ANSWER_CANDY_PRESETS[Math.abs(presetSeed) % ANSWER_CANDY_PRESETS.length]
-  ]
+  const preset =
+    CANDY_PRESETS[ANSWER_CANDY_PRESETS[Math.abs(presetSeed) % ANSWER_CANDY_PRESETS.length]]
   const feedbackColors: Partial<CandyButtonConfig> = locked
     ? isCorrect
       ? { light: '#bbf7d0', mid: '#22c55e', dark: '#15803d' }
@@ -198,8 +200,15 @@ export default function ChineseCharsPracticeSession() {
   const { user } = useAuth()
   const { setIsImmersive } = useImmersive()
   const { awardStars } = useStarHud()
-  const { lessons, lessonGroups, charByKey, getCharProfile, recordBatch, isCharDataReady, bookSlug } =
-    useChineseContext()
+  const {
+    lessons,
+    lessonGroups,
+    charByKey,
+    getCharProfile,
+    recordBatch,
+    isCharDataReady,
+    bookSlug,
+  } = useChineseContext()
   const { plans, appendLessonRuns, advanceAfterSession } = useChineseRoadmapPlan(user)
 
   const unitsParam = searchParams.get('units')
@@ -239,9 +248,7 @@ export default function ChineseCharsPracticeSession() {
 
   const filtered = useMemo(
     () =>
-      isCharDataReady
-        ? filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug)
-        : [],
+      isCharDataReady ? filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug) : [],
     [isCharDataReady, lessons, lessonGroups, selUnits, selLessons, bookSlug],
   )
 
@@ -258,9 +265,7 @@ export default function ChineseCharsPracticeSession() {
   const rewardSettleDoneRef = useRef(false)
   const sessionStartedAtRef = useRef<string>(new Date().toISOString())
 
-  const [phase, setPhase] = useState<PracticePhase>(() =>
-    cardPreviewEnabled ? 'cards' : 'chars',
-  )
+  const [phase, setPhase] = useState<PracticePhase>(() => (cardPreviewEnabled ? 'cards' : 'chars'))
   const [cardIdx, setCardIdx] = useState(0)
   const [charQIdx, setCharQIdx] = useState(0)
   const [charRetryIds, setCharRetryIds] = useState<string[]>([])
@@ -352,7 +357,16 @@ export default function ChineseCharsPracticeSession() {
     return () => {
       cancelled = true
     }
-  }, [isCharDataReady, builtPlan, bookSlug, scopeKey, legacyScopeKey, cardPreviewEnabled, user?.id, planId])
+  }, [
+    isCharDataReady,
+    builtPlan,
+    bookSlug,
+    scopeKey,
+    legacyScopeKey,
+    cardPreviewEnabled,
+    user?.id,
+    planId,
+  ])
 
   const getEnvelope = useCallback(() => {
     if (!plan || phase === 'done') return null
@@ -490,36 +504,36 @@ export default function ChineseCharsPracticeSession() {
     }
   }, [flushCloudNow, router, setIsImmersive, bookSlug])
 
-  const recordLessonAnswer = useCallback((lessonKey: string | null, phaseName: string, correct: boolean) => {
-    if (!lessonKey) return
-    setByLessonStats((prev) => {
-      const lesson = prev[lessonKey] ?? {}
-      const cur = lesson[phaseName] ?? { total: 0, correct: 0 }
-      return {
-        ...prev,
-        [lessonKey]: {
-          ...lesson,
-          [phaseName]: {
-            total: cur.total + 1,
-            correct: cur.correct + (correct ? 1 : 0),
+  const recordLessonAnswer = useCallback(
+    (lessonKey: string | null, phaseName: string, correct: boolean) => {
+      if (!lessonKey) return
+      setByLessonStats((prev) => {
+        const lesson = prev[lessonKey] ?? {}
+        const cur = lesson[phaseName] ?? { total: 0, correct: 0 }
+        return {
+          ...prev,
+          [lessonKey]: {
+            ...lesson,
+            [phaseName]: {
+              total: cur.total + 1,
+              correct: cur.correct + (correct ? 1 : 0),
+            },
           },
-        },
-      }
-    })
-  }, [])
-
-  const awardMoon = useCallback(
-    (amount: number, correct: boolean) => {
-      setCorrectCounts((prev) => ({
-        total: prev.total + 1,
-        correct: prev.correct + (correct ? 1 : 0),
-      }))
-      if (correct && amount > 0) {
-        setEarnedMoons((m) => m + amount)
-      }
+        }
+      })
     },
     [],
   )
+
+  const awardMoon = useCallback((amount: number, correct: boolean) => {
+    setCorrectCounts((prev) => ({
+      total: prev.total + 1,
+      correct: prev.correct + (correct ? 1 : 0),
+    }))
+    if (correct && amount > 0) {
+      setEarnedMoons((m) => m + amount)
+    }
+  }, [])
 
   // Rewards stay in the local practice snapshot while answering. Persist the
   // whole session in one request only after every phase is complete.
@@ -561,7 +575,7 @@ export default function ChineseCharsPracticeSession() {
     const finishedAt = new Date().toISOString()
     const startedAt = sessionStartedAtRef.current
     const durationSeconds = Math.round(
-      (new Date(finishedAt).getTime() - new Date(startedAt).getTime()) / 1000
+      (new Date(finishedAt).getTime() - new Date(startedAt).getTime()) / 1000,
     )
     const sessionLessons = filtered.map((f) => f.lesson)
     const completedInBatch: string[] = []
@@ -716,9 +730,7 @@ export default function ChineseCharsPracticeSession() {
     const lessonRow = findLessonRow(lessons, currentReading.lessonKey, bookSlug)
     const group = getLessonGroup(lessonGroups, currentReading.lessonKey, bookSlug)
     const passage = getLessonPassage(currentReading.lessonKey, bookSlug)
-    const unitLessons = lessonRow
-      ? lessons.filter((l) => l.unit === lessonRow.unit)
-      : []
+    const unitLessons = lessonRow ? lessons.filter((l) => l.unit === lessonRow.unit) : []
     const display = lessonRow ? getLessonDisplayInfo(lessonRow, unitLessons) : null
     return {
       lessonRow,
@@ -756,7 +768,15 @@ export default function ChineseCharsPracticeSession() {
     } else {
       setCharQIdx((i) => i + 1)
     }
-  }, [activeCharQuestions.length, charQIdx, charRetryIds.length, clearQuestionFeedback, goNextPhase, isCharRetryRound, plan])
+  }, [
+    activeCharQuestions.length,
+    charQIdx,
+    charRetryIds.length,
+    clearQuestionFeedback,
+    goNextPhase,
+    isCharRetryRound,
+    plan,
+  ])
 
   const advancePhraseQuestion = useCallback(() => {
     if (!plan) return
@@ -846,20 +866,14 @@ export default function ChineseCharsPracticeSession() {
   )
 
   const handleCharAnswer = useCallback(
-    (
-      correct: boolean,
-      q: CharPracticeQuestion,
-      wrong?: { selected: string; correct: string },
-    ) => {
+    (correct: boolean, q: CharPracticeQuestion, wrong?: { selected: string; correct: string }) => {
       if (q.kind === 'recognize') {
         recordBatch([{ charKey: q.charKey, track: 'recognize', correct }])
       } else if (q.kind === 'stroke') {
         recordBatch([{ charKey: q.charKey, track: 'write', correct }])
       }
       if (!correct && !isCharRetryRound) {
-        setCharRetryIds((previous) =>
-          previous.includes(q.id) ? previous : [...previous, q.id],
-        )
+        setCharRetryIds((previous) => (previous.includes(q.id) ? previous : [...previous, q.id]))
       }
       if (plan) {
         recordLessonAnswer(
@@ -886,13 +900,16 @@ export default function ChineseCharsPracticeSession() {
     return (
       <div className="mx-auto max-w-md p-6 text-center">
         <p className="text-sm text-stone-600">没有可练习的内容，请返回重新筛选。</p>
-        <button
+        <Button
           type="button"
           onClick={exitPractice}
-          className="mt-4 rounded-xl bg-amber-600 px-4 py-2 text-sm font-bold text-white"
+          variant="solid"
+          color="amber"
+          size="2"
+          className="mt-4"
         >
           返回生字库
-        </button>
+        </Button>
       </div>
     )
   }
@@ -901,28 +918,26 @@ export default function ChineseCharsPracticeSession() {
     <div className="cn-immersive-bg fixed inset-0 z-30 overflow-y-auto">
       <div className="mx-auto flex min-h-full max-w-2xl flex-col px-4 py-4">
         {stashToast && (
-          <div className="fixed left-1/2 top-4 z-50 -translate-x-1/2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800 shadow-md">
+          <div className="shadow-sticker fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800">
             {stashToast}
           </div>
         )}
 
         <header className="mb-3 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={exitPractice}
-            className="cursor-pointer rounded-full border border-amber-200/80 bg-white/80 px-3 py-1 text-sm font-bold text-amber-900/60 hover:border-amber-400"
-          >
+          <Button type="button" onClick={exitPractice} variant="outline" color="gray" size="1">
             ← 退出
-          </button>
+          </Button>
           {phase !== 'done' && (
-            <button
+            <Button
               type="button"
               onClick={() => void stashAndExit()}
               disabled={isStashing}
-              className="cursor-pointer rounded-full border border-amber-300/80 bg-amber-50/90 px-3 py-1 text-sm font-bold text-amber-800 hover:border-amber-400 disabled:cursor-wait disabled:opacity-60"
+              variant="soft"
+              color="amber"
+              size="1"
             >
               {isStashing ? '暂存中…' : '💾 暂存'}
-            </button>
+            </Button>
           )}
           <span className="text-sm font-extrabold text-stone-800">
             {phase === 'chars' && isCharRetryRound ? '错题补练' : PHASE_LABEL[phase]}
@@ -934,7 +949,7 @@ export default function ChineseCharsPracticeSession() {
         </header>
 
         {phase !== 'done' && (
-          <div className="mb-4 rounded-2xl border border-rose-200/70 bg-white/75 px-4 py-2.5">
+          <div className="mb-4 rounded-2xl border border-rose-200/70 bg-white px-4 py-2.5">
             <StarProgressBar
               color="red"
               target={Math.max(1, plan.possibleMoons)}
@@ -968,18 +983,20 @@ export default function ChineseCharsPracticeSession() {
               onFlip={() => setFlipped((f) => !f)}
             />
             <div className="mt-6 flex justify-center gap-3">
-              <button
+              <Button
                 type="button"
                 disabled={cardIdx === 0}
                 onClick={() => {
                   setCardIdx((i) => i - 1)
                   setFlipped(true)
                 }}
-                className="rounded-xl border border-amber-200 px-4 py-2 text-sm font-bold disabled:opacity-40"
+                variant="outline"
+                color="gray"
+                size="2"
               >
                 上一字
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => {
                   if (cardIdx + 1 >= plan.cards.length) {
@@ -991,10 +1008,12 @@ export default function ChineseCharsPracticeSession() {
                     setFlipped(true)
                   }
                 }}
-                className="cn-start-btn rounded-xl border-0 px-5 py-2 text-sm font-bold text-white"
+                variant="solid"
+                color="orange"
+                size="2"
               >
                 {cardIdx + 1 >= plan.cards.length ? '开始测验' : '下一字'}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -1002,7 +1021,8 @@ export default function ChineseCharsPracticeSession() {
         {phase === 'chars' && currentCharQ && (
           <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
             <p className="text-center text-xs font-semibold text-amber-900/45">
-              {isCharRetryRound ? '错题补练' : '文字练习'} {charQIdx + 1} / {activeCharQuestions.length}
+              {isCharRetryRound ? '错题补练' : '文字练习'} {charQIdx + 1} /{' '}
+              {activeCharQuestions.length}
             </p>
 
             {isCharRetryRound && (
@@ -1020,14 +1040,16 @@ export default function ChineseCharsPracticeSession() {
                   </div>
                   {getCharProfile(currentCharQ.charKey)?.phrases.length ? (
                     <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="组词提示">
-                      {getCharProfile(currentCharQ.charKey)?.phrases.slice(0, 3).map((phrase) => (
-                        <span
-                          key={phrase}
-                          className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-base font-extrabold text-sky-900"
-                        >
-                          {phrase}
-                        </span>
-                      ))}
+                      {getCharProfile(currentCharQ.charKey)
+                        ?.phrases.slice(0, 3)
+                        .map((phrase) => (
+                          <span
+                            key={phrase}
+                            className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-base font-extrabold text-sky-900"
+                          >
+                            {phrase}
+                          </span>
+                        ))}
                     </div>
                   ) : null}
                 </div>
@@ -1040,7 +1062,10 @@ export default function ChineseCharsPracticeSession() {
                       seed,
                     ).slice(0, 3)
                     while (distractors.length < 3) distractors.push(currentCharQ.pinyin)
-                    const opts = shuffle([currentCharQ.pinyin, ...distractors.slice(0, 3)], seed + 1)
+                    const opts = shuffle(
+                      [currentCharQ.pinyin, ...distractors.slice(0, 3)],
+                      seed + 1,
+                    )
                     return opts.map((opt, optionIdx) => {
                       const locked = wrongFeedback !== null
                       const isCorrect = opt === currentCharQ.pinyin
@@ -1068,17 +1093,16 @@ export default function ChineseCharsPracticeSession() {
                   })()}
                 </div>
                 {wrongFeedback && currentCharQ.kind === 'recognize' && (
-                  <WrongAnswerPanel
-                    correct={wrongFeedback.correct}
-                    onNext={advanceCharQuestion}
-                  />
+                  <WrongAnswerPanel correct={wrongFeedback.correct} onNext={advanceCharQuestion} />
                 )}
               </>
             )}
 
             {currentCharQ.kind === 'stroke' && (
               <div className="flex flex-col items-center gap-3">
-                <p className="text-sm font-semibold text-stone-600">按笔顺书写「{currentCharQ.char}」</p>
+                <p className="text-sm font-semibold text-stone-600">
+                  按笔顺书写「{currentCharQ.char}」
+                </p>
                 {strokeWrongMistakes === null ? (
                   <CharWriter
                     char={currentCharQ.char}
@@ -1145,7 +1169,9 @@ export default function ChineseCharsPracticeSession() {
                           void handleCharAnswer(
                             correct,
                             currentCharQ,
-                            correct ? undefined : { selected: opt, correct: currentCharQ.item.answer },
+                            correct
+                              ? undefined
+                              : { selected: opt, correct: currentCharQ.item.answer },
                           )
                         }}
                       />
@@ -1153,10 +1179,7 @@ export default function ChineseCharsPracticeSession() {
                   })}
                 </div>
                 {wrongFeedback && currentCharQ.kind === 'phrase-char' && (
-                  <WrongAnswerPanel
-                    correct={wrongFeedback.correct}
-                    onNext={advanceCharQuestion}
-                  />
+                  <WrongAnswerPanel correct={wrongFeedback.correct} onNext={advanceCharQuestion} />
                 )}
               </>
             )}
@@ -1200,10 +1223,7 @@ export default function ChineseCharsPracticeSession() {
               })}
             </div>
             {wrongFeedback && (
-              <WrongAnswerPanel
-                correct={wrongFeedback.correct}
-                onNext={advancePhraseQuestion}
-              />
+              <WrongAnswerPanel correct={wrongFeedback.correct} onNext={advancePhraseQuestion} />
             )}
           </div>
         )}
@@ -1250,16 +1270,16 @@ export default function ChineseCharsPracticeSession() {
                 const isCorrect = opt === currentAcc.answer
                 const isChosen = wrongFeedback?.selected === opt
                 return (
-                  <button
+                  <Button
                     key={opt}
                     type="button"
-                    disabled={locked}
+                    aria-disabled={locked}
                     onClick={() => {
+                      if (locked) return
                       const gardenKey =
                         filtered.find(
                           (f) =>
-                            f.lesson.unit === currentAcc.unit &&
-                            f.lesson.lessonKind === 'garden',
+                            f.lesson.unit === currentAcc.unit && f.lesson.lessonKind === 'garden',
                         )?.lesson.lessonKey ?? null
                       void handleChoiceAnswer(
                         opt === currentAcc.answer,
@@ -1271,24 +1291,19 @@ export default function ChineseCharsPracticeSession() {
                         { lessonKey: gardenKey, phaseName: 'accumulation' },
                       )
                     }}
-                    className={clsx(
-                      'rounded-xl border-2 px-3 py-3 text-sm font-bold',
-                      !locked && 'border-emerald-200 bg-white',
-                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
-                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
-                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-                    )}
+                    variant={!locked ? 'outline' : isCorrect || isChosen ? 'solid' : 'soft'}
+                    color={!locked ? 'jade' : isCorrect ? 'jade' : isChosen ? 'red' : 'gray'}
+                    size="3"
+                    radius="full"
+                    className="w-full"
                   >
                     {opt}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
             {wrongFeedback && (
-              <WrongAnswerPanel
-                correct={wrongFeedback.correct}
-                onNext={advanceAccQuestion}
-              />
+              <WrongAnswerPanel correct={wrongFeedback.correct} onNext={advanceAccQuestion} />
             )}
           </div>
         )}
@@ -1318,13 +1333,15 @@ export default function ChineseCharsPracticeSession() {
                     lessonTitle={currentReading.lessonTitle}
                   />
                   <div className="flex justify-center">
-                    <button
+                    <Button
                       type="button"
                       onClick={onFinishedRead}
-                      className="cn-start-btn rounded-xl border-0 px-6 py-2.5 text-sm font-bold text-white"
+                      variant="solid"
+                      color="orange"
+                      size="2"
                     >
                       {currentReading.blankItems.length > 0 ? '读完了，开始回想' : '读完了'}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               }
@@ -1332,59 +1349,62 @@ export default function ChineseCharsPracticeSession() {
           </div>
         )}
 
-        {phase === 'passage' && currentPassageBlank && passageStep === 'blank' && currentReading && (
-          <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
-            <p className="text-center text-xs font-semibold text-amber-900/45">
-              回想 {passageBlankIdx + 1} / {currentReading.blankItems.length}
-              {' · '}
-              {currentReading.lessonTitle}
-            </p>
-            <p className="text-center text-sm font-semibold text-amber-800/70">
-              {currentPassageBlank.blankKind === 'word'
-                ? '选出句子里彩色小空格里应该填的词语'
-                : '选出句子里彩色小空格里应该填的字'}
-            </p>
-            <div className="rounded-2xl border border-amber-200/70 bg-white/85 p-4 shadow-sm">
-              <QuizBlankSentence display={currentPassageBlank.prompt} size="md" align="start" />
+        {phase === 'passage' &&
+          currentPassageBlank &&
+          passageStep === 'blank' &&
+          currentReading && (
+            <div className="cn-candy-choice-container flex flex-1 flex-col gap-4">
+              <p className="text-center text-xs font-semibold text-amber-900/45">
+                回想 {passageBlankIdx + 1} / {currentReading.blankItems.length}
+                {' · '}
+                {currentReading.lessonTitle}
+              </p>
+              <p className="text-center text-sm font-semibold text-amber-800/70">
+                {currentPassageBlank.blankKind === 'word'
+                  ? '选出句子里彩色小空格里应该填的词语'
+                  : '选出句子里彩色小空格里应该填的字'}
+              </p>
+              <StickerCard elevation="sm" radius="md">
+                <QuizBlankSentence display={currentPassageBlank.prompt} size="md" align="start" />
+              </StickerCard>
+              <div className="cn-candy-choice-grid cn-candy-choice-grid--compact">
+                {passageBlankOptions.map((opt, optionIdx) => {
+                  const locked = wrongFeedback !== null
+                  const isCorrect = opt === currentPassageBlank.answer
+                  const isChosen = wrongFeedback?.selected === opt
+                  return (
+                    <CandyChoiceButton
+                      key={opt}
+                      value={opt}
+                      index={optionIdx}
+                      presetSeed={hashSeed(currentPassageBlank.id, 43)}
+                      locked={locked}
+                      isCorrect={isCorrect}
+                      isChosen={isChosen}
+                      compact
+                      onClick={() => {
+                        void handleChoiceAnswer(
+                          opt === currentPassageBlank.answer,
+                          MOON_REWARDS.blank,
+                          advancePassageBlankQuestion,
+                          opt === currentPassageBlank.answer
+                            ? undefined
+                            : { selected: opt, correct: currentPassageBlank.answer },
+                          { lessonKey: currentReading.lessonKey, phaseName: 'passage' },
+                        )
+                      }}
+                    />
+                  )
+                })}
+              </div>
+              {wrongFeedback && (
+                <WrongAnswerPanel
+                  correct={wrongFeedback.correct}
+                  onNext={advancePassageBlankQuestion}
+                />
+              )}
             </div>
-            <div className="cn-candy-choice-grid cn-candy-choice-grid--compact">
-              {passageBlankOptions.map((opt, optionIdx) => {
-                const locked = wrongFeedback !== null
-                const isCorrect = opt === currentPassageBlank.answer
-                const isChosen = wrongFeedback?.selected === opt
-                return (
-                  <CandyChoiceButton
-                    key={opt}
-                    value={opt}
-                    index={optionIdx}
-                    presetSeed={hashSeed(currentPassageBlank.id, 43)}
-                    locked={locked}
-                    isCorrect={isCorrect}
-                    isChosen={isChosen}
-                    compact
-                    onClick={() => {
-                      void handleChoiceAnswer(
-                        opt === currentPassageBlank.answer,
-                        MOON_REWARDS.blank,
-                        advancePassageBlankQuestion,
-                        opt === currentPassageBlank.answer
-                          ? undefined
-                          : { selected: opt, correct: currentPassageBlank.answer },
-                        { lessonKey: currentReading.lessonKey, phaseName: 'passage' },
-                      )
-                    }}
-                  />
-                )
-              })}
-            </div>
-            {wrongFeedback && (
-              <WrongAnswerPanel
-                correct={wrongFeedback.correct}
-                onNext={advancePassageBlankQuestion}
-              />
-            )}
-          </div>
-        )}
+          )}
 
         {phase === 'blank' && currentBlank && (
           <div className="flex flex-1 flex-col gap-4">
@@ -1398,20 +1418,21 @@ export default function ChineseCharsPracticeSession() {
               {' · '}
               {currentBlank.lessonTitle}
             </p>
-            <div className="rounded-2xl border border-amber-200/70 bg-white/85 p-4 shadow-sm">
+            <StickerCard elevation="sm" radius="md">
               <QuizBlankSentence display={currentBlank.prompt} size="md" align="start" />
-            </div>
+            </StickerCard>
             <div className="grid grid-cols-4 gap-3">
               {blankOptions.map((opt) => {
                 const locked = wrongFeedback !== null
                 const isCorrect = opt === currentBlank.answer
                 const isChosen = wrongFeedback?.selected === opt
                 return (
-                  <button
+                  <Button
                     key={opt}
                     type="button"
-                    disabled={locked}
+                    aria-disabled={locked}
                     onClick={() => {
+                      if (locked) return
                       void handleChoiceAnswer(
                         opt === currentBlank.answer,
                         MOON_REWARDS.blank,
@@ -1422,24 +1443,19 @@ export default function ChineseCharsPracticeSession() {
                         { lessonKey: currentBlank.lessonKey, phaseName: 'passage' },
                       )
                     }}
-                    className={clsx(
-                      'rounded-xl border-2 py-3 text-xl font-bold',
-                      !locked && 'border-amber-300 bg-white',
-                      locked && isCorrect && 'border-emerald-400 bg-emerald-50',
-                      locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50',
-                      locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-                    )}
+                    variant={!locked ? 'outline' : isCorrect || isChosen ? 'solid' : 'soft'}
+                    color={!locked ? 'amber' : isCorrect ? 'jade' : isChosen ? 'red' : 'gray'}
+                    size="3"
+                    radius="full"
+                    className="w-full"
                   >
                     {opt}
-                  </button>
+                  </Button>
                 )
               })}
             </div>
             {wrongFeedback && (
-              <WrongAnswerPanel
-                correct={wrongFeedback.correct}
-                onNext={advanceBlankQuestion}
-              />
+              <WrongAnswerPanel correct={wrongFeedback.correct} onNext={advanceBlankQuestion} />
             )}
           </div>
         )}
@@ -1468,7 +1484,10 @@ export default function ChineseCharsPracticeSession() {
         )}
 
         {phase === 'done' && (
-          <div className="mx-auto flex max-w-md flex-1 flex-col items-center justify-center rounded-3xl border border-amber-200/70 bg-white/85 p-8 text-center shadow-lg">
+          <StickerCard
+            size="lg"
+            className="mx-auto flex max-w-md flex-1 flex-col items-center justify-center text-center"
+          >
             <div className="mb-3 flex items-center gap-2">
               <ColoredStar color="red" size={36} />
               <span className="text-4xl font-black text-rose-700">{earnedMoons}</span>
@@ -1477,14 +1496,17 @@ export default function ChineseCharsPracticeSession() {
             <p className="mt-2 text-sm text-stone-500">
               正确 {correctCounts.correct} / {correctCounts.total} 题 · 获得 {earnedMoons} 个红月亮
             </p>
-            <button
+            <Button
               type="button"
               onClick={exitPractice}
-              className="cn-start-btn mt-6 rounded-xl border-0 px-6 py-2.5 text-sm font-bold text-white"
+              variant="solid"
+              color="amber"
+              size="2"
+              className="mt-6"
             >
               返回生字库
-            </button>
-          </div>
+            </Button>
+          </StickerCard>
         )}
       </div>
     </div>

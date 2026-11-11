@@ -71,7 +71,10 @@ export default function ChineseDailyCard() {
     if (!currentNode) return null
     const lessonRow = lessons.find((l) => l.lessonKey === currentNode.lessonKey)
     return lessonRow
-      ? getLessonDisplayInfo(lessonRow, lessons.filter((l) => l.unit === lessonRow.unit))
+      ? getLessonDisplayInfo(
+          lessonRow,
+          lessons.filter((l) => l.unit === lessonRow.unit),
+        )
       : null
   }, [currentNode, lessons])
 
@@ -99,12 +102,8 @@ export default function ChineseDailyCard() {
   }, [currentNode, masteryMap, bookSlug])
 
   const planHref =
-    activePlan && batchKeys.length > 0
-      ? buildChinesePlanPracticeHref(activePlan, batchKeys)
-      : null
-  const href = planCompleted
-    ? '/chinese/weekly'
-    : (planHref ?? chineseRoute(bookSlug, 'daily'))
+    activePlan && batchKeys.length > 0 ? buildChinesePlanPracticeHref(activePlan, batchKeys) : null
+  const href = planCompleted ? '/chinese/weekly' : (planHref ?? chineseRoute(bookSlug, 'daily'))
   const isLoading = plansLoading || (isCharDataLoading && !isCharDataReady)
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
   const quizSummary = activePlan ? formatPlanQuizTypes(activePlan.quizTypes) : ''
@@ -115,9 +114,9 @@ export default function ChineseDailyCard() {
       onClick={() => {
         if (focusPlan) setActiveChineseBook(focusPlan.bookSlug)
       }}
-      className="group relative flex w-full flex-col overflow-hidden rounded-2xl border-2 border-amber-200/80 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      className="group shadow-sticker-sm hover:shadow-sticker relative flex w-full flex-col overflow-hidden rounded-2xl border-2 border-amber-200/80 bg-amber-50 no-underline transition hover:-translate-y-0.5"
     >
-      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-amber-300/20 blur-2xl" />
+      <div className="pointer-events-none absolute -top-6 -right-6 h-24 w-24 rounded-full bg-amber-300/20" />
       <div className="relative px-4 py-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
@@ -164,13 +163,17 @@ export default function ChineseDailyCard() {
             )}
           </>
         ) : allDone ? (
-          <p className="text-xs font-medium text-amber-800/70">本册生字已全部通关，可复习任意一课 ✨</p>
+          <p className="text-xs font-medium text-amber-800/70">
+            本册生字已全部通关，可复习任意一课 ✨
+          </p>
         ) : currentNode ? (
           <>
             <p className="text-[11px] font-semibold text-amber-700">
               第{currentNode.unit}单元 · {display?.label ?? currentNode.lessonTitle}
             </p>
-            <p className="mt-0.5 truncate text-sm font-extrabold text-slate-900">{currentNode.lessonTitle}</p>
+            <p className="mt-0.5 truncate text-sm font-extrabold text-slate-900">
+              {currentNode.lessonTitle}
+            </p>
 
             {total > 0 && (
               <div className="mt-3 flex items-center gap-2">
@@ -179,9 +182,7 @@ export default function ChineseDailyCard() {
                     className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
                     style={{
                       width: `${pct}%`,
-                      background: lessonDone
-                        ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-                        : 'linear-gradient(90deg, #f59e0b, #fbbf24)',
+                      background: lessonDone ? '#22c55e' : '#f59e0b',
                     }}
                   />
                 </div>
@@ -201,7 +202,7 @@ export default function ChineseDailyCard() {
                     className={`rounded-lg border px-2 py-0.5 text-xs font-bold ${
                       item.done
                         ? 'border-emerald-200 bg-emerald-50 text-emerald-800 line-through opacity-80'
-                        : 'border-amber-200 bg-white/80 text-slate-800'
+                        : 'border-amber-200 bg-white text-slate-800'
                     }`}
                   >
                     {item.ch}

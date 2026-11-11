@@ -11,6 +11,8 @@ import {
   fmtPlanDateTime,
   planStatusLabel,
 } from './chinese-roadmap-plan-shared'
+import { Button } from '@rosie/ui/themes'
+import { StickerCard } from '@rosie/ui'
 
 function statusBadgeClass(status: ChineseRoadmapPlan['status']): string {
   switch (status) {
@@ -47,10 +49,7 @@ export default function ChineseRoadmapPlanManage() {
 
   const handleActivate = async (plan: ChineseRoadmapPlan) => {
     const hasOtherActive = plans.some((p) => p.status === 'active' && p.id !== plan.id)
-    if (
-      hasOtherActive &&
-      !window.confirm('恢复此计划将暂停当前进行中的计划，确定继续？')
-    ) {
+    if (hasOtherActive && !window.confirm('恢复此计划将暂停当前进行中的计划，确定继续？')) {
       return
     }
     setTogglingId(plan.id)
@@ -99,8 +98,8 @@ export default function ChineseRoadmapPlanManage() {
           href="/setting/plans/chinese/new"
           className="shrink-0 rounded-xl px-4 py-2.5 text-[13px] font-extrabold text-white no-underline transition-all hover:scale-105"
           style={{
-            background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-            boxShadow: '0 4px 14px rgba(217,119,6,.35)',
+            background: '#d97706',
+            boxShadow: '0 3px 0 rgba(217,119,6,.35)',
           }}
         >
           + 创建计划
@@ -120,7 +119,7 @@ export default function ChineseRoadmapPlanManage() {
           <Link
             href="/setting/plans/chinese/new"
             className="inline-block rounded-xl px-5 py-2.5 text-[13px] font-extrabold text-white no-underline"
-            style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}
+            style={{ background: '#d97706' }}
           >
             创建第一个计划
           </Link>
@@ -131,13 +130,17 @@ export default function ChineseRoadmapPlanManage() {
             const book = getChineseBook(plan.bookSlug)
             const busy = togglingId === plan.id
             return (
-              <article
+              <StickerCard
+                as="article"
+                size="none"
+                elevation="sm"
+                radius="md"
+                className="overflow-hidden"
                 key={plan.id}
-                className="overflow-hidden rounded-2xl border border-amber-200/80 bg-white/80 shadow-sm"
               >
-                <div className="h-1 bg-gradient-to-r from-amber-500 via-orange-400 to-amber-300" />
+                <div className="h-1 bg-amber-300" />
                 <div className="px-5 py-4">
-                  <h3 className="text-[1rem] font-extrabold leading-snug text-slate-900">
+                  <h3 className="text-[1rem] leading-snug font-extrabold text-slate-900">
                     {plan.title}
                   </h3>
                   <div className="mt-2.5 flex flex-wrap gap-2">
@@ -149,13 +152,13 @@ export default function ChineseRoadmapPlanManage() {
                     <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[12px] font-bold text-amber-800">
                       {book?.label ?? plan.bookSlug}
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[12px] font-bold text-slate-500">
+                    <span className="border-kid-line rounded-full border-2 bg-slate-50 px-2.5 py-0.5 text-[12px] font-bold text-slate-500">
                       每批 {plan.lessonsPerBatch} 关
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[12px] font-bold text-slate-500">
+                    <span className="border-kid-line rounded-full border-2 bg-slate-50 px-2.5 py-0.5 text-[12px] font-bold text-slate-500">
                       {formatPlanQuizTypes(plan.quizTypes)}
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[12px] font-bold text-slate-500">
+                    <span className="border-kid-line rounded-full border-2 bg-slate-50 px-2.5 py-0.5 text-[12px] font-bold text-slate-500">
                       更新 {fmtPlanDateTime(plan.updatedAt)}
                     </span>
                   </div>
@@ -174,41 +177,48 @@ export default function ChineseRoadmapPlanManage() {
                     编辑
                   </Link>
                   {plan.status === 'active' && (
-                    <button
+                    <Button
                       type="button"
                       disabled={busy}
                       onClick={() => {
                         void handlePause(plan)
                       }}
-                      className="cursor-pointer rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-[13px] font-extrabold text-slate-600 disabled:cursor-wait disabled:opacity-50"
+                      variant="outline"
+                      color="gray"
+                      size="2"
                     >
                       {busy ? '处理中…' : '暂停'}
-                    </button>
+                    </Button>
                   )}
                   {(plan.status === 'paused' || plan.status === 'completed') && (
-                    <button
+                    <Button
                       type="button"
                       disabled={busy || plan.status === 'completed'}
                       onClick={() => {
                         void handleActivate(plan)
                       }}
-                      className="cursor-pointer rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-[13px] font-extrabold text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      variant="soft"
+                      color="jade"
+                      size="2"
                     >
                       {busy ? '处理中…' : '恢复'}
-                    </button>
+                    </Button>
                   )}
-                  <button
+                  <Button
                     type="button"
                     disabled={archivingId === plan.id}
                     onClick={() => {
                       void handleArchive(plan)
                     }}
-                    className="ml-auto cursor-pointer rounded-xl border border-slate-200 px-3.5 py-2 text-[13px] font-bold text-slate-400 transition-colors hover:border-red-300 hover:text-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    variant="outline"
+                    color="gray"
+                    size="2"
+                    className="ml-auto"
                   >
                     {archivingId === plan.id ? '归档中…' : '归档'}
-                  </button>
+                  </Button>
                 </div>
-              </article>
+              </StickerCard>
             )
           })}
         </div>

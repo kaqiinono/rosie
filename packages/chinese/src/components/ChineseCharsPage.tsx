@@ -30,6 +30,7 @@ import { buildWordCardItems } from '../utils/chinese-pinyin-write-helpers'
 import { setActiveChineseBook } from '../hooks/useActiveChineseBook'
 import { chineseRoute } from '../utils/chinese-routes'
 import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
+import { Button } from '@rosie/ui/themes'
 
 export default function ChineseCharsPage() {
   const context = useChineseContext()
@@ -47,7 +48,10 @@ export default function ChineseCharsPage() {
     )
   }
 
-  const catalogKey = JSON.stringify([context.bookSlug, ...context.lessons.map((lesson) => [lesson.lessonKey, lesson.unit])])
+  const catalogKey = JSON.stringify([
+    context.bookSlug,
+    ...context.lessons.map((lesson) => [lesson.lessonKey, lesson.unit]),
+  ])
   return <CharsLibrary key={catalogKey} context={context} />
 }
 
@@ -77,10 +81,7 @@ function CharsLibrary({ context }: { context: ReturnType<typeof useChineseContex
   )
 
   const units = useMemo(() => getUnitOptions(book?.units ?? []), [book?.units])
-  const visibleLessons = useMemo(
-    () => getLessonsForUnits(lessons, selUnits),
-    [lessons, selUnits],
-  )
+  const visibleLessons = useMemo(() => getLessonsForUnits(lessons, selUnits), [lessons, selUnits])
 
   const filtered = useMemo(
     () => filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug),
@@ -92,14 +93,24 @@ function CharsLibrary({ context }: { context: ReturnType<typeof useChineseContex
     [filtered, charByKey, lessons, bookSlug],
   )
 
-  const cards = useMemo(() => buildCharCardItems(filtered, lessons, bookSlug), [filtered, lessons, bookSlug])
+  const cards = useMemo(
+    () => buildCharCardItems(filtered, lessons, bookSlug),
+    [filtered, lessons, bookSlug],
+  )
   const wordCards = useMemo(
     () => buildWordCardItems(filtered, lessons, bookSlug, teacherOnly),
     [filtered, lessons, bookSlug, teacherOnly],
   )
 
   const contentCount = useMemo(() => {
-    const plan = buildPracticeSessionPlan(filtered, charByKey, quizTypes, lessons, bookSlug, teacherOnly)
+    const plan = buildPracticeSessionPlan(
+      filtered,
+      charByKey,
+      quizTypes,
+      lessons,
+      bookSlug,
+      teacherOnly,
+    )
     const readingBlankCount = plan.readingLessons.reduce((n, l) => n + l.blankItems.length, 0)
     return (
       plan.cards.length +
@@ -116,23 +127,26 @@ function CharsLibrary({ context }: { context: ReturnType<typeof useChineseContex
     writeCharsFilter(bookSlug, selUnits, selLessons, cardPreviewEnabled)
   }, [bookSlug, selUnits, selLessons, cardPreviewEnabled])
 
-  const toggleUnit = useCallback((unit: number) => {
-    setSelUnits((prev) => {
-      const next = new Set(prev)
-      if (next.has(unit)) {
-        next.delete(unit)
-        setSelLessons((old) => {
-          const lessonUnit = new Map(lessons.map((l) => [l.lessonKey, l.unit]))
-          return new Set([...old].filter((key) => lessonUnit.get(key) !== unit))
-        })
-      } else {
-        next.add(unit)
-      }
-      return next
-    })
-    setFlippedSet(new Set())
-    setWordFlippedSet(new Set())
-  }, [lessons])
+  const toggleUnit = useCallback(
+    (unit: number) => {
+      setSelUnits((prev) => {
+        const next = new Set(prev)
+        if (next.has(unit)) {
+          next.delete(unit)
+          setSelLessons((old) => {
+            const lessonUnit = new Map(lessons.map((l) => [l.lessonKey, l.unit]))
+            return new Set([...old].filter((key) => lessonUnit.get(key) !== unit))
+          })
+        } else {
+          next.add(unit)
+        }
+        return next
+      })
+      setFlippedSet(new Set())
+      setWordFlippedSet(new Set())
+    },
+    [lessons],
+  )
 
   const toggleLesson = useCallback((lessonKey: string) => {
     setSelLessons((prev) => {
@@ -277,69 +291,77 @@ function CharsLibrary({ context }: { context: ReturnType<typeof useChineseContex
         {(selDisplayType === 'cards' || selDisplayType === 'all') &&
           cardPreviewEnabled &&
           cards.length > 0 && (
-          <section className="mt-6">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-sm font-extrabold tracking-wide text-amber-900/55 uppercase">
-                生字卡片
-              </h2>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openPrint('chars')}
-                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-amber-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-amber-900/55 transition hover:border-emerald-300"
-                >
-                  打印
-                </button>
-                <button
-                  type="button"
-                  onClick={toggleAllFlipped}
-                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-amber-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-amber-900/55 transition hover:border-emerald-300"
-                >
-                  {allFlipped ? '全部正面' : '全部翻面'}
-                </button>
+            <section className="mt-6">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-sm font-extrabold tracking-wide text-amber-900/55 uppercase">
+                  生字卡片
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => openPrint('chars')}
+                    variant="outline"
+                    color="gray"
+                    size="3"
+                  >
+                    打印
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={toggleAllFlipped}
+                    variant="outline"
+                    color="gray"
+                    size="3"
+                  >
+                    {allFlipped ? '全部正面' : '全部翻面'}
+                  </Button>
+                </div>
               </div>
-            </div>
-            <ChineseCharsCardsGrid
-              cards={cards}
-              charByKey={charByKey}
-              flippedSet={flippedSet}
-              onFlip={flipCard}
-            />
-          </section>
-        )}
+              <ChineseCharsCardsGrid
+                cards={cards}
+                charByKey={charByKey}
+                flippedSet={flippedSet}
+                onFlip={flipCard}
+              />
+            </section>
+          )}
 
         {(selDisplayType === 'cards' || selDisplayType === 'all') &&
           cardPreviewEnabled &&
           wordCards.length > 0 && (
-          <section className="mt-6">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-sm font-extrabold tracking-wide text-teal-800/55 uppercase">
-                词语卡片
-              </h2>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openPrint('words')}
-                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-teal-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-teal-900/55 transition hover:border-emerald-300"
-                >
-                  打印
-                </button>
-                <button
-                  type="button"
-                  onClick={toggleAllWordsFlipped}
-                  className="min-h-11 cursor-pointer rounded-xl border-[1.5px] border-teal-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-teal-900/55 transition hover:border-emerald-300"
-                >
-                  {allWordsFlipped ? '全部正面' : '全部翻面'}
-                </button>
+            <section className="mt-6">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-sm font-extrabold tracking-wide text-teal-800/55 uppercase">
+                  词语卡片
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => openPrint('words')}
+                    variant="outline"
+                    color="gray"
+                    size="3"
+                  >
+                    打印
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={toggleAllWordsFlipped}
+                    variant="outline"
+                    color="gray"
+                    size="3"
+                  >
+                    {allWordsFlipped ? '全部正面' : '全部翻面'}
+                  </Button>
+                </div>
               </div>
-            </div>
-            <ChineseWordsCardsGrid
-              words={wordCards}
-              flippedSet={wordFlippedSet}
-              onFlip={flipWordCard}
-            />
-          </section>
-        )}
+              <ChineseWordsCardsGrid
+                words={wordCards}
+                flippedSet={wordFlippedSet}
+                onFlip={flipWordCard}
+              />
+            </section>
+          )}
       </ChinesePageShell>
     </>
   )

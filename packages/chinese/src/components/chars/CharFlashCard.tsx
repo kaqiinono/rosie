@@ -29,15 +29,10 @@ interface CharFlashCardProps {
 
 const CARD_MIN_H = 260
 
-const FRONT_BG: CSSProperties = { background: 'linear-gradient(160deg, #fff7ed 0%, #ffedd5 100%)' }
-const BACK_BG: CSSProperties = { background: 'linear-gradient(160deg, #eef2ff 0%, #e0e7ff 100%)' }
+const FRONT_BG: CSSProperties = { background: '#fff7ed' }
+const BACK_BG: CSSProperties = { background: '#eef2ff' }
 
-export default function CharFlashCard({
-  data,
-  flipped,
-  onFlip,
-  index = 0,
-}: CharFlashCardProps) {
+export default function CharFlashCard({ data, flipped, onFlip, index = 0 }: CharFlashCardProps) {
   const {
     char,
     pinyin,
@@ -75,22 +70,18 @@ export default function CharFlashCard({
     </>
   )
 
-  const charGlyph = (speakOnBack = false, large = false) => (
+  const charGlyph = (large = false) => (
     <div className={`relative flex items-center justify-center ${large ? 'h-full w-full' : ''}`}>
       <span className={large ? 'cn-grid-cell-flash' : 'cn-grid-cell-sm'}>{char}</span>
       <CharSpeakButton
         text={char}
         size="sm"
-        className={`${large ? 'absolute right-0 bottom-0' : ''} ${speakOnBack ? 'text-indigo-700' : ''}`}
+        className={large ? 'absolute right-0 bottom-0' : undefined}
       />
     </div>
   )
 
-  const charStage = (speakOnBack = false) => (
-    <div className="cn-flash-char-stage">
-      {charGlyph(speakOnBack, true)}
-    </div>
-  )
+  const charStage = () => <div className="cn-flash-char-stage">{charGlyph(true)}</div>
 
   const hasMeta = Boolean(structure || (strokeCount && strokeCount > 0) || radicalName)
   const metaLine = hasMeta ? (
@@ -111,7 +102,7 @@ export default function CharFlashCard({
         {displayPhrases.map((p) => (
           <span
             key={p}
-            className="rounded-lg border border-indigo-100 bg-white/70 px-2.5 py-1.5 text-base leading-tight font-extrabold text-indigo-900"
+            className="rounded-lg border border-indigo-100 bg-white px-2.5 py-1.5 text-base leading-tight font-extrabold text-indigo-900"
           >
             {p}
           </span>
@@ -119,11 +110,12 @@ export default function CharFlashCard({
       </div>
     ) : null
 
-  const frontPhrases = displayPhrases.length > 0 ? (
-    <p className="max-w-full truncate text-center text-sm font-extrabold text-amber-800/75">
-      {displayPhrases.join(' · ')}
-    </p>
-  ) : null
+  const frontPhrases =
+    displayPhrases.length > 0 ? (
+      <p className="max-w-full truncate text-center text-sm font-extrabold text-amber-800/75">
+        {displayPhrases.join(' · ')}
+      </p>
+    ) : null
 
   const frontFace = (
     <div
@@ -133,13 +125,13 @@ export default function CharFlashCard({
         WebkitBackfaceVisibility: 'hidden',
         transform: 'rotateY(0deg) translateZ(0.01px)',
         WebkitTransform: 'rotateY(0deg) translateZ(0.01px)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 12px rgba(28,25,23,0.06)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 3px 0 rgba(28,25,23,.3)',
         ...FRONT_BG,
       }}
     >
       <div className="relative z-[1] flex shrink-0 flex-wrap gap-1">{infoBadges}</div>
 
-      {charStage(false)}
+      {charStage()}
 
       <div className="relative z-[1] shrink-0">{frontPhrases}</div>
 
@@ -158,7 +150,7 @@ export default function CharFlashCard({
         transform: 'rotateY(180deg) translateZ(0.01px)',
         WebkitTransform: 'rotateY(180deg) translateZ(0.01px)',
         border: '1px solid rgba(67,56,202,0.12)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 12px rgba(28,25,23,0.06)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 3px 0 rgba(28,25,23,.3)',
         ...BACK_BG,
       }}
     >
@@ -167,7 +159,7 @@ export default function CharFlashCard({
         {metaLine}
       </div>
 
-      {charStage(true)}
+      {charStage()}
       <div className="relative z-[1] shrink-0">{phraseBlock}</div>
       <span className="absolute right-2 bottom-1 text-[9px] font-bold text-indigo-900/20 select-none">
         ↩
@@ -184,6 +176,7 @@ export default function CharFlashCard({
         animation: `cn-card-rise 0.35s ease ${delay}s backwards`,
       }}
     >
+      {/* native-ok: 整张 3D 翻转字卡是容器按钮（多块内容 + preserve-3d 翻转），Radix Button 会居中挤压内容 */}
       <button
         type="button"
         onClick={onFlip}

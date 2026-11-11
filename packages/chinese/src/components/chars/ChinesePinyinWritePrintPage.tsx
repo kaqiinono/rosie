@@ -5,10 +5,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useChineseContext } from '../../context/ChineseContext'
 import { getChineseBook } from '../../utils/chinese-books'
-import {
-  buildCharCardItems,
-  filterLessons,
-} from '../../utils/chinese-chars-session-helpers'
+import { buildCharCardItems, filterLessons } from '../../utils/chinese-chars-session-helpers'
 import { chineseRoute } from '../../utils/chinese-routes'
 import { buildWordCardItems } from '../../utils/chinese-pinyin-write-helpers'
 import {
@@ -21,6 +18,7 @@ import {
   type PinyinWritePrintSection,
   type PinyinWriteWordPrintSection,
 } from '../../utils/chinese-pinyin-write-print-helpers'
+import { Button } from '@rosie/ui/themes'
 
 function parseUnits(raw: string | null): Set<number> {
   if (!raw) return new Set()
@@ -72,10 +70,7 @@ function PrintWordRows({
       {rows.map((row, rowIndex) => (
         <div key={`${prefix}-word-row-${rowIndex}`} className="cn-print-word-row">
           {row.map((group, groupIndex) => (
-            <div
-              key={`${prefix}-word-${rowIndex}-${groupIndex}`}
-              className="cn-print-word-group"
-            >
+            <div key={`${prefix}-word-${rowIndex}-${groupIndex}`} className="cn-print-word-group">
               {group.cells.map((cell, cellIndex) => (
                 <div
                   key={`${prefix}-word-${rowIndex}-${groupIndex}-${cellIndex}`}
@@ -123,7 +118,9 @@ function PrintLessonBlock({ block }: { block: PinyinWritePrintLessonBlock }) {
       </div>
       {block.charRows.length > 0 && (
         <div className="cn-print-subsection">
-          {block.wordGroupRows.length > 0 && <span className="cn-print-subsection-label">生字</span>}
+          {block.wordGroupRows.length > 0 && (
+            <span className="cn-print-subsection-label">生字</span>
+          )}
           <PrintRows rows={block.charRows} prefix={`${block.lessonKey}-char`} />
         </div>
       )}
@@ -149,9 +146,7 @@ export default function ChinesePinyinWritePrintPage() {
 
   const filtered = useMemo(
     () =>
-      isCharDataReady
-        ? filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug)
-        : [],
+      isCharDataReady ? filterLessons(lessons, lessonGroups, selUnits, selLessons, bookSlug) : [],
     [isCharDataReady, lessons, lessonGroups, selUnits, selLessons, bookSlug],
   )
 
@@ -181,7 +176,9 @@ export default function ChinesePinyinWritePrintPage() {
 
   const title = useMemo(() => {
     const unitNums =
-      selUnits.size > 0 ? [...selUnits].sort((a, b) => a - b) : [...new Set(filtered.map((f) => f.lesson.unit))].sort((a, b) => a - b)
+      selUnits.size > 0
+        ? [...selUnits].sort((a, b) => a - b)
+        : [...new Set(filtered.map((f) => f.lesson.unit))].sort((a, b) => a - b)
     const unitTitles = unitNums
       .map((unit) => book?.units.find((u) => u.unit === unit)?.title)
       .filter((t): t is string => Boolean(t))
@@ -220,7 +217,7 @@ export default function ChinesePinyinWritePrintPage() {
 
   return (
     <div className="cn-print-root min-h-screen bg-stone-100">
-      <div className="cn-no-print sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur-sm">
+      <div className="cn-no-print border-kid-line sticky top-0 z-50 border-b bg-white">
         <div className="mx-auto flex h-14 max-w-[800px] items-center gap-2 px-3 sm:px-4">
           <Link
             href={backHref}
@@ -231,24 +228,29 @@ export default function ChinesePinyinWritePrintPage() {
           <h1 className="min-w-0 flex-1 truncate text-center text-sm font-bold text-stone-800">
             打印预览 · {pageTitle}
           </h1>
-          <button
+          <Button
             type="button"
             onClick={() => window.print()}
-            className="shrink-0 rounded-full bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-amber-700 sm:px-4"
+            variant="solid"
+            color="amber"
+            size="1"
+            className="shrink-0"
           >
             打印
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="mx-auto max-w-[800px] px-4 py-6 print:max-w-none print:p-0">
-        <div className="cn-print-sheet rounded-lg bg-white p-8 shadow-sm print:rounded-none print:p-0 print:shadow-none">
+        <div className="cn-print-sheet shadow-sticker-sm rounded-lg bg-white p-8 print:rounded-none print:p-0 print:shadow-none">
           <header className="cn-print-doc-header">
             <h1 className="cn-print-doc-title">{pageTitle}</h1>
           </header>
 
           {kind === 'all'
-            ? combinedBlocks.map((block) => <PrintLessonBlock key={block.lessonKey} block={block} />)
+            ? combinedBlocks.map((block) => (
+                <PrintLessonBlock key={block.lessonKey} block={block} />
+              ))
             : kind === 'chars'
               ? charSections.map((section) => (
                   <PrintSectionBlock key={section.lessonKey} section={section} />
@@ -351,10 +353,10 @@ export default function ChinesePinyinWritePrintPage() {
           border: 1.5px solid #78716c;
           border-radius: 0.2rem;
           background:
-            linear-gradient(to right, rgba(120, 113, 108, 0.35) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(120, 113, 108, 0.35) 1px, transparent 1px),
-            linear-gradient(45deg, transparent 49.5%, rgba(120, 113, 108, 0.2) 49.5%, rgba(120, 113, 108, 0.2) 50.5%, transparent 50.5%),
-            linear-gradient(-45deg, transparent 49.5%, rgba(120, 113, 108, 0.2) 49.5%, rgba(120, 113, 108, 0.2) 50.5%, transparent 50.5%);
+            linear-gradient(to right, rgba(120, 113, 108, 0.35) 1px, transparent 1px), /* visual-ok: 打印格线 */
+            linear-gradient(to bottom, rgba(120, 113, 108, 0.35) 1px, transparent 1px), /* visual-ok: 打印格线 */
+            linear-gradient(45deg, transparent 49.5%, rgba(120, 113, 108, 0.2) 49.5%, rgba(120, 113, 108, 0.2) 50.5%, transparent 50.5%), /* visual-ok: 打印格线 */
+            linear-gradient(-45deg, transparent 49.5%, rgba(120, 113, 108, 0.2) 49.5%, rgba(120, 113, 108, 0.2) 50.5%, transparent 50.5%); /* visual-ok: 打印格线 */
           background-size: 50% 50%, 50% 50%, 100% 100%, 100% 100%;
           background-position: center, center, center, center;
         }

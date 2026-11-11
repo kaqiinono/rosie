@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import type { PinyinWriteQuizItem } from '../../utils/chinese-pinyin-write-helpers'
 import CharWriter from './CharWriter'
+import { Button } from '@rosie/ui/themes'
 
 function splitWordChars(word: string, pinyin: string): { char: string; pinyin: string }[] {
   const chars = [...word]
@@ -27,14 +28,8 @@ export default function PinyinWriteRunner(props: PinyinWriteRunnerProps) {
   return <WriteItem key={JSON.stringify([id, word, pinyin])} {...props} />
 }
 
-function WriteItem({
-  item,
-  onComplete,
-}: PinyinWriteRunnerProps) {
-  const segments = useMemo(
-    () => splitWordChars(item.word, item.pinyin),
-    [item.word, item.pinyin],
-  )
+function WriteItem({ item, onComplete }: PinyinWriteRunnerProps) {
+  const segments = useMemo(() => splitWordChars(item.word, item.pinyin), [item.word, item.pinyin])
   const size = writerSize(segments.length)
 
   /** null = not yet written; number = mistake count for that char */
@@ -84,7 +79,7 @@ function WriteItem({
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <div className="rounded-2xl border border-teal-200/70 bg-white/85 p-4 text-center sm:p-5">
+      <div className="rounded-2xl border border-teal-200/70 bg-white p-4 text-center sm:p-5">
         <p className="text-sm font-semibold text-teal-700/70">看拼音，按笔顺写出词语</p>
         <p className="mt-2 text-2xl font-black tracking-wide text-teal-900 sm:text-3xl">
           {item.pinyin}
@@ -111,18 +106,18 @@ function WriteItem({
                 'flex flex-col items-center rounded-2xl border-2 p-2 transition',
                 done && mistakes === 0 && 'border-emerald-300 bg-emerald-50/60',
                 done && mistakes > 0 && 'border-amber-300 bg-amber-50/60',
-                !done && 'border-teal-200/80 bg-white/80',
+                !done && 'border-teal-200/80 bg-white',
               )}
             >
-              {seg.pinyin && (
-                <p className="mb-1 text-sm font-black text-teal-800">{seg.pinyin}</p>
-              )}
+              {seg.pinyin && <p className="mb-1 text-sm font-black text-teal-800">{seg.pinyin}</p>}
               {done ? (
                 <div className="flex flex-col items-center gap-1">
                   <span
                     className={clsx(
                       'flex items-center justify-center rounded-xl border-2 bg-white text-4xl font-black',
-                      mistakes === 0 ? 'border-emerald-300 text-emerald-800' : 'border-amber-300 text-amber-800',
+                      mistakes === 0
+                        ? 'border-emerald-300 text-emerald-800'
+                        : 'border-amber-300 text-amber-800',
                     )}
                     style={{ width: size + 24, height: size + 24 }}
                   >
@@ -131,13 +126,15 @@ function WriteItem({
                   <p className="text-[10px] font-bold text-stone-500">
                     {mistakes === 0 ? '写好了' : `有 ${mistakes} 处笔误`}
                   </p>
-                  <button
+                  <Button
                     type="button"
                     onClick={() => retryChar(index)}
-                    className="cursor-pointer text-[11px] font-bold text-teal-700 hover:text-teal-900"
+                    variant="ghost"
+                    color="teal"
+                    size="1"
                   >
                     重写
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <CharWriter
@@ -145,9 +142,7 @@ function WriteItem({
                   char={seg.char}
                   mode="quiz"
                   size={size}
-                  onQuizComplete={({ totalMistakes }) =>
-                    handleCharComplete(index, totalMistakes)
-                  }
+                  onQuizComplete={({ totalMistakes }) => handleCharComplete(index, totalMistakes)}
                 />
               )}
             </div>
@@ -157,16 +152,17 @@ function WriteItem({
 
       {showWrongSummary && (
         <div className="rounded-2xl border border-rose-200 bg-rose-50/90 px-4 py-3 text-center">
-          <p className="text-sm font-bold text-rose-700">
-            再想想看～正确答案是「{item.word}」
-          </p>
-          <button
+          <p className="text-sm font-bold text-rose-700">再想想看～正确答案是「{item.word}」</p>
+          <Button
             type="button"
             onClick={() => onComplete(false)}
-            className="cn-start-btn mt-3 cursor-pointer rounded-xl border-0 px-5 py-2 text-sm font-bold text-white"
+            variant="solid"
+            color="orange"
+            size="2"
+            className="mt-3"
           >
             下一题
-          </button>
+          </Button>
         </div>
       )}
     </div>

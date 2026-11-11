@@ -82,7 +82,7 @@ function ChineseNavInner() {
   }
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-amber-100/80 bg-white/90 backdrop-blur-md">
+    <nav className="sticky top-0 z-20 border-b border-amber-100/80 bg-white">
       <div className="mx-auto flex max-w-[1280px] items-center gap-2 px-3 py-2 sm:gap-3 sm:px-6 lg:px-8">
         <BrandLogo size="lg" priority />
 
@@ -95,7 +95,7 @@ function ChineseNavInner() {
                 href={tab.href}
                 className={`relative inline-flex min-h-11 shrink-0 items-center rounded-lg px-2 py-1 text-[11px] font-bold no-underline transition sm:rounded-full sm:px-3 sm:py-2 sm:text-xs ${
                   active
-                    ? 'bg-amber-50 text-amber-700 after:absolute after:right-2 after:bottom-0 after:left-2 after:h-0.5 after:rounded-full after:bg-amber-500 sm:bg-amber-500 sm:text-white sm:shadow-sm sm:after:hidden'
+                    ? 'sm:shadow-sticker-sm bg-amber-50 text-amber-700 after:absolute after:right-2 after:bottom-0 after:left-2 after:h-0.5 after:rounded-full after:bg-amber-500 sm:bg-amber-500 sm:text-white sm:after:hidden'
                     : 'text-amber-900/65 hover:bg-amber-50 hover:text-amber-800'
                 }`}
               >
@@ -153,7 +153,7 @@ export default function ChineseLayout({ children }: { children: React.ReactNode 
 
   return (
     <ChineseProvider>
-      <div className="min-h-screen bg-gradient-to-b from-amber-50/80 to-orange-50/40 font-nunito">
+      <div className="font-nunito min-h-screen bg-amber-50/80">
         {!hideNav && <ChineseNav />}
         {children}
       </div>

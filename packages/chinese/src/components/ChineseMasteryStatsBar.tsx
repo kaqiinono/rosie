@@ -30,17 +30,14 @@ export default function ChineseMasteryStatsBar() {
         stats.recognizeGraduated > 0
           ? `已练 · 毕业 ${stats.recognizeGraduated}`
           : '已练 / 会认总数',
-      className: 'from-sky-50 to-indigo-50 border-sky-100 text-sky-800',
+      className: 'bg-sky-50 border-sky-100 text-sky-800',
     },
     {
       href: '/chinese/chars/writing',
       label: '会写',
       value: `${stats.writePracticed}/${stats.writeTotal}`,
-      hint:
-        stats.writeGraduated > 0
-          ? `已练 · 毕业 ${stats.writeGraduated}`
-          : '已练 / 会写总数',
-      className: 'from-amber-50 to-orange-50 border-amber-100 text-amber-800',
+      hint: stats.writeGraduated > 0 ? `已练 · 毕业 ${stats.writeGraduated}` : '已练 / 会写总数',
+      className: 'bg-amber-50 border-amber-100 text-amber-800',
     },
   ]
 
@@ -52,13 +49,13 @@ export default function ChineseMasteryStatsBar() {
           <Link
             key={card.href}
             href={card.href}
-            className={`rounded-2xl border bg-gradient-to-br p-4 no-underline transition hover:-translate-y-0.5 hover:shadow-md ${card.className}`}
+            className={`hover:shadow-sticker rounded-2xl border p-4 no-underline transition hover:-translate-y-0.5 ${card.className}`}
           >
             <div className="text-[11px] font-extrabold tracking-wide opacity-80">{card.label}</div>
             <div className="font-fredoka mt-1 text-[clamp(24px,5vw,32px)] leading-none font-black tabular-nums">
               {isCharDataLoading ? '—' : card.value}
             </div>
-            <div className="mt-1.5 text-[10px] font-semibold leading-snug opacity-70">
+            <div className="mt-1.5 text-[10px] leading-snug font-semibold opacity-70">
               {isCharDataLoading ? '加载中' : card.hint}
             </div>
           </Link>

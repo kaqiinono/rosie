@@ -2,11 +2,12 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@rosie/core'
-import { PageBreadcrumb } from '@rosie/ui'
+import { PageBreadcrumb, StickerCard } from '@rosie/ui'
 import { ChinesePageHeader, ChinesePageShell } from '../ChinesePageLayout'
 import { useChineseContext } from '../../context/ChineseContext'
 import { useChineseReadingRecordings } from '../../hooks/useChineseReadingRecordings'
 import type { ChineseReadingRecording } from '../../utils/chinese-reading-recording-helpers'
+import { Button } from '@rosie/ui/themes'
 
 function formatDuration(ms: number | null): string {
   if (ms == null || ms < 0) return '—'
@@ -32,7 +33,7 @@ function RecordingsSkeleton() {
       {[0, 1, 2].map((index) => (
         <div
           key={index}
-          className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+          className="border-kid-line shadow-sticker-sm animate-pulse rounded-2xl border-2 bg-white p-4"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
@@ -86,7 +87,7 @@ function RecordingRow({
   }
 
   return (
-    <li className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <StickerCard as="li" elevation="sm" radius="md" className="flex min-w-0 flex-col">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="truncate text-base font-extrabold text-slate-900">
@@ -98,14 +99,17 @@ function RecordingRow({
             {formatDuration(recording.durationMs)}
           </p>
         </div>
-        <button
+        <Button
           type="button"
           disabled={deleting}
           onClick={() => void handleDelete()}
-          className="shrink-0 cursor-pointer rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-[11px] font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
+          variant="soft"
+          color="ruby"
+          size="1"
+          className="shrink-0"
         >
           {deleting ? '删除中…' : '删除'}
-        </button>
+        </Button>
       </div>
       <div className="mt-auto pt-3">
         {active && signedUrl ? (
@@ -119,7 +123,7 @@ function RecordingRow({
             onError={() => setAudioError(true)}
           />
         ) : (
-          <button
+          <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
             type="button"
             disabled={loadingAudio}
             onClick={() => void handleActivate()}
@@ -140,7 +144,7 @@ function RecordingRow({
         <p className="mt-2 text-[11px] font-semibold text-rose-600">音频加载失败，请重试</p>
       )}
       {error && <p className="mt-2 text-[11px] font-semibold text-rose-600">{error}</p>}
-    </li>
+    </StickerCard>
   )
 }
 
@@ -227,7 +231,7 @@ export default function ChineseReadingRecordingsPage() {
   return (
     <ChinesePageShell
       width="wide"
-      className="pt-5 pb-24 [padding-inline:0.75rem] sm:pt-7 sm:[padding-inline:1.5rem] lg:[padding-inline:2rem]"
+      className="[padding-inline:0.75rem] pt-5 pb-24 sm:[padding-inline:1.5rem] sm:pt-7 lg:[padding-inline:2rem]"
     >
       <div className="mb-5 flex items-start sm:mb-6">
         <PageBreadcrumb variant="inline" />
@@ -237,7 +241,7 @@ export default function ChineseReadingRecordingsPage() {
         title={
           <span className="flex items-center gap-3">
             <span
-              className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 text-xl shadow-sm ring-1 ring-amber-200/70 sm:size-11"
+              className="shadow-sticker-sm grid size-10 shrink-0 place-items-center rounded-2xl bg-amber-100 text-xl ring-1 ring-amber-200/70 sm:size-11"
               aria-hidden
             >
               🎙️
@@ -248,7 +252,7 @@ export default function ChineseReadingRecordingsPage() {
         description="集中回听本册课文朗读，记录每一次进步。"
         action={
           !isLoading && bookRecordings.length > 0 ? (
-            <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-extrabold text-amber-700 shadow-sm">
+            <span className="shadow-sticker-sm inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-extrabold text-amber-700">
               共 {bookRecordings.length} 条录音
             </span>
           ) : undefined
@@ -258,7 +262,7 @@ export default function ChineseReadingRecordingsPage() {
       {isLoading ? (
         <RecordingsSkeleton />
       ) : bookRecordings.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <div className="border-kid-line rounded-2xl border-2 bg-white p-8 text-center">
           <div className="mb-2 text-4xl">🎙️</div>
           <div className="font-bold text-slate-800">还没有朗读录音</div>
           <div className="mt-1 text-[12px] text-slate-500">读课文时可以录一段，会保存在这里。</div>

@@ -22,6 +22,8 @@ import {
   planRunTypeLabel,
   planStatusLabel,
 } from './chinese-roadmap-plan-shared'
+import { FormSelect } from '@rosie/ui'
+import { Button, TextField } from '@rosie/ui/themes'
 
 type Props = {
   editPlanId?: string
@@ -63,7 +65,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
 
   const isEdit = !!editPlanId
   const existingPlan = useMemo(
-    () => (editPlanId ? plans.find((p) => p.id === editPlanId) ?? null : null),
+    () => (editPlanId ? (plans.find((p) => p.id === editPlanId) ?? null) : null),
     [editPlanId, plans],
   )
 
@@ -88,8 +90,11 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
     ? (existingPlan?.bookSlug ?? null)
     : bookSlug
 
-  const { lessons, lessonGroups, isLoading: lessonsLoading } =
-    useChineseBookLessons(effectiveBookSlug)
+  const {
+    lessons,
+    lessonGroups,
+    isLoading: lessonsLoading,
+  } = useChineseBookLessons(effectiveBookSlug)
 
   const selectableLessons = useMemo(() => {
     const ordered = sortLessonsPedagogically(lessons).filter(
@@ -169,9 +174,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
     !lessonsLoading &&
     !!effectiveBookSlug &&
     quizTypes.length > 0 &&
-    (isEdit
-      ? !!existingPlan && !!currentLessonKey
-      : !!startLessonKey)
+    (isEdit ? !!existingPlan && !!currentLessonKey : !!startLessonKey)
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
@@ -224,13 +227,8 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
 
   const handleActivate = async () => {
     if (!existingPlan) return
-    const hasOtherActive = plans.some(
-      (p) => p.status === 'active' && p.id !== existingPlan.id,
-    )
-    if (
-      hasOtherActive &&
-      !window.confirm('恢复此计划将暂停当前进行中的计划，确定继续？')
-    ) {
+    const hasOtherActive = plans.some((p) => p.status === 'active' && p.id !== existingPlan.id)
+    if (hasOtherActive && !window.confirm('恢复此计划将暂停当前进行中的计划，确定继续？')) {
       return
     }
     setTogglingStatus(true)
@@ -256,20 +254,28 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
     return (
       <div className="mx-auto max-w-[640px] px-4 py-10 text-center">
         <p className="text-[14px] font-bold text-slate-600">未找到该计划（可能已归档）。</p>
-        <button
+        <Button
           type="button"
           onClick={() => router.push('/setting/plans/chinese')}
-          className="mt-4 cursor-pointer rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-[13px] font-extrabold text-amber-800"
+          variant="soft"
+          color="amber"
+          size="2"
+          className="mt-4"
         >
           返回列表
-        </button>
+        </Button>
       </div>
     )
   }
 
   return (
     <div className="mx-auto max-w-[720px] px-4 py-6">
-      <form onSubmit={(e) => { void handleSubmit(e) }} className="flex flex-col gap-5">
+      <form
+        onSubmit={(e) => {
+          void handleSubmit(e)
+        }}
+        className="flex flex-col gap-5"
+      >
         <div>
           <h1 className="text-[20px] font-extrabold text-amber-900">
             {isEdit ? '编辑语文计划' : '新建语文计划'}
@@ -287,37 +293,40 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
           {isEdit ? (
             <div
               className="rounded-xl px-3.5 py-2.5 text-[14px] font-bold text-slate-700"
-              style={{ background: 'rgba(255,248,240,0.9)', border: '1.5px solid rgba(245,158,11,.25)' }}
+              style={{
+                background: 'rgba(255,248,240,0.9)',
+                border: '1.5px solid rgba(245,158,11,.25)',
+              }}
             >
               {bookMeta?.label ?? existingPlan?.bookSlug}
               <span className="ml-2 text-[11px] font-semibold text-slate-400">（不可更改）</span>
             </div>
           ) : (
-            <select
+            <FormSelect
               value={bookSlug ?? ''}
-              onChange={(e) => {
-                const next = e.target.value as ChineseBookSlug
+              onValueChange={(value) => {
+                const next = value as ChineseBookSlug
                 setBookSlug(next)
                 if (!titleTouched) {
                   const meta = getChineseBook(next)
                   if (meta) setTitle(`${meta.label}计划`)
                 }
               }}
-              className="w-full cursor-pointer rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-[14px] font-bold text-slate-800 outline-none focus:border-amber-400"
-            >
-              {CHINESE_BOOKS.filter((b) => b.isOpen).map((book) => (
-                <option key={book.slug} value={book.slug}>
-                  {book.label}
-                </option>
-              ))}
-            </select>
+              options={CHINESE_BOOKS.filter((b) => b.isOpen).map((book) => ({
+                value: book.slug,
+                label: book.label,
+              }))}
+              ariaLabel="教材"
+              size="2"
+              className="w-full"
+            />
           )}
         </label>
 
         {/* Title */}
         <label className="block">
           <span className="mb-1.5 block text-[12px] font-extrabold text-amber-900">标题</span>
-          <input
+          <TextField.Root
             type="text"
             value={title}
             onChange={(e) => {
@@ -325,7 +334,8 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
               setTitle(e.target.value)
             }}
             placeholder={defaultTitle}
-            className="w-full rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-[14px] font-bold text-slate-800 outline-none focus:border-amber-400"
+            size="2"
+            className="w-full"
           />
         </label>
 
@@ -343,24 +353,24 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
               该册暂无可用课文
             </div>
           ) : (
-            <select
+            <FormSelect
               value={isEdit ? currentLessonKey : startLessonKey}
-              onChange={(e) => {
+              onValueChange={(value) => {
                 if (isEdit) {
-                  setCurrentLessonKey(e.target.value)
-                  setSelectedRunLessonKey(e.target.value)
+                  setCurrentLessonKey(value)
+                  setSelectedRunLessonKey(value)
                 } else {
-                  setStartLessonKey(e.target.value)
+                  setStartLessonKey(value)
                 }
               }}
-              className="w-full cursor-pointer rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-[14px] font-bold text-slate-800 outline-none focus:border-amber-400"
-            >
-              {selectableLessons.map(({ lesson, label }) => (
-                <option key={lesson.lessonKey} value={lesson.lessonKey}>
-                  第{lesson.unit}单元 · {label}
-                </option>
-              ))}
-            </select>
+              options={selectableLessons.map(({ lesson, label }) => ({
+                value: lesson.lessonKey,
+                label: `第${lesson.unit}单元 · ${label}`,
+              }))}
+              ariaLabel={isEdit ? '当前关' : '起始关'}
+              size="2"
+              className="w-full"
+            />
           )}
         </label>
 
@@ -369,13 +379,14 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
           <span className="mb-1.5 block text-[12px] font-extrabold text-amber-900">
             每批关数 K（1–10）
           </span>
-          <input
+          <TextField.Root
             type="number"
             min={1}
             max={10}
             value={lessonsPerBatch}
             onChange={(e) => setLessonsPerBatch(clampK(Number(e.target.value)))}
-            className="w-28 rounded-xl border border-amber-200 bg-white px-3.5 py-2.5 text-[14px] font-bold text-slate-800 outline-none focus:border-amber-400"
+            size="2"
+            className="w-28"
           />
         </label>
 
@@ -387,7 +398,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
               const on = quizTypes.includes(type)
               const disabled = type === 'blank' && quizTypes.includes('passage')
               return (
-                <button
+                <Button
                   key={type}
                   type="button"
                   disabled={disabled}
@@ -395,16 +406,13 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
                     if (disabled) return
                     setQuizTypes((prev) => toggleQuizType(prev, type))
                   }}
-                  className={`rounded-full border px-3 py-1.5 text-[12px] font-extrabold transition ${
-                    disabled
-                      ? 'cursor-not-allowed border-amber-100 bg-amber-50/60 text-amber-900/35'
-                      : on
-                        ? 'cursor-pointer border-amber-400 bg-amber-500 text-white'
-                        : 'cursor-pointer border-amber-200 bg-white text-amber-800 hover:border-amber-300'
-                  }`}
+                  variant={on ? 'solid' : 'soft'}
+                  color="amber"
+                  size="1"
+                  radius="full"
                 >
                   {PLAN_QUIZ_TYPE_LABELS[type]}
-                </button>
+                </Button>
               )
             })}
           </div>
@@ -440,35 +448,39 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
                 existingPlan.status === 'active'
                   ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
                   : existingPlan.status === 'paused'
-                    ? 'border-slate-300 bg-slate-50 text-slate-600'
+                    ? 'border-kid-line bg-slate-50 text-slate-600'
                     : 'border-blue-300 bg-blue-50 text-blue-700'
               }`}
             >
               {planStatusLabel(existingPlan.status)}
             </span>
             {existingPlan.status === 'active' && (
-              <button
+              <Button
                 type="button"
                 disabled={togglingStatus}
                 onClick={() => {
                   void handlePause()
                 }}
-                className="cursor-pointer rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-[13px] font-extrabold text-slate-600 disabled:opacity-50"
+                variant="outline"
+                color="gray"
+                size="2"
               >
                 {togglingStatus ? '处理中…' : '暂停'}
-              </button>
+              </Button>
             )}
             {existingPlan.status === 'paused' && (
-              <button
+              <Button
                 type="button"
                 disabled={togglingStatus}
                 onClick={() => {
                   void handleActivate()
                 }}
-                className="cursor-pointer rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-[13px] font-extrabold text-emerald-700 disabled:opacity-50"
+                variant="soft"
+                color="jade"
+                size="2"
               >
                 {togglingStatus ? '处理中…' : '恢复'}
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -486,9 +498,7 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
               selectedLessonKey={selectedRunLessonKey}
               onSelectLesson={setSelectedRunLessonKey}
             />
-            <div
-              className="rounded-2xl border border-amber-200/80 bg-white/70 px-3 py-3"
-            >
+            <div className="rounded-2xl border border-amber-200/80 bg-white px-3 py-3">
               <div className="mb-2 flex items-center justify-between gap-2 px-1">
                 <span className="text-[12px] font-extrabold text-amber-900">关卡练习记录</span>
                 {runsLoading && (
@@ -500,15 +510,13 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
                   点选左侧关卡查看记录
                 </p>
               ) : selectedRuns.length === 0 ? (
-                <p className="px-1 py-4 text-center text-[12px] text-slate-400">
-                  该关暂无练习记录
-                </p>
+                <p className="px-1 py-4 text-center text-[12px] text-slate-400">该关暂无练习记录</p>
               ) : (
                 <div className="flex max-h-[320px] flex-col gap-2 overflow-y-auto pr-1">
                   {selectedRuns.map((run) => (
                     <div
                       key={run.id}
-                      className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2"
+                      className="border-kid-line rounded-xl border-2 bg-slate-50/80 px-3 py-2"
                     >
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[12px] font-extrabold text-slate-700">
@@ -524,8 +532,12 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
                           {run.completed ? '已完成' : '未完成'}
                         </span>
                         {run.source && run.source !== 'plan' && (
-                          <span className="rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">
-                            {run.source === 'free' ? '自由练习' : run.source === 'review' ? '复习' : run.source}
+                          <span className="border-kid-line rounded-full border-2 bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">
+                            {run.source === 'free'
+                              ? '自由练习'
+                              : run.source === 'review'
+                                ? '复习'
+                                : run.source}
                           </span>
                         )}
                         {run.durationSeconds != null && run.durationSeconds > 0 && (
@@ -573,29 +585,21 @@ export default function ChineseRoadmapPlanEditor({ editPlanId }: Props) {
           </div>
         )}
 
-        {formError && (
-          <p className="text-[13px] font-bold text-red-500">{formError}</p>
-        )}
+        {formError && <p className="text-[13px] font-bold text-red-500">{formError}</p>}
 
         <div className="flex flex-wrap gap-3 pt-1">
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="cursor-pointer rounded-xl px-5 py-2.5 text-[13px] font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50"
-            style={{
-              background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
-              boxShadow: '0 4px 14px rgba(217,119,6,.3)',
-            }}
-          >
+          <Button type="submit" disabled={!canSubmit} variant="solid" color="amber" size="2">
             {isSubmitting ? '保存中…' : isEdit ? '保存修改' : '创建计划'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => router.push('/setting/plans/chinese')}
-            className="cursor-pointer rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-[13px] font-bold text-slate-500"
+            variant="outline"
+            color="gray"
+            size="2"
           >
             取消
-          </button>
+          </Button>
         </div>
       </form>
     </div>

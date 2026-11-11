@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
+import { Button } from '@rosie/ui/themes'
 import { useChineseContext } from '../context/ChineseContext'
 import { setActiveChineseBook } from '../hooks/useActiveChineseBook'
 import { chineseRoute } from '../utils/chinese-routes'
@@ -138,31 +139,29 @@ export default function ChineseWeeklyPage() {
             const active =
               effectiveGrade?.grade === opt.grade && effectiveGrade?.semester === opt.semester
             return (
-              <button
+              <Button
                 key={gradeSemesterKey(opt.grade, opt.semester)}
                 type="button"
                 onClick={() => setSelectedGrade(opt)}
-                className={clsx(
-                  'rounded-full px-3 py-1.5 text-xs font-bold transition',
-                  active
-                    ? 'bg-amber-500 text-white shadow-sm'
-                    : 'border border-amber-200 bg-white text-amber-800 hover:border-amber-400',
-                )}
+                variant={active ? 'solid' : 'soft'}
+                color="amber"
+                size="1"
+                radius="full"
               >
                 {formatGradeSemester(opt.grade, opt.semester)}
-              </button>
+              </Button>
             )
           })}
         </div>
       )}
 
-      <div className="mt-4 flex items-center gap-3 rounded-2xl border border-amber-200 bg-white/80 px-4 py-3">
+      <div className="mt-4 flex items-center gap-3 rounded-2xl border border-amber-200 bg-white px-4 py-3">
         <div className="text-sm font-bold text-amber-800">
           已完成 {roadmap.completedCount} / {roadmap.totalCount} 课
         </div>
         <div className="ml-auto h-2 w-28 overflow-hidden rounded-full bg-amber-100">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all"
+            className="h-full rounded-full bg-emerald-400 transition-all"
             style={{
               width: `${
                 roadmap.totalCount > 0
@@ -233,20 +232,20 @@ export default function ChineseWeeklyPage() {
               className="absolute"
               style={{ left: p.x - NODE_R, top: p.y - NODE_R, width: NODE_R * 2 }}
             >
+              {/* native-ok: 路线图节点是绝对定位的圆形关卡按钮，按完成/当前/锁定状态使用脉冲动画和描边环，标准 Button 无法表达 */}
               <button
                 type="button"
                 disabled={isLocked}
                 onClick={() => openLesson(node)}
                 aria-label={node.label}
                 className={clsx(
-                  'flex min-w-3 items-center justify-center rounded-full text-xl font-black shadow-md transition',
+                  'shadow-sticker flex min-w-3 items-center justify-center rounded-full text-xl font-black transition',
                   'h-[60px] w-[60px]',
                   isCompleted &&
-                    'cursor-pointer bg-gradient-to-br from-emerald-400 to-emerald-500 text-white ring-2 ring-emerald-200 hover:brightness-105',
+                    'cursor-pointer bg-emerald-600 text-white ring-2 ring-emerald-200 hover:brightness-105',
                   isCurrent &&
-                    'animate-pulse cursor-pointer bg-gradient-to-br from-amber-400 to-orange-500 text-white ring-4 ring-amber-300 hover:brightness-105',
-                  isLocked &&
-                    'cursor-not-allowed bg-slate-200 text-slate-400 ring-2 ring-slate-100',
+                    'animate-pulse cursor-pointer bg-orange-600 text-white ring-4 ring-amber-300 hover:brightness-105',
+                  isLocked && 'ring-kid-line cursor-not-allowed bg-slate-200 text-slate-400 ring-2',
                 )}
               >
                 {nodeInner(node)}

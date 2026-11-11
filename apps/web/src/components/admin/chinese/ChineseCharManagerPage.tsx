@@ -14,6 +14,8 @@ import {
 } from '@rosie/chinese'
 import ChineseCharFormModal from './ChineseCharFormModal'
 import ChineseLessonRecallModal from './ChineseLessonRecallModal'
+import { Button, IconButton, TextField } from '@rosie/ui/themes'
+import { FormSelect, StickerCard } from '@rosie/ui'
 
 type Props = { user: User | null }
 type Tab = 'chars' | 'lessons'
@@ -42,48 +44,59 @@ function PaginationBar({
       : (() => {
           const nums: (number | '…')[] = [1]
           if (page > 3) nums.push('…')
-          for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) nums.push(i)
+          for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++)
+            nums.push(i)
           if (page < totalPages - 2) nums.push('…')
           nums.push(totalPages)
           return nums
         })()
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-1.5 border-t border-slate-100 px-3 py-3">
-      <button
+    <div className="border-kid-line flex flex-wrap items-center justify-center gap-1.5 border-t px-3 py-3">
+      <IconButton
         type="button"
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
-        className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 disabled:opacity-30"
+        variant="soft"
+        color="gray"
+        size="1"
+        className="w-8"
       >
         ‹
-      </button>
+      </IconButton>
       {pageNums.map((n, i) =>
         n === '…' ? (
-          <span key={`ellipsis-${i}`} className="flex h-8 w-8 items-center justify-center text-xs text-slate-400">
+          <span
+            key={`ellipsis-${i}`}
+            className="flex h-8 w-8 items-center justify-center text-xs text-slate-400"
+          >
             …
           </span>
         ) : (
-          <button
+          <Button
             key={n}
             type="button"
             onClick={() => onPageChange(n)}
-            className={`flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold ${
-              n === page ? 'bg-amber-500 text-white' : 'bg-slate-50 text-slate-600'
-            }`}
+            variant={n === page ? 'solid' : 'soft'}
+            color={n === page ? 'amber' : 'gray'}
+            size="1"
+            className="w-8"
           >
             {n}
-          </button>
+          </Button>
         ),
       )}
-      <button
+      <IconButton
         type="button"
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
-        className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-sm font-bold text-slate-600 disabled:opacity-30"
+        variant="soft"
+        color="gray"
+        size="1"
+        className="w-8"
       >
         ›
-      </button>
+      </IconButton>
       <span className="ml-1 text-[11px] text-slate-400">
         {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} / {total}
       </span>
@@ -137,7 +150,8 @@ export default function ChineseCharManagerPage({ user }: Props) {
     for (const book of bookOptions) {
       counts.set(book.slug, {
         chars: chars.filter((c) => c.grade === book.grade && c.semester === book.semester).length,
-        lessons: lessons.filter((l) => l.grade === book.grade && l.semester === book.semester).length,
+        lessons: lessons.filter((l) => l.grade === book.grade && l.semester === book.semester)
+          .length,
       })
     }
     return counts
@@ -209,19 +223,19 @@ export default function ChineseCharManagerPage({ user }: Props) {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: 'linear-gradient(160deg,#fffbeb 0%,#fff1f2 45%,#eff6ff 100%)' }}
-    >
+    <div className="min-h-screen" style={{ background: '#fff1f2' }}>
       <header
-        className="sticky top-0 z-30 border-b border-amber-200/40 backdrop-blur"
+        className="sticky top-0 z-30 border-b border-amber-200/40"
         style={{ background: 'rgba(255,255,255,0.85)' }}
       >
         <div className="mx-auto flex h-14 max-w-[960px] items-center gap-3 px-4">
           <Link
             href="/admin"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-amber-700 transition hover:scale-110"
-            style={{ background: 'rgba(245,158,11,0.10)', border: '1.5px solid rgba(245,158,11,0.30)' }}
+            style={{
+              background: 'rgba(245,158,11,0.10)',
+              border: '1.5px solid rgba(245,158,11,0.30)',
+            }}
             aria-label="返回管理后台"
           >
             ←
@@ -238,13 +252,16 @@ export default function ChineseCharManagerPage({ user }: Props) {
               {isLoading ? ' · 同步中…' : ''}
             </p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={() => void refresh()}
-            className="shrink-0 rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm"
+            variant="outline"
+            color="gray"
+            size="1"
+            className="shrink-0"
           >
             刷新
-          </button>
+          </Button>
         </div>
       </header>
 
@@ -266,23 +283,23 @@ export default function ChineseCharManagerPage({ user }: Props) {
 
         <div className="mb-4 flex gap-2">
           {(['chars', 'lessons'] as const).map((t) => (
-            <button
+            <Button
               key={t}
               type="button"
               onClick={() => {
                 setTab(t)
                 setPage(1)
               }}
-              className={`rounded-xl px-4 py-2 text-sm font-bold ${
-                tab === t ? 'bg-amber-500 text-white' : 'bg-white text-slate-600 shadow-sm'
-              }`}
+              variant={tab === t ? 'solid' : 'outline'}
+              color={tab === t ? 'amber' : 'gray'}
+              size="2"
             >
               {t === 'chars' ? '字表' : '读一读记一记'}
-            </button>
+            </Button>
           ))}
         </div>
 
-        <input
+        <TextField.Root
           type="search"
           placeholder={tab === 'chars' ? '搜索汉字、拼音、组词…' : '搜索课文、词语…'}
           value={search}
@@ -290,84 +307,81 @@ export default function ChineseCharManagerPage({ user }: Props) {
             setSearch(e.target.value)
             setPage(1)
           }}
-          className="mb-3 w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-amber-400 focus:outline-none"
+          size="2"
+          className="mb-3 w-full"
         />
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <select
+          <FormSelect
+            size="2"
+            ariaLabel="册别"
             value={bookSlug}
-            onChange={(e) => {
-              setBookSlug(e.target.value as BookFilter)
+            onValueChange={(next) => {
+              setBookSlug(next as BookFilter)
               setUnitFilter('all')
               setPage(1)
             }}
-            className="rounded-xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 focus:border-amber-400 focus:outline-none"
-          >
-            <option value="all">全部册别</option>
-            {bookOptions.map((b) => (
-              <option key={b.slug} value={b.slug}>
-                {b.label}
-              </option>
-            ))}
-          </select>
-          <select
+            options={[
+              { value: 'all', label: '全部册别' },
+              ...bookOptions.map((b) => ({ value: b.slug, label: b.label })),
+            ]}
+          />
+          <FormSelect
+            size="2"
+            ariaLabel="单元"
             value={unitFilter === 'all' ? 'all' : String(unitFilter)}
-            onChange={(e) => {
-              const v = e.target.value
+            onValueChange={(v) => {
               setUnitFilter(v === 'all' ? 'all' : Number(v))
               setPage(1)
             }}
             disabled={bookSlug === 'all'}
-            className="rounded-xl border-2 border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 focus:border-amber-400 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <option value="all">全部单元</option>
-            {unitOptions.map((u) => (
-              <option key={u} value={u}>
-                第{u}单元
-              </option>
-            ))}
-          </select>
+            options={[
+              { value: 'all', label: '全部单元' },
+              ...unitOptions.map((u) => ({ value: String(u), label: `第${u}单元` })),
+            ]}
+          />
           {activeList.length > 0 && (
             <span className="text-xs text-slate-400">
-              共 {activeList.length} 条
-              {totalPages > 1 ? ` · 第 ${safePage}/${totalPages} 页` : ''}
+              共 {activeList.length} 条{totalPages > 1 ? ` · 第 ${safePage}/${totalPages} 页` : ''}
             </span>
           )}
         </div>
 
         {tab === 'chars' ? (
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <StickerCard size="none" elevation="sm" radius="md" className="overflow-hidden">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-[11px] font-extrabold uppercase tracking-wide text-slate-500">
+              <thead className="bg-slate-50 text-[11px] font-extrabold tracking-wide text-slate-500 uppercase">
                 <tr>
                   <th className="px-3 py-2">字</th>
                   <th className="px-3 py-2">拼音</th>
-                  <th className="px-3 py-2 hidden sm:table-cell">部首</th>
-                  <th className="px-3 py-2 hidden sm:table-cell">结构</th>
-                  <th className="px-3 py-2 hidden md:table-cell">组词</th>
-                  <th className="px-3 py-2 w-16" />
+                  <th className="hidden px-3 py-2 sm:table-cell">部首</th>
+                  <th className="hidden px-3 py-2 sm:table-cell">结构</th>
+                  <th className="hidden px-3 py-2 md:table-cell">组词</th>
+                  <th className="w-16 px-3 py-2" />
                 </tr>
               </thead>
               <tbody>
                 {pagedChars.map((c) => (
-                  <tr key={c.charKey} className="border-t border-slate-100">
+                  <tr key={c.charKey} className="border-kid-line border-t">
                     <td className="px-3 py-2 text-lg font-extrabold">{c.char}</td>
                     <td className="px-3 py-2 text-slate-600">{c.pinyin}</td>
-                    <td className="px-3 py-2 hidden text-slate-500 sm:table-cell">
+                    <td className="hidden px-3 py-2 text-slate-500 sm:table-cell">
                       {c.radical}（{c.radicalName}）
                     </td>
-                    <td className="px-3 py-2 hidden text-slate-500 sm:table-cell">{c.structure}</td>
-                    <td className="px-3 py-2 hidden max-w-[200px] truncate text-slate-500 md:table-cell">
+                    <td className="hidden px-3 py-2 text-slate-500 sm:table-cell">{c.structure}</td>
+                    <td className="hidden max-w-[200px] truncate px-3 py-2 text-slate-500 md:table-cell">
                       {c.phrases.join(' ')}
                     </td>
                     <td className="px-3 py-2">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => setEditChar(c)}
-                        className="text-xs font-bold text-amber-700"
+                        variant="ghost"
+                        color="amber"
+                        size="1"
                       >
                         编辑
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -382,13 +396,15 @@ export default function ChineseCharManagerPage({ user }: Props) {
               total={filteredChars.length}
               onPageChange={setPage}
             />
-          </div>
+          </StickerCard>
         ) : (
           <div className="space-y-2">
             {pagedLessons.map((l) => (
-              <div
+              <StickerCard
+                elevation="sm"
+                radius="md"
+                className="flex items-start justify-between gap-3"
                 key={l.lessonKey}
-                className="flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
               >
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-400">
@@ -396,21 +412,24 @@ export default function ChineseCharManagerPage({ user }: Props) {
                   </p>
                   <h3 className="font-extrabold text-slate-800">{l.lessonTitle}</h3>
                   {l.recallPhrases.length > 0 ? (
-                    <p className="mt-1 text-xs text-slate-500 line-clamp-2">
+                    <p className="mt-1 line-clamp-2 text-xs text-slate-500">
                       {l.recallPhrases.join(' · ')}
                     </p>
                   ) : (
                     <p className="mt-1 text-xs text-slate-300">（暂无读一读记一记）</p>
                   )}
                 </div>
-                <button
+                <Button
                   type="button"
                   onClick={() => setEditLesson(l)}
-                  className="shrink-0 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800"
+                  variant="soft"
+                  color="amber"
+                  size="1"
+                  className="shrink-0"
                 >
                   编辑
-                </button>
-              </div>
+                </Button>
+              </StickerCard>
             ))}
             {filteredLessons.length === 0 && (
               <p className="p-6 text-center text-sm text-slate-400">无匹配课文</p>

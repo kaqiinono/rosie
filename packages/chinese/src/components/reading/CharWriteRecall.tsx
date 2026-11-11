@@ -4,6 +4,7 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import CharWriter from '../chars/CharWriter'
 import CharSpeakButton from '../chars/CharSpeakButton'
+import { Button } from '@rosie/ui/themes'
 
 export interface WriteRecallChar {
   char: string
@@ -37,7 +38,7 @@ function WriteCard({
   return (
     <div
       className={clsx(
-        'rounded-2xl border-[1.5px] bg-white/85 p-3 transition',
+        'rounded-2xl border-[1.5px] bg-white p-3 transition',
         result === true
           ? 'border-emerald-300 bg-emerald-50/70'
           : result === false
@@ -52,7 +53,7 @@ function WriteCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1">
             <p className="text-sm font-black text-rose-800">{item.pinyin}</p>
-            <CharSpeakButton text={item.char} size="sm" className="text-rose-600" />
+            <CharSpeakButton text={item.char} size="sm" />
           </div>
           <p className="text-[11px] text-slate-400">
             {result === true
@@ -63,21 +64,20 @@ function WriteCard({
           </p>
         </div>
         {!active && (
-          <button
+          <Button
             type="button"
             onClick={() => {
               setActive(true)
               setAttempt((n) => n + 1)
             }}
-            className={clsx(
-              'shrink-0 cursor-pointer rounded-lg border-[1.5px] px-3 py-1.5 text-[12px] font-bold transition',
-              result === undefined
-                ? 'border-rose-300 bg-rose-500 text-white hover:bg-rose-600'
-                : 'border-rose-200 bg-white text-rose-700 hover:bg-rose-50',
-            )}
+            variant={result === undefined ? 'solid' : 'soft'}
+            color="ruby"
+            size="1"
+            radius="full"
+            className="shrink-0"
           >
             {result === undefined ? '✍️ 写一写' : '重写'}
-          </button>
+          </Button>
         )}
       </div>
 
@@ -93,13 +93,15 @@ function WriteCard({
               setActive(false)
             }}
           />
-          <button
+          <Button
             type="button"
             onClick={() => setActive(false)}
-            className="cursor-pointer text-[11px] font-bold text-slate-400 hover:text-slate-600"
+            variant="ghost"
+            color="gray"
+            size="1"
           >
             收起
-          </button>
+          </Button>
         </div>
       )}
     </div>

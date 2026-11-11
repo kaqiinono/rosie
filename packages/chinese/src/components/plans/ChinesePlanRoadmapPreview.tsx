@@ -45,8 +45,14 @@ export default function ChinesePlanRoadmapPreview({
   if (nodes.length === 0) {
     return (
       <div
-        className={clsx('rounded-2xl px-4 py-6 text-center text-[13px] text-amber-800/70', className)}
-        style={{ background: 'rgba(255,248,240,0.65)', border: '1.5px dashed rgba(245,158,11,.35)' }}
+        className={clsx(
+          'rounded-2xl px-4 py-6 text-center text-[13px] text-amber-800/70',
+          className,
+        )}
+        style={{
+          background: 'rgba(255,248,240,0.65)',
+          border: '1.5px dashed rgba(245,158,11,.35)',
+        }}
       >
         暂无路线图关卡
       </div>
@@ -54,7 +60,7 @@ export default function ChinesePlanRoadmapPreview({
   }
 
   return (
-    <div className={clsx('rounded-2xl border border-amber-200/80 bg-white/70 px-3 py-3', className)}>
+    <div className={clsx('rounded-2xl border border-amber-200/80 bg-white px-3 py-3', className)}>
       <div className="mb-2 flex items-center justify-between gap-2 px-1">
         <span className="text-[12px] font-extrabold text-amber-900">计划路线图</span>
         <span className="text-[11px] font-bold text-amber-700/80">
@@ -66,7 +72,7 @@ export default function ChinesePlanRoadmapPreview({
           const selected = selectedLessonKey === node.lessonKey
           const clickable = !!onSelectLesson
           return (
-            <button
+            <button // native-ok: 路线图列表行是多块内容的容器按钮（徽标 + 标题 + 副标题），Radix Button 会居中挤压内容
               key={node.lessonKey}
               type="button"
               disabled={!clickable}
@@ -83,7 +89,7 @@ export default function ChinesePlanRoadmapPreview({
                 className={clsx(
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold',
                   node.state === 'completed' && 'bg-emerald-500 text-white',
-                  node.state === 'current' && 'bg-amber-500 text-white shadow-sm',
+                  node.state === 'current' && 'shadow-sticker-sm bg-amber-500 text-white',
                   node.state === 'locked' && 'bg-slate-200 text-slate-500',
                 )}
               >

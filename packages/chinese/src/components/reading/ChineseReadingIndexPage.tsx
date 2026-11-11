@@ -6,16 +6,20 @@ import { getWordMasteryLevel } from '@rosie/core'
 import { useChineseContext } from '../../context/ChineseContext'
 import { localLessonKey } from '../../utils/chinese-helpers'
 import { getLessonPassage } from '../../utils/chinese-lesson-passage-helpers'
-import {
-  getLessonDisplayInfo,
-  sortLessonsPedagogically,
-} from '../../utils/chinese-lesson-display'
+import { getLessonDisplayInfo, sortLessonsPedagogically } from '../../utils/chinese-lesson-display'
 import { chineseRoute } from '../../utils/chinese-routes'
 import { ChinesePageHeader, ChinesePageShell } from '../ChinesePageLayout'
 
 export default function ChineseReadingIndexPage() {
-  const { lessons, lessonGroups, getMastery, isCharDataLoading, isCharDataReady, bookSlug, charKeyForBook } =
-    useChineseContext()
+  const {
+    lessons,
+    lessonGroups,
+    getMastery,
+    isCharDataLoading,
+    isCharDataReady,
+    bookSlug,
+    charKeyForBook,
+  } = useChineseContext()
 
   const cards = useMemo(() => {
     const withPassage = lessons.filter((l) => {
@@ -32,7 +36,8 @@ export default function ChineseReadingIndexPage() {
       const total = recognize.length + write.length
       let mastered = 0
       for (const ch of recognize) {
-        if (getWordMasteryLevel(getMastery(charKeyForBook(ch), 'recognize').correct) >= 3) mastered += 1
+        if (getWordMasteryLevel(getMastery(charKeyForBook(ch), 'recognize').correct) >= 3)
+          mastered += 1
       }
       for (const ch of write) {
         if (getWordMasteryLevel(getMastery(charKeyForBook(ch), 'write').correct) >= 3) mastered += 1
@@ -70,7 +75,7 @@ export default function ChineseReadingIndexPage() {
       />
 
       {cards.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+        <div className="border-kid-line rounded-2xl border-2 bg-white p-8 text-center">
           <div className="mb-2 text-4xl">📭</div>
           <div className="font-bold text-slate-800">还没有课文</div>
           <div className="mt-1 text-[12px] text-slate-500">课文正文录入后会在这里出现。</div>
@@ -83,7 +88,7 @@ export default function ChineseReadingIndexPage() {
               <li key={c.lessonKey}>
                 <Link
                   href={chineseRoute(bookSlug, 'reading', localLessonKey(c.lessonKey))}
-                  className="block h-full min-h-40 rounded-2xl border border-slate-200 bg-white p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 sm:p-5"
+                  className="border-kid-line shadow-sticker-sm hover:shadow-sticker block h-full min-h-40 rounded-2xl border-2 bg-white p-4 no-underline transition hover:-translate-y-0.5 hover:border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 sm:p-5"
                 >
                   <div className="mb-1.5 flex items-center gap-1.5">
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700 ring-1 ring-amber-200">
@@ -110,7 +115,7 @@ export default function ChineseReadingIndexPage() {
                   {c.total > 0 && (
                     <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 transition-all"
+                        className="h-full rounded-full bg-emerald-400 transition-all"
                         style={{ width: `${pct}%` }}
                       />
                     </div>

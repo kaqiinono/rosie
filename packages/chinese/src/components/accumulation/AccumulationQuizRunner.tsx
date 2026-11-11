@@ -1,9 +1,9 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import clsx from 'clsx'
 import type { AccumulationQuizItem } from '../../utils/chinese-accumulation-helpers'
 import { ACCUMULATION_KIND_LABEL } from '../../utils/chinese-accumulation-helpers'
+import { Button } from '@rosie/ui/themes'
 
 interface AccumulationQuizRunnerProps {
   items: AccumulationQuizItem[]
@@ -62,7 +62,7 @@ export default function AccumulationQuizRunner({ items, onComplete }: Accumulati
         <p className="text-xs font-semibold text-teal-600">
           第 {idx + 1} / {items.length} 题 · {ACCUMULATION_KIND_LABEL[current.kind]}
         </p>
-        <p className="mt-4 text-xl font-bold leading-relaxed text-slate-900">{current.prompt}</p>
+        <p className="mt-4 text-xl leading-relaxed font-bold text-slate-900">{current.prompt}</p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -70,33 +70,29 @@ export default function AccumulationQuizRunner({ items, onComplete }: Accumulati
           const isCorrect = opt === current.answer
           const isChosen = selected === opt
           return (
-            <button
+            <Button
               key={opt}
               type="button"
-              disabled={answered}
-              onClick={() => handleSelect(opt)}
-              className={clsx(
-                'rounded-xl border-2 px-4 py-3 text-left text-sm font-semibold transition-colors',
-                !answered && 'border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50',
-                answered && isCorrect && 'border-emerald-400 bg-emerald-50 text-emerald-800',
-                answered && isChosen && !isCorrect && 'border-rose-400 bg-rose-50 text-rose-700',
-                answered && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-              )}
+              aria-disabled={answered}
+              onClick={() => {
+                if (!answered) handleSelect(opt)
+              }}
+              variant={!answered ? 'outline' : isCorrect || isChosen ? 'solid' : 'soft'}
+              color={!answered ? 'gray' : isCorrect ? 'jade' : isChosen ? 'red' : 'gray'}
+              size="3"
+              radius="full"
+              className="w-full"
             >
               {opt}
-            </button>
+            </Button>
           )
         })}
       </div>
 
       {answered && (
-        <button
-          type="button"
-          onClick={handleNext}
-          className="rounded-xl bg-teal-600 px-4 py-3 text-sm font-bold text-white hover:bg-teal-700"
-        >
+        <Button type="button" onClick={handleNext} variant="solid" color="teal" size="3">
           {idx + 1 >= items.length ? '查看结果' : '下一题'}
-        </button>
+        </Button>
       )}
     </div>
   )

@@ -22,7 +22,7 @@ export default function ChinesePage() {
           <Link
             key={book.slug}
             href={`/chinese/${book.slug}`}
-            className="group block rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            className="group shadow-sticker-sm hover:shadow-sticker block rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 no-underline transition hover:-translate-y-0.5"
           >
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -34,7 +34,7 @@ export default function ChinesePage() {
                   识字 {book.recognizeTotal} · 写字 {book.writeTotal}
                 </p>
               </div>
-              <span className="rounded-full bg-white/80 px-2 py-1 text-xs font-bold text-amber-700 shadow-sm">
+              <span className="shadow-sticker-sm rounded-full bg-white px-2 py-1 text-xs font-bold text-amber-700">
                 进入
               </span>
             </div>

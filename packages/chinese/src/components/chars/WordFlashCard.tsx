@@ -13,15 +13,10 @@ interface WordFlashCardProps {
 
 const CARD_MIN_H = 260
 
-const FRONT_BG: CSSProperties = { background: 'linear-gradient(160deg, #f0fdf4 0%, #dcfce7 100%)' }
-const BACK_BG: CSSProperties = { background: 'linear-gradient(160deg, #fdf4ff 0%, #fae8ff 100%)' }
+const FRONT_BG: CSSProperties = { background: '#f0fdf4' }
+const BACK_BG: CSSProperties = { background: '#fdf4ff' }
 
-export default function WordFlashCard({
-  data,
-  flipped,
-  onFlip,
-  index = 0,
-}: WordFlashCardProps) {
+export default function WordFlashCard({ data, flipped, onFlip, index = 0 }: WordFlashCardProps) {
   const { word, pinyin, unit, unitLessonNo, bookLessonNo, lessonTitle } = data
   const delay = Math.min(index * 0.03, 0.25)
 
@@ -32,8 +27,7 @@ export default function WordFlashCard({
     return parts.join(' · ')
   }, [unit, unitLessonNo, bookLessonNo])
 
-  const wordSize =
-    word.length >= 4 ? 'text-3xl' : word.length === 3 ? 'text-4xl' : 'text-5xl'
+  const wordSize = word.length >= 4 ? 'text-3xl' : word.length === 3 ? 'text-4xl' : 'text-5xl'
 
   const frontFace = (
     <div
@@ -43,7 +37,7 @@ export default function WordFlashCard({
         WebkitBackfaceVisibility: 'hidden',
         transform: 'rotateY(0deg) translateZ(0.01px)',
         WebkitTransform: 'rotateY(0deg) translateZ(0.01px)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 12px rgba(28,25,23,0.06)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 3px 0 rgba(28,25,23,.3)',
         ...FRONT_BG,
       }}
     >
@@ -82,7 +76,7 @@ export default function WordFlashCard({
         transform: 'rotateY(180deg) translateZ(0.01px)',
         WebkitTransform: 'rotateY(180deg) translateZ(0.01px)',
         border: '1px solid rgba(192,38,211,0.12)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 12px rgba(28,25,23,0.06)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), 0 3px 0 rgba(28,25,23,.3)',
         ...BACK_BG,
       }}
     >
@@ -111,6 +105,7 @@ export default function WordFlashCard({
         animation: `cn-card-rise 0.35s ease ${delay}s backwards`,
       }}
     >
+      {/* native-ok: 整张 3D 翻转词卡是容器按钮（多块内容 + preserve-3d 翻转），Radix Button 会居中挤压内容 */}
       <button
         type="button"
         onClick={onFlip}

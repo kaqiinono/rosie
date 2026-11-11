@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import type { ChineseBookSlug } from '../../utils/chinese-books'
 import { useChineseReadingRecordings } from '../../hooks/useChineseReadingRecordings'
+import { Button } from '@rosie/ui/themes'
 
 export type PassageRecorderProps = {
   bookSlug: ChineseBookSlug
@@ -314,14 +315,14 @@ export default function PassageRecorder({
 
   if (hydrated && !supported) {
     return (
-      <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50 to-orange-50/60 px-4 py-3">
+      <div className="rounded-2xl border border-amber-200/70 bg-amber-50 px-4 py-3">
         <p className="text-center text-xs font-semibold text-amber-900/50">当前浏览器不支持录音</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-amber-200/70 bg-gradient-to-br from-amber-50 to-orange-50/60 p-4">
+    <div className="rounded-2xl border border-amber-200/70 bg-amber-50 p-4">
       <div className="mb-2 flex items-center justify-between gap-2">
         <p className="text-[11px] font-bold text-amber-800">朗读录音（可选）</p>
         {(phase === 'recording' || phase === 'preview' || phase === 'uploading') && (
@@ -333,27 +334,25 @@ export default function PassageRecorder({
 
       {(phase === 'idle' || phase === 'starting') && (
         <div className="flex justify-center">
-          <button
+          <Button
             type="button"
             onClick={() => void startRecording()}
             disabled={!hydrated || phase === 'starting'}
-            className="cursor-pointer rounded-full bg-amber-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-700 disabled:opacity-50"
+            variant="solid"
+            color="amber"
+            size="2"
           >
             {phase === 'starting' ? '准备中…' : '开始录音'}
-          </button>
+          </Button>
         </div>
       )}
 
       {phase === 'recording' && (
         <div className="flex flex-col items-center gap-3">
           <p className="text-xs font-semibold text-rose-600">● 录音中…</p>
-          <button
-            type="button"
-            onClick={stopRecording}
-            className="cursor-pointer rounded-full bg-rose-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-rose-700"
-          >
+          <Button type="button" onClick={stopRecording} variant="solid" color="ruby" size="2">
             停止
-          </button>
+          </Button>
         </div>
       )}
 
@@ -361,22 +360,26 @@ export default function PassageRecorder({
         <div className="flex flex-col gap-3">
           <audio controls src={previewUrl} className="w-full" preload="metadata" />
           <div className="flex flex-wrap items-center justify-center gap-2">
-            <button
+            <Button
               type="button"
               disabled={phase === 'uploading'}
               onClick={() => void upload()}
-              className="cursor-pointer rounded-full bg-amber-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-amber-700 disabled:cursor-wait disabled:opacity-60"
+              variant="solid"
+              color="amber"
+              size="2"
             >
               {phase === 'uploading' ? '上传中…' : '上传保存'}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               disabled={phase === 'uploading'}
               onClick={discard}
-              className="cursor-pointer rounded-full border border-amber-300 bg-white/80 px-4 py-2 text-sm font-bold text-amber-800 transition hover:bg-white disabled:opacity-60"
+              variant="outline"
+              color="amber"
+              size="2"
             >
               放弃
-            </button>
+            </Button>
           </div>
         </div>
       )}

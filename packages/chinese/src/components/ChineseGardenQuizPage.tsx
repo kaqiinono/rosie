@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { FormSelect } from '@rosie/ui'
 import {
   CharQuizRunner,
   buildGardenQuizItems,
@@ -48,17 +49,17 @@ export default function ChineseGardenQuizPage() {
 
       <label className="mt-4 block text-xs font-bold text-slate-500">
         选择园地
-        <select
+        <FormSelect
           value={resolvedKey}
-          onChange={(e) => setLessonKey(e.target.value)}
-          className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold"
-        >
-          {gardenGroups.map((g) => (
-            <option key={g.lessonKey} value={g.lessonKey}>
-              第{g.unit}单元 · {g.lessonTitle}
-            </option>
-          ))}
-        </select>
+          onValueChange={setLessonKey}
+          options={gardenGroups.map((g) => ({
+            value: g.lessonKey,
+            label: `第${g.unit}单元 · ${g.lessonTitle}`,
+          }))}
+          ariaLabel="选择园地"
+          size="2"
+          className="mt-1 w-full"
+        />
       </label>
 
       {group && group.recognize.length > 0 && (

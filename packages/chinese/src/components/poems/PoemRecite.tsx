@@ -3,6 +3,8 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import clsx from 'clsx'
 import type { PoemEntry } from '../../utils/g1b/types'
+import { Button } from '@rosie/ui/themes'
+import { StickerCard } from '@rosie/ui'
 
 interface PoemReciteProps {
   poem: PoemEntry
@@ -71,7 +73,7 @@ export default function PoemRecite({ poem, onComplete }: PoemReciteProps) {
         <p className="mt-2 text-xs text-slate-500">填空背诵 — 写出挖空的字</p>
       </header>
 
-      <div className="space-y-3 rounded-2xl border border-violet-100 bg-white/80 p-5 shadow-sm">
+      <StickerCard elevation="sm" radius="md" className="space-y-3">
         {poem.lines.map((line, lineIdx) => {
           const lineBlanks = blanks.filter((b) => b.lineIdx === lineIdx)
           if (lineBlanks.length === 0) {
@@ -94,7 +96,7 @@ export default function PoemRecite({ poem, onComplete }: PoemReciteProps) {
             const ok = submitted && val === slot.char
             const bad = submitted && val !== slot.char
             parts.push(
-              <input
+              <input // native-ok: 古诗填空是嵌在诗句文字里的单字行内输入框，标准 TextField 会打断诗句排版
                 key={k}
                 type="text"
                 maxLength={1}
@@ -122,17 +124,13 @@ export default function PoemRecite({ poem, onComplete }: PoemReciteProps) {
             </p>
           )
         })}
-      </div>
+      </StickerCard>
 
       <div className="mt-6 flex flex-col items-center gap-3">
         {!submitted ? (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white hover:bg-violet-700"
-          >
+          <Button type="button" onClick={handleSubmit} variant="solid" color="violet" size="2">
             提交
-          </button>
+          </Button>
         ) : (
           <p className="text-sm font-semibold text-violet-800">得分：{score}%</p>
         )}

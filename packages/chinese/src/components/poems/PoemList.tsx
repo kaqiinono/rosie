@@ -16,7 +16,7 @@ export default function PoemList({ basePath = '/chinese/poems', poems = POEMS }:
         <li key={poem.id}>
           <Link
             href={`${basePath}/${poem.id}`}
-            className="block h-full min-h-32 rounded-2xl border border-violet-200/70 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-4 no-underline shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 sm:p-5"
+            className="shadow-sticker-sm hover:shadow-sticker block h-full min-h-32 rounded-2xl border border-violet-200/70 bg-fuchsia-50 p-4 no-underline transition hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 sm:p-5"
           >
             <div className="flex items-start justify-between gap-2">
               <div>

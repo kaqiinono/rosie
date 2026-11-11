@@ -8,6 +8,7 @@ import { chineseRoute } from '../utils/chinese-routes'
 import { getLessonPassage } from '../utils/chinese-lesson-passage-helpers'
 import { useChineseContext } from '../context/ChineseContext'
 import LessonPassageView from './units/LessonPassageView'
+import { StickerCard } from '@rosie/ui'
 
 function lessonKeyFor(unit: number, lesson: ChineseLessonMeta): string {
   if (lesson.kind === 'garden') return `u${unit}-garden`
@@ -40,7 +41,7 @@ function LessonCard({ unit, lesson, lessonGroups, lessons }: LessonCardProps) {
   const isHappyReading = lesson.kind === 'happy_reading'
 
   return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <StickerCard as="article" elevation="sm" radius="md">
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h3 className="font-extrabold text-slate-900">{lesson.title}</h3>
@@ -130,25 +131,19 @@ function LessonCard({ unit, lesson, lessonGroups, lessons }: LessonCardProps) {
       )}
 
       {!isGarden && !isHappyReading && (
-        <section className="mt-4 border-t border-slate-100 pt-3">
-          <p className="mb-2 text-[10px] font-bold tracking-wide text-slate-400 uppercase">
-            课文
-          </p>
+        <section className="border-kid-line mt-4 border-t pt-3">
+          <p className="mb-2 text-[10px] font-bold tracking-wide text-slate-400 uppercase">课文</p>
           <LessonPassageView lessonKey={key} group={group} />
           {passage?.paragraphs.length ? null : (
-            <p className="mt-1 text-[10px] text-slate-400">
-              生字表与词语练习已可用；正文录入中。
-            </p>
+            <p className="mt-1 text-[10px] text-slate-400">生字表与词语练习已可用；正文录入中。</p>
           )}
         </section>
       )}
 
       {isGarden && group && group.recognize.length > 0 && (
-        <p className="mt-3 text-xs text-emerald-700">
-          园地扩展认读：{group.recognize.join(' ')}
-        </p>
+        <p className="mt-3 text-xs text-emerald-700">园地扩展认读：{group.recognize.join(' ')}</p>
       )}
-    </article>
+    </StickerCard>
   )
 }
 

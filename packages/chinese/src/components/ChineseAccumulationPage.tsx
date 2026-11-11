@@ -4,12 +4,16 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { getBookPoems, getBookAccumulation } from '../utils/chinese-book-content'
-import { ACCUMULATION_KIND_LABEL, buildAccumulationQuizItems } from '../utils/chinese-accumulation-helpers'
+import {
+  ACCUMULATION_KIND_LABEL,
+  buildAccumulationQuizItems,
+} from '../utils/chinese-accumulation-helpers'
 import AccumulationQuizRunner from './accumulation/AccumulationQuizRunner'
 import PoemList from './poems/PoemList'
 import { getGardenLessonGroups } from '../utils/chinese-garden-helpers'
 import { useChineseContext } from '../context/ChineseContext'
 import { ChinesePageHeader, ChinesePageShell } from './ChinesePageLayout'
+import { Button } from '@rosie/ui/themes'
 
 export default function ChineseAccumulationPage() {
   const searchParams = useSearchParams()
@@ -27,11 +31,7 @@ export default function ChineseAccumulationPage() {
   const [quizzing, setQuizzing] = useState(unitFilter !== undefined)
 
   const items = useMemo(
-    () =>
-      buildAccumulationQuizItems(
-        accumulation,
-        activeUnit === 'all' ? undefined : activeUnit,
-      ),
+    () => buildAccumulationQuizItems(accumulation, activeUnit === 'all' ? undefined : activeUnit),
     [activeUnit, accumulation],
   )
 
@@ -46,13 +46,16 @@ export default function ChineseAccumulationPage() {
   if (quizzing && items.length > 0) {
     return (
       <div className="mx-auto max-w-lg px-4 py-6">
-        <button
+        <Button
           type="button"
           onClick={() => setQuizzing(false)}
-          className="mb-4 text-xs font-semibold text-teal-700"
+          variant="ghost"
+          color="teal"
+          size="1"
+          className="mb-4"
         >
           ← 返回列表
-        </button>
+        </Button>
         <AccumulationQuizRunner items={items} onComplete={handleComplete} />
       </div>
     )
@@ -66,7 +69,7 @@ export default function ChineseAccumulationPage() {
         {accumulation.map((block) => (
           <div
             key={`${block.unit}-${block.kind}`}
-            className="rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50 to-cyan-50 p-4 shadow-sm sm:p-5"
+            className="shadow-sticker-sm rounded-2xl border border-teal-200/70 bg-cyan-50 p-4 sm:p-5"
           >
             <div className="flex h-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0 flex-1">
@@ -85,16 +88,19 @@ export default function ChineseAccumulationPage() {
                   )}
                 </ul>
               </div>
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setActiveUnit(block.unit)
                   setQuizzing(true)
                 }}
-                className="min-h-11 shrink-0 cursor-pointer rounded-xl bg-teal-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-teal-700 focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2"
+                variant="solid"
+                color="teal"
+                size="3"
+                className="shrink-0"
               >
                 练习
-              </button>
+              </Button>
             </div>
           </div>
         ))}
@@ -112,7 +118,9 @@ export default function ChineseAccumulationPage() {
                 href={`/chinese/garden?lesson=${g.lessonKey}`}
                 className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900 no-underline transition hover:border-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2"
               >
-                <span>第{g.unit}单元 · {g.lessonTitle}</span>
+                <span>
+                  第{g.unit}单元 · {g.lessonTitle}
+                </span>
                 <span className="text-xs text-emerald-600">{g.recognize.length} 字 →</span>
               </Link>
             ))}
@@ -121,23 +129,23 @@ export default function ChineseAccumulationPage() {
       )}
 
       <section className="mt-8">
-        <h2 className="mb-3 text-sm font-bold tracking-wide text-violet-600 uppercase">
-          园地古诗
-        </h2>
+        <h2 className="mb-3 text-sm font-bold tracking-wide text-violet-600 uppercase">园地古诗</h2>
         <PoemList poems={gardenPoems} />
       </section>
 
-      <button
+      <Button
         type="button"
         onClick={() => {
           setActiveUnit('all')
           setQuizzing(true)
         }}
-        className="mt-6 min-h-12 w-full cursor-pointer rounded-xl border-2 border-teal-400 bg-white/60 px-4 py-3 text-sm font-bold text-teal-800 transition hover:bg-teal-50 focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2"
+        variant="outline"
+        color="teal"
+        size="3"
+        className="mt-6 w-full"
       >
         全部练习（{buildAccumulationQuizItems(accumulation).length} 题）
-      </button>
-
+      </Button>
     </ChinesePageShell>
   )
 }

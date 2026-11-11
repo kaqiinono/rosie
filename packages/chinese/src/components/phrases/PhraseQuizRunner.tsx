@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import clsx from 'clsx'
 import type { PhraseQuizItem } from '../../utils/chinese-phrase-helpers'
 import { buildPhraseOptions } from '../../utils/chinese-phrase-helpers'
 import { hashSeed } from '../../utils/chinese-helpers'
 import QuizBlankSentence from '../chars/QuizBlankSentence'
+import { Button } from '@rosie/ui/themes'
 
 interface PhraseQuizRunnerProps {
   items: PhraseQuizItem[]
@@ -75,13 +75,11 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
       <div className="text-center">
         <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
           第 {idx + 1} / {items.length} 题
-          <span className="ml-2 normal-case text-violet-600">
+          <span className="ml-2 text-violet-600 normal-case">
             {current.source === 'recall' ? '读一读记一记' : '组词'}
           </span>
         </p>
-        <p className="mt-3 text-sm font-semibold text-violet-700/80">
-          选出彩色小空格里应该填的字
-        </p>
+        <p className="mt-3 text-sm font-semibold text-violet-700/80">选出彩色小空格里应该填的字</p>
         <div className="mt-4">
           <QuizBlankSentence display={current.display} size="lg" />
         </div>
@@ -93,21 +91,21 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
           const isCorrect = opt === current.answer
           const isChosen = wrongFeedback?.selected === opt
           return (
-            <button
+            <Button
               key={opt}
               type="button"
-              disabled={locked}
-              onClick={() => handleSelect(opt)}
-              className={clsx(
-                'rounded-xl border-2 py-4 text-2xl font-bold transition-colors',
-                !locked && 'border-slate-200 bg-white hover:border-violet-300 hover:bg-violet-50',
-                locked && isCorrect && 'border-emerald-400 bg-emerald-50 text-emerald-800',
-                locked && isChosen && !isCorrect && 'border-rose-400 bg-rose-50 text-rose-700',
-                locked && !isChosen && !isCorrect && 'border-slate-100 bg-slate-50 text-slate-400',
-              )}
+              aria-disabled={locked}
+              onClick={() => {
+                if (!locked) handleSelect(opt)
+              }}
+              variant={!locked ? 'outline' : isCorrect || isChosen ? 'solid' : 'soft'}
+              color={!locked ? 'gray' : isCorrect ? 'jade' : isChosen ? 'red' : 'gray'}
+              size="4"
+              radius="full"
+              className="w-full"
             >
               {opt}
-            </button>
+            </Button>
           )
         })}
       </div>
@@ -117,7 +115,7 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
           <p className="text-sm font-bold text-rose-700">
             再想想看～正确答案是「{wrongFeedback.correct}」
           </p>
-          <button
+          <Button
             type="button"
             onClick={() => {
               setWrongFeedback(null)
@@ -128,10 +126,13 @@ export default function PhraseQuizRunner({ items, charPool, onComplete }: Phrase
                 setIdx((i) => i + 1)
               }
             }}
-            className="mt-3 rounded-xl bg-violet-600 px-4 py-3 text-sm font-bold text-white hover:bg-violet-700"
+            variant="solid"
+            color="violet"
+            size="3"
+            className="mt-3"
           >
             {idx + 1 >= items.length ? '查看结果' : '下一题'}
-          </button>
+          </Button>
         </div>
       )}
     </div>

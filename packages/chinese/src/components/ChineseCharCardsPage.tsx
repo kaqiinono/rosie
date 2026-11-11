@@ -12,12 +12,22 @@ import {
   useChineseContext,
 } from '@rosie/chinese'
 import { todayStr } from '@rosie/core'
+import { Button } from '@rosie/ui/themes'
 
 export default function ChineseCharCardsPage() {
   const searchParams = useSearchParams()
   const lessonParam = searchParams.get('lesson')
-  const { weeklyPlan, lessonGroups, lessons, charByKey, getCharProfile, masteryMap, isCharDataReady, charKeyForBook, bookSlug } =
-    useChineseContext()
+  const {
+    weeklyPlan,
+    lessonGroups,
+    lessons,
+    charByKey,
+    getCharProfile,
+    masteryMap,
+    isCharDataReady,
+    charKeyForBook,
+    bookSlug,
+  } = useChineseContext()
   const today = todayStr()
   const todayPlan = weeklyPlan?.days.find((d) => d.date === today)
 
@@ -43,7 +53,17 @@ export default function ChineseCharCardsPage() {
       return buildTodayQuizItems(lessonGroups, charByKey, masteryMap, todayPlan, today)
     }
     return []
-  }, [lessonParam, todayPlan, lessonGroups, charByKey, masteryMap, isCharDataReady, today, charKeyForBook, bookSlug])
+  }, [
+    lessonParam,
+    todayPlan,
+    lessonGroups,
+    charByKey,
+    masteryMap,
+    isCharDataReady,
+    today,
+    charKeyForBook,
+    bookSlug,
+  ])
 
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
@@ -100,28 +120,32 @@ export default function ChineseCharCardsPage() {
         />
       </div>
       <div className="mt-6 flex justify-center gap-3">
-        <button
+        <Button
           type="button"
           disabled={idx === 0}
           onClick={() => {
             setIdx((i) => i - 1)
             setFlipped(false)
           }}
-          className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold disabled:opacity-40"
+          variant="outline"
+          color="gray"
+          size="2"
         >
           上一字
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           disabled={idx >= items.length - 1}
           onClick={() => {
             setIdx((i) => i + 1)
             setFlipped(false)
           }}
-          className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-40"
+          variant="solid"
+          color="amber"
+          size="2"
         >
           下一字
-        </button>
+        </Button>
       </div>
     </div>
   )

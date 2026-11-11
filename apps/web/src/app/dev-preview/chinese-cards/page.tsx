@@ -44,13 +44,19 @@ export default function ChineseCardsPreview() {
     })
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/80 to-orange-50/40 p-8 font-nunito">
+    <div className="font-nunito min-h-screen bg-amber-50/80 p-8">
       <h2 className="mb-3 text-sm font-extrabold text-amber-900/60">
         背面：无词语（左） / 有词语（右）
       </h2>
       <div className="grid grid-cols-2 gap-4" style={{ maxWidth: 500 }}>
         {MOCK_CARDS.map((c, i) => (
-          <CharFlashCard key={i} data={c} flipped={flippedSet.has(i)} onFlip={() => flip(i)} index={i} />
+          <CharFlashCard
+            key={i}
+            data={c}
+            flipped={flippedSet.has(i)}
+            onFlip={() => flip(i)}
+            index={i}
+          />
         ))}
       </div>
     </div>

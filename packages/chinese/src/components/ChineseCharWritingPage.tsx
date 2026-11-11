@@ -11,6 +11,7 @@ import {
   getLessonGroup,
   useChineseContext,
 } from '@rosie/chinese'
+import { Button } from '@rosie/ui/themes'
 
 type WriterMode = 'quiz' | 'animate'
 
@@ -38,7 +39,16 @@ export default function ChineseCharWritingPage() {
         ? (() => {
             const group = getLessonGroup(lessonGroups, lessonParam, bookSlug)!
             const writeKeys = group.write.map((ch) => charKeyForBook(ch))
-            return buildDayQuizItems(lessonGroups, charByKey, lessonParam, [], writeKeys, [], [], bookSlug)
+            return buildDayQuizItems(
+              lessonGroups,
+              charByKey,
+              lessonParam,
+              [],
+              writeKeys,
+              [],
+              [],
+              bookSlug,
+            )
           })()
         : todayPlan
           ? buildTodayQuizItems(lessonGroups, charByKey, masteryMap, todayPlan, today)
@@ -105,9 +115,7 @@ export default function ChineseCharWritingPage() {
   }
 
   if (!current) {
-    return (
-      <p className="p-6 text-center text-sm text-rose-600">无法加载当前生字。</p>
-    )
+    return <p className="p-6 text-center text-sm text-rose-600">无法加载当前生字。</p>
   }
 
   return (
@@ -120,7 +128,7 @@ export default function ChineseCharWritingPage() {
         </p>
         <p className="mt-1 text-sm font-semibold text-rose-800">
           {current.char}
-          <span className="ml-2 text-slate-500 font-normal">{current.pinyin}</span>
+          <span className="ml-2 font-normal text-slate-500">{current.pinyin}</span>
         </p>
         {profile?.radicalName && (
           <p className="mt-0.5 text-xs text-indigo-700">部首：{profile.radicalName}</p>
@@ -140,38 +148,33 @@ export default function ChineseCharWritingPage() {
 
       {lastMistakes !== null && mode === 'quiz' && (
         <p className="mt-3 text-center text-sm text-emerald-700">
-          完成！错 {lastMistakes} 笔
-          {lastMistakes <= 2 ? ' · 很棒 🎉' : ' · 再练一次会更好'}
+          完成！错 {lastMistakes} 笔{lastMistakes <= 2 ? ' · 很棒 🎉' : ' · 再练一次会更好'}
         </p>
       )}
 
       <div className="mt-4 flex justify-center gap-2">
-        <button
+        <Button
           type="button"
           onClick={() => switchMode('animate')}
-          className={`rounded-lg px-3 py-2 text-xs font-bold ${
-            mode === 'animate'
-              ? 'bg-amber-600 text-white'
-              : 'border border-slate-200 bg-white text-slate-700'
-          }`}
+          variant={mode === 'animate' ? 'solid' : 'outline'}
+          color={mode === 'animate' ? 'amber' : 'gray'}
+          size="1"
         >
           看笔顺
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={() => switchMode('quiz')}
-          className={`rounded-lg px-3 py-2 text-xs font-bold ${
-            mode === 'quiz'
-              ? 'bg-sky-600 text-white'
-              : 'border border-slate-200 bg-white text-slate-700'
-          }`}
+          variant={mode === 'quiz' ? 'solid' : 'outline'}
+          color={mode === 'quiz' ? 'sky' : 'gray'}
+          size="1"
         >
           书写练习
-        </button>
+        </Button>
       </div>
 
       <div className="mt-6 flex justify-center gap-3">
-        <button
+        <Button
           type="button"
           disabled={idx === 0}
           onClick={() => {
@@ -179,11 +182,13 @@ export default function ChineseCharWritingPage() {
             setLastMistakes(null)
             setModeKey((k) => k + 1)
           }}
-          className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold disabled:opacity-40"
+          variant="outline"
+          color="gray"
+          size="2"
         >
           上一字
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           disabled={idx >= items.length - 1}
           onClick={() => {
@@ -191,10 +196,12 @@ export default function ChineseCharWritingPage() {
             setLastMistakes(null)
             setModeKey((k) => k + 1)
           }}
-          className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-40"
+          variant="solid"
+          color="amber"
+          size="2"
         >
           下一字
-        </button>
+        </Button>
       </div>
 
       <p className="mt-6 text-center text-[11px] text-slate-400">
