@@ -31,6 +31,52 @@ function doneNotice(step: Pick<WorkStep, 'name' | 'sun' | 'water'>): string {
   return `🌸 ${step.name}完成啦！${reward}`
 }
 
+function ParkedTasks({ steps, onSelect }: { steps: WorkStep[]; onSelect: (id: string) => void }) {
+  const groups = new Map<string, WorkStep[]>()
+  for (const step of steps) {
+    if (step.skipped || step.planned || step.end) continue
+    const group = groups.get(step.scheduled)
+    if (group) group.push(step)
+    else groups.set(step.scheduled, [step])
+  }
+  if (!groups.size) return <Text>这里暂时没有作业。</Text>
+
+  return (
+    <Flex direction="column" gap="4">
+      {Array.from(groups.keys()).sort().map((day) => {
+        const date = new Date(day + 'T00:00:00Z')
+        const label = `${date.getUTCMonth() + 1} 月 ${date.getUTCDate()} 日 · 周${'日一二三四五六'[date.getUTCDay()]}`
+        return (
+          <section key={day}>
+            <h3 className="mb-2 font-bold">
+              <time dateTime={day}>{label}</time>
+            </h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {groups.get(day)?.map((step) => {
+                const subject = SUBJECTS[step.subject]
+                return (
+                  <StickerCard key={step.id} asChild interactive tone="paper" size="sm" elevation="sm" radius="md">
+                    {/* native-ok: 多行作业卡通过 StickerCard 提供外观，按钮提供整卡键盘操作。 */}
+                    <button type="button" onClick={() => onSelect(step.id)} aria-label={`${label}，${step.name}，${subject.label}，预计 ${step.minutes} 分钟`}>
+                      <span className="flex items-center gap-3 text-left">
+                        <span aria-hidden="true" className="text-2xl">{subject.emoji}</span>
+                        <span className="min-w-0">
+                          <Text as="span" size="3" weight="bold" className="block break-words">{step.name}</Text>
+                          <Text as="span" size="2" color="gray">{subject.label} · 预计 {step.minutes} 分钟</Text>
+                        </span>
+                      </span>
+                    </button>
+                  </StickerCard>
+                )
+              })}
+            </div>
+          </section>
+        )
+      })}
+    </Flex>
+  )
+}
+
 export default function LiveTree() {
   const api = useTimeTree()
   const { tree, busy, run } = api
@@ -413,25 +459,12 @@ export default function LiveTree() {
         }
       >
         <Flex direction="column" gap="3">
-          {dialog === 'park' &&
-            (tree.steps.some((s) => !s.skipped && !s.planned && !s.end) ? (
-              tree.steps
-                .filter((s) => !s.skipped && !s.planned && !s.end)
-                .map((s) => (
-                  <Button
-                    key={s.id}
-                    variant="soft"
-                    onClick={() => {
-                      close()
-                      setStep(s.id)
-                    }}
-                  >
-                    {s.name}
-                  </Button>
-                ))
-            ) : (
-              <Text>这里暂时没有作业。</Text>
-            ))}
+          {dialog === 'park' && (
+            <ParkedTasks steps={tree.steps} onSelect={(id) => {
+              close()
+              setStep(id)
+            }} />
+          )}
           {dialog === 'wish' && (
             <>
               <Text>红、黄、蓝各用 {tree.rules.wish} 颗，换一份约好的心愿。</Text>
