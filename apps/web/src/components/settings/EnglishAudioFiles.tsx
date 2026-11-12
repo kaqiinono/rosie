@@ -22,13 +22,17 @@ type FileListProps = {
 }
 
 export function useEnglishFileInventory(userId: string, generation: string, main: LessonAudioDirectory | null) {
-  const [result, setResult] = useState<{ key: string; files: LessonInventoryFile[]; ready: boolean; error: string }>()
   const [attempt, setAttempt] = useState(0)
   const id = main?.directory_id
   const path = main?.path
   const key = JSON.stringify([userId, generation, id, path, attempt])
+  const [result, setResult] = useState<{ key: string; files: LessonInventoryFile[]; ready: boolean; error: string }>({
+    key, files: [], ready: false, error: '',
+  })
+  if (result.key !== key) {
+    setResult({ key, files: [], ready: false, error: '' })
+  }
   useEffect(() => {
-    setResult(undefined)
     if (!id || !path) return
     const controller = new AbortController()
     const files: LessonInventoryFile[] = []
@@ -66,8 +70,7 @@ export function useEnglishFileInventory(userId: string, generation: string, main
     return () => controller.abort()
   }, [userId, generation, id, path, key])
 
-  const current = result?.key === key ? result : undefined
-  return { files: current?.files ?? [], ready: current?.ready ?? false, error: current?.error ?? '', refresh: () => setAttempt(n => n + 1) }
+  return { files: result.files, ready: result.ready, error: result.error, refresh: () => setAttempt(n => n + 1) }
 }
 
 export function EnglishFileList({ inventory, main, disabled, choose }: FileListProps) {
