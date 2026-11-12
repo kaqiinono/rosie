@@ -121,7 +121,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
         onClick={() => setId(s.id)}
       >
         {SUBJECTS[s.subject].emoji} {s.name} ·{' '}
-        {s.skipped ? '已跳过' : s.end
+        {s.skipped ? '不用做' : s.end
           ? (s.start ? clock(s.end) + ' ' : '') + timing(s)
           : s.start
             ? '◷ 进行中'
@@ -233,7 +233,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
         )}
         {skipped.length > 0 && (
           <>
-            <Badge color="gray">当天已跳过</Badge>
+            <Badge color="gray">当天不用做</Badge>
             <Flex gap="2" wrap="wrap">{skipped.map(row)}</Flex>
           </>
         )}

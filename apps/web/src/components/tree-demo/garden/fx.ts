@@ -1,6 +1,8 @@
 // 粒子画布，来自 bubble-wish-tree 演示：泡泡破裂、星光、水滴、花瓣、彩纸、飞行小球、萤火虫。
 // 所有对外坐标都是浏览器视口坐标（clientX / clientY），内部换算成画布坐标。
 
+import { gardenAudio } from './audio'
+
 type Particle =
   | { kind: 'ring'; x: number; y: number; age: number; life: number; r0: number; r1: number; color: string }
   | { kind: 'shard'; x: number; y: number; vx: number; vy: number; age: number; life: number; r: number; color: string }
@@ -33,6 +35,8 @@ type Particle =
 const rand = (a: number, b: number): number => a + Math.random() * (b - a)
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 const TAU = Math.PI * 2
+
+export type SeedFlight = { id: string; x: number; y: number }
 
 export class GardenFx {
   private canvas: HTMLCanvasElement | null = null
@@ -201,6 +205,30 @@ export class GardenFx {
         h: rand(8, 13),
       })
     }
+  }
+
+  prefersReducedMotion(): boolean {
+    return this.reduceMotion || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  }
+
+  /**
+   * 金色种子飞到花位。减少动效时不飞、不撒火花，立刻落地并播一次开花音。
+   * 正常动效下每颗种子落地时撒一小团火花并播开花音。
+   */
+  flySeeds(fromX: number, fromY: number, seeds: SeedFlight[], onLand: (seed: SeedFlight) => void): void {
+    if (seeds.length === 0) return
+    if (this.prefersReducedMotion()) {
+      for (const seed of seeds) onLand(seed)
+      gardenAudio.bloom()
+      return
+    }
+    seeds.forEach((seed, index) => {
+      this.orb(fromX, fromY, seed.x, seed.y, '#ffe082', 8, 0.9 + index * 0.12, () => {
+        this.sparkle(seed.x, seed.y, 10, '#ffffff')
+        gardenAudio.bloom()
+        onLand(seed)
+      })
+    })
   }
 
   /** 一个沿弧线飞向目标的小球，到达时回调 */

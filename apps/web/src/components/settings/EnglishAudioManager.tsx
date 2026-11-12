@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Badge, Box, Button, Card, Flex, Grid, Heading, Separator, Text } from '@rosie/ui/themes'
 import { SyncSelect, useSyncConfirmation } from './SyncControls'
 import { invalidateSessionStore } from '@rosie/core'
-import { DirectoryChooser, EnglishFileList } from './EnglishAudioFiles'
+import { DirectoryChooser, EnglishFileList, useEnglishFileInventory } from './EnglishAudioFiles'
 import { LoadStatus, request, useQuery } from './EnglishSyncRequest'
 import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
 import { directoryPrefix, type LessonAudioEditor, type LessonAudioPick } from '@/lib/english-audio-types'
+import { matchEnglishAudio } from '@/lib/english-audio-match'
 
 type Lesson = { stage: string; unit: string; lesson: string; title: string; key: string }
 type Props = { userId: string; paths: SyncDirectoryList }
@@ -16,13 +17,16 @@ function samePick(left?: LessonAudioPick, right?: LessonAudioPick) {
   return left?.directory_id === right?.directory_id && left?.path === right?.path && left?.file_id === right?.file_id
 }
 
-function Bindings({ userId, paths, initial, url, reload }: Props & { initial: LessonAudioEditor; url: string; reload: () => void }) {
+function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { initial: LessonAudioEditor; lessonKey: string; url: string; reload: () => void }) {
   const { confirm, dialog } = useSyncConfirmation()
   const [saved, setSaved] = useState(initial)
   const [picks, setPicks] = useState(initial.picks)
   const [main, setMain] = useState(initial.mainDirectory)
+  const inventory = useEnglishFileInventory(userId, paths.generation, main)
+  const [matchMessage, setMatchMessage] = useState('')
   const [choosing, setChoosing] = useState(!initial.mainDirectory)
-  const [target, setTarget] = useState(() => initial.slots.find(row => !initial.picks[row.slot])?.slot ?? initial.slots[0]?.slot ?? '')
+  const [target, setTarget] = useState(() => initial.slots.find(row => !row.unbindOnly && !initial.picks[row.slot])?.slot
+    ?? initial.slots.find(row => !row.unbindOnly)?.slot ?? '')
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const pending = useRef<AbortController | null>(null)
@@ -34,24 +38,37 @@ function Bindings({ userId, paths, initial, url, reload }: Props & { initial: Le
   }
   const invalidPick = Object.entries(picks).some(([slot, pick]) => !samePick(pick, saved.picks[slot]) && !insideMain(pick))
   const targetLabel = saved.slots.find(row => row.slot === target)?.label
+  function autoMatch() {
+    if (!main || !inventory.ready || saving) return
+    const matches = matchEnglishAudio(lessonKey, saved.slots, picks, main, inventory.files)
+    const count = Object.keys(matches).length
+    if (count) {
+      const next = { ...picks, ...matches }
+      setPicks(next)
+      setTarget(saved.slots.find(row => !row.unbindOnly && !next[row.slot])?.slot ?? '')
+    }
+    setMatchMessage(count ? `已匹配 ${count} 项，请核对后保存。` : '没有可唯一匹配的新条目。')
+    setMessage('')
+  }
   function bind(pick: LessonAudioPick) {
     if (!target || saving) return
     const next = { ...picks, [target]: pick }
     setPicks(next)
+    setMatchMessage('')
     const index = saved.slots.findIndex(row => row.slot === target)
     const remaining = [...saved.slots.slice(index + 1), ...saved.slots.slice(0, index)]
-    setTarget(remaining.find(row => !next[row.slot])?.slot ?? '')
+    setTarget(remaining.find(row => !row.unbindOnly && !next[row.slot])?.slot ?? '')
     setMessage('')
   }
   async function save() {
     if (pending.current) return
     const controller = new AbortController()
     pending.current = controller
-    setSaving(true); setMessage('')
+    setSaving(true); setMessage(''); setMatchMessage('')
     try {
       const next = await request<{ revision: string }>(userId, url, controller.signal, { revision: saved.revision, mainDirectory: main, picks })
       if (controller.signal.aborted) return
-      setSaved({ ...saved, mainDirectory: main, picks, revision: next.revision })
+      setSaved({ ...saved, slots: saved.slots.filter(row => !row.unbindOnly || picks[row.slot]), mainDirectory: main, picks, revision: next.revision })
       invalidateSessionStore('baidu_reading_audio_keys')
       setMessage('本课绑定已保存。')
     } catch (e) {
@@ -68,14 +85,14 @@ function Bindings({ userId, paths, initial, url, reload }: Props & { initial: Le
           </Box>
           <Flex gap="2">
             {main && <Button variant="soft" color="gray" size="1" disabled={saving} onClick={() => {
-              setMain(null); setChoosing(true); setMessage('')
+              setMain(null); setChoosing(true); setMessage(''); setMatchMessage('')
             }}>解除主目录</Button>}
             {!choosing && <Button variant="soft" size="1" disabled={saving} onClick={() => setChoosing(true)}>更换目录</Button>}
           </Flex>
         </Flex>
         {choosing && <DirectoryChooser userId={userId} paths={paths} initial={main} disabled={saving}
           cancel={main ? () => setChoosing(false) : undefined} choose={directory => {
-            setMain(directory); setChoosing(false); setMessage('')
+            setMain(directory); setChoosing(false); setMessage(''); setMatchMessage('')
           }} />}
       </Flex>
     </Card>
@@ -83,15 +100,25 @@ function Bindings({ userId, paths, initial, url, reload }: Props & { initial: Le
       <Card>
         <Flex align="center" justify="between" gap="2" mb="3">
           <Heading as="h3" size="3">课程音频</Heading>
-          <Text size="1" color="gray">{Object.keys(picks).length} / {saved.slots.length} 已绑定</Text>
+          <Flex align="center" gap="2" wrap="wrap">
+            <Text size="1" color="gray">{Object.keys(picks).length} / {saved.slots.length} 已绑定</Text>
+            <Button size="1" variant="soft" disabled={!main || !inventory.ready || saving || !saved.slots.some(row => !row.unbindOnly && !picks[row.slot])}
+              onClick={autoMatch}>自动匹配</Button>
+          </Flex>
         </Flex>
+        {matchMessage && <Text as="p" size="2" mb="2" role="status">{matchMessage}</Text>}
         <Box maxHeight="55vh" overflowY="auto">
-          {['课级音频', '单个单词音频', '逐句听记音频'].map((groupLabel, group) => {
-            const rows = saved.slots.filter(s => (s.slot.startsWith('word:') ? 1 : s.slot.startsWith('clip:') ? 2 : 0) === group)
+          {['课级音频', '单个单词音频', '逐句听记音频', '听记清单外的旧绑定'].map((groupLabel, group) => {
+            const rows = saved.slots.filter(s => {
+              if (s.unbindOnly) return group === 3
+              if (s.slot.startsWith('clip:')) return group === 2
+              if (s.slot.startsWith('word:')) return group === 1
+              return group === 0
+            })
             if (!rows.length) return null
             return <Box key={groupLabel} mb="3">
               <Text as="p" size="1" weight="bold" color="gray" mb="1">{groupLabel}</Text>
-              {rows.map(({ slot, label }) => {
+              {rows.map(({ slot, label, unbindOnly }) => {
                 const pick = picks[slot]
                 return <Box key={slot}>
                   <Flex align="center" gap="2" py="2">
@@ -101,11 +128,11 @@ function Bindings({ userId, paths, initial, url, reload }: Props & { initial: Le
                         {pick.path.split('/').pop()}{main && !insideMain(pick) && ' · 主目录外'}
                       </Text> : <Text as="p" size="1" color="gray">未绑定</Text>}
                     </Box>
-                    <Button size="1" variant={target === slot ? 'solid' : 'soft'} disabled={saving}
+                    {!unbindOnly && <Button size="1" variant={target === slot ? 'solid' : 'soft'} disabled={saving}
                       aria-label={'匹配 ' + label} aria-pressed={target === slot}
-                      onClick={() => setTarget(slot)}>{target === slot ? '匹配中' : '匹配'}</Button>
+                      onClick={() => setTarget(slot)}>{target === slot ? '匹配中' : '匹配'}</Button>}
                     {pick && <Button size="1" color="gray" variant="soft" aria-label={'解绑 ' + label} disabled={saving}
-                      onClick={() => { const next = { ...picks }; delete next[slot]; setPicks(next); setTarget(slot); setMessage('') }}>解绑</Button>}
+                      onClick={() => { const next = { ...picks }; delete next[slot]; setPicks(next); if (!unbindOnly) setTarget(slot); setMessage(''); setMatchMessage('') }}>解绑</Button>}
                   </Flex>
                   <Separator size="4" />
                 </Box>
@@ -120,7 +147,7 @@ function Bindings({ userId, paths, initial, url, reload }: Props & { initial: Le
           {main ? <>
             {targetLabel ? <Box role="status"><Badge>正在匹配 · {targetLabel}</Badge></Box> : <Text size="2" color="gray">选择课程音频条目后即可绑定文件。</Text>}
             <EnglishFileList key={JSON.stringify([paths.generation, main.directory_id, main.path])}
-              userId={userId} generation={paths.generation} main={main} disabled={saving || !target}
+              inventory={inventory} main={main} disabled={saving || !target}
               choose={bind} />
           </> : <Text size="2" color="gray">选定主目录后，这里会列出其中及子目录内的文件。</Text>}
         </Flex>
@@ -169,7 +196,7 @@ export default function EnglishAudioManager({ userId, paths }: Props) {
         onValueChange={v => changeSelection(() => setLesson(v))} />
     </Grid>}
     <LoadStatus {...editor} />
-    {editor.data && <Bindings key={url} initial={editor.data} url={url} reload={editor.retry} userId={userId} paths={paths} />}
+    {editor.data && <Bindings key={url} initial={editor.data} lessonKey={lesson} url={url} reload={editor.retry} userId={userId} paths={paths} />}
     {dialog}
   </Flex>
 }

@@ -72,7 +72,9 @@ export function useTimeTree() {
     setBusy(true)
     setMessage('')
     try {
-      const next = await request(id, action, data?.revision)
+      // finish 后再 pop 时，组件还没重渲染，闭包里的 revision 已过期。
+      const revision = store.getSessionData(id)?.revision ?? data?.revision
+      const next = await request(id, action, revision)
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
       if (action.kind === 'acceptBox') invalidateSessionStore('draw_pool_entries')

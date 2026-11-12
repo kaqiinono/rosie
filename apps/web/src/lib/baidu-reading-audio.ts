@@ -8,6 +8,9 @@ const STAGES = ['4A', '5A'] as const
 const LISTENING_CLIP_COUNTS: Record<string, number> = {
   '5a-u3l2': 28,
   '5a-u3l3': 24,
+  '5a-u4l1': 19,
+  '5a-u4l2': 26,
+  '5a-u4l3': 19,
 }
 
 export function baiduReadingPath(key: string, clip: string | null = null): string | null {

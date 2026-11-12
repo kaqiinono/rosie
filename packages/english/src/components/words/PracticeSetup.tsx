@@ -79,8 +79,9 @@ export default function PracticeSetup({
             <Button
               key={t.key}
               onClick={() => t.toggle(!t.checked)}
-              variant="outline"
-              color="gray"
+              aria-pressed={t.checked}
+              variant={t.checked ? 'solid' : 'soft'}
+              color={t.checked ? 'red' : 'gray'}
               size="2"
             >
               {t.label}
@@ -91,8 +92,9 @@ export default function PracticeSetup({
               key="D"
               onClick={() => setTypeD(!typeD)}
               title="本周重点课的词，挖空课文原句作答"
-              variant="outline"
-              color="gray"
+              aria-pressed={typeD}
+              variant={typeD ? 'solid' : 'soft'}
+              color={typeD ? 'red' : 'gray'}
               size="2"
             >
               📖 D. 课文语境填空
@@ -114,8 +116,9 @@ export default function PracticeSetup({
           <Button
             onClick={() => setButtonStyle('candy')}
             title="SVG 水果造型（草莓 / 蓝莓 / 爱心 / 糖果 / 棉花糖）"
-            variant="outline"
-            color="gray"
+            aria-pressed={buttonStyle === 'candy'}
+            variant={buttonStyle === 'candy' ? 'solid' : 'soft'}
+            color={buttonStyle === 'candy' ? 'red' : 'gray'}
             size="2"
           >
             🍓 糖果造型
@@ -123,8 +126,9 @@ export default function PracticeSetup({
           <Button
             onClick={() => setButtonStyle('jelly')}
             title="圆角果冻砖（5 色彩虹）"
-            variant="outline"
-            color="gray"
+            aria-pressed={buttonStyle === 'jelly'}
+            variant={buttonStyle === 'jelly' ? 'solid' : 'soft'}
+            color={buttonStyle === 'jelly' ? 'red' : 'gray'}
             size="2"
           >
             💎 果冻砖

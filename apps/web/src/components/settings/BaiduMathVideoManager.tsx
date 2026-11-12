@@ -15,6 +15,7 @@ import {
   TextField,
 } from '@rosie/ui/themes'
 import { SyncPending, SyncSelect, useSyncConfirmation } from './SyncControls'
+import { DirectoryChooser, type SyncChosenDirectory } from './SyncDirectoryChooser'
 import {
   LESSONS,
   lessonByKey,
@@ -26,6 +27,7 @@ import {
 } from '@rosie/math-kit/hooks/useProblemVideoCatalog'
 import {
   bindingValue,
+  sameMathDirectory,
   VIDEO_SOURCES,
   type MathVideoEditor,
   type VideoSource,
@@ -41,7 +43,7 @@ const defaultLesson = [...LESSONS].sort((a, b) => b.grade - a.grade || b.seq - a
 type Picks = Record<string, string>
 
 function savedPicks(editor: MathVideoEditor): Picks {
-  return editor.selectedId === editor.directoryId
+  return sameMathDirectory(editor)
     ? Object.fromEntries(editor.bindings.map((b) => [b.problemId, bindingValue(b)]))
     : {}
 }
@@ -54,6 +56,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
   const [questionSearch, setQuestionSearch] = useState('')
   const [batchIssues, setBatchIssues] = useState<Record<string, string>>({})
   const [showIssues, setShowIssues] = useState(false)
+  const [choosing, setChoosing] = useState(false)
   const { confirm, dialog } = useSyncConfirmation()
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
@@ -108,6 +111,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
       setBatchIssues({})
       setEditor(next)
       setPicks(savedPicks(next))
+      setChoosing(!next.selectedId)
       replaceProblemVideoCatalog(userId, {
         summaryNames: Object.fromEntries(
           next.bindings
@@ -148,12 +152,12 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         !summaryReplayOrder(lessonKey, b.problemId) &&
         picks[b.problemId],
     ) ?? []
-  const changingDirectory = editor && editor.directoryId !== editor.selectedId
+  const changingDirectory = Boolean(editor && !sameMathDirectory(editor))
   const dirty = Boolean(
     changingDirectory ||
-    (editor &&
-      (Object.keys(picks).length !== editor.bindings.length ||
-        editor.bindings.some((b) => picks[b.problemId] !== bindingValue(b)))),
+      (editor &&
+        (Object.keys(picks).length !== editor.bindings.length ||
+          editor.bindings.some((b) => picks[b.problemId] !== bindingValue(b)))),
   )
   function afterDiscard(proceed: () => void) {
     if (dirty) confirm('放弃本讲尚未保存的修改？', proceed)
@@ -165,50 +169,60 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
       setEditor(null)
       setPicks({})
       setQuestionSearch('')
+      setChoosing(false)
       setLesson(key)
     })
   }
-  function changeDirectory(id: string) {
-    if (!id) {
-      if (!editor) return
-      setBatchIssues({})
-      setEditor({
-        ...editor,
-        selectedId: null,
-        syncedAt: null,
-        version: null,
-        files: {},
-        occupied: {},
-      })
-      setPicks({})
-      setError('')
-      setMessage('')
-    } else {
-      void run({ action: 'read', lessonKey, directoryId: id }, async (snapshot, signal) => {
-        if (snapshot.generation !== paths.generation)
-          throw Error('共享网盘账号已变更，请刷新授权路径列表。')
-        accept(snapshot)
-        const next = await requestBaiduVideoData(
-          userId,
-          {
-            action: 'sync',
-            lessonKey,
-            directoryId: id,
-            generation: snapshot.generation,
-            version: snapshot.version,
-          },
-          signal,
-        )
-        if (signal.aborted) return
-        invalidateProblemVideoCatalogs(userId)
-        accept(next)
-        setMessage('已读取 ' + Object.keys(next.files).length + ' 个视频。')
-      })
-    }
+  function clearDirectory() {
+    if (!editor) return
+    setBatchIssues({})
+    setEditor({
+      ...editor,
+      selectedId: null,
+      selectedPath: null,
+      syncedAt: null,
+      version: null,
+      files: {},
+      occupied: {},
+    })
+    setPicks({})
+    setChoosing(true)
+    setError('')
+    setMessage('')
+  }
+  function chooseDirectory(main: SyncChosenDirectory) {
+    afterDiscard(() => {
+      void run(
+        { action: 'read', lessonKey, directoryId: main.directory_id, path: main.path },
+        async (snapshot, signal) => {
+          if (snapshot.generation !== paths.generation)
+            throw Error('共享网盘账号已变更，请刷新授权路径列表。')
+          accept(snapshot)
+          const next = await requestBaiduVideoData(
+            userId,
+            {
+              action: 'sync',
+              lessonKey,
+              directoryId: main.directory_id,
+              path: main.path,
+              generation: snapshot.generation,
+              version: snapshot.version,
+            },
+            signal,
+          )
+          if (signal.aborted) return
+          invalidateProblemVideoCatalogs(userId)
+          accept(next)
+          setChoosing(false)
+          setMessage('已读取 ' + Object.keys(next.files).length + ' 个视频。')
+        },
+      )
+    })
   }
   function reread() {
     const directoryId = editor?.selectedId ?? undefined
-    void run({ action: 'read', lessonKey, directoryId }, (next) => {
+    const path = editor?.selectedPath ?? undefined
+    void run({ action: 'read', lessonKey, directoryId, path }, (next) => {
       if (!editor || !dirty) {
         accept(next)
         return
@@ -217,10 +231,10 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         setError('共享网盘账号已变更。请放弃旧账号的草稿后重新读取。')
         return
       }
-      // Start with the latest publication and reapply only this editor's changes.
-      const latest = !editor.selectedId
-        ? { ...next, selectedId: null, version: null, syncedAt: null, files: {}, occupied: {} }
-        : next
+      const latest =
+        !editor.selectedId || !editor.selectedPath
+          ? { ...next, selectedId: null, selectedPath: null, version: null, syncedAt: null, files: {}, occupied: {} }
+          : next
       const merged = savedPicks(latest)
       const base = savedPicks(editor)
       const overlaps: string[] = []
@@ -240,12 +254,13 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
     })
   }
   function sync() {
-    if (!editor?.selectedId) return
+    if (!editor?.selectedId || !editor.selectedPath) return
     void run(
       {
         action: 'sync',
         lessonKey,
         directoryId: editor.selectedId,
+        path: editor.selectedPath,
         generation: editor.generation,
         version: editor.version,
       },
@@ -255,7 +270,6 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
           setError('本讲绑定或共享账号已变更，草稿已保留。请重新读取后核对。')
           return
         }
-        // A legacy path retained in the draft may now have its verified file ID.
         const resolved = { ...picks }
         for (const b of next.bindings) {
           const old = published.get(b.problemId)
@@ -264,6 +278,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         }
         accept(next)
         setPicks(resolved)
+        setChoosing(false)
         setMessage('已同步 ' + Object.keys(next.files).length + ' 个视频。')
       },
     )
@@ -304,6 +319,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         action: 'save',
         lessonKey,
         directoryId: editor.selectedId,
+        path: editor.selectedPath,
         generation: editor.generation,
         version: editor.version,
         revision: editor.revision,
@@ -311,12 +327,17 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
       },
       (next) => {
         accept(next)
+        setChoosing(false)
         setMessage('本讲绑定已保存。')
       },
     )
   }
 
   const issues = visibleProblems.filter((p) => !picks[p.id] && batchIssues[p.id])
+  const selectedMain =
+    editor?.selectedId && editor.selectedPath
+      ? { directory_id: editor.selectedId, path: editor.selectedPath }
+      : null
   return (
     <Flex
       direction="column"
@@ -330,7 +351,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
         数学视频回放
       </Heading>
       <Text size="2" color="gray">
-        选择本讲目录后可批量匹配或逐题绑定 MP4，核对后保存。
+        先选已收藏的授权路径，再进入本讲子目录并确认为主目录，然后批量匹配或逐题绑定 MP4。
       </Text>
       <Grid columns={{ initial: '1', sm: '2' }} gap="3">
         <SyncSelect
@@ -351,14 +372,44 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
           onValueChange={changeLesson}
         />
       </Grid>
-      <SyncSelect
-        label="本讲网盘目录"
-        value={editor?.selectedId ?? ''}
-        empty="未选择目录"
-        disabled={busy || !editor || !paths.directories.length}
-        options={paths.directories.map((d) => ({ value: d.id, label: d.path }))}
-        onValueChange={(id) => afterDiscard(() => changeDirectory(id))}
-      />
+      <Card>
+        <Flex direction="column" gap="2">
+          <Flex align="center" justify="between" gap="2" wrap="wrap">
+            <Box minWidth="0">
+              <Heading as="h3" size="3">
+                本讲主目录
+              </Heading>
+              {selectedMain && (
+                <Text as="p" size="2" color="gray" truncate title={selectedMain.path}>
+                  {selectedMain.path}
+                </Text>
+              )}
+            </Box>
+            <Flex gap="2">
+              {selectedMain && (
+                <Button variant="soft" color="gray" size="1" disabled={busy} onClick={() => afterDiscard(clearDirectory)}>
+                  解除主目录
+                </Button>
+              )}
+              {!choosing && (
+                <Button variant="soft" size="1" disabled={busy || !editor} onClick={() => setChoosing(true)}>
+                  更换目录
+                </Button>
+              )}
+            </Flex>
+          </Flex>
+          {choosing && editor && (
+            <DirectoryChooser
+              userId={userId}
+              paths={paths}
+              initial={selectedMain}
+              disabled={busy}
+              cancel={selectedMain ? () => setChoosing(false) : undefined}
+              choose={chooseDirectory}
+            />
+          )}
+        </Flex>
+      </Card>
       <Flex gap="2" wrap="wrap">
         <Button variant="soft" disabled={busy || !editor?.selectedId} onClick={sync}>
           刷新文件列表
@@ -401,7 +452,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
                   ' 个视频'
                 : editor.selectedId
                   ? '尚未取得文件列表，请点击「刷新文件列表」重试。'
-                  : '请选择本讲使用的授权路径。'}
+                  : '请选择授权路径下的本讲主目录。'}
           </Text>
           <Box>
             <Text as="p" id="sync-sources" weight="medium" size="2" mb="2">
@@ -459,7 +510,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
             </Box>
           )}
           <MathVideoPairingPanel
-            key={lessonKey + ':' + editor.selectedId}
+            key={lessonKey + ':' + editor.selectedId + ':' + editor.selectedPath}
             editor={editor}
             problems={visibleProblems}
             picks={picks}
@@ -507,8 +558,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
                     timeZone: 'Asia/Shanghai',
                   })}{' '}
                   · 目录：
-                  {editor.directories.find((d) => d.id === editor.directoryId)?.path ?? '未绑定'} ·
-                  题目绑定{' '}
+                  {editor.mainPath ?? '未绑定'} · 题目绑定{' '}
                   {
                     editor.bindings.filter(
                       (b) => b.problemId !== fullKey && !summaryReplayOrder(lessonKey, b.problemId),

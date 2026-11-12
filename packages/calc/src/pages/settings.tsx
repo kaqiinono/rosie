@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
+import { DarkScope } from '@rosie/ui'
+import { Button } from '@rosie/ui/themes'
 import type { CalcSettings, CalcTimingMode } from '@rosie/core'
 import { DEFAULT_CALC_SETTINGS, useCalcStrategies } from '../hooks/useCalcSettings'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
@@ -366,7 +368,7 @@ export default function CalcSettingsPage() {
   }))
   const [strategyName, setStrategyName] = useState('')
   const initializedForRef = useRef<string | null>(null)
-  const [saved, setSaved] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
   const [saveError, setSaveError] = useState('')
   const [tierSheetOpen, setTierSheetOpen] = useState(false)
   const configuredPercentageTotal =
@@ -414,6 +416,7 @@ export default function CalcSettingsPage() {
   }
 
   const handleSave = async () => {
+    if (saveStatus !== 'idle') return
     if (!strategyName.trim()) {
       setSaveError('请输入策略名称')
       return
@@ -423,14 +426,15 @@ export default function CalcSettingsPage() {
       return
     }
     setSaveError('')
-    setSaved(false)
+    setSaveStatus('saving')
     try {
       if (strategyId) await saveStrategy(strategyId, strategyName, settings)
       else await createStrategy(strategyName, settings)
-      setSaved(true)
+      setSaveStatus('saved')
       playSfx('coin', settings.soundEnabled)
       window.setTimeout(() => router.push('/setting/calc'), 450)
     } catch (error: unknown) {
+      setSaveStatus('idle')
       setSaveError(error instanceof Error ? error.message : '保存失败，请稍后重试')
     }
   }
@@ -834,26 +838,28 @@ export default function CalcSettingsPage() {
               {saveError}
             </p>
           )}
-          <div className="flex gap-2.5">
-            <Link
-              href="/setting/calc"
-              className="flex min-w-0 flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-3.5 text-[13px] font-black text-violet-100/65 transition-all hover:bg-white/10"
-            >
-              取消
-            </Link>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="min-w-0 flex-[2] rounded-2xl px-3 py-3.5 text-[15px] font-black transition-all hover:-translate-y-0.5 active:translate-y-0"
-              style={{
-                background: saved ? 'rgba(34,197,94,0.18)' : '#a855f7',
-                boxShadow: saved ? 'none' : '0 3px 0 rgba(139,92,246,0.38)',
-                color: saved ? '#4ade80' : '#fff',
-              }}
-            >
-              {saved ? '已保存 ✓' : strategyId ? '💾 保存修改' : '✨ 创建策略'}
-            </button>
-          </div>
+          <DarkScope>
+            <div className="flex gap-2.5">
+              <Link
+                href="/setting/calc"
+                className="flex min-w-0 flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-3 py-3.5 text-[13px] font-black text-violet-100/65 transition-all hover:bg-white/10"
+              >
+                取消
+              </Link>
+              <Button
+                type="button"
+                onClick={handleSave}
+                loading={saveStatus === 'saving'}
+                aria-busy={saveStatus === 'saving'}
+                aria-disabled={saveStatus !== 'idle'}
+                color={saveStatus === 'saved' ? 'green' : 'violet'}
+                size="4"
+                className="min-w-0 flex-[2]"
+              >
+                {saveStatus === 'saved' ? '已保存 ✓' : strategyId ? '💾 保存修改' : '✨ 创建策略'}
+              </Button>
+            </div>
+          </DarkScope>
         </div>
       </main>
 

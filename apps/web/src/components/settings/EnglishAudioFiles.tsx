@@ -3,90 +3,44 @@
 import { useEffect, useState } from 'react'
 import { Box, Button, Flex, Separator, Text, TextField } from '@rosie/ui/themes'
 import { lessonAudioMime } from '@rosie/english/utils/reading-audio-types'
-import type { SyncDirectoryList, SyncDirectoryPage } from '@/app/api/baidu/sync/directories/route'
-import { directoryPrefix, type LessonAudioDirectory, type LessonAudioPick } from '@/lib/english-audio-types'
-import { LoadStatus, request, useQuery } from './EnglishSyncRequest'
-import { SyncPending, SyncSelect } from './SyncControls'
+import type { SyncDirectoryPage } from '@/app/api/baidu/sync/directories/route'
+import { directoryPrefix, type LessonAudioDirectory, type LessonAudioPick, type LessonInventoryFile } from '@/lib/english-audio-types'
+import { request } from './EnglishSyncRequest'
+import { SyncPending } from './SyncControls'
+
+export { DirectoryChooser, type SyncChosenDirectory } from './SyncDirectoryChooser'
 
 function directoryUrl(id: string, path: string, generation: string, start: number) {
   return '/api/baidu/sync/directories?' + new URLSearchParams({ id, path, generation, start: String(start) })
 }
 
-type ChooserProps = {
-  userId: string
-  paths: SyncDirectoryList
-  initial: LessonAudioDirectory | null
-  disabled: boolean
-  cancel?: () => void
-  choose: (main: LessonAudioDirectory) => void
-}
-
-export function DirectoryChooser({ userId, paths, initial, disabled, cancel, choose }: ChooserProps) {
-  const [id, setId] = useState(initial?.directory_id ?? '')
-  const [path, setPath] = useState(initial?.path ?? '')
-  const [start, setStart] = useState(0)
-  const root = paths.directories.find(row => row.id === id)
-  const page = useQuery<SyncDirectoryPage>(userId, root ? directoryUrl(id, path, paths.generation, start) : '')
-  function open(next: string) { setPath(next); setStart(0) }
-  return <Flex direction="column" gap="2">
-    <SyncSelect label="授权路径" value={id} empty="选择已收藏的路径" disabled={disabled || !paths.directories.length}
-      options={paths.directories.map(row => ({ value: row.id, label: row.path }))}
-      onValueChange={value => { setId(value); open(paths.directories.find(row => row.id === value)?.path ?? '') }} />
-    {!paths.directories.length && <Text size="2" color="gray">请先在「路径」中添加课程所在目录。</Text>}
-    {root && <>
-      <Text size="2" color="gray">{path}</Text>
-      <Flex gap="2" wrap="wrap">
-        <Button variant="soft" disabled={disabled || !page.data} onClick={() => choose({ directory_id: id, path })}>使用此目录</Button>
-        {path !== root.path && <Button variant="soft" color="gray" disabled={disabled}
-          onClick={() => open(path.slice(0, path.lastIndexOf('/')) || '/')}>上一级</Button>}
-      </Flex>
-      <LoadStatus {...page} />
-      {page.data && <Flex gap="2" wrap="wrap">
-        {page.data.entries.filter(entry => entry.folder).map(entry => <Button key={entry.name} size="1" variant="surface"
-          disabled={disabled} aria-label={'打开子目录 ' + entry.name} onClick={() => open(directoryPrefix(path) + entry.name)}>{entry.name}</Button>)}
-        {(['previous', 'next'] as const).map(key => {
-          const offset = page.data?.[key]
-          return typeof offset === 'number' && <Button key={key} size="1" color="gray" variant="soft"
-            disabled={disabled} onClick={() => setStart(offset)}>{key === 'next' ? '下一页' : '上一页'}</Button>
-        })}
-      </Flex>}
-    </>}
-    {cancel && <Box><Button variant="soft" color="gray" size="1" disabled={disabled} onClick={cancel}>取消更换</Button></Box>}
-  </Flex>
-}
-
-type InventoryFile = { name: string; directory: string; fileId?: string }
 type FileListProps = {
-  userId: string
-  generation: string
   main: LessonAudioDirectory
+  inventory: ReturnType<typeof useEnglishFileInventory>
   disabled: boolean
   choose: (pick: LessonAudioPick) => void
 }
 
-export function EnglishFileList({ userId, generation, main, disabled, choose }: FileListProps) {
-  const [files, setFiles] = useState<InventoryFile[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+export function useEnglishFileInventory(userId: string, generation: string, main: LessonAudioDirectory | null) {
+  const [result, setResult] = useState<{ key: string; files: LessonInventoryFile[]; ready: boolean; error: string }>()
   const [attempt, setAttempt] = useState(0)
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(0)
-  const { directory_id: id, path } = main
+  const id = main?.directory_id
+  const path = main?.path
+  const key = JSON.stringify([userId, generation, id, path, attempt])
   useEffect(() => {
+    setResult(undefined)
+    if (!id || !path) return
     const controller = new AbortController()
-    async function scan() {
-      setLoading(true)
-      setError('')
-      setFiles([])
-      setPage(0)
-      const directories = [path]
+    const files: LessonInventoryFile[] = []
+    async function scan(rootId: string, rootPath: string) {
+      const directories = [rootPath]
       const visited = new Set(directories)
       for (const directory of directories) {
         let offset: number | null = 0
         do {
-          const result: SyncDirectoryPage = await request(userId, directoryUrl(id, directory, generation, offset), controller.signal)
+          const result: SyncDirectoryPage = await request(userId, directoryUrl(rootId, directory, generation, offset), controller.signal)
           if (controller.signal.aborted) return
-          const batch: InventoryFile[] = []
+          const batch: LessonInventoryFile[] = []
           for (const entry of result.entries) {
             const full = directoryPrefix(directory) + entry.name
             if (entry.folder) {
@@ -95,19 +49,32 @@ export function EnglishFileList({ userId, generation, main, disabled, choose }: 
               batch.push({ name: entry.name, directory, fileId: entry.fileId })
             }
           }
-          if (batch.length) setFiles(previous => previous.concat(batch))
+          if (batch.length) {
+            files.push(...batch)
+            setResult({ key, files: files.slice(), ready: false, error: '' })
+          }
           offset = result.next
         } while (offset !== null)
       }
     }
-    void scan().catch((reason: unknown) => {
-      if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : '文件列表读取失败。')
-    }).finally(() => {
-      if (!controller.signal.aborted) setLoading(false)
+    void scan(id, path).then(() => {
+      if (!controller.signal.aborted) setResult({ key, files, ready: true, error: '' })
+    }).catch((reason: unknown) => {
+      if (!controller.signal.aborted) setResult({ key, files, ready: false, error: reason instanceof Error ? reason.message : '文件列表读取失败。' })
     })
     return () => controller.abort()
-  }, [userId, generation, id, path, attempt])
+  }, [userId, generation, id, path, key])
 
+  const current = result?.key === key ? result : undefined
+  return { files: current?.files ?? [], ready: current?.ready ?? false, error: current?.error ?? '', refresh: () => setAttempt(n => n + 1) }
+}
+
+export function EnglishFileList({ inventory, main, disabled, choose }: FileListProps) {
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0)
+  const { directory_id: id, path } = main
+  const { files, ready, error } = inventory
+  const loading = !ready && !error
   const query = search.trim().toLowerCase()
   const matches = query ? files.filter(file => (directoryPrefix(file.directory) + file.name).toLowerCase().includes(query)) : files
   const pageSize = 50
@@ -116,7 +83,7 @@ export function EnglishFileList({ userId, generation, main, disabled, choose }: 
       onChange={event => { setSearch(event.target.value); setPage(0) }} />
     <Flex justify="between" align="center" gap="2">
       <Text size="1" color="gray">{matches.length} 个文件</Text>
-      <Button size="1" color="gray" variant="soft" disabled={loading} onClick={() => setAttempt(n => n + 1)}>
+      <Button size="1" color="gray" variant="soft" disabled={loading} onClick={() => { setPage(0); inventory.refresh() }}>
         {error ? '重试读取' : '刷新文件'}
       </Button>
     </Flex>

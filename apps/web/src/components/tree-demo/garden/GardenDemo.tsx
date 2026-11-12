@@ -210,9 +210,11 @@ export default function GardenDemo() {
     if (!res) return
     setBubbleId(null)
     gardenAudio.pop()
-    fx.burst(cx, cy, SUBJECTS[res.bud.subject].color)
-    flyTo(sunRef.current, cx, cy, '#ffd54a', 7)
-    flyTo(waterRef.current, cx, cy + 12, '#74c0fc', 7)
+    if (!fx.prefersReducedMotion()) {
+      fx.burst(cx, cy, SUBJECTS[res.bud.subject].color)
+      flyTo(sunRef.current, cx, cy, '#ffd54a', 7)
+      flyTo(waterRef.current, cx, cy + 12, '#74c0fc', 7)
+    }
     addFloat(cx, cy - 60, `+${res.sunGain}☀️  +${res.waterGain}💧`)
     if (res.combo > 1) addFloat(cx, cy - 92, `连击 ×${res.combo}!`)
     if (res.comboWater) toast(`⚡ ${COMBO_EVERY} 连击！奖励 💧+1`)
@@ -225,19 +227,22 @@ export default function GardenDemo() {
     // 种子飞向今天的叶区，到了才开花
     const ids = res.flowers.map((f) => f.id)
     setHidden((prev) => new Set([...prev, ...ids]))
-    res.flowers.forEach((f, i) => {
-      const target = clientPosOf(f.id) ?? { x: cx, y: cy - 200 }
-      fx.orb(cx, cy, target.x, target.y, '#ffe082', 8, 0.9 + i * 0.12, () => {
+    fx.flySeeds(
+      cx,
+      cy,
+      res.flowers.map((f) => {
+        const target = clientPosOf(f.id) ?? { x: cx, y: cy - 200 }
+        return { id: f.id, x: target.x, y: target.y }
+      }),
+      (seed) => {
         setHidden((prev) => {
           const next = new Set(prev)
-          next.delete(f.id)
+          next.delete(seed.id)
           return next
         })
-        markFresh([f.id], 'born', 800)
-        fx.sparkle(target.x, target.y, 10, '#ffffff')
-        gardenAudio.bloom()
-      })
-    })
+        markFresh([seed.id], 'born', 800)
+      },
+    )
   }
 
   function handleWater(id: string, rect: DOMRect): void {

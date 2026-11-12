@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { lessonAudioMime } from '@rosie/english/utils/reading-audio-types'
 import { readingPassages } from '@rosie/english/utils/reading-data'
-import { lessonListeningTargets } from '@rosie/english/utils/listening-clips'
+import { listeningClipsFor } from '@rosie/english/utils/listening-clips'
 import { BAIDU_AUTH_MESSAGES, baiduAuthErrorCode } from '@rosie/core'
 import { createAdminSupabase, getUserFromRequest, isAdminRequestUser } from '@/lib/api-auth'
 import { getBaiduAccountContext } from '@/lib/baidu-token'
@@ -41,15 +41,17 @@ async function manage(request: Request) {
         .eq('account_id', account.accountId).eq('lesson_key', passage.key).returns<PublishedLesson[]>().maybeSingle(),
     ])
     if (words.error || lesson.error) return fail('读取本课资源失败，请检查数据库迁移及连接。', 503)
-    const slots = [
+    const slots: LessonAudioEditor['slots'] = [
       { slot: 'words', label: '全部单词音频' }, { slot: 'narration', label: '课文完整音频' }, { slot: 'recitation', label: '背诵音频' },
       ...words.data.map(({ word }) => ({ slot: 'word:' + word.trim().toLowerCase(), label: word })),
-      ...lessonListeningTargets(passage).map(s => ({ slot: 'clip:' + s.target, label: s.english })),
+      ...listeningClipsFor(passage).map(clip => ({ slot: 'clip:' + clip.target, label: clip.english })),
     ]
     const previous = lesson.data?.english_audio_bindings ?? []
     const knownSlots = new Set(slots.map(s => s.slot))
     for (const row of previous) {
-      if (!knownSlots.has(row.slot)) slots.push({ slot: row.slot, label: '已移除的条目 · ' + row.slot })
+      if (!knownSlots.has(row.slot)) slots.push({
+        slot: row.slot, label: '已移除的条目 · ' + row.slot, unbindOnly: row.slot.startsWith('clip:'),
+      })
     }
     const revision = lesson.data?.revision ?? null
     const storedMain = lesson.data?.directory_id && lesson.data.main_path

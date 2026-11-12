@@ -189,14 +189,8 @@ function SyncWorkspace({ user }: { user: User }) {
 
   return (
     <BaiduOAuthConnect target="shared" authorization={authorization}>
-      <Card size="3" className="flex flex-1 flex-col">
-        <Tabs.Root
-          ref={panel}
-          value={tab}
-          onValueChange={switchTab}
-          activationMode="manual"
-          className="flex flex-1 flex-col"
-        >
+      <Card size="3">
+        <Tabs.Root ref={panel} value={tab} onValueChange={switchTab} activationMode="manual">
           <Tabs.List aria-label="同步模块">
             {tabs.map((item) => (
               <Tabs.Trigger key={item} value={item} disabled={busy}>
@@ -204,14 +198,9 @@ function SyncWorkspace({ user }: { user: User }) {
               </Tabs.Trigger>
             ))}
           </Tabs.List>
-          <Box position="relative" flexGrow="1" minHeight="18rem">
-            {tabs.map((item) => (
-              <Tabs.Content
-                value={item}
-                key={item}
-                className="absolute inset-0 overflow-y-auto [scrollbar-gutter:stable]"
-              >
-                <Box pt="4">
+          {tabs.map((item) => (
+            <Tabs.Content value={item} key={item}>
+              <Box pt="4">
                   {error && (
                     <Text as="p" size="2" color="red" role="alert" mb="2">
                       {error}
@@ -381,10 +370,9 @@ function SyncWorkspace({ user }: { user: User }) {
                       )}
                     </Flex>
                   )}
-                </Box>
-              </Tabs.Content>
-            ))}
-          </Box>
+              </Box>
+            </Tabs.Content>
+          ))}
         </Tabs.Root>
         {dialog}
       </Card>

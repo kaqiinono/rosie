@@ -88,11 +88,11 @@ export default function AppHeader() {
             </div>
 
             <div
-              className="hidden items-center gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1 md:flex"
+              className="hidden items-center gap-2 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1 md:flex"
               role="group"
               aria-label="切换教材"
             >
-              <span className="px-1.5 text-[.7rem] font-extrabold text-[var(--wm-text-dim)]">
+              <span className="px-1.5 text-sm font-extrabold whitespace-nowrap text-[var(--wm-text-dim)]">
                 📗 教材
               </span>
               {availableStages.map((stage) => {
@@ -106,7 +106,7 @@ export default function AppHeader() {
                     }}
                     aria-pressed={active}
                     title={`切换到 ${stage}`}
-                    variant={active ? 'solid' : 'ghost'}
+                    variant={active ? 'solid' : 'soft'}
                     color={active ? 'indigo' : 'gray'}
                     size="2"
                     className="shrink-0 whitespace-nowrap"
@@ -129,7 +129,8 @@ export default function AppHeader() {
                 onClick={() => router.push(t.path)}
                 title={t.label}
                 aria-label={t.label}
-                variant={active ? 'solid' : 'ghost'}
+                aria-current={active ? 'page' : undefined}
+                variant={active ? 'solid' : 'soft'}
                 color={active ? 'red' : 'gray'}
                 size="2"
                 className="min-w-0 whitespace-nowrap md:shrink-0 md:text-[0.875rem]"

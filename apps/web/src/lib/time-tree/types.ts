@@ -5,6 +5,7 @@ export interface WorkStep {
   occurrence: string
   name: string
   notes: string
+  planNote?: string
   subject: SubjectKey
   priority: string
   minutes: number
@@ -65,6 +66,7 @@ export type ActionKind =
   | 'return'
   | 'move'
   | 'record'
+  | 'saveNotes'
   | 'water'
   | 'magic'
   | 'pick'
@@ -74,6 +76,7 @@ export type ActionKind =
   | 'acceptBox'
 export interface TreeAction {
   kind: ActionKind
+  notes?: { id: string; previous: string; value: string }[]
   id?: string
   day?: string | null
   start?: string

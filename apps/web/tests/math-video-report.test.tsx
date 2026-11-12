@@ -9,7 +9,8 @@ afterEach(cleanup)
 
 const editor: MathVideoEditor = {
   lessonKey: '2-10', generation: 'account-version',
-  directoryId: 'dir', selectedId: 'dir', directories: [{ id: 'dir', path: '/数学' }],
+  directoryId: 'dir', mainPath: '/数学', selectedId: 'dir', selectedPath: '/数学',
+  directories: [{ id: 'dir', path: '/数学' }],
   revision: 'lesson-version', version: 'scan-version', reviewNames: ['旧文件.mp4'],
   savedAt: '2026-11-01T01:00:00Z', syncedAt: '2026-11-01T01:01:00Z',
   files: { '90071992547409931': '鸡兔同笼-附加1.mp4', '123': '课堂.mp4' },

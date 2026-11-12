@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="泡泡愿望树：把作业变成泡泡，戳破泡泡开花，浇水结果，摘果换礼物。">
+<title>泡泡愿望树 · 作业大冒险</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Baloo+2:wght@500;700;800&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-daypart="day" data-tree-lv="1">
+
+<!-- ===== 天空背景 ===== -->
+<div id="sky" aria-hidden="true">
+  <div class="aurora"></div>
+  <div class="sun"><i></i></div>
+  <div class="moon"></div>
+  <div class="stars"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="cloud c4"></div>
+</div>
+
+<!-- ===== 草地山丘 ===== -->
+<div id="hills" aria-hidden="true">
+  <svg viewBox="0 0 1440 220" preserveAspectRatio="none">
+    <path class="hill-back"  d="M0,120 C240,40 420,150 720,110 C1020,70 1200,140 1440,90 L1440,220 L0,220 Z"/>
+    <path class="hill-mid"   d="M0,160 C260,100 520,190 820,150 C1100,115 1280,180 1440,150 L1440,220 L0,220 Z"/>
+    <path class="hill-front" d="M0,195 C300,160 600,215 900,190 C1150,170 1320,205 1440,190 L1440,220 L0,220 Z"/>
+  </svg>
+  <span class="ground-deco g1">🌼</span>
+  <span class="ground-deco g2">🍄</span>
+  <span class="ground-deco g3">🌱</span>
+  <span class="ground-deco g4">🌷</span>
+  <span class="ground-deco g5">🌿</span>
+</div>
+
+<!-- ===== 愿望树 ===== -->
+<div id="tree-wrap">
+  <div class="tree-shadow" aria-hidden="true"></div>
+  <div id="tree-sway">
+    <svg id="tree-svg" viewBox="0 0 420 480" aria-hidden="true">
+      <defs>
+        <linearGradient id="trunkG" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#8a573a"/><stop offset=".45" stop-color="#b07b52"/><stop offset="1" stop-color="#7a4a2e"/>
+        </linearGradient>
+        <radialGradient id="leafBackG" cx=".4" cy=".3" r="1.1">
+          <stop offset="0" stop-color="#6fbf63"/><stop offset="1" stop-color="#3f8f47"/>
+        </radialGradient>
+        <radialGradient id="leafFrontG" cx=".38" cy=".28" r="1.15">
+          <stop offset="0" stop-color="#b9ec84"/><stop offset=".55" stop-color="#7ccf6a"/><stop offset="1" stop-color="#54ad55"/>
+        </radialGradient>
+        <radialGradient id="leafTopG" cx=".4" cy=".3" r="1.1">
+          <stop offset="0" stop-color="#d8f7a8"/><stop offset="1" stop-color="#8fdd77"/>
+        </radialGradient>
+      </defs>
+
+      <!-- 后层树冠 -->
+      <g class="canopy-back" transform="translate(210 150) scale(1.25) translate(-210 -150)">
+        <ellipse cx="95"  cy="150" rx="78" ry="66" fill="url(#leafBackG)"/>
+        <ellipse cx="330" cy="145" rx="80" ry="68" fill="url(#leafBackG)"/>
+        <ellipse cx="210" cy="95"  rx="95" ry="75" fill="url(#leafBackG)"/>
+        <ellipse cx="150" cy="215" rx="70" ry="52" fill="url(#leafBackG)"/>
+        <ellipse cx="285" cy="215" rx="72" ry="54" fill="url(#leafBackG)"/>
+      </g>
+
+      <!-- 树干与树枝 -->
+      <path d="M178,472 C182,420 186,380 190,340 C193,305 196,275 198,245 L222,245 C224,275 228,305 231,340 C235,380 240,420 244,472 C224,480 198,480 178,472 Z" fill="url(#trunkG)"/>
+      <path d="M199,268 C170,250 140,235 112,218 L120,204 C148,220 176,236 203,252 Z" fill="url(#trunkG)"/>
+      <path d="M221,262 C252,244 284,230 316,214 L310,199 C280,214 250,230 217,247 Z" fill="url(#trunkG)"/>
+      <path d="M186,400 C190,398 194,400 196,404" stroke="#6d3f24" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>
+      <path d="M228,430 C232,428 236,430 238,434" stroke="#6d3f24" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>
+
+      <!-- 树的脸 -->
+      <g class="tree-face">
+        <ellipse class="eye" cx="199" cy="332" rx="4.6" ry="6" fill="#4a2c17"/>
+        <ellipse class="eye" cx="223" cy="332" rx="4.6" ry="6" fill="#4a2c17"/>
+        <circle cx="190" cy="344" r="5" fill="#ff9d9d" opacity=".55"/>
+        <circle cx="232" cy="344" r="5" fill="#ff9d9d" opacity=".55"/>
+        <path d="M203,344 Q211,352 219,344" stroke="#4a2c17" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <!-- 秋千 -->
+      <g class="swing">
+        <line x1="306" y1="212" x2="302" y2="330" stroke="#8a573a" stroke-width="3"/>
+        <line x1="330" y1="210" x2="334" y2="330" stroke="#8a573a" stroke-width="3"/>
+        <rect x="296" y="328" width="44" height="10" rx="5" fill="#c98a5b" stroke="#8a573a" stroke-width="2"/>
+      </g>
+
+      <!-- 前层树冠 -->
+      <g class="canopy-front" transform="translate(210 150) scale(1.25) translate(-210 -150)">
+        <ellipse cx="105" cy="125" rx="72" ry="60" fill="url(#leafFrontG)"/>
+        <ellipse cx="205" cy="80"  rx="82" ry="64" fill="url(#leafFrontG)"/>
+        <ellipse cx="312" cy="118" rx="74" ry="60" fill="url(#leafFrontG)"/>
+        <ellipse cx="352" cy="180" rx="52" ry="44" fill="url(#leafFrontG)"/>
+        <ellipse cx="72"  cy="185" rx="50" ry="42" fill="url(#leafFrontG)"/>
+        <ellipse cx="160" cy="195" rx="68" ry="52" fill="url(#leafFrontG)"/>
+        <ellipse cx="262" cy="192" rx="70" ry="54" fill="url(#leafFrontG)"/>
+        <ellipse cx="210" cy="142" rx="80" ry="62" fill="url(#leafTopG)"/>
+        <ellipse cx="150" cy="105" rx="40" ry="30" fill="url(#leafTopG)" opacity=".8"/>
+        <ellipse cx="275" cy="98"  rx="38" ry="28" fill="url(#leafTopG)" opacity=".8"/>
+      </g>
+
+      <!-- 升级装饰 -->
+      <g class="lv2-deco" transform="translate(210 150) scale(1.25) translate(-210 -150)">
+        <circle cx="88" cy="108" r="5" fill="#ffd54a"/>
+        <circle cx="338" cy="102" r="5" fill="#ff8fb3"/>
+        <circle cx="212" cy="52" r="5" fill="#ffd54a"/>
+        <path d="M120,60 q4,-10 8,0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>
+        <path d="M300,58 q4,-10 8,0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/>
+      </g>
+      <g class="lv3-deco" transform="translate(210 150) scale(1.25) translate(-210 -150)">
+        <line x1="210" y1="30" x2="210" y2="48" stroke="#8a573a" stroke-width="2.4"/>
+        <circle cx="210" cy="58" r="11" fill="#ffd54a" stroke="#e8a013" stroke-width="2.4"/>
+        <circle cx="210" cy="58" r="4.5" fill="#fff3c4"/>
+        <path class="lv3-spark" d="M96,58 l3,7 7,3 -7,3 -3,7 -3,-7 -7,-3 7,-3 Z" fill="#fff"/>
+        <path class="lv3-spark s2" d="M330,62 l2.4,5.6 5.6,2.4 -5.6,2.4 -2.4,5.6 -2.4,-5.6 -5.6,-2.4 5.6,-2.4 Z" fill="#fff"/>
+      </g>
+    </svg>
+    <div id="flower-layer"></div>
+  </div>
+  <div id="tree-level-tag">🌱 小树成长 <b id="tree-progress">0/10</b></div>
+</div>
+
+<!-- ===== 泡泡层 ===== -->
+<div id="bubble-layer"></div>
+
+<!-- ===== 粒子画布 ===== -->
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="float-texts" aria-hidden="true"></div>
+
+<!-- ===== 顶部 HUD ===== -->
+<header id="hud">
+  <div class="logo"><span class="logo-flower">🌸</span>泡泡愿望树</div>
+  <div class="hud-right">
+    <div class="pill" id="pill-sun"   title="阳光：完成作业获得，用来施展阳光魔法">☀️ <b id="sun-val">0</b></div>
+    <div class="pill" id="pill-water" title="水滴：完成作业获得，给小花浇水">💧 <b id="water-val">0</b></div>
+    <div class="pill" id="pill-fruit" title="果实：摘下来可以去愿望商店换礼物">🍎 <b id="fruit-val">0</b></div>
+    <div class="pill streak" id="pill-streak" title="连续完成作业的天数">🔥 <b id="streak-val">0</b>天</div>
+    <button class="icon-btn" id="btn-sound" title="声音开关" aria-label="声音开关">🔊</button>
+    <button class="icon-btn" id="btn-help" title="怎么玩" aria-label="怎么玩">❓</button>
+    <button class="icon-btn parent-btn" id="btn-parent" title="家长模式">🔒 家长</button>
+  </div>
+</header>
+
+<!-- ===== 今日目标 ===== -->
+<div id="daily-goal">
+  <div class="goal-title">🎯 今日目标：戳破 3 个泡泡</div>
+  <div class="goal-dots" id="goal-dots"><i></i><i></i><i></i></div>
+  <div class="goal-text" id="goal-text">每完成一项作业，就能戳破一个泡泡哦！</div>
+</div>
+
+<!-- ===== 底部功能坞 ===== -->
+<nav id="dock">
+  <button class="dock-btn magic" id="btn-magic" title="消耗 10 阳光，让所有小花立刻成长一次">
+    <span class="d-emoji">✨</span><span class="d-label">阳光魔法</span><span class="d-cost">10☀️</span>
+  </button>
+  <button class="dock-btn shop" id="btn-shop" title="用果实兑换奖励">
+    <span class="d-emoji">🎁</span><span class="d-label">愿望商店</span><i class="badge" id="shop-badge">0</i>
+  </button>
+  <button class="dock-btn diary" id="btn-diary" title="看看你的成长足迹">
+    <span class="d-emoji">📔</span><span class="d-label">成长日记</span>
+  </button>
+</nav>
+
+<!-- ===== 遮罩 ===== -->
+<div id="scrim" hidden></div>
+
+<!-- ===== 任务详情底部卡片 ===== -->
+<section id="task-sheet" class="sheet" hidden aria-label="任务详情">
+  <button class="sheet-close" id="ts-close" aria-label="关闭">✕</button>
+  <div class="ts-head">
+    <span class="ts-emoji" id="ts-emoji">📖</span>
+    <div>
+      <span class="ts-subject" id="ts-subject">语文</span>
+      <h2 class="ts-name" id="ts-name">单课预习</h2>
+      <div class="ts-stars" id="ts-stars">⭐</div>
+    </div>
+  </div>
+  <div class="ts-reward" id="ts-reward"></div>
+  <div class="ts-note" id="ts-note"></div>
+  <button class="big-btn pop-btn" id="ts-pop">🫧 做完啦，戳破它！</button>
+  <button class="ghost-btn" id="ts-later">⏰ 明天再做</button>
+</section>
+
+<!-- ===== 小花弹窗 ===== -->
+<div id="flower-pop" hidden>
+  <button class="sheet-close" id="fp-close" aria-label="关闭">✕</button>
+  <div class="fp-title" id="fp-title">小花</div>
+  <div class="fp-desc" id="fp-desc"></div>
+  <div class="fp-dots" id="fp-dots"><i></i><i></i><i></i></div>
+  <button class="big-btn water-btn" id="fp-water">💧 浇水长大</button>
+  <button class="big-btn pick-btn" id="fp-pick" hidden>🍎 摘下果子</button>
+</div>
+
+<!-- ===== 愿望商店 ===== -->
+<aside id="shop" class="drawer" hidden aria-label="愿望商店">
+  <div class="drawer-head">
+    <h2>🎁 愿望商店</h2>
+    <div class="drawer-sub">摘下的果实可以换礼物 · 现在拥有 <b class="shop-fruit" id="shop-fruit">0</b> 🍎</div>
+    <button class="sheet-close" data-close="shop" aria-label="关闭">✕</button>
+  </div>
+  <div class="drawer-body"><div id="shop-list" class="shop-list"></div></div>
+</aside>
+
+<!-- ===== 成长日记 ===== -->
+<aside id="diary" class="drawer" hidden aria-label="成长日记">
+  <div class="drawer-head">
+    <h2>📔 成长日记</h2>
+    <div class="drawer-sub">每一个小努力，都被大树记住啦</div>
+    <button class="sheet-close" data-close="diary" aria-label="关闭">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div id="diary-stats" class="diary-stats"></div>
+    <div id="diary-list" class="diary-list"></div>
+  </div>
+</aside>
+
+<!-- ===== 家长模式 ===== -->
+<aside id="parent" class="drawer wide" hidden aria-label="家长模式">
+  <div class="drawer-head">
+    <h2>🔒 家长模式</h2>
+    <div class="drawer-sub">管理作业泡泡与奖励 · 难度建议见底部小贴士</div>
+    <button class="sheet-close" data-close="parent" aria-label="关闭">✕</button>
+  </div>
+  <div class="drawer-body">
+    <h3 class="p-section">📊 今日概览</h3>
+    <div id="parent-overview" class="p-overview"></div>
+
+    <h3 class="p-section">🫧 作业任务库</h3>
+    <div class="p-hint">启用的任务会出现在天空里成为泡泡；⭐ 越多奖励越多，⭐⭐⭐ 开金花、结金果（值 2 个果实）。</div>
+    <div id="task-list"></div>
+    <div class="p-add">
+      <select id="add-subject" aria-label="科目">
+        <option value="语文">📖 语文</option>
+        <option value="数学">🔢 数学</option>
+        <option value="英语">🔤 英语</option>
+      </select>
+      <input id="add-name" type="text" maxlength="12" placeholder="新作业名称，如：口算一页">
+      <select id="add-stars" aria-label="难度">
+        <option value="1">⭐ 基础</option>
+        <option value="2">⭐⭐ 巩固</option>
+        <option value="3">⭐⭐⭐ 挑战</option>
+      </select>
+      <button class="mini-btn" id="add-task">＋ 添加</button>
+    </div>
+
+    <h3 class="p-section">🎁 奖励管理</h3>
+    <div id="reward-list"></div>
+    <div class="p-add">
+      <input id="rw-emoji" type="text" maxlength="4" placeholder="🎁" class="rw-emoji-input" aria-label="奖励图标">
+      <input id="rw-name" type="text" maxlength="14" placeholder="新奖励名称">
+      <input id="rw-cost" type="number" min="1" max="99" value="3" class="rw-cost-input" aria-label="所需果实">
+      <button class="mini-btn" id="add-reward">＋ 添加</button>
+    </div>
+
+    <h3 class="p-section">💾 数据</h3>
+    <div class="p-data">
+      <button class="mini-btn" id="btn-export">⬇️ 导出备份</button>
+      <button class="mini-btn danger" id="btn-reset">🗑 重新开始</button>
+    </div>
+
+    <div class="p-tips">
+      <b>🌈 难度小贴士（怎么让孩子不放弃）</b>
+      <p>每天推荐搭配：<b>2 个 ⭐ 基础</b>（预习/每日单词/每日三题）＋ <b>1 个 ⭐⭐ 巩固</b>（复习/背诵）＋ <b>1 个 ⭐⭐⭐ 挑战</b>（写话/作文/默写，可选做）。</p>
+      <p>小奖励 1~2 个果实当天可换，大奖励 8~12 个果实约一周达成 —— 「跳一跳够得着」。没完成不惩罚、泡泡不会消失，明天再来就好。</p>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== 家长验证 ===== -->
+<div id="gate" hidden>
+  <div class="gate-card">
+    <div class="gate-emoji">🔐</div>
+    <h2>家长验证</h2>
+    <p>请答对这道题进入家长模式</p>
+    <div class="gate-q" id="gate-q">6 × 7 = ?</div>
+    <input id="gate-input" type="number" inputmode="numeric" placeholder="答案" aria-label="验证答案">
+    <div class="gate-actions">
+      <button class="big-btn" id="gate-ok">进入</button>
+      <button class="ghost-btn" id="gate-cancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 新手引导 ===== -->
+<div id="tutorial" hidden>
+  <div class="tut-card">
+    <h2 class="tut-title">🌸 欢迎来到泡泡愿望树！</h2>
+    <div class="tut-steps">
+      <div class="tut-step"><span class="t-emoji">🫧</span><b>① 戳泡泡</b><p>做完一项作业，就戳破它的泡泡</p></div>
+      <div class="tut-arrow">➜</div>
+      <div class="tut-step"><span class="t-emoji">🌸</span><b>② 开花啦</b><p>大树上立刻开出一朵对应颜色的小花</p></div>
+      <div class="tut-arrow">➜</div>
+      <div class="tut-step"><span class="t-emoji">🍎</span><b>③ 摘果换礼</b><p>给花浇水 3 次就结果，摘果去商店换礼物</p></div>
+    </div>
+    <div class="tut-tips">💧 浇水滴 · ☀️ 阳光魔法让全部花一起长大 · ⭐⭐⭐ 挑战作业结<b>金果</b>，值 2 个果实！</div>
+    <button class="big-btn" id="tut-start">开始冒险！🚀</button>
+  </div>
+</div>
+
+<div id="toasts" aria-live="polite"></div>
+
+<noscript><div style="position:fixed;inset:0;background:#fff8ec;display:flex;align-items:center;justify-content:center;font-size:20px;z-index:999">需要开启 JavaScript 才能进入愿望树花园哦 🌸</div></noscript>
+<script src="game.js"></script>
+</body>
+</html>

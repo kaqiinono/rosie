@@ -1,19 +1,19 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { AlertDialog, Button, Flex, Select, Spinner, Text } from '@rosie/ui/themes'
+import { AlertDialog, Box, Button, Flex, Select, Spinner, Text } from '@rosie/ui/themes'
 
-export function SyncSelect({ label, value, options, empty, disabled, onValueChange }: {
+export function SyncSelect({ label, value, options, empty, disabled, onValueChange, layout = 'stack' }: {
   label: string
   value: string
   options: { value: string; label: string }[]
   empty?: string
   disabled?: boolean
+  layout?: 'stack' | 'inline'
   onValueChange: (value: string) => void
 }) {
   // Radix reserves the empty value. Encode it so users can explicitly clear a binding.
-  return <Flex direction="column" gap="1" minWidth="0">
-    <Text size="2" weight="medium">{label}</Text>
+  const control = (
     <Select.Root value={'=' + value} onValueChange={next => onValueChange(next.slice(1))} disabled={disabled}>
       <Select.Trigger aria-label={label} />
       <Select.Content position="popper">
@@ -22,7 +22,21 @@ export function SyncSelect({ label, value, options, empty, disabled, onValueChan
           <Select.Item key={option.value} value={'=' + option.value}>{option.label}</Select.Item>)}
       </Select.Content>
     </Select.Root>
-  </Flex>
+  )
+  if (layout === 'inline') {
+    return (
+      <Flex align="center" gap="2" wrap="wrap" minWidth="0">
+        <Text size="2" weight="medium" className="shrink-0">{label}</Text>
+        <Box flexGrow="1" minWidth="12rem">{control}</Box>
+      </Flex>
+    )
+  }
+  return (
+    <Flex direction="column" gap="1" minWidth="0">
+      <Text size="2" weight="medium">{label}</Text>
+      {control}
+    </Flex>
+  )
 }
 
 export function SyncPending({ children = '正在加载…' }: { children?: string }) {

@@ -131,6 +131,24 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   const { kind, id } = action
   const day = tree.today
   if (kind === 'sync') return
+  if (kind === 'saveNotes') {
+    requireState(Array.isArray(action.notes), '无效的作业备注。')
+    const steps = new Map(tree.steps.map((step) => [step.id, step]))
+    const updates = action.notes.map((note) => {
+      requireState(note && typeof note.value === 'string', '无效的作业备注。')
+      const step = steps.get(note.id)
+      requireState(step, '找不到这项作业，请重新打开备注。')
+      const value = note.value.trim()
+      const current = step.planNote ?? ''
+      requireState(current === note.previous || current === value, '备注已在其他设备修改，请重新打开备注。')
+      return { step, value }
+    })
+    for (const { step, value } of updates) {
+      if (value) step.planNote = value
+      else delete step.planNote
+    }
+    return
+  }
   if (kind === 'school') {
     tree.afterSchool = true
     fill(tree)
@@ -204,10 +222,10 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   const s = tree.steps.find((step) => step.id === stepId)
   requireState(s, '找不到这项作业，请刷新。')
   if (s.skipped && kind === 'skip') return
-  requireState(!s.skipped, '本次作业已跳过。')
+  requireState(!s.skipped, '本次作业不用做。')
   switch (kind) {
     case 'skip': {
-      requireState(!s.start && !s.end, '只能跳过未开始的作业。')
+      requireState(!s.start && !s.end, '只有未开始的作业可以标记为「不用做」。')
       const pending = tree.steps.filter((part) => part.occurrence === s.occurrence && !part.end)
       requireState(pending.every((part) => !part.start), '这项作业正在计时。')
       for (const part of pending) {

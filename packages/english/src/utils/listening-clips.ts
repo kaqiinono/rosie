@@ -1,4 +1,4 @@
-import { baiduReadingAudioUrl, lessonAudioUrl } from './reading-audio-types'
+import { lessonAudioUrl } from './reading-audio-types'
 import type { ReadingPassage } from './reading-data'
 
 export interface ListeningClip {
@@ -69,9 +69,85 @@ const u3l3: [string, string, [number, number]][] = [
   ['4-2', '真是太棒了！', [0.12, 1.249]],
 ]
 
+const u4l1: [string, string, [number, number]][] = [
+  ['title', '传说中的百慕大三角：谜团已解', [0, 3.987]],
+  ['0-0', '多年来，人们一直相信，大西洋上位于百慕大、波多黎各和美国佛罗里达州之间的这片海域很危险。', [0, 9.437]],
+  ['0-1', '他们认为，经过这里的飞机和船只很可能会失踪。', [0, 4.549]],
+  ['0-2', '到了1964年，已经有一位作家把这片海域称为“百慕大三角”。', [0, 5.34]],
+  ['0-3', '这个名字流传了下来，谜团也一直留了下来。', [0, 2.541]],
+  ['1-0', '1945年，美国海军五架飞机组成的第19飞行中队从佛罗里达起飞后，就再也没有回来。', [0, 8.51]],
+  ['1-1', '它们在百慕大三角失踪后，这片海域是危险地带的说法便开始流传。', [0, 7.229]],
+  ['1-2', '甚至在这次著名的飞行之前，就已经有好几艘船在这片水域失踪了。', [0, 4.82]],
+  ['1-3', '人们对这些事发生的原因有许多不同的看法。', [0, 3.215]],
+  ['1-4', '有些人甚至相信，这是一只巨型章鱼造成的！', [0, 3.959]],
+  ['2-0', '然而，科学家认为天气是原因之一。', [0, 4.01]],
+  ['2-1', '这片海域上空形状奇特的云会产生向下冲入水中的强风，掀起巨大的海啸波浪，足以击沉船只或击落低空飞行的飞机。', [0, 11.391]],
+  ['2-2', '而许多研究人员认为，这根本没有什么神秘的。', [0, 3.681]],
+  ['2-3', '世界各地都会发生海难和空难。', [0, 3.433]],
+  ['2-4', '百慕大三角来往的船只和飞机更多，所以这类事故看起来也更多。', [0, 4.446]],
+  ['3-0', '百慕大三角也是大西洋最深的海域之一，有些地方深达8千米（5英里）。', [0, 8.906]],
+  ['3-1', '因此，残骸很难找到，这让这些失踪事件显得更加神秘。', [0, 6.047]],
+  ['3-2', '2011年，人们找到了第19飞行中队的飞机，证明它们并没有彻底消失。', [0, 6.261]],
+  ['3-3', '可是，无论有多少证据表明百慕大三角和海洋里的其他地方一样安全，许多人仍然认为，绝不能去那里。', [0, 10.116]],
+]
+
+const u4l2: [string, string, [number, number]][] = [
+  ['title', '阿梅莉娅·埃尔哈特神秘失踪之谜', [0, 3.482]],
+  ['0-0', '1937年7月2日早晨，阿梅莉娅·埃尔哈特原定驾驶飞机降落在太平洋上的豪兰岛，那是一座很小的岛。', [0, 10.425]],
+  ['0-1', '可她始终没有抵达。', [0, 1.734]],
+  ['0-2', '她和她的飞机就这样消失了。', [0, 2.66]],
+  ['1-0', '阿梅莉娅第一次见到飞机时才十岁。', [0, 3.011]],
+  ['1-1', '她觉得飞机没什么令人兴奋的。', [0, 2.16]],
+  ['1-2', '她曾说：“那是个用生锈的铁丝和木头做成的东西，一点意思也没有……”', [0, 5.061]],
+  ['1-3', '然而，十年后，她作为乘客坐上飞机，在洛杉矶上空飞了十分钟。', [0, 5.86]],
+  ['1-4', '那一刻，她决定学习飞行。', [0, 3.325]],
+  ['2-0', '阿梅莉娅当飞行员的那个年代，许多女性没有外出工作，大多数人甚至从未坐过飞机。', [0, 6.867]],
+  ['2-1', '到35岁时，她已经打破了一项世界纪录。', [0, 4.275]],
+  ['2-2', '1932年，她成为第一位独自驾机飞越大西洋的女性。', [0, 5.852]],
+  ['2-3', '但阿梅莉娅还有更远大的梦想。', [0, 2.624]],
+  ['2-4', '她想成为第一位驾机环球飞行的女性。', [0, 3.758]],
+  ['3-0', '1937年6月，她和领航员弗雷德·努南从佛罗里达州的迈阿密起飞。', [0, 6.895]],
+  ['3-1', '飞越美国后，他们去了巴西。', [0, 3.701]],
+  ['3-2', '他们继续飞行，途经非洲、亚洲和澳大利亚。', [0, 4.1]],
+  ['3-3', '7月2日，他们从新几内亚起飞，前往豪兰岛，但飞机始终没有抵达。', [0, 7.233]],
+  ['3-4', '人们搜寻了埃尔哈特和努南好几个星期，却没能找到他们。', [0, 4.188]],
+  ['4-0', '关于到底发生了什么，有好几种说法。', [0, 2.851]],
+  ['4-1', '有人认为弗雷德和阿梅莉娅迷了路，燃油耗尽后坠入海中；也有人认为他们降落在另一座岛上，被困在了那里。', [0, 9.361]],
+  ['4-2', '有人甚至认为，阿梅莉娅一直在当间谍，后来被抓住了。', [0, 4.555]],
+  ['4-3', '有一件事是肯定的：阿梅莉娅·埃尔哈特将永远是个传奇人物。', [0, 5.25]],
+  ['heading-5', '你猜怎么着！', [0, 0.905]],
+  ['5-0', '2014年，另一位也叫阿梅莉娅·埃尔哈特的飞行员完成了一次打破纪录的飞行。她与前面那位飞行员没有亲属关系。', [0, 7.064]],
+  ['5-1', '她成为驾驶单引擎飞机环球飞行39,000千米（24,300英里）的最年轻女性。', [0, 10.619]],
+]
+
+const u4l3: [string, string, [number, number]][] = [
+  ['0-0', '蜘蛛阿南西知道自己很聪明，但他也知道自己缺少智慧。', [0, 6.101]],
+  ['0-1', '他不喜欢这样，却又不知道该怎么办。', [0, 3.018]],
+  ['0-2', '一天，他想出了一个主意。', [0, 1.712]],
+  ['0-3', '他提着篮子走遍村子，请每个人都分一点智慧给他。', [0, 6.048]],
+  ['0-4', '村民们都笑了，因为他们知道，在所有生灵中，阿南西最需要智慧。', [0, 6.179]],
+  ['0-5', '于是，每个人都往他的篮子里放了一点智慧，祝他一路好运。', [0, 5.395]],
+  ['1-0', '不久，篮子就装满了，但阿南西担心有人会嫉妒他的智慧，把它夺走。', [0, 7.720]],
+  ['1-1', '他决定把篮子藏在一棵高高的树顶上。', [0, 3.436]],
+  ['1-2', '他把篮子绑在身前，试着往树上爬，可这样爬树太难了。', [0, 7.041]],
+  ['1-3', '他试了一次又一次，还是没能爬上去。', [0, 3.462]],
+  ['2-0', '这时，他最小的儿子走了过来。', [0, 2.078]],
+  ['2-1', '“爸爸，你在干什么呀？”儿子问道。阿南西把事情告诉了他。', [0, 4.089]],
+  ['2-2', '“你为什么不把篮子背在背上呢？”儿子说。', [0, 4.377]],
+  ['3-0', '阿南西把篮子背在背上，轻轻松松就爬上了树。', [0, 3.933]],
+  ['3-1', '可他并不高兴。', [0, 1.163]],
+  ['3-2', '“我走遍全村，收集了这么多智慧，成了天底下最有智慧的生灵，可我的小儿子竟然比我还有智慧。', [0, 9.392]],
+  ['3-3', '把你们的智慧拿回去吧！”他说。', [0, 3.018]],
+  ['3-4', '他把篮子抛向空中，回家去了。', [0, 3.227]],
+  ['3-5', '就这样，智慧撒遍了全世界。', [0, 4.429]],
+]
+
 const clipsByPassage: Record<string, [string, string, [number, number]][]> = {
   '5a-u3l2': u3l2,
   '5a-u3l3': u3l3,
+  '5a-u4l1': u4l1,
+  '5a-u4l2': u4l2,
+  '5a-u4l3': u4l3,
 }
 
 export function readingSegments(passage: ReadingPassage, index: number): string[] {
@@ -98,48 +174,15 @@ export function listeningClipsFor(passage: ReadingPassage | undefined): Listenin
   })
 }
 
-export function lessonListeningTargets(passage: ReadingPassage) {
-  const targets = [{ target: 'title', english: passage.title }]
-  passage.paragraphs.forEach((_, index) => {
-    const heading = passage.paragraphTitles?.[index]
-    if (heading) targets.push({ target: 'heading-' + index, english: heading })
-    readingSegments(passage, index).forEach((english, sentence) => {
-      targets.push({ target: index + '-' + sentence, english })
-    })
-  })
-  return targets
-}
-
 export function playableListeningClips(
   passage: ReadingPassage | undefined,
   slots: string[],
 ): ListeningClip[] {
   if (!passage) return []
-  const legacy = listeningClipsFor(passage)
-  if (!slots.some((slot) => slot.startsWith(passage.key + '#clip:'))) return legacy
-  const byTarget = new Map(
-    legacy.map((clip, i) => [
-      clip.target,
-      {
-        ...clip,
-        sourceUrl: baiduReadingAudioUrl(passage.key) + '?clip=' + String(i + 1).padStart(2, '0'),
-      },
-    ]),
-  )
   const available = new Set(slots)
-  return lessonListeningTargets(passage).flatMap((sentence) => {
-    const slot = 'clip:' + sentence.target
-    const old = byTarget.get(sentence.target)
-    if (available.has(passage.key + '#' + slot)) {
-      return [
-        {
-          ...sentence,
-          chinese: old?.chinese ?? '',
-          singleRead: [0, Infinity] as [number, number],
-          sourceUrl: lessonAudioUrl(passage.key, slot),
-        },
-      ]
-    }
-    return old ? [old] : []
+  return listeningClipsFor(passage).map((clip) => {
+    const slot = 'clip:' + clip.target
+    if (!available.has(passage.key + '#' + slot)) return clip
+    return { ...clip, singleRead: [0, Infinity] as [number, number], sourceUrl: lessonAudioUrl(passage.key, slot) }
   })
 }

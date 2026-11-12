@@ -3162,11 +3162,17 @@ export const readingPassages: ReadingPassage[] = [
     "unit": "Unit 4",
     "lesson": "Lesson 1",
     "title": "The Legendary Bermuda Triangle: A Mystery No More",
+    "narrationCues": [
+      [[9.434, 18.731], [19.602, 24.011], [25.011, 30.211], [30.746, 33.147]],
+      [[34.345, 42.715], [43.589, 50.678], [51.559, 56.239], [57.206, 60.281], [61.007, 64.826]],
+      [[65.807, 69.677], [70.447, 81.698], [82.856, 86.397], [87.006, 90.299], [90.777, 95.083]],
+      [[95.982, 104.748], [105.471, 111.378], [112.398, 118.519], [119.34, 129.316]]
+    ],
     "paragraphs": [
       "For years, people have believed that an area of the Atlantic Ocean between Bermuda, Puerto Rico and Florida, USA was a dangerous place. They thought planes and boats passing through here were likely to disappear. By 1964, a writer had called the area the ‘Bermuda Triangle’. The name stuck, and so did the mystery.",
       "In 1945, five US Navy planes, called Flight 19, took off from Florida and never came back. After they disappeared into the Bermuda Triangle, theories had begun to spread that the area was a danger zone. Even before this famous flight, several ships had disappeared in these waters. People had many different ideas about why this happened. Some people even believed that a giant octopus was responsible!",
       "However, scientists believe that weather is part of the problem. Unusually shaped clouds above the area create strong winds that go down into the water, creating huge tsunami waves that can take down boats or low-flying planes. And many researchers believe that there’s no mystery at all. Shipwrecks and plane crashes happen all over the world. It just seems to happen more in the Bermuda Triangle because there’s more traffic.",
-      "The Bermuda Triangle is also one of the deepest areas of the Atlantic, with some areas being 8 km (5 mi.) deep. So, remains are hard to find, which makes the disappearances seem even more mysterious. In 2011, the Flight 19 planes were found, proving that they didn’t completely disappear. But no matter how much evidence there is that the Bermuda Triangle is no more dangerous than any other part of the ocean, many still believe that there’s a mystery."
+      "The Bermuda Triangle is also one of the deepest areas of the Atlantic, with some areas being 8 km (5 mi.) deep. So, remains are hard to find, which makes the disappearances seem even more mysterious. In 2011, the Flight 19 planes were found, proving that they didn’t completely disappear. But no matter how much evidence there is that the Bermuda Triangle is no more dangerous than any other part of the ocean, many still believe that you mustn’t go there."
     ],
     "learningSections": [
       {
@@ -3717,6 +3723,15 @@ export const readingPassages: ReadingPassage[] = [
     "unit": "Unit 4",
     "lesson": "Lesson 2",
     "title": "The Mysterious Disappearance of Amelia Earhart",
+    "listeningBreaks": { "1": ["Ten years later, however,"] },
+    "narrationCues": [
+      [[9.526, 19.811], [20.451, 22.045], [22.507, 25.027]],
+      [[26.495, 29.366], [29.774, 31.794], [32.191, 37.112], [38.068, 43.788], [44.61, 47.795]],
+      [[49.306, 56.033], [56.801, 60.936], [61.726, 67.438], [68.28, 70.764], [71.216, 74.834]],
+      [[75.639, 82.394], [83.189, 86.75], [87.435, 91.395], [92.253, 99.346], [100.202, 104.25]],
+      [[105.127, 107.838], [108.401, 117.622], [118.276, 122.691], [123.42, 128.53]],
+      [[131.279, 138.203], [139.571, 150.05]]
+    ],
     "paragraphs": [
       "On the morning of 2nd July, 1937, Amelia Earhart was due to land her plane on the tiny island of Howland in the Pacific Ocean. She never arrived, though. She and her plane simply disappeared.",
       "Amelia was ten when she saw her first plane. She didn’t think it was very exciting. She had said, ‘It was a thing of rusty wire and wood and not at all interesting ...’ Ten years later, however, she was a passenger in a plane for ten minutes, flying over Los Angeles. At that moment, she decided to learn how to fly.",
@@ -4295,6 +4310,12 @@ export const readingPassages: ReadingPassage[] = [
     "unit": "Unit 4",
     "lesson": "Lesson 3",
     "title": "Anansi and the Basket of Wisdom",
+    "narrationCues": [
+      [[9.819, 15.690], [16.103, 18.896], [19.688, 21.190], [22.070, 27.891], [28.814, 34.762], [35.262, 40.424]],
+      [[40.967, 48.442], [48.925, 52.134], [52.789, 59.605], [60.358, 63.578]],
+      [[64.588, 66.430], [67.473, 71.350], [72.287, 76.439]],
+      [[77.728, 81.425], [82.337, 83.278], [84.369, 93.555], [93.855, 96.655], [97.163, 100.150], [100.933, 105.136]]
+    ],
     "paragraphs": [
       "Anansi the spider knew that he was very clever, but he also knew he wasn’t wise. He didn’t like this, but he did not know what to do. One day he had an idea. He went around the village with a basket and asked each person to give him some of their wisdom. The people laughed at Anansi because they knew that of all the creatures, he needed wisdom the most. So each person put a bit in his basket and wished him good luck with his search.",
       "Soon his basket was full, but Anansi was worried that someone might be jealous of his wisdom and take it from him. He decided to hide it at the top of a tall tree. When he had tied the basket to the front part of his body, he tried to climb the tree, but it was too difficult. He tried again and again without success.",

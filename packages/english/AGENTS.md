@@ -25,14 +25,18 @@ audio, flipbook).
   own play queue via `@rosie/player` directly, with **no ❤️ favorites / audio-collection coupling**.
   Admins publish lesson audio from bookmarked Baidu directories in the 英语 tab of `/admin/sync`.
   Select a lesson and its main directory (a bookmark or one of its descendants). The file panel
-  pages through that entire subtree and shows relative paths. Saving commits the directory and
+  pages through that entire subtree and shows relative paths. Once the scan completes, 自动匹配
+  fills empty draft bindings by imported clip number, word text and lesson track names. Ambiguous
+  matches stay available for manual selection. Saving commits the directory and
   all audio bindings together under one lesson revision. Previously published bindings outside
   the selected directory remain available until explicitly replaced or removed.
   The binding migration `20261109061544_english_lesson_audio_bindings.sql` stores account-scoped file
   references and lesson revisions. New bindings stream from Netdisk. Reading queues and lesson
   details prefer explicit narration bindings. Lesson details also play whole-vocabulary and
   recitation tracks. Individual pronunciations use the entry's stage/unit/lesson and normalized
-  word. Listening clips use passage sentence targets and retain existing clips for unmigrated sentences.
+  word. Sync and playback both use the imported listening clip list from `listeningClipsFor` in
+  recording order. Lessons without a list have no sentence slots. Published clip bindings outside
+  the list can be kept or removed. Configured clips without a binding use their original recording.
   For lessons awaiting migration, narration uses discovered Baidu files under
   `/airosie/english/audio/{4A|5A}/U{unit}L{lesson}.mp3`. `useBaiduReadingAudio` caches available
   keys per user through `createUserSessionStore` and establishes/renews an HttpOnly audio session;

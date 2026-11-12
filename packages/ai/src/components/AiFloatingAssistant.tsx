@@ -136,6 +136,9 @@ export default function AiFloatingAssistant({
   const [open, setOpen] = useState(false)
   const [launcherPosition, setLauncherPosition] = useState<LauncherPosition | null>(null)
   const [dragging, setDragging] = useState(false)
+  // 仅本次页面生命周期内隐藏；刷新后重新出现（不持久化）。对话抽屉打开时不会隐藏。
+  const [dismissed, setDismissed] = useState(false)
+  const launcherHidden = dismissed && !open
   const [activeProblem, setActiveProblem] = useState<{
     problemId: string
     hasAttempted: boolean
@@ -222,7 +225,8 @@ export default function AiFloatingAssistant({
   const positionLauncher = useCallback(
     (position: LauncherPosition, persist = false) => {
       const launcher = launcherRef.current
-      if (!launcher) return
+      // 隐藏时（display:none）尺寸为 0，不计算也不保存位置
+      if (!launcher || launcher.offsetWidth === 0) return
       const nextPosition = clampLauncherPosition(
         position,
         launcher.offsetWidth,
@@ -345,37 +349,58 @@ export default function AiFloatingAssistant({
 
   return (
     <>
-      {/* native-ok: 可拖动、键盘微调位置的悬浮启动器，依赖 pointer 事件与内联定位，Radix Button 无法承载 */}
-      <button
-        ref={launcherRef}
-        type="button"
-        aria-label={open ? '收起不不' : '打开不不，可拖动调整位置'}
-        aria-expanded={open}
-        title={open ? '收起不不' : '拖动可移开，方向键也可调整位置'}
+      {/* 外层负责固定定位；关闭按钮是启动器的兄弟节点，避免嵌套 button。 */}
+      <div
         style={launcherStyle}
-        onClick={() => {
-          if (suppressClickRef.current) {
-            suppressClickRef.current = false
-            return
-          }
-          if (open) closeAssistant()
-          else openAssistant()
-        }}
-        onKeyDown={handleLauncherKeyDown}
-        onPointerDown={handleLauncherPointerDown}
-        onPointerMove={handleLauncherPointerMove}
-        onPointerUp={finishLauncherDrag}
-        onPointerCancel={cancelLauncherDrag}
-        className={`group fixed right-4 bottom-24 z-50 flex min-h-14 touch-none items-center gap-2 rounded-full border-2 border-amber-600 bg-amber-400 p-2.5 text-amber-950 shadow-[0_4px_0_#b45309] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 md:right-6 md:bottom-6 [body:has(#reading-listening-drawer)_&]:hidden ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
+        className={`fixed right-4 bottom-24 z-50 w-fit md:right-6 md:bottom-6 [body:has(#reading-listening-drawer)_&]:hidden ${launcherHidden ? 'hidden' : ''}`}
       >
-        <span
-          aria-hidden="true"
-          className="grid size-9 place-items-center overflow-hidden rounded-full bg-white/20 text-2xl transition group-hover:scale-110"
+        {/* native-ok: 可拖动、键盘微调位置的悬浮启动器，依赖 pointer 事件与内联定位，Radix Button 无法承载 */}
+        <button
+          ref={launcherRef}
+          type="button"
+          aria-label={open ? '收起不不' : '打开不不，可拖动调整位置'}
+          aria-expanded={open}
+          title={open ? '收起不不' : '拖动可移开，方向键也可调整位置'}
+          onClick={() => {
+            if (suppressClickRef.current) {
+              suppressClickRef.current = false
+              return
+            }
+            if (open) closeAssistant()
+            else openAssistant()
+          }}
+          onKeyDown={handleLauncherKeyDown}
+          onPointerDown={handleLauncherPointerDown}
+          onPointerMove={handleLauncherPointerMove}
+          onPointerUp={finishLauncherDrag}
+          onPointerCancel={cancelLauncherDrag}
+          className={`group flex min-h-14 touch-none items-center gap-2 rounded-full border-2 border-amber-600 bg-amber-400 p-2.5 text-amber-950 shadow-[0_4px_0_#b45309] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
         >
-          {open ? '×' : <RosieAssistantAvatar className="size-full" />}
-        </span>
-        <span className="text-sm font-bold whitespace-nowrap">{open ? '收起' : '问问我'}</span>
-      </button>
+          <span
+            aria-hidden="true"
+            className="grid size-9 place-items-center overflow-hidden rounded-full bg-white/20 text-2xl transition group-hover:scale-110"
+          >
+            {open ? '×' : <RosieAssistantAvatar className="size-full" />}
+          </span>
+          <span className="text-sm font-bold whitespace-nowrap">{open ? '收起' : '问问我'}</span>
+        </button>
+        {!open && (
+          <IconButton
+            type="button"
+            aria-label="暂时隐藏不不，刷新页面后恢复"
+            title="暂时隐藏，刷新页面后恢复"
+            size="1"
+            radius="full"
+            variant="solid"
+            color="gray"
+            highContrast
+            className="absolute -top-2 -right-2"
+            onClick={() => setDismissed(true)}
+          >
+            ×
+          </IconButton>
+        )}
+      </div>
 
       {/* native-ok: 全屏半透明遮罩，点击关闭对话框，不是视觉按钮 */}
       <button

@@ -461,6 +461,39 @@
     top: 25%;
   }
 }
+/* 手机：宝石面板沉到底部横排，右侧不再占位，把整块宽度和高度尽量让给树。
+   由 LiveTree 写入 --tg-dock-h（底部按钮坞高）与 --tg-rail-h（宝石条高）。 */
+.tg-scene--rail-bottom {
+  --tg-tree-bottom: var(--tg-dock-h, 4rem);
+}
+@media (max-width: 767px) {
+  .tg-scene--rail-bottom {
+    --tg-stage-right: 0px;
+    --tg-tree-bottom: calc(var(--tg-dock-h, 4rem) + var(--tg-rail-h, 0px));
+  }
+  .tg-scene--rail-bottom .tg-stone-rail {
+    left: 0.5rem;
+    right: 0.5rem;
+    top: auto;
+    bottom: var(--tg-dock-h, 4rem);
+    margin-block: 0;
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 0;
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .tg-scene--rail-bottom .tg-stone-rail > * {
+    flex: 2 1 0;
+    min-width: 0;
+    margin-top: 0;
+  }
+  .tg-scene--rail-bottom .tg-stone-rail > :first-child {
+    flex: 3 1 0;
+  }
+}
 .tg-bubble {
   position: relative;
   width: var(--tg-size);
@@ -530,10 +563,52 @@
   }
 }
 .tg-bubble-in {
+  position: relative;
+  z-index: 2;
   text-align: center;
   pointer-events: none;
   padding: 8px;
   animation: tg-wobble 3.6s ease-in-out infinite;
+}
+/* 进行中：外圈是预计时间进度 */
+.tg-bubble-timer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: calc(var(--tg-size) + 16px);
+  height: calc(var(--tg-size) + 16px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  overflow: visible;
+}
+.tg-bubble-track,
+.tg-bubble-arc {
+  fill: none;
+  stroke-width: 3.4;
+}
+.tg-bubble-track {
+  stroke: #d9b48a;
+}
+/* 按住开花：比分钟进度更靠外的一圈，进度由脚本按住的时间画出来 */
+.tg-bubble-hold {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: calc(var(--tg-size) + 30px);
+  height: calc(var(--tg-size) + 30px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  overflow: visible;
+}
+.tg-bubble-hold-arc {
+  fill: none;
+  stroke-width: 4.2;
+}
+.tg-bubble[data-holding='true'],
+.tg-bubble[data-holding='true'] .tg-bubble-in {
+  animation-play-state: paused;
 }
 @keyframes tg-wobble {
   0%,
@@ -644,17 +719,21 @@
   .tg-bubble,
   .tg-bubble::after,
   .tg-bubble-in,
+  .tg-born,
   .tg-gem-glow {
     animation: none !important;
   }
 }
 
 .tg-scene .tg-bubble[data-state] {
-  background-color: var(--tg-tint);
+  background-color: color-mix(in srgb, var(--tg-tint) 30%, transparent);
 }
 .tg-bubble[data-state='running'] {
-  border: 5px double #795000;
+  touch-action: none;
+}
+.tg-bubble[data-state='overdue'] {
+  border: 4px dashed #c2410c;
 }
 .tg-bubble[data-state='done'] {
-  border-color: #238943;
+  border: 5px solid #238943;
 }

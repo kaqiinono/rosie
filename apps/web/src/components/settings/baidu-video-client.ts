@@ -3,10 +3,11 @@
 import { supabase } from '@rosie/core'
 import type { MathVideoEditor } from '@/lib/baidu-math-video-report-types'
 
-type Read = { action: 'read'; lessonKey: string; directoryId?: string }
+type Read = { action: 'read'; lessonKey: string; directoryId?: string; path?: string }
 type Mutation = {
   lessonKey: string
   directoryId: string | null
+  path: string | null
   generation: string
   version: string | null
 } & (
@@ -24,6 +25,7 @@ export async function requestBaiduVideoData(
   if (error || data.session?.user.id !== userId) throw Error('登录已过期，请重新登录。')
   const query = new URLSearchParams({ lessonKey: input.lessonKey })
   if (input.directoryId) query.set('directoryId', input.directoryId)
+  if (input.path) query.set('path', input.path)
   const route = input.action === 'sync' ? 'sync' : 'report'
   const response = await fetch('/api/baidu/video/catalog/' + route + '?' + query, {
     method: input.action === 'read' ? 'GET' : input.action === 'sync' ? 'POST' : 'PUT',

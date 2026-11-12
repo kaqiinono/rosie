@@ -4,21 +4,33 @@ import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AppDialog, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text, TextField } from '@rosie/ui/themes'
-import TreeScene, { type ItemKind } from '@/components/tree-demo/garden/TreeScene'
+import TreeScene, { type ItemKind, type TreeSceneHandle } from '@/components/tree-demo/garden/TreeScene'
 import Sky, { daypartOf } from '@/components/tree-demo/garden/Sky'
 import Bubbles, { type BubbleState } from '@/components/tree-demo/garden/Bubbles'
 import StonePanel from '@/components/tree-demo/garden/StonePanel'
-import { buildRegions } from '@/components/tree-demo/garden/layout'
+import { buildRegions, todayCenter } from '@/components/tree-demo/garden/layout'
 import { CORE_SUBJECTS, SUBJECTS } from '@/components/tree-demo/garden/model'
 import { gardenAudio } from '@/components/tree-demo/garden/audio'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
-import { shift, timing } from '@/lib/time-tree/types'
+import { shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 import { sceneState } from './sceneState'
+import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
 import { useTimeTree } from './useTimeTree'
 import '@/components/tree-demo/garden/garden.css'
 
-const noHidden = new Set<string>()
+function bump(el: HTMLElement | null): void {
+  if (!el) return
+  el.classList.remove('tg-bump')
+  void el.offsetWidth
+  el.classList.add('tg-bump')
+}
+
+function doneNotice(step: Pick<WorkStep, 'name' | 'sun' | 'water'>): string {
+  const reward = step.sun || step.water ? ` · ☀️ +${step.sun} · 💧 +${step.water}` : ''
+  return `🌸 ${step.name}完成啦！${reward}`
+}
+
 export default function LiveTree() {
   const api = useTimeTree()
   const { tree, busy, run } = api
@@ -32,9 +44,15 @@ export default function LiveTree() {
   const [sound, setSound] = useState(true)
   const [hour, setHour] = useState(() => new Date().getHours())
   const [fresh, setFresh] = useState<Record<string, 'born'>>({})
+  const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const fx = useRef<GardenFx | null>(null)
+  const treeRef = useRef<TreeSceneHandle>(null)
+  const sunRef = useRef<HTMLSpanElement>(null)
+  const waterRef = useRef<HTMLSpanElement>(null)
+  const bloomOrigin = useRef<{ id: string; at: { x: number; y: number } | null } | null>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const dock = useRef<HTMLDivElement>(null)
+  const rail = useRef<HTMLElement>(null)
   const scene = useRef<HTMLDivElement>(null)
   const state = useMemo(() => (tree ? sceneState(tree) : null), [tree])
   const regions = useMemo(() => (state ? buildRegions(state) : []), [state])
@@ -48,13 +66,13 @@ export default function LiveTree() {
     effects.attach(canvas.current, () => null)
     fx.current = effects
     const obs = new ResizeObserver(() => {
-      scene.current?.style.setProperty(
-        '--tg-tree-bottom',
-        (dock.current?.offsetHeight ?? 64) + 'px',
-      )
+      // 树的底边 = 按钮坞高（桌面）；手机再加上底部宝石条高，见 garden.css
+      scene.current?.style.setProperty('--tg-dock-h', (dock.current?.offsetHeight ?? 64) + 'px')
+      scene.current?.style.setProperty('--tg-rail-h', (rail.current?.offsetHeight ?? 0) + 'px')
       effects.resize()
     })
     obs.observe(dock.current)
+    if (rail.current) obs.observe(rail.current)
     if (scene.current) obs.observe(scene.current)
     const timer = setInterval(() => setHour(new Date().getHours()), 60000)
     return () => {
@@ -102,6 +120,80 @@ export default function LiveTree() {
     setPin('')
   }
 
+  function bubbleCenter(id: string): { x: number; y: number } | null {
+    const el = scene.current?.querySelector<HTMLElement>(`[data-bubble-id="${id}"]`)
+    if (!el) return null
+    const rect = el.getBoundingClientRect()
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+  }
+  function showFlower(id: string) {
+    setHidden((prev) => {
+      if (!prev.has(id)) return prev
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+    setFresh((prev) => ({ ...prev, [id]: 'born' }))
+  }
+  function flyCount(from: { x: number; y: number }, el: HTMLSpanElement | null, color: string, dy: number) {
+    if (!el || !fx.current) return
+    const box = el.getBoundingClientRect()
+    fx.current.orb(
+      from.x,
+      from.y + dy,
+      box.left + box.width / 2,
+      box.top + box.height / 2,
+      color,
+      7,
+      0.85,
+      () => bump(el),
+    )
+  }
+  function sow(
+    step: WorkStep,
+    treeData: TreeData,
+    rewards: boolean,
+    origin: { x: number; y: number } | null = null,
+  ) {
+    const from = bubbleCenter(step.id) ?? origin
+    const ids = step.stages.map((_, index) => `${step.id}#${index}`)
+    const effects = fx.current
+    gardenAudio.ensure()
+    gardenAudio.pop()
+    if (!from || !effects) {
+      if (ids.length) {
+        gardenAudio.bloom()
+        for (const id of ids) showFlower(id)
+      }
+      return
+    }
+    const reduced = effects.prefersReducedMotion()
+    if (!reduced) {
+      effects.burst(from.x, from.y, SUBJECTS[step.subject].color)
+      if (rewards && step.sun > 0) flyCount(from, sunRef.current, '#ffd54a', 0)
+      if (rewards && step.water > 0) flyCount(from, waterRef.current, '#74c0fc', 12)
+      if (ids.length) {
+        setHidden((prev) => {
+          const next = new Set(prev)
+          for (const id of ids) next.add(id)
+          return next
+        })
+      }
+    }
+    const regions = buildRegions(sceneState(treeData))
+    const seeds = ids.map((id) => {
+      for (const region of regions) {
+        const hit = region.placed.find((item) => item.item.id === id)
+        if (!hit) continue
+        const at = treeRef.current?.toClient(hit.x, hit.y)
+        if (at) return { id, x: at.x, y: at.y }
+      }
+      const center = todayCenter()
+      const at = treeRef.current?.toClient(center.x, center.y)
+      return { id, x: at?.x ?? from.x, y: at?.y ?? from.y - 160 }
+    })
+    effects.flySeeds(from.x, from.y, seeds, (seed) => showFlower(seed.id))
+  }
   async function clickBubble(id: string) {
     if (busy) return
     const s = air.find((x) => x.id === id)
@@ -109,21 +201,21 @@ export default function LiveTree() {
       setStep(id)
       return
     }
-    const el = Array.from(
-      scene.current?.querySelectorAll<HTMLElement>('[data-bubble-id]') ?? [],
-    ).find((e) => e.dataset.bubbleId === id)
-    const rect = el?.getBoundingClientRect()
+    const origin = bubbleCenter(id)
     const result = await run({ kind: 'pop', id })
     if (!result) return
-    gardenAudio.pop()
-    if (rect && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-      fx.current?.burst(
-        rect.x + rect.width / 2,
-        rect.y + rect.height / 2,
-        SUBJECTS[s.subject].color,
-      )
-    setFresh(Object.fromEntries(s.stages.map((_, i) => [id + '#' + i, 'born' as const])))
+    sow(result.steps.find((item) => item.id === id) ?? s, result, false, origin)
     notify('🌸 ' + s.name + '完成啦！')
+  }
+  async function completeRunning(id: string) {
+    if (busy) return
+    const step = air.find((item) => item.id === id)
+    if (!step?.start || step.end) return
+    const origin = bubbleCenter(id)
+    const outcome = await finishAndPop(run, step)
+    if (!outcome.ok) return
+    if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin)
+    notify(doneNotice(outcome.step))
   }
   function openItem(kind: ItemKind, id: string) {
     if (kind === 'bud') {
@@ -137,17 +229,18 @@ export default function LiveTree() {
   return (
     <div
       ref={scene}
-      className="tg-scene z-40"
+      className="tg-scene tg-scene--rail-bottom z-40"
       data-daypart={daypartOf(hour)}
       onPointerDownCapture={() => gardenAudio.ensure()}
     >
       <Sky daypart={daypartOf(hour)} />
       <div className="tg-tree-wrap">
         <TreeScene
+          ref={treeRef}
           state={state}
           regions={regions}
           fresh={fresh}
-          hidden={noHidden}
+          hidden={hidden}
           onItem={openItem}
           onParked={() => show('park')}
         />
@@ -157,7 +250,12 @@ export default function LiveTree() {
           bubbles={state.buds.filter((b) => states[b.id])}
           slots={state.bubbleSlots}
           states={states}
+          startedAt={Object.fromEntries(
+            air.filter((s) => s.start && !s.end).map((s) => [s.id, s.start!]),
+          )}
           onOpen={(id) => void clickBubble(id)}
+          onHoldFinish={(id) => void completeRunning(id)}
+          holdLocked={busy}
         />
       </div>
       <header className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
@@ -177,29 +275,52 @@ export default function LiveTree() {
             >
               {sound ? '🔊' : '🔇'}
             </Button>
-            <Badge color="amber">☀️ {tree.sun}</Badge>
-            <Badge color="sky">💧 {tree.water}</Badge>
+            <Badge ref={sunRef} color="amber">
+              ☀️ {tree.sun}
+            </Badge>
+            <Badge ref={waterRef} color="sky">
+              💧 {tree.water}
+            </Badge>
             <Button asChild size="1" variant="soft">
               <Link href="/setting/time-tree">家长设置</Link>
             </Button>
           </Flex>
         </StickerCard>
       </header>
-      <aside className="tg-stone-rail" aria-label="宝石与盲盒">
+      <aside ref={rail} className="tg-stone-rail" aria-label="宝石与盲盒">
         <StonePanel
+          bottomOnMobile
           state={state}
           thresholds={tree.rules}
           canExchange={canExchange && !busy}
           onExchange={() => show('wish')}
+          mobileActions={
+            <>
+              <Button color="violet" variant="soft" onClick={() => show('box')}>
+                🎁 {tree.boxReady ? '开盲盒' : '盲盒'}
+              </Button>
+              {tree.apples.length > 0 && (
+                <Button variant="soft" onClick={() => show('fruitList')}>
+                  🍎 摘果子 {tree.apples.length}
+                </Button>
+              )}
+            </>
+          }
           registerPile={() => {}}
         />
-        <StickerCard size="sm" tone="paper" className="mt-2">
+        <StickerCard size="sm" tone="paper" className="mt-2 max-md:hidden">
           <Flex direction="column" gap="2">
-            {nextWish && nextWish > tree.today && <Text size="1">下次心愿 {nextWish}</Text>}
+            {nextWish && nextWish > tree.today && (
+              <Text size="1" className="max-md:hidden">
+                下次心愿 {nextWish}
+              </Text>
+            )}
             <Button color="violet" variant="soft" onClick={() => show('box')}>
               🎁 {tree.boxReady ? '打开盲盒' : '我的盲盒'}
             </Button>
-            <Text size="1">再结 {12 - (tree.appleCount % 12)} 个学科苹果长出彩虹果</Text>
+            <Text size="1" className="max-md:hidden">
+              再结 {12 - (tree.appleCount % 12)} 个学科苹果长出彩虹果
+            </Text>
             {tree.apples.length > 0 && (
               <Button size="1" variant="soft" onClick={() => show('fruitList')}>
                 摘果子（{tree.apples.length}）
@@ -262,13 +383,15 @@ export default function LiveTree() {
           step={step}
           select={setStep}
           close={() => setStep(null)}
-          onFinished={(s) =>
-            notify(
-              timing(s).startsWith('超时')
-                ? '做完啦，点绿色泡泡开花'
-                : timing(s) + ' · ☀️ +' + s.sun + ' · 💧 +' + s.water,
-            )
-          }
+          onBeforeFinish={(current) => {
+            bloomOrigin.current = { id: current.id, at: bubbleCenter(current.id) }
+          }}
+          onFinished={(finished, next, bloom) => {
+            const saved = bloomOrigin.current?.id === finished.id ? bloomOrigin.current.at : null
+            bloomOrigin.current = null
+            if (bloom) sow(finished, next, true, saved)
+            notify(doneNotice(finished))
+          }}
         />
       )}
       <AppDialog
