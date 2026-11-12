@@ -12,7 +12,9 @@ export interface WorkStep {
   planned: string | null
   deadline: string
   start: string | null
+  /** ISO timestamp for timed work, or a Beijing calendar date for untimed completion. */
   end: string | null
+  skipped?: boolean
   settled: boolean
   popped: boolean
   slot: number | null
@@ -57,6 +59,8 @@ export type ActionKind =
   | 'school'
   | 'start'
   | 'finish'
+  | 'completeUntimed'
+  | 'skip'
   | 'pop'
   | 'return'
   | 'move'
@@ -109,7 +113,8 @@ export function clock(value: string) {
   })
 }
 export function timing(step: WorkStep) {
-  if (!step.start || !step.end) return ''
+  if (!step.end) return ''
+  if (!step.start) return '已完成 · 未计时'
   const delta = elapsed(step.start, step.end) - step.minutes
   return delta === 0 ? '按时完成' : delta < 0 ? `提前 ${-delta} 分钟` : `超时 ${delta} 分钟`
 }

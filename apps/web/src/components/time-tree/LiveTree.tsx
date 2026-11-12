@@ -291,9 +291,9 @@ export default function LiveTree() {
       >
         <Flex direction="column" gap="3">
           {dialog === 'park' &&
-            (tree.steps.some((s) => !s.planned && !s.end) ? (
+            (tree.steps.some((s) => !s.skipped && !s.planned && !s.end) ? (
               tree.steps
-                .filter((s) => !s.planned && !s.end)
+                .filter((s) => !s.skipped && !s.planned && !s.end)
                 .map((s) => (
                   <Button
                     key={s.id}

@@ -22,6 +22,10 @@ function emptyTotals(): DayTotals {
   return { plan: 0, done: 0, completed: 0, early: 0, onTime: 0, late: 0, milliseconds: 0 }
 }
 
+function estimatedMinutes(steps: WorkStep[]) {
+  return steps.reduce((total, step) => total + step.minutes, 0)
+}
+
 function journalDays(steps: WorkStep[]) {
   const groups = new Map<string, WorkStep[]>()
   const days = new Map<string, DayTotals>()
@@ -33,6 +37,7 @@ function journalDays(steps: WorkStep[]) {
     return created
   }
   for (const step of steps) {
+    if (step.skipped) continue
     const group = groups.get(step.occurrence)
     if (group) group.push(step)
     else groups.set(step.occurrence, [step])
@@ -59,15 +64,10 @@ function journalDays(steps: WorkStep[]) {
       if (finished) entry(planned).done++
     }
     if (!finished) continue
-    const actual = entry(
-      dayOf(
-        parts
-          .map((s) => s.end!)
-          .sort()
-          .at(-1)!,
-      ),
-    )
+    const completionDays = parts.map((s) => dayOf(s.end!))
+    const actual = entry(completionDays.sort().at(-1)!)
     actual.completed++
+    if (parts.some((s) => !s.start)) continue
     const margins = parts.map((s) => elapsed(s.start!, s.end!) - s.minutes)
     if (margins.some((m) => m > 0)) actual.late++
     else if (margins.some((m) => m < 0)) actual.early++
@@ -103,20 +103,26 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
       for (const key of Object.keys(summary) as (keyof DayTotals)[]) summary[key] += counts[key]
   }
   const step = tree.steps.find((s) => s.id === id)
-  const planned = tree.steps.filter((s) => s.planned === date)
+  const planned = tree.steps.filter((s) => !s.skipped && s.planned === date)
   const finished = tree.steps.filter((s) => s.end && dayOf(s.end) === date)
-  const extra = tree.steps.filter((s) => !s.end && (!s.planned || s.planned < date))
+  const overdue = tree.steps.filter((s) => !s.skipped && !s.end && s.planned !== null && s.planned < date)
+  const parked = calendar
+    ? tree.steps.filter((s) => !s.skipped && !s.end && s.planned === null && s.scheduled === date)
+    : []
+  const skipped = calendar
+    ? tree.steps.filter((s) => s.skipped && (s.planned ?? s.scheduled) === date)
+    : []
   function row(s: WorkStep) {
     return (
       <Button
         key={s.id}
         variant="soft"
-        color={s.end ? 'green' : s.start ? 'amber' : 'sky'}
+        color={s.skipped ? 'gray' : s.end ? 'green' : s.start ? 'amber' : 'sky'}
         onClick={() => setId(s.id)}
       >
         {SUBJECTS[s.subject].emoji} {s.name} ·{' '}
-        {s.end
-          ? clock(s.end) + ' ' + timing(s)
+        {s.skipped ? '已跳过' : s.end
+          ? (s.start ? clock(s.end) + ' ' : '') + timing(s)
           : s.start
             ? '◷ 进行中'
             : s.planned
@@ -213,7 +219,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             </Text>
           </>
         )}
-        <Text weight="bold">{date} · 当天计划</Text>
+        <Text weight="bold">{date} · 当天计划 · 预计 {estimatedMinutes(planned)} 分钟</Text>
         <Flex gap="2" wrap="wrap">
           {planned.length ? planned.map(row) : <Text size="2">当天没有排入作业。</Text>}
         </Flex>
@@ -225,11 +231,23 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             </Flex>
           </>
         )}
-        {!calendar && extra.length > 0 && (
+        {skipped.length > 0 && (
           <>
-            <Badge color="amber">补做与先不做</Badge>
+            <Badge color="gray">当天已跳过</Badge>
+            <Flex gap="2" wrap="wrap">{skipped.map(row)}</Flex>
+          </>
+        )}
+        {parked.length > 0 && (
+          <>
+            <Badge color="gray">当天先不做</Badge>
+            <Flex gap="2" wrap="wrap">{parked.map(row)}</Flex>
+          </>
+        )}
+        {!calendar && overdue.length > 0 && (
+          <>
+            <Badge color="amber">补做计划 · 预计 {estimatedMinutes(overdue)} 分钟</Badge>
             <Flex gap="2" wrap="wrap">
-              {extra.map(row)}
+              {overdue.map(row)}
             </Flex>
           </>
         )}

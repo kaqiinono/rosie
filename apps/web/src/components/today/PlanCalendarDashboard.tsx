@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { todayStr } from '@rosie/core'
 import { Button } from '@rosie/ui/themes'
 import HomeworkJournal from '@/components/time-tree/HomeworkJournal'
@@ -15,11 +16,17 @@ function dateLabel(date: string): string {
 
 /** Plan calendar page body: month grid on top, selected day's full dashboard below. */
 export default function PlanCalendarDashboard() {
+  return (
+    <Suspense>
+      <PlanCalendarDashboardBody />
+    </Suspense>
+  )
+}
+
+function PlanCalendarDashboardBody() {
+  const searchParams = useSearchParams()
   const [selected, setSelected] = useState<string>(todayStr())
-  const [homework, setHomework] = useState(false)
-  useEffect(() => {
-    setHomework(new URLSearchParams(window.location.search).get('view') === 'homework')
-  }, [])
+  const [homework, setHomework] = useState(() => searchParams.get('view') === 'homework')
   const isToday = selected === todayStr()
 
   return (

@@ -44,6 +44,7 @@ function fill(tree: TreeData) {
     (s) =>
       s.slot === null &&
       !s.popped &&
+      !s.skipped &&
       s.planned &&
       s.planned <= tree.today &&
       s.returned !== tree.today,
@@ -202,9 +203,29 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   const [stepId, flowerIndex] = (id ?? '').split('#')
   const s = tree.steps.find((step) => step.id === stepId)
   requireState(s, '找不到这项作业，请刷新。')
+  if (s.skipped && kind === 'skip') return
+  requireState(!s.skipped, '本次作业已跳过。')
   switch (kind) {
+    case 'skip': {
+      requireState(!s.start && !s.end, '只能跳过未开始的作业。')
+      const pending = tree.steps.filter((part) => part.occurrence === s.occurrence && !part.end)
+      requireState(pending.every((part) => !part.start), '这项作业正在计时。')
+      for (const part of pending) {
+        part.skipped = true
+        part.slot = null
+      }
+      fill(tree)
+      break
+    }
+    case 'completeUntimed':
+      if (s.end) return
+      requireState(!s.start, '正在计时，请使用「完成了」。')
+      requireState((s.planned ?? s.scheduled) <= day, '请在作业当天完成。')
+      s.end = day
+      s.popped = s.slot === null
+      break
     case 'start': {
-      if (s.start) return
+      if (s.start || s.end) return
       requireState(s.planned && s.planned <= day, '请先把作业安排到今天。')
       requireState(!tree.steps.some((other) => other.start && !other.end), '请先处理正在做的作业。')
       s.start = now
@@ -260,7 +281,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       break
     case 'return':
     case 'move': {
-      requireState(!s.start, '已开始的作业不能改期。')
+      requireState(!s.start && !s.end, '已开始或完成的作业不能改期。')
       if (kind === 'move') {
         const target = action.day
         requireState(
@@ -273,7 +294,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         )
         if (target) {
           const load = tree.steps
-            .filter((p) => p !== s && p.planned === target)
+            .filter((p) => p !== s && !p.skipped && p.planned === target)
             .reduce((n, p) => n + p.stages.length, 0)
           requireState(load + s.stages.length <= capacityOf(target), '这天的叶区已经排满了。')
         }

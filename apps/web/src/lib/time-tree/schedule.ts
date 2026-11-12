@@ -33,7 +33,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   const existing = new Set(tree.steps.map((s) => s.occurrence))
   const load = new Map<string, number>()
   for (const s of tree.steps)
-    if (s.planned) load.set(s.planned, (load.get(s.planned) ?? 0) + s.stages.length)
+    if (!s.skipped && s.planned) load.set(s.planned, (load.get(s.planned) ?? 0) + s.stages.length)
   const active = templates
     .filter((t) => t.enabled)
     .sort((a, b) => a.priority.localeCompare(b.priority) || a.id.localeCompare(b.id))

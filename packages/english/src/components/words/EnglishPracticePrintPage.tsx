@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getWordMasteryLevel } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
@@ -18,6 +18,7 @@ import {
   nextPrintSeed,
 } from '../../utils/english-practice-print-helpers'
 import { getFilteredWords, lessonChipTag, letterCount, wordKey } from '../../utils/english-helpers'
+import { LinkButton } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 
 /** Minimum width ≈ three short English words; grows for longer phrases. */
@@ -102,26 +103,56 @@ function PrintQuestionBlock({
   )
 }
 
-function runPrint(title: string, prepareNextPrint: () => void) {
-  // Mark <html> before the dialog opens so WebKit drops fixed chrome
-  // even if @media print application is delayed on iOS.
-  document.documentElement.classList.add('en-printing')
-  document.title = sanitizePrintDocumentTitle(title)
-  let cleaned = false
-  const cleanup = () => {
-    if (cleaned) return
-    cleaned = true
-    document.documentElement.classList.remove('en-printing')
-    window.removeEventListener('afterprint', cleanup)
+function SavePracticePdf({ title, sections }: {
+  title: string
+  sections: ReturnType<typeof buildPrintSections>
+}) {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(false)
+  const [download, setDownload] = useState<{ url: string; sections: typeof sections } | null>(null)
+  const url = download?.sections === sections ? download.url : ''
+  const request = useRef(0)
+  const filename = `${sanitizePrintDocumentTitle(title)}.pdf`
+
+  useEffect(() => {
+    setBusy(false)
+    setError(false)
+    return () => { request.current++ }
+  }, [sections])
+  useEffect(() => {
+    if (url) return () => URL.revokeObjectURL(url)
+  }, [url])
+
+  async function save() {
+    const id = ++request.current
+    setBusy(true)
+    setError(false)
+    try {
+      const { createPracticePdf } = await import('../../utils/english-practice-pdf')
+      const pdf = await createPracticePdf(title, sections)
+      if (request.current !== id) return
+      const href = URL.createObjectURL(pdf)
+      setDownload({ url: href, sections })
+      // Keep a real download link available if the browser requires a fresh tap.
+      const link = document.createElement('a')
+      link.href = href
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+    } catch {
+      if (request.current === id) setError(true)
+    } finally {
+      if (request.current === id) setBusy(false)
+    }
   }
-  window.addEventListener('afterprint', cleanup)
-  window.print()
-  // `window.print()` blocks until the print dialog closes in supported browsers,
-  // so the rendered sheet is unchanged while printing. Prepare a fresh ordering
-  // immediately afterwards for the next click on this preview page.
-  prepareNextPrint()
-  // iOS sometimes never fires afterprint; keep class until dialog is long gone.
-  window.setTimeout(cleanup, 60_000)
+
+  if (url) return <LinkButton href={url} download={filename}>下载 PDF</LinkButton>
+  return (
+    <Button type="button" size="1" variant="soft" loading={busy} disabled={busy} onClick={save}>
+      {error ? '生成失败，重试' : '保存 PDF'}
+    </Button>
+  )
 }
 
 function parseSeed(raw: string | null): number {
@@ -139,12 +170,6 @@ export default function EnglishPracticePrintPage() {
   useEffect(() => {
     setPrintSeed(requestedSeed)
   }, [requestedSeed])
-
-  useEffect(() => {
-    return () => {
-      document.documentElement.classList.remove('en-printing')
-    }
-  }, [])
 
   const stage = searchParams.get('stage') ?? '4A'
 
@@ -204,6 +229,17 @@ export default function EnglishPracticePrintPage() {
     }
   }, [title, hasPrintContent])
 
+  const printRequested = useRef(false)
+  useEffect(() => {
+    function afterPrint() {
+      if (!printRequested.current) return
+      printRequested.current = false
+      setPrintSeed(seed => nextPrintSeed(filteredWords, types, vocab, seed))
+    }
+    window.addEventListener('afterprint', afterPrint)
+    return () => window.removeEventListener('afterprint', afterPrint)
+  }, [filteredWords, types, vocab])
+
   if (!stageReady) {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-stone-500">
@@ -239,13 +275,18 @@ export default function EnglishPracticePrintPage() {
           <h1 className="min-w-0 flex-1 truncate text-center text-sm font-bold text-stone-800">
             打印预览 · {questionCount} 题
           </h1>
+          <SavePracticePdf key={`${searchParams.toString()}-${printSeed}-${questionCount}`} title={title} sections={sections} />
           <Button
             type="button"
-            onClick={() =>
-              runPrint(title, () =>
-                setPrintSeed((seed) => nextPrintSeed(filteredWords, types, vocab, seed)),
-              )
-            }
+            onClick={() => {
+              printRequested.current = true
+              try {
+                window.print()
+              } catch {
+                printRequested.current = false
+                window.alert('当前浏览器无法打开打印面板，请点「保存 PDF」后从文件中打印。')
+              }
+            }}
             variant="solid"
             color="indigo"
             size="1"
@@ -439,22 +480,6 @@ export default function EnglishPracticePrintPage() {
         }
         .en-print-four-line-grid::before { top: 33.333%; }
         .en-print-four-line-grid::after { top: 66.666%; }
-
-        html.en-printing .en-words-bg-deco,
-        html.en-printing .en-no-print {
-          display: none !important;
-          visibility: hidden !important;
-        }
-        html.en-printing,
-        html.en-printing body,
-        html.en-printing .en-words-print-layout,
-        html.en-printing .en-print-root {
-          background: #ffffff !important;
-          color: #1c1917 !important;
-          height: auto !important;
-          min-height: 0 !important;
-          overflow: visible !important;
-        }
 
         @media print {
           @page { size: A4; margin: 14mm 12mm; }

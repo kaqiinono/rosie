@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AppDialog, LoadingOverlay, StickerCard } from '@rosie/ui'
-import { Button, Flex, Text, TextField } from '@rosie/ui/themes'
+import { Button, Flex, Grid, Text, TextField } from '@rosie/ui/themes'
 import {
   clock,
   dayOf,
@@ -104,11 +104,14 @@ export function StepPanel({
             开始 {dayOf(step.start)} {clock(step.start)}
           </Text>
         )}
-        {step.end ? (
+        {step.skipped ? (
+          <Text>本次作业已跳过</Text>
+        ) : step.end ? (
           <>
             <Text>
-              完成 {dayOf(step.end)} {clock(step.end)} · 实际 {elapsed(step.start!, step.end)} 分钟
-              · {timing(step)}
+              完成 {dayOf(step.end)}{' '}
+              {step.start && `${clock(step.end)} · 实际 ${elapsed(step.start, step.end)} 分钟 · `}
+              {timing(step)}
             </Text>
             <Text>
               🌸 {step.stages.length}　☀️ +{step.sun}　💧 +{step.water}
@@ -191,20 +194,38 @@ export function StepPanel({
                 {overdue ? '开始补做' : '开始做'}
               </Button>
             )}
-            {step.slot !== null && (
+            <Grid columns="2" gap="2">
               <Button
                 variant="soft"
-                disabled={api.busy}
-                onClick={() => void submit({ kind: 'return' })}
+                color="green"
+                disabled={api.busy || (step.planned ?? step.scheduled) > tree.today}
+                onClick={() => void submit({ kind: 'completeUntimed' })}
               >
-                放回花苞
+                直接完成
               </Button>
-            )}
-            {(overdue || step.slot === null) && (
-              <Button variant="soft" onClick={() => setMove(!move)}>
-                改到其他日期
+              <Button
+                variant="soft"
+                color="gray"
+                disabled={api.busy}
+                onClick={() => void submit({ kind: 'skip' })}
+              >
+                跳过
               </Button>
-            )}
+              {step.slot !== null && (
+                <Button
+                  variant="soft"
+                  disabled={api.busy}
+                  onClick={() => void submit({ kind: 'return' })}
+                >
+                  放回花苞
+                </Button>
+              )}
+              {(overdue || step.slot === null) && (
+                <Button variant="soft" onClick={() => setMove(!move)}>
+                  改日期
+                </Button>
+              )}
+            </Grid>
             {move && (
               <Flex gap="2" wrap="wrap">
                 {Array.from({ length: 7 }, (_, i) => shift(tree.today, i)).map((day) => (
@@ -228,9 +249,9 @@ export function StepPanel({
             )}
           </>
         )}
-        {homework && !manual && !step.end && (
+        {homework && !manual && !step.skipped && !step.end && (
           <Button variant="ghost" onClick={() => setManual(true)}>
-            家长补录起止时间
+            家长补录
           </Button>
         )}
         {api.message && (
