@@ -67,7 +67,7 @@ export async function mathVideoAdmin(req: Request) {
     if (Object.hasOwn(conflicts, code)) return failure(conflicts[code]!, 409)
     if (code === 'replay_schema_unavailable')
       return failure(
-        '数学回放绑定接口尚未就绪，请确认已应用回放迁移 20261101033221 与 20261112165000，再重新读取。',
+        '数学回放绑定接口尚未就绪，请确认已应用回放迁移 20261101033221 与 20261112175729，再重新读取。',
         503,
       )
     if (code === 'invalid_picks') return failure('请核对题目与视频，每个视频只能绑定一道题。', 400)

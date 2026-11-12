@@ -3,7 +3,6 @@
 import { NavigationLink, OrbBackground } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useGreeting } from '@/hooks/useGreeting'
-import { DrawCard } from '@rosie/rewards'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
 
 const modules = [
@@ -16,9 +15,8 @@ const modules = [
   { href: '/chinese', title: '语文园地', icon: '📜', tint: 'bg-orange-100' },
   { href: '/ai', title: 'AI 助手', icon: '✨', tint: 'bg-cyan-100' },
   { href: '/mistakes', title: '错题本', icon: '📕', tint: 'bg-rose-100' },
-  { href: '/flipbook', title: '绘本阅读', icon: '📚', tint: 'bg-orange-100' },
-  { href: '/audio', title: '音频天地', icon: '🎧', tint: 'bg-sky-100' },
   { href: '/vouchers', title: '我的奖券', icon: '⭐', tint: 'bg-yellow-100' },
+  { href: '/draw', title: '抽一抽', icon: '🎡', tint: 'bg-amber-100' },
 ]
 
 export default function HomePage() {
@@ -79,7 +77,6 @@ export default function HomePage() {
           ))}
         </nav>
 
-        {user && <DrawCard key={user.id} userId={user.id} />}
         <HomeStatsPanel />
 
         <div className="text-text-muted text-xs">

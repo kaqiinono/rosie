@@ -1,6 +1,6 @@
 'use client'
 
-import { AppDialog } from '@rosie/ui'
+import { AppDialog, DarkScope } from '@rosie/ui'
 import { useEffect } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import type { ReadingPassage } from '../../utils/reading-data'
@@ -114,7 +114,7 @@ export default function WordPopup({
     matchedForm ?? (sentenceMatch ? resolveWordFormMatch(sentenceMatch, [entry]) : null)
   const isInflected = effectiveMatch && effectiveMatch.source !== 'base'
 
-  return (
+  const dialog = (
     <AppDialog
       open
       chrome="none"
@@ -275,6 +275,7 @@ export default function WordPopup({
       </div>
     </AppDialog>
   )
+  return <DarkScope appearance="light">{dialog}</DarkScope>
 }
 
 export { wordKey }

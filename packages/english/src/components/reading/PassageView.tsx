@@ -345,7 +345,7 @@ export default function PassageView({
   return (
     <div ref={containerRef} className="font-nunito">
       {sourceStages.length > 1 && (
-        <div className="ring-kid-line mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 ring-1">
+        <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
           <span className="font-bold text-slate-500">词库来源</span>
           {sourceStages.map((stage) => (
             <span key={stage} className="inline-flex items-center gap-1.5 font-bold">

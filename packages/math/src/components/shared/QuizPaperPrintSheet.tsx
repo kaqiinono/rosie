@@ -5,39 +5,14 @@ import QuizProblemPrintWidget from '@rosie/math-kit/components/shared/QuizProble
 import ScratchPadPrintBlock from '@rosie/math-kit/components/shared/ScratchPad/ScratchPadPrintBlock'
 import { isInteractiveProblem } from '@rosie/math-kit/utils/check-problem-answer'
 import { getProblemAnswerMode } from '@rosie/math-kit/utils/problem-answer-mode'
+import { GRADE_LABEL, gradeOf, lessonDisplayLabel } from '@rosie/math-kit/utils/lesson-grade'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
-import { PROBLEMS as G1Lesson12PROBLEMS } from '@rosie/math-content/utils/g1/lesson12-data'
-import { PROBLEMS as G1Lesson13PROBLEMS } from '@rosie/math-content/utils/g1/lesson13-data'
-import { PROBLEMS as G1Lesson15PROBLEMS } from '@rosie/math-content/utils/g1/lesson15-data'
-import { PROBLEMS as G1Lesson18PROBLEMS } from '@rosie/math-content/utils/g1/lesson18-data'
-import { PROBLEMS as G1Lesson23PROBLEMS } from '@rosie/math-content/utils/g1/lesson23-data'
-import { PROBLEMS as G1Lesson29PROBLEMS } from '@rosie/math-content/utils/g1/lesson29-data'
-import { PROBLEMS as G1Lesson30PROBLEMS } from '@rosie/math-content/utils/g1/lesson30-data'
-import { PROBLEMS as G1Lesson34PROBLEMS } from '@rosie/math-content/utils/g1/lesson34-data'
-import { PROBLEMS as G1Lesson35PROBLEMS } from '@rosie/math-content/utils/g1/lesson35-data'
-import { PROBLEMS as G1Lesson36PROBLEMS } from '@rosie/math-content/utils/g1/lesson36-data'
-import { PROBLEMS as G1Lesson37PROBLEMS } from '@rosie/math-content/utils/g1/lesson37-data'
-import { PROBLEMS as G1Lesson38PROBLEMS } from '@rosie/math-content/utils/g1/lesson38-data'
-import { PROBLEMS as G1Lesson39PROBLEMS } from '@rosie/math-content/utils/g1/lesson39-data'
-import { PROBLEMS as G1Lesson40PROBLEMS } from '@rosie/math-content/utils/g1/lesson40-data'
-import { PROBLEMS as G1Lesson41PROBLEMS } from '@rosie/math-content/utils/g1/lesson41-data'
-import { PROBLEMS as G1Lesson42PROBLEMS } from '@rosie/math-content/utils/g1/lesson42-data'
-import { PROBLEMS as G1Lesson43PROBLEMS } from '@rosie/math-content/utils/g1/lesson43-data'
-import { PROBLEMS as G1Lesson44PROBLEMS } from '@rosie/math-content/utils/g1/lesson44-data'
-import { PROBLEMS as G1Lesson46PROBLEMS } from '@rosie/math-content/utils/g1/lesson46-data'
-import { PROBLEMS as G1Lesson47PROBLEMS } from '@rosie/math-content/utils/g1/lesson47-data'
-import { PROBLEMS as G2Lesson1PROBLEMS } from '@rosie/math-content/utils/g2/lesson1-data'
-import { PROBLEMS as G2Lesson2PROBLEMS } from '@rosie/math-content/utils/g2/lesson2-data'
-import { PROBLEMS as G2Lesson6PROBLEMS } from '@rosie/math-content/utils/g2/lesson6-data'
-import { PROBLEMS as G2Lesson7PROBLEMS } from '@rosie/math-content/utils/g2/lesson7-data'
-import { PROBLEMS as G2Lesson9PROBLEMS } from '@rosie/math-content/utils/g2/lesson9-data'
-import { PROBLEMS as G2Lesson10PROBLEMS } from '@rosie/math-content/utils/g2/lesson10-data'
-import { PROBLEMS as G2Lesson12PROBLEMS } from '@rosie/math-content/utils/g2/lesson12-data'
-import { PROBLEMS as G2Lesson13PROBLEMS } from '@rosie/math-content/utils/g2/lesson13-data'
-import { PROBLEMS as G2Lesson5PROBLEMS } from '@rosie/math-content/utils/g2/lesson5-data'
-import { PROBLEMS as G2Lesson4PROBLEMS } from '@rosie/math-content/utils/g2/lesson4-data'
-import { PROBLEMS as G2Lesson3PROBLEMS } from '@rosie/math-content/utils/g2/lesson3-data'
-import type { Problem, ProblemSet } from '@rosie/core'
+import type { Problem } from '@rosie/core'
+import { QUIZ_ALL_ENTRIES_MAP } from '../../utils/quiz-lesson-meta'
+import { migrateProblemIdForAudit } from '../../admin/legacy-migration-map'
+import ProblemVideoReplay from '@rosie/math-kit/components/shared/ProblemVideoReplay'
+import { useProblemImageUrl } from '@rosie/math-kit/hooks/useProblemImageUrl'
+import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import {
   computeQuizPoints,
   type QuizAnswerRecord,
@@ -45,56 +20,7 @@ import {
 } from '@rosie/math/hooks/useMathQuiz'
 import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 
-export type QuizPrintMode = 'blank' | 'complete'
-
-const LESSON_DATA: Record<string, ProblemSet> = {
-  '1-12': G1Lesson12PROBLEMS,
-  '1-13': G1Lesson13PROBLEMS,
-  '1-15': G1Lesson15PROBLEMS,
-  '1-18': G1Lesson18PROBLEMS,
-  '1-23': G1Lesson23PROBLEMS,
-  '1-29': G1Lesson29PROBLEMS,
-  '1-30': G1Lesson30PROBLEMS,
-  '1-34': G1Lesson34PROBLEMS,
-  '1-35': G1Lesson35PROBLEMS,
-  '1-36': G1Lesson36PROBLEMS,
-  '1-37': G1Lesson37PROBLEMS,
-  '1-38': G1Lesson38PROBLEMS,
-  '1-39': G1Lesson39PROBLEMS,
-  '1-40': G1Lesson40PROBLEMS,
-  '1-41': G1Lesson41PROBLEMS,
-  '1-42': G1Lesson42PROBLEMS,
-  '1-43': G1Lesson43PROBLEMS,
-  '1-44': G1Lesson44PROBLEMS,
-  '1-46': G1Lesson46PROBLEMS,
-  '1-47': G1Lesson47PROBLEMS,
-  '2-1': G2Lesson1PROBLEMS,
-  '2-2': G2Lesson2PROBLEMS,
-  '2-6': G2Lesson6PROBLEMS,
-  '2-7': G2Lesson7PROBLEMS,
-  '2-9': G2Lesson9PROBLEMS,
-  '2-10': G2Lesson10PROBLEMS,
-  '2-12': G2Lesson12PROBLEMS,
-  '2-13': G2Lesson13PROBLEMS,
-  '2-5': G2Lesson5PROBLEMS,
-  '2-4': G2Lesson4PROBLEMS,
-  '2-3': G2Lesson3PROBLEMS,
-}
-
-type SectionKey = 'pretest' | 'lesson' | 'homework' | 'workbook' | 'supplement'
-const ALL_SECTIONS: SectionKey[] = ['lesson', 'homework', 'workbook', 'supplement', 'pretest']
-
-const PROBLEM_MAP = (() => {
-  const map = new Map<string, { problem: Problem; lessonId: string; section: SectionKey }>()
-  for (const [lessonId, data] of Object.entries(LESSON_DATA)) {
-    for (const section of ALL_SECTIONS) {
-      const problems = data[section]
-      if (!problems) continue
-      for (const p of problems) map.set(p.id, { problem: p, lessonId, section })
-    }
-  }
-  return map
-})()
+export type QuizPrintMode = 'blank' | 'complete' | 'answers'
 
 function formatDate(iso: string) {
   const d = new Date(iso)
@@ -126,6 +52,20 @@ function hasCustomPrintWidget(problem: Problem): boolean {
   return mode === 'custom-widget' || mode === 'readonly-puzzle-numeric'
 }
 
+function GridReferenceAnswer({ problem, savedAnswer }: {
+  problem: Problem
+  savedAnswer?: QuizAnswerRecord
+}) {
+  const analysisImage = useProblemImageUrl(problem, 'analysis')
+  if (analysisImage) return <p>见下方题解图。</p>
+
+  const state = savedAnswer?.interactiveState
+  if (savedAnswer?.correct && state != null && problem.checkAnswer?.(state).ok) {
+    return <QuizProblemPrintWidget problem={problem} interactiveState={state} />
+  }
+  return <p>本题暂无参考填法。</p>
+}
+
 export function QuizPaperPrintSheet({
   paper,
   printMode,
@@ -140,6 +80,7 @@ export function QuizPaperPrintSheet({
   const pointsArr = computeQuizPoints(paper.problems.length)
   const totalScore = pointsArr.reduce((s, p) => s + p, 0)
   const submitted = Boolean(paper.completedAt)
+  const isAnswerKey = printMode === 'answers'
   const isComplete = printMode === 'complete' && submitted
 
   return (
@@ -149,10 +90,16 @@ export function QuizPaperPrintSheet({
       }`}
     >
       <div className="mb-6 border-b-2 border-slate-800 pb-4">
-        <h1 className="mb-3 text-center text-2xl font-black text-slate-900">{paper.title}</h1>
+        <h1 className="mb-3 text-center text-2xl font-black text-slate-900">
+          {paper.title}{isAnswerKey && ' · 参考答案'}
+        </h1>
         <div className="flex items-center justify-between text-sm text-slate-600">
-          <span>姓名：___________________</span>
-          <span>班级：___________________</span>
+          {!isAnswerKey && (
+            <>
+              <span>姓名：___________________</span>
+              <span>班级：___________________</span>
+            </>
+          )}
           <span>日期：{formatDate(paper.createdAt)}</span>
         </div>
         <p className="mt-3 text-xs text-slate-500">
@@ -167,9 +114,17 @@ export function QuizPaperPrintSheet({
 
       <ol className="m-0 list-none p-0">
         {paper.problems.map((item, i) => {
-          const entry = PROBLEM_MAP.get(item.problemId)
-          if (!entry) return null
-          const { problem } = entry
+          const entry = QUIZ_ALL_ENTRIES_MAP.get(item.problemId)
+            ?? QUIZ_ALL_ENTRIES_MAP.get(migrateProblemIdForAudit(item.problemId) ?? '')
+          if (!entry) {
+            return (
+              <li key={i} className="problem-item">
+                {i + 1}. 题库中找不到原题（{item.problemId}）
+              </li>
+            )
+          }
+          const { problem, lessonId } = entry
+          const grade = gradeOf(lessonId)
           const answerMode = getProblemAnswerMode(problem)
           const pts = pointsArr[i] ?? 0
           const record = paper.answers?.[item.problemId]
@@ -182,18 +137,51 @@ export function QuizPaperPrintSheet({
 
           return (
             <li key={`${paper.id}-${item.problemId}-${i}`} className="problem-item">
+              {isAnswerKey && grade != null && (
+                <p className="mb-1 text-xs font-semibold text-slate-600">
+                  {GRADE_LABEL[grade] ?? `${grade} 年级`} · {lessonDisplayLabel(lessonId)}
+                </p>
+              )}
               <div
                 className="problem-text text-[15px] text-slate-900"
                 dangerouslySetInnerHTML={{
                   __html: `<span class="q-num">${i + 1}.</span><span class="q-title">${problem.title}</span><span class="q-pts">（${pts}分）</span> ${sanitizeProblemText(problem.text)}`,
                 }}
               />
-              <QuizProblemPrintWidget
-                problem={problem}
-                interactiveState={isComplete ? interactiveState : undefined}
-              />
+              {isAnswerKey && (
+                <ProblemFigureImage problem={customWidget ? { ...problem, figureNode: undefined } : problem} />
+              )}
+              {(!isAnswerKey || customWidget) && (
+                <QuizProblemPrintWidget
+                  problem={problem}
+                  interactiveState={isComplete ? interactiveState : undefined}
+                />
+              )}
 
-              {isComplete ? (
+              {isAnswerKey ? (
+                <>
+                  <div className="answer-block mt-3 text-sm text-slate-800">
+                    <p className="font-bold">参考答案</p>
+                    {problem.finalQ || answerMode !== 'custom-widget' ? (
+                      [problem, ...(problem.additionalQuestions ?? [])].map((q, index) => (
+                        <p key={index}>{q.finalQ} {q.finalAns}{q.finalUnit}</p>
+                      ))
+                    ) : (
+                      <GridReferenceAnswer problem={problem} savedAnswer={record} />
+                    )}
+                  </div>
+                  {problem.verticalPuzzle?.solutionFills && !problem.verticalPuzzle.readonly && (
+                    <QuizProblemPrintWidget
+                      problem={problem}
+                      interactiveState={problem.verticalPuzzle.solutionFills}
+                    />
+                  )}
+                  <QuizProblemSolution problem={problem} className="print-solution mt-3" />
+                  <div className="no-print mt-2">
+                    <ProblemVideoReplay problem={problem} />
+                  </div>
+                </>
+              ) : isComplete ? (
                 <>
                   {(userAnswer || record?.correct != null) && (
                     <div className="answer-block border-kid-line mt-3 rounded-lg border-2 bg-slate-50 px-3 py-2 text-sm">

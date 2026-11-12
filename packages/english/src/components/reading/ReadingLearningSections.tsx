@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
+import { StickerCard } from '@rosie/ui'
 import { ExerciseView } from '../../grammar/components/ExerciseView'
 import type { ReadingLearningSection } from '../../utils/reading-data'
 import { resolveReadingWordRef } from '../../utils/reading-data'
@@ -53,20 +54,28 @@ export default function ReadingLearningSections({
   if (sections.length === 0) return null
 
   return (
-    <section className="bg-surface shadow-sticker-sm ring-border-light mt-8 overflow-hidden rounded-3xl ring-1">
+    <StickerCard as="section" tone="white" size="none" elevation="sm" className="mt-8 overflow-hidden">
       <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between bg-orange-600 px-5 py-4 text-left text-white"
+        className="flex w-full items-center justify-between bg-amber-100 px-5 py-4 text-left text-amber-950"
       >
-        <span>
-          <span className="block text-xs font-black tracking-widest uppercase opacity-80">
-            Lesson workshop
-          </span>
-          <span className="font-fredoka text-xl font-black">本课总结与练习</span>
+        <span className="font-fredoka flex items-center gap-2.5 text-xl font-black">
+          <span aria-hidden="true" className="h-5 w-1 rounded-full bg-amber-500" />
+          本课总结与练习
         </span>
-        <span className={`text-2xl transition-transform ${open ? 'rotate-180' : ''}`}>⌄</span>
+        <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-full bg-amber-200 text-amber-900">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            className={`motion-safe:transition-transform ${open ? 'rotate-180' : ''}`}
+          >
+            <path d="m3 5.5 5 5 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
       </button>
 
       {open && (
@@ -102,7 +111,7 @@ export default function ReadingLearningSections({
                     setActiveId(next.id)
                     document.getElementById(`reading-tab-${next.id}`)?.focus()
                   }}
-                  variant={active ? 'solid' : 'ghost'}
+                  variant={active ? 'solid' : 'soft'}
                   color={active ? 'orange' : 'gray'}
                   size="3"
                   className="sm:text-base"
@@ -179,6 +188,6 @@ export default function ReadingLearningSections({
           </div>
         </div>
       )}
-    </section>
+    </StickerCard>
   )
 }

@@ -12,7 +12,9 @@ admin/vouchers/today/math/english — it is NOT calc-specific (despite some `use
 
 **Tables:** `calc_sessions`, voucher/wallet tables. Barrel: `import { … } from '@rosie/rewards'`.
 
-Personal draw pools power the home DrawCard and /setting/draw-pools. Pool mutations
+Personal draw pools power the wheel at /draw and /setting/draw-pools. The home menu links to /draw.
+The read-only /api/draw-wheel route verifies the session and reads the owner's entries,
+pending ticket, round and reservation status from the existing pool tables. Only the server chooses the winning entry. Pool mutations
 use change_draw_pool, which serializes changes per account and pool. Accept with
 the draw ticket, not the entry ID. Penalties track accepted rounds independently
 of the wallet and voucher system.

@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Badge, Box, Button, Card, Flex, Grid, Heading, Separator, Text } from '@rosie/ui/themes'
 import { SyncSelect, useSyncConfirmation } from './SyncControls'
 import { invalidateSessionStore } from '@rosie/core'
-import { DirectoryChooser, EnglishFileList, useEnglishFileInventory } from './EnglishAudioFiles'
+import { CourseMainDirectory } from './SyncDirectoryChooser'
+import { EnglishFileList, useEnglishFileInventory } from './EnglishAudioFiles'
 import { LoadStatus, request, useQuery } from './EnglishSyncRequest'
 import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
 import { directoryPrefix, type LessonAudioEditor, type LessonAudioPick } from '@/lib/english-audio-types'
@@ -76,26 +77,20 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
     } finally { pending.current = null; if (!controller.signal.aborted) setSaving(false) }
   }
   return <Flex direction="column" gap="3" data-sync-dirty={dirty} data-sync-saving={saving}>
-    <Card>
-      <Flex direction="column" gap="2">
-        <Flex align="center" justify="between" gap="2" wrap="wrap">
-          <Box minWidth="0">
-            <Heading as="h3" size="3">课程主目录</Heading>
-            {main && <Text as="p" size="2" color="gray" truncate title={main.path}>{main.path}</Text>}
-          </Box>
-          <Flex gap="2">
-            {main && <Button variant="soft" color="gray" size="1" disabled={saving} onClick={() => {
-              setMain(null); setChoosing(true); setMessage(''); setMatchMessage('')
-            }}>解除主目录</Button>}
-            {!choosing && <Button variant="soft" size="1" disabled={saving} onClick={() => setChoosing(true)}>更换目录</Button>}
-          </Flex>
-        </Flex>
-        {choosing && <DirectoryChooser userId={userId} paths={paths} initial={main} disabled={saving}
-          cancel={main ? () => setChoosing(false) : undefined} choose={directory => {
-            setMain(directory); setChoosing(false); setMessage(''); setMatchMessage('')
-          }} />}
-      </Flex>
-    </Card>
+    <CourseMainDirectory
+      userId={userId}
+      paths={paths}
+      main={main}
+      disabled={saving}
+      choosing={choosing}
+      onChoosingChange={setChoosing}
+      onClear={() => {
+        setMain(null); setChoosing(true); setMessage(''); setMatchMessage('')
+      }}
+      onChoose={directory => {
+        setMain(directory); setChoosing(false); setMessage(''); setMatchMessage('')
+      }}
+    />
     <Grid gap="3" columns={{ initial: '1', sm: '2' }} align="start">
       <Card>
         <Flex align="center" justify="between" gap="2" mb="3">
@@ -116,7 +111,7 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
               return group === 0
             })
             if (!rows.length) return null
-            return <Box key={groupLabel} mb="3">
+            return <Box key={groupLabel} mb="3" pr="4">
               <Text as="p" size="1" weight="bold" color="gray" mb="1">{groupLabel}</Text>
               {rows.map(({ slot, label, unbindOnly }) => {
                 const pick = picks[slot]

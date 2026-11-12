@@ -1,18 +1,23 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useBaiduMediaError } from '@rosie/core'
-import { Button } from '@rosie/ui/themes'
+import { Button, Switch } from '@rosie/ui/themes'
 import type { ListeningClip } from '../../utils/listening-clips'
 
 // Keep three seconds of the recorded writing pause after the first reading.
 const SINGLE_READ_WAIT_SECONDS = 3
 const CLIP_GAP_MS = 1000
 
+type PlaybackButton = 'previous' | 'play' | 'next'
+
 type Props = {
+  panelOpen?: boolean
   passageKey: string
   clips: ListeningClip[]
   index: number
+  replayRequest: number
+  onLoadingClipChange: (index: number | null) => void
   select: (index: number) => void
   collapsed: boolean
   setCollapsed: (collapsed: boolean) => void
@@ -24,9 +29,12 @@ type Props = {
 }
 
 export default function ListeningDrawer({
+  panelOpen = true,
   passageKey,
   clips,
   index,
+  replayRequest,
+  onLoadingClipChange,
   select,
   close,
   collapsed,
@@ -49,7 +57,13 @@ export default function ListeningDrawer({
   const [failedKey, setFailedKey] = useState('')
   const [finishedKey, setFinishedKey] = useState('')
   const audio = useRef<HTMLAudioElement>(null)
-  const previousClip = useRef('')
+  const requestedButton = useRef<PlaybackButton>('play')
+  const [loadingButton, setLoadingButton] = useState<PlaybackButton | null>(null)
+  const reportLoading = useCallback((button: PlaybackButton | null) => {
+    setLoadingButton(button)
+    onLoadingClipChange(button === null ? null : index)
+  }, [index, onLoadingClipChange])
+  const previousPlayback = useRef({ key: '', replayRequest })
   const clip = clips[index]
   const [startedClip, setStartedClip] = useState('')
   const currentKey = clip.sourceUrl ?? passageKey + '-' + index
@@ -72,19 +86,37 @@ export default function ListeningDrawer({
     setFailedKey('')
     const el = audio.current
     if (!el) return
-    if (previousClip.current !== currentKey && el.readyState >= 1) el.currentTime = 0
-    previousClip.current = currentKey
+    const previous = previousPlayback.current
+    if ((previous.key !== currentKey || previous.replayRequest !== replayRequest) && el.readyState >= 1) {
+      el.currentTime = 0
+    }
+    previousPlayback.current = { key: currentKey, replayRequest }
     if (paused) return
     let current = true
+    reportLoading(requestedButton.current)
+    requestedButton.current = 'play'
     if (el.error) el.load()
-    void el.play().catch(() => {
-      if (current) setFailedKey(currentKey)
-    })
+    void el.play().then(
+      () => {
+        if (current) reportLoading(null)
+      },
+      () => {
+        if (!current) return
+        setFailedKey(currentKey)
+        reportLoading(null)
+      },
+    )
     return () => {
       current = false
+      reportLoading(null)
       el.pause()
     }
-  }, [currentKey, attempt, paused])
+  }, [currentKey, index, attempt, paused, replayRequest, reportLoading])
+
+  function navigateClip(button: 'previous' | 'next') {
+    if (!paused) requestedButton.current = button
+    select(button === 'previous' ? previousIndex : nextIndex)
+  }
 
   function toggleClip(i: number) {
     const next = selected.includes(i)
@@ -102,6 +134,7 @@ export default function ListeningDrawer({
   }
 
   const failed = failedKey === currentKey
+  const errorMessage = mediaError || '这段音频暂时无法播放，请重试。'
   function togglePlayback() {
     if (paused || failed) {
       if (!selected.length) setSelected([index])
@@ -114,22 +147,19 @@ export default function ListeningDrawer({
   }
 
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const switchLabel =
-    'inline-flex min-h-10 cursor-pointer items-center gap-2 text-sm text-slate-700'
-  const switchInput =
-    'h-4 w-7 shrink-0 cursor-pointer appearance-none rounded-full bg-slate-300 p-0.5 before:block before:size-3 before:rounded-full before:bg-white before:shadow-sticker-sm checked:bg-orange-700 checked:before:translate-x-3 focus-visible:outline-2 focus-visible:outline-offset-2'
+  const settingRow = 'flex min-h-11 items-center justify-between gap-3 text-sm text-slate-700'
 
-  return (
+  const panel = panelOpen && (
     <section
       id="reading-listening-drawer"
       aria-label="听记练习"
-      className={`border-kid-line shadow-sticker-sm fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[52dvh] max-w-2xl overflow-y-auto rounded-t-3xl border-2 bg-stone-50 px-4 text-slate-900 sm:px-6 ${collapsed ? 'flex-wrap items-center pt-1 pb-[calc(0.25rem_+_env(safe-area-inset-bottom,0px))]' : 'flex-col pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]'}`}
+      className={`border-kid-line shadow-sticker-lg fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom,0px)_+_0.75rem)] z-50 mx-auto flex max-h-[52dvh] max-w-2xl overflow-y-auto rounded-3xl border-2 bg-stone-50 px-4 text-slate-900 sm:px-6 ${collapsed ? 'flex-wrap items-center gap-3 py-2' : 'flex-col py-4'}`}
     >
       <header
         className={
           collapsed
             ? 'order-1 ml-auto'
-            : 'flex shrink-0 items-center justify-between gap-2 border-b border-orange-100 pb-2'
+            : 'flex shrink-0 flex-wrap items-center justify-between gap-3'
         }
       >
         {!collapsed && (
@@ -159,11 +189,12 @@ export default function ListeningDrawer({
             </Button>
           </div>
         )}
-        <div className="flex items-center text-sm font-bold text-slate-600">
+        <div className="ml-auto flex items-center gap-3 text-sm font-bold text-slate-600">
           <Button
             type="button"
             aria-expanded={!collapsed}
             aria-controls="listening-clip-text listening-clip-options"
+            mx="0"
             variant="ghost"
             color="gray"
             size="2"
@@ -178,6 +209,7 @@ export default function ListeningDrawer({
           <Button
             type="button"
             aria-label="关闭听记"
+            mx="0"
             variant="ghost"
             color="gray"
             size="2"
@@ -234,8 +266,94 @@ export default function ListeningDrawer({
         {translate && (
           <p className="mt-2 text-base leading-relaxed text-slate-600">{clip.chinese}</p>
         )}
-        {failed && <p role="alert">{mediaError || '这段音频暂时无法播放，请重试。'}</p>}
+        {failed && <p role="alert">{errorMessage}</p>}
       </div>
+      <div
+        className={`flex flex-wrap items-center gap-3 text-sm ${collapsed ? 'grow' : 'shrink-0 pt-2'}`}
+      >
+        <Button
+          type="button"
+          variant="soft"
+          color="gray"
+          size="2"
+          disabled={previousIndex < 0}
+          loading={loadingButton === 'previous'}
+          onClick={() => navigateClip('previous')}
+        >
+          上一段
+        </Button>
+        <Button
+          type="button"
+          variant="solid"
+          color="orange"
+          size="2"
+          className="min-w-16"
+          loading={loadingButton === 'play'}
+          onClick={togglePlayback}
+        >
+          {paused ? '播放' : failed ? '重试' : '暂停'}
+        </Button>
+        <Button
+          type="button"
+          variant="soft"
+          color="gray"
+          size="2"
+          disabled={nextIndex >= clips.length}
+          loading={loadingButton === 'next'}
+          onClick={() => navigateClip('next')}
+        >
+          下一段
+        </Button>
+        <Button
+          type="button"
+          aria-expanded={settingsOpen}
+          aria-controls="listening-settings"
+          onClick={() => setSettingsOpen(!settingsOpen)}
+          variant="soft"
+          color="gray"
+          size="2"
+          className="ml-auto"
+        >
+          设置 {settingsOpen ? '▴' : '▾'}
+        </Button>
+      </div>
+      {settingsOpen && (
+        <div
+          id="listening-settings"
+          role="group"
+          aria-label="听记设置"
+          className="order-last mt-3 grid w-full shrink-0 grid-cols-1 gap-x-6 rounded-2xl bg-stone-100 px-4 py-1 sm:grid-cols-3"
+        >
+          <label className={settingRow}>
+            显示翻译
+            <Switch color="orange" checked={translate} onCheckedChange={setTranslate} />
+          </label>
+          <label className={settingRow}>
+            只听一遍
+            <Switch
+              color="orange"
+              checked={single}
+              onCheckedChange={(enabled) => {
+                if (audio.current) audio.current.currentTime = enabled ? clip.singleRead[0] : 0
+                setSingle(enabled)
+              }}
+            />
+          </label>
+          {multiple ? (
+            <span className="self-center py-2 text-sm text-slate-600">已启用多段循环</span>
+          ) : (
+            <label className={settingRow}>
+              单段循环
+              <Switch color="orange" checked={loop} onCheckedChange={setLoop} />
+            </label>
+          )}
+        </div>
+      )}
+    </section>
+  )
+
+  return (
+    <>
       {[index, nextIndex]
         .filter((i, pos, indices) => i >= 0 && i < clips.length && indices.indexOf(i) === pos)
         .map((i) => {
@@ -293,101 +411,15 @@ export default function ListeningDrawer({
                   : undefined
               }
               onEnded={active ? finishClip : undefined}
-              onError={active && !paused ? () => setFailedKey(currentKey) : undefined}
+              onError={active && !paused ? () => {
+                setFailedKey(currentKey)
+                reportLoading(null)
+              } : undefined}
             />
           )
         })}
-      <div
-        className={`flex flex-wrap items-center gap-1 text-sm ${collapsed ? 'grow' : 'border-kid-line shrink-0 border-t pt-1'}`}
-      >
-        <Button
-          type="button"
-          variant="ghost"
-          color="gray"
-          size="2"
-          disabled={previousIndex < 0}
-          onClick={() => select(previousIndex)}
-        >
-          上一段
-        </Button>
-        <Button
-          type="button"
-          variant="solid"
-          color="orange"
-          size="2"
-          className="min-w-16"
-          onClick={togglePlayback}
-        >
-          {paused ? '播放' : failed ? '重试' : '暂停'}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          color="gray"
-          size="2"
-          disabled={nextIndex >= clips.length}
-          onClick={() => select(nextIndex)}
-        >
-          下一段
-        </Button>
-        <Button
-          type="button"
-          aria-expanded={settingsOpen}
-          aria-controls="listening-settings"
-          onClick={() => setSettingsOpen(!settingsOpen)}
-          variant="ghost"
-          color="gray"
-          size="2"
-          className="ml-auto"
-        >
-          设置 {settingsOpen ? '▴' : '▾'}
-        </Button>
-      </div>
-      {settingsOpen && (
-        <div
-          id="listening-settings"
-          className="border-kid-line order-last flex w-full shrink-0 flex-wrap items-center gap-x-5 border-t"
-        >
-          <label className={switchLabel}>
-            <input
-              type="checkbox"
-              role="switch"
-              className={switchInput}
-              checked={translate}
-              onChange={(e) => setTranslate(e.target.checked)}
-            />
-            显示翻译
-          </label>
-          <label className={switchLabel}>
-            <input
-              type="checkbox"
-              role="switch"
-              className={switchInput}
-              checked={single}
-              onChange={(e) => {
-                const enabled = e.target.checked
-                if (audio.current) audio.current.currentTime = enabled ? clip.singleRead[0] : 0
-                setSingle(enabled)
-              }}
-            />
-            只听一遍
-          </label>
-          {multiple ? (
-            <span className="text-sm text-slate-600">已启用多段循环</span>
-          ) : (
-            <label className={switchLabel}>
-              <input
-                type="checkbox"
-                role="switch"
-                className={switchInput}
-                checked={loop}
-                onChange={(e) => setLoop(e.target.checked)}
-              />
-              单段循环
-            </label>
-          )}
-        </div>
-      )}
-    </section>
+      {panel}
+      {!panelOpen && failed && <p role="alert">{errorMessage}</p>}
+    </>
   )
 }

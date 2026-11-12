@@ -4,17 +4,17 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
-import { FormSelect } from '@rosie/ui'
+import { FormSelect, LearningIcon } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 
 const BASE = '/english/words'
 
 const TABS = [
-  { id: 'cards', path: `${BASE}/cards`, icon: '🃏', label: '单词' },
-  { id: 'practice', path: `${BASE}/practice`, icon: '✏️', label: '练习' },
-  { id: 'daily', path: `${BASE}/daily`, icon: '📅', label: '计划' },
-  { id: 'reading', path: `${BASE}/reading`, icon: '📖', label: '阅读' },
-]
+  { id: 'cards', path: `${BASE}/cards`, icon: 'wordCards', label: '单词' },
+  { id: 'practice', path: `${BASE}/practice`, icon: 'learn', label: '练习' },
+  { id: 'daily', path: `${BASE}/daily`, icon: 'plan', label: '计划' },
+  { id: 'reading', path: `${BASE}/reading`, icon: 'focus', label: '阅读' },
+] as const
 
 export default function AppHeader() {
   const router = useRouter()
@@ -41,12 +41,13 @@ export default function AppHeader() {
 
         {isReading && (
           <div
-            className="flex items-center gap-1 justify-self-end rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1"
+            className="flex items-center gap-2 justify-self-end rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1.5 sm:gap-3"
             role="group"
             aria-label="切换阅读分类"
           >
-            <span className="hidden px-1.5 text-[.7rem] font-extrabold text-[var(--wm-text-dim)] sm:inline">
-              📚 分类
+            <span className="hidden items-center gap-1.5 pl-1 text-xs font-extrabold text-[var(--wm-text-dim)] sm:inline-flex">
+              <LearningIcon name="focus" size={18} />
+              分类
             </span>
             {(
               [
@@ -60,7 +61,8 @@ export default function AppHeader() {
                   key={collection.id}
                   type="button"
                   onClick={() => router.push(collection.href)}
-                  variant={active ? 'solid' : 'ghost'}
+                  aria-pressed={active}
+                  variant={active ? 'solid' : 'soft'}
                   color={active ? 'indigo' : 'gray'}
                   size="2"
                 >
@@ -126,19 +128,16 @@ export default function AppHeader() {
             return (
               <Button
                 key={t.id}
-                onClick={() => router.push(t.path)}
-                title={t.label}
-                aria-label={t.label}
-                aria-current={active ? 'page' : undefined}
+                asChild
                 variant={active ? 'solid' : 'soft'}
                 color={active ? 'red' : 'gray'}
                 size="2"
                 className="min-w-0 whitespace-nowrap md:shrink-0 md:text-[0.875rem]"
               >
-                <span aria-hidden className="text-[1rem] leading-none">
-                  {t.icon}
-                </span>
-                <span>{t.label}</span>
+                <Link href={t.path} title={t.label} aria-current={active ? 'page' : false}>
+                  <LearningIcon name={t.icon} />
+                  <span>{t.label}</span>
+                </Link>
               </Button>
             )
           })}

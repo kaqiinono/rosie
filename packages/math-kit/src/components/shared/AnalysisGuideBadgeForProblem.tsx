@@ -8,7 +8,7 @@ type Props = {
   problem: Problem
   size?: 'sm' | 'md'
   className?: string
-  variant?: 'default' | 'toolbar'
+  variant?: 'default' | 'metadata'
 }
 
 /** Resolves static + cloud analysis image, then shows badge when available. */

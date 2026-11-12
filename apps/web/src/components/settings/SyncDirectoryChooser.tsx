@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Flex, Text } from '@rosie/ui/themes'
+import { Box, Button, Card, Flex, Heading, Text } from '@rosie/ui/themes'
 import type { SyncDirectoryList, SyncDirectoryPage } from '@/app/api/baidu/sync/directories/route'
 import { LoadStatus, useQuery } from './EnglishSyncRequest'
 import { SyncSelect } from './SyncControls'
@@ -23,6 +23,56 @@ type ChooserProps = {
   disabled: boolean
   cancel?: () => void
   choose: (main: SyncChosenDirectory) => void
+}
+
+type MainDirectoryProps = {
+  userId: string
+  paths: SyncDirectoryList
+  main: SyncChosenDirectory | null
+  disabled: boolean
+  choosing: boolean
+  onChoosingChange: (choosing: boolean) => void
+  onChoose: (directory: SyncChosenDirectory) => void
+  onClear: () => void
+}
+
+export function CourseMainDirectory({
+  userId, paths, main, disabled, choosing, onChoosingChange, onChoose, onClear,
+}: MainDirectoryProps) {
+  return (
+    <Card>
+      <Flex direction="column" gap="2">
+        <Flex align="center" justify="between" gap="2" wrap="wrap">
+          <Box minWidth="0">
+            <Heading as="h3" size="3">课程主目录</Heading>
+            {main && <Text as="p" size="2" color="gray" truncate title={main.path}>{main.path}</Text>}
+          </Box>
+          <Flex gap="2">
+            {main && (
+              <Button variant="soft" color="gray" size="1" disabled={disabled} onClick={onClear}>
+                解除主目录
+              </Button>
+            )}
+            {!choosing && (
+              <Button variant="soft" size="1" disabled={disabled} onClick={() => onChoosingChange(true)}>
+                更换目录
+              </Button>
+            )}
+          </Flex>
+        </Flex>
+        {choosing && (
+          <DirectoryChooser
+            userId={userId}
+            paths={paths}
+            initial={main}
+            disabled={disabled}
+            cancel={main ? () => onChoosingChange(false) : undefined}
+            choose={onChoose}
+          />
+        )}
+      </Flex>
+    </Card>
+  )
 }
 
 export function DirectoryChooser({ userId, paths, initial, disabled, cancel, choose }: ChooserProps) {

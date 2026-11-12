@@ -25,6 +25,8 @@ server components like `app/layout.tsx`). Barrel: `import { CandyButton } from '
 
 ## 受控组件入口清单
 
+学习工具栏的装饰图标用 `LearningIcon` from `@rosie/ui`，按动作传 `name`（calculator / wordCards / plan / learn / focus / listen / readAloud / print / pause），默认 20px。按钮提供可见文字或无障碍名称。彩色 SVG 随应用存于 `apps/web/public/icons/plump`，来自 [Streamline](https://github.com/webalys-hq/streamline-vectors) 免费 Plump 图集，每份 SVG 保留 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 署名。暂停使用实心双竖条。
+
 | 适用场景 | 指定入口 | 使用约定 |
 | --- | --- | --- |
 | 页面级请求加载 | `LoadingOverlay` from `@rosie/ui` | 传入 `visible` 和 `placement="content"` 展示 Rosie 转圈。页面使用纵向弹性布局，加载容器占满剩余视口高度，组件在其中水平、垂直居中。 |

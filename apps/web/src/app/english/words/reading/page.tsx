@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { useAuth, supabase, useBaiduMediaError } from '@rosie/core'
 import { useWeeklyPlan } from '@rosie/english'
@@ -21,12 +21,13 @@ import { wordKey } from '@rosie/english'
 import { getWordMasteryLevel } from '@rosie/core'
 import { type PlayerTrack } from '@rosie/player'
 import { StoryShelf } from '@rosie/english'
-import { Button, IconButton } from '@rosie/ui/themes'
+import { Button, IconButton, SegmentedControl } from '@rosie/ui/themes'
 
 export default function ReadingIndexPage() {
   const { user } = useAuth()
   const { weeklyPlan, isLoading } = useWeeklyPlan(user)
   const { vocab, masteryMap, selStage, setSelStage } = useWordsContext()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const { hasAudio } = useReadingPassageMedia(user)
   const {
@@ -51,13 +52,13 @@ export default function ReadingIndexPage() {
   )
   const requestedVolume = searchParams.get('volume')?.toUpperCase() ?? null
   const selectedVolume =
-    requestedVolume && houhaiStages.includes(requestedVolume as '4A' | '5A')
-      ? requestedVolume
-      : null
+    houhaiStages.find((stage) => stage === requestedVolume) ?? houhaiStages[0]
 
   useEffect(() => {
-    if (selectedVolume && selectedVolume !== selStage) setSelStage(selectedVolume)
-  }, [selStage, selectedVolume, setSelStage])
+    if (collection === 'houhai' && selectedVolume && selectedVolume !== selStage) {
+      setSelStage(selectedVolume)
+    }
+  }, [collection, selStage, selectedVolume, setSelStage])
 
   // 选中集（用于"播放选中"）。切教材后 audiobookKeys 会变，下面 selectedKeys 自动丢掉跨册项。
   const [queueKeys, setQueueKeys] = useState<string[]>([])
@@ -87,7 +88,6 @@ export default function ReadingIndexPage() {
   const focusKey = weeklyPlan?.focusLessonKey ?? null
   const parsedFocus = useMemo(() => (focusKey ? parseFocusLessonKey(focusKey) : null), [focusKey])
 
-  // 厚海先选分辑，再展示该分辑的文章。
   const stagePassages = useMemo(
     () => (selectedVolume ? readingPassages.filter((p) => p.stage === selectedVolume) : []),
     [selectedVolume],
@@ -178,48 +178,6 @@ export default function ReadingIndexPage() {
 
   if (collection === 'story') return <StoryShelf />
 
-  if (!selectedVolume) {
-    return (
-      <main className="font-nunito relative z-[1] mx-auto w-full max-w-[1280px] px-3 pt-6 pb-24 md:px-4">
-        <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
-        <div className="mb-5">
-          <p className="text-xs font-extrabold tracking-[0.18em] text-sky-600 uppercase">
-            Houhai Readers
-          </p>
-          <h1 className="font-fredoka mt-1 text-2xl font-black text-[var(--wm-text)]">
-            📘 厚海阅读
-          </h1>
-          <p className="mt-2 text-sm text-[var(--wm-text-dim)]">选择一个分辑进入课文列表</p>
-        </div>
-        <ul className="flex flex-wrap gap-3">
-          {houhaiStages.map((stage) => {
-            const passageCount = readingPassages.filter((passage) => passage.stage === stage).length
-            return (
-              <li key={stage}>
-                <Link
-                  href={`/english/words/reading?collection=houhai&volume=${encodeURIComponent(stage)}`}
-                  className="group shadow-sticker-sm hover:shadow-sticker inline-flex min-h-11 items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 whitespace-nowrap no-underline ring-1 ring-sky-200 transition hover:-translate-y-0.5"
-                >
-                  <h2 className="font-fredoka text-base font-black text-slate-900">{stage}</h2>
-                  <span aria-hidden className="text-slate-400">
-                    ·
-                  </span>
-                  <p className="text-sm font-bold text-slate-500">{passageCount} 篇课文</p>
-                  <span
-                    aria-hidden
-                    className="text-lg text-sky-700 transition-transform group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </main>
-    )
-  }
-
   return (
     <main
       className="font-nunito relative z-[1] mx-auto w-full max-w-[1280px] px-3 pt-6 pb-32 md:px-4"
@@ -228,16 +186,28 @@ export default function ReadingIndexPage() {
       <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <Link
-            href="/english/words/reading?collection=houhai"
-            className="inline-flex min-h-9 shrink-0 items-center rounded-full bg-white px-3 text-xs font-bold text-sky-700 no-underline ring-1 ring-sky-200 transition hover:bg-sky-50"
-          >
-            ← 全部分辑
-          </Link>
-          <h1 className="font-fredoka min-w-0 text-xl font-bold text-[var(--wm-text)] sm:text-2xl">
-            📚 厚海 · {selectedVolume}
+        <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <h1 className="font-fredoka text-xl font-bold text-[var(--wm-text)] sm:text-2xl">
+            📚 厚海阅读
           </h1>
+          {houhaiStages.length > 0 && (
+            <SegmentedControl.Root
+              aria-label="厚海阅读册别"
+              size="3"
+              value={selectedVolume}
+              onValueChange={(volume) => {
+                const params = new URLSearchParams(searchParams.toString())
+                params.set('volume', volume)
+                router.replace(`/english/words/reading?${params}`, { scroll: false })
+              }}
+            >
+              {houhaiStages.map((stage) => (
+                <SegmentedControl.Item key={stage} value={stage}>
+                  {stage}
+                </SegmentedControl.Item>
+              ))}
+            </SegmentedControl.Root>
+          )}
         </div>
         <div className="flex items-center gap-2 sm:ml-auto">
           <Button
@@ -272,10 +242,7 @@ export default function ReadingIndexPage() {
       {cards.length === 0 ? (
         <div className="ring-kid-line rounded-2xl bg-white p-8 text-center ring-1">
           <div className="mb-2 text-4xl">📭</div>
-          <div className="font-bold text-gray-800">{selectedVolume} 还没有课文</div>
-          <div className="mt-1 text-[12px] text-gray-500">
-            可返回厚海选择其它分辑，或等待本分辑课文上线。
-          </div>
+          <div className="font-bold text-gray-800">暂无厚海课文</div>
         </div>
       ) : (
         <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -372,7 +339,7 @@ export default function ReadingIndexPage() {
                             void markCurrentLesson(p.key)
                           }}
                           variant={p.key === currentLessonKey ? 'solid' : 'soft'}
-                          color={p.key === currentLessonKey ? 'sky' : 'orange'}
+                          color="orange"
                           radius="full"
                           size="2"
                         >

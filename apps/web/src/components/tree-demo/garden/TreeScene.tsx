@@ -104,10 +104,6 @@ function Defs() {
         <stop offset="0" stopColor="#8fdd77" />
         <stop offset="1" stopColor="#4d9c46" />
       </linearGradient>
-      <linearGradient id="tg-wood" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#d9a073" />
-        <stop offset="1" stopColor="#a8693f" />
-      </linearGradient>
       {subjects.map((k) => (
         <radialGradient key={`ap-${k}`} id={`tg-apple-${k}`} cx="0.34" cy="0.28" r="0.95">
           <stop offset="0" stopColor={SUBJECTS[k].tint} />
@@ -517,17 +513,24 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
           }
         }}
       >
-        <circle className="tg-focus" cx="45" cy="30" r="52" fill="transparent" stroke="transparent" />
+        <rect className="tg-focus" x="-6" y="-8" width="124" height="76" rx="15" fill="transparent" stroke="transparent" />
         <g className="tg-item-body">
-          <rect x="0" y="8" width="90" height="52" rx="10" fill="url(#tg-wood)" stroke="#8a573a" strokeWidth="3" />
-          <path d="M0 24 H90 M0 42 H90" stroke="#8a573a" strokeWidth="2" opacity="0.6" />
-          <text x="45" y="38" textAnchor="middle" fontSize="15" fontWeight="800" fill="#ffffff" stroke="#6d3f24" strokeWidth="0.8">
+          <path d="M2 17 L12 3 Q13 1 17 1 H95 Q99 1 100 3 L110 17Z" fill="#659688" stroke="#43776b" strokeWidth="2.5" />
+          <path d="M23 19 L21 0 Q21 -3 24 -3 L45 -5 Q48 -5 48 -2 L51 19Z" fill="#ffe59b" stroke="#c2994f" strokeWidth="2" />
+          <path d="M4 17 H108 L103 52 Q102 60 94 60 H18 Q10 60 9 52Z" fill="#a6ddc5" stroke="#43776b" strokeWidth="2.5" />
+          <rect x="1" y="13" width="110" height="9" rx="4" fill="#d3eedc" stroke="#43776b" strokeWidth="2.5" />
+          <rect x="18" y="26" width="76" height="28" rx="8" fill="#fff0df" />
+          <text x="56" y="47" textAnchor="middle" fontSize="20" fontWeight="700" fill="#99345a">
             先不做
           </text>
-          <circle cx="86" cy="10" r="12" fill="#ef4444" stroke="#ffffff" strokeWidth="2.5" />
-          <text x="86" y="15" textAnchor="middle" fontSize="13" fontWeight="800" fill="#ffffff">
-            {parked}
-          </text>
+          {parked > 0 && (
+            <g>
+              <rect x="88" y="-8" width={16 + String(parked).length * 8} height="22" rx="11" fill="#99345a" stroke="#fff0df" strokeWidth="2" />
+              <text x={96 + String(parked).length * 4} y="7" textAnchor="middle" fontSize="12" fontWeight="700" fill="#fff">
+                {parked}
+              </text>
+            </g>
+          )}
         </g>
       </g>
     </svg>

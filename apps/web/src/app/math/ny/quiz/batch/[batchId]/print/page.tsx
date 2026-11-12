@@ -12,6 +12,7 @@ import {
 import type { QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 import { fetchQuizScratchObjectsMap } from '@rosie/math-kit/utils/math-scratch-db'
+import { LoadingOverlay } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 
 function rowToPaper(row: Record<string, unknown>): QuizPaper {
@@ -33,6 +34,7 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
   const { batchId } = use(params)
   const { user } = useAuth()
   const searchParams = useSearchParams()
+  const answerKey = searchParams.get('mode') === 'answers'
 
   const [titleBase, setTitleBase] = useState('')
   const [papers, setPapers] = useState<QuizPaper[]>([])
@@ -70,7 +72,7 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
       const scratchMap = new Map<string, Map<string, ScratchObject[]>>()
       await Promise.all(
         loaded
-          .filter((p) => p.completedAt)
+          .filter((p) => p.completedAt && !answerKey)
           .map(async (p) => {
             const m = await fetchQuizScratchObjectsMap(p.id)
             scratchMap.set(p.id, m)
@@ -79,7 +81,7 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
       setScratchByPaper(scratchMap)
       setLoading(false)
     })()
-  }, [user, batchId])
+  }, [user, batchId, answerKey])
 
   const anyCompleted = papers.some((p) => p.completedAt)
 
@@ -93,11 +95,8 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-indigo-200 border-t-indigo-500" />
-          <span className="text-sm text-slate-400">加载批次中…</span>
-        </div>
+      <div className="flex min-h-dvh flex-col">
+        <LoadingOverlay visible placement="content" />
       </div>
     )
   }
@@ -136,30 +135,34 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
             批次打印 · {titleBase || papers[0]?.title} · {papers.length} 卷
           </h1>
           <div className="flex-1 sm:hidden" />
-          <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
-            <Button
-              type="button"
-              onClick={() => setUserPrintMode('blank')}
-              variant={printMode === 'blank' ? 'outline' : 'ghost'}
-              color="gray"
-              size="1"
-            >
-              空白卷
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setUserPrintMode('complete')}
-              disabled={!anyCompleted}
-              title={
-                anyCompleted ? '已交卷的卷会附作答与题解；未交卷仍按空白卷' : '本批次尚无已交试卷'
-              }
-              variant={printMode === 'complete' ? 'outline' : 'ghost'}
-              color="gray"
-              size="1"
-            >
-              完整答卷
-            </Button>
-          </div>
+          {answerKey ? (
+            <span className="text-sm font-bold text-indigo-700">参考答案</span>
+          ) : (
+            <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
+              <Button
+                type="button"
+                onClick={() => setUserPrintMode('blank')}
+                variant={printMode === 'blank' ? 'outline' : 'ghost'}
+                color="gray"
+                size="1"
+              >
+                空白卷
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setUserPrintMode('complete')}
+                disabled={!anyCompleted}
+                title={
+                  anyCompleted ? '已交卷的卷会附作答与题解；未交卷仍按空白卷' : '本批次尚无已交试卷'
+                }
+                variant={printMode === 'complete' ? 'outline' : 'ghost'}
+                color="gray"
+                size="1"
+              >
+                完整答卷
+              </Button>
+            </div>
+          )}
           <Button
             onClick={() => window.print()}
             variant="solid"
@@ -167,7 +170,7 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
             size="1"
             className="shrink-0"
           >
-            🖨 <span className="hidden sm:inline">打印全部</span>
+            🖨 <span>{answerKey ? '打印全部答案' : '打印全部'}</span>
           </Button>
         </div>
       </div>
@@ -177,7 +180,7 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
           <QuizPaperPrintSheet
             key={paper.id}
             paper={paper}
-            printMode={printMode}
+            printMode={answerKey ? 'answers' : printMode}
             scratchByProblem={scratchByPaper.get(paper.id)}
             pageBreakAfter={i < papers.length - 1}
           />

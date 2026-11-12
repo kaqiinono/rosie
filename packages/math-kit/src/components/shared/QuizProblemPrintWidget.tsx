@@ -128,7 +128,9 @@ export default function QuizProblemPrintWidget({ problem, interactiveState }: Pr
     <div className="quiz-print-widget mt-2 flex justify-center">
       <div
         ref={hostRef}
-        className="pointer-events-none fixed top-0 -left-[9999px] w-max opacity-0"
+        className={`pointer-events-none fixed top-0 -left-[9999px] w-max opacity-0 ${
+          dataUrl ? 'print:hidden' : 'print:static print:opacity-100'
+        }`}
         aria-hidden
       >
         {renderWidgetSource(problem, interactiveState)}

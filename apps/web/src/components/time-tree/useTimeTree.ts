@@ -78,6 +78,7 @@ export function useTimeTree() {
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
       if (action.kind === 'acceptBox') invalidateSessionStore('draw_pool_entries')
+      if (action.kind === 'openBox' || action.kind === 'acceptBox') invalidateSessionStore('draw_wheel_entries')
       return next.tree
     } catch (e) {
       setMessage(e instanceof Error ? e.message : '保存失败，请重试。')

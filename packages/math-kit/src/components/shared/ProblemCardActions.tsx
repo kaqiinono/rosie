@@ -3,8 +3,6 @@
 import { createContext, useContext, type ReactNode } from 'react'
 import type { Problem } from '@rosie/core'
 import { IconButton } from '@rosie/ui/themes'
-import AnalysisGuideBadge from './AnalysisGuideBadge'
-import AnalysisGuideBadgeForProblem from './AnalysisGuideBadgeForProblem'
 import FavoriteHeart from './FavoriteHeart'
 import ProblemDraftActions from './ProblemDraftActions'
 import ProblemVideoReplay from './ProblemVideoReplay'
@@ -24,7 +22,6 @@ export function useExternalProblemActions(): boolean {
 
 type Props = {
   problem: Problem
-  hasAnalysis?: boolean
   isOpen?: boolean
   onToggle?: () => void
   /** Omit when the current surface does not have practice history; never infer it from mastery. */
@@ -33,7 +30,6 @@ type Props = {
 
 export default function ProblemCardActions({
   problem,
-  hasAnalysis,
   isOpen,
   onToggle,
   practiceCount,
@@ -42,16 +38,11 @@ export default function ProblemCardActions({
     practiceCount === undefined ? 'bg-slate-50/70' : problemPracticeStyle(practiceCount).surface
   return (
     <div
-      className={`border-kid-line relative mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-b-xl border-t px-2.5 py-1 ${surface}`}
+      className={`border-kid-line relative mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-b-xl border-t px-2.5 py-1 ${surface}`}
       role="group"
       aria-label="题目操作"
     >
-      <div className="relative flex min-w-0 flex-wrap items-center gap-0.5">
-        {hasAnalysis === undefined ? (
-          <AnalysisGuideBadgeForProblem problem={problem} variant="toolbar" />
-        ) : (
-          <AnalysisGuideBadge hasImage={hasAnalysis} variant="toolbar" />
-        )}
+      <div className="relative flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2">
         <ProblemDraftActions problem={problem} variant="toolbar" />
         <FavoriteHeart problemId={problem.id} variant="toolbar" />
         {onToggle && (

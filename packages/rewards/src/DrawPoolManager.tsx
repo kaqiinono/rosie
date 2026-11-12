@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react'
 import { useAuth } from '@rosie/core'
-import { changePool, entriesStore, poolLabels, type PoolEntry, type PoolKind } from './drawPools'
+import { changePool, entriesStore, poolLabels, wheelStore, type PoolEntry, type PoolKind } from './drawPools'
 
 type TreeToggle = (props: { checked: boolean; disabled: boolean; name: string; onChange: (value: boolean) => void }) => ReactNode
 
@@ -35,6 +35,7 @@ function PoolEditor({
         if (entry) entriesStore.patchSessionData(userId, (rows) => [...rows, entry])
         setName('')
       }
+      wheelStore.invalidate(userId)
     } catch (err) {
       setError(err instanceof Error ? err.message : '操作失败，请重试。')
     } finally {

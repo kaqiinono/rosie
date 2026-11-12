@@ -12,12 +12,14 @@ import {
 import type { QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 import { fetchQuizScratchObjectsMap } from '@rosie/math-kit/utils/math-scratch-db'
+import { LoadingOverlay } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 
 export default function QuizPrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { user } = useAuth()
   const searchParams = useSearchParams()
+  const answerKey = searchParams.get('mode') === 'answers'
 
   const [paper, setPaper] = useState<QuizPaper | null>(null)
   const [scratchByProblem, setScratchByProblem] = useState<Map<string, ScratchObject[]>>(new Map())
@@ -50,14 +52,14 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
             batchIndex: (data.batch_index as number | null) ?? null,
           }
           setPaper(p)
-          if (p.completedAt) {
+          if (p.completedAt && !answerKey) {
             const scratchMap = await fetchQuizScratchObjectsMap(p.id)
             setScratchByProblem(scratchMap)
           }
         }
         setLoading(false)
       })
-  }, [user, id])
+  }, [user, id, answerKey])
 
   const autoPrintMode = useMemo((): QuizPrintMode => {
     if (!paper) return 'blank'
@@ -71,11 +73,8 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-indigo-200 border-t-indigo-500" />
-          <span className="text-sm text-slate-400">加载中…</span>
-        </div>
+      <div className="flex min-h-dvh flex-col">
+        <LoadingOverlay visible placement="content" />
       </div>
     )
   }
@@ -98,7 +97,7 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
       <div className="no-print border-kid-line sticky top-0 z-50 border-b bg-white">
         <div className="mx-auto flex h-14 max-w-[800px] items-center gap-2 px-3 sm:gap-3 sm:px-4">
           <Link
-            href={`/math/ny/quiz/${id}`}
+            href={answerKey ? '/math/ny/quiz' : `/math/ny/quiz/${id}`}
             className="flex shrink-0 items-center gap-1 text-sm text-slate-400 no-underline transition-colors hover:text-slate-600 sm:gap-1.5"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -116,28 +115,32 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
             打印预览 · {paper.title}
           </h1>
           <div className="flex-1 sm:hidden" />
-          <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
-            <Button
-              type="button"
-              onClick={() => setUserPrintMode({ paperId: paper.id, mode: 'blank' })}
-              variant={printMode === 'blank' ? 'outline' : 'ghost'}
-              color="gray"
-              size="1"
-            >
-              空白卷
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setUserPrintMode({ paperId: paper.id, mode: 'complete' })}
-              disabled={!submitted}
-              title={submitted ? '含作答、草稿与题解' : '交卷后可打印完整答卷'}
-              variant={printMode === 'complete' ? 'outline' : 'ghost'}
-              color="gray"
-              size="1"
-            >
-              完整答卷
-            </Button>
-          </div>
+          {answerKey ? (
+            <span className="text-sm font-bold text-indigo-700">参考答案</span>
+          ) : (
+            <div className="flex items-center gap-1 rounded-full bg-slate-100 p-0.5">
+              <Button
+                type="button"
+                onClick={() => setUserPrintMode({ paperId: paper.id, mode: 'blank' })}
+                variant={printMode === 'blank' ? 'outline' : 'ghost'}
+                color="gray"
+                size="1"
+              >
+                空白卷
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setUserPrintMode({ paperId: paper.id, mode: 'complete' })}
+                disabled={!submitted}
+                title={submitted ? '含作答、草稿与题解' : '交卷后可打印完整答卷'}
+                variant={printMode === 'complete' ? 'outline' : 'ghost'}
+                color="gray"
+                size="1"
+              >
+                完整答卷
+              </Button>
+            </div>
+          )}
           <Button
             onClick={() => window.print()}
             variant="solid"
@@ -145,7 +148,7 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
             size="1"
             className="shrink-0"
           >
-            🖨 <span className="hidden sm:inline">打印</span>
+            🖨 <span>{answerKey ? '打印答案' : '打印'}</span>
           </Button>
         </div>
       </div>
@@ -153,7 +156,7 @@ export default function QuizPrintPage({ params }: { params: Promise<{ id: string
       <div className="mx-auto max-w-[800px] px-4 py-6 print:max-w-none print:p-0">
         <QuizPaperPrintSheet
           paper={paper}
-          printMode={printMode}
+          printMode={answerKey ? 'answers' : printMode}
           scratchByProblem={scratchByProblem}
         />
       </div>

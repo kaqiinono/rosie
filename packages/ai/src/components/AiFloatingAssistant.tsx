@@ -374,15 +374,9 @@ export default function AiFloatingAssistant({
           onPointerMove={handleLauncherPointerMove}
           onPointerUp={finishLauncherDrag}
           onPointerCancel={cancelLauncherDrag}
-          className={`group flex min-h-14 touch-none items-center gap-2 rounded-full border-2 border-amber-600 bg-amber-400 p-2.5 text-amber-950 shadow-[0_4px_0_#b45309] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 ${dragging ? 'cursor-grabbing' : 'cursor-grab transition hover:-translate-y-1 active:translate-y-0'} ${open ? 'pr-3' : 'pr-4'}`}
+          className={`grid size-14 touch-none place-items-center rounded-full bg-rose-100 shadow-[inset_0_-4px_0_var(--color-rose-200)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 ${dragging ? 'cursor-grabbing' : 'cursor-grab motion-safe:transition-transform motion-safe:hover:-translate-y-0.5'}`}
         >
-          <span
-            aria-hidden="true"
-            className="grid size-9 place-items-center overflow-hidden rounded-full bg-white/20 text-2xl transition group-hover:scale-110"
-          >
-            {open ? '×' : <RosieAssistantAvatar className="size-full" />}
-          </span>
-          <span className="text-sm font-bold whitespace-nowrap">{open ? '收起' : '问问我'}</span>
+          <RosieAssistantAvatar className="pointer-events-none size-12" />
         </button>
         {!open && (
           <IconButton
@@ -391,13 +385,14 @@ export default function AiFloatingAssistant({
             title="暂时隐藏，刷新页面后恢复"
             size="1"
             radius="full"
-            variant="solid"
+            variant="surface"
             color="gray"
-            highContrast
             className="absolute -top-2 -right-2"
             onClick={() => setDismissed(true)}
           >
-            ×
+            <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="m3 3 6 6m0-6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
           </IconButton>
         )}
       </div>

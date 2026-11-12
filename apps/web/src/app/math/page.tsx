@@ -1,6 +1,6 @@
 'use client'
 
-import { OrbBackground, PageBreadcrumb } from '@rosie/ui'
+import { LearningIcon, OrbBackground, PageBreadcrumb } from '@rosie/ui'
 import GradeCard from '@rosie/math/components/GradeCard'
 import MathDailyCard from '@rosie/math/components/MathDailyCard'
 import MathSeaCard from '@rosie/math/components/MathSeaCard'
@@ -30,7 +30,13 @@ export default function MathPage() {
           <PageBreadcrumb variant="inline" />
         </div>
         <section className="max-w-[480px] text-center">
-          <div className="animate-bounce-slow inline-block text-5xl">🧮</div>
+          <div aria-hidden="true" className="relative inline-flex items-center justify-center px-5">
+            <span className="absolute top-0 left-0 -rotate-12 text-lg leading-none text-amber-400">★</span>
+            <span className="inline-flex origin-bottom motion-safe:animate-[bounce-slow_550ms_ease-in-out,wiggle_600ms_ease-in-out_550ms]">
+              <LearningIcon name="calculator" size={48} />
+            </span>
+            <span className="absolute right-0 bottom-0 rotate-12 text-xl leading-none font-black text-emerald-400">+</span>
+          </div>
           <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-amber-700">
             数学探险乐园
           </h1>

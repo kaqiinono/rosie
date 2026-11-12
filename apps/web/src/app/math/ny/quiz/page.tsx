@@ -640,6 +640,11 @@ export default function QuizPage() {
             )}
           </div>
         </div>
+        <Button asChild size="1" variant="soft" color="indigo">
+          <Link href={`/math/ny/quiz/${paper.id}/print?mode=answers`} onClick={(e) => e.stopPropagation()}>
+            答案
+          </Link>
+        </Button>
         <IconButton
           onClick={(e) => {
             e.stopPropagation()
@@ -964,7 +969,7 @@ export default function QuizPage() {
                       className="rounded-2xl bg-white p-3"
                       style={{ border: '1px solid #e2e8f0', boxShadow: '0 3px 0 rgba(0,0,0,.3)' }}
                     >
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <button // native-ok: 整块可点击容器（内含多行内容），Radix Button 是 inline-flex 居中，不适用
                           type="button"
                           onClick={() => toggleBatchExpanded(batch.id)}
@@ -1027,7 +1032,7 @@ export default function QuizPage() {
                             </p>
                           </div>
                         </button>
-                        <div className="flex shrink-0 items-center gap-1.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <Button
                             type="button"
                             disabled={batchBusyId === batch.id}
@@ -1051,6 +1056,11 @@ export default function QuizPage() {
                             size="1"
                           >
                             打印
+                          </Button>
+                          <Button asChild variant="soft" color="indigo" size="1">
+                            <Link href={`/math/ny/quiz/batch/${batch.id}/print?mode=answers`}>
+                              批量导出答案
+                            </Link>
                           </Button>
                           <Button
                             type="button"

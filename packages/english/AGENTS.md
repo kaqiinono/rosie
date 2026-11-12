@@ -50,13 +50,14 @@ audio, flipbook).
   proxy retains Storage fallback; a working fallback is never blocked by a Baidu error.
   Textbook detail narration uses `usePlaylistPlayer` + `PlayerDock` with `showProgress`, sharing
   the list player's pause/loop controls and adding seek support. Changing passages stops the old queue.
-  In the listening drawer, pausing keeps clip navigation silent until Play is pressed, including
-  after reopening the drawer on the same passage. A multi-clip selection loops in passage order
+  Previous and Next in the listening drawer preserve the paused state. Clicking an inline
+  headphones button starts its clip from the beginning on every click. A multi-clip selection loops in passage order
   with a one-second gap. A single selected clip uses the existing single-clip loop setting.
   Collapsing the listening drawer keeps audio, passage highlighting, and the playback controls active.
   Closing it ends listening and cancels any pending transition to the next clip.
   The reading shelf groups textbook stages `4A` and `5A` under the top-level **厚海** collection;
-  learners choose the collection, then the volume, then a passage. The 厚海 shelf
+  the shelf opens the highest available volume by default. The selector beside the list title
+  switches volumes and stores the choice in the URL’s `volume` parameter. The 厚海 shelf
   uses a single account-wide current lesson stored in Auth user metadata `reading_current_lesson`;
   its card is highlighted and the volume list rotates ascending Unit/Lesson order from that lesson,
   wrapping to the first lesson at the end. Playback-all follows the displayed order. Passage highlighting

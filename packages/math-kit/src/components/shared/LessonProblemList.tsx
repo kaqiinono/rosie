@@ -14,6 +14,7 @@ import { useLessonAnalysisImageIds } from '@rosie/math-kit/hooks/useLessonAnalys
 import { problemHasAnalysisImage } from '@rosie/math-kit/utils/problem-analysis-image'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
 import { problemPracticeStyle } from '../../utils/problem-practice-style'
+import AnalysisGuideBadge from './AnalysisGuideBadge'
 import ProblemCardActions from './ProblemCardActions'
 import { ProblemScratchProvider } from './ScratchPad/ProblemScratchContext'
 import { Button } from '@rosie/ui/themes'
@@ -160,6 +161,7 @@ export default function LessonProblemList({
                 </span>
                 <MetaDot />
                 <span className="shrink-0 font-medium tabular-nums">难度 {p.difficulty}/5</span>
+                <AnalysisGuideBadge hasImage={hasAnalysis} variant="metadata" />
                 <MetaDot />
                 <PracticeCountBadge count={count} compact />
                 {showSource && sourceLabel && (
@@ -208,7 +210,7 @@ export default function LessonProblemList({
                 basePath,
               }}
             >
-              <ProblemCardActions problem={p} hasAnalysis={hasAnalysis} practiceCount={count} />
+              <ProblemCardActions problem={p} practiceCount={count} />
             </ProblemScratchProvider>
           </div>
         )

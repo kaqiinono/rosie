@@ -358,9 +358,9 @@ export default function LiveTree() {
       </div>
       <header className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
         <Flex gap="2" align="center">
-          <Button asChild variant="soft">
+          <StickerCard asChild interactive size="sm" tone="paper" elevation="sm">
             <Link href="/">← 首页</Link>
-          </Button>
+          </StickerCard>
           <span className="tg-logo">🌳 生命树</span>
         </Flex>
         <StickerCard size="sm" tone="paper">
@@ -429,37 +429,39 @@ export default function LiveTree() {
       </aside>
       <div
         ref={dock}
-        className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap justify-center gap-2 p-3"
+        className="absolute inset-x-0 bottom-0 z-10 flex justify-center p-3"
       >
-        <Button
-          loading={busy}
-          onClick={async () => {
-            const t = await run({ kind: 'school' })
-            if (t && !t.steps.some((s) => s.slot !== null))
-              notify(
-                t.steps.some((s) => s.end && s.planned === t.today)
-                  ? '今天的作业做完啦'
-                  : '今天没有待做的作业',
-              )
-          }}
-        >
-          {tree.afterSchool ? '补满泡泡' : '🫧 放学了'}
-        </Button>
-        <Button
-          color="amber"
-          disabled={busy || tree.sun < 8 || tree.magicDay === tree.today}
-          onClick={async () => {
-            if (await run({ kind: 'magic' })) gardenAudio.magic()
-          }}
-        >
-          ☀️ 阳光魔法 · 8
-        </Button>
-        <Button asChild variant="soft">
-          <Link href="/tasks/homework">作业管理</Link>
-        </Button>
-        <Button asChild variant="soft">
-          <Link href="/today/calendar?view=homework">作业日历</Link>
-        </Button>
+        <StickerCard size="sm" tone="paper" elevation="sm" className="flex max-w-full flex-wrap justify-center gap-2">
+          <Button
+            loading={busy}
+            onClick={async () => {
+              const t = await run({ kind: 'school' })
+              if (t && !t.steps.some((s) => s.slot !== null))
+                notify(
+                  t.steps.some((s) => s.end && s.planned === t.today)
+                    ? '今天的作业做完啦'
+                    : '今天没有待做的作业',
+                )
+            }}
+          >
+            {tree.afterSchool ? '补满泡泡' : '🫧 放学了'}
+          </Button>
+          <Button
+            color="amber"
+            disabled={busy || tree.sun < 8 || tree.magicDay === tree.today}
+            onClick={async () => {
+              if (await run({ kind: 'magic' })) gardenAudio.magic()
+            }}
+          >
+            ☀️ 阳光魔法 · 8
+          </Button>
+          <Button asChild variant="soft">
+            <Link href="/tasks/homework">作业管理</Link>
+          </Button>
+          <Button asChild variant="soft">
+            <Link href="/today/calendar?view=homework">作业日历</Link>
+          </Button>
+        </StickerCard>
       </div>
       <canvas
         ref={canvas}

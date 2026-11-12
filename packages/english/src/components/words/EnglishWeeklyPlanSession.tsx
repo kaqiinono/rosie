@@ -532,6 +532,7 @@ function AdaptivePlanCard({
     plan.status === 'active' && daySnapshot && rows
       ? buildDailyWordCapsules(daySnapshot.dailyTask, rows, vocab)
       : []
+  const showStudy = capsules.length > 0
 
   const effectiveCalendarRows = calendarRows ?? rows ?? null
   const calendarSimulation = useMemo(() => {
@@ -647,53 +648,43 @@ function AdaptivePlanCard({
           </div>
         )}
       </button>
-      <div className="mt-auto flex flex-wrap items-center justify-end gap-1.5 px-4 pb-4">
+      <div className="mt-auto grid grid-cols-2 gap-2 px-4 pb-4">
         <Button
           type="button"
           aria-expanded={calendarOpen}
           onClick={openCalendar}
-          variant="outline"
+          variant="soft"
           color="gray"
           size="2"
-          className="whitespace-nowrap"
+          loading={calendarOpen && calendarLoading}
         >
-          {calendarLoading ? '加载轨迹…' : '🧭 批次轨迹'}
+          批次轨迹
         </Button>
-        {plan.status === 'active' && capsules.length > 0 && (
-          <Link
-            href={`/english/words/adaptive/${plan.id}/practice`}
-            className="font-nunito rounded-[10px] border border-[rgba(74,222,128,.4)] bg-[rgba(74,222,128,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#86efac] no-underline transition-all hover:border-[rgba(74,222,128,.7)] hover:bg-[rgba(74,222,128,.18)]"
-          >
-            📖 学习
-          </Link>
+        <Button asChild variant="soft" color="gray" size="2">
+          <Link href={`/english/words/adaptive/${plan.id}/preview`}>轨迹预览</Link>
+        </Button>
+        {showStudy && (
+          <Button asChild variant="soft" color="gray" size="2">
+            <Link href={`/english/words/adaptive/${plan.id}/practice`}>学习</Link>
+          </Button>
         )}
         <Button
           type="button"
           aria-expanded={unitProgressOpen}
           onClick={openUnitProgress}
-          variant="outline"
+          variant="soft"
           color="gray"
           size="2"
-          className="whitespace-nowrap"
+          className={showStudy ? undefined : 'col-span-2'}
+          loading={unitProgressOpen && calendarLoading}
         >
-          📊 单元进度
+          单元进度
         </Button>
-        <Link
-          href={`/english/words/adaptive/${plan.id}/preview`}
-          className="font-nunito rounded-[10px] border border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap text-[#c4b5fd] no-underline"
-        >
-          轨迹预览
-        </Link>
-        <Link
-          href={`/english/words/adaptive/${plan.id}`}
-          className={`font-nunito rounded-[10px] border px-2.5 py-2 text-[.72rem] font-extrabold whitespace-nowrap no-underline ${
-            isCurrent
-              ? 'border-[rgba(139,92,246,.55)] bg-[rgba(139,92,246,.22)] text-[#ddd6fe]'
-              : 'border-[rgba(139,92,246,.35)] bg-[rgba(139,92,246,.1)] text-[#c4b5fd]'
-          }`}
-        >
-          开始练习 →
-        </Link>
+        <Button asChild variant="solid" color="violet" size="3" className="col-span-2">
+          <Link href={`/english/words/adaptive/${plan.id}`}>
+            开始练习 <span aria-hidden>→</span>
+          </Link>
+        </Button>
       </div>
       {calendarOpen && userId && (
         <AdaptivePlanCardCalendar

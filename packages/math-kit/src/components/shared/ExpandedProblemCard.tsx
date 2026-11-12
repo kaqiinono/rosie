@@ -9,6 +9,7 @@ import type { ProblemDetailComponentProps } from '@rosie/math-kit/components/sha
 import { SolutionAvailabilityOverride } from '@rosie/math-kit/components/shared/QuestionLayout'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
 import { problemPracticeStyle } from '../../utils/problem-practice-style'
+import AnalysisGuideBadge from './AnalysisGuideBadge'
 import ProblemCardActions, { ExternalProblemActions } from './ProblemCardActions'
 import {
   ProblemScratchProvider,
@@ -72,6 +73,7 @@ function ExpandedProblemCard({
             {problem.tagLabel}
           </span>
           <span className="shrink-0 font-medium tabular-nums">难度 {problem.difficulty}/5</span>
+          <AnalysisGuideBadge hasImage={hasAnalysis} variant="metadata" />
           {sourceLabel && <span className="max-w-full truncate font-medium">{sourceLabel}</span>}
           <PracticeCountBadge count={count} compact />
         </div>
@@ -136,7 +138,6 @@ function ExpandedProblemCard({
       >
         <ProblemCardActions
           problem={problem}
-          hasAnalysis={hasAnalysis}
           isOpen={isOpen}
           onToggle={onToggle}
           practiceCount={count}

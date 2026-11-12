@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import ProblemActionIcon from './ProblemActionIcon'
+import { Badge } from '@rosie/ui/themes'
 
 type Props = {
   hasImage: boolean
@@ -9,7 +9,7 @@ type Props = {
   /** List cards: circular 图 marker */
   compact?: boolean
   className?: string
-  variant?: 'default' | 'toolbar'
+  variant?: 'default' | 'metadata'
 }
 
 /** Marks whether a problem has a 题解配图. */
@@ -23,18 +23,11 @@ export default function AnalysisGuideBadge({
 }: Props) {
   if (!hasImage && !showMissing) return null
 
-  if (variant === 'toolbar' && hasImage) {
+  if (variant === 'metadata' && hasImage) {
     return (
-      <span
-        title="本题有详细图解解析"
-        className={clsx(
-          'text-text-secondary inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center',
-          className,
-        )}
-      >
-        <ProblemActionIcon name="diagram" />
-        <span className="sr-only">本题有详细图解解析</span>
-      </span>
+      <Badge size="1" variant="soft" color="blue" title="本题有详细图解解析" className={className}>
+        有图解
+      </Badge>
     )
   }
 

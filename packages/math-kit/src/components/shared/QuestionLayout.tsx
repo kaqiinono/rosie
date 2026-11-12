@@ -12,6 +12,7 @@ import React, {
 } from 'react'
 import type { Problem } from '@rosie/core'
 import ProblemNotesPanel from '@rosie/math-kit/components/shared/ProblemNotesPanel'
+import AnalysisGuideBadgeForProblem from './AnalysisGuideBadgeForProblem'
 import ProblemCardActions, { useExternalProblemActions } from './ProblemCardActions'
 
 type SolutionToggleContextValue = {
@@ -223,6 +224,9 @@ export default function QuestionLayout({
         >
           {/* ── Section 1: 题目 ── */}
           <section className="ql-question">
+            {problem && !externalActions && (
+              <AnalysisGuideBadgeForProblem problem={problem} variant="metadata" />
+            )}
             <div className="ql-question-body">{question}</div>
           </section>
 

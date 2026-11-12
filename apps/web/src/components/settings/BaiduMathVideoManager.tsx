@@ -15,7 +15,7 @@ import {
   TextField,
 } from '@rosie/ui/themes'
 import { SyncPending, SyncSelect, useSyncConfirmation } from './SyncControls'
-import { DirectoryChooser, type SyncChosenDirectory } from './SyncDirectoryChooser'
+import { CourseMainDirectory, type SyncChosenDirectory } from './SyncDirectoryChooser'
 import {
   LESSONS,
   lessonByKey,
@@ -372,44 +372,18 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
           onValueChange={changeLesson}
         />
       </Grid>
-      <Card>
-        <Flex direction="column" gap="2">
-          <Flex align="center" justify="between" gap="2" wrap="wrap">
-            <Box minWidth="0">
-              <Heading as="h3" size="3">
-                本讲主目录
-              </Heading>
-              {selectedMain && (
-                <Text as="p" size="2" color="gray" truncate title={selectedMain.path}>
-                  {selectedMain.path}
-                </Text>
-              )}
-            </Box>
-            <Flex gap="2">
-              {selectedMain && (
-                <Button variant="soft" color="gray" size="1" disabled={busy} onClick={() => afterDiscard(clearDirectory)}>
-                  解除主目录
-                </Button>
-              )}
-              {!choosing && (
-                <Button variant="soft" size="1" disabled={busy || !editor} onClick={() => setChoosing(true)}>
-                  更换目录
-                </Button>
-              )}
-            </Flex>
-          </Flex>
-          {choosing && editor && (
-            <DirectoryChooser
-              userId={userId}
-              paths={paths}
-              initial={selectedMain}
-              disabled={busy}
-              cancel={selectedMain ? () => setChoosing(false) : undefined}
-              choose={chooseDirectory}
-            />
-          )}
-        </Flex>
-      </Card>
+      {editor && (
+        <CourseMainDirectory
+          userId={userId}
+          paths={paths}
+          main={selectedMain}
+          disabled={busy}
+          choosing={choosing}
+          onChoosingChange={setChoosing}
+          onClear={() => afterDiscard(clearDirectory)}
+          onChoose={chooseDirectory}
+        />
+      )}
       <Flex gap="2" wrap="wrap">
         <Button variant="soft" disabled={busy || !editor?.selectedId} onClick={sync}>
           刷新文件列表

@@ -32,7 +32,8 @@ import { UncoveredWordsReview } from '@rosie/english'
 import { PreReadingRecall } from '@rosie/english'
 import { GlossaryPanel } from '@rosie/english'
 import { ReadingLearningSections } from '@rosie/english'
-import { Button, IconButton } from '@rosie/ui/themes'
+import { DarkScope, LearningIcon } from '@rosie/ui'
+import { Button, Flex, IconButton, SegmentedControl, Spinner, Switch, Theme } from '@rosie/ui/themes'
 
 const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 0, label: '未掌握', dot: 'bg-amber-400' },
@@ -69,63 +70,69 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
   const passage = findPassageByKey(key)
   const { data: slots } = useAudioSlots(user)
   const clips = useMemo(() => playableListeningClips(passage, slots), [passage, slots])
-  const [listening, setListening] = useState<{ key: string; index: number; open: boolean } | null>(
-    null,
-  )
+  const [listening, setListening] = useState<{
+    key: string
+    index: number
+    mode: 'inline' | 'panel' | 'closed'
+  } | null>(null)
   const [listeningCollapsed, setListeningCollapsed] = useState(false)
   const [listeningPaused, setListeningPaused] = useState(false)
+  const [clipReplayRequest, setClipReplayRequest] = useState(0)
+  const [loadingClipIndex, setLoadingClipIndex] = useState<number | null>(null)
   const [selectedClips, setSelectedClips] = useState<number[]>([])
   const showClip = useCallback(
     (index: number) => {
-      setListening({ key, index, open: true })
+      setListening({ key, index, mode: 'panel' })
       setSelectedClips((current) => (current.includes(index) ? current : [index]))
     },
     [key],
   )
-  const listeningOpen = listening?.key === key && listening.open
+  const listeningOpen = listening?.key === key && listening.mode === 'panel'
+  const listeningActive = listening?.key === key && listening.mode !== 'closed'
   const clipIndex = listening?.key === key ? listening.index : 0
-  const target = listeningOpen ? clips[clipIndex]?.target : undefined
-  const selectClip = (index: number) => {
-    if (!listeningOpen) setListeningCollapsed(false)
+  const target = listeningActive ? clips[clipIndex]?.target : undefined
+  const selectClip = (index: number, openPanel = false) => {
     if (loadingNarration) {
       stop()
       setLoadingNarration(false)
     } else {
       player.audioRef.current?.pause()
     }
-    showClip(index)
+    if (openPanel || listeningOpen) {
+      if (openPanel) setListeningCollapsed(false)
+      showClip(index)
+    } else {
+      setListening({ key, index, mode: 'inline' })
+      setSelectedClips([index])
+    }
   }
-  const closeListening = () => setListening({ key, index: clipIndex, open: false })
+  const closeListening = () => setListening({ key, index: clipIndex, mode: 'closed' })
   const clipButton = (cue: string) => {
     const index = clips.findIndex((clip) => clip.target === cue)
     if (index < 0) return null
+    const loading = listeningActive && !listeningPaused && clipIndex === index && loadingClipIndex === index
     return (
       <IconButton
         type="button"
-        aria-label={`听记第 ${index + 1} 段`}
-        title="听记练习"
-        onClick={() => selectClip(index)}
+        aria-label={loading ? `正在加载第 ${index + 1} 段音频` : `播放第 ${index + 1} 段音频`}
+        aria-busy={loading}
+        title="播放当前句"
+        onClick={() => {
+          setListeningPaused(false)
+          setClipReplayRequest((request) => request + 1)
+          selectClip(index)
+        }}
         variant="ghost"
         color={target === cue ? 'orange' : 'gray'}
+        m={cue === 'title' ? '0' : undefined}
         size="2"
       >
-        <svg
-          aria-hidden="true"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M3 16v-4a9 9 0 0 1 18 0v4" />
-          <rect x="3" y="12" width="4" height="8" rx="2" />
-          <rect x="17" y="12" width="4" height="8" rx="2" />
-        </svg>
+        {loading ? <Spinner aria-hidden size="1" /> : <LearningIcon name="listen" size={16} />}
       </IconButton>
     )
   }
   useEffect(() => {
+    if (!listeningOpen) return
     const drawer = document.getElementById('reading-listening-drawer')
     if (!target || !drawer) return
     const follow = () => {
@@ -149,7 +156,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       window.removeEventListener('resize', follow)
       observer.disconnect()
     }
-  }, [target, clipIndex])
+  }, [target, clipIndex, listeningOpen])
   const [stripSelected, setStripSelected] = useState<WordEntry | null>(null)
   /** Two reading modes per design 2C. Defaults to 专注模式 (distraction-free reading). */
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
@@ -291,6 +298,44 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
     )
   }
 
+  const renderLessonAudioButton = (slot: 'words' | 'recitation', label: string, size: '2' | '3') => {
+    if (!slots.includes(key + '#' + slot)) return null
+    const url = lessonAudioUrl(key, slot)
+    const active = player.current?.url === url && player.isPlaying
+    const playing = active && !player.isPaused
+    const actionLabel = (playing ? '暂停' : '播放') + label
+    return (
+      <Button
+        type="button"
+        aria-label={actionLabel}
+        aria-pressed={playing}
+        onClick={async () => {
+          setListening(null)
+          setNarrationError('')
+          setLoadingNarration(false)
+          if (active) return player.togglePause()
+          try {
+            await player.playWhenReady({
+              url,
+              label: passage.title + ' · ' + label,
+              refLink: '/english/words/reading/' + key,
+              mediaType: 'audio',
+              source: null,
+            })
+          } catch {
+            setNarrationError('网盘音频暂时无法播放，请重试。')
+          }
+        }}
+        variant="outline"
+        color="orange"
+        size={size}
+      >
+        {slot === 'words' && <LearningIcon name={playing ? 'pause' : 'readAloud'} />}
+        {slot === 'words' ? '单词' : actionLabel}
+      </Button>
+    )
+  }
+
   return (
     <main
       className="font-nunito relative z-[1] mx-auto w-full max-w-[1280px] px-3 pt-6 pb-32 md:px-4"
@@ -302,7 +347,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       <div aria-hidden className="fixed inset-0 -z-10 bg-[var(--wm-bg)]" />
 
       {/* Page header */}
-      <div className="mb-5 rounded-2xl bg-amber-50 p-4 ring-1 ring-orange-200/60 sm:p-5">
+      <Theme appearance="light" hasBackground={false} className="mb-5 rounded-2xl bg-amber-50 p-4 ring-1 ring-orange-200/60 sm:p-5">
         {/* Row 1 — 导航条:返回 ⇆ 模式切换。永远单行,模式 toggle 用短文案 + nowrap */}
         <div className="mb-3 flex items-center justify-between gap-3">
           <Link
@@ -313,29 +358,28 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
             <span className="text-[14px] leading-none">←</span>
             <span>返回</span>
           </Link>
-          <div className="inline-flex shrink-0 rounded-full bg-white p-0.5 ring-1 ring-orange-200">
-            {(['learn', 'focus'] as const).map((m) => {
-              const active = readingMode === m
-              return (
-                <Button
-                  key={m}
-                  onClick={() => setReadingMode(m)}
-                  title={
-                    m === 'learn'
-                      ? '段落末出现遮词回想题，掌握度会更新'
-                      : '只显示词高亮，纯阅读不打断'
-                  }
-                  aria-label={m === 'learn' ? '学习模式' : '专注阅读模式'}
-                  variant={active ? 'solid' : 'ghost'}
-                  color={active ? 'orange' : 'gray'}
-                  size="1"
-                  className="whitespace-nowrap"
-                >
-                  {m === 'learn' ? '🧠 学习' : '📖 专注'}
-                </Button>
-              )
-            })}
-          </div>
+          <SegmentedControl.Root
+            aria-label="阅读模式"
+            size="2"
+            radius="full"
+            value={readingMode}
+            onValueChange={(mode) => {
+              if (mode === 'learn' || mode === 'focus') setReadingMode(mode)
+            }}
+          >
+            <SegmentedControl.Item value="learn" aria-label="学习模式" title="段落末出现遮词回想题，掌握度会更新">
+              <Flex as="span" align="center" justify="center" gap="1">
+                <LearningIcon name="learn" />
+                学习
+              </Flex>
+            </SegmentedControl.Item>
+            <SegmentedControl.Item value="focus" aria-label="专注阅读模式" title="只显示词高亮，纯阅读不打断">
+              <Flex as="span" align="center" justify="center" gap="1">
+                <LearningIcon name="focus" />
+                专注
+              </Flex>
+            </SegmentedControl.Item>
+          </SegmentedControl.Root>
         </div>
 
         {/* Row 2 — 信息+工具:Lesson 标识 + 前测/难点词芯片,允许自然换行 */}
@@ -387,9 +431,11 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
           >
             {passage.title}
           </span>
-          {clipButton('title')}
+          <span className="ml-2 inline-flex items-center align-middle empty:hidden">
+            {clipButton('title')}
+          </span>
         </h1>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-3 flex flex-col items-start gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-gray-600">
             {LEGEND.map((l) => (
               <div key={l.level} className="flex items-center gap-1.5">
@@ -398,15 +444,16 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
               </div>
             ))}
           </div>
-          <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto">
             {clips.length > 0 && (
               <Button
-                onClick={() => selectClip(clipIndex)}
+                onClick={() => selectClip(clipIndex, true)}
                 variant="outline"
                 color="orange"
-                size="3"
+                size="2"
               >
-                🎧 听记
+                <LearningIcon name="listen" />
+                听记
               </Button>
             )}
             <Button
@@ -415,144 +462,79 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
               title="打开适合打印的课文版"
               variant="outline"
               color="gray"
-              size="3"
+              size="2"
             >
-              <span aria-hidden className="text-sm">
-                🖨️
-              </span>
-              <span className="hidden whitespace-nowrap sm:inline">打印</span>
+              <LearningIcon name="print" />
+              打印
             </Button>
-            <Button
-              type="button"
-              onClick={() => setLessonFocus((current) => !current)}
-              aria-pressed={lessonFocus}
-              title={lessonFocus ? '关闭后显示厚海全部匹配词' : '开启后只显示本课词'}
-              variant={lessonFocus ? 'soft' : 'outline'}
-              color={lessonFocus ? 'orange' : 'gray'}
-              size="3"
-            >
-              <span
-                aria-hidden
-                className={`relative h-5 w-9 shrink-0 overflow-hidden rounded-full transition-colors ${
-                  lessonFocus ? 'bg-orange-500' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`shadow-sticker-sm absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                    lessonFocus ? 'translate-x-4' : 'translate-x-0'
-                  }`}
-                />
-              </span>
-              <span className="hidden whitespace-nowrap sm:inline">专注</span>
-            </Button>
-            <Button
-              type="button"
-              disabled={loadingNarration}
-              aria-busy={loadingNarration}
-              aria-label={
-                loadingNarration
-                  ? '正在加载朗读'
-                  : !audioUrl
-                    ? '暂无朗读音频'
-                    : narrationPlaying
-                      ? '暂停朗读'
-                      : '播放朗读'
-              }
-              aria-pressed={narrationPlaying}
-              title={
-                !audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'
-              }
-              onClick={async () => {
-                setListening(null)
-                setNarrationError('')
-                if (!audioUrl) {
-                  window.alert('未找到本课朗读音频')
-                  return
+            <div className="flex max-w-full flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                disabled={loadingNarration}
+                aria-busy={loadingNarration}
+                aria-label={
+                  loadingNarration
+                    ? '正在加载朗读'
+                    : !audioUrl
+                      ? '暂无朗读音频'
+                      : narrationPlaying
+                        ? '暂停朗读'
+                        : '播放朗读'
                 }
-                if (narrationActive && player.isPlaying) {
-                  player.togglePause()
-                } else {
-                  setLoadingNarration(true)
-                  try {
-                    const started = await player.playWhenReady({
-                      url: audioUrl,
-                      label: passage.title,
-                      refLink: `/english/words/reading/${key}`,
-                      mediaType: 'audio',
-                      source: null,
-                    })
-                    if (started) setLoadingNarration(false)
-                  } catch {
-                    const networkError =
-                      player.audioRef.current?.error?.code === 2 || !navigator.onLine
-                    stop()
-                    setLoadingNarration(false)
-                    setNarrationError(
-                      networkError ? '网络连接失败，请重试。' : '音频暂时无法播放，请重试。',
-                    )
+                aria-pressed={narrationPlaying}
+                title={
+                  !audioUrl ? '暂无朗读音频' : narrationPlaying ? '暂停朗读' : '使用底部播放器朗读'
+                }
+                onClick={async () => {
+                  setListening(null)
+                  setNarrationError('')
+                  if (!audioUrl) {
+                    window.alert('未找到本课朗读音频')
+                    return
                   }
-                }
-              }}
-              variant={narrationPlaying ? 'solid' : 'outline'}
-              color="orange"
-              size="3"
-              className="w-11 shrink-0"
-            >
-              {loadingNarration ? (
-                <span
-                  aria-hidden
-                  className="size-5 animate-spin rounded-full border-2 border-orange-200 border-t-orange-700 motion-reduce:animate-none"
-                />
-              ) : (
-                <span aria-hidden>{narrationPlaying ? '⏸' : '🔊'}</span>
-              )}
-            </Button>
+                  if (narrationActive && player.isPlaying) {
+                    player.togglePause()
+                  } else {
+                    setLoadingNarration(true)
+                    try {
+                      const started = await player.playWhenReady({
+                        url: audioUrl,
+                        label: passage.title,
+                        refLink: `/english/words/reading/${key}`,
+                        mediaType: 'audio',
+                        source: null,
+                      })
+                      if (started) setLoadingNarration(false)
+                    } catch {
+                      const networkError =
+                        player.audioRef.current?.error?.code === 2 || !navigator.onLine
+                      stop()
+                      setLoadingNarration(false)
+                      setNarrationError(
+                        networkError ? '网络连接失败，请重试。' : '音频暂时无法播放，请重试。',
+                      )
+                    }
+                  }
+                }}
+                variant={narrationPlaying ? 'solid' : 'outline'}
+                color="orange"
+                size="2"
+                loading={loadingNarration}
+              >
+                <LearningIcon name={narrationPlaying ? 'pause' : 'readAloud'} />
+                {narrationPlaying ? '暂停朗读' : '朗读'}
+              </Button>
+              {renderLessonAudioButton('words', '全部单词音频', '2')}
+            </div>
+            <label className="ml-auto inline-flex items-center gap-2 whitespace-nowrap text-sm font-bold text-gray-700">
+              <Switch checked={lessonFocus} onCheckedChange={setLessonFocus} color="orange" />
+              只看本课词
+            </label>
           </div>
         </div>
-      </div>
+      </Theme>
 
-      <div className="flex flex-wrap gap-2">
-        {(
-          [
-            ['words', '全部单词音频'],
-            ['recitation', '背诵音频'],
-          ] as const
-        ).map(([slot, label]) => {
-          if (!slots.includes(key + '#' + slot)) return null
-          const url = lessonAudioUrl(key, slot)
-          const active = player.current?.url === url && player.isPlaying
-          return (
-            <Button
-              key={slot}
-              type="button"
-              aria-pressed={active && !player.isPaused}
-              onClick={async () => {
-                setListening(null)
-                setNarrationError('')
-                setLoadingNarration(false)
-                if (active) return player.togglePause()
-                try {
-                  await player.playWhenReady({
-                    url,
-                    label: passage.title + ' · ' + label,
-                    refLink: '/english/words/reading/' + key,
-                    mediaType: 'audio',
-                    source: null,
-                  })
-                } catch {
-                  setNarrationError('网盘音频暂时无法播放，请重试。')
-                }
-              }}
-              variant="outline"
-              color="orange"
-              size="3"
-            >
-              {active && !player.isPaused ? '暂停' : '播放'}
-              {label}
-            </Button>
-          )
-        })}
-      </div>
+      {renderLessonAudioButton('recitation', '背诵音频', '3')}
       {(playbackError || narrationError || (/^(4a|5a)-/.test(key) && baiduError)) && (
         <p role="alert" className="my-3 text-sm text-red-700">
           {playbackError || narrationError || baiduError}
@@ -579,14 +561,14 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       />
 
       {/* Passage body */}
-      <div className="ring-kid-line rounded-2xl bg-white p-5 ring-1 sm:p-7">
+      <Theme appearance="light" hasBackground={false} className="ring-kid-line rounded-2xl bg-white p-5 ring-1 sm:p-7">
         <PassageView
           passage={passage}
           lessonWords={visibleWords}
           masteryMap={masteryMap}
           focusWord={focusWord}
           listeningTarget={target}
-          listeningCollapsed={listeningCollapsed}
+          listeningCollapsed={!listeningOpen || listeningCollapsed}
           renderClipButton={clips.length ? clipButton : undefined}
           narrationRef={
             narrationActive && !listeningOpen && (listening?.key !== key || narrationPlaying)
@@ -598,7 +580,7 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
           mode={readingMode}
           renderParagraphFooter={readingMode === 'learn' ? renderQuizFooter : undefined}
         />
-      </div>
+      </Theme>
 
       {/* 补考区:列出本课还没被段落回想题考过的词,可选完成 */}
       {readingMode === 'learn' && lessonWords.length > 0 && (
@@ -611,13 +593,15 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
       )}
 
       {passage.learningSections && passage.learningSections.length > 0 && (
-        <ReadingLearningSections
-          key={readingMode}
-          sections={passage.learningSections}
-          vocab={fullVocab}
-          defaultOpen={readingMode === 'learn'}
-          onWordClick={setStripSelected}
-        />
+        <DarkScope appearance="light">
+          <ReadingLearningSections
+            key={readingMode}
+            sections={passage.learningSections}
+            vocab={fullVocab}
+            defaultOpen={readingMode === 'learn'}
+            onWordClick={setStripSelected}
+          />
+        </DarkScope>
       )}
 
       <WordPopup
@@ -628,23 +612,28 @@ function ReadingPassageDetail({ passageKey: key }: { passageKey: string }) {
         onEntryChange={setStripSelected}
         onClose={() => setStripSelected(null)}
       />
-      <div hidden={listeningOpen}>
+      <div hidden={listeningOpen || (listeningActive && !listeningPaused)}>
         <PlayerDock player={player} theme="light" showProgress />
       </div>
-      {listeningOpen && clips[clipIndex] && (
-        <ListeningDrawer
-          passageKey={key}
-          clips={clips}
-          index={clipIndex}
-          select={showClip}
-          close={closeListening}
-          collapsed={listeningCollapsed}
-          setCollapsed={setListeningCollapsed}
-          paused={listeningPaused}
-          setPaused={setListeningPaused}
-          selected={selectedClips}
-          setSelected={setSelectedClips}
-        />
+      {listeningActive && clips[clipIndex] && (
+        <DarkScope appearance="light">
+          <ListeningDrawer
+            panelOpen={listeningOpen}
+            passageKey={key}
+            clips={clips}
+            index={clipIndex}
+            replayRequest={clipReplayRequest}
+            onLoadingClipChange={setLoadingClipIndex}
+            select={showClip}
+            close={closeListening}
+            collapsed={listeningCollapsed}
+            setCollapsed={setListeningCollapsed}
+            paused={listeningPaused}
+            setPaused={setListeningPaused}
+            selected={selectedClips}
+            setSelected={setSelectedClips}
+          />
+        </DarkScope>
       )}
     </main>
   )
