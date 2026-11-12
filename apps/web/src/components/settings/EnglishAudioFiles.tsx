@@ -32,8 +32,9 @@ export function useEnglishFileInventory(userId: string, generation: string, main
     if (!id || !path) return
     const controller = new AbortController()
     const files: LessonInventoryFile[] = []
-    async function scan(rootId: string, rootPath: string) {
-      const directories = [rootPath]
+    const rootId = id
+    const directories = [path]
+    async function scan() {
       const visited = new Set(directories)
       for (const directory of directories) {
         let offset: number | null = 0
@@ -57,7 +58,7 @@ export function useEnglishFileInventory(userId: string, generation: string, main
         } while (offset !== null)
       }
     }
-    void scan(id, path).then(() => {
+    void scan().then(() => {
       if (!controller.signal.aborted) setResult({ key, files, ready: true, error: '' })
     }).catch((reason: unknown) => {
       if (!controller.signal.aborted) setResult({ key, files, ready: false, error: reason instanceof Error ? reason.message : '文件列表读取失败。' })

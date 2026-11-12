@@ -156,20 +156,24 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
   }
 
   function retractRing(id: string, from: number): void {
-    window.clearInterval(retractRef.current)
+    cancelAnimationFrame(retractRef.current)
     if (from <= 0 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setHoldRing((ring) => (ring?.id === id ? null : ring))
       return
     }
-    const started = performance.now()
-    retractRef.current = window.setInterval(() => {
+    let started: number | undefined
+    function tick(time: number) {
       if (holdRef.current) return
-      const progress = from * (1 - Math.min(1, (performance.now() - started) / RETRACT_MS))
+      started ??= time
+      const progress = from * (1 - Math.min(1, (time - started) / RETRACT_MS))
       if (progress <= 0.02) {
-        window.clearInterval(retractRef.current)
         setHoldRing((ring) => (ring?.id === id ? null : ring))
-      } else setHoldRing({ id, progress })
-    }, 32)
+        return
+      }
+      setHoldRing({ id, progress })
+      retractRef.current = requestAnimationFrame(tick)
+    }
+    retractRef.current = requestAnimationFrame(tick)
   }
 
   function leaveHold(): void {
@@ -183,7 +187,9 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
     if (armed) retractRing(id, progress)
     else setHoldRing((ring) => (ring?.id === id ? null : ring))
   }
-  leaveRef.current = leaveHold
+  useEffect(() => {
+    leaveRef.current = leaveHold
+  })
 
   useEffect(() => {
     if (holdLocked) leaveRef.current()
@@ -196,7 +202,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
         window.clearInterval(gesture.timer)
         gesture.stopWindow()
       }
-      window.clearInterval(retractRef.current)
+      cancelAnimationFrame(retractRef.current)
       holdRef.current = null
     },
     [],
@@ -211,7 +217,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
     } catch {
       // 合成事件或指针已结束时没有捕获，元素上的松开仍然有效。
     }
-    window.clearInterval(retractRef.current)
+    cancelAnimationFrame(retractRef.current)
     settledPointer.current = null
     const gesture: HoldGesture = {
       id,
@@ -291,12 +297,12 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
     }
   }
 
-  function endHold(event: { clientX: number; clientY: number; pointerId: number }): void {
+  function endHold(event: PointerEvent | ReactPointerEvent<HTMLDivElement>): void {
     const gesture = holdRef.current
     if (!gesture || event.pointerId !== gesture.pointerId) return
     const inside = pointInside(gesture.el, event.clientX, event.clientY)
     const armed = gesture.armed
-    const progress = armed ? Math.min(1, (performance.now() - gesture.armedAt) / FILL_MS) : 0
+    const progress = armed ? Math.max(0, Math.min(1, (event.timeStamp - gesture.armedAt) / FILL_MS)) : 0
     const filled = progress >= 1
     const tap = !armed && gesture.dist <= TAP_SLOP && inside
     const id = gesture.id
