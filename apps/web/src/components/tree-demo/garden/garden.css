@@ -570,7 +570,7 @@
   padding: 8px;
   animation: tg-wobble 3.6s ease-in-out infinite;
 }
-/* 进行中：外圈是预计时间进度 */
+/* 圆弧显示已用时间占比，光点沿轨道绕行表示仍在计时。 */
 .tg-bubble-timer {
   position: absolute;
   left: 50%;
@@ -581,6 +581,11 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
   overflow: visible;
+}
+.tg-bubble-bead {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: tg-spin 3.2s linear infinite;
 }
 .tg-bubble-track,
 .tg-bubble-arc {
@@ -719,6 +724,7 @@
   .tg-bubble,
   .tg-bubble::after,
   .tg-bubble-in,
+  .tg-bubble-bead,
   .tg-born,
   .tg-gem-glow {
     animation: none !important;

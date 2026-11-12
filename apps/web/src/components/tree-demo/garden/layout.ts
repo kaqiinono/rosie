@@ -90,6 +90,7 @@ export interface Region {
   overflow: number
   load: number
   capacity: number
+  plannedMinutes?: { completed: number; total: number }
   /** 物件缩放：小叶区里的东西更小 */
   scale: number
 }

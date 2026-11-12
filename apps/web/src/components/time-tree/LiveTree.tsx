@@ -78,6 +78,41 @@ function ParkedTasks({ steps, onSelect }: { steps: WorkStep[]; onSelect: (id: st
 }
 
 export default function LiveTree() {
+  useEffect(() => {
+    if (!navigator.wakeLock) return
+    let lock: WakeLockSentinel | undefined
+    let generation = 0
+
+    function release() {
+      generation++
+      if (lock && !lock.released) void lock.release().catch(() => {})
+      lock = undefined
+    }
+
+    async function syncVisibility() {
+      if (document.visibilityState !== 'visible') {
+        release()
+        return
+      }
+      if (lock && !lock.released) return
+      const request = ++generation
+      try {
+        const acquired = await navigator.wakeLock.request('screen')
+        if (request === generation) lock = acquired
+        else await acquired.release()
+      } catch {
+        // 设备省电策略可能拒绝常亮，回到前台时再申请。
+      }
+    }
+
+    void syncVisibility()
+    document.addEventListener('visibilitychange', syncVisibility)
+    return () => {
+      document.removeEventListener('visibilitychange', syncVisibility)
+      release()
+    }
+  }, [])
+
   const api = useTimeTree()
   const { tree, busy, run } = api
   const [stepId, setStep] = useState<string | null>(null)
@@ -101,7 +136,24 @@ export default function LiveTree() {
   const rail = useRef<HTMLElement>(null)
   const scene = useRef<HTMLDivElement>(null)
   const state = useMemo(() => (tree ? sceneState(tree) : null), [tree])
-  const regions = useMemo(() => (state ? buildRegions(state) : []), [state])
+  const regions = useMemo(() => {
+    if (!state || !tree) return []
+    const byDay = new Map<string, { completed: number; total: number }>()
+    for (const step of tree.steps) {
+      if (!step.planned || step.skipped) continue
+      const minutes = byDay.get(step.planned) ?? { completed: 0, total: 0 }
+      minutes.total += step.minutes
+      if (step.end) minutes.completed += step.minutes
+      byDay.set(step.planned, minutes)
+    }
+    return buildRegions(state).map((region) => {
+      if (region.dateKey) {
+        return { ...region, plannedMinutes: byDay.get(region.dateKey) ?? { completed: 0, total: 0 } }
+      }
+      const total = region.mergedKeys.reduce((sum, day) => sum + (byDay.get(day)?.total ?? 0), 0)
+      return { ...region, plannedMinutes: { completed: 0, total } }
+    })
+  }, [state, tree])
   useEffect(() => {
     gardenAudio.setSound(sound)
   }, [sound])

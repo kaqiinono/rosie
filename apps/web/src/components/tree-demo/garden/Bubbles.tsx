@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { Badge } from '@rosie/ui/themes'
 import { SUBJECTS, flowersOfBud, type Bud } from './model'
 
 /** 泡泡底色按科目区分（语文红 / 数学黄 / 英语蓝 / 生活绿）；状态由文案和边框表达，见 garden.css */
@@ -11,6 +12,14 @@ export const bubbleStates = {
   done: { label: '✓ 已完成 · 点我开花' },
 }
 export type BubbleState = keyof typeof bubbleStates
+
+function countdownDisplay(elapsedMs: number, minutes: number) {
+  const remaining = Math.ceil((minutes * 60000 - elapsedMs) / 1000)
+  const seconds = Math.abs(remaining)
+  const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
+  const ss = String(seconds % 60).padStart(2, '0')
+  return { caption: remaining < 0 ? '超时' : '剩余', time: `${mm}:${ss}`, overtime: remaining < 0 }
+}
 
 const SUBJECT_TINT = {
   chinese: '#ff9d9d',
@@ -104,6 +113,7 @@ function RunningTimer({
           transform="rotate(-90 50 50)"
         />
       )}
+      <circle className="tg-bubble-bead" cx="50" cy="2" r="3.5" fill="#fffdf6" stroke={arc} strokeWidth="1.5" />
     </svg>
   )
 }
@@ -340,10 +350,13 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
         const meta = SUBJECTS[bud.subject]
         const slot = slots[bud.id] ?? 0
         const status = states?.[bud.id]
-        const label = status ? bubbleStates[status].label + (status === 'running' && bud.overdue ? ' · 补做' : '') : ''
         const start = status === 'running' ? startedAt?.[bud.id] : undefined
         const startedMs = start ? Date.parse(start) : NaN
-        const elapsedMin = Number.isFinite(startedMs) ? Math.max(0, Math.floor((now - startedMs) / 60000)) : null
+        const countdown = Number.isFinite(startedMs) && bud.minutes > 0
+          ? countdownDisplay(Math.max(0, now - startedMs), bud.minutes)
+          : null
+        const stateLabel = countdown ? `${countdown.caption} ${countdown.time}` : status ? bubbleStates[status].label : ''
+        const label = status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
         const holdable = status === 'running' && !!onHoldFinish
         const hint = holdable ? '，按住开花，点一下查看' : ''
         const style: BubbleStyle = {
@@ -362,7 +375,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
               data-bubble-id={bud.id}
               data-holding={holdingId === bud.id ? 'true' : undefined}
               aria-label={`${meta.label}：${bud.name}，${n} 朵花 ${label}${
-                elapsedMin !== null ? `，已进行 ${elapsedMin} 分钟，预计 ${bud.minutes} 分钟` : ''
+                Number.isFinite(startedMs) ? `，预计 ${bud.minutes} 分钟` : ''
               }${hint}`}
               className="tg-bubble"
               style={style}
@@ -386,9 +399,24 @@ export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onH
               <span className="tg-bubble-in">
                 <span className="block text-[calc(var(--tg-size)*0.26)] leading-none">{meta.emoji}</span>
                 <span className="mt-0.5 line-clamp-2 block text-[calc(var(--tg-size)*0.13)] font-extrabold leading-tight text-[#4a3728]">
-                  {bud.name}
+                  {countdown && bud.overdue ? '补做 · ' : ''}{bud.name}
                 </span>
-                <span className="block text-[calc(var(--tg-size)*0.1)] leading-none tracking-wider">{label || '🌸'.repeat(n)}</span>
+                {countdown ? (
+                  <Badge
+                    size={{ initial: '1', sm: '2' }}
+                    variant="solid"
+                    radius="full"
+                    color={countdown.overtime ? 'orange' : 'amber'}
+                    mt="1"
+                  >
+                    <span className="whitespace-nowrap">
+                      {countdown.caption}{' '}
+                      <strong className="tabular-nums">{countdown.time}</strong>
+                    </span>
+                  </Badge>
+                ) : (
+                  <span className="block text-[calc(var(--tg-size)*0.1)] leading-none tracking-wider">{label || '🌸'.repeat(n)}</span>
+                )}
               </span>
             </div>
           </div>

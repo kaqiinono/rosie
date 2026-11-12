@@ -219,12 +219,14 @@ function RegionLabel({ region }: { region: Region }) {
   const { cx, cy, ry } = region.geom
   const today = region.tone === 'today'
   const lines: string[] = [`${region.label} ${region.sub}`]
-  if (region.tone !== 'history') lines.push(`已排 ${region.load}/${region.capacity}`)
-  const size = today ? 14 : 12
+  const minutes = region.plannedMinutes
+  if (minutes) lines.push(today ? `完成 ${minutes.completed} / ${minutes.total}分钟` : `共 ${minutes.total}分钟`)
+  else if (region.tone !== 'history') lines.push(`已排 ${region.load}/${region.capacity}`)
+  const size = (today ? 14 : 12) - (minutes ? 2 : 0)
   const w = Math.max(...lines.map((l) => textWidth(l, size))) + 18
   const h = lines.length * (size + 4) + 8
   const y = cy + ry * (today ? 1.0 : 0.98)
-  const full = region.tone !== 'history' && region.load >= region.capacity
+  const full = !minutes && region.tone !== 'history' && region.load >= region.capacity
   return (
     <g pointerEvents="none">
       <rect
