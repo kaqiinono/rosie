@@ -1,0 +1,33 @@
+[
+  {
+    "id": "08:0019",
+    "word": "block (notice)",
+    "page": 2,
+    "flags": [
+      "source_label_semantics_conflict"
+    ],
+    "normalizationStatus": "pending",
+    "notes": "原文把 block 与 notice、街区与公告混在一起，疑似 (notice) board 列错位；仅凭相邻行不能可靠还原。保留原文待核，不自动改成 noticeboard。"
+  },
+  {
+    "id": "08:0088",
+    "word": "light (clothes)",
+    "page": 4,
+    "flags": [
+      "source_label_semantics_conflict"
+    ],
+    "normalizationStatus": "pending",
+    "notes": "原文 light (clothes) 配轻的(衣物)，但家庭主题后接 line，疑似 (clothes) line 列错位；不能确认是轻便衣物还是晾衣绳。保留待核，不猜测分配。"
+  },
+  {
+    "id": "08:1297",
+    "word": "guest guide",
+    "page": 55,
+    "flags": [
+      "source_headword_gloss_conflict"
+    ],
+    "normalizationStatus": "pending",
+    "candidateKey": "guest guide",
+    "notes": "guest guide 仅见于 08:1297，中文为导游但词头不等于常规 tour guide；既有质量审核要求不能无证据替换。需原页或其他独立来源明确该组合的含义，暂不编造职业释义。"
+  }
+]

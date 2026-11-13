@@ -1,0 +1,1154 @@
+[
+  {
+    "page": 1,
+    "word_raw": "arise",
+    "word": "arise",
+    "definition": "出现;产生",
+    "past": "arose",
+    "past_participle": "arisen",
+    "id": "09:0001",
+    "candidateKeys": [
+      "arise"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "awake",
+    "word": "awake",
+    "definition": "醒来",
+    "past": "awoke / awaked",
+    "past_participle": "awoken / awaked",
+    "id": "09:0002",
+    "candidateKeys": [
+      "awake"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "babysit",
+    "word": "babysit",
+    "definition": "临时照看(孩子)",
+    "past": "babysat",
+    "past_participle": "babysat",
+    "id": "09:0003",
+    "candidateKeys": [
+      "babysit"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "be (am / is / are)",
+    "word": "be",
+    "definition": "是;存在",
+    "past": "was / were",
+    "past_participle": "been",
+    "id": "09:0004",
+    "candidateKeys": [
+      "be"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "beat",
+    "word": "beat",
+    "definition": "击打;打败",
+    "past": "beat",
+    "past_participle": "beaten",
+    "id": "09:0005",
+    "candidateKeys": [
+      "beat"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "become",
+    "word": "become",
+    "definition": "变成;成为",
+    "past": "became",
+    "past_participle": "become",
+    "id": "09:0006",
+    "candidateKeys": [
+      "become"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "begin",
+    "word": "begin",
+    "definition": "开始",
+    "past": "began",
+    "past_participle": "begun",
+    "id": "09:0007",
+    "candidateKeys": [
+      "begin"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "bend",
+    "word": "bend",
+    "definition": "(使)弯曲",
+    "past": "bent",
+    "past_participle": "bent",
+    "id": "09:0008",
+    "candidateKeys": [
+      "bend"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "bet",
+    "word": "bet",
+    "definition": "打赌",
+    "past": "bet",
+    "past_participle": "bet",
+    "id": "09:0009",
+    "candidateKeys": [
+      "bet"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "bite",
+    "word": "bite",
+    "definition": "咬",
+    "past": "bit",
+    "past_participle": "bitten",
+    "id": "09:0010",
+    "candidateKeys": [
+      "bite"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "blow",
+    "word": "blow",
+    "definition": "吹;刮",
+    "past": "blew",
+    "past_participle": "blown",
+    "id": "09:0011",
+    "candidateKeys": [
+      "blow"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "break",
+    "word": "break",
+    "definition": "打破;弄坏",
+    "past": "broke",
+    "past_participle": "broken",
+    "id": "09:0012",
+    "candidateKeys": [
+      "break"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "bring",
+    "word": "bring",
+    "definition": "带来;拿来",
+    "past": "brought",
+    "past_participle": "brought",
+    "id": "09:0013",
+    "candidateKeys": [
+      "bring"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "build",
+    "word": "build",
+    "definition": "建造",
+    "past": "built",
+    "past_participle": "built",
+    "id": "09:0014",
+    "candidateKeys": [
+      "build"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "burn",
+    "word": "burn",
+    "definition": "燃烧;烧伤",
+    "past": "burnt / burned",
+    "past_participle": "burnt / burned",
+    "id": "09:0015",
+    "candidateKeys": [
+      "burn"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "buy",
+    "word": "buy",
+    "definition": "买",
+    "past": "bought",
+    "past_participle": "bought",
+    "id": "09:0016",
+    "candidateKeys": [
+      "buy"
+    ]
+  },
+  {
+    "page": 1,
+    "word_raw": "can",
+    "word": "can",
+    "definition": "能;会",
+    "past": "could",
+    "past_participle": "—",
+    "id": "09:0017",
+    "candidateKeys": [
+      "can"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "cast",
+    "word": "cast",
+    "definition": "投;抛",
+    "past": "cast",
+    "past_participle": "cast",
+    "id": "09:0018",
+    "candidateKeys": [
+      "cast"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "catch",
+    "word": "catch",
+    "definition": "接住;抓住",
+    "past": "caught",
+    "past_participle": "caught",
+    "id": "09:0019",
+    "candidateKeys": [
+      "catch"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "choose",
+    "word": "choose",
+    "definition": "选择",
+    "past": "chose",
+    "past_participle": "chosen",
+    "id": "09:0020",
+    "candidateKeys": [
+      "choose"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "come",
+    "word": "come",
+    "definition": "来",
+    "past": "came",
+    "past_participle": "come",
+    "id": "09:0021",
+    "candidateKeys": [
+      "come"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "cost",
+    "word": "cost",
+    "definition": "花费;价值为",
+    "past": "cost",
+    "past_participle": "cost",
+    "id": "09:0022",
+    "candidateKeys": [
+      "cost"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "cut",
+    "word": "cut",
+    "definition": "切;割",
+    "past": "cut",
+    "past_participle": "cut",
+    "id": "09:0023",
+    "candidateKeys": [
+      "cut"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "deal",
+    "word": "deal",
+    "definition": "处理;分配",
+    "past": "dealt",
+    "past_participle": "dealt",
+    "id": "09:0024",
+    "candidateKeys": [
+      "deal"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "dig",
+    "word": "dig",
+    "definition": "挖",
+    "past": "dug",
+    "past_participle": "dug",
+    "id": "09:0025",
+    "candidateKeys": [
+      "dig"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "do (does)",
+    "word": "do",
+    "definition": "做",
+    "past": "did",
+    "past_participle": "done",
+    "id": "09:0026",
+    "candidateKeys": [
+      "do"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "draw",
+    "word": "draw",
+    "definition": "画;拉",
+    "past": "drew",
+    "past_participle": "drawn",
+    "id": "09:0027",
+    "candidateKeys": [
+      "draw"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "dream",
+    "word": "dream",
+    "definition": "做梦;梦想",
+    "past": "dreamt / dreamed",
+    "past_participle": "dreamt / dreamed",
+    "id": "09:0028",
+    "candidateKeys": [
+      "dream"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "drink",
+    "word": "drink",
+    "definition": "喝",
+    "past": "drank",
+    "past_participle": "drunk",
+    "id": "09:0029",
+    "candidateKeys": [
+      "drink"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "drive",
+    "word": "drive",
+    "definition": "驾驶",
+    "past": "drove",
+    "past_participle": "driven",
+    "id": "09:0030",
+    "candidateKeys": [
+      "drive"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "eat",
+    "word": "eat",
+    "definition": "吃",
+    "past": "ate",
+    "past_participle": "eaten",
+    "id": "09:0031",
+    "candidateKeys": [
+      "eat"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "fall",
+    "word": "fall",
+    "definition": "落下;跌倒",
+    "past": "fell",
+    "past_participle": "fallen",
+    "id": "09:0032",
+    "candidateKeys": [
+      "fall"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "feed",
+    "word": "feed",
+    "definition": "喂养",
+    "past": "fed",
+    "past_participle": "fed",
+    "id": "09:0033",
+    "candidateKeys": [
+      "feed"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "feel",
+    "word": "feel",
+    "definition": "感觉;摸起来",
+    "past": "felt",
+    "past_participle": "felt",
+    "id": "09:0034",
+    "candidateKeys": [
+      "feel"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "fight",
+    "word": "fight",
+    "definition": "打架;战斗",
+    "past": "fought",
+    "past_participle": "fought",
+    "id": "09:0035",
+    "candidateKeys": [
+      "fight"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "find",
+    "word": "find",
+    "definition": "找到;发现",
+    "past": "found",
+    "past_participle": "found",
+    "id": "09:0036",
+    "candidateKeys": [
+      "find"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "fly",
+    "word": "fly",
+    "definition": "⻜",
+    "past": "flew",
+    "past_participle": "flown",
+    "id": "09:0037",
+    "candidateKeys": [
+      "fly"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "forbid",
+    "word": "forbid",
+    "definition": "禁止",
+    "past": "forbade / forbad",
+    "past_participle": "forbidden",
+    "id": "09:0038",
+    "candidateKeys": [
+      "forbid"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "forget",
+    "word": "forget",
+    "definition": "忘记",
+    "past": "forgot",
+    "past_participle": "forgotten",
+    "id": "09:0039",
+    "candidateKeys": [
+      "forget"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "forgive",
+    "word": "forgive",
+    "definition": "原谅",
+    "past": "forgave",
+    "past_participle": "forgiven",
+    "id": "09:0040",
+    "candidateKeys": [
+      "forgive"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "freeze",
+    "word": "freeze",
+    "definition": "冻结;结冰",
+    "past": "froze",
+    "past_participle": "frozen",
+    "id": "09:0041",
+    "candidateKeys": [
+      "freeze"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "get",
+    "word": "get",
+    "definition": "得到;变得",
+    "past": "got",
+    "past_participle": "got / gotten(美)",
+    "id": "09:0042",
+    "candidateKeys": [
+      "get"
+    ]
+  },
+  {
+    "page": 2,
+    "word_raw": "give",
+    "word": "give",
+    "definition": "给",
+    "past": "gave",
+    "past_participle": "given",
+    "id": "09:0043",
+    "candidateKeys": [
+      "give"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "go",
+    "word": "go",
+    "definition": "去",
+    "past": "went",
+    "past_participle": "gone",
+    "id": "09:0044",
+    "candidateKeys": [
+      "go"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "grow",
+    "word": "grow",
+    "definition": "生⻓;成⻓",
+    "past": "grew",
+    "past_participle": "grown",
+    "id": "09:0045",
+    "candidateKeys": [
+      "grow"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "hang",
+    "word": "hang",
+    "definition": "悬挂;绞死",
+    "past": "hung(悬挂)/ hanged(绞死)",
+    "past_participle": "hung(悬挂)/ hanged(绞死)",
+    "id": "09:0046",
+    "candidateKeys": [
+      "hang"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "have (has)",
+    "word": "have",
+    "definition": "有",
+    "past": "had",
+    "past_participle": "had",
+    "id": "09:0047",
+    "candidateKeys": [
+      "have"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "hear",
+    "word": "hear",
+    "definition": "听⻅",
+    "past": "heard",
+    "past_participle": "heard",
+    "id": "09:0048",
+    "candidateKeys": [
+      "hear"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "hide",
+    "word": "hide",
+    "definition": "隐藏",
+    "past": "hid",
+    "past_participle": "hidden",
+    "id": "09:0049",
+    "candidateKeys": [
+      "hide"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "hit",
+    "word": "hit",
+    "definition": "击;打",
+    "past": "hit",
+    "past_participle": "hit",
+    "id": "09:0050",
+    "candidateKeys": [
+      "hit"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "hold",
+    "word": "hold",
+    "definition": "拿住;握住",
+    "past": "held",
+    "past_participle": "held",
+    "id": "09:0051",
+    "candidateKeys": [
+      "hold"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "hurt",
+    "word": "hurt",
+    "definition": "使受伤;感到疼痛",
+    "past": "hurt",
+    "past_participle": "hurt",
+    "id": "09:0052",
+    "candidateKeys": [
+      "hurt"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "keep",
+    "word": "keep",
+    "definition": "保持;保留",
+    "past": "kept",
+    "past_participle": "kept",
+    "id": "09:0053",
+    "candidateKeys": [
+      "keep"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "know",
+    "word": "know",
+    "definition": "知道;认识",
+    "past": "knew",
+    "past_participle": "known",
+    "id": "09:0054",
+    "candidateKeys": [
+      "know"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "lay",
+    "word": "lay",
+    "definition": "放置;下蛋",
+    "past": "laid",
+    "past_participle": "laid",
+    "id": "09:0055",
+    "candidateKeys": [
+      "lay"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "lead",
+    "word": "lead",
+    "definition": "带领;引导",
+    "past": "led",
+    "past_participle": "led",
+    "id": "09:0056",
+    "candidateKeys": [
+      "lead"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "learn",
+    "word": "learn",
+    "definition": "学习;得知",
+    "past": "learnt / learned",
+    "past_participle": "learnt / learned",
+    "id": "09:0057",
+    "candidateKeys": [
+      "learn"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "leave",
+    "word": "leave",
+    "definition": "离开;留下",
+    "past": "left",
+    "past_participle": "left",
+    "id": "09:0058",
+    "candidateKeys": [
+      "leave"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "lend",
+    "word": "lend",
+    "definition": "借给",
+    "past": "lent",
+    "past_participle": "lent",
+    "id": "09:0059",
+    "candidateKeys": [
+      "lend"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "let",
+    "word": "let",
+    "definition": "让;允许",
+    "past": "let",
+    "past_participle": "let",
+    "id": "09:0060",
+    "candidateKeys": [
+      "let"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "lie",
+    "word": "lie",
+    "definition": "躺;位于",
+    "past": "lay",
+    "past_participle": "lain",
+    "id": "09:0061",
+    "candidateKeys": [
+      "lie"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "light",
+    "word": "light",
+    "definition": "点燃;照亮",
+    "past": "lit / lighted",
+    "past_participle": "lit / lighted",
+    "id": "09:0062",
+    "candidateKeys": [
+      "light"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "lose",
+    "word": "lose",
+    "definition": "丢失;输掉",
+    "past": "lost",
+    "past_participle": "lost",
+    "id": "09:0063",
+    "candidateKeys": [
+      "lose"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "make",
+    "word": "make",
+    "definition": "制作;使得",
+    "past": "made",
+    "past_participle": "made",
+    "id": "09:0064",
+    "candidateKeys": [
+      "make"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "may",
+    "word": "may",
+    "definition": "可以;可能",
+    "past": "might",
+    "past_participle": "—",
+    "id": "09:0065",
+    "candidateKeys": [
+      "may"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "mean",
+    "word": "mean",
+    "definition": "意思是;意味着",
+    "past": "meant",
+    "past_participle": "meant",
+    "id": "09:0066",
+    "candidateKeys": [
+      "mean"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "meet",
+    "word": "meet",
+    "definition": "遇⻅;会面",
+    "past": "met",
+    "past_participle": "met",
+    "id": "09:0067",
+    "candidateKeys": [
+      "meet"
+    ]
+  },
+  {
+    "page": 3,
+    "word_raw": "mistake",
+    "word": "mistake",
+    "definition": "误以为;弄错",
+    "past": "mistook",
+    "past_participle": "mistaken",
+    "id": "09:0068",
+    "candidateKeys": [
+      "mistake"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "misunderstand",
+    "word": "misunderstand",
+    "definition": "误解",
+    "past": "misunderstood",
+    "past_participle": "misunderstood",
+    "id": "09:0069",
+    "candidateKeys": [
+      "misunderstand"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "pay",
+    "word": "pay",
+    "definition": "支付",
+    "past": "paid",
+    "past_participle": "paid",
+    "id": "09:0070",
+    "candidateKeys": [
+      "pay"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "prove",
+    "word": "prove",
+    "definition": "证明",
+    "past": "proved",
+    "past_participle": "proved / proven",
+    "id": "09:0071",
+    "candidateKeys": [
+      "prove"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "put",
+    "word": "put",
+    "definition": "放;安置",
+    "past": "put",
+    "past_participle": "put",
+    "id": "09:0072",
+    "candidateKeys": [
+      "put"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "quit",
+    "word": "quit",
+    "definition": "停止;退出",
+    "past": "quit / quitted",
+    "past_participle": "quit / quitted",
+    "id": "09:0073",
+    "candidateKeys": [
+      "quit"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "read",
+    "word": "read",
+    "definition": "阅读",
+    "past": "read",
+    "past_participle": "read",
+    "id": "09:0074",
+    "candidateKeys": [
+      "read"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "rebuild",
+    "word": "rebuild",
+    "definition": "重建",
+    "past": "rebuilt",
+    "past_participle": "rebuilt",
+    "id": "09:0075",
+    "candidateKeys": [
+      "rebuild"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "retell",
+    "word": "retell",
+    "definition": "复述",
+    "past": "retold",
+    "past_participle": "retold",
+    "id": "09:0076",
+    "candidateKeys": [
+      "retell"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "rid",
+    "word": "rid",
+    "definition": "使摆脱",
+    "past": "rid / ridded",
+    "past_participle": "rid / ridded",
+    "id": "09:0077",
+    "candidateKeys": [
+      "rid"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "ride",
+    "word": "ride",
+    "definition": "骑;乘坐",
+    "past": "rode",
+    "past_participle": "ridden",
+    "id": "09:0078",
+    "candidateKeys": [
+      "ride"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "rise",
+    "word": "rise",
+    "definition": "上升;起身",
+    "past": "rose",
+    "past_participle": "risen",
+    "id": "09:0079",
+    "candidateKeys": [
+      "rise"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "run",
+    "word": "run",
+    "definition": "跑;运行",
+    "past": "ran",
+    "past_participle": "run",
+    "id": "09:0080",
+    "candidateKeys": [
+      "run"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "saw",
+    "word": "saw",
+    "definition": "锯",
+    "past": "sawed",
+    "past_participle": "sawn / sawed",
+    "id": "09:0081",
+    "candidateKeys": [
+      "saw"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "say",
+    "word": "say",
+    "definition": "说",
+    "past": "said",
+    "past_participle": "said",
+    "id": "09:0082",
+    "candidateKeys": [
+      "say"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "see",
+    "word": "see",
+    "definition": "看⻅;明白",
+    "past": "saw",
+    "past_participle": "seen",
+    "id": "09:0083",
+    "candidateKeys": [
+      "see"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "seek",
+    "word": "seek",
+    "definition": "寻找",
+    "past": "sought",
+    "past_participle": "sought",
+    "id": "09:0084",
+    "candidateKeys": [
+      "seek"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "sell",
+    "word": "sell",
+    "definition": "卖",
+    "past": "sold",
+    "past_participle": "sold",
+    "id": "09:0085",
+    "candidateKeys": [
+      "sell"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "send",
+    "word": "send",
+    "definition": "发送;寄出",
+    "past": "sent",
+    "past_participle": "sent",
+    "id": "09:0086",
+    "candidateKeys": [
+      "send"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "set",
+    "word": "set",
+    "definition": "放置;设置",
+    "past": "set",
+    "past_participle": "set",
+    "id": "09:0087",
+    "candidateKeys": [
+      "set"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "sew",
+    "word": "sew",
+    "definition": "缝;缝制",
+    "past": "sewed",
+    "past_participle": "sewn / sewed",
+    "id": "09:0088",
+    "candidateKeys": [
+      "sew"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "shake",
+    "word": "shake",
+    "definition": "摇动;颤抖",
+    "past": "shook",
+    "past_participle": "shaken",
+    "id": "09:0089",
+    "candidateKeys": [
+      "shake"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "shall",
+    "word": "shall",
+    "definition": "将;应当",
+    "past": "should",
+    "past_participle": "—",
+    "id": "09:0090",
+    "candidateKeys": [
+      "shall"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "shine",
+    "word": "shine",
+    "definition": "发光;照耀",
+    "past": "shone",
+    "past_participle": "shone",
+    "id": "09:0091",
+    "candidateKeys": [
+      "shine"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "shine",
+    "word": "shine",
+    "definition": "擦亮",
+    "past": "shined",
+    "past_participle": "shined",
+    "id": "09:0092",
+    "candidateKeys": [
+      "shine"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "shoot",
+    "word": "shoot",
+    "definition": "射击;拍摄",
+    "past": "shot",
+    "past_participle": "shot",
+    "id": "09:0093",
+    "candidateKeys": [
+      "shoot"
+    ]
+  },
+  {
+    "page": 4,
+    "word_raw": "show",
+    "word": "show",
+    "definition": "展示;显露",
+    "past": "showed",
+    "past_participle": "shown / showed",
+    "id": "09:0094",
+    "candidateKeys": [
+      "show"
+    ]
+  },
+  {
+    "page": 5,
+    "word_raw": "sing",
+    "word": "sing",
+    "definition": "唱歌",
+    "past": "sang",
+    "past_participle": "sung",
+    "id": "09:0095",
+    "candidateKeys": [
+      "sing"
+    ]
+  },
+  {
+    "page": 5,
+    "word_raw": "sink",
+    "word": "sink",
+    "definition": "下沉",
+    "past": "sank / sunk",
+    "past_participle": "sunk / sunken",
+    "id": "09:0096",
+    "candidateKeys": [
+      "sink"
+    ]
+  }
+]

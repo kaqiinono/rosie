@@ -1,0 +1,839 @@
+{
+  "entries": [
+    {
+      "key": "spend",
+      "previousRevision": "3",
+      "revision": "4",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "catch",
+      "previousRevision": "3",
+      "revision": "4",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "feed",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "keep",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "have",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "thirdPerson"
+      ]
+    },
+    {
+      "key": "go",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "thirdPerson"
+      ]
+    },
+    {
+      "key": "see",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "take",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "write",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "degree",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "view",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "ring",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "tie",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "wear",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "light",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "mouse",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "learn",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "series",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "eat",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "feel",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "hear",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "hurt",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "tooth",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "material",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "buy",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "customer",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "penny",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "throw",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "grow",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "holiday",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "businesswoman",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "chip",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "schoolchild",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "sock",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "spell",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "ingredient",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "handkerchief",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "hero",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "chest of drawers",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "mean",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "say",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "speak",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "sell",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "facility",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "hit",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "freeze",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "blow",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "flavour",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "vegetarian",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "attraction",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "policeman",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "postman",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "salesman",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "benefit",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "bet",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "control",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "dig",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "doubt",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "dozen",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "dream",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "drop",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "effect",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "explanation",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "figure",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "firework",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "habit",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "herb",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "fight",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "forget",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "get",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "hide",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "lead",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "life",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "toe",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "meet",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "mistake",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "permit",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "prefer",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "put",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "rid",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "rise",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "send",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "sew",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "shake",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "shave",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "shine",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "slip",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple",
+        "presentParticiple"
+      ]
+    },
+    {
+      "key": "spill",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "spoil",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "tear",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "past",
+        "pastParticiple"
+      ]
+    },
+    {
+      "key": "wave",
+      "previousRevision": "2",
+      "revision": "3",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "advisor",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "award",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "organiser",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    },
+    {
+      "key": "tablecloth",
+      "previousRevision": "1",
+      "revision": "2",
+      "disabledCategories": [
+        "plural"
+      ]
+    }
+  ]
+}

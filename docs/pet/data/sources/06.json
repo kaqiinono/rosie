@@ -1,0 +1,4523 @@
+[
+  {
+    "word": "achieve",
+    "group": 1,
+    "page": 1,
+    "id": "06:0001",
+    "candidateKeys": [
+      "achieve"
+    ]
+  },
+  {
+    "word": "accessible",
+    "group": 1,
+    "page": 1,
+    "id": "06:0002",
+    "candidateKeys": [
+      "accessible"
+    ]
+  },
+  {
+    "word": "act",
+    "group": 1,
+    "page": 1,
+    "id": "06:0003",
+    "candidateKeys": [
+      "act"
+    ]
+  },
+  {
+    "word": "accommodation",
+    "group": 1,
+    "page": 1,
+    "id": "06:0004",
+    "candidateKeys": [
+      "accommodation"
+    ]
+  },
+  {
+    "word": "admire",
+    "group": 1,
+    "page": 1,
+    "id": "06:0005",
+    "candidateKeys": [
+      "admire"
+    ]
+  },
+  {
+    "word": "absolutely",
+    "group": 1,
+    "page": 1,
+    "id": "06:0006",
+    "candidateKeys": [
+      "absolutely"
+    ]
+  },
+  {
+    "word": "accountant",
+    "group": 1,
+    "page": 1,
+    "id": "06:0007",
+    "candidateKeys": [
+      "accountant"
+    ]
+  },
+  {
+    "word": "accident",
+    "group": 1,
+    "page": 1,
+    "id": "06:0008",
+    "candidateKeys": [
+      "accident"
+    ]
+  },
+  {
+    "word": "achievement",
+    "group": 1,
+    "page": 1,
+    "id": "06:0009",
+    "candidateKeys": [
+      "achievement"
+    ]
+  },
+  {
+    "word": "accompany",
+    "group": 1,
+    "page": 1,
+    "id": "06:0010",
+    "candidateKeys": [
+      "accompany"
+    ]
+  },
+  {
+    "word": "aggressive",
+    "group": 2,
+    "page": 2,
+    "id": "06:0011",
+    "candidateKeys": [
+      "aggressive"
+    ]
+  },
+  {
+    "word": "advanced",
+    "group": 2,
+    "page": 2,
+    "id": "06:0012",
+    "candidateKeys": [
+      "advanced"
+    ]
+  },
+  {
+    "word": "air conditioner",
+    "group": 2,
+    "page": 2,
+    "id": "06:0013",
+    "candidateKeys": [
+      "air conditioner"
+    ]
+  },
+  {
+    "word": "adventurous",
+    "group": 2,
+    "page": 2,
+    "id": "06:0014",
+    "candidateKeys": [
+      "adventurous"
+    ]
+  },
+  {
+    "word": "alcoholic",
+    "group": 2,
+    "page": 2,
+    "id": "06:0015",
+    "candidateKeys": [
+      "alcoholic"
+    ]
+  },
+  {
+    "word": "admit",
+    "group": 2,
+    "page": 2,
+    "id": "06:0016",
+    "candidateKeys": [
+      "admit"
+    ]
+  },
+  {
+    "word": "advisors",
+    "group": 2,
+    "page": 2,
+    "id": "06:0017",
+    "candidateKeys": [
+      "advisor"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "advantage",
+    "group": 2,
+    "page": 2,
+    "id": "06:0018",
+    "candidateKeys": [
+      "advantage"
+    ]
+  },
+  {
+    "word": "aim",
+    "group": 2,
+    "page": 2,
+    "id": "06:0019",
+    "candidateKeys": [
+      "aim"
+    ]
+  },
+  {
+    "word": "advert",
+    "group": 2,
+    "page": 2,
+    "id": "06:0020",
+    "candidateKeys": [
+      "advert"
+    ]
+  },
+  {
+    "word": "anxiety",
+    "group": 3,
+    "page": 3,
+    "id": "06:0021",
+    "candidateKeys": [
+      "anxiety"
+    ]
+  },
+  {
+    "word": "amount",
+    "group": 3,
+    "page": 3,
+    "id": "06:0022",
+    "candidateKeys": [
+      "amount"
+    ]
+  },
+  {
+    "word": "application",
+    "group": 3,
+    "page": 3,
+    "id": "06:0023",
+    "candidateKeys": [
+      "application"
+    ]
+  },
+  {
+    "word": "annoying",
+    "group": 3,
+    "page": 3,
+    "id": "06:0024",
+    "candidateKeys": [
+      "annoying"
+    ]
+  },
+  {
+    "word": "apply for",
+    "group": 3,
+    "page": 3,
+    "id": "06:0025",
+    "candidateKeys": [
+      "apply for"
+    ]
+  },
+  {
+    "word": "allow",
+    "group": 3,
+    "page": 3,
+    "id": "06:0026",
+    "candidateKeys": [
+      "allow"
+    ]
+  },
+  {
+    "word": "Antarctica",
+    "group": 3,
+    "page": 3,
+    "id": "06:0027",
+    "candidateKeys": [
+      "antarctica"
+    ]
+  },
+  {
+    "word": "amusement park",
+    "group": 3,
+    "page": 3,
+    "id": "06:0028",
+    "candidateKeys": [
+      "amusement park"
+    ]
+  },
+  {
+    "word": "apologize",
+    "group": 3,
+    "page": 3,
+    "id": "06:0029",
+    "candidateKeys": [
+      "apologise"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "annual",
+    "group": 3,
+    "page": 3,
+    "id": "06:0030",
+    "candidateKeys": [
+      "annual"
+    ]
+  },
+  {
+    "word": "ask for a leave",
+    "group": 4,
+    "page": 5,
+    "id": "06:0031",
+    "candidateKeys": [
+      "ask for leave"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "apprenticeship",
+    "group": 4,
+    "page": 5,
+    "id": "06:0032",
+    "candidateKeys": [
+      "apprenticeship"
+    ]
+  },
+  {
+    "word": "attempt",
+    "group": 4,
+    "page": 5,
+    "id": "06:0033",
+    "candidateKeys": [
+      "attempt"
+    ]
+  },
+  {
+    "word": "argument",
+    "group": 4,
+    "page": 5,
+    "id": "06:0034",
+    "candidateKeys": [
+      "argument"
+    ]
+  },
+  {
+    "word": "attend",
+    "group": 4,
+    "page": 5,
+    "id": "06:0035",
+    "candidateKeys": [
+      "attend"
+    ]
+  },
+  {
+    "word": "appointment",
+    "group": 4,
+    "page": 5,
+    "id": "06:0036",
+    "candidateKeys": [
+      "appointment"
+    ]
+  },
+  {
+    "word": "article",
+    "group": 4,
+    "page": 5,
+    "id": "06:0037",
+    "candidateKeys": [
+      "article"
+    ]
+  },
+  {
+    "word": "architecture",
+    "group": 4,
+    "page": 5,
+    "id": "06:0038",
+    "candidateKeys": [
+      "architecture"
+    ]
+  },
+  {
+    "word": "atmosphere",
+    "group": 4,
+    "page": 5,
+    "id": "06:0039",
+    "candidateKeys": [
+      "atmosphere"
+    ]
+  },
+  {
+    "word": "arrangement",
+    "group": 4,
+    "page": 5,
+    "id": "06:0040",
+    "candidateKeys": [
+      "arrangement"
+    ]
+  },
+  {
+    "word": "awards",
+    "group": 5,
+    "page": 6,
+    "id": "06:0041",
+    "candidateKeys": [
+      "award"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "attract",
+    "group": 5,
+    "page": 6,
+    "id": "06:0042",
+    "candidateKeys": [
+      "attract"
+    ]
+  },
+  {
+    "word": "bargain",
+    "group": 5,
+    "page": 6,
+    "id": "06:0043",
+    "candidateKeys": [
+      "bargain"
+    ]
+  },
+  {
+    "word": "audience",
+    "group": 5,
+    "page": 6,
+    "id": "06:0044",
+    "candidateKeys": [
+      "audience"
+    ]
+  },
+  {
+    "word": "basement",
+    "group": 5,
+    "page": 6,
+    "id": "06:0045",
+    "candidateKeys": [
+      "basement"
+    ]
+  },
+  {
+    "word": "attitude",
+    "group": 5,
+    "page": 6,
+    "id": "06:0046",
+    "candidateKeys": [
+      "attitude"
+    ]
+  },
+  {
+    "word": "avoid",
+    "group": 5,
+    "page": 6,
+    "id": "06:0047",
+    "candidateKeys": [
+      "avoid"
+    ]
+  },
+  {
+    "word": "attractions",
+    "group": 5,
+    "page": 6,
+    "id": "06:0048",
+    "candidateKeys": [
+      "attraction"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "balcony",
+    "group": 5,
+    "page": 6,
+    "id": "06:0049",
+    "candidateKeys": [
+      "balcony"
+    ]
+  },
+  {
+    "word": "available",
+    "group": 5,
+    "page": 6,
+    "id": "06:0050",
+    "candidateKeys": [
+      "available"
+    ]
+  },
+  {
+    "word": "blame",
+    "group": 6,
+    "page": 7,
+    "id": "06:0051",
+    "candidateKeys": [
+      "blame"
+    ]
+  },
+  {
+    "word": "battery",
+    "group": 6,
+    "page": 7,
+    "id": "06:0052",
+    "candidateKeys": [
+      "battery"
+    ]
+  },
+  {
+    "word": "breathtaking",
+    "group": 6,
+    "page": 7,
+    "id": "06:0053",
+    "candidateKeys": [
+      "breathtaking"
+    ]
+  },
+  {
+    "word": "behave",
+    "group": 6,
+    "page": 7,
+    "id": "06:0054",
+    "candidateKeys": [
+      "behave"
+    ]
+  },
+  {
+    "word": "calm",
+    "group": 6,
+    "page": 7,
+    "id": "06:0055",
+    "candidateKeys": [
+      "calm"
+    ]
+  },
+  {
+    "word": "basic",
+    "group": 6,
+    "page": 7,
+    "id": "06:0056",
+    "candidateKeys": [
+      "basic"
+    ]
+  },
+  {
+    "word": "benefit",
+    "group": 6,
+    "page": 7,
+    "id": "06:0057",
+    "candidateKeys": [
+      "benefit"
+    ]
+  },
+  {
+    "word": "be responsible for",
+    "group": 6,
+    "page": 7,
+    "id": "06:0058",
+    "candidateKeys": [
+      "be responsible for"
+    ]
+  },
+  {
+    "word": "bother",
+    "group": 6,
+    "page": 7,
+    "id": "06:0059",
+    "candidateKeys": [
+      "bother"
+    ]
+  },
+  {
+    "word": "belong to",
+    "group": 6,
+    "page": 7,
+    "id": "06:0060",
+    "candidateKeys": [
+      "belong to"
+    ]
+  },
+  {
+    "word": "champion",
+    "group": 7,
+    "page": 8,
+    "id": "06:0061",
+    "candidateKeys": [
+      "champion"
+    ]
+  },
+  {
+    "word": "career",
+    "group": 7,
+    "page": 8,
+    "id": "06:0062",
+    "candidateKeys": [
+      "career"
+    ]
+  },
+  {
+    "word": "character",
+    "group": 7,
+    "page": 8,
+    "id": "06:0063",
+    "candidateKeys": [
+      "character"
+    ]
+  },
+  {
+    "word": "century",
+    "group": 7,
+    "page": 8,
+    "id": "06:0064",
+    "candidateKeys": [
+      "century"
+    ]
+  },
+  {
+    "word": "charge",
+    "group": 7,
+    "page": 8,
+    "id": "06:0065",
+    "candidateKeys": [
+      "charge"
+    ]
+  },
+  {
+    "word": "cancel",
+    "group": 7,
+    "page": 8,
+    "id": "06:0066",
+    "candidateKeys": [
+      "cancel"
+    ]
+  },
+  {
+    "word": "challenge",
+    "group": 7,
+    "page": 8,
+    "id": "06:0067",
+    "candidateKeys": [
+      "challenge"
+    ]
+  },
+  {
+    "word": "celebrity",
+    "group": 7,
+    "page": 8,
+    "id": "06:0068",
+    "candidateKeys": [
+      "celebrity"
+    ]
+  },
+  {
+    "word": "chance",
+    "group": 7,
+    "page": 8,
+    "id": "06:0069",
+    "candidateKeys": [
+      "chance"
+    ]
+  },
+  {
+    "word": "certificate",
+    "group": 7,
+    "page": 8,
+    "id": "06:0070",
+    "candidateKeys": [
+      "certificate"
+    ]
+  },
+  {
+    "word": "combine",
+    "group": 8,
+    "page": 9,
+    "id": "06:0071",
+    "candidateKeys": [
+      "combine"
+    ]
+  },
+  {
+    "word": "chemistry",
+    "group": 8,
+    "page": 9,
+    "id": "06:0072",
+    "candidateKeys": [
+      "chemistry"
+    ]
+  },
+  {
+    "word": "common",
+    "group": 8,
+    "page": 9,
+    "id": "06:0073",
+    "candidateKeys": [
+      "common"
+    ]
+  },
+  {
+    "word": "climate",
+    "group": 8,
+    "page": 9,
+    "id": "06:0074",
+    "candidateKeys": [
+      "climate"
+    ]
+  },
+  {
+    "word": "communication",
+    "group": 8,
+    "page": 9,
+    "id": "06:0075",
+    "candidateKeys": [
+      "communication"
+    ]
+  },
+  {
+    "word": "charity",
+    "group": 8,
+    "page": 9,
+    "id": "06:0076",
+    "candidateKeys": [
+      "charity"
+    ]
+  },
+  {
+    "word": "collection",
+    "group": 8,
+    "page": 9,
+    "id": "06:0077",
+    "candidateKeys": [
+      "collection"
+    ]
+  },
+  {
+    "word": "childhood",
+    "group": 8,
+    "page": 9,
+    "id": "06:0078",
+    "candidateKeys": [
+      "childhood"
+    ]
+  },
+  {
+    "word": "comment",
+    "group": 8,
+    "page": 9,
+    "id": "06:0079",
+    "candidateKeys": [
+      "comment"
+    ]
+  },
+  {
+    "word": "coastal",
+    "group": 8,
+    "page": 9,
+    "id": "06:0080",
+    "candidateKeys": [
+      "coastal"
+    ]
+  },
+  {
+    "word": "condition",
+    "group": 9,
+    "page": 10,
+    "id": "06:0081",
+    "candidateKeys": [
+      "condition"
+    ]
+  },
+  {
+    "word": "company",
+    "group": 9,
+    "page": 10,
+    "id": "06:0082",
+    "candidateKeys": [
+      "company"
+    ]
+  },
+  {
+    "word": "consequently",
+    "group": 9,
+    "page": 10,
+    "id": "06:0083",
+    "candidateKeys": [
+      "consequently"
+    ]
+  },
+  {
+    "word": "complete",
+    "group": 9,
+    "page": 10,
+    "id": "06:0084",
+    "candidateKeys": [
+      "complete"
+    ]
+  },
+  {
+    "word": "consider",
+    "group": 9,
+    "page": 10,
+    "id": "06:0085",
+    "candidateKeys": [
+      "consider"
+    ]
+  },
+  {
+    "word": "community",
+    "group": 9,
+    "page": 10,
+    "id": "06:0086",
+    "candidateKeys": [
+      "community"
+    ]
+  },
+  {
+    "word": "concentrate",
+    "group": 9,
+    "page": 10,
+    "id": "06:0087",
+    "candidateKeys": [
+      "concentrate"
+    ]
+  },
+  {
+    "word": "compete against",
+    "group": 9,
+    "page": 10,
+    "id": "06:0088",
+    "candidateKeys": [
+      "compete against"
+    ]
+  },
+  {
+    "word": "confidence",
+    "group": 9,
+    "page": 10,
+    "id": "06:0089",
+    "candidateKeys": [
+      "confidence"
+    ]
+  },
+  {
+    "word": "complicated",
+    "group": 9,
+    "page": 10,
+    "id": "06:0090",
+    "candidateKeys": [
+      "complicated"
+    ]
+  },
+  {
+    "word": "cosy",
+    "group": 10,
+    "page": 12,
+    "id": "06:0091",
+    "candidateKeys": [
+      "cosy"
+    ]
+  },
+  {
+    "word": "contact",
+    "group": 10,
+    "page": 12,
+    "id": "06:0092",
+    "candidateKeys": [
+      "contact"
+    ]
+  },
+  {
+    "word": "cotton",
+    "group": 10,
+    "page": 12,
+    "id": "06:0093",
+    "candidateKeys": [
+      "cotton"
+    ]
+  },
+  {
+    "word": "convenient",
+    "group": 10,
+    "page": 12,
+    "id": "06:0094",
+    "candidateKeys": [
+      "convenient"
+    ]
+  },
+  {
+    "word": "craft",
+    "group": 10,
+    "page": 12,
+    "id": "06:0095",
+    "candidateKeys": [
+      "craft"
+    ]
+  },
+  {
+    "word": "consist",
+    "group": 10,
+    "page": 12,
+    "id": "06:0096",
+    "candidateKeys": [
+      "consist"
+    ]
+  },
+  {
+    "word": "corridor",
+    "group": 10,
+    "page": 12,
+    "id": "06:0097",
+    "candidateKeys": [
+      "corridor"
+    ]
+  },
+  {
+    "word": "contain",
+    "group": 10,
+    "page": 12,
+    "id": "06:0098",
+    "candidateKeys": [
+      "contain"
+    ]
+  },
+  {
+    "word": "cottage",
+    "group": 10,
+    "page": 12,
+    "id": "06:0099",
+    "candidateKeys": [
+      "cottage"
+    ]
+  },
+  {
+    "word": "convince",
+    "group": 10,
+    "page": 12,
+    "id": "06:0100",
+    "candidateKeys": [
+      "convince"
+    ]
+  },
+  {
+    "word": "deal with",
+    "group": 11,
+    "page": 13,
+    "id": "06:0101",
+    "candidateKeys": [
+      "deal with"
+    ]
+  },
+  {
+    "word": "creature",
+    "group": 11,
+    "page": 13,
+    "id": "06:0102",
+    "candidateKeys": [
+      "creature"
+    ]
+  },
+  {
+    "word": "decoration",
+    "group": 11,
+    "page": 13,
+    "id": "06:0103",
+    "candidateKeys": [
+      "decoration"
+    ]
+  },
+  {
+    "word": "currently",
+    "group": 11,
+    "page": 13,
+    "id": "06:0104",
+    "candidateKeys": [
+      "currently"
+    ]
+  },
+  {
+    "word": "decrease",
+    "group": 11,
+    "page": 13,
+    "id": "06:0105",
+    "candidateKeys": [
+      "decrease"
+    ]
+  },
+  {
+    "word": "creativity",
+    "group": 11,
+    "page": 13,
+    "id": "06:0106",
+    "candidateKeys": [
+      "creativity"
+    ]
+  },
+  {
+    "word": "damage",
+    "group": 11,
+    "page": 13,
+    "id": "06:0107",
+    "candidateKeys": [
+      "damage"
+    ]
+  },
+  {
+    "word": "curious",
+    "group": 11,
+    "page": 13,
+    "id": "06:0108",
+    "candidateKeys": [
+      "curious"
+    ]
+  },
+  {
+    "word": "decide",
+    "group": 11,
+    "page": 13,
+    "id": "06:0109",
+    "candidateKeys": [
+      "decide"
+    ]
+  },
+  {
+    "word": "customers",
+    "group": 11,
+    "page": 13,
+    "id": "06:0110",
+    "candidateKeys": [
+      "customer"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "depend on",
+    "group": 12,
+    "page": 14,
+    "id": "06:0111",
+    "candidateKeys": [
+      "depend on"
+    ]
+  },
+  {
+    "word": "delay",
+    "group": 12,
+    "page": 14,
+    "id": "06:0112",
+    "candidateKeys": [
+      "delay"
+    ]
+  },
+  {
+    "word": "describe",
+    "group": 12,
+    "page": 14,
+    "id": "06:0113",
+    "candidateKeys": [
+      "describe"
+    ]
+  },
+  {
+    "word": "delivery",
+    "group": 12,
+    "page": 14,
+    "id": "06:0114",
+    "candidateKeys": [
+      "delivery"
+    ]
+  },
+  {
+    "word": "design",
+    "group": 12,
+    "page": 14,
+    "id": "06:0115",
+    "candidateKeys": [
+      "design"
+    ]
+  },
+  {
+    "word": "definitely",
+    "group": 12,
+    "page": 14,
+    "id": "06:0116",
+    "candidateKeys": [
+      "definitely"
+    ]
+  },
+  {
+    "word": "department",
+    "group": 12,
+    "page": 14,
+    "id": "06:0117",
+    "candidateKeys": [
+      "department"
+    ]
+  },
+  {
+    "word": "delighted",
+    "group": 12,
+    "page": 14,
+    "id": "06:0118",
+    "candidateKeys": [
+      "delighted"
+    ]
+  },
+  {
+    "word": "depressed",
+    "group": 12,
+    "page": 14,
+    "id": "06:0119",
+    "candidateKeys": [
+      "depressed"
+    ]
+  },
+  {
+    "word": "dentist",
+    "group": 12,
+    "page": 14,
+    "id": "06:0120",
+    "candidateKeys": [
+      "dentist"
+    ]
+  },
+  {
+    "word": "device",
+    "group": 13,
+    "page": 15,
+    "id": "06:0121",
+    "candidateKeys": [
+      "device"
+    ]
+  },
+  {
+    "word": "despite",
+    "group": 13,
+    "page": 15,
+    "id": "06:0122",
+    "candidateKeys": [
+      "despite"
+    ]
+  },
+  {
+    "word": "director",
+    "group": 13,
+    "page": 15,
+    "id": "06:0123",
+    "candidateKeys": [
+      "director"
+    ]
+  },
+  {
+    "word": "destroy",
+    "group": 13,
+    "page": 15,
+    "id": "06:0124",
+    "candidateKeys": [
+      "destroy"
+    ]
+  },
+  {
+    "word": "disability",
+    "group": 13,
+    "page": 15,
+    "id": "06:0125",
+    "candidateKeys": [
+      "disability"
+    ]
+  },
+  {
+    "word": "desire",
+    "group": 13,
+    "page": 15,
+    "id": "06:0126",
+    "candidateKeys": [
+      "desire"
+    ]
+  },
+  {
+    "word": "develop",
+    "group": 13,
+    "page": 15,
+    "id": "06:0127",
+    "candidateKeys": [
+      "develop"
+    ]
+  },
+  {
+    "word": "destination",
+    "group": 13,
+    "page": 15,
+    "id": "06:0128",
+    "candidateKeys": [
+      "destination"
+    ]
+  },
+  {
+    "word": "devote",
+    "group": 13,
+    "page": 15,
+    "id": "06:0129",
+    "candidateKeys": [
+      "devote"
+    ]
+  },
+  {
+    "word": "detail",
+    "group": 13,
+    "page": 15,
+    "id": "06:0130",
+    "candidateKeys": [
+      "detail"
+    ]
+  },
+  {
+    "word": "divide",
+    "group": 14,
+    "page": 17,
+    "id": "06:0131",
+    "candidateKeys": [
+      "divide"
+    ]
+  },
+  {
+    "word": "disappointed",
+    "group": 14,
+    "page": 17,
+    "id": "06:0132",
+    "candidateKeys": [
+      "disappointed"
+    ]
+  },
+  {
+    "word": "dormitory",
+    "group": 14,
+    "page": 17,
+    "id": "06:0133",
+    "candidateKeys": [
+      "dormitory"
+    ]
+  },
+  {
+    "word": "discuss",
+    "group": 14,
+    "page": 17,
+    "id": "06:0134",
+    "candidateKeys": [
+      "discuss"
+    ]
+  },
+  {
+    "word": "doubts",
+    "group": 14,
+    "page": 17,
+    "id": "06:0135",
+    "candidateKeys": [
+      "doubt"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "disadvantage",
+    "group": 14,
+    "page": 17,
+    "id": "06:0136",
+    "candidateKeys": [
+      "disadvantage"
+    ]
+  },
+  {
+    "word": "distance",
+    "group": 14,
+    "page": 17,
+    "id": "06:0137",
+    "candidateKeys": [
+      "distance"
+    ]
+  },
+  {
+    "word": "discount",
+    "group": 14,
+    "page": 17,
+    "id": "06:0138",
+    "candidateKeys": [
+      "discount"
+    ]
+  },
+  {
+    "word": "documentary",
+    "group": 14,
+    "page": 17,
+    "id": "06:0139",
+    "candidateKeys": [
+      "documentary"
+    ]
+  },
+  {
+    "word": "disease",
+    "group": 14,
+    "page": 17,
+    "id": "06:0140",
+    "candidateKeys": [
+      "disease"
+    ]
+  },
+  {
+    "word": "efficient",
+    "group": 15,
+    "page": 18,
+    "id": "06:0141",
+    "candidateKeys": [
+      "efficient"
+    ]
+  },
+  {
+    "word": "drama",
+    "group": 15,
+    "page": 18,
+    "id": "06:0142",
+    "candidateKeys": [
+      "drama"
+    ]
+  },
+  {
+    "word": "emergency",
+    "group": 15,
+    "page": 18,
+    "id": "06:0143",
+    "candidateKeys": [
+      "emergency"
+    ]
+  },
+  {
+    "word": "earn",
+    "group": 15,
+    "page": 18,
+    "id": "06:0144",
+    "candidateKeys": [
+      "earn"
+    ]
+  },
+  {
+    "word": "employee",
+    "group": 15,
+    "page": 18,
+    "id": "06:0145",
+    "candidateKeys": [
+      "employee"
+    ]
+  },
+  {
+    "word": "dozens",
+    "group": 15,
+    "page": 18,
+    "id": "06:0146",
+    "candidateKeys": [
+      "dozen"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "effects",
+    "group": 15,
+    "page": 18,
+    "id": "06:0147",
+    "candidateKeys": [
+      "effect"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "draw attention to",
+    "group": 15,
+    "page": 18,
+    "id": "06:0148",
+    "candidateKeys": [
+      "draw attention to"
+    ]
+  },
+  {
+    "word": "embarrassed",
+    "group": 15,
+    "page": 18,
+    "id": "06:0149",
+    "candidateKeys": [
+      "embarrassed"
+    ]
+  },
+  {
+    "word": "educational",
+    "group": 15,
+    "page": 18,
+    "id": "06:0150",
+    "candidateKeys": [
+      "educational"
+    ]
+  },
+  {
+    "word": "entrance",
+    "group": 16,
+    "page": 19,
+    "id": "06:0151",
+    "candidateKeys": [
+      "entrance"
+    ]
+  },
+  {
+    "word": "enemy",
+    "group": 16,
+    "page": 19,
+    "id": "06:0152",
+    "candidateKeys": [
+      "enemy"
+    ]
+  },
+  {
+    "word": "environment",
+    "group": 16,
+    "page": 19,
+    "id": "06:0153",
+    "candidateKeys": [
+      "environment"
+    ]
+  },
+  {
+    "word": "enroll",
+    "group": 16,
+    "page": 19,
+    "id": "06:0154",
+    "candidateKeys": [
+      "enroll"
+    ]
+  },
+  {
+    "word": "equal",
+    "group": 16,
+    "page": 19,
+    "id": "06:0155",
+    "candidateKeys": [
+      "equal"
+    ]
+  },
+  {
+    "word": "encourage",
+    "group": 16,
+    "page": 19,
+    "id": "06:0156",
+    "candidateKeys": [
+      "encourage"
+    ]
+  },
+  {
+    "word": "entertainment",
+    "group": 16,
+    "page": 19,
+    "id": "06:0157",
+    "candidateKeys": [
+      "entertainment"
+    ]
+  },
+  {
+    "word": "energy",
+    "group": 16,
+    "page": 19,
+    "id": "06:0158",
+    "candidateKeys": [
+      "energy"
+    ]
+  },
+  {
+    "word": "entry",
+    "group": 16,
+    "page": 19,
+    "id": "06:0159",
+    "candidateKeys": [
+      "entry"
+    ]
+  },
+  {
+    "word": "ensure",
+    "group": 16,
+    "page": 19,
+    "id": "06:0160",
+    "candidateKeys": [
+      "ensure"
+    ]
+  },
+  {
+    "word": "examination",
+    "group": 17,
+    "page": 21,
+    "id": "06:0161",
+    "candidateKeys": [
+      "examination"
+    ]
+  },
+  {
+    "word": "escape",
+    "group": 17,
+    "page": 21,
+    "id": "06:0162",
+    "candidateKeys": [
+      "escape"
+    ]
+  },
+  {
+    "word": "except",
+    "group": 17,
+    "page": 21,
+    "id": "06:0163",
+    "candidateKeys": [
+      "except"
+    ]
+  },
+  {
+    "word": "essential",
+    "group": 17,
+    "page": 21,
+    "id": "06:0164",
+    "candidateKeys": [
+      "essential"
+    ]
+  },
+  {
+    "word": "exhibition",
+    "group": 17,
+    "page": 21,
+    "id": "06:0165",
+    "candidateKeys": [
+      "exhibition"
+    ]
+  },
+  {
+    "word": "equipment",
+    "group": 17,
+    "page": 21,
+    "id": "06:0166",
+    "candidateKeys": [
+      "equipment"
+    ]
+  },
+  {
+    "word": "eventually",
+    "group": 17,
+    "page": 21,
+    "id": "06:0167",
+    "candidateKeys": [
+      "eventually"
+    ]
+  },
+  {
+    "word": "especially",
+    "group": 17,
+    "page": 21,
+    "id": "06:0168",
+    "candidateKeys": [
+      "especially"
+    ]
+  },
+  {
+    "word": "examine",
+    "group": 17,
+    "page": 21,
+    "id": "06:0169",
+    "candidateKeys": [
+      "examine"
+    ]
+  },
+  {
+    "word": "event",
+    "group": 17,
+    "page": 21,
+    "id": "06:0170",
+    "candidateKeys": [
+      "event"
+    ]
+  },
+  {
+    "word": "explanations",
+    "group": 18,
+    "page": 22,
+    "id": "06:0171",
+    "candidateKeys": [
+      "explanation"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "expect",
+    "group": 18,
+    "page": 22,
+    "id": "06:0172",
+    "candidateKeys": [
+      "expect"
+    ]
+  },
+  {
+    "word": "extra",
+    "group": 18,
+    "page": 22,
+    "id": "06:0173",
+    "candidateKeys": [
+      "extra"
+    ]
+  },
+  {
+    "word": "experiment",
+    "group": 18,
+    "page": 22,
+    "id": "06:0174",
+    "candidateKeys": [
+      "experiment"
+    ]
+  },
+  {
+    "word": "extremely",
+    "group": 18,
+    "page": 22,
+    "id": "06:0175",
+    "candidateKeys": [
+      "extremely"
+    ]
+  },
+  {
+    "word": "exit",
+    "group": 18,
+    "page": 22,
+    "id": "06:0176",
+    "candidateKeys": [
+      "exit"
+    ]
+  },
+  {
+    "word": "explain",
+    "group": 18,
+    "page": 22,
+    "id": "06:0177",
+    "candidateKeys": [
+      "explain"
+    ]
+  },
+  {
+    "word": "experience",
+    "group": 18,
+    "page": 22,
+    "id": "06:0178",
+    "candidateKeys": [
+      "experience"
+    ]
+  },
+  {
+    "word": "explore",
+    "group": 18,
+    "page": 22,
+    "id": "06:0179",
+    "candidateKeys": [
+      "explore"
+    ]
+  },
+  {
+    "word": "expert",
+    "group": 18,
+    "page": 22,
+    "id": "06:0180",
+    "candidateKeys": [
+      "expert"
+    ]
+  },
+  {
+    "word": "fee",
+    "group": 19,
+    "page": 23,
+    "id": "06:0181",
+    "candidateKeys": [
+      "fee"
+    ]
+  },
+  {
+    "word": "fall in love with",
+    "group": 19,
+    "page": 23,
+    "id": "06:0182",
+    "candidateKeys": [
+      "fall in love with"
+    ]
+  },
+  {
+    "word": "figures",
+    "group": 19,
+    "page": 23,
+    "id": "06:0183",
+    "candidateKeys": [
+      "figure"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "fancy",
+    "group": 19,
+    "page": 23,
+    "id": "06:0184",
+    "candidateKeys": [
+      "fancy"
+    ]
+  },
+  {
+    "word": "flavours",
+    "group": 19,
+    "page": 23,
+    "id": "06:0185",
+    "candidateKeys": [
+      "flavour"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "fact",
+    "group": 19,
+    "page": 23,
+    "id": "06:0186",
+    "candidateKeys": [
+      "fact"
+    ]
+  },
+  {
+    "word": "feature",
+    "group": 19,
+    "page": 23,
+    "id": "06:0187",
+    "candidateKeys": [
+      "feature"
+    ]
+  },
+  {
+    "word": "familiar",
+    "group": 19,
+    "page": 23,
+    "id": "06:0188",
+    "candidateKeys": [
+      "familiar"
+    ]
+  },
+  {
+    "word": "ferry",
+    "group": 19,
+    "page": 23,
+    "id": "06:0189",
+    "candidateKeys": [
+      "ferry"
+    ]
+  },
+  {
+    "word": "fascinate",
+    "group": 19,
+    "page": 23,
+    "id": "06:0190",
+    "candidateKeys": [
+      "fascinate"
+    ]
+  },
+  {
+    "word": "fortnight",
+    "group": 20,
+    "page": 24,
+    "id": "06:0191",
+    "candidateKeys": [
+      "fortnight"
+    ]
+  },
+  {
+    "word": "focus on",
+    "group": 20,
+    "page": 24,
+    "id": "06:0192",
+    "candidateKeys": [
+      "focus on"
+    ]
+  },
+  {
+    "word": "freezer",
+    "group": 20,
+    "page": 24,
+    "id": "06:0193",
+    "candidateKeys": [
+      "freezer"
+    ]
+  },
+  {
+    "word": "forbidden",
+    "group": 20,
+    "page": 24,
+    "id": "06:0194",
+    "candidateKeys": [
+      "forbidden"
+    ]
+  },
+  {
+    "word": "freezing",
+    "group": 20,
+    "page": 24,
+    "id": "06:0195",
+    "candidateKeys": [
+      "freezing"
+    ]
+  },
+  {
+    "word": "flood",
+    "group": 20,
+    "page": 24,
+    "id": "06:0196",
+    "candidateKeys": [
+      "flood"
+    ]
+  },
+  {
+    "word": "foreign",
+    "group": 20,
+    "page": 24,
+    "id": "06:0197",
+    "candidateKeys": [
+      "foreign"
+    ]
+  },
+  {
+    "word": "foodie",
+    "group": 20,
+    "page": 24,
+    "id": "06:0198",
+    "candidateKeys": [
+      "foodie"
+    ]
+  },
+  {
+    "word": "freedom",
+    "group": 20,
+    "page": 24,
+    "id": "06:0199",
+    "candidateKeys": [
+      "freedom"
+    ]
+  },
+  {
+    "word": "forecast",
+    "group": 20,
+    "page": 24,
+    "id": "06:0200",
+    "candidateKeys": [
+      "forecast"
+    ]
+  },
+  {
+    "word": "get rid of",
+    "group": 21,
+    "page": 25,
+    "id": "06:0201",
+    "candidateKeys": [
+      "get rid of"
+    ]
+  },
+  {
+    "word": "frightened",
+    "group": 21,
+    "page": 25,
+    "id": "06:0202",
+    "candidateKeys": [
+      "frightened"
+    ]
+  },
+  {
+    "word": "global",
+    "group": 21,
+    "page": 25,
+    "id": "06:0203",
+    "candidateKeys": [
+      "global"
+    ]
+  },
+  {
+    "word": "generation",
+    "group": 21,
+    "page": 25,
+    "id": "06:0204",
+    "candidateKeys": [
+      "generation"
+    ]
+  },
+  {
+    "word": "goal",
+    "group": 21,
+    "page": 25,
+    "id": "06:0205",
+    "candidateKeys": [
+      "goal"
+    ]
+  },
+  {
+    "word": "fridge",
+    "group": 21,
+    "page": 25,
+    "id": "06:0206",
+    "candidateKeys": [
+      "fridge"
+    ]
+  },
+  {
+    "word": "get in touch with",
+    "group": 21,
+    "page": 25,
+    "id": "06:0207",
+    "candidateKeys": [
+      "get in touch with"
+    ]
+  },
+  {
+    "word": "furniture",
+    "group": 21,
+    "page": 25,
+    "id": "06:0208",
+    "candidateKeys": [
+      "furniture"
+    ]
+  },
+  {
+    "word": "glance",
+    "group": 21,
+    "page": 25,
+    "id": "06:0209",
+    "candidateKeys": [
+      "glance"
+    ]
+  },
+  {
+    "word": "geography",
+    "group": 21,
+    "page": 25,
+    "id": "06:0210",
+    "candidateKeys": [
+      "geography"
+    ]
+  },
+  {
+    "word": "headline",
+    "group": 22,
+    "page": 26,
+    "id": "06:0211",
+    "candidateKeys": [
+      "headline"
+    ]
+  },
+  {
+    "word": "guard",
+    "group": 22,
+    "page": 26,
+    "id": "06:0212",
+    "candidateKeys": [
+      "guard"
+    ]
+  },
+  {
+    "word": "height",
+    "group": 22,
+    "page": 26,
+    "id": "06:0213",
+    "candidateKeys": [
+      "height"
+    ]
+  },
+  {
+    "word": "guided",
+    "group": 22,
+    "page": 26,
+    "id": "06:0214",
+    "candidateKeys": [
+      "guided"
+    ]
+  },
+  {
+    "word": "hidden",
+    "group": 22,
+    "page": 26,
+    "id": "06:0215",
+    "candidateKeys": [
+      "hidden"
+    ]
+  },
+  {
+    "word": "graduation",
+    "group": 22,
+    "page": 26,
+    "id": "06:0216",
+    "candidateKeys": [
+      "graduation"
+    ]
+  },
+  {
+    "word": "hardly",
+    "group": 22,
+    "page": 26,
+    "id": "06:0217",
+    "candidateKeys": [
+      "hardly"
+    ]
+  },
+  {
+    "word": "guest",
+    "group": 22,
+    "page": 26,
+    "id": "06:0218",
+    "candidateKeys": [
+      "guest"
+    ]
+  },
+  {
+    "word": "headphone",
+    "group": 22,
+    "page": 26,
+    "id": "06:0219",
+    "candidateKeys": [
+      "headphones"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "habits",
+    "group": 22,
+    "page": 26,
+    "id": "06:0220",
+    "candidateKeys": [
+      "habit"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "ideal",
+    "group": 23,
+    "page": 27,
+    "id": "06:0221",
+    "candidateKeys": [
+      "ideal"
+    ]
+  },
+  {
+    "word": "historical",
+    "group": 23,
+    "page": 27,
+    "id": "06:0222",
+    "candidateKeys": [
+      "historical"
+    ]
+  },
+  {
+    "word": "impatient",
+    "group": 23,
+    "page": 27,
+    "id": "06:0223",
+    "candidateKeys": [
+      "impatient"
+    ]
+  },
+  {
+    "word": "host",
+    "group": 23,
+    "page": 27,
+    "id": "06:0224",
+    "candidateKeys": [
+      "host"
+    ]
+  },
+  {
+    "word": "impossible",
+    "group": 23,
+    "page": 27,
+    "id": "06:0225",
+    "candidateKeys": [
+      "impossible"
+    ]
+  },
+  {
+    "word": "hire",
+    "group": 23,
+    "page": 27,
+    "id": "06:0226",
+    "candidateKeys": [
+      "hire"
+    ]
+  },
+  {
+    "word": "hurry",
+    "group": 23,
+    "page": 27,
+    "id": "06:0227",
+    "candidateKeys": [
+      "hurry"
+    ]
+  },
+  {
+    "word": "honest",
+    "group": 23,
+    "page": 27,
+    "id": "06:0228",
+    "candidateKeys": [
+      "honest"
+    ]
+  },
+  {
+    "word": "immediately",
+    "group": 23,
+    "page": 27,
+    "id": "06:0229",
+    "candidateKeys": [
+      "immediately"
+    ]
+  },
+  {
+    "word": "hunt",
+    "group": 23,
+    "page": 27,
+    "id": "06:0230",
+    "candidateKeys": [
+      "hunt"
+    ]
+  },
+  {
+    "word": "increase",
+    "group": 24,
+    "page": 29,
+    "id": "06:0231",
+    "candidateKeys": [
+      "increase"
+    ]
+  },
+  {
+    "word": "in advance",
+    "group": 24,
+    "page": 29,
+    "id": "06:0232",
+    "candidateKeys": [
+      "in advance"
+    ]
+  },
+  {
+    "word": "independent",
+    "group": 24,
+    "page": 29,
+    "id": "06:0233",
+    "candidateKeys": [
+      "independent"
+    ]
+  },
+  {
+    "word": "in return",
+    "group": 24,
+    "page": 29,
+    "id": "06:0234",
+    "candidateKeys": [
+      "in return"
+    ]
+  },
+  {
+    "word": "industry",
+    "group": 24,
+    "page": 29,
+    "id": "06:0235",
+    "candidateKeys": [
+      "industry"
+    ]
+  },
+  {
+    "word": "improve",
+    "group": 24,
+    "page": 29,
+    "id": "06:0236",
+    "candidateKeys": [
+      "improve"
+    ]
+  },
+  {
+    "word": "inconvenience",
+    "group": 24,
+    "page": 29,
+    "id": "06:0237",
+    "candidateKeys": [
+      "inconvenience"
+    ]
+  },
+  {
+    "word": "in case",
+    "group": 24,
+    "page": 29,
+    "id": "06:0238",
+    "candidateKeys": [
+      "in case"
+    ]
+  },
+  {
+    "word": "incredible",
+    "group": 24,
+    "page": 29,
+    "id": "06:0239",
+    "candidateKeys": [
+      "incredible"
+    ]
+  },
+  {
+    "word": "including",
+    "group": 24,
+    "page": 29,
+    "id": "06:0240",
+    "candidateKeys": [
+      "including"
+    ]
+  },
+  {
+    "word": "inspiration",
+    "group": 25,
+    "page": 30,
+    "id": "06:0241",
+    "candidateKeys": [
+      "inspiration"
+    ]
+  },
+  {
+    "word": "inform",
+    "group": 25,
+    "page": 30,
+    "id": "06:0242",
+    "candidateKeys": [
+      "inform"
+    ]
+  },
+  {
+    "word": "instead",
+    "group": 25,
+    "page": 30,
+    "id": "06:0243",
+    "candidateKeys": [
+      "instead"
+    ]
+  },
+  {
+    "word": "informative",
+    "group": 25,
+    "page": 30,
+    "id": "06:0244",
+    "candidateKeys": [
+      "informative"
+    ]
+  },
+  {
+    "word": "instead of",
+    "group": 25,
+    "page": 30,
+    "id": "06:0245",
+    "candidateKeys": [
+      "instead of"
+    ]
+  },
+  {
+    "word": "influential",
+    "group": 25,
+    "page": 30,
+    "id": "06:0246",
+    "candidateKeys": [
+      "influential"
+    ]
+  },
+  {
+    "word": "injury",
+    "group": 25,
+    "page": 30,
+    "id": "06:0247",
+    "candidateKeys": [
+      "injury"
+    ]
+  },
+  {
+    "word": "information",
+    "group": 25,
+    "page": 30,
+    "id": "06:0248",
+    "candidateKeys": [
+      "information"
+    ]
+  },
+  {
+    "word": "inspire",
+    "group": 25,
+    "page": 30,
+    "id": "06:0249",
+    "candidateKeys": [
+      "inspire"
+    ]
+  },
+  {
+    "word": "ingredients",
+    "group": 25,
+    "page": 30,
+    "id": "06:0250",
+    "candidateKeys": [
+      "ingredient"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "interview",
+    "group": 26,
+    "page": 31,
+    "id": "06:0251",
+    "candidateKeys": [
+      "interview"
+    ]
+  },
+  {
+    "word": "instructor",
+    "group": 26,
+    "page": 31,
+    "id": "06:0252",
+    "candidateKeys": [
+      "instructor"
+    ]
+  },
+  {
+    "word": "invite",
+    "group": 26,
+    "page": 31,
+    "id": "06:0253",
+    "candidateKeys": [
+      "invite"
+    ]
+  },
+  {
+    "word": "interactive",
+    "group": 26,
+    "page": 31,
+    "id": "06:0254",
+    "candidateKeys": [
+      "interactive"
+    ]
+  },
+  {
+    "word": "involve",
+    "group": 26,
+    "page": 31,
+    "id": "06:0255",
+    "candidateKeys": [
+      "involve"
+    ]
+  },
+  {
+    "word": "instruction",
+    "group": 26,
+    "page": 31,
+    "id": "06:0256",
+    "candidateKeys": [
+      "instructions"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "interruption",
+    "group": 26,
+    "page": 31,
+    "id": "06:0257",
+    "candidateKeys": [
+      "interruption"
+    ]
+  },
+  {
+    "word": "intend",
+    "group": 26,
+    "page": 31,
+    "id": "06:0258",
+    "candidateKeys": [
+      "intend"
+    ]
+  },
+  {
+    "word": "invitation",
+    "group": 26,
+    "page": 31,
+    "id": "06:0259",
+    "candidateKeys": [
+      "invitation"
+    ]
+  },
+  {
+    "word": "international",
+    "group": 26,
+    "page": 31,
+    "id": "06:0260",
+    "candidateKeys": [
+      "international"
+    ]
+  },
+  {
+    "word": "knowledge",
+    "group": 27,
+    "page": 32,
+    "id": "06:0261",
+    "candidateKeys": [
+      "knowledge"
+    ]
+  },
+  {
+    "word": "item",
+    "group": 27,
+    "page": 32,
+    "id": "06:0262",
+    "candidateKeys": [
+      "item"
+    ]
+  },
+  {
+    "word": "latest",
+    "group": 27,
+    "page": 32,
+    "id": "06:0263",
+    "candidateKeys": [
+      "latest"
+    ]
+  },
+  {
+    "word": "jealous",
+    "group": 27,
+    "page": 32,
+    "id": "06:0264",
+    "candidateKeys": [
+      "jealous"
+    ]
+  },
+  {
+    "word": "law",
+    "group": 27,
+    "page": 32,
+    "id": "06:0265",
+    "candidateKeys": [
+      "law"
+    ]
+  },
+  {
+    "word": "issue",
+    "group": 27,
+    "page": 32,
+    "id": "06:0266",
+    "candidateKeys": [
+      "issue"
+    ]
+  },
+  {
+    "word": "judge",
+    "group": 27,
+    "page": 32,
+    "id": "06:0267",
+    "candidateKeys": [
+      "judge"
+    ]
+  },
+  {
+    "word": "jammed",
+    "group": 27,
+    "page": 32,
+    "id": "06:0268",
+    "candidateKeys": [
+      "jammed"
+    ]
+  },
+  {
+    "word": "landscape",
+    "group": 27,
+    "page": 32,
+    "id": "06:0269",
+    "candidateKeys": [
+      "landscape"
+    ]
+  },
+  {
+    "word": "journal",
+    "group": 27,
+    "page": 32,
+    "id": "06:0270",
+    "candidateKeys": [
+      "journal"
+    ]
+  },
+  {
+    "word": "literature",
+    "group": 28,
+    "page": 33,
+    "id": "06:0271",
+    "candidateKeys": [
+      "literature"
+    ]
+  },
+  {
+    "word": "lecture",
+    "group": 28,
+    "page": 33,
+    "id": "06:0272",
+    "candidateKeys": [
+      "lecture"
+    ]
+  },
+  {
+    "word": "loads of",
+    "group": 28,
+    "page": 33,
+    "id": "06:0273",
+    "candidateKeys": [
+      "loads of"
+    ]
+  },
+  {
+    "word": "lifeguard",
+    "group": 28,
+    "page": 33,
+    "id": "06:0274",
+    "candidateKeys": [
+      "lifeguard"
+    ]
+  },
+  {
+    "word": "local",
+    "group": 28,
+    "page": 33,
+    "id": "06:0275",
+    "candidateKeys": [
+      "local"
+    ]
+  },
+  {
+    "word": "leave sb. alone",
+    "group": 28,
+    "page": 33,
+    "id": "06:0276",
+    "candidateKeys": [
+      "leave alone"
+    ]
+  },
+  {
+    "word": "liquid",
+    "group": 28,
+    "page": 33,
+    "id": "06:0277",
+    "candidateKeys": [
+      "liquid"
+    ]
+  },
+  {
+    "word": "level",
+    "group": 28,
+    "page": 33,
+    "id": "06:0278",
+    "candidateKeys": [
+      "level"
+    ]
+  },
+  {
+    "word": "litter",
+    "group": 28,
+    "page": 33,
+    "id": "06:0279",
+    "candidateKeys": [
+      "litter"
+    ]
+  },
+  {
+    "word": "limited",
+    "group": 28,
+    "page": 33,
+    "id": "06:0280",
+    "candidateKeys": [
+      "limited"
+    ]
+  },
+  {
+    "word": "manager",
+    "group": 29,
+    "page": 34,
+    "id": "06:0281",
+    "candidateKeys": [
+      "manager"
+    ]
+  },
+  {
+    "word": "location",
+    "group": 29,
+    "page": 34,
+    "id": "06:0282",
+    "candidateKeys": [
+      "location"
+    ]
+  },
+  {
+    "word": "marvellous",
+    "group": 29,
+    "page": 34,
+    "id": "06:0283",
+    "candidateKeys": [
+      "marvellous"
+    ]
+  },
+  {
+    "word": "look forward to",
+    "group": 29,
+    "page": 34,
+    "id": "06:0284",
+    "candidateKeys": [
+      "look forward to"
+    ]
+  },
+  {
+    "word": "match",
+    "group": 29,
+    "page": 34,
+    "id": "06:0285",
+    "candidateKeys": [
+      "match"
+    ]
+  },
+  {
+    "word": "located",
+    "group": 29,
+    "page": 34,
+    "id": "06:0286",
+    "candidateKeys": [
+      "located"
+    ]
+  },
+  {
+    "word": "magical",
+    "group": 29,
+    "page": 34,
+    "id": "06:0287",
+    "candidateKeys": [
+      "magical"
+    ]
+  },
+  {
+    "word": "locker",
+    "group": 29,
+    "page": 34,
+    "id": "06:0288",
+    "candidateKeys": [
+      "locker"
+    ]
+  },
+  {
+    "word": "mars",
+    "group": 29,
+    "page": 34,
+    "id": "06:0289",
+    "candidateKeys": [
+      "mars"
+    ]
+  },
+  {
+    "word": "luxury",
+    "group": 29,
+    "page": 34,
+    "id": "06:0290",
+    "candidateKeys": [
+      "luxury"
+    ]
+  },
+  {
+    "word": "migration",
+    "group": 30,
+    "page": 36,
+    "id": "06:0291",
+    "candidateKeys": [
+      "migration"
+    ]
+  },
+  {
+    "word": "maximum",
+    "group": 30,
+    "page": 36,
+    "id": "06:0292",
+    "candidateKeys": [
+      "maximum"
+    ]
+  },
+  {
+    "word": "mistake",
+    "group": 30,
+    "page": 36,
+    "id": "06:0293",
+    "candidateKeys": [
+      "mistake"
+    ]
+  },
+  {
+    "word": "memorable",
+    "group": 30,
+    "page": 36,
+    "id": "06:0294",
+    "candidateKeys": [
+      "memorable"
+    ]
+  },
+  {
+    "word": "monster",
+    "group": 30,
+    "page": 36,
+    "id": "06:0295",
+    "candidateKeys": [
+      "monster"
+    ]
+  },
+  {
+    "word": "materials",
+    "group": 30,
+    "page": 36,
+    "id": "06:0296",
+    "candidateKeys": [
+      "material"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "messy",
+    "group": 30,
+    "page": 36,
+    "id": "06:0297",
+    "candidateKeys": [
+      "messy"
+    ]
+  },
+  {
+    "word": "membership",
+    "group": 30,
+    "page": 36,
+    "id": "06:0298",
+    "candidateKeys": [
+      "membership"
+    ]
+  },
+  {
+    "word": "minimum",
+    "group": 30,
+    "page": 36,
+    "id": "06:0299",
+    "candidateKeys": [
+      "minimum"
+    ]
+  },
+  {
+    "word": "memory",
+    "group": 30,
+    "page": 36,
+    "id": "06:0300",
+    "candidateKeys": [
+      "memory"
+    ]
+  },
+  {
+    "word": "network",
+    "group": 31,
+    "page": 37,
+    "id": "06:0301",
+    "candidateKeys": [
+      "network"
+    ]
+  },
+  {
+    "word": "natural",
+    "group": 31,
+    "page": 37,
+    "id": "06:0302",
+    "candidateKeys": [
+      "natural"
+    ]
+  },
+  {
+    "word": "no longer",
+    "group": 31,
+    "page": 37,
+    "id": "06:0303",
+    "candidateKeys": [
+      "no longer"
+    ]
+  },
+  {
+    "word": "necessary",
+    "group": 31,
+    "page": 37,
+    "id": "06:0304",
+    "candidateKeys": [
+      "necessary"
+    ]
+  },
+  {
+    "word": "non-scheduled",
+    "group": 31,
+    "page": 37,
+    "id": "06:0305",
+    "candidateKeys": [
+      "non-scheduled"
+    ]
+  },
+  {
+    "word": "national",
+    "group": 31,
+    "page": 37,
+    "id": "06:0306",
+    "candidateKeys": [
+      "national"
+    ]
+  },
+  {
+    "word": "neighbourhood",
+    "group": 31,
+    "page": 37,
+    "id": "06:0307",
+    "candidateKeys": [
+      "neighbourhood"
+    ]
+  },
+  {
+    "word": "neat",
+    "group": 31,
+    "page": 37,
+    "id": "06:0308",
+    "candidateKeys": [
+      "neat"
+    ]
+  },
+  {
+    "word": "nickname",
+    "group": 31,
+    "page": 37,
+    "id": "06:0309",
+    "candidateKeys": [
+      "nickname"
+    ]
+  },
+  {
+    "word": "neighbour",
+    "group": 31,
+    "page": 37,
+    "id": "06:0310",
+    "candidateKeys": [
+      "neighbour"
+    ]
+  },
+  {
+    "word": "old-fashioned",
+    "group": 32,
+    "page": 38,
+    "id": "06:0311",
+    "candidateKeys": [
+      "old-fashioned"
+    ]
+  },
+  {
+    "word": "notice",
+    "group": 32,
+    "page": 38,
+    "id": "06:0312",
+    "candidateKeys": [
+      "notice"
+    ]
+  },
+  {
+    "word": "opinion",
+    "group": 32,
+    "page": 38,
+    "id": "06:0313",
+    "candidateKeys": [
+      "opinion"
+    ]
+  },
+  {
+    "word": "object",
+    "group": 32,
+    "page": 38,
+    "id": "06:0314",
+    "candidateKeys": [
+      "object"
+    ]
+  },
+  {
+    "word": "opportunity",
+    "group": 32,
+    "page": 38,
+    "id": "06:0315",
+    "candidateKeys": [
+      "opportunity"
+    ]
+  },
+  {
+    "word": "normal",
+    "group": 32,
+    "page": 38,
+    "id": "06:0316",
+    "candidateKeys": [
+      "normal"
+    ]
+  },
+  {
+    "word": "occasion",
+    "group": 32,
+    "page": 38,
+    "id": "06:0317",
+    "candidateKeys": [
+      "occasion"
+    ]
+  },
+  {
+    "word": "novel",
+    "group": 32,
+    "page": 38,
+    "id": "06:0318",
+    "candidateKeys": [
+      "novel"
+    ]
+  },
+  {
+    "word": "on duty",
+    "group": 32,
+    "page": 38,
+    "id": "06:0319",
+    "candidateKeys": [
+      "on duty"
+    ]
+  },
+  {
+    "word": "obvious",
+    "group": 32,
+    "page": 38,
+    "id": "06:0320",
+    "candidateKeys": [
+      "obvious"
+    ]
+  },
+  {
+    "word": "otherwise",
+    "group": 33,
+    "page": 39,
+    "id": "06:0321",
+    "candidateKeys": [
+      "otherwise"
+    ]
+  },
+  {
+    "word": "option",
+    "group": 33,
+    "page": 39,
+    "id": "06:0322",
+    "candidateKeys": [
+      "option"
+    ]
+  },
+  {
+    "word": "owner",
+    "group": 33,
+    "page": 39,
+    "id": "06:0323",
+    "candidateKeys": [
+      "owner"
+    ]
+  },
+  {
+    "word": "organisers",
+    "group": 33,
+    "page": 39,
+    "id": "06:0324",
+    "candidateKeys": [
+      "organiser"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "parking",
+    "group": 33,
+    "page": 39,
+    "id": "06:0325",
+    "candidateKeys": [
+      "parking"
+    ]
+  },
+  {
+    "word": "opposite",
+    "group": 33,
+    "page": 39,
+    "id": "06:0326",
+    "candidateKeys": [
+      "opposite"
+    ]
+  },
+  {
+    "word": "original",
+    "group": 33,
+    "page": 39,
+    "id": "06:0327",
+    "candidateKeys": [
+      "original"
+    ]
+  },
+  {
+    "word": "organisation",
+    "group": 33,
+    "page": 39,
+    "id": "06:0328",
+    "candidateKeys": [
+      "organisation"
+    ]
+  },
+  {
+    "word": "owe",
+    "group": 33,
+    "page": 39,
+    "id": "06:0329",
+    "candidateKeys": [
+      "owe"
+    ]
+  },
+  {
+    "word": "organize",
+    "group": 33,
+    "page": 39,
+    "id": "06:0330",
+    "candidateKeys": [
+      "organise"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "patient",
+    "group": 34,
+    "page": 40,
+    "id": "06:0331",
+    "candidateKeys": [
+      "patient"
+    ]
+  },
+  {
+    "word": "particular",
+    "group": 34,
+    "page": 40,
+    "id": "06:0332",
+    "candidateKeys": [
+      "particular"
+    ]
+  },
+  {
+    "word": "performance",
+    "group": 34,
+    "page": 40,
+    "id": "06:0333",
+    "candidateKeys": [
+      "performance"
+    ]
+  },
+  {
+    "word": "partnership",
+    "group": 34,
+    "page": 40,
+    "id": "06:0334",
+    "candidateKeys": [
+      "partnership"
+    ]
+  },
+  {
+    "word": "performer",
+    "group": 34,
+    "page": 40,
+    "id": "06:0335",
+    "candidateKeys": [
+      "performer"
+    ]
+  },
+  {
+    "word": "participate",
+    "group": 34,
+    "page": 40,
+    "id": "06:0336",
+    "candidateKeys": [
+      "participate"
+    ]
+  },
+  {
+    "word": "passport",
+    "group": 34,
+    "page": 40,
+    "id": "06:0337",
+    "candidateKeys": [
+      "passport"
+    ]
+  },
+  {
+    "word": "particularly",
+    "group": 34,
+    "page": 40,
+    "id": "06:0338",
+    "candidateKeys": [
+      "particularly"
+    ]
+  },
+  {
+    "word": "perform",
+    "group": 34,
+    "page": 40,
+    "id": "06:0339",
+    "candidateKeys": [
+      "perform"
+    ]
+  },
+  {
+    "word": "passenger",
+    "group": 34,
+    "page": 40,
+    "id": "06:0340",
+    "candidateKeys": [
+      "passenger"
+    ]
+  },
+  {
+    "word": "photography",
+    "group": 35,
+    "page": 41,
+    "id": "06:0341",
+    "candidateKeys": [
+      "photography"
+    ]
+  },
+  {
+    "word": "permission",
+    "group": 35,
+    "page": 41,
+    "id": "06:0342",
+    "candidateKeys": [
+      "permission"
+    ]
+  },
+  {
+    "word": "plastic",
+    "group": 35,
+    "page": 41,
+    "id": "06:0343",
+    "candidateKeys": [
+      "plastic"
+    ]
+  },
+  {
+    "word": "personality",
+    "group": 35,
+    "page": 41,
+    "id": "06:0344",
+    "candidateKeys": [
+      "personality"
+    ]
+  },
+  {
+    "word": "pleasant",
+    "group": 35,
+    "page": 41,
+    "id": "06:0345",
+    "candidateKeys": [
+      "pleasant"
+    ]
+  },
+  {
+    "word": "period",
+    "group": 35,
+    "page": 41,
+    "id": "06:0346",
+    "candidateKeys": [
+      "period"
+    ]
+  },
+  {
+    "word": "persuade",
+    "group": 35,
+    "page": 41,
+    "id": "06:0347",
+    "candidateKeys": [
+      "persuade"
+    ]
+  },
+  {
+    "word": "permit",
+    "group": 35,
+    "page": 41,
+    "id": "06:0348",
+    "candidateKeys": [
+      "permit"
+    ]
+  },
+  {
+    "word": "physical",
+    "group": 35,
+    "page": 41,
+    "id": "06:0349",
+    "candidateKeys": [
+      "physical"
+    ]
+  },
+  {
+    "word": "perspective",
+    "group": 35,
+    "page": 41,
+    "id": "06:0350",
+    "candidateKeys": [
+      "perspective"
+    ]
+  },
+  {
+    "word": "postpone",
+    "group": 36,
+    "page": 43,
+    "id": "06:0351",
+    "candidateKeys": [
+      "postpone"
+    ]
+  },
+  {
+    "word": "popular",
+    "group": 36,
+    "page": 43,
+    "id": "06:0352",
+    "candidateKeys": [
+      "popular"
+    ]
+  },
+  {
+    "word": "practice",
+    "group": 36,
+    "page": 43,
+    "id": "06:0353",
+    "candidateKeys": [
+      "practice"
+    ]
+  },
+  {
+    "word": "positive",
+    "group": 36,
+    "page": 43,
+    "id": "06:0354",
+    "candidateKeys": [
+      "positive"
+    ]
+  },
+  {
+    "word": "predict",
+    "group": 36,
+    "page": 43,
+    "id": "06:0355",
+    "candidateKeys": [
+      "predict"
+    ]
+  },
+  {
+    "word": "politician",
+    "group": 36,
+    "page": 43,
+    "id": "06:0356",
+    "candidateKeys": [
+      "politician"
+    ]
+  },
+  {
+    "word": "post",
+    "group": 36,
+    "page": 43,
+    "id": "06:0357",
+    "candidateKeys": [
+      "post"
+    ]
+  },
+  {
+    "word": "population",
+    "group": 36,
+    "page": 43,
+    "id": "06:0358",
+    "candidateKeys": [
+      "population"
+    ]
+  },
+  {
+    "word": "potential",
+    "group": 36,
+    "page": 43,
+    "id": "06:0359",
+    "candidateKeys": [
+      "potential"
+    ]
+  },
+  {
+    "word": "possibility",
+    "group": 36,
+    "page": 43,
+    "id": "06:0360",
+    "candidateKeys": [
+      "possibility"
+    ]
+  },
+  {
+    "word": "produce",
+    "group": 37,
+    "page": 44,
+    "id": "06:0361",
+    "candidateKeys": [
+      "produce"
+    ]
+  },
+  {
+    "word": "previous",
+    "group": 37,
+    "page": 44,
+    "id": "06:0362",
+    "candidateKeys": [
+      "previous"
+    ]
+  },
+  {
+    "word": "professional",
+    "group": 37,
+    "page": 44,
+    "id": "06:0363",
+    "candidateKeys": [
+      "professional"
+    ]
+  },
+  {
+    "word": "prison",
+    "group": 37,
+    "page": 44,
+    "id": "06:0364",
+    "candidateKeys": [
+      "prison"
+    ]
+  },
+  {
+    "word": "programme",
+    "group": 37,
+    "page": 44,
+    "id": "06:0365",
+    "candidateKeys": [
+      "programme"
+    ]
+  },
+  {
+    "word": "prepare",
+    "group": 37,
+    "page": 44,
+    "id": "06:0366",
+    "candidateKeys": [
+      "prepare"
+    ]
+  },
+  {
+    "word": "probably",
+    "group": 37,
+    "page": 44,
+    "id": "06:0367",
+    "candidateKeys": [
+      "probably"
+    ]
+  },
+  {
+    "word": "primary school",
+    "group": 37,
+    "page": 44,
+    "id": "06:0368",
+    "candidateKeys": [
+      "primary school"
+    ]
+  },
+  {
+    "word": "producer",
+    "group": 37,
+    "page": 44,
+    "id": "06:0369",
+    "candidateKeys": [
+      "producer"
+    ]
+  },
+  {
+    "word": "private",
+    "group": 37,
+    "page": 44,
+    "id": "06:0370",
+    "candidateKeys": [
+      "private"
+    ]
+  },
+  {
+    "word": "protect",
+    "group": 38,
+    "page": 45,
+    "id": "06:0371",
+    "candidateKeys": [
+      "protect"
+    ]
+  },
+  {
+    "word": "project",
+    "group": 38,
+    "page": 45,
+    "id": "06:0372",
+    "candidateKeys": [
+      "project"
+    ]
+  },
+  {
+    "word": "public",
+    "group": 38,
+    "page": 45,
+    "id": "06:0373",
+    "candidateKeys": [
+      "public"
+    ]
+  },
+  {
+    "word": "promote",
+    "group": 38,
+    "page": 45,
+    "id": "06:0374",
+    "candidateKeys": [
+      "promote"
+    ]
+  },
+  {
+    "word": "publish",
+    "group": 38,
+    "page": 45,
+    "id": "06:0375",
+    "candidateKeys": [
+      "publish"
+    ]
+  },
+  {
+    "word": "prohibit",
+    "group": 38,
+    "page": 45,
+    "id": "06:0376",
+    "candidateKeys": [
+      "prohibit"
+    ]
+  },
+  {
+    "word": "property",
+    "group": 38,
+    "page": 45,
+    "id": "06:0377",
+    "candidateKeys": [
+      "property"
+    ]
+  },
+  {
+    "word": "promise",
+    "group": 38,
+    "page": 45,
+    "id": "06:0378",
+    "candidateKeys": [
+      "promise"
+    ]
+  },
+  {
+    "word": "provide",
+    "group": 38,
+    "page": 45,
+    "id": "06:0379",
+    "candidateKeys": [
+      "provide"
+    ]
+  },
+  {
+    "word": "pronunciation",
+    "group": 38,
+    "page": 45,
+    "id": "06:0380",
+    "candidateKeys": [
+      "pronunciation"
+    ]
+  },
+  {
+    "word": "quiz",
+    "group": 39,
+    "page": 46,
+    "id": "06:0381",
+    "candidateKeys": [
+      "quiz"
+    ]
+  },
+  {
+    "word": "punish",
+    "group": 39,
+    "page": 46,
+    "id": "06:0382",
+    "candidateKeys": [
+      "punish"
+    ]
+  },
+  {
+    "word": "rather than",
+    "group": 39,
+    "page": 46,
+    "id": "06:0383",
+    "candidateKeys": [
+      "rather than"
+    ]
+  },
+  {
+    "word": "qualified",
+    "group": 39,
+    "page": 46,
+    "id": "06:0384",
+    "candidateKeys": [
+      "qualified"
+    ]
+  },
+  {
+    "word": "realise",
+    "group": 39,
+    "page": 46,
+    "id": "06:0385",
+    "candidateKeys": [
+      "realise"
+    ]
+  },
+  {
+    "word": "punctual",
+    "group": 39,
+    "page": 46,
+    "id": "06:0386",
+    "candidateKeys": [
+      "punctual"
+    ]
+  },
+  {
+    "word": "queue",
+    "group": 39,
+    "page": 46,
+    "id": "06:0387",
+    "candidateKeys": [
+      "queue"
+    ]
+  },
+  {
+    "word": "pursue",
+    "group": 39,
+    "page": 46,
+    "id": "06:0388",
+    "candidateKeys": [
+      "pursue"
+    ]
+  },
+  {
+    "word": "rare",
+    "group": 39,
+    "page": 46,
+    "id": "06:0389",
+    "candidateKeys": [
+      "rare"
+    ]
+  },
+  {
+    "word": "quality",
+    "group": 39,
+    "page": 46,
+    "id": "06:0390",
+    "candidateKeys": [
+      "quality"
+    ]
+  },
+  {
+    "word": "recipe",
+    "group": 40,
+    "page": 48,
+    "id": "06:0391",
+    "candidateKeys": [
+      "recipe"
+    ]
+  },
+  {
+    "word": "reasonable",
+    "group": 40,
+    "page": 48,
+    "id": "06:0392",
+    "candidateKeys": [
+      "reasonable"
+    ]
+  },
+  {
+    "word": "recommend",
+    "group": 40,
+    "page": 48,
+    "id": "06:0393",
+    "candidateKeys": [
+      "recommend"
+    ]
+  },
+  {
+    "word": "recently",
+    "group": 40,
+    "page": 48,
+    "id": "06:0394",
+    "candidateKeys": [
+      "recently"
+    ]
+  },
+  {
+    "word": "record",
+    "group": 40,
+    "page": 48,
+    "id": "06:0395",
+    "candidateKeys": [
+      "record"
+    ]
+  },
+  {
+    "word": "realistic",
+    "group": 40,
+    "page": 48,
+    "id": "06:0396",
+    "candidateKeys": [
+      "realistic"
+    ]
+  },
+  {
+    "word": "receptionist",
+    "group": 40,
+    "page": 48,
+    "id": "06:0397",
+    "candidateKeys": [
+      "receptionist"
+    ]
+  },
+  {
+    "word": "receive",
+    "group": 40,
+    "page": 48,
+    "id": "06:0398",
+    "candidateKeys": [
+      "receive"
+    ]
+  },
+  {
+    "word": "recognise",
+    "group": 40,
+    "page": 48,
+    "id": "06:0399",
+    "candidateKeys": [
+      "recognise"
+    ]
+  },
+  {
+    "word": "reception",
+    "group": 40,
+    "page": 48,
+    "id": "06:0400",
+    "candidateKeys": [
+      "reception"
+    ]
+  },
+  {
+    "word": "register",
+    "group": 41,
+    "page": 49,
+    "id": "06:0401",
+    "candidateKeys": [
+      "register"
+    ]
+  },
+  {
+    "word": "reduce",
+    "group": 41,
+    "page": 49,
+    "id": "06:0402",
+    "candidateKeys": [
+      "reduce"
+    ]
+  },
+  {
+    "word": "regularly",
+    "group": 41,
+    "page": 49,
+    "id": "06:0403",
+    "candidateKeys": [
+      "regularly"
+    ]
+  },
+  {
+    "word": "refreshments",
+    "group": 41,
+    "page": 49,
+    "id": "06:0404",
+    "candidateKeys": [
+      "refreshments"
+    ]
+  },
+  {
+    "word": "relationship",
+    "group": 41,
+    "page": 49,
+    "id": "06:0405",
+    "candidateKeys": [
+      "relationship"
+    ]
+  },
+  {
+    "word": "recycle",
+    "group": 41,
+    "page": 49,
+    "id": "06:0406",
+    "candidateKeys": [
+      "recycle"
+    ]
+  },
+  {
+    "word": "refund",
+    "group": 41,
+    "page": 49,
+    "id": "06:0407",
+    "candidateKeys": [
+      "refund"
+    ]
+  },
+  {
+    "word": "referee",
+    "group": 41,
+    "page": 49,
+    "id": "06:0408",
+    "candidateKeys": [
+      "referee"
+    ]
+  },
+  {
+    "word": "regret",
+    "group": 41,
+    "page": 49,
+    "id": "06:0409",
+    "candidateKeys": [
+      "regret"
+    ]
+  },
+  {
+    "word": "refrigerator",
+    "group": 41,
+    "page": 49,
+    "id": "06:0410",
+    "candidateKeys": [
+      "refrigerator"
+    ]
+  },
+  {
+    "word": "replace",
+    "group": 42,
+    "page": 50,
+    "id": "06:0411",
+    "candidateKeys": [
+      "replace"
+    ]
+  },
+  {
+    "word": "relaxation",
+    "group": 42,
+    "page": 50,
+    "id": "06:0412",
+    "candidateKeys": [
+      "relaxation"
+    ]
+  },
+  {
+    "word": "rescue",
+    "group": 42,
+    "page": 50,
+    "id": "06:0413",
+    "candidateKeys": [
+      "rescue"
+    ]
+  },
+  {
+    "word": "remote",
+    "group": 42,
+    "page": 50,
+    "id": "06:0414",
+    "candidateKeys": [
+      "remote"
+    ]
+  },
+  {
+    "word": "research",
+    "group": 42,
+    "page": 50,
+    "id": "06:0415",
+    "candidateKeys": [
+      "research"
+    ]
+  },
+  {
+    "word": "relative",
+    "group": 42,
+    "page": 50,
+    "id": "06:0416",
+    "candidateKeys": [
+      "relative"
+    ]
+  },
+  {
+    "word": "repair",
+    "group": 42,
+    "page": 50,
+    "id": "06:0417",
+    "candidateKeys": [
+      "repair"
+    ]
+  },
+  {
+    "word": "relief",
+    "group": 42,
+    "page": 50,
+    "id": "06:0418",
+    "candidateKeys": [
+      "relief"
+    ]
+  },
+  {
+    "word": "request",
+    "group": 42,
+    "page": 50,
+    "id": "06:0419",
+    "candidateKeys": [
+      "request"
+    ]
+  },
+  {
+    "word": "rent",
+    "group": 42,
+    "page": 50,
+    "id": "06:0420",
+    "candidateKeys": [
+      "rent"
+    ]
+  },
+  {
+    "word": "review",
+    "group": 43,
+    "page": 51,
+    "id": "06:0421",
+    "candidateKeys": [
+      "review"
+    ]
+  },
+  {
+    "word": "reserve",
+    "group": 43,
+    "page": 51,
+    "id": "06:0422",
+    "candidateKeys": [
+      "reserve"
+    ]
+  },
+  {
+    "word": "reward",
+    "group": 43,
+    "page": 51,
+    "id": "06:0423",
+    "candidateKeys": [
+      "reward"
+    ]
+  },
+  {
+    "word": "respect",
+    "group": 43,
+    "page": 51,
+    "id": "06:0424",
+    "candidateKeys": [
+      "respect"
+    ]
+  },
+  {
+    "word": "risk",
+    "group": 43,
+    "page": 51,
+    "id": "06:0425",
+    "candidateKeys": [
+      "risk"
+    ]
+  },
+  {
+    "word": "reservation",
+    "group": 43,
+    "page": 51,
+    "id": "06:0426",
+    "candidateKeys": [
+      "reservation"
+    ]
+  },
+  {
+    "word": "retired",
+    "group": 43,
+    "page": 51,
+    "id": "06:0427",
+    "candidateKeys": [
+      "retired"
+    ]
+  },
+  {
+    "word": "resort",
+    "group": 43,
+    "page": 51,
+    "id": "06:0428",
+    "candidateKeys": [
+      "resort"
+    ]
+  },
+  {
+    "word": "revise",
+    "group": 43,
+    "page": 51,
+    "id": "06:0429",
+    "candidateKeys": [
+      "revise"
+    ]
+  },
+  {
+    "word": "responsibility",
+    "group": 43,
+    "page": 51,
+    "id": "06:0430",
+    "candidateKeys": [
+      "responsibility"
+    ]
+  },
+  {
+    "word": "scenery",
+    "group": 44,
+    "page": 52,
+    "id": "06:0431",
+    "candidateKeys": [
+      "scenery"
+    ]
+  },
+  {
+    "word": "rubbish",
+    "group": 44,
+    "page": 52,
+    "id": "06:0432",
+    "candidateKeys": [
+      "rubbish"
+    ]
+  },
+  {
+    "word": "section",
+    "group": 44,
+    "page": 52,
+    "id": "06:0433",
+    "candidateKeys": [
+      "section"
+    ]
+  },
+  {
+    "word": "salary",
+    "group": 44,
+    "page": 52,
+    "id": "06:0434",
+    "candidateKeys": [
+      "salary"
+    ]
+  },
+  {
+    "word": "security",
+    "group": 44,
+    "page": 52,
+    "id": "06:0435",
+    "candidateKeys": [
+      "security"
+    ]
+  },
+  {
+    "word": "routine",
+    "group": 44,
+    "page": 52,
+    "id": "06:0436",
+    "candidateKeys": [
+      "routine"
+    ]
+  },
+  {
+    "word": "satisfy",
+    "group": 44,
+    "page": 52,
+    "id": "06:0437",
+    "candidateKeys": [
+      "satisfy"
+    ]
+  },
+  {
+    "word": "rush hour",
+    "group": 44,
+    "page": 52,
+    "id": "06:0438",
+    "candidateKeys": [
+      "rush hour"
+    ]
+  },
+  {
+    "word": "secondary",
+    "group": 44,
+    "page": 52,
+    "id": "06:0439",
+    "candidateKeys": [
+      "secondary"
+    ]
+  },
+  {
+    "word": "sale",
+    "group": 44,
+    "page": 52,
+    "id": "06:0440",
+    "candidateKeys": [
+      "sale"
+    ]
+  },
+  {
+    "word": "sightseeing",
+    "group": 45,
+    "page": 53,
+    "id": "06:0441",
+    "candidateKeys": [
+      "sightseeing"
+    ]
+  },
+  {
+    "word": "serious",
+    "group": 45,
+    "page": 53,
+    "id": "06:0442",
+    "candidateKeys": [
+      "serious"
+    ]
+  },
+  {
+    "word": "silent",
+    "group": 45,
+    "page": 53,
+    "id": "06:0443",
+    "candidateKeys": [
+      "silent"
+    ]
+  },
+  {
+    "word": "session",
+    "group": 45,
+    "page": 53,
+    "id": "06:0444",
+    "candidateKeys": [
+      "session"
+    ]
+  },
+  {
+    "word": "similar",
+    "group": 45,
+    "page": 53,
+    "id": "06:0445",
+    "candidateKeys": [
+      "similar"
+    ]
+  },
+  {
+    "word": "select",
+    "group": 45,
+    "page": 53,
+    "id": "06:0446",
+    "candidateKeys": [
+      "select"
+    ]
+  },
+  {
+    "word": "shoot",
+    "group": 45,
+    "page": 53,
+    "id": "06:0447",
+    "candidateKeys": [
+      "shoot"
+    ]
+  },
+  {
+    "word": "service",
+    "group": 45,
+    "page": 53,
+    "id": "06:0448",
+    "candidateKeys": [
+      "service"
+    ]
+  },
+  {
+    "word": "sign up",
+    "group": 45,
+    "page": 53,
+    "id": "06:0449",
+    "candidateKeys": [
+      "sign up"
+    ]
+  },
+  {
+    "word": "shoot",
+    "group": 45,
+    "page": 53,
+    "id": "06:0450",
+    "candidateKeys": [
+      "shoot"
+    ]
+  },
+  {
+    "word": "spare",
+    "group": 46,
+    "page": 55,
+    "id": "06:0451",
+    "candidateKeys": [
+      "spare"
+    ]
+  },
+  {
+    "word": "situation",
+    "group": 46,
+    "page": 55,
+    "id": "06:0452",
+    "candidateKeys": [
+      "situation"
+    ]
+  },
+  {
+    "word": "specialize",
+    "group": 46,
+    "page": 55,
+    "id": "06:0453",
+    "candidateKeys": [
+      "specialize"
+    ]
+  },
+  {
+    "word": "software",
+    "group": 46,
+    "page": 55,
+    "id": "06:0454",
+    "candidateKeys": [
+      "software"
+    ]
+  },
+  {
+    "word": "staff",
+    "group": 46,
+    "page": 55,
+    "id": "06:0455",
+    "candidateKeys": [
+      "staff"
+    ]
+  },
+  {
+    "word": "single",
+    "group": 46,
+    "page": 55,
+    "id": "06:0456",
+    "candidateKeys": [
+      "single"
+    ]
+  },
+  {
+    "word": "spacious",
+    "group": 46,
+    "page": 55,
+    "id": "06:0457",
+    "candidateKeys": [
+      "spacious"
+    ]
+  },
+  {
+    "word": "social media",
+    "group": 46,
+    "page": 55,
+    "id": "06:0458",
+    "candidateKeys": [
+      "social media"
+    ]
+  },
+  {
+    "word": "special offer",
+    "group": 46,
+    "page": 55,
+    "id": "06:0459",
+    "candidateKeys": [
+      "special offer"
+    ]
+  },
+  {
+    "word": "space",
+    "group": 46,
+    "page": 55,
+    "id": "06:0460",
+    "candidateKeys": [
+      "space"
+    ]
+  },
+  {
+    "word": "stylish",
+    "group": 47,
+    "page": 56,
+    "id": "06:0461",
+    "candidateKeys": [
+      "stylish"
+    ]
+  },
+  {
+    "word": "strange",
+    "group": 47,
+    "page": 56,
+    "id": "06:0462",
+    "candidateKeys": [
+      "strange"
+    ]
+  },
+  {
+    "word": "suggestion",
+    "group": 47,
+    "page": 56,
+    "id": "06:0463",
+    "candidateKeys": [
+      "suggestion"
+    ]
+  },
+  {
+    "word": "structure",
+    "group": 47,
+    "page": 56,
+    "id": "06:0464",
+    "candidateKeys": [
+      "structure"
+    ]
+  },
+  {
+    "word": "suitable",
+    "group": 47,
+    "page": 56,
+    "id": "06:0465",
+    "candidateKeys": [
+      "suitable"
+    ]
+  },
+  {
+    "word": "straight away",
+    "group": 47,
+    "page": 56,
+    "id": "06:0466",
+    "candidateKeys": [
+      "straight away"
+    ]
+  },
+  {
+    "word": "stuff",
+    "group": 47,
+    "page": 56,
+    "id": "06:0467",
+    "candidateKeys": [
+      "stuff"
+    ]
+  },
+  {
+    "word": "stressful",
+    "group": 47,
+    "page": 56,
+    "id": "06:0468",
+    "candidateKeys": [
+      "stressful"
+    ]
+  },
+  {
+    "word": "successful",
+    "group": 47,
+    "page": 56,
+    "id": "06:0469",
+    "candidateKeys": [
+      "successful"
+    ]
+  },
+  {
+    "word": "struggle",
+    "group": 47,
+    "page": 56,
+    "id": "06:0470",
+    "candidateKeys": [
+      "struggle"
+    ]
+  },
+  {
+    "word": "technical",
+    "group": 48,
+    "page": 57,
+    "id": "06:0471",
+    "candidateKeys": [
+      "technical"
+    ]
+  },
+  {
+    "word": "switch off",
+    "group": 48,
+    "page": 57,
+    "id": "06:0472",
+    "candidateKeys": [
+      "switch off"
+    ]
+  },
+  {
+    "word": "temperature",
+    "group": 48,
+    "page": 57,
+    "id": "06:0473",
+    "candidateKeys": [
+      "temperature"
+    ]
+  },
+  {
+    "word": "take ages",
+    "group": 48,
+    "page": 57,
+    "id": "06:0474",
+    "candidateKeys": [
+      "take ages"
+    ]
+  },
+  {
+    "word": "tournament",
+    "group": 48,
+    "page": 57,
+    "id": "06:0475",
+    "candidateKeys": [
+      "tournament"
+    ]
+  },
+  {
+    "word": "surround",
+    "group": 48,
+    "page": 57,
+    "id": "06:0476",
+    "candidateKeys": [
+      "surround"
+    ]
+  },
+  {
+    "word": "talented",
+    "group": 48,
+    "page": 57,
+    "id": "06:0477",
+    "candidateKeys": [
+      "talented"
+    ]
+  },
+  {
+    "word": "take advantage of",
+    "group": 48,
+    "page": 57,
+    "id": "06:0478",
+    "candidateKeys": [
+      "take advantage of"
+    ]
+  },
+  {
+    "word": "technology",
+    "group": 48,
+    "page": 57,
+    "id": "06:0479",
+    "candidateKeys": [
+      "technology"
+    ]
+  },
+  {
+    "word": "takeaway",
+    "group": 48,
+    "page": 57,
+    "id": "06:0480",
+    "candidateKeys": [
+      "takeaway"
+    ]
+  },
+  {
+    "word": "unfortunately",
+    "group": 49,
+    "page": 58,
+    "id": "06:0481",
+    "candidateKeys": [
+      "unfortunately"
+    ]
+  },
+  {
+    "word": "transportation",
+    "group": 49,
+    "page": 58,
+    "id": "06:0482",
+    "candidateKeys": [
+      "transportation"
+    ]
+  },
+  {
+    "word": "unknown",
+    "group": 49,
+    "page": 58,
+    "id": "06:0483",
+    "candidateKeys": [
+      "unknown"
+    ]
+  },
+  {
+    "word": "uncomfortable",
+    "group": 49,
+    "page": 58,
+    "id": "06:0484",
+    "candidateKeys": [
+      "uncomfortable"
+    ]
+  },
+  {
+    "word": "unnecessary",
+    "group": 49,
+    "page": 58,
+    "id": "06:0485",
+    "candidateKeys": [
+      "unnecessary"
+    ]
+  },
+  {
+    "word": "tradition",
+    "group": 49,
+    "page": 58,
+    "id": "06:0486",
+    "candidateKeys": [
+      "tradition"
+    ]
+  },
+  {
+    "word": "unforgettable",
+    "group": 49,
+    "page": 58,
+    "id": "06:0487",
+    "candidateKeys": [
+      "unforgettable"
+    ]
+  },
+  {
+    "word": "typical",
+    "group": 49,
+    "page": 58,
+    "id": "06:0488",
+    "candidateKeys": [
+      "typical"
+    ]
+  },
+  {
+    "word": "unique",
+    "group": 49,
+    "page": 58,
+    "id": "06:0489",
+    "candidateKeys": [
+      "unique"
+    ]
+  },
+  {
+    "word": "undisturbed",
+    "group": 49,
+    "page": 58,
+    "id": "06:0490",
+    "candidateKeys": [
+      "undisturbed"
+    ]
+  },
+  {
+    "word": "vote",
+    "group": 50,
+    "page": 59,
+    "id": "06:0491",
+    "candidateKeys": [
+      "vote"
+    ]
+  },
+  {
+    "word": "variety",
+    "group": 50,
+    "page": 59,
+    "id": "06:0492",
+    "candidateKeys": [
+      "variety"
+    ]
+  },
+  {
+    "word": "wedding",
+    "group": 50,
+    "page": 59,
+    "id": "06:0493",
+    "candidateKeys": [
+      "wedding"
+    ]
+  },
+  {
+    "word": "vehicle",
+    "group": 50,
+    "page": 59,
+    "id": "06:0494",
+    "candidateKeys": [
+      "vehicle"
+    ]
+  },
+  {
+    "word": "worth",
+    "group": 50,
+    "page": 59,
+    "id": "06:0495",
+    "candidateKeys": [
+      "worth"
+    ]
+  },
+  {
+    "word": "valuable",
+    "group": 50,
+    "page": 59,
+    "id": "06:0496",
+    "candidateKeys": [
+      "valuable"
+    ]
+  },
+  {
+    "word": "volunteer",
+    "group": 50,
+    "page": 59,
+    "id": "06:0497",
+    "candidateKeys": [
+      "volunteer"
+    ]
+  },
+  {
+    "word": "vegetarians",
+    "group": 50,
+    "page": 59,
+    "id": "06:0498",
+    "candidateKeys": [
+      "vegetarian"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  },
+  {
+    "word": "weakness",
+    "group": 50,
+    "page": 59,
+    "id": "06:0499",
+    "candidateKeys": [
+      "weakness"
+    ]
+  },
+  {
+    "word": "views",
+    "group": 50,
+    "page": 59,
+    "id": "06:0500",
+    "candidateKeys": [
+      "view"
+    ],
+    "identityNormalizationRevision": "pet-final-identity-2026-11-13-1"
+  }
+]

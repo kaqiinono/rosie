@@ -15,6 +15,25 @@ const BLANK = '______'
 
 type ItemStatus = 'idle' | 'correct' | 'wrong'
 
+export interface ExerciseItemState {
+  values: string[]
+  first?: { values: string[]; correct: boolean; helped: boolean }
+  status?: Exclude<ItemStatus, 'idle'>
+  helped?: boolean
+  retries?: number
+  revealed?: boolean
+}
+
+/** Controlled state for a single exercise group. Assessment grading is owned by the caller. */
+export interface ExercisePracticeOptions {
+  mode: 'practice' | 'assessment'
+  disabled?: boolean
+  disabledItems?: number[]
+  submitted?: boolean
+  states: Record<number, ExerciseItemState | undefined>
+  onItemChange: (itemNumber: number, state: ExerciseItemState) => void
+}
+
 interface ExerciseExample {
   cue: string
   answer: string
@@ -121,7 +140,9 @@ function parseExpected(item: GrammarExerciseItem, blankCount: number): string[] 
 }
 
 function isGraded(item: GrammarExerciseItem): boolean {
-  return exerciseExample(item) == null && item.answer.trim() !== ''
+  return item.acceptedAnswerSets !== undefined
+    ? item.acceptedAnswerSets.length > 0
+    : exerciseExample(item) == null && item.answer.trim() !== ''
 }
 
 /** 选择题答案拆分：多选答案形如 "A, B"（学习指导），单元素时退化为整串比较 */
@@ -135,6 +156,7 @@ function choiceAnswerParts(answer: string): string[] {
 
 /** 选择题点选判分：答案按逗号拆分后任一片段命中即对（兼容多选 "A, B"） */
 function isChoiceCorrect(item: GrammarExerciseItem, value: string): boolean {
+  if (item.acceptedAnswerSets) return isExerciseAnswerCorrect(item, [value])
   const accepted = choiceAnswerParts(item.answer)
   const normalizedValue = normalize(value)
   if (accepted.includes(normalizedValue)) return true
@@ -144,6 +166,49 @@ function isChoiceCorrect(item: GrammarExerciseItem, value: string): boolean {
     ? accepted.includes(normalize(labeledChoice[1])) ||
         accepted.includes(normalize(labeledChoice[2]))
     : false
+}
+
+function answerSlotCount(item: GrammarExerciseItem): number {
+  if (item.type === 'multiple_choice' || item.type === 'matching') return 1
+  return Math.max(promptParts(item).length - 1, 1)
+}
+
+function hasCompleteAnswer(item: GrammarExerciseItem, values: string[]): boolean {
+  return (
+    values.length === answerSlotCount(item) &&
+    Array.from(values).every((value) => Boolean(value?.trim()))
+  )
+}
+
+export function isExerciseAnswerCorrect(item: GrammarExerciseItem, values: string[]): boolean {
+  if (item.acceptedAnswerSets) {
+    if (!hasCompleteAnswer(item, values)) return false
+    const normalizeStrict = (value: string) =>
+      value.trim().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').toLowerCase()
+    return item.acceptedAnswerSets.some(
+      (set) =>
+        set.length === values.length &&
+        set.every(
+          (expected, index) => normalizeStrict(expected) === normalizeStrict(values[index] ?? ''),
+        ),
+    )
+  }
+  if (item.type === 'multiple_choice' || item.type === 'matching') {
+    return Boolean(values[0]?.trim()) && isChoiceCorrect(item, values[0] ?? '')
+  }
+  if (values.every((value) => !value?.trim())) return false
+  const expected = parseExpected(item, item.prompt.split(BLANK).length - 1)
+  return values
+    .map((value) => normalize(value ?? ''))
+    .every(
+      (value, index) =>
+        value === normalize(expected[index] ?? expected[0] ?? '') ||
+        expected.some((answer) => normalize(answer) === value),
+    )
+}
+
+function referenceAnswer(item: GrammarExerciseItem): string {
+  return item.acceptedAnswerSets?.map((set) => set.join(' · ')).join(' / ') ?? item.answer
 }
 
 function choicePresentation(choice: string, index: number): { label: string; text: string } {
@@ -194,6 +259,11 @@ interface ItemCardProps {
   onCheck: () => void
   /** multiple_choice 点选备选答案（写入第一个空并立即判分） */
   onPick: (value: string) => void
+  disabled?: boolean
+  deferred?: boolean
+  revealed?: boolean
+  onReveal?: () => void
+  onRetry?: () => void
 }
 
 function sentenceCues(item: GrammarExerciseItem): string[] {
@@ -212,9 +282,19 @@ interface SentenceBuilderProps {
   openEnded: boolean
   onChange: (value: string) => void
   onCheck: () => void
+  disabled?: boolean
+  deferred?: boolean
 }
 
-function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: SentenceBuilderProps) {
+function SentenceBuilder({
+  item,
+  status,
+  openEnded,
+  onChange,
+  onCheck,
+  disabled,
+  deferred,
+}: SentenceBuilderProps) {
   const cues = useMemo(() => sentenceCues(item), [item])
   const [order, setOrder] = useState<number[]>([])
   const [dragging, setDragging] = useState<number | null>(null)
@@ -231,6 +311,7 @@ function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: Sentenc
   const remove = (index: number) => commit(order.filter((entry) => entry !== index))
 
   const insertAt = (index: number, target: number) => {
+    if (disabled) return
     const without = order.filter((entry) => entry !== index)
     const previousPosition = order.indexOf(index)
     const adjustedTarget = previousPosition >= 0 && previousPosition < target ? target - 1 : target
@@ -252,7 +333,8 @@ function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: Sentenc
             <Button
               key={index}
               type="button"
-              draggable
+              draggable={!disabled}
+              disabled={disabled}
               onDragStart={() => setDragging(index)}
               onDragEnd={() => setDragging(null)}
               onClick={() => append(index)}
@@ -295,7 +377,8 @@ function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: Sentenc
               {slot < order.length && (
                 <Button
                   type="button"
-                  draggable
+                  draggable={!disabled}
+                  disabled={disabled}
                   onDragStart={() => setDragging(order[slot])}
                   onDragEnd={() => setDragging(null)}
                   onClick={() => remove(order[slot])}
@@ -318,10 +401,10 @@ function SentenceBuilder({ item, status, openEnded, onChange, onCheck }: Sentenc
         </p>
       </div>
 
-      {!openEnded && status === 'idle' && (
+      {!openEnded && !deferred && status === 'idle' && (
         <Button
           type="button"
-          disabled={order.length !== cues.length}
+          disabled={disabled || order.length !== cues.length}
           onClick={onCheck}
           variant="solid"
           color="blue"
@@ -339,11 +422,13 @@ function ChoiceChips({
   item,
   selectedValue,
   status,
+  disabled,
   onPick,
 }: {
   item: GrammarExerciseItem
   selectedValue: string
   status: ItemStatus
+  disabled?: boolean
   onPick: (v: string) => void
 }) {
   let choices: string[] = item.options && item.options.length > 0 ? [...item.options] : []
@@ -370,7 +455,7 @@ function ChoiceChips({
             type="button"
             role="radio"
             aria-checked={isSelected}
-            disabled={judged}
+            disabled={disabled || judged}
             onClick={() => onPick(c)}
             className={`focus-visible:ring-app-blue flex min-h-14 items-center gap-3 rounded-xl px-4 py-3 text-left text-base leading-relaxed font-semibold transition-[color,background-color,box-shadow,transform] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${
               isAnswer
@@ -379,7 +464,9 @@ function ChoiceChips({
                   ? 'bg-app-red-light text-app-red shadow-sticker-sm'
                   : judged
                     ? 'bg-surface-dim/70 text-text-muted'
-                    : 'bg-surface-dim text-text-primary hover:bg-app-blue-light hover:text-app-blue-dark cursor-pointer active:scale-[0.99]'
+                    : isSelected
+                      ? 'bg-app-blue-light text-app-blue-dark shadow-sticker-sm'
+                      : 'bg-surface-dim text-text-primary enabled:hover:bg-app-blue-light enabled:hover:text-app-blue-dark enabled:cursor-pointer enabled:active:scale-[0.99]'
             }`}
           >
             <span
@@ -411,7 +498,20 @@ function ChoiceChips({
   )
 }
 
-function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions }: ItemCardProps) {
+function ItemCard({
+  item,
+  values,
+  status,
+  onChange,
+  onCheck,
+  onPick,
+  hideOptions,
+  disabled,
+  deferred,
+  revealed,
+  onReveal,
+  onRetry,
+}: ItemCardProps) {
   const response = exerciseResponse(item)
   const displayItem = response ? { ...item, prompt: response.prompt } : item
   const example = exerciseExample(item)
@@ -463,6 +563,8 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
   }
 
   const inputClass = (idx: number) => {
+    // Explicit answer sets are graded as a whole, including feedback for all blanks.
+    const strictCorrect = item.acceptedAnswerSets ? status === 'correct' : undefined
     if (usesUnderlineBlank) {
       const base =
         'inline-block min-w-[6ch] max-w-full border-0 border-b-2 bg-transparent px-1 py-0.5 text-center text-base font-semibold text-text-primary outline-none transition-colors'
@@ -470,9 +572,10 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
       const expected = parseExpected(item, blankCount)
       const value = normalize(values[idx] ?? '')
       const correct =
-        value !== '' &&
-        (value === normalize(expected[idx] ?? expected[0] ?? '') ||
-          expected.some((answer) => normalize(answer) === value))
+        strictCorrect ??
+        (value !== '' &&
+          (value === normalize(expected[idx] ?? expected[0] ?? '') ||
+            expected.some((answer) => normalize(answer) === value)))
       return correct
         ? `${base} border-app-green text-app-green-dark`
         : `${base} border-app-red text-app-red`
@@ -483,9 +586,10 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
     const expected = parseExpected(item, blankCount)
     const v = normalize(values[idx] ?? '')
     const ok =
-      v !== '' &&
-      (v === normalize(expected[idx] ?? expected[0] ?? '') ||
-        expected.some((e) => normalize(e) === v))
+      strictCorrect ??
+      (v !== '' &&
+        (v === normalize(expected[idx] ?? expected[0] ?? '') ||
+          expected.some((e) => normalize(e) === v)))
     return ok
       ? `${base} border-app-green bg-app-green-light text-app-green-dark`
       : `${base} border-app-red bg-app-red-light text-app-red`
@@ -558,6 +662,7 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
                         : undefined
                     }
                     value={values[i] ?? ''}
+                    disabled={disabled}
                     onChange={(e) => onChange(i, e.target.value)}
                     placeholder={usesUnderlineBlank ? undefined : '自由作答'}
                     aria-label={`第 ${item.number} 题第 ${i + 1} 个空`}
@@ -584,9 +689,10 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
                         : undefined
                     }
                     value={values[i] ?? ''}
+                    disabled={disabled}
                     onChange={(e) => onChange(i, e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') onCheck()
+                      if (e.key === 'Enter' && !e.nativeEvent.isComposing && !deferred) onCheck()
                     }}
                     aria-label={`第 ${item.number} 题第 ${i + 1} 个空`}
                     autoComplete="off"
@@ -606,17 +712,26 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
             {response.response}
           </span>
         )}
-        {!openEnded && !isChoice && !needsWholeAnswer && status === 'idle' && (
-          <Button
-            onClick={onCheck}
-            variant="solid"
-            color="blue"
-            size="1"
-            className="ml-1.5 shrink-0"
-          >
-            检查
-          </Button>
-        )}
+        {!openEnded &&
+          !isChoice &&
+          !needsWholeAnswer &&
+          !deferred &&
+          !revealed &&
+          status === 'idle' && (
+            <Button
+              type="button"
+              disabled={
+                disabled || (item.acceptedAnswerSets != null && !hasCompleteAnswer(item, values))
+              }
+              onClick={onCheck}
+              variant="solid"
+              color="blue"
+              size="1"
+              className="ml-1.5 shrink-0"
+            >
+              检查
+            </Button>
+          )}
         {status === 'correct' && (
           <span className="text-app-green-dark ml-1.5 text-sm font-bold">✔ 正确</span>
         )}
@@ -627,6 +742,8 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
           item={item}
           status={status}
           openEnded={openEnded}
+          disabled={disabled}
+          deferred={deferred || revealed}
           onChange={(value) => onChange(0, value)}
           onCheck={onCheck}
         />
@@ -641,9 +758,12 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
             color={status === 'correct' ? 'green' : status === 'wrong' ? 'red' : undefined}
             aria-label={`第 ${item.number} 题完整答案`}
             value={values[0] ?? ''}
+            disabled={disabled}
             onChange={(event) => onChange(0, event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' && !openEnded) onCheck()
+              if (event.key === 'Enter' && !event.nativeEvent.isComposing && !openEnded && !deferred) {
+                onCheck()
+              }
             }}
             placeholder={openEnded ? '输入你的答案' : '写出完整句子'}
             autoComplete="off"
@@ -651,10 +771,10 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
             spellCheck={false}
             className="min-w-0 flex-1"
           />
-          {!openEnded && status === 'idle' && (
+          {!openEnded && !deferred && !revealed && status === 'idle' && (
             <Button
               type="button"
-              disabled={!values[0]?.trim()}
+              disabled={disabled || !values[0]?.trim()}
               onClick={onCheck}
               variant="solid"
               color="blue"
@@ -668,19 +788,39 @@ function ItemCard({ item, values, status, onChange, onCheck, onPick, hideOptions
       )}
       {/* 选择/匹配类题目的选项列表（未共享渲染时才展示；multiple_choice 用 chips 展示） */}
       {isChoice && (
-        <ChoiceChips item={item} selectedValue={selectedChoice} status={status} onPick={onPick} />
+        <ChoiceChips
+          item={item}
+          selectedValue={selectedChoice}
+          status={status}
+          disabled={disabled}
+          onPick={onPick}
+        />
       )}
       {!hideOptions && item.options && item.options.length > 0 && !isChoice && (
         <ReferenceOptions options={item.options} />
       )}
-      {status === 'wrong' && item.answer && (
-        <div className="text-text-secondary mt-1.5 pl-7 text-[13px]">
-          参考答案：<span className="text-text-primary font-semibold">{item.answer}</span>
+      {(status === 'wrong' || revealed) && referenceAnswer(item) && (
+        <div className="text-text-secondary mt-1.5 pl-7 text-[13px]" role="status">
+          参考答案：<span className="text-text-primary font-semibold">{referenceAnswer(item)}</span>
         </div>
       )}
-      {status !== 'idle' && item.explanation && (
-        <div className="bg-app-blue-light/55 text-app-blue-dark mt-2 rounded-lg px-3 py-2 text-[13px] leading-relaxed sm:ml-7">
+      {(status !== 'idle' || revealed) && item.explanation && (
+        <div className="bg-app-blue-light/55 text-app-blue-dark mt-2 rounded-lg px-3 py-2 text-[13px] leading-relaxed whitespace-pre-line sm:ml-7">
           💡 {item.explanation}
+        </div>
+      )}
+      {(onReveal || onRetry) && (
+        <div className="mt-2 flex flex-wrap gap-2 sm:ml-7">
+          {onReveal && (
+            <Button type="button" variant="ghost" color="gray" size="2" onClick={onReveal}>
+              查看答案
+            </Button>
+          )}
+          {onRetry && (
+            <Button type="button" variant="soft" size="2" onClick={onRetry}>
+              再试一次
+            </Button>
+          )}
         </div>
       )}
     </div>
@@ -700,6 +840,7 @@ interface ExerciseGroupProps {
   onEditGroup?: (groupIdx: number) => void
   onPreviewFigure: (figure: GrammarFigure) => void
   onRemoveFigure?: (groupIdx: number) => void
+  practice?: ExercisePracticeOptions
 }
 
 type MatchingSelection =
@@ -934,10 +1075,15 @@ function ExerciseGroup({
   onEditGroup,
   onPreviewFigure,
   onRemoveFigure,
+  practice,
 }: ExerciseGroupProps) {
   const [inputs, setInputs] = useState<Record<string, string[]>>({})
   const [statuses, setStatuses] = useState<Record<number, ItemStatus>>({})
   const [resetVersion, setResetVersion] = useState(0)
+  const isAssessment = practice?.mode === 'assessment'
+  const isDeferred = isAssessment && !practice?.submitted
+  const isReadOnly = Boolean(practice?.disabled || practice?.submitted)
+  const isItemReadOnly = (n: number) => isReadOnly || practice?.disabledItems?.includes(n)
 
   const itemKey = (n: number) => `g${groupIdx}-${n}`
   const graded = useMemo(() => group.items.filter(isGraded), [group.items])
@@ -945,33 +1091,48 @@ function ExerciseGroup({
   const isMatchingGroup =
     group.items.length > 0 && group.items.every((item) => item.type === 'matching')
   const matchingOptions = isMatchingGroup ? (shared ?? group.items[0]?.options ?? []) : []
-  const correctCount = graded.filter((it) => statuses[it.number] === 'correct').length
-  const allJudged =
-    graded.length > 0 &&
-    graded.every((it) => statuses[it.number] === 'correct' || statuses[it.number] === 'wrong')
+  const statusOf = (n: number): ItemStatus => {
+    if (!practice) return statuses[n] ?? 'idle'
+    return isDeferred ? 'idle' : practice.states[n]?.status ?? 'idle'
+  }
+  const valuesOf = (n: number): string[] =>
+    (practice ? practice.states[n]?.values : inputs[itemKey(n)]) ?? []
+  const correctCount = graded.filter((it) => statusOf(it.number) === 'correct').length
+  const allJudged = graded.length > 0 && graded.every((it) => statusOf(it.number) !== 'idle')
 
   // 组级完成上报：全部可判分题判定后触发；结果变化（重做）时再次触发
   const reportedRef = useRef('')
   useEffect(() => {
-    if (!allJudged) return
+    if (practice || !allJudged) return
     const sig = `${correctCount}/${graded.length}`
     if (reportedRef.current === sig) return
     reportedRef.current = sig
     onGroupResult(groupIdx, correctCount, graded.length)
-  }, [allJudged, correctCount, graded.length, groupIdx, onGroupResult])
+  }, [allJudged, correctCount, graded.length, groupIdx, onGroupResult, practice])
+
+  const recordJudgment = (item: GrammarExerciseItem, values: string[]) => {
+    const ok = isExerciseAnswerCorrect(item, values)
+    const status = ok ? 'correct' : 'wrong'
+    if (practice) {
+      const state = practice.states[item.number]
+      if (isItemReadOnly(item.number) || isAssessment || state?.status || state?.revealed) return
+      practice.onItemChange(item.number, {
+        ...state,
+        values,
+        status,
+        first: state?.first ?? { values: [...values], correct: ok, helped: Boolean(state?.helped) },
+      })
+      return
+    }
+    setStatuses((prev) => ({ ...prev, [item.number]: status }))
+  }
 
   const handleCheck = (item: GrammarExerciseItem) => {
-    const blankCount = item.prompt.split(BLANK).length - 1
-    const values = inputs[itemKey(item.number)] ?? []
-    if (values.every((v) => !v || !v.trim())) return
-    const expected = parseExpected(item, blankCount)
-    const normValues = values.map((v) => normalize(v ?? ''))
-    const ok = normValues.every(
-      (v, i) =>
-        v === normalize(expected[i] ?? expected[0] ?? '') ||
-        expected.some((e) => normalize(e) === v),
-    )
-    setStatuses((prev) => ({ ...prev, [item.number]: ok ? 'correct' : 'wrong' }))
+    const values = valuesOf(item.number)
+    if (item.acceptedAnswerSets) {
+      if (!hasCompleteAnswer(item, values)) return
+    } else if (values.every((v) => !v?.trim())) return
+    recordJudgment(item, values)
   }
 
   const handleReset = () => {
@@ -982,6 +1143,15 @@ function ExerciseGroup({
   }
 
   const handlePick = (item: GrammarExerciseItem, value: string) => {
+    if (practice) {
+      if (isItemReadOnly(item.number)) return
+      if (isDeferred) {
+        practice.onItemChange(item.number, { values: [value] })
+      } else {
+        recordJudgment(item, [value])
+      }
+      return
+    }
     const blankCount = promptParts(item).length - 1
     const slots = Math.max(blankCount, 1)
     setInputs((prev) => ({
@@ -1008,6 +1178,47 @@ function ExerciseGroup({
       const next = { ...prev, [item.number]: itemStatus }
       if (previousOwner) delete next[previousOwner.number]
       return next
+    })
+  }
+
+  const handleChange = (item: GrammarExerciseItem, blankIdx: number, value: string) => {
+    const key = itemKey(item.number)
+    if (practice) {
+      const state = practice.states[item.number]
+      if (isItemReadOnly(item.number) || (!isAssessment && (state?.status || state?.revealed))) return
+      const values = Array.from({ length: answerSlotCount(item) }, (_, index) =>
+        index === blankIdx ? value : state?.values[index] ?? '',
+      )
+      practice.onItemChange(item.number, { ...state, values })
+      return
+    }
+    setInputs((prev) => {
+      const next = [...(prev[key] ?? [])]
+      next[blankIdx] = value
+      return { ...prev, [key]: next }
+    })
+    setStatuses((prev) => (prev[item.number] ? { ...prev, [item.number]: 'idle' } : prev))
+  }
+
+  const handleReveal = (itemNumber: number) => {
+    if (!practice || isItemReadOnly(itemNumber) || isAssessment) return
+    practice.onItemChange(itemNumber, {
+      ...practice.states[itemNumber],
+      values: valuesOf(itemNumber),
+      helped: true,
+      revealed: true,
+    })
+  }
+
+  const handleRetry = (itemNumber: number) => {
+    if (!practice || isItemReadOnly(itemNumber) || isAssessment) return
+    const state = practice.states[itemNumber]
+    practice.onItemChange(itemNumber, {
+      ...state,
+      values: [],
+      status: undefined,
+      revealed: false,
+      retries: (state?.retries ?? 0) + 1,
     })
   }
 
@@ -1048,7 +1259,7 @@ function ExerciseGroup({
               ＋ 插图
             </Button>
           )}
-        {graded.length > 0 && (
+        {graded.length > 0 && !isDeferred && (
           <span
             className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold ${
               correctCount === graded.length && allJudged
@@ -1098,8 +1309,8 @@ function ExerciseGroup({
           onRemove={isAdmin && onRemoveFigure ? () => onRemoveFigure(groupIdx) : undefined}
         />
       )}
-      {shared && !isMatchingGroup && <ReferenceOptions options={shared} />}
-      {isMatchingGroup && matchingOptions.length > 0 ? (
+      {shared && !isAssessment && !isMatchingGroup && <ReferenceOptions options={shared} />}
+      {!practice && isMatchingGroup && matchingOptions.length > 0 ? (
         <MatchingBoard
           key={resetVersion}
           items={group.items}
@@ -1112,30 +1323,41 @@ function ExerciseGroup({
         />
       ) : (
         <div className="flex flex-col gap-2">
-          {group.items.map((item) => (
-            <ItemCard
-              key={`${item.number}-${resetVersion}`}
-              item={item}
-              values={inputs[itemKey(item.number)] ?? []}
-              status={isGraded(item) ? (statuses[item.number] ?? 'idle') : 'idle'}
-              hideOptions={shared != null}
-              onChange={(blankIdx, value) => {
-                setInputs((prev) => {
-                  const next = [...(prev[itemKey(item.number)] ?? [])]
-                  next[blankIdx] = value
-                  return { ...prev, [itemKey(item.number)]: next }
-                })
-                setStatuses((prev) =>
-                  prev[item.number] ? { ...prev, [item.number]: 'idle' } : prev,
-                )
-              }}
-              onCheck={() => handleCheck(item)}
-              onPick={(value) => handlePick(item, value)}
-            />
-          ))}
+          {group.items.map((item) => {
+            const state = practice?.states[item.number]
+            const status = isGraded(item) ? statusOf(item.number) : 'idle'
+            const revealed = !isAssessment && state?.revealed
+            const readOnly = isItemReadOnly(item.number)
+            const canUsePracticeActions = practice?.mode === 'practice' && !readOnly && isGraded(item)
+            return (
+              <ItemCard
+                key={`${item.number}-${resetVersion}-${state?.retries ?? 0}`}
+                item={item}
+                values={valuesOf(item.number)}
+                status={status}
+                hideOptions={shared != null || isAssessment}
+                disabled={readOnly || Boolean(practice && (status !== 'idle' || revealed))}
+                deferred={isAssessment}
+                revealed={revealed}
+                onReveal={
+                  canUsePracticeActions && status === 'idle' && !revealed
+                    ? () => handleReveal(item.number)
+                    : undefined
+                }
+                onRetry={
+                  canUsePracticeActions && (status === 'wrong' || revealed)
+                    ? () => handleRetry(item.number)
+                    : undefined
+                }
+                onChange={(blankIdx, value) => handleChange(item, blankIdx, value)}
+                onCheck={() => handleCheck(item)}
+                onPick={(value) => handlePick(item, value)}
+              />
+            )
+          })}
         </div>
       )}
-      {Object.keys(statuses).length > 0 && (
+      {!practice && Object.keys(statuses).length > 0 && (
         <Button onClick={handleReset} variant="ghost" color="gray" size="1" className="mt-3">
           重做本组
         </Button>
@@ -1154,6 +1376,7 @@ export interface ExerciseViewProps {
   onEditGroup?: (groupIdx: number) => void
   onPreviewFigure: (figure: GrammarFigure) => void
   onRemoveFigure?: (groupIdx: number) => void
+  practice?: ExercisePracticeOptions
 }
 
 export function ExerciseView({
@@ -1166,6 +1389,7 @@ export function ExerciseView({
   onEditGroup,
   onPreviewFigure,
   onRemoveFigure,
+  practice,
 }: ExerciseViewProps) {
   return (
     <div className="flex flex-col gap-5">
@@ -1187,6 +1411,7 @@ export function ExerciseView({
             onEditGroup={onEditGroup}
             onPreviewFigure={onPreviewFigure}
             onRemoveFigure={onRemoveFigure}
+            practice={practice}
           />
         )
       })}

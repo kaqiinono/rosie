@@ -1,0 +1,9393 @@
+{
+  "snapshotDate": "2026-11-13",
+  "method": "Exact case-insensitive spelling comparison; POS and sense reuse requires editorial review.",
+  "nonPetRows": 2227,
+  "distinctNonPetSpellings": 1785,
+  "candidateMatches": 1316,
+  "matchedSpellings": [
+    {
+      "key": "a.m.",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "able",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "accident",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ache",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "achievement",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "act",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "active",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "actor",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "add",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "address",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "admire",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "advanced",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "adventure",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "advertisement",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "aeroplane",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "affect",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "5A": 1
+      }
+    },
+    {
+      "key": "afraid",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "africa",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "afternoon",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "air",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "air conditioning",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "airport",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "alarm clock",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "album",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "alive",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "alone",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "altogether",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "amazing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ambulance",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "ancient",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "angry",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "animal",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ankle",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "antarctica",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "apartment",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "apartment building",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "app",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "appear",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "appearance",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "apple",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "application",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "appointment",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "approximately",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "area",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "arm",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "armchair",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "art",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "article",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "artist",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "as well as",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "asia",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "assistant",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "athlete",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "attitude",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "attract",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "aunt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "australia",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "author",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "autumn",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "awful",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "back",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "backpack",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bad",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "badminton",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bag",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bake",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "balcony",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "bald",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "ball",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "banana",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bank",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "barbecue",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "baseball",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "basketball",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bathing suit",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "bathroom",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "battery",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "beach",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "bean",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bear",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "beautiful",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "beauty",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "bed",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bedroom",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bee",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "beef",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "beginner",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bell",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "belt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "better",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bicycle",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "big",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bike",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bill",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "bin",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "biology",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "bird",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "birth",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "birthday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "biscuit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "black",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "blackboard",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "blanket",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "bleed",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "block",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "blog",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "blood",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "blouse",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "blue",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "board",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "board game",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "boat",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "body",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "boil",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "boiled",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "book",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "bookcase",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "bookshelf",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "bookshop",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bookstore",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "boot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "border",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "bored",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "boring",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "born",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "boss",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "bother",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "bottle",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bowl",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "box",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "boy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "boyfriend",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bracelet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "brain",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "branch",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "brave",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "bread",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "break",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "break down",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "breakfast",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "breeze",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "bridge",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "brilliant",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "brother",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "brown",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "building",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "burger",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "burn",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "bus",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "bus station",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "bus stop",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "bush",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "business",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "businessman",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "businesswoman",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "busy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "butter",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "buy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "by accident",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "by mistake",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "by post",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cabinet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cafeteria",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "cake",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "calendar",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "call",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "camel",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "camera",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "camp",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "camping",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "campsite",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "can",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "candy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "canteen",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "cap",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "car",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "card",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "cardboard",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "career",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "5A": 1
+      }
+    },
+    {
+      "key": "careful",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "carpet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "carrot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cartoon",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "case",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cash",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "castle",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "catch",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cathedral",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "cd",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cd player",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "ceiling",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "celebrity",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cell phone",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "cent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "century",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cereal",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chain",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chair",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "change",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "channel",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "character",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chatroom",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cheap",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "cheat",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "check",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "cheerful",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "cheese",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chef",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "chemist",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "chemistry",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cheque",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chess",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chicken",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "child",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chilli",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chips",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "chocolate",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cinema",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "city",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "city centre",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "class",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "classical",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "classical music",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "classmate",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "classroom",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cleaner",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "clear",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "clever",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "click",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "climate",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "climb",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "climbing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "clock",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "close",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "closed",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "clothes",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cloud",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cloudy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "clown",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "club",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "coach",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "coast",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "coat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "coffee",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cola",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cold",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "colleague",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "collect",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "collection",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "college",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "comb",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "comedy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "comfortable",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "comic",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "comment",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "common",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "company",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "competition",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "complain",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "computer",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "concert",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "consider",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "continent",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "conversation",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cook",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "cooker",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "cookie",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cooking",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cool",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "corner",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cost",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "costume",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cosy",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "cough",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "country",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "countryside",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "course",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "cousin",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cover",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "cow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "crash",
+      "occurrences": 2,
+      "stages": {
+        "5A": 2
+      }
+    },
+    {
+      "key": "crazy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cream",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "create",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "creative",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "creature",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "credit card",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cricket",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "crop",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "cross",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "crossing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "crossroads",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cup",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cupboard",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "curious",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "curry",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "curtain",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "cushion",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "customer",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "cycling",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "daily",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "damage",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "dance",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "dancer",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "danger",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "dangerous",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dark",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "date",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "daughter",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "day",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "dead",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "deep",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "defend",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "degree",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "delay",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "delayed",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "delicious",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "dentist",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "department store",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "desert",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "design",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "designer",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "desire",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "desk",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "dessert",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "destination",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "destroy",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "detective",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "diary",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "dictionary",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "die",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "different",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "difficult",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "digital",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "digital camera",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "dining room",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dinner",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dinosaur",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "diploma",
+      "occurrences": 4,
+      "stages": {
+        "5A": 1,
+        "KET": 3
+      }
+    },
+    {
+      "key": "disappear",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "disappointment",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "disco",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "discount",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "discover",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "discovery",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "discuss",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "disgusting",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "dish",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "display",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "distance",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "dive",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "diver",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "doctor",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "documentary",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "dog",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dollar",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dolphin",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "door",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "download",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "downstairs",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dr",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "draw",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "drawer",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "drawing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dress",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "drink",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "drive",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "driver",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "driving licence",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "drugstore",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "drum",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "duck",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "due",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "dust",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "dvd",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "dvd player",
+      "occurrences": 5,
+      "stages": {
+        "KET": 5
+      }
+    },
+    {
+      "key": "ear",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "earache",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "earn",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "earring",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "east",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "eat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "education",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "egg",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "elbow",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "electric",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "electricity",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "electronics",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "elephant",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "elevator",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "email",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "emergency",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "employee",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "end up",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "engine",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "engineer",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "enjoy",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "enormous",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "entertain",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "entrance",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "envelope",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "environmental",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "equipment",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "eraser",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "especially",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "euro",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "europe",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "evening",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "excellent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "excited",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "exciting",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "exercise",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "exhibition",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "exist",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "exit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "expect",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "expedition",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "expensive",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "experience",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "experienced",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "explore",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "explorer",
+      "occurrences": 4,
+      "stages": {
+        "4A": 1,
+        "KET": 3
+      }
+    },
+    {
+      "key": "extraordinary",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "eye",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "face",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "factory",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "fair",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "fall",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "family",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "famous",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fan",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "fantastic",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "far",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "farm",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "farmer",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fashion",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fast",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fast food",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "father",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "favourite",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "feel",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ferry",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "festival",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "field",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "file",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fill in",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "film",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "find out",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fine",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "finger",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fire",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "first",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fish",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "fishing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "flat",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "flight",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "flood",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "floor",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "flower",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fly",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "focus on",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "fog",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "foggy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "food",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "foot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "football",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "footballer",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "for sale",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "forest",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "fork",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "form",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fountain",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "free",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "fresh",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "friday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fridge",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "fried",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "friend",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "friendly",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "friendship",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "frightening",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "fruit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fry",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "fuel",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "full",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "full-time",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "fun",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "funny",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "fur",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "furniture",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "gallery",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "game",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "gap",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "garage",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "garden",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "garlic",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "gas",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "gas station",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "gate",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "generation",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "generous",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "geography",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "get back",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "get dressed",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "get fit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "get off",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "get on",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "get up",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "giant",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "gift",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "girl",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "girlfriend",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "give back",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "give up",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "glad",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "glass",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "glasses",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "global warming",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "glove",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "go out",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "go shopping",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "goal",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "golden",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "golf",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "good",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "good-looking",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandchild",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "granddaughter",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandfather",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandma",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandmother",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandpa",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandparent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grandson",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "granny",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grape",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grass",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "great",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "green",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "grilled",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grocery store",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "group",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "grow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "grow up",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "guest",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "guest-house",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "guide",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "guidebook",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "guitar",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "guy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "gym",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hair",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hairdryer",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "half",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hall",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hand",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "handbag",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "handle",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "happy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "harbour",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hard",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hate",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "head",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "headache",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "headphones",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "headteacher",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "health",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "healthy",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "hear",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "heart",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "heating",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "heavy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "helicopter",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "high",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hill",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "hip hop",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "historic",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "history",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hobby",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "hockey",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "holidays",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "home",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "homework",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "honest",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "honey",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "horrible",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "horse",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hospital",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "hot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "hotel",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "hour",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "house",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "humid",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "hungry",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "hunt",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "hurry",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "hurt",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "husband",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ice",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "ice cream",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ice skating",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "id card",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "identification",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ill",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "imagine",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "important",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "improve",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "in fact",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "incredible",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "information",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "ingredient",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "injure",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "insect",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "inspire",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "instead of",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "instructions",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "instrument",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "interested",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "interesting",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "internet",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "interview",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "invent",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "invitation",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "island",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "jacket",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "jam",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "jazz",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "jealous",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "jeans",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "jewellery",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "job",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "jog",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "join",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "journalist",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "journey",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "juice",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "jumper",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "jungle",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "keep fit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "key",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "keyboard",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "kill",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "kind",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "king",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "kit",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "kitchen",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "kite",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "knee",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "knife",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "know",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "knowledge",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "label",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "lake",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "lamp",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "land",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "language",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "laptop",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "late",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "laugh",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "lawyer",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "lazy",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "leader",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "leaf",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "learn",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "leave",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "leg",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lemon",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lemonade",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lesson",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "letter",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "level",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "library",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "licence",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lie down",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lift",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "light",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "lightning",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "link",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "lion",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "liquid",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "5A": 1
+      }
+    },
+    {
+      "key": "listen to",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "litre",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "live",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "living room",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "load",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "loads of",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "local",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "located",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "location",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "look after",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "look at",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "look for",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "look out",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lorry",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "love",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lovely",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "luck",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lucky",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "luggage",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lunch",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "lunchtime",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "magazine",
+      "occurrences": 4,
+      "stages": {
+        "4A": 1,
+        "KET": 3
+      }
+    },
+    {
+      "key": "main course",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "make sure",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "manager",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "mango",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "map",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "mark",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "market",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "married",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "material",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "meal",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "meat",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "mechanic",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "medicine",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "meeting",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "melon",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "member",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "memory",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "menu",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "message",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "midday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "midnight",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "mile",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "milk",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "million",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "mineral water",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "minute",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "mirror",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "miserable",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "miss",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "mix",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "mobile phone",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "model",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "modern",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "moment",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "monday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "monkey",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "month",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "monthly",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "monument",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "moon",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "morning",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "mother",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "motorbike",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "motorway",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "mountain",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "mouse",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "move",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "movie",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "movie star",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "movie theater",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "mp3 player",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "mr",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "mrs",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ms",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "mum",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "museum",
+      "occurrences": 4,
+      "stages": {
+        "KET": 4
+      }
+    },
+    {
+      "key": "mushroom",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "music",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "musical",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "musician",
+      "occurrences": 4,
+      "stages": {
+        "5A": 1,
+        "KET": 3
+      }
+    },
+    {
+      "key": "mystery",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "5A": 1
+      }
+    },
+    {
+      "key": "narrow",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "nasty",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "nationality",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "natural",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "neck",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "necklace",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "neighbour",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "nephew",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "nervous",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "nest",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "net",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "news",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "newspaper",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "nice",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "niece",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "night",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "noisy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "north",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "north america",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "nose",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "note",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "notebook",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "nurse",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "o'clock",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "object",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "occupation",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "ocean",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "office",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "oil",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "old",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "omelette",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "on time",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "onion",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "online",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "open",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "opera",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "opinion",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "orange",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "oven",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "p.m.",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pain",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "paint",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "painter",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "palace",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "pale",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pan",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "parent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "park",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "parking",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "parking lot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "parrot",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "part-time",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "party",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pass",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "passenger",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "passport",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "password",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "past",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "pasta",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "path",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "patient",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "pay",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "pc",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "pear",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pedestrian",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "peel",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "pencil",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pencil case",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "penfriend",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "penny",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pepper",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "perform",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "performance",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "perfume",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "perhaps",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "petrol",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "petrol station",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pharmacy",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "phone",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "photograph",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "photographer",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "photography",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "physics",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "piano",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pick up",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "picnic",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "picture",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pillow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pilot",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "pink",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pity",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "pizza",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "planet",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "plant",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "plastic",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "plate",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "platform",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "play",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "player",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "playground",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pleasant",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "plug in",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "pocket",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "point",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "police officer",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "police station",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "politician",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "pool",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "poor",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pop music",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "population",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "possibility",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "post",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "post office",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "postcard",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "poster",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pot",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "potato",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pound",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "pour",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "power",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "powerful",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "practice",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "practise",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "prepare",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "pretty",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "prevent",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "price",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "print",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "printer",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "prize",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "problem",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "product",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "professional",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "program",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "programme",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "project",
+      "occurrences": 4,
+      "stages": {
+        "4A": 1,
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "protect",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "prove",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "pull",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "pupil",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "purple",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "purpose",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "purse",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "put on",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "put out",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "pyjamas",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "qualification",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "quality",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "quarter",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "queen",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "queue",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "quick",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "quiet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "quiz",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "rabbit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "race",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "racket",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "radio",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "railway",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "railway station",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "rain",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "raincoat",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "rainforest",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "rap",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "raw",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "reach",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "react",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "read",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "reading",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ready",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "real",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "receipt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "receptionist",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "recipe",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "record",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "5A": 1
+      }
+    },
+    {
+      "key": "recycle",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "red",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "refrigerator",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "relax",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "relaxed",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "religion",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "remember",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "remove",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "rent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "repair",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "report",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "reporter",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "research",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "reserve",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "responsible",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "rest",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "restaurant",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "return",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "review",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "rice",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "rich",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "ride",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "riding",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "right",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ring",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "river",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "road",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "roast",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "rock",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "rock music",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "romantic",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "roof",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "room",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "rope",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "roundabout",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "route",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "rubber",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "rubbish",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "rug",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "rugby",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "ruin",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "ruler",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "run",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "runner",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "running",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sad",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sailing",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "sailor",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "salad",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "salary",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "sale",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "salt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sand",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sandwich",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "saturday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sauce",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "saucer",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "sausage",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "scarf",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "school",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "schoolchild",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "science",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "scientist",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "scissors",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "scooter",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "screen",
+      "occurrences": 4,
+      "stages": {
+        "4A": 1,
+        "KET": 3
+      }
+    },
+    {
+      "key": "sculpture",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "5A": 1
+      }
+    },
+    {
+      "key": "sea",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "search",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "seat",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "second",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "secretary",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "selfie",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "sense",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sensible",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "series",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "seriously",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "shade",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "share",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sheet",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "shelf",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ship",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "shirt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "shop",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "shop assistant",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "shopper",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "shopping",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "shorts",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "shoulder",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "show",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "shower",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "sick",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "sight",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sightseeing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sign",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "sign up",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "silver",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "singer",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "sink",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "sister",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sit down",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sitting room",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "skateboard",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "skateboarding",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "skating",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ski",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "skiing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "skill",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "skin",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "skirt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sky",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "slice",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "slide",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "slow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "small",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "smell",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "smooth",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "snack",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "snow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "snowboard",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "snowboarding",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "soap",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "soccer",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "social media",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "sock",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sofa",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "soft",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "software",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "solve",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "son",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "song",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sore",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sorry",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "soup",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "south",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "south america",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "space",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "speaker",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "special",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "species",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "spell",
+      "occurrences": 1,
+      "stages": {
+        "story": 1
+      }
+    },
+    {
+      "key": "spend",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "sports centre",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "spring",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "spy",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "square",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "stadium",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "staff",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "stage",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "stamp",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "star",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "station",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "stay",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "steak",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "steal",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "steep",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "sticky",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "stomach",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "stomach ache",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "stone",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "stop",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "store",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "storm",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "strange",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "strawberry",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "street",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "strict",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "strong",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "student",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "studies",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "study",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "subject",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "succeed",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "success",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sugar",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "suggest",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "suit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "suitcase",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "summer",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "sun",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sunday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sunglasses",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sunny",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "supermarket",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "supper",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "support",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "sure",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "surf",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "surfboard",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "surfing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "surname",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sweater",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "sweatshirt",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "sweet",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "swim",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "swimming",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "swimming costume",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "swimming pool",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "swimsuit",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "system",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "t-shirt",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "table tennis",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tablet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "take care of",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "take off",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "take part",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "take part in",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "take up",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "tall",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "taste",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "tax",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "taxi",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tea",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "teach",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "teacher",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "team",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "technology",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "teenager",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "telephone",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "temperature",
+      "occurrences": 3,
+      "stages": {
+        "4A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "tennis",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tennis player",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "tent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "term",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "terrible",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "test",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "text",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "text message",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "textbook",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "theatre",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "third",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "thirsty",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "throat",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "throw",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "throw away",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "thunderstorm",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "thursday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "ticket",
+      "occurrences": 5,
+      "stages": {
+        "4A": 1,
+        "KET": 4
+      }
+    },
+    {
+      "key": "tidy up",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tie",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tiger",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tights",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "time",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "timetable",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "tired",
+      "occurrences": 4,
+      "stages": {
+        "4A": 1,
+        "KET": 3
+      }
+    },
+    {
+      "key": "tiring",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "title",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "toast",
+      "occurrences": 2,
+      "stages": {
+        "KET": 1,
+        "story": 1
+      }
+    },
+    {
+      "key": "today",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "toilet",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "tomato",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tomorrow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tonight",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tooth",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "toothache",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "toothbrush",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tour",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "tour guide",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "tourist",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tourist information centre",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "towel",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "town",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "track",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "traffic",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "traffic light",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "train",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "trainers",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "tram",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "travel",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "travel agent",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tree",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "trick",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "trip",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "trousers",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "try",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "try on",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "tuesday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "tune",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "turn off",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "turn on",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "type",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "tyre",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "umbrella",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "uncle",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "underground",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "underneath",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "unhappy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "uniform",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "universe",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "university",
+      "occurrences": 3,
+      "stages": {
+        "5A": 1,
+        "KET": 2
+      }
+    },
+    {
+      "key": "upload",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "upstairs",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "useful",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "variety",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "vegetable",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "video",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "video game",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "view",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "village",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "violin",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "virus",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "visit",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "visitor",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "vocabulary",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "voice",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "volleyball",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "waiter",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "waitress",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "wake up",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "walk",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "wall",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wallet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wardrobe",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "warm",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wash up",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "washing machine",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "waste",
+      "occurrences": 2,
+      "stages": {
+        "4A": 2
+      }
+    },
+    {
+      "key": "watch",
+      "occurrences": 3,
+      "stages": {
+        "KET": 3
+      }
+    },
+    {
+      "key": "water",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "way",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "weak",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "wear",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "weather",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "web",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "web page",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "website",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wednesday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "week",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "weekday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "weekend",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "weekly",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "well",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "west",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wet",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "whale",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wheel",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "white",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wide",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "wife",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wild",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wildlife",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "win",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wind",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "window",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "windsurfing",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "windy",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "winner",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "winter",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "wise",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "wonder",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "wood",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "wooden",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "wool",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "work",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "work out",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "worker",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "working hours",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "world",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "worried",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "worry",
+      "occurrences": 1,
+      "stages": {
+        "4A": 1
+      }
+    },
+    {
+      "key": "write down",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "writer",
+      "occurrences": 2,
+      "stages": {
+        "5A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "wrong",
+      "occurrences": 2,
+      "stages": {
+        "4A": 1,
+        "KET": 1
+      }
+    },
+    {
+      "key": "year",
+      "occurrences": 2,
+      "stages": {
+        "KET": 2
+      }
+    },
+    {
+      "key": "yellow",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "yesterday",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "young",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "zero",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    },
+    {
+      "key": "zone",
+      "occurrences": 1,
+      "stages": {
+        "5A": 1
+      }
+    },
+    {
+      "key": "zoo",
+      "occurrences": 1,
+      "stages": {
+        "KET": 1
+      }
+    }
+  ]
+}

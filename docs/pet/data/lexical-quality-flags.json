@@ -1,0 +1,615 @@
+{
+  "revision": "1",
+  "reviewedAt": "2026-11-13",
+  "scope": "Known source defects and extraction-layout hazards only; this file does not approve candidate words.",
+  "entries": [
+    {
+      "wordKey": "IT",
+      "sourceRowIds": [
+        "08:0436",
+        "08:1185"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "part_of_speech",
+        "senses",
+        "word"
+      ],
+      "reason": "原表把信息技术缩写 IT 写为 /ɪt/；当前候选键 it 又合并了代词 it，大小写对应不同词义及读音。",
+      "correctedGuidance": "IT 表示信息技术，读字母名称 /ˌaɪˈtiː/。规范词表已将 IT 与代词 it 分开，不能复用代词 /ɪt/ 的音标，也不能将信息技术义放回 it。",
+      "references": [
+        {
+          "title": "Cambridge Dictionary: it / IT",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/it"
+        }
+      ]
+    },
+    {
+      "wordKey": "bathroom",
+      "sourceRowIds": [
+        "08:0012"
+      ],
+      "fields": [
+        "ipa"
+      ],
+      "reason": "原表 /ˈbeɪθ.ruːm/ 的首元音不对应 bathroom。",
+      "correctedGuidance": "英音可采用 /ˈbɑːθ.ruːm/；美音可采用 /ˈbæθ.ruːm/，也有结尾 /rʊm/ 变体。不要沿用原表 /eɪ/。",
+      "references": [
+        {
+          "title": "Cambridge pronunciation: bathroom",
+          "url": "https://dictionary.cambridge.org/us/pronunciation/english/bathroom"
+        }
+      ]
+    },
+    {
+      "wordKey": "contract",
+      "sourceRowIds": [
+        "08:1264"
+      ],
+      "fields": [
+        "ipa"
+      ],
+      "reason": "原表 /ˈkɒn.traкт/ 混入西里尔字符 к、т，且该行表示名词合同。",
+      "correctedGuidance": "此处名词“合同”的英音可写 /ˈkɒn.trækt/，第一音节重读；若收录动词义项，另核定对应读音和义项，不复制损坏的字符。",
+      "references": [
+        {
+          "title": "Collins pronunciation: contract",
+          "url": "https://www.collinsdictionary.com/dictionary/english-pronunciations/contract"
+        }
+      ]
+    },
+    {
+      "wordKey": "climate change",
+      "sourceRowIds": [
+        "08:1842"
+      ],
+      "fields": [
+        "ipa"
+      ],
+      "reason": "原表 /ˈklaɪmɪt ʃeɪndʒ/ 的 climate 弱读元音及 change 起始辅音错误。",
+      "correctedGuidance": "可采用 /ˈklaɪ.mət ˌtʃeɪndʒ/；change 以 /tʃ/ 起始。01:0623 的读音可作相互核对，不把“气候变化”拆成另一词头。",
+      "references": [
+        {
+          "title": "Cambridge pronunciation: climate change",
+          "url": "https://dictionary.cambridge.org/us/pronunciation/english/climate-change"
+        }
+      ]
+    },
+    {
+      "wordKey": "impressed",
+      "sourceRowIds": [
+        "01:0025",
+        "08:0583"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "01 把 impressed 释为“令人印象深刻的”，与其例句中“感到钦佩”不符；08 的 /ɪmˈprɛs.tɪd/ 错添了音节。",
+      "correctedGuidance": "表示受到深刻影响、感到钦佩，可译“印象深刻的；钦佩的”；读 /ɪmˈprest/，-ed 在 /s/ 后发 /t/。与 impressive（令人印象深刻的）区别；保留 be impressed by/with 的搭配。",
+      "references": [
+        {
+          "title": "Cambridge Dictionary: impressed / impress",
+          "url": "https://dictionary.cambridge.org/us/dictionary/english/impressed"
+        }
+      ]
+    },
+    {
+      "wordKey": "lively",
+      "sourceRowIds": [
+        "01:0030"
+      ],
+      "fields": [
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原释义混入“可爱的”，容易与 lovely 混淆。",
+      "correctedGuidance": "此处人物性格义项应为“活泼的；充满活力的”。不要把 lovely 的“可爱的”作为 lively 的基础释义。",
+      "references": [
+        {
+          "title": "Cambridge Dictionary: lively",
+          "url": "https://dictionary.cambridge.org/dictionary/english/lively"
+        }
+      ]
+    },
+    {
+      "wordKey": "champion",
+      "sourceRowIds": [
+        "01:0541"
+      ],
+      "fields": [
+        "example",
+        "collocations"
+      ],
+      "reason": "原例句 He won the champion. 把冠军人物误当作可赢得的比赛称号搭配。",
+      "correctedGuidance": "使用自行编写的自然例句，例如 He became the champion. 或 He won the championship.；词条若为 champion，应让例句实际包含 champion，而非仅改成 championship。可用 become a champion / world champion。"
+    },
+    {
+      "wordKey": "science fiction",
+      "sourceRowIds": [
+        "01:0374"
+      ],
+      "fields": [
+        "example",
+        "part_of_speech",
+        "word_forms"
+      ],
+      "reason": "原例句 The Martian is a good science fiction. 将该体裁名词直接作为 a 后的单数可数名词。",
+      "correctedGuidance": "science fiction 通常不可数；可自行编写 I enjoy reading science fiction.，或补出 a science-fiction novel。不得生成 sciences fictions 之类机械复数。",
+      "references": [
+        {
+          "title": "Cambridge Dictionary: science fiction",
+          "url": "https://dictionary.cambridge.org/dictionary/english-spanish/science-fiction"
+        }
+      ]
+    },
+    {
+      "wordKey": "butterfly",
+      "sourceRowIds": [
+        "01:0180"
+      ],
+      "fields": [
+        "topics"
+      ],
+      "reason": "此行蝴蝶被列入健康与身体，但原释义和例句均为昆虫义项。",
+      "correctedGuidance": "昆虫义项应关联自然主题；同一源另有01:0620自然主题行。不要由错误主题推断出医学词义。保留两处原始来源，不改写源记录。"
+    },
+    {
+      "wordKey": "gas",
+      "sourceRowIds": [
+        "08:1843"
+      ],
+      "fields": [
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原词头带 Am Eng 标记，中文却只写“气体”，没有区分美语 gasoline 的简称。",
+      "correctedGuidance": "分别核定气体/燃气及美语“汽油”的义项；不要把原表 Am Eng 对应的汽油用法漏掉，也不要将其他来源的 gas 气体义覆盖为汽油。"
+    },
+    {
+      "wordKey": "guest guide",
+      "sourceRowIds": [
+        "08:1297"
+      ],
+      "fields": [
+        "word",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "该行 guest guide 对应“导游”，词头与常见导游职业名称不一致，且当前仅该资料提供这一组合。",
+      "correctedGuidance": "不要直接把 guest guide 当作 tour guide 的无条件同义词，也不要擅自改词头；核对原页面及其他来源。若无法确认所指，将该来源组合列为待审，不编造一个职业词义来通过审核。"
+    },
+    {
+      "wordKey": "block",
+      "sourceRowIds": [
+        "08:0019"
+      ],
+      "fields": [
+        "word",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "block (notice) 与“街区(公告)”混合了互不清晰的注记，不能直接据此定义词义。",
+      "correctedGuidance": "保留原标签待核；block 的词义应由其他清晰来源核定，不把 notice 或“公告”作为 block 的释义。"
+    },
+    {
+      "wordKey": "channel",
+      "sourceRowIds": [
+        "08:0033"
+      ],
+      "fields": [
+        "word",
+        "chinese_def"
+      ],
+      "reason": "词头中的 with TV 是语境注记，中文“与电视”不构成词义。",
+      "correctedGuidance": "频道义项可表述为“电视频道”，注记作为语境提示，不进入词头拼写或中文答案。"
+    },
+    {
+      "wordKey": "light",
+      "sourceRowIds": [
+        "08:0088"
+      ],
+      "fields": [
+        "word",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "light (clothes) 的括号说明限定轻薄衣物语境，不能与光/灯等名词义直接混用。",
+      "correctedGuidance": "在该来源行中核对形容词“轻的；轻薄的”义项；保留其他来源的光线/灯等独立义项和对应词性。括号 clothes 不属于 light 的规范拼写。"
+    },
+    {
+      "wordKey": "primary school",
+      "sourceRowIds": [
+        "01:0361"
+      ],
+      "fields": [
+        "ipa",
+        "example"
+      ],
+      "reason": "该跨页重建行缺少音标与例句，不能视作完整可复用内容。",
+      "correctedGuidance": "保留小学释义与跨页来源，根据其他来源补齐音标并自行编写自然例句；不得把空值替换成破折号或占位文本发布。"
+    },
+    {
+      "wordKey": "get dressed",
+      "sourceRowIds": [
+        "08:0316"
+      ],
+      "fields": [
+        "ipa"
+      ],
+      "reason": "原音标为破折号，表示缺失。",
+      "correctedGuidance": "将原 IPA 视作缺失并重新核定；破折号不是音标。"
+    },
+    {
+      "wordKey": "go with",
+      "sourceRowIds": [
+        "08:0319"
+      ],
+      "fields": [
+        "ipa",
+        "senses"
+      ],
+      "reason": "原表把两个搭配写在同一行且音标为破折号。",
+      "correctedGuidance": "音标需分别补齐；衣物/颜色搭配语境下核定义项，不把原复合词头或破折号当成答案。"
+    },
+    {
+      "wordKey": "go together",
+      "sourceRowIds": [
+        "08:0319"
+      ],
+      "fields": [
+        "ipa",
+        "senses"
+      ],
+      "reason": "原表把两个搭配写在同一行且音标为破折号。",
+      "correctedGuidance": "音标需分别补齐；衣物/颜色搭配语境下核定义项，不把原复合词头或破折号当成答案。"
+    },
+    {
+      "wordKey": "a.m.",
+      "sourceRowIds": [
+        "08:1665"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def"
+      ],
+      "reason": "该复合源行同时列 a.m. / p.m.，仅提供 /ˌeɪˈem/；中文也合并为上午/下午。",
+      "correctedGuidance": "只将 /ˌeɪˈem/ 与上午义分配给 a.m.，不把合并中文当成单词义。"
+    },
+    {
+      "wordKey": "p.m.",
+      "sourceRowIds": [
+        "08:1665"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def"
+      ],
+      "reason": "该复合源行仅提供 a.m. 的音标，不能用于 p.m.。",
+      "correctedGuidance": "p.m. 单独核定下午义与 /ˌpiːˈem/，不得复制 a.m. 的读音。"
+    },
+    {
+      "wordKey": "alarm clock",
+      "sourceRowIds": [
+        "01:0702"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按名词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "bring up",
+      "sourceRowIds": [
+        "01:0703"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按短语动词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "bus station",
+      "sourceRowIds": [
+        "01:0704"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按名词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "get off",
+      "sourceRowIds": [
+        "01:0705"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按短语动词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "grow up",
+      "sourceRowIds": [
+        "01:0706"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按短语动词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "hand in",
+      "sourceRowIds": [
+        "01:0707"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按短语动词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "keep fit",
+      "sourceRowIds": [
+        "01:0708"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按动词短语理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "keep on",
+      "sourceRowIds": [
+        "01:0709"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按短语动词理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "make progress",
+      "sourceRowIds": [
+        "01:0710"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按动词短语理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "on holiday",
+      "sourceRowIds": [
+        "01:0711"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按介词短语理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "pass an exam",
+      "sourceRowIds": [
+        "01:0712"
+      ],
+      "fields": [
+        "source_cells",
+        "part_of_speech",
+        "ipa",
+        "chinese_def",
+        "example"
+      ],
+      "reason": "01 最后的短语表使用三列 cells=[音标,中文,例句]，没有此前的独立词性列。按常规四列解读会整体错位。",
+      "correctedGuidance": "正确读取 cells[0] 为音标、cells[1] 为中文、cells[2] 为例句；词性需独立核定，此处可按动词短语理解。空例句需另补，不可将中文误写入 IPA。"
+    },
+    {
+      "wordKey": "january",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "january 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "february",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "february 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "march",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "march 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "april",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "april 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "may",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "may 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "june",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "june 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "july",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "july 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "august",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "august 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "september",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "september 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "october",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "october 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "november",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "november 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    },
+    {
+      "wordKey": "december",
+      "sourceRowIds": [
+        "08:1681"
+      ],
+      "fields": [
+        "ipa",
+        "chinese_def",
+        "senses"
+      ],
+      "reason": "原表 January–December 是整组月份范围，只提供两端词的音标和“一月到十二月”的组合释义。",
+      "correctedGuidance": "december 的月份义需单独给出对应中文和音标，不能复用整段范围文本或端点读音；保留月份首字母大写。若同拼写另有普通词义（如 may 情态动词、march 行进），须分义并核定各自词性和读音。"
+    }
+  ]
+}

@@ -1,0 +1,806 @@
+{
+  "revision": "pet-final-identity-2026-11-13-1",
+  "redirects": {
+    "leave sb. alone": {
+      "targetKey": "leave alone",
+      "reason": "宾语占位 sb. 从可练习词头移入句法模式；只改引用不改题目答案。",
+      "revision": "pet-source-normalization-2026-11-13-1",
+      "allocationInheritedByTarget": true
+    },
+    "notice board": {
+      "targetKey": "noticeboard",
+      "reason": "同一公告板名词的分写/合写拼写变体；两个词条均未发布，保留目标位置并退休重复位置。",
+      "revision": "pet-source-normalization-2026-11-13-1"
+    },
+    "break time": {
+      "targetKey": "breaktime",
+      "reason": "休息时间名词的分写/合写变体，复用已有 breaktime 位置。",
+      "revision": "pet-source-normalization-2026-11-13-1"
+    },
+    "socks": {
+      "targetKey": "sock",
+      "reason": "明确的拼写或屈折变体，主清单已有 sock；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "chat room": {
+      "targetKey": "chatroom",
+      "reason": "明确的拼写或屈折变体，主清单已有 chatroom；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "fireworks": {
+      "targetKey": "firework",
+      "reason": "明确的拼写或屈折变体，主清单已有 firework；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "herbs": {
+      "targetKey": "herb",
+      "reason": "明确的拼写或屈折变体，主清单已有 herb；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "ingredients": {
+      "targetKey": "ingredient",
+      "reason": "08:0221 是 ingredient 的普通复数；归并到已审核 ingredient，保存来源与 plural=ingredients，不新增重复词条。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "toes": {
+      "targetKey": "toe",
+      "reason": "普通复数toes与规范单数toe重复，应关联toe并保留原页码来源，不另建第二学习词条。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "living-room": {
+      "targetKey": "living room",
+      "reason": "08:0090 为 living room 的连字符写法；归并到已审核 living room 的来源与别名，不新增重复词条。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "facilities": {
+      "targetKey": "facility",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "extreme sports": {
+      "targetKey": "extreme sport",
+      "reason": "普通复数extreme sports与主表extreme sport重复，应归并为extreme sport并把复数保留为词形。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "waves": {
+      "targetKey": "wave",
+      "reason": "明确的拼写或屈折变体，主清单已有 wave；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "degrees": {
+      "targetKey": "degree",
+      "reason": "degree 的常规复数形式；规范词 degree 已存在，应合并来源和词形，不新增重复学习词条。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "attractions": {
+      "targetKey": "attraction",
+      "reason": "明确的拼写或屈折变体，主清单已有 attraction；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "customers": {
+      "targetKey": "customer",
+      "reason": "customer 的常规复数，规范词 customer 已存在；合并来源并保留题目答案 customers。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "doubts": {
+      "targetKey": "doubt",
+      "reason": "原题为 doubt 的名词复数，应关联原形并保留实际答案 doubts。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "dozens": {
+      "targetKey": "dozen",
+      "reason": "dozens 是 dozen 的复数用法；保留 dozens of 搭配和题目答案，合并词头。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "effects": {
+      "targetKey": "effect",
+      "reason": "原题 effects 为 effect 的复数，合并词头并保留题目实际答案。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "explanations": {
+      "targetKey": "explanation",
+      "reason": "explanation 的常规复数，规范词 explanation 已存在；合并来源并保留题目实际答案 explanations。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "figures": {
+      "targetKey": "figure",
+      "reason": "figure 的常规复数；master 已有 figure，应合并来源并保留数据义和题目实际答案 figures。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "flavours": {
+      "targetKey": "flavour",
+      "reason": "明确的拼写或屈折变体，主清单已有 flavour；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "habits": {
+      "targetKey": "habit",
+      "reason": "明确的拼写或屈折变体，主清单已有 habit；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "materials": {
+      "targetKey": "material",
+      "reason": "原题为 material 的复数；合并来源、保留 materials 题目答案。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "vegetarians": {
+      "targetKey": "vegetarian",
+      "reason": "原题 vegetarians 为 vegetarian 的名词复数，合并词头并保留实际答案。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "views": {
+      "targetKey": "view",
+      "reason": "明确的拼写或屈折变体，主清单已有 view；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "forwards": {
+      "targetKey": "forward",
+      "reason": "forwards 为 forward 的副词变体；合并时只关联向前副词义，不覆盖 forward 的其他词性。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "toward": {
+      "targetKey": "towards",
+      "reason": "明确的拼写或屈折变体，主清单已有 towards；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "math": {
+      "targetKey": "maths",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "apologize": {
+      "targetKey": "apologise",
+      "reason": "明确的拼写或屈折变体，主清单已有 apologise；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "organize": {
+      "targetKey": "organise",
+      "reason": "organize 是 organise 的拼写变体，合并来源并保留原题答案。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "monday - sunday": {
+      "targetKeys": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "reason": "10-topics:1490 是星期一至星期日的范围标签，需映射到现有七个星期词条，不应作为一个可拼写词条导入。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "instruction": {
+      "targetKey": "instructions",
+      "reason": "保留既有规范词条，合并普通词形或拼写变体的来源；义项需合并保留。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "headphone": {
+      "targetKey": "headphones",
+      "reason": "明确的拼写或屈折变体，主清单已有 headphones；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "inquiry": {
+      "targetKey": "enquiry",
+      "reason": "与已审核 enquiry 为常见拼写变体；本条完整内容可用于合并，同时保留询问和正式调查义。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "advisors": {
+      "targetKey": "advisor",
+      "reason": "已核定为未发布词头的原位规范更名 → advisor；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "advisor"
+    },
+    "awards": {
+      "targetKey": "award",
+      "reason": "已核定为未发布词头的原位规范更名 → award；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "award"
+    },
+    "cheers!": {
+      "targetKey": "cheers",
+      "reason": "已核定为未发布词头的原位规范更名 → cheers；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "cheers"
+    },
+    "ask for a leave": {
+      "targetKey": "ask for leave",
+      "reason": "词头待规范为 ask for leave；本条 fields/senses 已按规范短语审核，原始题目 asking for a leave 保留待修订。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "ask for leave"
+    },
+    "people": {
+      "targetKey": "person",
+      "reason": "官方标 n pl，本条为 person 的常用不规则复数；建议合并词形、来源，保留原词头 people 可检索。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "while, whilst": {
+      "targetKeys": [
+        "while",
+        "whilst"
+      ],
+      "reason": "组合词头须拆分；master 已有 while，建议此候选规范为 whilst 并单独保留 /waɪlst/，待 root 完成 key 规范后采用 preparedContent。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "whilst"
+    },
+    "woolen": {
+      "targetKey": "woollen",
+      "reason": "woollen 的美式拼写变体；master 已有 woollen，合并来源并保留 woolen 为拼写别名。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "organisers": {
+      "targetKey": "organiser",
+      "reason": "已核定为未发布词头的原位规范更名 → organiser；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "organiser"
+    },
+    "suprising": {
+      "targetKey": "surprising",
+      "reason": "已核定为未发布词头的原位规范更名 → surprising；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "surprising"
+    },
+    "table-cloth": {
+      "targetKey": "tablecloth",
+      "reason": "已核定为未发布词头的原位规范更名 → tablecloth；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "revision": "pet-final-identity-2026-11-13-1",
+      "allocationInheritedByTarget": "tablecloth"
+    },
+    "chips": {
+      "targetKey": "chip",
+      "reason": "普通屈折复数，归并到已发布 chip；保留实际句子答案 chips。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    },
+    "holidays": {
+      "targetKey": "holiday",
+      "reason": "普通屈折复数，归并到已发布 holiday；保留原文及复数形式。",
+      "revision": "pet-final-identity-2026-11-13-1"
+    }
+  },
+  "retiredAllocations": {
+    "notice board": {
+      "unit": "PET Unit 04",
+      "lesson": "Lesson 03",
+      "position": 53,
+      "primaryTopic": "education",
+      "redirectKey": "noticeboard",
+      "retired": true,
+      "reason": "同一公告板名词的分写/合写拼写变体；两个词条均未发布，保留目标位置并退休重复位置。"
+    },
+    "socks": {
+      "unit": "PET Unit 01",
+      "lesson": "Lesson 04",
+      "position": 62,
+      "primaryTopic": "clothes-accessories",
+      "retired": true,
+      "redirectKeys": [
+        "sock"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 sock；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "chat room": {
+      "unit": "PET Unit 03",
+      "lesson": "Lesson 01",
+      "position": 15,
+      "primaryTopic": "communications-technology",
+      "retired": true,
+      "redirectKeys": [
+        "chatroom"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 chatroom；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "fireworks": {
+      "unit": "PET Unit 05",
+      "lesson": "Lesson 03",
+      "position": 49,
+      "primaryTopic": "entertainment-media",
+      "retired": true,
+      "redirectKeys": [
+        "firework"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 firework；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "herbs": {
+      "unit": "PET Unit 07",
+      "lesson": "Lesson 04",
+      "position": 71,
+      "primaryTopic": "food-drink",
+      "retired": true,
+      "redirectKeys": [
+        "herb"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 herb；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "ingredients": {
+      "unit": "PET Unit 07",
+      "lesson": "Lesson 04",
+      "position": 77,
+      "primaryTopic": "food-drink",
+      "retired": true,
+      "redirectKeys": [
+        "ingredient"
+      ],
+      "reason": "08:0221 是 ingredient 的普通复数；归并到已审核 ingredient，保存来源与 plural=ingredients，不新增重复词条。",
+      "slotReusedBy": null
+    },
+    "toes": {
+      "unit": "PET Unit 08",
+      "lesson": "Lesson 05",
+      "position": 96,
+      "primaryTopic": "health-medicine-exercise",
+      "retired": true,
+      "redirectKeys": [
+        "toe"
+      ],
+      "reason": "普通复数toes与规范单数toe重复，应关联toe并保留原页码来源，不另建第二学习词条。",
+      "slotReusedBy": null
+    },
+    "living-room": {
+      "unit": "PET Unit 10",
+      "lesson": "Lesson 04",
+      "position": 65,
+      "primaryTopic": "house-home",
+      "retired": true,
+      "redirectKeys": [
+        "living room"
+      ],
+      "reason": "08:0090 为 living room 的连字符写法；归并到已审核 living room 的来源与别名，不新增重复词条。",
+      "slotReusedBy": null
+    },
+    "facilities": {
+      "unit": "PET Unit 09",
+      "lesson": "Lesson 01",
+      "position": 12,
+      "primaryTopic": "hobbies-leisure",
+      "retired": true,
+      "redirectKeys": [
+        "facility"
+      ],
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "slotReusedBy": null
+    },
+    "extreme sports": {
+      "unit": "PET Unit 18",
+      "lesson": "Lesson 02",
+      "position": 26,
+      "primaryTopic": "sport",
+      "retired": true,
+      "redirectKeys": [
+        "extreme sport"
+      ],
+      "reason": "普通复数extreme sports与主表extreme sport重复，应归并为extreme sport并把复数保留为词形。",
+      "slotReusedBy": null
+    },
+    "waves": {
+      "unit": "PET Unit 19",
+      "lesson": "Lesson 04",
+      "position": 66,
+      "primaryTopic": "natural-world",
+      "retired": true,
+      "redirectKeys": [
+        "wave"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 wave；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "degrees": {
+      "unit": "PET Unit 22",
+      "lesson": "Lesson 01",
+      "position": 6,
+      "primaryTopic": "weather",
+      "retired": true,
+      "redirectKeys": [
+        "degree"
+      ],
+      "reason": "degree 的常规复数形式；规范词 degree 已存在，应合并来源和词形，不新增重复学习词条。",
+      "slotReusedBy": null
+    },
+    "attractions": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 07",
+      "position": 130,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "attraction"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 attraction；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "customers": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 19",
+      "position": 365,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "customer"
+      ],
+      "reason": "customer 的常规复数，规范词 customer 已存在；合并来源并保留题目答案 customers。",
+      "slotReusedBy": null
+    },
+    "doubts": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 22",
+      "position": 436,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "doubt"
+      ],
+      "reason": "原题为 doubt 的名词复数，应关联原形并保留实际答案 doubts。",
+      "slotReusedBy": null
+    },
+    "dozens": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 22",
+      "position": 439,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "dozen"
+      ],
+      "reason": "dozens 是 dozen 的复数用法；保留 dozens of 搭配和题目答案，合并词头。",
+      "slotReusedBy": null
+    },
+    "effects": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 24",
+      "position": 463,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "effect"
+      ],
+      "reason": "原题 effects 为 effect 的复数，合并词头并保留题目实际答案。",
+      "slotReusedBy": null
+    },
+    "explanations": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 27",
+      "position": 528,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "explanation"
+      ],
+      "reason": "explanation 的常规复数，规范词 explanation 已存在；合并来源并保留题目实际答案 explanations。",
+      "slotReusedBy": null
+    },
+    "figures": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 29",
+      "position": 566,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "figure"
+      ],
+      "reason": "figure 的常规复数；master 已有 figure，应合并来源并保留数据义和题目实际答案 figures。",
+      "slotReusedBy": null
+    },
+    "flavours": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 30",
+      "position": 582,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "flavour"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 flavour；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "habits": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 35",
+      "position": 695,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "habit"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 habit；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "materials": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 48",
+      "position": 960,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "material"
+      ],
+      "reason": "原题为 material 的复数；合并来源、保留 materials 题目答案。",
+      "slotReusedBy": null
+    },
+    "vegetarians": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 86",
+      "position": 1706,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "vegetarian"
+      ],
+      "reason": "原题 vegetarians 为 vegetarian 的名词复数，合并词头并保留实际答案。",
+      "slotReusedBy": null
+    },
+    "views": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 86",
+      "position": 1713,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "view"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 view；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "forwards": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 91",
+      "position": 1819,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "forward"
+      ],
+      "reason": "forwards 为 forward 的副词变体；合并时只关联向前副词义，不覆盖 forward 的其他词性。",
+      "slotReusedBy": null
+    },
+    "toward": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 93",
+      "position": 1847,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "towards"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 towards；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "math": {
+      "unit": "PET Unit 04",
+      "lesson": "Lesson 05",
+      "position": 82,
+      "primaryTopic": "education",
+      "retired": true,
+      "redirectKeys": [
+        "maths"
+      ],
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "slotReusedBy": null
+    },
+    "apologize": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 05",
+      "position": 92,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "apologise"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 apologise；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "organize": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 55",
+      "position": 1095,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "organise"
+      ],
+      "reason": "organize 是 organise 的拼写变体，合并来源并保留原题答案。",
+      "slotReusedBy": null
+    },
+    "monday - sunday": {
+      "unit": "PET Unit 20",
+      "lesson": "Lesson 02",
+      "position": 30,
+      "primaryTopic": "time",
+      "retired": true,
+      "redirectKeys": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "reason": "10-topics:1490 是星期一至星期日的范围标签，需映射到现有七个星期词条，不应作为一个可拼写词条导入。",
+      "slotReusedBy": null
+    },
+    "instruction": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 42",
+      "position": 825,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "instructions"
+      ],
+      "reason": "保留既有规范词条，合并普通词形或拼写变体的来源；义项需合并保留。",
+      "slotReusedBy": null
+    },
+    "headphone": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 36",
+      "position": 714,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "headphones"
+      ],
+      "reason": "明确的拼写或屈折变体，主清单已有 headphones；请求合并来源和词形到该键，保留目标 ID 与位置，避免独立发布重复词。",
+      "slotReusedBy": null
+    },
+    "inquiry": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 41",
+      "position": 816,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "enquiry"
+      ],
+      "reason": "与已审核 enquiry 为常见拼写变体；本条完整内容可用于合并，同时保留询问和正式调查义。",
+      "slotReusedBy": null
+    },
+    "advisors": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 02",
+      "position": 32,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "advisor"
+      ],
+      "reason": "已核定为未发布词头的原位规范更名 → advisor；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "slotReusedBy": "advisor"
+    },
+    "awards": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 07",
+      "position": 138,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "award"
+      ],
+      "reason": "已核定为未发布词头的原位规范更名 → award；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "slotReusedBy": "award"
+    },
+    "cheers!": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 14",
+      "position": 277,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "cheers"
+      ],
+      "reason": "已核定为未发布词头的原位规范更名 → cheers；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "slotReusedBy": "cheers"
+    },
+    "ask for a leave": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 06",
+      "position": 111,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "ask for leave"
+      ],
+      "reason": "词头待规范为 ask for leave；本条 fields/senses 已按规范短语审核，原始题目 asking for a leave 保留待修订。",
+      "slotReusedBy": "ask for leave"
+    },
+    "people": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 58",
+      "position": 1143,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "person"
+      ],
+      "reason": "官方标 n pl，本条为 person 的常用不规则复数；建议合并词形、来源，保留原词头 people 可检索。",
+      "slotReusedBy": null
+    },
+    "while, whilst": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 88",
+      "position": 1758,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "while",
+        "whilst"
+      ],
+      "reason": "组合词头须拆分；master 已有 while，建议此候选规范为 whilst 并单独保留 /waɪlst/，待 root 完成 key 规范后采用 preparedContent。",
+      "slotReusedBy": "whilst"
+    },
+    "woolen": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 89",
+      "position": 1778,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "woollen"
+      ],
+      "reason": "woollen 的美式拼写变体；master 已有 woollen，合并来源并保留 woolen 为拼写别名。",
+      "slotReusedBy": null
+    },
+    "organisers": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 55",
+      "position": 1094,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "organiser"
+      ],
+      "reason": "已核定为未发布词头的原位规范更名 → organiser；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "slotReusedBy": "organiser"
+    },
+    "suprising": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 77",
+      "position": 1539,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "surprising"
+      ],
+      "reason": "已核定为未发布词头的原位规范更名 → surprising；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "slotReusedBy": "surprising"
+    },
+    "table-cloth": {
+      "unit": "PET Unit 24",
+      "lesson": "Lesson 78",
+      "position": 1544,
+      "primaryTopic": "basics",
+      "retired": true,
+      "redirectKeys": [
+        "tablecloth"
+      ],
+      "reason": "已核定为未发布词头的原位规范更名 → tablecloth；以下完整字段已按目标词头、单数音标或去标点结果修正，等待根代理安全更新键和位置引用后采用。",
+      "slotReusedBy": "tablecloth"
+    },
+    "chips": {
+      "unit": "PET Unit 07",
+      "lesson": "Lesson 02",
+      "position": 30,
+      "primaryTopic": "food-drink",
+      "retired": true,
+      "redirectKeys": [
+        "chip"
+      ],
+      "reason": "普通屈折复数，归并到已发布 chip；保留实际句子答案 chips。",
+      "slotReusedBy": null
+    },
+    "holidays": {
+      "unit": "PET Unit 09",
+      "lesson": "Lesson 02",
+      "position": 21,
+      "primaryTopic": "hobbies-leisure",
+      "retired": true,
+      "redirectKeys": [
+        "holiday"
+      ],
+      "reason": "普通屈折复数，归并到已发布 holiday；保留原文及复数形式。",
+      "slotReusedBy": null
+    }
+  }
+}

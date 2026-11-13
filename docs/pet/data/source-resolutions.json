@@ -1,0 +1,8126 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-13",
+  "scope": "全部 305 条原 review-queue 来源行的词头规范审核；仅词头判定，不代表释义、音标或整词条已发布审核通过。",
+  "rules": [
+    "原始来源不改写；本表是增量解析覆盖。",
+    "缩写、派生词和同义词分别建词；只有明确拼写变体作为 aliases。",
+    "词形与宾语占位分别保存；不得将 sb/sth/括号斜线直接作为拼写答案。",
+    "大小写异义词按 case-sensitive-resolutions.json 拆分。",
+    "未列作词条的例示搭配保存 collocations，不自动提取例句中其他单词。",
+    "alias 仅在对应义项使用；不得全词全词性扩大题目答案。"
+  ],
+  "summary": {
+    "sourceRows": 305,
+    "resolved": 303,
+    "pending": 2,
+    "sourceContentStillNeedsReview": 5
+  },
+  "resolutions": [
+    {
+      "sourceRowId": "08:0004",
+      "rawHeadword": "alarm (fire/car)",
+      "sourceWord": "alarm (fire/car)",
+      "page": 1,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "alarm",
+          "word": "alarm"
+        },
+        {
+          "key": "fire alarm",
+          "word": "fire alarm"
+        },
+        {
+          "key": "car alarm",
+          "word": "car alarm"
+        }
+      ],
+      "notes": "括号给出报警器的两种限定词。",
+      "canonicalKeys": [
+        "alarm",
+        "fire alarm",
+        "car alarm"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0011",
+      "rawHeadword": "bath (tub)",
+      "sourceWord": "bath (tub)",
+      "page": 1,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bath",
+          "word": "bath"
+        },
+        {
+          "key": "bathtub",
+          "word": "bathtub"
+        }
+      ],
+      "notes": "bath 与 bathtub 均为列出的完整词头；不拆出 tub。",
+      "canonicalKeys": [
+        "bath",
+        "bathtub"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0019",
+      "rawHeadword": "block (notice)",
+      "sourceWord": "block (notice)",
+      "page": 2,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "pending",
+      "canonicalKeys": [],
+      "entries": [],
+      "pendingFlags": [
+        "source_label_semantics_conflict"
+      ],
+      "notes": "原文把 block 与 notice、街区与公告混在一起，疑似 (notice) board 列错位；仅凭相邻行不能可靠还原。保留原文待核，不自动改成 noticeboard。"
+    },
+    {
+      "sourceRowId": "08:0033",
+      "rawHeadword": "channel (with TV)",
+      "sourceWord": "channel (with TV)",
+      "page": 2,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "channel",
+          "word": "channel",
+          "senseHints": [
+            "电视频道"
+          ]
+        }
+      ],
+      "notes": "with TV 是语境标注，不是词头或 channel with TV 固定短语。",
+      "canonicalKeys": [
+        "channel"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0043",
+      "rawHeadword": "digital (adj)",
+      "sourceWord": "digital (adj)",
+      "page": 3,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "digital",
+          "word": "digital"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "digital"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0052",
+      "rawHeadword": "DVD (player)",
+      "sourceWord": "DVD (player)",
+      "page": 3,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "dvd",
+          "word": "DVD"
+        },
+        {
+          "key": "dvd player",
+          "word": "DVD player"
+        }
+      ],
+      "notes": "光盘缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "dvd",
+        "dvd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0053",
+      "rawHeadword": "electric (al)",
+      "sourceWord": "electric (al)",
+      "page": 3,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "electric",
+          "word": "electric"
+        },
+        {
+          "key": "electrical",
+          "word": "electrical"
+        }
+      ],
+      "notes": "不同形容词，搭配范围不同，不合并为可互换答案。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "electric",
+        "electrical"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0068",
+      "rawHeadword": "ground (floor)",
+      "sourceWord": "ground (floor)",
+      "page": 4,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ground",
+          "word": "ground"
+        },
+        {
+          "key": "ground floor",
+          "word": "ground floor"
+        }
+      ],
+      "notes": "基础词及完整楼层短语分别保留。",
+      "canonicalKeys": [
+        "ground",
+        "ground floor"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0071",
+      "rawHeadword": "heat (v)",
+      "sourceWord": "heat (v)",
+      "page": 4,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "heat",
+          "word": "heat"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "heat"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0088",
+      "rawHeadword": "light (clothes)",
+      "sourceWord": "light (clothes)",
+      "page": 4,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "pending",
+      "canonicalKeys": [],
+      "entries": [],
+      "pendingFlags": [
+        "source_label_semantics_conflict"
+      ],
+      "notes": "原文 light (clothes) 配轻的(衣物)，但家庭主题后接 line，疑似 (clothes) line 列错位；不能确认是轻便衣物还是晾衣绳。保留待核，不猜测分配。"
+    },
+    {
+      "sourceRowId": "08:0092",
+      "rawHeadword": "microwave (n)",
+      "sourceWord": "microwave (n)",
+      "page": 5,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "microwave",
+          "word": "microwave"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "microwave"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0115",
+      "rawHeadword": "safe (adj)",
+      "sourceWord": "safe (adj)",
+      "page": 5,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "safe",
+          "word": "safe"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "safe"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0124",
+      "rawHeadword": "stay (v)",
+      "sourceWord": "stay (v)",
+      "page": 6,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "stay",
+          "word": "stay"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "stay"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0136",
+      "rawHeadword": "TV (screen/set)",
+      "sourceWord": "TV (screen/set)",
+      "page": 6,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tv",
+          "word": "TV"
+        },
+        {
+          "key": "tv screen",
+          "word": "TV screen"
+        },
+        {
+          "key": "tv set",
+          "word": "TV set"
+        }
+      ],
+      "notes": "电视缩写、屏幕和电视机分别保留；set 在此不是套装。",
+      "canonicalKeys": [
+        "tv",
+        "tv screen",
+        "tv set"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0137",
+      "rawHeadword": "upstairs (adv)",
+      "sourceWord": "upstairs (adv)",
+      "page": 6,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "upstairs",
+          "word": "upstairs"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "upstairs"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0296",
+      "rawHeadword": "yog(h)urt",
+      "sourceWord": "yog(h)urt",
+      "page": 13,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "yogurt",
+          "word": "yogurt",
+          "aliases": [
+            "yoghurt"
+          ]
+        }
+      ],
+      "notes": "同一食品的拼写变体。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "yogurt"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0316",
+      "rawHeadword": "get dressed",
+      "sourceWord": "get dressed",
+      "page": 14,
+      "originalFlags": [
+        "missing_ipa"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get dressed",
+          "word": "get dressed"
+        }
+      ],
+      "notes": "词头正常；原始来源缺音标，内容补齐后方可发布。",
+      "canonicalKeys": [
+        "get dressed"
+      ],
+      "pendingFlags": [
+        "missing_ipa"
+      ]
+    },
+    {
+      "sourceRowId": "08:0319",
+      "rawHeadword": "go with / go together (phr v)",
+      "sourceWord": "go with / go together (phr v)",
+      "page": 14,
+      "originalFlags": [
+        "composite_or_annotation_review",
+        "missing_ipa"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "go with",
+          "word": "go with"
+        },
+        {
+          "key": "go together",
+          "word": "go together"
+        }
+      ],
+      "notes": "服装搭配语境的两个短语分别保留，原始来源缺音标须单独补齐。",
+      "canonicalKeys": [
+        "go with",
+        "go together"
+      ],
+      "pendingFlags": [
+        "missing_ipa"
+      ],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0378",
+      "rawHeadword": "wear (out)",
+      "sourceWord": "wear (out)",
+      "page": 16,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "wear",
+          "word": "wear"
+        },
+        {
+          "key": "wear out",
+          "word": "wear out"
+        }
+      ],
+      "notes": "穿着与穿坏/用坏短语分别保留。",
+      "canonicalKeys": [
+        "wear",
+        "wear out"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0387",
+      "rawHeadword": "grey / gray",
+      "sourceWord": "grey / gray",
+      "page": 17,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "grey",
+          "word": "grey",
+          "aliases": [
+            "gray"
+          ]
+        }
+      ],
+      "notes": "英美拼写变体。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "grey"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0408",
+      "rawHeadword": "break (time)",
+      "sourceWord": "break (time)",
+      "page": 18,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "break",
+          "word": "break"
+        },
+        {
+          "key": "break time",
+          "word": "break time"
+        }
+      ],
+      "notes": "休息及休息时间；不得把打碎义复制到 break time。",
+      "canonicalKeys": [
+        "break",
+        "break time"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0445",
+      "rawHeadword": "math(s)",
+      "sourceWord": "math(s)",
+      "page": 19,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "math",
+          "word": "math"
+        },
+        {
+          "key": "maths",
+          "word": "maths"
+        }
+      ],
+      "notes": "美式与英式词形发音不同，分别保留；maths 不是 math 的普通可数复数。",
+      "relation": "regional-lexical-variants",
+      "canonicalKeys": [
+        "math",
+        "maths"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0454",
+      "rawHeadword": "practice (n)",
+      "sourceWord": "practice (n)",
+      "page": 20,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "practice",
+          "word": "practice"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "practice"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0455",
+      "rawHeadword": "practise (v)",
+      "sourceWord": "practise (v)",
+      "page": 20,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "practise",
+          "word": "practise"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "practise"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0471",
+      "rawHeadword": "study (v)",
+      "sourceWord": "study (v)",
+      "page": 20,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "study",
+          "word": "study"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "study"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0662",
+      "rawHeadword": "CD (player)",
+      "sourceWord": "CD (player)",
+      "page": 28,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cd",
+          "word": "CD"
+        },
+        {
+          "key": "cd player",
+          "word": "CD player"
+        }
+      ],
+      "notes": "唱片缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "cd",
+        "cd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0665",
+      "rawHeadword": "collect (or)",
+      "sourceWord": "collect (or)",
+      "page": 28,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "collect",
+          "word": "collect"
+        },
+        {
+          "key": "collector",
+          "word": "collector"
+        }
+      ],
+      "notes": "动词及派生人物名词；拆分后分别补齐音标和释义。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "collect",
+        "collector"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0674",
+      "rawHeadword": "DVD (player)",
+      "sourceWord": "DVD (player)",
+      "page": 29,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "dvd",
+          "word": "DVD"
+        },
+        {
+          "key": "dvd player",
+          "word": "DVD player"
+        }
+      ],
+      "notes": "光盘缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "dvd",
+        "dvd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0694",
+      "rawHeadword": "member (ship)",
+      "sourceWord": "member (ship)",
+      "page": 30,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "member",
+          "word": "member"
+        },
+        {
+          "key": "membership",
+          "word": "membership"
+        }
+      ],
+      "notes": "会员与会员资格/会员群体，不同派生名词。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "member",
+        "membership"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0716",
+      "rawHeadword": "act (v)",
+      "sourceWord": "act (v)",
+      "page": 31,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "act",
+          "word": "act"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "act"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0737",
+      "rawHeadword": "CD (player)",
+      "sourceWord": "CD (player)",
+      "page": 31,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cd",
+          "word": "CD"
+        },
+        {
+          "key": "cd player",
+          "word": "CD player"
+        }
+      ],
+      "notes": "唱片缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "cd",
+        "cd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0755",
+      "rawHeadword": "DJ / disc jockey",
+      "sourceWord": "DJ / disc jockey",
+      "page": 32,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0760",
+      "rawHeadword": "DVD (player)",
+      "sourceWord": "DVD (player)",
+      "page": 32,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "dvd",
+          "word": "DVD"
+        },
+        {
+          "key": "dvd player",
+          "word": "DVD player"
+        }
+      ],
+      "notes": "光盘缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "dvd",
+        "dvd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0844",
+      "rawHeadword": "catch (v)",
+      "sourceWord": "catch (v)",
+      "page": 36,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "catch",
+          "word": "catch"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "catch"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0848",
+      "rawHeadword": "climb (v)",
+      "sourceWord": "climb (v)",
+      "page": 36,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "climb",
+          "word": "climb"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "climb"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0850",
+      "rawHeadword": "coach (n)",
+      "sourceWord": "coach (n)",
+      "page": 36,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "coach",
+          "word": "coach"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "coach"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0861",
+      "rawHeadword": "enter (a competition)",
+      "sourceWord": "enter (a competition)",
+      "page": 36,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "enter",
+          "word": "enter",
+          "senseHints": [
+            "报名参加"
+          ],
+          "collocations": [
+            "enter a competition"
+          ]
+        }
+      ],
+      "notes": "括号为宾语搭配；保留 enter 的参赛义，不生成带括号词头。",
+      "canonicalKeys": [
+        "enter"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0876",
+      "rawHeadword": "hit (v)",
+      "sourceWord": "hit (v)",
+      "page": 37,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "hit",
+          "word": "hit"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "hit"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0885",
+      "rawHeadword": "kick (v)",
+      "sourceWord": "kick (v)",
+      "page": 37,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "kick",
+          "word": "kick"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "kick"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0888",
+      "rawHeadword": "locker (room)",
+      "sourceWord": "locker (room)",
+      "page": 38,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "locker",
+          "word": "locker"
+        },
+        {
+          "key": "locker room",
+          "word": "locker room"
+        }
+      ],
+      "notes": "储物柜和更衣室是不同事物，分别保留。",
+      "canonicalKeys": [
+        "locker",
+        "locker room"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0895",
+      "rawHeadword": "pitch (n)",
+      "sourceWord": "pitch (n)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pitch",
+          "word": "pitch"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "pitch"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0896",
+      "rawHeadword": "play (v)",
+      "sourceWord": "play (v)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "play",
+          "word": "play"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "play"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0897",
+      "rawHeadword": "point(s)",
+      "sourceWord": "point(s)",
+      "page": 38,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "point",
+          "word": "point",
+          "forms": {
+            "plural": [
+              "points"
+            ]
+          },
+          "senseHints": [
+            "分数"
+          ]
+        }
+      ],
+      "notes": "分数义及规则复数；不要把分数义覆盖其他 point 义项。",
+      "canonicalKeys": [
+        "point"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0898",
+      "rawHeadword": "practice (n)",
+      "sourceWord": "practice (n)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "practice",
+          "word": "practice"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "practice"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0899",
+      "rawHeadword": "practise (v)",
+      "sourceWord": "practise (v)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "practise",
+          "word": "practise"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "practise"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0905",
+      "rawHeadword": "reserve (n)",
+      "sourceWord": "reserve (n)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "reserve",
+          "word": "reserve"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "reserve"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0906",
+      "rawHeadword": "rest (n & v)",
+      "sourceWord": "rest (n & v)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rest",
+          "word": "rest"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "rest"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0907",
+      "rawHeadword": "ride (n & v)",
+      "sourceWord": "ride (n & v)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ride",
+          "word": "ride"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "ride"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0911",
+      "rawHeadword": "run (n & v)",
+      "sourceWord": "run (n & v)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "run",
+          "word": "run"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "run"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0913",
+      "rawHeadword": "sail (n & v)",
+      "sourceWord": "sail (n & v)",
+      "page": 38,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "sail",
+          "word": "sail"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "sail"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0926",
+      "rawHeadword": "sport(s)",
+      "sourceWord": "sport(s)",
+      "page": 39,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "sport",
+          "word": "sport",
+          "forms": {
+            "plural": [
+              "sports"
+            ]
+          }
+        }
+      ],
+      "notes": "运动名词的复数和名词修饰形式保留为词形。",
+      "canonicalKeys": [
+        "sport"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0944",
+      "rawHeadword": "throw (v)",
+      "sourceWord": "throw (v)",
+      "page": 40,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "throw",
+          "word": "throw"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "throw"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0949",
+      "rawHeadword": "train(ing)",
+      "sourceWord": "train(ing)",
+      "page": 40,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "train",
+          "word": "train"
+        },
+        {
+          "key": "training",
+          "word": "training"
+        }
+      ],
+      "notes": "训练动词及活动名词；不套用火车名词释义。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "train",
+        "training"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:0950",
+      "rawHeadword": "trainer(s)",
+      "sourceWord": "trainer(s)",
+      "page": 40,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "trainer",
+          "word": "trainer",
+          "forms": {
+            "plural": [
+              "trainers"
+            ]
+          },
+          "senseHints": [
+            "教练"
+          ]
+        }
+      ],
+      "notes": "08 中文明确为教练；此源复数按教练处理。现有 trainers 鞋类词条保留独立词义，不复用其释义。",
+      "canonicalKeys": [
+        "trainer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0953",
+      "rawHeadword": "walk (v)",
+      "sourceWord": "walk (v)",
+      "page": 40,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "walk",
+          "word": "walk"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "walk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:0954",
+      "rawHeadword": "watch (v)",
+      "sourceWord": "watch (v)",
+      "page": 40,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "watch",
+          "word": "watch"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "watch"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1021",
+      "rawHeadword": "ill / sick",
+      "sourceWord": "ill / sick",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ill",
+          "word": "ill"
+        },
+        {
+          "key": "sick",
+          "word": "sick"
+        }
+      ],
+      "notes": "不同同义词，有使用范围差别，不是拼写变体。",
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "ill",
+        "sick"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1061",
+      "rawHeadword": "well (adj)",
+      "sourceWord": "well (adj)",
+      "page": 44,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "well",
+          "word": "well"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "well"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1077",
+      "rawHeadword": "close (v)",
+      "sourceWord": "close (v)",
+      "page": 45,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "close",
+          "word": "close"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "close"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1081",
+      "rawHeadword": "cost (n & v)",
+      "sourceWord": "cost (n & v)",
+      "page": 45,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cost",
+          "word": "cost"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "cost"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1102",
+      "rawHeadword": "pay (for)",
+      "sourceWord": "pay (for)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pay",
+          "word": "pay"
+        },
+        {
+          "key": "pay for",
+          "word": "pay for"
+        }
+      ],
+      "notes": "动词及付款对象介词搭配分别保留。",
+      "canonicalKeys": [
+        "pay",
+        "pay for"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1148",
+      "rawHeadword": "call (v)",
+      "sourceWord": "call (v)",
+      "page": 49,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "call",
+          "word": "call"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "call"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1150",
+      "rawHeadword": "CD (player)",
+      "sourceWord": "CD (player)",
+      "page": 49,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cd",
+          "word": "CD"
+        },
+        {
+          "key": "cd player",
+          "word": "CD player"
+        }
+      ],
+      "notes": "唱片缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "cd",
+        "cd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1154",
+      "rawHeadword": "click (v)",
+      "sourceWord": "click (v)",
+      "page": 49,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "click",
+          "word": "click"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "click"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1164",
+      "rawHeadword": "disc / disk",
+      "sourceWord": "disc / disk",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1166",
+      "rawHeadword": "download (n & v)",
+      "sourceWord": "download (n & v)",
+      "page": 49,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "download",
+          "word": "download"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "download"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1168",
+      "rawHeadword": "DVD (player)",
+      "sourceWord": "DVD (player)",
+      "page": 49,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "dvd",
+          "word": "DVD"
+        },
+        {
+          "key": "dvd player",
+          "word": "DVD player"
+        }
+      ],
+      "notes": "光盘缩写与播放器分别保留。",
+      "canonicalKeys": [
+        "dvd",
+        "dvd player"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1169",
+      "rawHeadword": "electronic(s)",
+      "sourceWord": "electronic(s)",
+      "page": 49,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "electronic",
+          "word": "electronic"
+        },
+        {
+          "key": "electronics",
+          "word": "electronics"
+        }
+      ],
+      "notes": "形容词及电子学/电子设备名词；不能按普通复数合并。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "electronic",
+        "electronics"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1177",
+      "rawHeadword": "hang up (v)",
+      "sourceWord": "hang up (v)",
+      "page": 50,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "hang up",
+          "word": "hang up"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "hang up"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1187",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1214",
+      "rawHeadword": "sign up (v)",
+      "sourceWord": "sign up (v)",
+      "page": 51,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "sign up",
+          "word": "sign up"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "sign up"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1226",
+      "rawHeadword": "upload (n & v)",
+      "sourceWord": "upload (n & v)",
+      "page": 52,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "upload",
+          "word": "upload"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "upload"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1233",
+      "rawHeadword": "(computer) programmer",
+      "sourceWord": "(computer) programmer",
+      "page": 52,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "programmer",
+          "word": "programmer"
+        },
+        {
+          "key": "computer programmer",
+          "word": "computer programmer"
+        }
+      ],
+      "notes": "括号表示可选修饰语。",
+      "canonicalKeys": [
+        "programmer",
+        "computer programmer"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1248",
+      "rawHeadword": "break (n)",
+      "sourceWord": "break (n)",
+      "page": 53,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "break",
+          "word": "break"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "break"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1282",
+      "rawHeadword": "employ (v)",
+      "sourceWord": "employ (v)",
+      "page": 54,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "employ",
+          "word": "employ"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "employ"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1293",
+      "rawHeadword": "football player / footballer",
+      "sourceWord": "football player / footballer",
+      "page": 54,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "football player",
+          "word": "football player"
+        },
+        {
+          "key": "footballer",
+          "word": "footballer"
+        }
+      ],
+      "notes": "球员短语与派生名词分别保留；旧版 10-topics:1791 与下一行 10-topics:1792 footballer 连读。",
+      "relatedSourceIds": [
+        "10-topics:1791",
+        "10-topics:1792"
+      ],
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "football player",
+        "footballer"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1322",
+      "rawHeadword": "officer (e.g. prison/police)",
+      "sourceWord": "officer (e.g. prison/police)",
+      "page": 56,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "officer",
+          "word": "officer",
+          "collocations": [
+            "prison officer",
+            "police officer"
+          ]
+        }
+      ],
+      "notes": "e.g. 明示职业搭配例示；不把括号和斜线作为词头。",
+      "canonicalKeys": [
+        "officer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1370",
+      "rawHeadword": "volunteer (n)",
+      "sourceWord": "volunteer (n)",
+      "page": 57,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "volunteer",
+          "word": "volunteer"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "volunteer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1371",
+      "rawHeadword": "wage(s)",
+      "sourceWord": "wage(s)",
+      "page": 57,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "wage",
+          "word": "wage",
+          "forms": {
+            "plural": [
+              "wages"
+            ]
+          }
+        }
+      ],
+      "notes": "工资名词及常用复数；不可直接复制单数发音到复数词形。",
+      "canonicalKeys": [
+        "wage"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1382",
+      "rawHeadword": "café / cafe",
+      "sourceWord": "café / cafe",
+      "page": 58,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "café",
+          "word": "café",
+          "aliases": [
+            "cafe"
+          ]
+        }
+      ],
+      "notes": "去重并统一带重音拼写；无重音 cafe 为可接受拼写变体。",
+      "canonicalKeys": [
+        "café"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1406",
+      "rawHeadword": "mall (shopping)",
+      "sourceWord": "mall (shopping)",
+      "page": 59,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mall",
+          "word": "mall"
+        },
+        {
+          "key": "shopping mall",
+          "word": "shopping mall"
+        }
+      ],
+      "notes": "同一场所的短称与完整短语，不把 shopping 独立拆为来源词。",
+      "canonicalKeys": [
+        "mall",
+        "shopping mall"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1442",
+      "rawHeadword": "shopping centre (shopping \nmall)",
+      "sourceWord": "shopping centre (shopping mall)",
+      "page": 61,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "shopping centre",
+          "word": "shopping centre"
+        },
+        {
+          "key": "shopping mall",
+          "word": "shopping mall"
+        }
+      ],
+      "notes": "两个同义短语分别保留，不当作拼写变体。",
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "shopping centre",
+        "shopping mall"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1488",
+      "rawHeadword": "(aero) / (air)plane",
+      "sourceWord": "(aero) / (air)plane",
+      "page": 63,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "aeroplane",
+          "word": "aeroplane"
+        },
+        {
+          "key": "airplane",
+          "word": "airplane"
+        }
+      ],
+      "notes": "英美完整词形；分别保留发音，不作为同一拼写答案。",
+      "relation": "regional-lexical-variants",
+      "canonicalKeys": [
+        "aeroplane",
+        "airplane"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1504",
+      "rawHeadword": "bicycle / bike",
+      "sourceWord": "bicycle / bike",
+      "page": 64,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bicycle",
+          "word": "bicycle"
+        },
+        {
+          "key": "bike",
+          "word": "bike"
+        }
+      ],
+      "notes": "同义词而非拼写变体，分别保留。",
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "bicycle",
+        "bike"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1505",
+      "rawHeadword": "board (v)",
+      "sourceWord": "board (v)",
+      "page": 64,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "board",
+          "word": "board"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "board"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1527",
+      "rawHeadword": "catch (v)",
+      "sourceWord": "catch (v)",
+      "page": 65,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "catch",
+          "word": "catch"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "catch"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1528",
+      "rawHeadword": "change (v)",
+      "sourceWord": "change (v)",
+      "page": 65,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "change",
+          "word": "change"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "change"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1530",
+      "rawHeadword": "check in (v)",
+      "sourceWord": "check in (v)",
+      "page": 65,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "check in",
+          "word": "check in"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "check in"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1531",
+      "rawHeadword": "check out (v)",
+      "sourceWord": "check out (v)",
+      "page": 65,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "check out",
+          "word": "check out"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "check out"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1532",
+      "rawHeadword": "check-in (n)",
+      "sourceWord": "check-in (n)",
+      "page": 65,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "check-in",
+          "word": "check-in"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "check-in"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1540",
+      "rawHeadword": "cycle (n & v)",
+      "sourceWord": "cycle (n & v)",
+      "page": 65,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cycle",
+          "word": "cycle"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "cycle"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1549",
+      "rawHeadword": "document(s)",
+      "sourceWord": "document(s)",
+      "page": 65,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "document",
+          "word": "document",
+          "forms": {
+            "plural": [
+              "documents"
+            ]
+          }
+        }
+      ],
+      "notes": "规则复数作为词形保存，不新增独立重复词。",
+      "canonicalKeys": [
+        "document"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1554",
+      "rawHeadword": "driving / driver's licence",
+      "sourceWord": "driving / driver's licence",
+      "page": 66,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "driving licence",
+          "word": "driving licence"
+        },
+        {
+          "key": "driver's licence",
+          "word": "driver's licence"
+        }
+      ],
+      "notes": "两种完整证件短语。旧版 10-topics:1580 与下一行 10-topics:1581 licence 连读；保留原行及跨行证据。",
+      "relatedSourceIds": [
+        "10-topics:1580",
+        "10-topics:1581"
+      ],
+      "canonicalKeys": [
+        "driving licence",
+        "driver's licence"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1569",
+      "rawHeadword": "gas / gas station (Am Eng)",
+      "sourceWord": "gas / gas station (Am Eng)",
+      "page": 66,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "gas",
+          "word": "gas",
+          "senseHints": [
+            "汽油（美式）"
+          ]
+        },
+        {
+          "key": "gas station",
+          "word": "gas station",
+          "senseHints": [
+            "加油站（美式）"
+          ]
+        }
+      ],
+      "notes": "燃料和地点是不同词条；保留美式使用标注。",
+      "canonicalKeys": [
+        "gas",
+        "gas station"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1582",
+      "rawHeadword": "land (v)",
+      "sourceWord": "land (v)",
+      "page": 67,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "land",
+          "word": "land"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "land"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1605",
+      "rawHeadword": "park (v)",
+      "sourceWord": "park (v)",
+      "page": 68,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "park",
+          "word": "park"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "park"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1616",
+      "rawHeadword": "rail(road)",
+      "sourceWord": "rail(road)",
+      "page": 68,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rail",
+          "word": "rail"
+        },
+        {
+          "key": "railroad",
+          "word": "railroad"
+        }
+      ],
+      "notes": "rail 与 railroad 为不同完整名词，不能按可选单字母处理。",
+      "canonicalKeys": [
+        "rail",
+        "railroad"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1622",
+      "rawHeadword": "return (n & v)",
+      "sourceWord": "return (n & v)",
+      "page": 68,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "return",
+          "word": "return"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "return"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1623",
+      "rawHeadword": "ride (n & v)",
+      "sourceWord": "ride (n & v)",
+      "page": 68,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ride",
+          "word": "ride"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "ride"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1628",
+      "rawHeadword": "sail (v)",
+      "sourceWord": "sail (v)",
+      "page": 68,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "sail",
+          "word": "sail"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "sail"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1641",
+      "rawHeadword": "tour (n)",
+      "sourceWord": "tour (n)",
+      "page": 69,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tour",
+          "word": "tour"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "tour"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1655",
+      "rawHeadword": "tyre / tire",
+      "sourceWord": "tyre / tire",
+      "page": 69,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tyre",
+          "word": "tyre",
+          "aliases": [
+            "tire"
+          ],
+          "senseHints": [
+            "轮胎"
+          ]
+        }
+      ],
+      "notes": "轮胎名词的英美拼写变体；不得让 tire 疲劳动词义继承 tyre 释义。",
+      "relation": "sense-scoped-spelling-variants",
+      "canonicalKeys": [
+        "tyre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1660",
+      "rawHeadword": "visit (or)",
+      "sourceWord": "visit (or)",
+      "page": 70,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "visit",
+          "word": "visit"
+        },
+        {
+          "key": "visitor",
+          "word": "visitor"
+        }
+      ],
+      "notes": "动词/名词访问与访客派生名词分别保留。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "visit",
+        "visitor"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1665",
+      "rawHeadword": "a.m. / p.m.",
+      "sourceWord": "a.m. / p.m.",
+      "page": 70,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "a.m.",
+          "word": "a.m."
+        },
+        {
+          "key": "p.m.",
+          "word": "p.m."
+        }
+      ],
+      "notes": "两个时间缩略词，含义相反；分别保留。",
+      "canonicalKeys": [
+        "a.m.",
+        "p.m."
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1678",
+      "rawHeadword": "half (past)",
+      "sourceWord": "half (past)",
+      "page": 71,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "half",
+          "word": "half"
+        },
+        {
+          "key": "half past",
+          "word": "half past"
+        }
+      ],
+      "notes": "数量词及报时短语；half past 后需时间宾语。",
+      "canonicalKeys": [
+        "half",
+        "half past"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1681",
+      "rawHeadword": "January ‒ December",
+      "sourceWord": "January ‒ December",
+      "page": 71,
+      "originalFlags": [
+        "range_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "january",
+          "word": "January"
+        },
+        {
+          "key": "february",
+          "word": "February"
+        },
+        {
+          "key": "march",
+          "word": "March"
+        },
+        {
+          "key": "april",
+          "word": "April"
+        },
+        {
+          "key": "May",
+          "word": "May",
+          "caseSensitive": true
+        },
+        {
+          "key": "june",
+          "word": "June"
+        },
+        {
+          "key": "july",
+          "word": "July"
+        },
+        {
+          "key": "august",
+          "word": "August"
+        },
+        {
+          "key": "september",
+          "word": "September"
+        },
+        {
+          "key": "october",
+          "word": "October"
+        },
+        {
+          "key": "november",
+          "word": "November"
+        },
+        {
+          "key": "december",
+          "word": "December"
+        }
+      ],
+      "notes": "明确列出的闭区间展开为十二月份；May 与情态动词 may 区分。",
+      "canonicalKeys": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "May",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1693",
+      "rawHeadword": "quarter (past / to)",
+      "sourceWord": "quarter (past / to)",
+      "page": 71,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "quarter",
+          "word": "quarter"
+        },
+        {
+          "key": "quarter past",
+          "word": "quarter past"
+        },
+        {
+          "key": "quarter to",
+          "word": "quarter to"
+        }
+      ],
+      "notes": "数量词及两种报时短语；past/to 含义不同。",
+      "canonicalKeys": [
+        "quarter",
+        "quarter past",
+        "quarter to"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1740",
+      "rawHeadword": "thunder (storm)",
+      "sourceWord": "thunder (storm)",
+      "page": 73,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "thunder",
+          "word": "thunder"
+        },
+        {
+          "key": "thunderstorm",
+          "word": "thunderstorm"
+        }
+      ],
+      "notes": "雷声与雷暴是不同名词。",
+      "canonicalKeys": [
+        "thunder",
+        "thunderstorm"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1770",
+      "rawHeadword": "explore (r)",
+      "sourceWord": "explore (r)",
+      "page": 75,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "explore",
+          "word": "explore"
+        },
+        {
+          "key": "explorer",
+          "word": "explorer"
+        }
+      ],
+      "notes": "动词及派生人物名词。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "explore",
+        "explorer"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1771",
+      "rawHeadword": "fall (Am Eng)",
+      "sourceWord": "fall (Am Eng)",
+      "page": 75,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "fall",
+          "word": "fall"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "fall"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1799",
+      "rawHeadword": "mouse / mice",
+      "sourceWord": "mouse / mice",
+      "page": 76,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mouse",
+          "word": "mouse",
+          "forms": {
+            "plural": [
+              "mice"
+            ]
+          }
+        }
+      ],
+      "notes": "mice 为不规则复数，不作为同义词或独立重复词。",
+      "canonicalKeys": [
+        "mouse"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1843",
+      "rawHeadword": "gas (Am Eng)",
+      "sourceWord": "gas (Am Eng)",
+      "page": 78,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "gas",
+          "word": "gas"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。原释义“气体”与 Am Eng 提示并不能证明此行指汽油；保留两个 gas 义项，后续内容审核不要直接按美式汽油覆盖。",
+      "canonicalKeys": [
+        "gas"
+      ],
+      "pendingFlags": [
+        "regional_gloss_mismatch"
+      ]
+    },
+    {
+      "sourceRowId": "08:1845",
+      "rawHeadword": "petrol (Br Eng)",
+      "sourceWord": "petrol (Br Eng)",
+      "page": 78,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "petrol",
+          "word": "petrol"
+        }
+      ],
+      "notes": "移除词性/地域注释，原文保留；释义仍须按原注释的词性或地域义项匹配。",
+      "canonicalKeys": [
+        "petrol"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "08:1852",
+      "rawHeadword": "rubbish (bin)",
+      "sourceWord": "rubbish (bin)",
+      "page": 78,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rubbish",
+          "word": "rubbish"
+        },
+        {
+          "key": "rubbish bin",
+          "word": "rubbish bin"
+        }
+      ],
+      "notes": "垃圾与垃圾桶分别保留。",
+      "canonicalKeys": [
+        "rubbish",
+        "rubbish bin"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "08:1853",
+      "rawHeadword": "traffic (jam)",
+      "sourceWord": "traffic (jam)",
+      "page": 78,
+      "originalFlags": [
+        "composite_or_annotation_review"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "traffic",
+          "word": "traffic"
+        },
+        {
+          "key": "traffic jam",
+          "word": "traffic jam"
+        }
+      ],
+      "notes": "交通和交通堵塞分别保留。",
+      "canonicalKeys": [
+        "traffic",
+        "traffic jam"
+      ],
+      "pendingFlags": [],
+      "contentReuseRule": "组合源的音标、释义须逐目标词重新核对，禁止整体复制到所有拆分词。"
+    },
+    {
+      "sourceRowId": "10-main:0093",
+      "rawHeadword": "among (amongst)",
+      "sourceWord": "among (amongst)",
+      "page": 5,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "among",
+          "word": "among"
+        },
+        {
+          "key": "amongst",
+          "word": "amongst"
+        }
+      ],
+      "notes": "同义介词变体，发音不同；分别维护，不扩大听写答案。",
+      "relation": "lexical-variants",
+      "canonicalKeys": [
+        "among",
+        "amongst"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0164",
+      "rawHeadword": "at / @",
+      "sourceWord": "at / @",
+      "page": 5,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "at",
+          "word": "at",
+          "notations": [
+            "@"
+          ]
+        }
+      ],
+      "notes": "@ 为地址符号读法，不新增符号拼写词条；at 的介词和符号读法分别记录义项。",
+      "canonicalKeys": [
+        "at"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0300",
+      "rawHeadword": "blond(e)",
+      "sourceWord": "blond(e)",
+      "page": 6,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "blond",
+          "word": "blond",
+          "aliases": [
+            "blonde"
+          ],
+          "senseHints": [
+            "形容词：金发的"
+          ]
+        }
+      ],
+      "notes": "官方原条目标为 adj，仅合并金发形容词义的拼写变体；不由此导入名词性别称谓。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "blond"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0461",
+      "rawHeadword": "centimetre (cm)",
+      "sourceWord": "centimetre (cm)",
+      "page": 8,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "centimetre",
+          "word": "centimetre",
+          "notations": [
+            "cm"
+          ]
+        }
+      ],
+      "notes": "cm 为度量符号，不独立生成符号词；保留可显示的缩写关系。",
+      "canonicalKeys": [
+        "centimetre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0469",
+      "rawHeadword": "certainly (not)",
+      "sourceWord": "certainly (not)",
+      "page": 8,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "certainly",
+          "word": "certainly"
+        },
+        {
+          "key": "certainly not",
+          "word": "certainly not"
+        }
+      ],
+      "notes": "保留肯定副词及明确列出的否定短语。",
+      "canonicalKeys": [
+        "certainly",
+        "certainly not"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0677",
+      "rawHeadword": "CV (Curriculum Vitae)",
+      "sourceWord": "CV (Curriculum Vitae)",
+      "page": 10,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cv",
+          "word": "CV"
+        },
+        {
+          "key": "curriculum vitae",
+          "word": "curriculum vitae"
+        }
+      ],
+      "notes": "缩写及完整形式读音不同，分别保留；完整形式作普通名词小写。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "cv",
+        "curriculum vitae"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0698",
+      "rawHeadword": "deal with (sth/sb)",
+      "sourceWord": "deal with (sth/sb)",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "deal with",
+          "word": "deal with",
+          "argumentPatterns": [
+            "deal with something",
+            "deal with somebody"
+          ]
+        }
+      ],
+      "notes": "sth/sb 是宾语占位标记，不进入可练习词头。",
+      "canonicalKeys": [
+        "deal with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0774",
+      "rawHeadword": "disc/disk",
+      "sourceWord": "disc/disk",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0775",
+      "rawHeadword": "disc jockey (DJ)",
+      "sourceWord": "disc jockey (DJ)",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0776",
+      "rawHeadword": "disco(theque)",
+      "sourceWord": "disco(theque)",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disco",
+          "word": "disco"
+        },
+        {
+          "key": "discotheque",
+          "word": "discotheque"
+        }
+      ],
+      "notes": "缩略形式与完整形式读音不同，分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disco",
+        "discotheque"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0796",
+      "rawHeadword": "DJ (disc jockey)",
+      "sourceWord": "DJ (disc jockey)",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0798",
+      "rawHeadword": "doctor / Dr",
+      "sourceWord": "doctor / Dr",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "doctor",
+          "word": "doctor"
+        },
+        {
+          "key": "dr",
+          "word": "Dr",
+          "senseHints": [
+            "博士或医生称谓"
+          ]
+        }
+      ],
+      "notes": "词汇与称谓缩写分别保留；Dr 用作名字前的称谓。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "doctor",
+        "dr"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0931",
+      "rawHeadword": "examination/exam",
+      "sourceWord": "examination/exam",
+      "page": 13,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "examination",
+          "word": "examination"
+        },
+        {
+          "key": "exam",
+          "word": "exam"
+        }
+      ],
+      "notes": "完整名词与常用缩略词分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "examination",
+        "exam"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:0976",
+      "rawHeadword": "familiar (with)",
+      "sourceWord": "familiar (with)",
+      "page": 14,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "familiar",
+          "word": "familiar"
+        },
+        {
+          "key": "familiar with",
+          "word": "familiar with"
+        }
+      ],
+      "notes": "形容词及其固定介词搭配。",
+      "canonicalKeys": [
+        "familiar",
+        "familiar with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1052",
+      "rawHeadword": "focus (sth) on/upon sth/sb",
+      "sourceWord": "focus (sth) on/upon sth/sb",
+      "page": 14,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "focus on",
+          "word": "focus on",
+          "argumentPatterns": [
+            "focus on something",
+            "focus on somebody",
+            "focus something on something",
+            "focus something on somebody"
+          ]
+        },
+        {
+          "key": "focus upon",
+          "word": "focus upon",
+          "argumentPatterns": [
+            "focus upon something",
+            "focus upon somebody",
+            "focus something upon something",
+            "focus something upon somebody"
+          ]
+        }
+      ],
+      "notes": "展开介词选择，sth/sb 保留为句法槽位；不进入拼写目标。",
+      "canonicalKeys": [
+        "focus on",
+        "focus upon"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1079",
+      "rawHeadword": "forward(s)",
+      "sourceWord": "forward(s)",
+      "page": 15,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "forward",
+          "word": "forward"
+        },
+        {
+          "key": "forwards",
+          "word": "forwards"
+        }
+      ],
+      "notes": "副词变体；forward 另有形容词义，不能将所有词性相互替换。",
+      "relation": "sense-scoped-variants",
+      "canonicalKeys": [
+        "forward",
+        "forwards"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1135",
+      "rawHeadword": "get along (with)",
+      "sourceWord": "get along (with)",
+      "page": 15,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get along",
+          "word": "get along"
+        },
+        {
+          "key": "get along with",
+          "word": "get along with"
+        }
+      ],
+      "notes": "保留不及物短语及带宾语介词短语；相关但语法槽位不同。",
+      "canonicalKeys": [
+        "get along",
+        "get along with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1142",
+      "rawHeadword": "get on (with)",
+      "sourceWord": "get on (with)",
+      "page": 15,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get on",
+          "word": "get on"
+        },
+        {
+          "key": "get on with",
+          "word": "get on with"
+        }
+      ],
+      "notes": "分别记录短语及义项；不能将交通工具上车义复制给相处/进展义。",
+      "canonicalKeys": [
+        "get on",
+        "get on with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1187",
+      "rawHeadword": "gram(me)",
+      "sourceWord": "gram(me)",
+      "page": 16,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "gram",
+          "word": "gram",
+          "aliases": [
+            "gramme"
+          ]
+        }
+      ],
+      "notes": "同一单位的拼写变体。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "gram"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1190",
+      "rawHeadword": "grand(d)ad",
+      "sourceWord": "grand(d)ad",
+      "page": 16,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "grandad",
+          "word": "grandad",
+          "aliases": [
+            "granddad"
+          ]
+        }
+      ],
+      "notes": "同一亲属称谓的拼写变体。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "grandad"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1362",
+      "rawHeadword": "identity card (ID)",
+      "sourceWord": "identity card (ID)",
+      "page": 18,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "identity card",
+          "word": "identity card"
+        },
+        {
+          "key": "id",
+          "word": "ID"
+        }
+      ],
+      "notes": "证件全称及缩写分别保留；ID 可有更广泛身份识别义。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "identity card",
+        "id"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1374",
+      "rawHeadword": "impressed (by/with)",
+      "sourceWord": "impressed (by/with)",
+      "page": 18,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "impressed",
+          "word": "impressed"
+        },
+        {
+          "key": "impressed by",
+          "word": "impressed by"
+        },
+        {
+          "key": "impressed with",
+          "word": "impressed with"
+        }
+      ],
+      "notes": "形容词及两个介词搭配；按题目语境判定介词答案。",
+      "canonicalKeys": [
+        "impressed",
+        "impressed by",
+        "impressed with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1454",
+      "rawHeadword": "IT (Information Technology)",
+      "sourceWord": "IT (Information Technology)",
+      "page": 19,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "IT",
+          "word": "IT",
+          "caseSensitive": true,
+          "senseHints": [
+            "信息技术"
+          ]
+        },
+        {
+          "key": "information technology",
+          "word": "information technology"
+        }
+      ],
+      "notes": "信息技术缩写与全称；IT 必须与 it 代词分开，IT 音标为 /ˌaɪˈtiː/。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "IT",
+        "information technology"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1485",
+      "rawHeadword": "kilogramme (kg)",
+      "sourceWord": "kilogramme (kg)",
+      "page": 19,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "kilogram",
+          "word": "kilogram",
+          "aliases": [
+            "kilogramme"
+          ],
+          "notations": [
+            "kg"
+          ]
+        }
+      ],
+      "notes": "已有 kilogram 规范词头；kg 为单位符号，kilogramme 为拼写变体。",
+      "canonicalKeys": [
+        "kilogram"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1486",
+      "rawHeadword": "kilometre (km)",
+      "sourceWord": "kilometre (km)",
+      "page": 19,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "kilometre",
+          "word": "kilometre",
+          "notations": [
+            "km"
+          ]
+        }
+      ],
+      "notes": "km 为单位符号，不单独新增符号拼写词。",
+      "canonicalKeys": [
+        "kilometre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1502",
+      "rawHeadword": "laboratory (lab)",
+      "sourceWord": "laboratory (lab)",
+      "page": 20,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laboratory",
+          "word": "laboratory"
+        },
+        {
+          "key": "lab",
+          "word": "lab"
+        }
+      ],
+      "notes": "完整名词与缩略词分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "laboratory",
+        "lab"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1512",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 20,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1597",
+      "rawHeadword": "lots / a lot",
+      "sourceWord": "lots / a lot",
+      "page": 21,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "lots",
+          "word": "lots"
+        },
+        {
+          "key": "a lot",
+          "word": "a lot"
+        }
+      ],
+      "notes": "大量义的两个列出形式分别保留，搭配中 of 按句法要求处理。",
+      "canonicalKeys": [
+        "lots",
+        "a lot"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1641",
+      "rawHeadword": "maths / mathematics",
+      "sourceWord": "maths / mathematics",
+      "page": 21,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "maths",
+          "word": "maths"
+        },
+        {
+          "key": "mathematics",
+          "word": "mathematics"
+        }
+      ],
+      "notes": "学科短称与完整名词分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "maths",
+        "mathematics"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1680",
+      "rawHeadword": "millimetre (mm)",
+      "sourceWord": "millimetre (mm)",
+      "page": 22,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "millimetre",
+          "word": "millimetre",
+          "notations": [
+            "mm"
+          ]
+        }
+      ],
+      "notes": "mm 为单位符号，不单独新增符号词条。",
+      "canonicalKeys": [
+        "millimetre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1695",
+      "rawHeadword": "mobile (phone)",
+      "sourceWord": "mobile (phone)",
+      "page": 22,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mobile",
+          "word": "mobile"
+        },
+        {
+          "key": "mobile phone",
+          "word": "mobile phone"
+        }
+      ],
+      "notes": "保留名词短称及完整短语；mobile 形容词义另外记录。",
+      "canonicalKeys": [
+        "mobile",
+        "mobile phone"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:1921",
+      "rawHeadword": "PC (personal computer)",
+      "sourceWord": "PC (personal computer)",
+      "page": 24,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pc",
+          "word": "PC"
+        },
+        {
+          "key": "personal computer",
+          "word": "personal computer"
+        }
+      ],
+      "notes": "缩写与全称分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "pc",
+        "personal computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2045",
+      "rawHeadword": "pound (£)",
+      "sourceWord": "pound (£)",
+      "page": 26,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pound",
+          "word": "pound",
+          "notations": [
+            "£"
+          ],
+          "senseHints": [
+            "英镑"
+          ]
+        }
+      ],
+      "notes": "£ 为货币符号；货币义与磅重量义分别记录。",
+      "canonicalKeys": [
+        "pound"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2089",
+      "rawHeadword": "program(me)",
+      "sourceWord": "program(me)",
+      "page": 26,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "program",
+          "word": "program",
+          "senseHints": [
+            "计算机程序；美式计划/节目"
+          ]
+        },
+        {
+          "key": "programme",
+          "word": "programme",
+          "senseHints": [
+            "英式计划/节目"
+          ]
+        }
+      ],
+      "notes": "英式计算机程序用 program；programme 用于节目/计划，不能无条件合并拼写答案。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/program"
+      ],
+      "canonicalKeys": [
+        "program",
+        "programme"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2210",
+      "rawHeadword": "rely (on)",
+      "sourceWord": "rely (on)",
+      "page": 28,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rely on",
+          "word": "rely on"
+        }
+      ],
+      "notes": "rely 的此处介词搭配需 on；不新增带占位括号词。",
+      "canonicalKeys": [
+        "rely on"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2548",
+      "rawHeadword": "step forward/back(wards)/out",
+      "sourceWord": "step forward/back(wards)/out",
+      "page": 32,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "step forward",
+          "word": "step forward"
+        },
+        {
+          "key": "step back",
+          "word": "step back"
+        },
+        {
+          "key": "step backwards",
+          "word": "step backwards"
+        },
+        {
+          "key": "step out",
+          "word": "step out"
+        }
+      ],
+      "notes": "按共同动词展开四个明确列出的方向短语；不把不同方向当可互换答案。",
+      "canonicalKeys": [
+        "step forward",
+        "step back",
+        "step backwards",
+        "step out"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2549",
+      "rawHeadword": "step over/in/on/out of (sth)",
+      "sourceWord": "step over/in/on/out of (sth)",
+      "page": 32,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "step over",
+          "word": "step over",
+          "argumentPatterns": [
+            "step over something"
+          ]
+        },
+        {
+          "key": "step in",
+          "word": "step in",
+          "argumentPatterns": [
+            "step in something"
+          ]
+        },
+        {
+          "key": "step on",
+          "word": "step on",
+          "argumentPatterns": [
+            "step on something"
+          ]
+        },
+        {
+          "key": "step out of",
+          "word": "step out of",
+          "argumentPatterns": [
+            "step out of something"
+          ]
+        }
+      ],
+      "notes": "按共同动词展开四个介词短语；sth 是宾语占位，不是拼写目标。",
+      "canonicalKeys": [
+        "step over",
+        "step in",
+        "step on",
+        "step out of"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2665",
+      "rawHeadword": "television (TV)",
+      "sourceWord": "television (TV)",
+      "page": 34,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "television",
+          "word": "television"
+        },
+        {
+          "key": "tv",
+          "word": "TV"
+        }
+      ],
+      "notes": "完整词与缩写分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "television",
+        "tv"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2760",
+      "rawHeadword": "toward(s)",
+      "sourceWord": "toward(s)",
+      "page": 35,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "toward",
+          "word": "toward"
+        },
+        {
+          "key": "towards",
+          "word": "towards"
+        }
+      ],
+      "notes": "介词变体，发音不同，分别保留。",
+      "relation": "lexical-variants",
+      "canonicalKeys": [
+        "toward",
+        "towards"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2877",
+      "rawHeadword": "v/versus",
+      "sourceWord": "v/versus",
+      "page": 37,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "versus",
+          "word": "versus",
+          "notations": [
+            "v"
+          ]
+        }
+      ],
+      "notes": "v 是比赛对阵语境的书面缩写，读作 versus；不新增单字母拼写词。",
+      "canonicalKeys": [
+        "versus"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-main:2910",
+      "rawHeadword": "wage(s)",
+      "sourceWord": "wage(s)",
+      "page": 37,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "wage",
+          "word": "wage",
+          "forms": {
+            "plural": [
+              "wages"
+            ]
+          }
+        }
+      ],
+      "notes": "工资名词及常用复数；不可直接复制单数发音到复数词形。",
+      "canonicalKeys": [
+        "wage"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0104",
+      "rawHeadword": "at / @",
+      "sourceWord": "at / @",
+      "page": 41,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "at",
+          "word": "at",
+          "notations": [
+            "@"
+          ]
+        }
+      ],
+      "notes": "@ 为地址符号读法，不新增符号拼写词条；at 的介词和符号读法分别记录义项。",
+      "canonicalKeys": [
+        "at"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0125",
+      "rawHeadword": "disc/disk",
+      "sourceWord": "disc/disk",
+      "page": 41,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0148",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 41,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0168",
+      "rawHeadword": "program(me)",
+      "sourceWord": "program(me)",
+      "page": 41,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "program",
+          "word": "program",
+          "senseHints": [
+            "计算机程序；美式计划/节目"
+          ]
+        },
+        {
+          "key": "programme",
+          "word": "programme",
+          "senseHints": [
+            "英式计划/节目"
+          ]
+        }
+      ],
+      "notes": "英式计算机程序用 program；programme 用于节目/计划，不能无条件合并拼写答案。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/program"
+      ],
+      "canonicalKeys": [
+        "program",
+        "programme"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0235",
+      "rawHeadword": "laboratory (lab)",
+      "sourceWord": "laboratory (lab)",
+      "page": 42,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laboratory",
+          "word": "laboratory"
+        },
+        {
+          "key": "lab",
+          "word": "lab"
+        }
+      ],
+      "notes": "完整名词与缩略词分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "laboratory",
+        "lab"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0243",
+      "rawHeadword": "math(s)",
+      "sourceWord": "math(s)",
+      "page": 42,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "math",
+          "word": "math"
+        },
+        {
+          "key": "maths",
+          "word": "maths"
+        }
+      ],
+      "notes": "美式与英式词形发音不同，分别保留；maths 不是 math 的普通可数复数。",
+      "relation": "regional-lexical-variants",
+      "canonicalKeys": [
+        "math",
+        "maths"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0311",
+      "rawHeadword": "disc / disk",
+      "sourceWord": "disc / disk",
+      "page": 42,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0314",
+      "rawHeadword": "DJ / disc jockey",
+      "sourceWord": "DJ / disc jockey",
+      "page": 42,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0421",
+      "rawHeadword": "bunch (of bananas)",
+      "sourceWord": "bunch (of bananas)",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bunch",
+          "word": "bunch",
+          "collocations": [
+            "a bunch of bananas"
+          ]
+        }
+      ],
+      "notes": "括号是量词搭配例示，香蕉不是新增词头；保留搭配。",
+      "canonicalKeys": [
+        "bunch"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0428",
+      "rawHeadword": "can (of beans)",
+      "sourceWord": "can (of beans)",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "can",
+          "word": "can",
+          "senseHints": [
+            "罐；一罐"
+          ],
+          "collocations": [
+            "a can of beans"
+          ]
+        }
+      ],
+      "notes": "括号限定容器义及量词搭配，不是情态动词 can 的释义。",
+      "canonicalKeys": [
+        "can"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0602",
+      "rawHeadword": "feel better/ill/sick",
+      "sourceWord": "feel better/ill/sick",
+      "page": 44,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "feel better",
+          "word": "feel better"
+        },
+        {
+          "key": "feel ill",
+          "word": "feel ill"
+        },
+        {
+          "key": "feel sick",
+          "word": "feel sick"
+        }
+      ],
+      "notes": "三个有不同补语的短语，不将 better/ill/sick 作为可互换答案。",
+      "canonicalKeys": [
+        "feel better",
+        "feel ill",
+        "feel sick"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0608",
+      "rawHeadword": "get better/worse",
+      "sourceWord": "get better/worse",
+      "page": 44,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get better",
+          "word": "get better"
+        },
+        {
+          "key": "get worse",
+          "word": "get worse"
+        }
+      ],
+      "notes": "两个相反含义的短语分别保留。",
+      "canonicalKeys": [
+        "get better",
+        "get worse"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0675",
+      "rawHeadword": "collect(or)",
+      "sourceWord": "collect(or)",
+      "page": 44,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "collect",
+          "word": "collect"
+        },
+        {
+          "key": "collector",
+          "word": "collector"
+        }
+      ],
+      "notes": "动词及派生人物名词；拆分后分别补齐音标和释义。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "collect",
+        "collector"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0704",
+      "rawHeadword": "member(ship)",
+      "sourceWord": "member(ship)",
+      "page": 44,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "member",
+          "word": "member"
+        },
+        {
+          "key": "membership",
+          "word": "membership"
+        }
+      ],
+      "notes": "会员与会员资格/会员群体，不同派生名词。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "member",
+        "membership"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0729",
+      "rawHeadword": "alarm (fire/car)",
+      "sourceWord": "alarm (fire/car)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "alarm",
+          "word": "alarm"
+        },
+        {
+          "key": "fire alarm",
+          "word": "fire alarm"
+        },
+        {
+          "key": "car alarm",
+          "word": "car alarm"
+        }
+      ],
+      "notes": "括号给出报警器的两种限定词。",
+      "canonicalKeys": [
+        "alarm",
+        "fire alarm",
+        "car alarm"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0736",
+      "rawHeadword": "bath(tub)",
+      "sourceWord": "bath(tub)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bath",
+          "word": "bath"
+        },
+        {
+          "key": "bathtub",
+          "word": "bathtub"
+        }
+      ],
+      "notes": "bath 与 bathtub 均为列出的完整词头；不拆出 tub。",
+      "canonicalKeys": [
+        "bath",
+        "bathtub"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0745",
+      "rawHeadword": "(notice) board",
+      "sourceWord": "(notice) board",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "board",
+          "word": "board"
+        },
+        {
+          "key": "noticeboard",
+          "word": "noticeboard"
+        }
+      ],
+      "notes": "公告板规范词头 noticeboard；board 保留独立木板/板面义。",
+      "collocations": [
+        "notice board"
+      ],
+      "canonicalKeys": [
+        "board",
+        "noticeboard"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0759",
+      "rawHeadword": "channel (with TV)",
+      "sourceWord": "channel (with TV)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "channel",
+          "word": "channel",
+          "senseHints": [
+            "电视频道"
+          ]
+        }
+      ],
+      "notes": "with TV 是语境标注，不是词头或 channel with TV 固定短语。",
+      "canonicalKeys": [
+        "channel"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0779",
+      "rawHeadword": "electric(al)",
+      "sourceWord": "electric(al)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "electric",
+          "word": "electric"
+        },
+        {
+          "key": "electrical",
+          "word": "electrical"
+        }
+      ],
+      "notes": "不同形容词，搭配范围不同，不合并为可互换答案。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "electric",
+        "electrical"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0794",
+      "rawHeadword": "ground (floor)",
+      "sourceWord": "ground (floor)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ground",
+          "word": "ground"
+        },
+        {
+          "key": "ground floor",
+          "word": "ground floor"
+        }
+      ],
+      "notes": "基础词及完整楼层短语分别保留。",
+      "canonicalKeys": [
+        "ground",
+        "ground floor"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0812",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:0862",
+      "rawHeadword": "TV (screen/set)",
+      "sourceWord": "TV (screen/set)",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tv",
+          "word": "TV"
+        },
+        {
+          "key": "tv screen",
+          "word": "TV screen"
+        },
+        {
+          "key": "tv set",
+          "word": "TV set"
+        }
+      ],
+      "notes": "电视缩写、屏幕和电视机分别保留；set 在此不是套装。",
+      "canonicalKeys": [
+        "tv",
+        "tv screen",
+        "tv set"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1044",
+      "rawHeadword": "apartment block / apartment building",
+      "sourceWord": "apartment block / apartment building",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "apartment block",
+          "word": "apartment block"
+        },
+        {
+          "key": "apartment building",
+          "word": "apartment building"
+        }
+      ],
+      "notes": "两个同义短语分别保留。",
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "apartment block",
+        "apartment building"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1049",
+      "rawHeadword": "cafe / café",
+      "sourceWord": "cafe / café",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "café",
+          "word": "café",
+          "aliases": [
+            "cafe"
+          ]
+        }
+      ],
+      "notes": "去重并统一带重音拼写；无重音 cafe 为可接受拼写变体。",
+      "canonicalKeys": [
+        "café"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1073",
+      "rawHeadword": "mall (shopping)",
+      "sourceWord": "mall (shopping)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mall",
+          "word": "mall"
+        },
+        {
+          "key": "shopping mall",
+          "word": "shopping mall"
+        }
+      ],
+      "notes": "同一场所的短称与完整短语，不把 shopping 独立拆为来源词。",
+      "canonicalKeys": [
+        "mall",
+        "shopping mall"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1152",
+      "rawHeadword": "(shopping) mall",
+      "sourceWord": "(shopping) mall",
+      "page": 47,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mall",
+          "word": "mall"
+        },
+        {
+          "key": "shopping mall",
+          "word": "shopping mall"
+        }
+      ],
+      "notes": "同一场所的短称与完整短语，不把 shopping 独立拆为来源词。",
+      "canonicalKeys": [
+        "mall",
+        "shopping mall"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1164",
+      "rawHeadword": "café / café",
+      "sourceWord": "café / café",
+      "page": 47,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "café",
+          "word": "café",
+          "aliases": [
+            "cafe"
+          ]
+        }
+      ],
+      "notes": "去重并统一带重音拼写；无重音 cafe 为可接受拼写变体。",
+      "canonicalKeys": [
+        "café"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1221",
+      "rawHeadword": "pay (for)",
+      "sourceWord": "pay (for)",
+      "page": 47,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pay",
+          "word": "pay"
+        },
+        {
+          "key": "pay for",
+          "word": "pay for"
+        }
+      ],
+      "notes": "动词及付款对象介词搭配分别保留。",
+      "canonicalKeys": [
+        "pay",
+        "pay for"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1273",
+      "rawHeadword": "enter (a competition)",
+      "sourceWord": "enter (a competition)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "enter",
+          "word": "enter",
+          "senseHints": [
+            "报名参加"
+          ],
+          "collocations": [
+            "enter a competition"
+          ]
+        }
+      ],
+      "notes": "括号为宾语搭配；保留 enter 的参赛义，不生成带括号词头。",
+      "canonicalKeys": [
+        "enter"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1275",
+      "rawHeadword": "(sports) facilities",
+      "sourceWord": "(sports) facilities",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "facilities",
+          "word": "facilities"
+        },
+        {
+          "key": "sports facilities",
+          "word": "sports facilities"
+        }
+      ],
+      "notes": "设施义常用复数，复用已存在的 facilities 词条；不把 sports 单独拆出。",
+      "canonicalKeys": [
+        "facilities",
+        "sports facilities"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1300",
+      "rawHeadword": "locker (room)",
+      "sourceWord": "locker (room)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "locker",
+          "word": "locker"
+        },
+        {
+          "key": "locker room",
+          "word": "locker room"
+        }
+      ],
+      "notes": "储物柜和更衣室是不同事物，分别保留。",
+      "canonicalKeys": [
+        "locker",
+        "locker room"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1309",
+      "rawHeadword": "point(s)",
+      "sourceWord": "point(s)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "point",
+          "word": "point",
+          "forms": {
+            "plural": [
+              "points"
+            ]
+          },
+          "senseHints": [
+            "分数"
+          ]
+        }
+      ],
+      "notes": "分数义及规则复数；不要把分数义覆盖其他 point 义项。",
+      "canonicalKeys": [
+        "point"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1330",
+      "rawHeadword": "shoot(ing)",
+      "sourceWord": "shoot(ing)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "shoot",
+          "word": "shoot"
+        },
+        {
+          "key": "shooting",
+          "word": "shooting"
+        }
+      ],
+      "notes": "动词与活动名词分别保留；射击/拍摄义依据来源句子分别记录。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "shoot",
+        "shooting"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1338",
+      "rawHeadword": "sport(s)",
+      "sourceWord": "sport(s)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "sport",
+          "word": "sport",
+          "forms": {
+            "plural": [
+              "sports"
+            ]
+          }
+        }
+      ],
+      "notes": "运动名词的复数和名词修饰形式保留为词形。",
+      "canonicalKeys": [
+        "sport"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1361",
+      "rawHeadword": "trainer(s)",
+      "sourceWord": "trainer(s)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "trainer",
+          "word": "trainer",
+          "forms": {
+            "plural": [
+              "trainers"
+            ]
+          },
+          "senseHints": [
+            "教练"
+          ]
+        },
+        {
+          "key": "trainers",
+          "word": "trainers",
+          "senseHints": [
+            "运动鞋（常用复数）"
+          ]
+        }
+      ],
+      "notes": "官方括号复数可覆盖教练的单复数及运动鞋的复数名词；两个已有词头按义项分别关联，不将鞋类释义复制到教练。08 的同名行有中文“教练”，只分配 trainer。",
+      "canonicalKeys": [
+        "trainer",
+        "trainers"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1362",
+      "rawHeadword": "train(ing)",
+      "sourceWord": "train(ing)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "train",
+          "word": "train"
+        },
+        {
+          "key": "training",
+          "word": "training"
+        }
+      ],
+      "notes": "训练动词及活动名词；不套用火车名词释义。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "train",
+        "training"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1363",
+      "rawHeadword": "versus / v",
+      "sourceWord": "versus / v",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "versus",
+          "word": "versus",
+          "notations": [
+            "v"
+          ]
+        }
+      ],
+      "notes": "v 是比赛对阵语境的书面缩写，读作 versus；不新增单字母拼写词。",
+      "canonicalKeys": [
+        "versus"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1396",
+      "rawHeadword": "explore(r)",
+      "sourceWord": "explore(r)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "explore",
+          "word": "explore"
+        },
+        {
+          "key": "explorer",
+          "word": "explorer"
+        }
+      ],
+      "notes": "动词及派生人物名词。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "explore",
+        "explorer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1425",
+      "rawHeadword": "mouse/mice",
+      "sourceWord": "mouse/mice",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mouse",
+          "word": "mouse",
+          "forms": {
+            "plural": [
+              "mice"
+            ]
+          }
+        }
+      ],
+      "notes": "mice 为不规则复数，不作为同义词或独立重复词。",
+      "canonicalKeys": [
+        "mouse"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1469",
+      "rawHeadword": "a.m. / p.m.",
+      "sourceWord": "a.m. / p.m.",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "a.m.",
+          "word": "a.m."
+        },
+        {
+          "key": "p.m.",
+          "word": "p.m."
+        }
+      ],
+      "notes": "两个时间缩略词，含义相反；分别保留。",
+      "canonicalKeys": [
+        "a.m.",
+        "p.m."
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1470",
+      "rawHeadword": "ages (for ages)",
+      "sourceWord": "ages (for ages)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ages",
+          "word": "ages"
+        },
+        {
+          "key": "for ages",
+          "word": "for ages"
+        }
+      ],
+      "notes": "长时间义及其明确列出的习语；不与 age 年龄义自动共用释义。",
+      "canonicalKeys": [
+        "ages",
+        "for ages"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1482",
+      "rawHeadword": "half (past)",
+      "sourceWord": "half (past)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "half",
+          "word": "half"
+        },
+        {
+          "key": "half past",
+          "word": "half past"
+        }
+      ],
+      "notes": "数量词及报时短语；half past 后需时间宾语。",
+      "canonicalKeys": [
+        "half",
+        "half past"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1498",
+      "rawHeadword": "quarter (past / to)",
+      "sourceWord": "quarter (past / to)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "quarter",
+          "word": "quarter"
+        },
+        {
+          "key": "quarter past",
+          "word": "quarter past"
+        },
+        {
+          "key": "quarter to",
+          "word": "quarter to"
+        }
+      ],
+      "notes": "数量词及两种报时短语；past/to 含义不同。",
+      "canonicalKeys": [
+        "quarter",
+        "quarter past",
+        "quarter to"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1516",
+      "rawHeadword": "(aero) / (air)plane",
+      "sourceWord": "(aero) / (air)plane",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "aeroplane",
+          "word": "aeroplane"
+        },
+        {
+          "key": "airplane",
+          "word": "airplane"
+        }
+      ],
+      "notes": "英美完整词形；分别保留发音，不作为同一拼写答案。",
+      "relation": "regional-lexical-variants",
+      "canonicalKeys": [
+        "aeroplane",
+        "airplane"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1530",
+      "rawHeadword": "bicycle / bike",
+      "sourceWord": "bicycle / bike",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bicycle",
+          "word": "bicycle"
+        },
+        {
+          "key": "bike",
+          "word": "bike"
+        }
+      ],
+      "notes": "同义词而非拼写变体，分别保留。",
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "bicycle",
+        "bike"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1575",
+      "rawHeadword": "document(s)",
+      "sourceWord": "document(s)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "document",
+          "word": "document",
+          "forms": {
+            "plural": [
+              "documents"
+            ]
+          }
+        }
+      ],
+      "notes": "规则复数作为词形保存，不新增独立重复词。",
+      "canonicalKeys": [
+        "document"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1580",
+      "rawHeadword": "driving/driver’s",
+      "sourceWord": "driving/driver’s",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "driving licence",
+          "word": "driving licence"
+        },
+        {
+          "key": "driver's licence",
+          "word": "driver's licence"
+        }
+      ],
+      "notes": "两种完整证件短语。旧版 10-topics:1580 与下一行 10-topics:1581 licence 连读；保留原行及跨行证据。",
+      "relatedSourceIds": [
+        "10-topics:1580",
+        "10-topics:1581"
+      ],
+      "canonicalKeys": [
+        "driving licence",
+        "driver's licence"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1596",
+      "rawHeadword": "gas / gas station (Am Eng)",
+      "sourceWord": "gas / gas station (Am Eng)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "gas",
+          "word": "gas",
+          "senseHints": [
+            "汽油（美式）"
+          ]
+        },
+        {
+          "key": "gas station",
+          "word": "gas station",
+          "senseHints": [
+            "加油站（美式）"
+          ]
+        }
+      ],
+      "notes": "燃料和地点是不同词条；保留美式使用标注。",
+      "canonicalKeys": [
+        "gas",
+        "gas station"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1644",
+      "rawHeadword": "rail(road)",
+      "sourceWord": "rail(road)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rail",
+          "word": "rail"
+        },
+        {
+          "key": "railroad",
+          "word": "railroad"
+        }
+      ],
+      "notes": "rail 与 railroad 为不同完整名词，不能按可选单字母处理。",
+      "canonicalKeys": [
+        "rail",
+        "railroad"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1658",
+      "rawHeadword": "(bus) service",
+      "sourceWord": "(bus) service",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "service",
+          "word": "service"
+        },
+        {
+          "key": "bus service",
+          "word": "bus service"
+        }
+      ],
+      "notes": "括号表示可选修饰语；保留基础词与巴士服务短语。",
+      "canonicalKeys": [
+        "service",
+        "bus service"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1683",
+      "rawHeadword": "tyre/tire",
+      "sourceWord": "tyre/tire",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tyre",
+          "word": "tyre",
+          "aliases": [
+            "tire"
+          ],
+          "senseHints": [
+            "轮胎"
+          ]
+        }
+      ],
+      "notes": "轮胎名词的英美拼写变体；不得让 tire 疲劳动词义继承 tyre 释义。",
+      "relation": "sense-scoped-spelling-variants",
+      "canonicalKeys": [
+        "tyre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1688",
+      "rawHeadword": "visit(or)",
+      "sourceWord": "visit(or)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "visit",
+          "word": "visit"
+        },
+        {
+          "key": "visitor",
+          "word": "visitor"
+        }
+      ],
+      "notes": "动词/名词访问与访客派生名词分别保留。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "visit",
+        "visitor"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1726",
+      "rawHeadword": "thunder(storm)",
+      "sourceWord": "thunder(storm)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "thunder",
+          "word": "thunder"
+        },
+        {
+          "key": "thunderstorm",
+          "word": "thunderstorm"
+        }
+      ],
+      "notes": "雷声与雷暴是不同名词。",
+      "canonicalKeys": [
+        "thunder",
+        "thunderstorm"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1791",
+      "rawHeadword": "football player/",
+      "sourceWord": "football player/",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "football player",
+          "word": "football player"
+        },
+        {
+          "key": "footballer",
+          "word": "footballer"
+        }
+      ],
+      "notes": "球员短语与派生名词分别保留；旧版 10-topics:1791 与下一行 10-topics:1792 footballer 连读。",
+      "relatedSourceIds": [
+        "10-topics:1791",
+        "10-topics:1792"
+      ],
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "football player",
+        "footballer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1822",
+      "rawHeadword": "officer (e.g. prison/police)",
+      "sourceWord": "officer (e.g. prison/police)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "officer",
+          "word": "officer",
+          "collocations": [
+            "prison officer",
+            "police officer"
+          ]
+        }
+      ],
+      "notes": "e.g. 明示职业搭配例示；不把括号和斜线作为词头。",
+      "canonicalKeys": [
+        "officer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1840",
+      "rawHeadword": "(computer) programmer",
+      "sourceWord": "(computer) programmer",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "programmer",
+          "word": "programmer"
+        },
+        {
+          "key": "computer programmer",
+          "word": "computer programmer"
+        }
+      ],
+      "notes": "括号表示可选修饰语。",
+      "canonicalKeys": [
+        "programmer",
+        "computer programmer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "10-topics:1872",
+      "rawHeadword": "wage(s)",
+      "sourceWord": "wage(s)",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "wage",
+          "word": "wage",
+          "forms": {
+            "plural": [
+              "wages"
+            ]
+          }
+        }
+      ],
+      "notes": "工资名词及常用复数；不可直接复制单数发音到复数词形。",
+      "canonicalKeys": [
+        "wage"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0094",
+      "rawHeadword": "among (amongst)",
+      "sourceWord": "among (amongst)",
+      "page": 5,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "among",
+          "word": "among"
+        },
+        {
+          "key": "amongst",
+          "word": "amongst"
+        }
+      ],
+      "notes": "同义介词变体，发音不同；分别维护，不扩大听写答案。",
+      "relation": "lexical-variants",
+      "canonicalKeys": [
+        "among",
+        "amongst"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0167",
+      "rawHeadword": "at / @",
+      "sourceWord": "at / @",
+      "page": 5,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "at",
+          "word": "at",
+          "notations": [
+            "@"
+          ]
+        }
+      ],
+      "notes": "@ 为地址符号读法，不新增符号拼写词条；at 的介词和符号读法分别记录义项。",
+      "canonicalKeys": [
+        "at"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0306",
+      "rawHeadword": "blond(e)",
+      "sourceWord": "blond(e)",
+      "page": 6,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "blond",
+          "word": "blond",
+          "aliases": [
+            "blonde"
+          ],
+          "senseHints": [
+            "形容词：金发的"
+          ]
+        }
+      ],
+      "notes": "官方原条目标为 adj，仅合并金发形容词义的拼写变体；不由此导入名词性别称谓。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "blond"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0471",
+      "rawHeadword": "centimetre (cm)",
+      "sourceWord": "centimetre (cm)",
+      "page": 8,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "centimetre",
+          "word": "centimetre",
+          "notations": [
+            "cm"
+          ]
+        }
+      ],
+      "notes": "cm 为度量符号，不独立生成符号词；保留可显示的缩写关系。",
+      "canonicalKeys": [
+        "centimetre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0479",
+      "rawHeadword": "certainly (not)",
+      "sourceWord": "certainly (not)",
+      "page": 8,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "certainly",
+          "word": "certainly"
+        },
+        {
+          "key": "certainly not",
+          "word": "certainly not"
+        }
+      ],
+      "notes": "保留肯定副词及明确列出的否定短语。",
+      "canonicalKeys": [
+        "certainly",
+        "certainly not"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0691",
+      "rawHeadword": "CV (Curriculum Vitae)",
+      "sourceWord": "CV (Curriculum Vitae)",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "cv",
+          "word": "CV"
+        },
+        {
+          "key": "curriculum vitae",
+          "word": "curriculum vitae"
+        }
+      ],
+      "notes": "缩写及完整形式读音不同，分别保留；完整形式作普通名词小写。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "cv",
+        "curriculum vitae"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0712",
+      "rawHeadword": "deal with (sth/sb)",
+      "sourceWord": "deal with (sth/sb)",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "deal with",
+          "word": "deal with",
+          "argumentPatterns": [
+            "deal with something",
+            "deal with somebody"
+          ]
+        }
+      ],
+      "notes": "sth/sb 是宾语占位标记，不进入可练习词头。",
+      "canonicalKeys": [
+        "deal with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0790",
+      "rawHeadword": "disc/disk",
+      "sourceWord": "disc/disk",
+      "page": 11,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0791",
+      "rawHeadword": "disc jockey (DJ)",
+      "sourceWord": "disc jockey (DJ)",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0792",
+      "rawHeadword": "disco(theque)",
+      "sourceWord": "disco(theque)",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disco",
+          "word": "disco"
+        },
+        {
+          "key": "discotheque",
+          "word": "discotheque"
+        }
+      ],
+      "notes": "缩略形式与完整形式读音不同，分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disco",
+        "discotheque"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0812",
+      "rawHeadword": "DJ (disc jockey)",
+      "sourceWord": "DJ (disc jockey)",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0814",
+      "rawHeadword": "doctor / Dr",
+      "sourceWord": "doctor / Dr",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "doctor",
+          "word": "doctor"
+        },
+        {
+          "key": "dr",
+          "word": "Dr",
+          "senseHints": [
+            "博士或医生称谓"
+          ]
+        }
+      ],
+      "notes": "词汇与称谓缩写分别保留；Dr 用作名字前的称谓。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "doctor",
+        "dr"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0830",
+      "rawHeadword": "Dr / doctor",
+      "sourceWord": "Dr / doctor",
+      "page": 12,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "doctor",
+          "word": "doctor"
+        },
+        {
+          "key": "dr",
+          "word": "Dr",
+          "senseHints": [
+            "博士或医生称谓"
+          ]
+        }
+      ],
+      "notes": "词汇与称谓缩写分别保留；Dr 用作名字前的称谓。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "doctor",
+        "dr"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0949",
+      "rawHeadword": "examination/exam",
+      "sourceWord": "examination/exam",
+      "page": 13,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "examination",
+          "word": "examination"
+        },
+        {
+          "key": "exam",
+          "word": "exam"
+        }
+      ],
+      "notes": "完整名词与常用缩略词分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "examination",
+        "exam"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:0994",
+      "rawHeadword": "familiar (with)",
+      "sourceWord": "familiar (with)",
+      "page": 14,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "familiar",
+          "word": "familiar"
+        },
+        {
+          "key": "familiar with",
+          "word": "familiar with"
+        }
+      ],
+      "notes": "形容词及其固定介词搭配。",
+      "canonicalKeys": [
+        "familiar",
+        "familiar with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1072",
+      "rawHeadword": "focus (sth) on/upon sth/sb",
+      "sourceWord": "focus (sth) on/upon sth/sb",
+      "page": 15,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "focus on",
+          "word": "focus on",
+          "argumentPatterns": [
+            "focus on something",
+            "focus on somebody",
+            "focus something on something",
+            "focus something on somebody"
+          ]
+        },
+        {
+          "key": "focus upon",
+          "word": "focus upon",
+          "argumentPatterns": [
+            "focus upon something",
+            "focus upon somebody",
+            "focus something upon something",
+            "focus something upon somebody"
+          ]
+        }
+      ],
+      "notes": "展开介词选择，sth/sb 保留为句法槽位；不进入拼写目标。",
+      "canonicalKeys": [
+        "focus on",
+        "focus upon"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1102",
+      "rawHeadword": "forward(s)",
+      "sourceWord": "forward(s)",
+      "page": 15,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "forward",
+          "word": "forward"
+        },
+        {
+          "key": "forwards",
+          "word": "forwards"
+        }
+      ],
+      "notes": "副词变体；forward 另有形容词义，不能将所有词性相互替换。",
+      "relation": "sense-scoped-variants",
+      "canonicalKeys": [
+        "forward",
+        "forwards"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1159",
+      "rawHeadword": "get along (with)",
+      "sourceWord": "get along (with)",
+      "page": 15,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get along",
+          "word": "get along"
+        },
+        {
+          "key": "get along with",
+          "word": "get along with"
+        }
+      ],
+      "notes": "保留不及物短语及带宾语介词短语；相关但语法槽位不同。",
+      "canonicalKeys": [
+        "get along",
+        "get along with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1166",
+      "rawHeadword": "get on (with)",
+      "sourceWord": "get on (with)",
+      "page": 16,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get on",
+          "word": "get on"
+        },
+        {
+          "key": "get on with",
+          "word": "get on with"
+        }
+      ],
+      "notes": "分别记录短语及义项；不能将交通工具上车义复制给相处/进展义。",
+      "canonicalKeys": [
+        "get on",
+        "get on with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1210",
+      "rawHeadword": "gram(me)",
+      "sourceWord": "gram(me)",
+      "page": 16,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "gram",
+          "word": "gram",
+          "aliases": [
+            "gramme"
+          ]
+        }
+      ],
+      "notes": "同一单位的拼写变体。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "gram"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1213",
+      "rawHeadword": "grand(d)ad",
+      "sourceWord": "grand(d)ad",
+      "page": 16,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "grandad",
+          "word": "grandad",
+          "aliases": [
+            "granddad"
+          ]
+        }
+      ],
+      "notes": "同一亲属称谓的拼写变体。",
+      "relation": "spelling-variants",
+      "canonicalKeys": [
+        "grandad"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1391",
+      "rawHeadword": "identity card (ID)",
+      "sourceWord": "identity card (ID)",
+      "page": 18,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "identity card",
+          "word": "identity card"
+        },
+        {
+          "key": "id",
+          "word": "ID"
+        }
+      ],
+      "notes": "证件全称及缩写分别保留；ID 可有更广泛身份识别义。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "identity card",
+        "id"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1403",
+      "rawHeadword": "impressed (by/with)",
+      "sourceWord": "impressed (by/with)",
+      "page": 18,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "impressed",
+          "word": "impressed"
+        },
+        {
+          "key": "impressed by",
+          "word": "impressed by"
+        },
+        {
+          "key": "impressed with",
+          "word": "impressed with"
+        }
+      ],
+      "notes": "形容词及两个介词搭配；按题目语境判定介词答案。",
+      "canonicalKeys": [
+        "impressed",
+        "impressed by",
+        "impressed with"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1477",
+      "rawHeadword": "IT (Information Technology)",
+      "sourceWord": "IT (Information Technology)",
+      "page": 19,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "IT",
+          "word": "IT",
+          "caseSensitive": true,
+          "senseHints": [
+            "信息技术"
+          ]
+        },
+        {
+          "key": "information technology",
+          "word": "information technology"
+        }
+      ],
+      "notes": "信息技术缩写与全称；IT 必须与 it 代词分开，IT 音标为 /ˌaɪˈtiː/。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "IT",
+        "information technology"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1518",
+      "rawHeadword": "kilogramme (kg)",
+      "sourceWord": "kilogramme (kg)",
+      "page": 20,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "kilogram",
+          "word": "kilogram",
+          "aliases": [
+            "kilogramme"
+          ],
+          "notations": [
+            "kg"
+          ]
+        }
+      ],
+      "notes": "已有 kilogram 规范词头；kg 为单位符号，kilogramme 为拼写变体。",
+      "canonicalKeys": [
+        "kilogram"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1519",
+      "rawHeadword": "kilometre (km)",
+      "sourceWord": "kilometre (km)",
+      "page": 20,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "kilometre",
+          "word": "kilometre",
+          "notations": [
+            "km"
+          ]
+        }
+      ],
+      "notes": "km 为单位符号，不单独新增符号拼写词。",
+      "canonicalKeys": [
+        "kilometre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1535",
+      "rawHeadword": "laboratory (lab)",
+      "sourceWord": "laboratory (lab)",
+      "page": 20,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laboratory",
+          "word": "laboratory"
+        },
+        {
+          "key": "lab",
+          "word": "lab"
+        }
+      ],
+      "notes": "完整名词与缩略词分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "laboratory",
+        "lab"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1545",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 20,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1634",
+      "rawHeadword": "lots / a lot",
+      "sourceWord": "lots / a lot",
+      "page": 21,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "lots",
+          "word": "lots"
+        },
+        {
+          "key": "a lot",
+          "word": "a lot"
+        }
+      ],
+      "notes": "大量义的两个列出形式分别保留，搭配中 of 按句法要求处理。",
+      "canonicalKeys": [
+        "lots",
+        "a lot"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1679",
+      "rawHeadword": "maths / mathematics",
+      "sourceWord": "maths / mathematics",
+      "page": 21,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "maths",
+          "word": "maths"
+        },
+        {
+          "key": "mathematics",
+          "word": "mathematics"
+        }
+      ],
+      "notes": "学科短称与完整名词分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "maths",
+        "mathematics"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1719",
+      "rawHeadword": "millimetre (mm)",
+      "sourceWord": "millimetre (mm)",
+      "page": 22,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "millimetre",
+          "word": "millimetre",
+          "notations": [
+            "mm"
+          ]
+        }
+      ],
+      "notes": "mm 为单位符号，不单独新增符号词条。",
+      "canonicalKeys": [
+        "millimetre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1734",
+      "rawHeadword": "mobile (phone)",
+      "sourceWord": "mobile (phone)",
+      "page": 22,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mobile",
+          "word": "mobile"
+        },
+        {
+          "key": "mobile phone",
+          "word": "mobile phone"
+        }
+      ],
+      "notes": "保留名词短称及完整短语；mobile 形容词义另外记录。",
+      "canonicalKeys": [
+        "mobile",
+        "mobile phone"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:1966",
+      "rawHeadword": "PC (personal computer)",
+      "sourceWord": "PC (personal computer)",
+      "page": 25,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pc",
+          "word": "PC"
+        },
+        {
+          "key": "personal computer",
+          "word": "personal computer"
+        }
+      ],
+      "notes": "缩写与全称分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "pc",
+        "personal computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2093",
+      "rawHeadword": "pound (£)",
+      "sourceWord": "pound (£)",
+      "page": 26,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pound",
+          "word": "pound",
+          "notations": [
+            "£"
+          ],
+          "senseHints": [
+            "英镑"
+          ]
+        }
+      ],
+      "notes": "£ 为货币符号；货币义与磅重量义分别记录。",
+      "canonicalKeys": [
+        "pound"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2137",
+      "rawHeadword": "program(me)",
+      "sourceWord": "program(me)",
+      "page": 27,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "program",
+          "word": "program",
+          "senseHints": [
+            "计算机程序；美式计划/节目"
+          ]
+        },
+        {
+          "key": "programme",
+          "word": "programme",
+          "senseHints": [
+            "英式计划/节目"
+          ]
+        }
+      ],
+      "notes": "英式计算机程序用 program；programme 用于节目/计划，不能无条件合并拼写答案。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/program"
+      ],
+      "canonicalKeys": [
+        "program",
+        "programme"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2265",
+      "rawHeadword": "rely (on)",
+      "sourceWord": "rely (on)",
+      "page": 29,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rely on",
+          "word": "rely on"
+        }
+      ],
+      "notes": "rely 的此处介词搭配需 on；不新增带占位括号词。",
+      "canonicalKeys": [
+        "rely on"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2616",
+      "rawHeadword": "step forward/back(wards)/out",
+      "sourceWord": "step forward/back(wards)/out",
+      "page": 33,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "step forward",
+          "word": "step forward"
+        },
+        {
+          "key": "step back",
+          "word": "step back"
+        },
+        {
+          "key": "step backwards",
+          "word": "step backwards"
+        },
+        {
+          "key": "step out",
+          "word": "step out"
+        }
+      ],
+      "notes": "按共同动词展开四个明确列出的方向短语；不把不同方向当可互换答案。",
+      "canonicalKeys": [
+        "step forward",
+        "step back",
+        "step backwards",
+        "step out"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2617",
+      "rawHeadword": "step over/in/on/out of (sth)",
+      "sourceWord": "step over/in/on/out of (sth)",
+      "page": 33,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "step over",
+          "word": "step over",
+          "argumentPatterns": [
+            "step over something"
+          ]
+        },
+        {
+          "key": "step in",
+          "word": "step in",
+          "argumentPatterns": [
+            "step in something"
+          ]
+        },
+        {
+          "key": "step on",
+          "word": "step on",
+          "argumentPatterns": [
+            "step on something"
+          ]
+        },
+        {
+          "key": "step out of",
+          "word": "step out of",
+          "argumentPatterns": [
+            "step out of something"
+          ]
+        }
+      ],
+      "notes": "按共同动词展开四个介词短语；sth 是宾语占位，不是拼写目标。",
+      "canonicalKeys": [
+        "step over",
+        "step in",
+        "step on",
+        "step out of"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2733",
+      "rawHeadword": "television (TV)",
+      "sourceWord": "television (TV)",
+      "page": 35,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "television",
+          "word": "television"
+        },
+        {
+          "key": "tv",
+          "word": "TV"
+        }
+      ],
+      "notes": "完整词与缩写分别保留。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "television",
+        "tv"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2829",
+      "rawHeadword": "toward(s)",
+      "sourceWord": "toward(s)",
+      "page": 36,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "toward",
+          "word": "toward"
+        },
+        {
+          "key": "towards",
+          "word": "towards"
+        }
+      ],
+      "notes": "介词变体，发音不同，分别保留。",
+      "relation": "lexical-variants",
+      "canonicalKeys": [
+        "toward",
+        "towards"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2948",
+      "rawHeadword": "v/versus",
+      "sourceWord": "v/versus",
+      "page": 38,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "versus",
+          "word": "versus",
+          "notations": [
+            "v"
+          ]
+        }
+      ],
+      "notes": "v 是比赛对阵语境的书面缩写，读作 versus；不新增单字母拼写词。",
+      "canonicalKeys": [
+        "versus"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-main:2981",
+      "rawHeadword": "wage(s)",
+      "sourceWord": "wage(s)",
+      "page": 38,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "wage",
+          "word": "wage",
+          "forms": {
+            "plural": [
+              "wages"
+            ]
+          }
+        }
+      ],
+      "notes": "工资名词及常用复数；不可直接复制单数发音到复数词形。",
+      "canonicalKeys": [
+        "wage"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0114",
+      "rawHeadword": "disc/disk",
+      "sourceWord": "disc/disk",
+      "page": 42,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0116",
+      "rawHeadword": "at / @",
+      "sourceWord": "at / @",
+      "page": 42,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "at",
+          "word": "at",
+          "notations": [
+            "@"
+          ]
+        }
+      ],
+      "notes": "@ 为地址符号读法，不新增符号拼写词条；at 的介词和符号读法分别记录义项。",
+      "canonicalKeys": [
+        "at"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0155",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0191",
+      "rawHeadword": "program(me)",
+      "sourceWord": "program(me)",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "program",
+          "word": "program",
+          "senseHints": [
+            "计算机程序；美式计划/节目"
+          ]
+        },
+        {
+          "key": "programme",
+          "word": "programme",
+          "senseHints": [
+            "英式计划/节目"
+          ]
+        }
+      ],
+      "notes": "英式计算机程序用 program；programme 用于节目/计划，不能无条件合并拼写答案。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/program"
+      ],
+      "canonicalKeys": [
+        "program",
+        "programme"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0202",
+      "rawHeadword": "laboratory (lab)",
+      "sourceWord": "laboratory (lab)",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laboratory",
+          "word": "laboratory"
+        },
+        {
+          "key": "lab",
+          "word": "lab"
+        }
+      ],
+      "notes": "完整名词与缩略词分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "laboratory",
+        "lab"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0234",
+      "rawHeadword": "math(s)",
+      "sourceWord": "math(s)",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "math",
+          "word": "math"
+        },
+        {
+          "key": "maths",
+          "word": "maths"
+        }
+      ],
+      "notes": "美式与英式词形发音不同，分别保留；maths 不是 math 的普通可数复数。",
+      "relation": "regional-lexical-variants",
+      "canonicalKeys": [
+        "math",
+        "maths"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0305",
+      "rawHeadword": "disc / disk",
+      "sourceWord": "disc / disk",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc",
+          "word": "disc",
+          "senseHints": [
+            "圆盘；唱片"
+          ]
+        },
+        {
+          "key": "disk",
+          "word": "disk",
+          "senseHints": [
+            "磁盘；美式圆盘拼写"
+          ]
+        }
+      ],
+      "notes": "英国英语计算机义通常也写 disk；保留两个词头并按义项关联，避免给所有义项无条件拼写互换。",
+      "relation": "sense-scoped-variants",
+      "evidenceUrls": [
+        "https://dictionary.cambridge.org/dictionary/english/disc",
+        "https://www.oxfordlearnersdictionaries.com/us/definition/english/disc"
+      ],
+      "canonicalKeys": [
+        "disc",
+        "disk"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0317",
+      "rawHeadword": "DJ / disc jockey",
+      "sourceWord": "DJ / disc jockey",
+      "page": 43,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "disc jockey",
+          "word": "disc jockey"
+        },
+        {
+          "key": "dj",
+          "word": "DJ"
+        }
+      ],
+      "notes": "全称与缩写分别保留，发音不同。",
+      "relation": "abbreviation",
+      "canonicalKeys": [
+        "disc jockey",
+        "dj"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0416",
+      "rawHeadword": "can (of beans)",
+      "sourceWord": "can (of beans)",
+      "page": 44,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "can",
+          "word": "can",
+          "senseHints": [
+            "罐；一罐"
+          ],
+          "collocations": [
+            "a can of beans"
+          ]
+        }
+      ],
+      "notes": "括号限定容器义及量词搭配，不是情态动词 can 的释义。",
+      "canonicalKeys": [
+        "can"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0482",
+      "rawHeadword": "bunch (of bananas)",
+      "sourceWord": "bunch (of bananas)",
+      "page": 44,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bunch",
+          "word": "bunch",
+          "collocations": [
+            "a bunch of bananas"
+          ]
+        }
+      ],
+      "notes": "括号是量词搭配例示，香蕉不是新增词头；保留搭配。",
+      "canonicalKeys": [
+        "bunch"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0657",
+      "rawHeadword": "get better/worse",
+      "sourceWord": "get better/worse",
+      "page": 45,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "get better",
+          "word": "get better"
+        },
+        {
+          "key": "get worse",
+          "word": "get worse"
+        }
+      ],
+      "notes": "两个相反含义的短语分别保留。",
+      "canonicalKeys": [
+        "get better",
+        "get worse"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0686",
+      "rawHeadword": "collect(or)",
+      "sourceWord": "collect(or)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "collect",
+          "word": "collect"
+        },
+        {
+          "key": "collector",
+          "word": "collector"
+        }
+      ],
+      "notes": "动词及派生人物名词；拆分后分别补齐音标和释义。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "collect",
+        "collector"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0696",
+      "rawHeadword": "member(ship)",
+      "sourceWord": "member(ship)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "member",
+          "word": "member"
+        },
+        {
+          "key": "membership",
+          "word": "membership"
+        }
+      ],
+      "notes": "会员与会员资格/会员群体，不同派生名词。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "member",
+        "membership"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0778",
+      "rawHeadword": "bath(tub)",
+      "sourceWord": "bath(tub)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bath",
+          "word": "bath"
+        },
+        {
+          "key": "bathtub",
+          "word": "bathtub"
+        }
+      ],
+      "notes": "bath 与 bathtub 均为列出的完整词头；不拆出 tub。",
+      "canonicalKeys": [
+        "bath",
+        "bathtub"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0792",
+      "rawHeadword": "laptop (computer)",
+      "sourceWord": "laptop (computer)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "laptop",
+          "word": "laptop"
+        },
+        {
+          "key": "laptop computer",
+          "word": "laptop computer"
+        }
+      ],
+      "notes": "常用短称与完整复合名词。",
+      "canonicalKeys": [
+        "laptop",
+        "laptop computer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0806",
+      "rawHeadword": "electric(al)",
+      "sourceWord": "electric(al)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "electric",
+          "word": "electric"
+        },
+        {
+          "key": "electrical",
+          "word": "electrical"
+        }
+      ],
+      "notes": "不同形容词，搭配范围不同，不合并为可互换答案。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "electric",
+        "electrical"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0812",
+      "rawHeadword": "(notice) board",
+      "sourceWord": "(notice) board",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "board",
+          "word": "board"
+        },
+        {
+          "key": "noticeboard",
+          "word": "noticeboard"
+        }
+      ],
+      "notes": "公告板规范词头 noticeboard；board 保留独立木板/板面义。",
+      "collocations": [
+        "notice board"
+      ],
+      "canonicalKeys": [
+        "board",
+        "noticeboard"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0851",
+      "rawHeadword": "TV (screen/set)",
+      "sourceWord": "TV (screen/set)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tv",
+          "word": "TV"
+        },
+        {
+          "key": "tv screen",
+          "word": "TV screen"
+        },
+        {
+          "key": "tv set",
+          "word": "TV set"
+        }
+      ],
+      "notes": "电视缩写、屏幕和电视机分别保留；set 在此不是套装。",
+      "canonicalKeys": [
+        "tv",
+        "tv screen",
+        "tv set"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0865",
+      "rawHeadword": "ground (floor)",
+      "sourceWord": "ground (floor)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ground",
+          "word": "ground"
+        },
+        {
+          "key": "ground floor",
+          "word": "ground floor"
+        }
+      ],
+      "notes": "基础词及完整楼层短语分别保留。",
+      "canonicalKeys": [
+        "ground",
+        "ground floor"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:0868",
+      "rawHeadword": "channel (with TV)",
+      "sourceWord": "channel (with TV)",
+      "page": 46,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "channel",
+          "word": "channel",
+          "senseHints": [
+            "电视频道"
+          ]
+        }
+      ],
+      "notes": "with TV 是语境标注，不是词头或 channel with TV 固定短语。",
+      "canonicalKeys": [
+        "channel"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1071",
+      "rawHeadword": "cafe / café",
+      "sourceWord": "cafe / café",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "café",
+          "word": "café",
+          "aliases": [
+            "cafe"
+          ]
+        }
+      ],
+      "notes": "去重并统一带重音拼写；无重音 cafe 为可接受拼写变体。",
+      "canonicalKeys": [
+        "café"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1073",
+      "rawHeadword": "mall (shopping)",
+      "sourceWord": "mall (shopping)",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mall",
+          "word": "mall"
+        },
+        {
+          "key": "shopping mall",
+          "word": "shopping mall"
+        }
+      ],
+      "notes": "同一场所的短称与完整短语，不把 shopping 独立拆为来源词。",
+      "canonicalKeys": [
+        "mall",
+        "shopping mall"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1168",
+      "rawHeadword": "(shopping) mall",
+      "sourceWord": "(shopping) mall",
+      "page": 48,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mall",
+          "word": "mall"
+        },
+        {
+          "key": "shopping mall",
+          "word": "shopping mall"
+        }
+      ],
+      "notes": "同一场所的短称与完整短语，不把 shopping 独立拆为来源词。",
+      "canonicalKeys": [
+        "mall",
+        "shopping mall"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1232",
+      "rawHeadword": "pay (for)",
+      "sourceWord": "pay (for)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "pay",
+          "word": "pay"
+        },
+        {
+          "key": "pay for",
+          "word": "pay for"
+        }
+      ],
+      "notes": "动词及付款对象介词搭配分别保留。",
+      "canonicalKeys": [
+        "pay",
+        "pay for"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1289",
+      "rawHeadword": "enter (a competition)",
+      "sourceWord": "enter (a competition)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "enter",
+          "word": "enter",
+          "senseHints": [
+            "报名参加"
+          ],
+          "collocations": [
+            "enter a competition"
+          ]
+        }
+      ],
+      "notes": "括号为宾语搭配；保留 enter 的参赛义，不生成带括号词头。",
+      "canonicalKeys": [
+        "enter"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1299",
+      "rawHeadword": "(sports) facilities",
+      "sourceWord": "(sports) facilities",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "facilities",
+          "word": "facilities"
+        },
+        {
+          "key": "sports facilities",
+          "word": "sports facilities"
+        }
+      ],
+      "notes": "设施义常用复数，复用已存在的 facilities 词条；不把 sports 单独拆出。",
+      "canonicalKeys": [
+        "facilities",
+        "sports facilities"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1308",
+      "rawHeadword": "locker (room)",
+      "sourceWord": "locker (room)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "locker",
+          "word": "locker"
+        },
+        {
+          "key": "locker room",
+          "word": "locker room"
+        }
+      ],
+      "notes": "储物柜和更衣室是不同事物，分别保留。",
+      "canonicalKeys": [
+        "locker",
+        "locker room"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1333",
+      "rawHeadword": "shoot(ing)",
+      "sourceWord": "shoot(ing)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "shoot",
+          "word": "shoot"
+        },
+        {
+          "key": "shooting",
+          "word": "shooting"
+        }
+      ],
+      "notes": "动词与活动名词分别保留；射击/拍摄义依据来源句子分别记录。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "shoot",
+        "shooting"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1344",
+      "rawHeadword": "point(s)",
+      "sourceWord": "point(s)",
+      "page": 49,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "point",
+          "word": "point",
+          "forms": {
+            "plural": [
+              "points"
+            ]
+          },
+          "senseHints": [
+            "分数"
+          ]
+        }
+      ],
+      "notes": "分数义及规则复数；不要把分数义覆盖其他 point 义项。",
+      "canonicalKeys": [
+        "point"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1353",
+      "rawHeadword": "versus / v",
+      "sourceWord": "versus / v",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "versus",
+          "word": "versus",
+          "notations": [
+            "v"
+          ]
+        }
+      ],
+      "notes": "v 是比赛对阵语境的书面缩写，读作 versus；不新增单字母拼写词。",
+      "canonicalKeys": [
+        "versus"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1362",
+      "rawHeadword": "sport(s)",
+      "sourceWord": "sport(s)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "sport",
+          "word": "sport",
+          "forms": {
+            "plural": [
+              "sports"
+            ]
+          }
+        }
+      ],
+      "notes": "运动名词的复数和名词修饰形式保留为词形。",
+      "canonicalKeys": [
+        "sport"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1380",
+      "rawHeadword": "train(ing)",
+      "sourceWord": "train(ing)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "train",
+          "word": "train"
+        },
+        {
+          "key": "training",
+          "word": "training"
+        }
+      ],
+      "notes": "训练动词及活动名词；不套用火车名词释义。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "train",
+        "training"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1384",
+      "rawHeadword": "trainer(s)",
+      "sourceWord": "trainer(s)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "trainer",
+          "word": "trainer",
+          "forms": {
+            "plural": [
+              "trainers"
+            ]
+          },
+          "senseHints": [
+            "教练"
+          ]
+        },
+        {
+          "key": "trainers",
+          "word": "trainers",
+          "senseHints": [
+            "运动鞋（常用复数）"
+          ]
+        }
+      ],
+      "notes": "官方括号复数可覆盖教练的单复数及运动鞋的复数名词；两个已有词头按义项分别关联，不将鞋类释义复制到教练。08 的同名行有中文“教练”，只分配 trainer。",
+      "canonicalKeys": [
+        "trainer",
+        "trainers"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1386",
+      "rawHeadword": "explore(r)",
+      "sourceWord": "explore(r)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "explore",
+          "word": "explore"
+        },
+        {
+          "key": "explorer",
+          "word": "explorer"
+        }
+      ],
+      "notes": "动词及派生人物名词。",
+      "relation": "derivation",
+      "canonicalKeys": [
+        "explore",
+        "explorer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1403",
+      "rawHeadword": "mouse/mice",
+      "sourceWord": "mouse/mice",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "mouse",
+          "word": "mouse",
+          "forms": {
+            "plural": [
+              "mice"
+            ]
+          }
+        }
+      ],
+      "notes": "mice 为不规则复数，不作为同义词或独立重复词。",
+      "canonicalKeys": [
+        "mouse"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1498",
+      "rawHeadword": "a.m. / p.m.",
+      "sourceWord": "a.m. / p.m.",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "a.m.",
+          "word": "a.m."
+        },
+        {
+          "key": "p.m.",
+          "word": "p.m."
+        }
+      ],
+      "notes": "两个时间缩略词，含义相反；分别保留。",
+      "canonicalKeys": [
+        "a.m.",
+        "p.m."
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1502",
+      "rawHeadword": "half (past)",
+      "sourceWord": "half (past)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "half",
+          "word": "half"
+        },
+        {
+          "key": "half past",
+          "word": "half past"
+        }
+      ],
+      "notes": "数量词及报时短语；half past 后需时间宾语。",
+      "canonicalKeys": [
+        "half",
+        "half past"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1510",
+      "rawHeadword": "quarter (past / to)",
+      "sourceWord": "quarter (past / to)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "quarter",
+          "word": "quarter"
+        },
+        {
+          "key": "quarter past",
+          "word": "quarter past"
+        },
+        {
+          "key": "quarter to",
+          "word": "quarter to"
+        }
+      ],
+      "notes": "数量词及两种报时短语；past/to 含义不同。",
+      "canonicalKeys": [
+        "quarter",
+        "quarter past",
+        "quarter to"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1513",
+      "rawHeadword": "ages (for ages)",
+      "sourceWord": "ages (for ages)",
+      "page": 50,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "ages",
+          "word": "ages"
+        },
+        {
+          "key": "for ages",
+          "word": "for ages"
+        }
+      ],
+      "notes": "长时间义及其明确列出的习语；不与 age 年龄义自动共用释义。",
+      "canonicalKeys": [
+        "ages",
+        "for ages"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1536",
+      "rawHeadword": "(aero) / (air)plane",
+      "sourceWord": "(aero) / (air)plane",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "aeroplane",
+          "word": "aeroplane"
+        },
+        {
+          "key": "airplane",
+          "word": "airplane"
+        }
+      ],
+      "notes": "英美完整词形；分别保留发音，不作为同一拼写答案。",
+      "relation": "regional-lexical-variants",
+      "canonicalKeys": [
+        "aeroplane",
+        "airplane"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1559",
+      "rawHeadword": "(bus) service",
+      "sourceWord": "(bus) service",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "service",
+          "word": "service"
+        },
+        {
+          "key": "bus service",
+          "word": "bus service"
+        }
+      ],
+      "notes": "括号表示可选修饰语；保留基础词与巴士服务短语。",
+      "canonicalKeys": [
+        "service",
+        "bus service"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1589",
+      "rawHeadword": "document(s)",
+      "sourceWord": "document(s)",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "document",
+          "word": "document",
+          "forms": {
+            "plural": [
+              "documents"
+            ]
+          }
+        }
+      ],
+      "notes": "规则复数作为词形保存，不新增独立重复词。",
+      "canonicalKeys": [
+        "document"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1592",
+      "rawHeadword": "bicycle / bike",
+      "sourceWord": "bicycle / bike",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "bicycle",
+          "word": "bicycle"
+        },
+        {
+          "key": "bike",
+          "word": "bike"
+        }
+      ],
+      "notes": "同义词而非拼写变体，分别保留。",
+      "relation": "synonyms",
+      "canonicalKeys": [
+        "bicycle",
+        "bike"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1661",
+      "rawHeadword": "tyre/tire",
+      "sourceWord": "tyre/tire",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "tyre",
+          "word": "tyre",
+          "aliases": [
+            "tire"
+          ],
+          "senseHints": [
+            "轮胎"
+          ]
+        }
+      ],
+      "notes": "轮胎名词的英美拼写变体；不得让 tire 疲劳动词义继承 tyre 释义。",
+      "relation": "sense-scoped-spelling-variants",
+      "canonicalKeys": [
+        "tyre"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1671",
+      "rawHeadword": "gas / gas station (Am Eng)",
+      "sourceWord": "gas / gas station (Am Eng)",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "gas",
+          "word": "gas",
+          "senseHints": [
+            "汽油（美式）"
+          ]
+        },
+        {
+          "key": "gas station",
+          "word": "gas station",
+          "senseHints": [
+            "加油站（美式）"
+          ]
+        }
+      ],
+      "notes": "燃料和地点是不同词条；保留美式使用标注。",
+      "canonicalKeys": [
+        "gas",
+        "gas station"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1683",
+      "rawHeadword": "rail(road)",
+      "sourceWord": "rail(road)",
+      "page": 51,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "rail",
+          "word": "rail"
+        },
+        {
+          "key": "railroad",
+          "word": "railroad"
+        }
+      ],
+      "notes": "rail 与 railroad 为不同完整名词，不能按可选单字母处理。",
+      "canonicalKeys": [
+        "rail",
+        "railroad"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1718",
+      "rawHeadword": "thunder(storm)",
+      "sourceWord": "thunder(storm)",
+      "page": 52,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "thunder",
+          "word": "thunder"
+        },
+        {
+          "key": "thunderstorm",
+          "word": "thunderstorm"
+        }
+      ],
+      "notes": "雷声与雷暴是不同名词。",
+      "canonicalKeys": [
+        "thunder",
+        "thunderstorm"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1765",
+      "rawHeadword": "(computer) programmer",
+      "sourceWord": "(computer) programmer",
+      "page": 52,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "programmer",
+          "word": "programmer"
+        },
+        {
+          "key": "computer programmer",
+          "word": "computer programmer"
+        }
+      ],
+      "notes": "括号表示可选修饰语。",
+      "canonicalKeys": [
+        "programmer",
+        "computer programmer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1837",
+      "rawHeadword": "officer (e.g. prison/police)",
+      "sourceWord": "officer (e.g. prison/police)",
+      "page": 52,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "officer",
+          "word": "officer",
+          "collocations": [
+            "prison officer",
+            "police officer"
+          ]
+        }
+      ],
+      "notes": "e.g. 明示职业搭配例示；不把括号和斜线作为词头。",
+      "canonicalKeys": [
+        "officer"
+      ],
+      "pendingFlags": []
+    },
+    {
+      "sourceRowId": "cambridge-2025-topics:1883",
+      "rawHeadword": "wage(s)",
+      "sourceWord": "wage(s)",
+      "page": 52,
+      "originalFlags": [
+        "unresolved_composite"
+      ],
+      "status": "resolved",
+      "entries": [
+        {
+          "key": "wage",
+          "word": "wage",
+          "forms": {
+            "plural": [
+              "wages"
+            ]
+          }
+        }
+      ],
+      "notes": "工资名词及常用复数；不可直接复制单数发音到复数词形。",
+      "canonicalKeys": [
+        "wage"
+      ],
+      "pendingFlags": []
+    }
+  ]
+}

@@ -244,8 +244,10 @@ export interface GrammarExerciseItem {
   type: GrammarExerciseType
   /** 题干；填空处用 6 个下划线 ______ 表示 */
   prompt: string
-  /** 空字符串 = 开放题，展示不判分；单空题允许每行填写一个可接受答案 */
+  /** 未提供 acceptedAnswerSets 时，空字符串表示开放题；单空题每行一个可接受答案。 */
   answer: string
+  /** 每组答案按空格顺序完整匹配。旧题仅使用 answer。 */
+  acceptedAnswerSets?: string[][]
   options?: string[] | null
   /** 作答后展示的简短解析；旧剑桥数据未设置时不显示。 */
   explanation?: string
@@ -634,12 +636,21 @@ export function normalizeExercises(raw: unknown): GrammarExerciseGroup[] {
         const ir = asRecord(it)
         if (!ir) continue
         const t = asString(ir.type)
+        const answerSets = ir.acceptedAnswerSets
+        const acceptedAnswerSets = Array.isArray(answerSets)
+          ? answerSets.filter(
+              (set): set is string[] =>
+                Array.isArray(set) && set.length > 0 &&
+                set.every((answer) => typeof answer === 'string' && answer.trim() !== ''),
+            )
+          : undefined
         items.push({
           number: asNumber(ir.number, items.length + 1),
           // 未知题型归一为 short_answer：展示不判分，永不崩溃
           type: (KNOWN_EXERCISE_TYPES.includes(t) ? t : 'short_answer') as GrammarExerciseType,
           prompt: asString(ir.prompt),
           answer: asString(ir.answer),
+          ...(acceptedAnswerSets ? { acceptedAnswerSets } : {}),
           options: Array.isArray(ir.options) ? ir.options.map(String) : null,
           ...(() => {
             const studyUnits = Array.isArray(ir.studyUnits)

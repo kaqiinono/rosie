@@ -1,0 +1,134 @@
+[
+  {
+    "id": "pet-forms-past-and-participle",
+    "revision": "1",
+    "kind": "forms",
+    "title": "不规则动词 · 过去式与过去分词",
+    "topic": "education",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-form-go-past",
+        "kind": "word_form",
+        "wordKey": "go",
+        "targetForm": "past",
+        "prompt": "Yesterday Maya ______ (go) to the library after school.",
+        "acceptedAnswerSets": [
+          [
+            "went"
+          ]
+        ],
+        "explanation": "yesterday 表示已结束的过去时间，go 的过去式是 went。",
+        "translation": "昨天放学后，玛雅去了图书馆。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-go-pastparticiple",
+        "kind": "word_form",
+        "wordKey": "go",
+        "targetForm": "pastParticiple",
+        "prompt": "Tom has ______ (go) to the library. He is still there.",
+        "acceptedAnswerSets": [
+          [
+            "gone"
+          ]
+        ],
+        "explanation": "has 后用过去分词 gone。has gone to 表示已经去了、还没回来。",
+        "translation": "汤姆去图书馆了。他现在还在那里。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-see-past",
+        "kind": "word_form",
+        "wordKey": "see",
+        "targetForm": "past",
+        "prompt": "I ______ (see) our new science teacher yesterday.",
+        "acceptedAnswerSets": [
+          [
+            "saw"
+          ]
+        ],
+        "explanation": "yesterday 提示一般过去时，see 的过去式是 saw。",
+        "translation": "我昨天见到了我们的新科学老师。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-see-pastparticiple",
+        "kind": "word_form",
+        "wordKey": "see",
+        "targetForm": "pastParticiple",
+        "prompt": "Have you ______ (see) my pencil case today?",
+        "acceptedAnswerSets": [
+          [
+            "seen"
+          ]
+        ],
+        "explanation": "现在完成时的疑问句用 Have + 主语 + 过去分词。see 的过去分词是 seen。",
+        "translation": "你今天看到过我的铅笔盒吗？",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-take-past",
+        "kind": "word_form",
+        "wordKey": "take",
+        "targetForm": "past",
+        "prompt": "Last Monday we ______ (take) the school bus to the museum.",
+        "acceptedAnswerSets": [
+          [
+            "took"
+          ]
+        ],
+        "explanation": "last Monday 指已结束的过去时间，take 的过去式是 took。",
+        "translation": "上周一我们乘校车去了博物馆。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-take-pastparticiple",
+        "kind": "word_form",
+        "wordKey": "take",
+        "targetForm": "pastParticiple",
+        "prompt": "Our teacher has already ______ (take) a photo of the finished poster.",
+        "acceptedAnswerSets": [
+          [
+            "taken"
+          ]
+        ],
+        "explanation": "has already 后用过去分词，take 的过去分词是 taken。",
+        "translation": "老师已经给做好的海报拍了照。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-write-past",
+        "kind": "word_form",
+        "wordKey": "write",
+        "targetForm": "past",
+        "prompt": "Last week Leo ______ (write) a report about his visit.",
+        "acceptedAnswerSets": [
+          [
+            "wrote"
+          ]
+        ],
+        "explanation": "last week 提示一般过去时，write 的过去式是 wrote。",
+        "translation": "利奥上周写了一篇参观报告。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-form-write-pastparticiple",
+        "kind": "word_form",
+        "wordKey": "write",
+        "targetForm": "pastParticiple",
+        "prompt": "I've just ______ (write) an email to my teacher.",
+        "acceptedAnswerSets": [
+          [
+            "written"
+          ]
+        ],
+        "explanation": "I've 是 I have 的缩写。write 的过去分词 written 有两个 t。",
+        "translation": "我刚给老师写了一封电子邮件。",
+        "reviewed": true
+      }
+    ],
+    "origin": "original"
+  }
+]

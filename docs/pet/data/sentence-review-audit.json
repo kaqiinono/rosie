@@ -1,0 +1,1700 @@
+{
+  "reviewedNewSets": 49,
+  "reviewedNewItems": 490,
+  "remainingNewItems": 0,
+  "sourceBackup": "output/pet/sentence-extraction-backup.json",
+  "changedItems": [
+    {
+      "id": "sentence-014",
+      "changes": {
+        "translation": {
+          "original": "对于 8-12 岁的青少年,我们提供一个充满挑战、乐趣和学习的冒险 5 天计划。",
+          "reviewed": "我们为8至12岁的孩子提供一个为期五天、充满冒险活动、挑战、乐趣和学习机会的项目。"
+        }
+      }
+    },
+    {
+      "id": "sentence-015",
+      "changes": {
+        "prompt": {
+          "original": "One group made a radio news report, another produced a sad documentary about rainforest, and another made a funny ______ to promote a trip to Mars.",
+          "reviewed": "One group made a radio news report, another produced a sad documentary about rainforests, and another made a funny ______ to promote a trip to Mars."
+        }
+      }
+    },
+    {
+      "id": "sentence-016",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "advisors"
+            ]
+          ],
+          "reviewed": [
+            [
+              "advisors"
+            ],
+            [
+              "advisers"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-020",
+      "changes": {
+        "translation": {
+          "original": "禁止饮酒。",
+          "reviewed": "禁止含酒精饮料。"
+        }
+      }
+    },
+    {
+      "id": "sentence-026",
+      "changes": {
+        "prompt": {
+          "original": "Four weeks ago, I was on ______. I went there with twenty other students on a three-week educational programme, and we saw some of the most amazing wildlife on Earth.",
+          "reviewed": "Four weeks ago, I was in ______. I went there with twenty other students on a three-week educational programme, and we saw some of the most amazing wildlife on Earth."
+        }
+      }
+    },
+    {
+      "id": "sentence-028",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "apologize"
+            ]
+          ],
+          "reviewed": [
+            [
+              "apologize"
+            ],
+            [
+              "apologise"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-037",
+      "changes": {
+        "prompt": {
+          "original": "Your English teacher, Mrs Black, is ______, so tomorrow's English class will be used for science examination.",
+          "reviewed": "Your English teacher, Mrs Black, is ______, so tomorrow's English class will be used for a science examination."
+        },
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "asking for a leave"
+            ]
+          ],
+          "reviewed": [
+            [
+              "asking for leave"
+            ]
+          ]
+        },
+        "translation": {
+          "original": "你的英语老师布莱克女士正在请假,因此明天的英语课将用于科学考试。",
+          "reviewed": "你的英语老师布莱克女士正在请假，因此明天的英语课将用于一次科学考试。"
+        }
+      }
+    },
+    {
+      "id": "sentence-039",
+      "changes": {
+        "prompt": {
+          "original": "in 2015, he decided it was time to ______ the world-famous El Captain.",
+          "reviewed": "in 2015, he decided it was time to ______ the world-famous El Capitan."
+        }
+      }
+    },
+    {
+      "id": "sentence-040",
+      "changes": {
+        "translation": {
+          "original": "通常的英语老师无法上课。",
+          "reviewed": "平时的英语老师无法出席这节课。"
+        }
+      }
+    },
+    {
+      "id": "sentence-051",
+      "changes": {
+        "prompt": {
+          "original": "With good grades, they can go to university and do their ______ medical training which is six years",
+          "reviewed": "With good grades, they can go to university and do their ______ medical training which lasts six years."
+        }
+      }
+    },
+    {
+      "id": "sentence-059",
+      "changes": {
+        "prompt": {
+          "original": "All the challenges will be satisfied with the ______ scenery.",
+          "reviewed": "All the challengers will be satisfied with the ______ scenery."
+        },
+        "translation": {
+          "original": "所有的挑战都将因令人叹为观止的风景而得到满足。",
+          "reviewed": "所有挑战者都会对这令人叹为观止的风景感到满意。"
+        }
+      }
+    },
+    {
+      "id": "sentence-070",
+      "changes": {
+        "prompt": {
+          "original": "Full amount will be ______ for any loss of the ticket.",
+          "reviewed": "The full amount will be ______ for any loss of the ticket."
+        }
+      }
+    },
+    {
+      "id": "sentence-076",
+      "changes": {
+        "translation": {
+          "original": "请在垃圾收集前的前一晚或之后才倒出垃圾。",
+          "reviewed": "请勿早于垃圾收运日前一天晚上投放垃圾。"
+        }
+      }
+    },
+    {
+      "id": "sentence-087",
+      "changes": {
+        "translation": {
+          "original": "他手里的物品并不都是完美的。",
+          "reviewed": "他收集到的物品并非都完好无损。"
+        }
+      }
+    },
+    {
+      "id": "sentence-089",
+      "changes": {
+        "prompt": {
+          "original": "Around 250.000 Chinese and Thais restaurants are here, and ______ you can find anything you could possibly think of in terms of Asian foods and cultures.",
+          "reviewed": "Around 250,000 Chinese and Thai restaurants are here, and ______ you can find anything you could possibly think of in terms of Asian foods and cultures."
+        }
+      }
+    },
+    {
+      "id": "sentence-097",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "cosy"
+            ]
+          ],
+          "reviewed": [
+            [
+              "cosy"
+            ],
+            [
+              "cozy"
+            ]
+          ]
+        },
+        "translation": {
+          "original": "这是一个基本的建筑,但温暖而舒适,我在和小马一起工作时得到了免费的床铺和食物。",
+          "reviewed": "那是一栋简朴但温暖舒适的建筑；照料小马期间，我享有免费的食宿。"
+        }
+      }
+    },
+    {
+      "id": "sentence-104",
+      "changes": {
+        "prompt": {
+          "original": "The shop is ______ close due to roof works so you can browse their website and make an order.",
+          "reviewed": "The shop is ______ closed due to roof works so you can browse their website and make an order."
+        }
+      }
+    },
+    {
+      "id": "sentence-109",
+      "changes": {
+        "prompt": {
+          "original": "Just finishing ______, this market features a modern cafe area and more than 20 food corners, with plenty of different world kitchens to choose from.",
+          "reviewed": "Following the completion of its ______, this market features a modern cafe area and more than 20 food corners, with plenty of different world kitchens to choose from."
+        },
+        "translation": {
+          "original": "刚刚装修完毕,这个市场设有现代化的咖啡区和 20 多个美食角,有很多不同的世界厨房可供选择。",
+          "reviewed": "装修完成后，这个市场设有现代化的咖啡区和二十多个美食摊位，提供多种世界各地的菜肴。"
+        }
+      }
+    },
+    {
+      "id": "sentence-114",
+      "changes": {
+        "translation": {
+          "original": "订单总额超过 230 元的所有订单均享受 3-5 天的免费送货!",
+          "reviewed": "所有超过30英镑的订单均享免费配送，3至5天送达！"
+        }
+      }
+    },
+    {
+      "id": "sentence-119",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "describing"
+            ]
+          ],
+          "reviewed": [
+            [
+              "describing"
+            ],
+            [
+              "describe"
+            ]
+          ]
+        },
+        "translation": {
+          "original": "我们坐下,听三位媒体研究人员描述在大学学习这门学科的情况。",
+          "reviewed": "我们就座后，听三位媒体研究专业的教职人员介绍在大学学习这门学科的情况。"
+        }
+      }
+    },
+    {
+      "id": "sentence-125",
+      "changes": {
+        "prompt": {
+          "original": "As an amazing building with the original 19th-century building, visitors can find ______ of old structure and style.",
+          "reviewed": "In this amazing building, which retains its original 19th-century features, visitors can find ______ of the old structure and style."
+        },
+        "translation": {
+          "original": "作为一座带有原始 19 世纪建筑的惊人建筑,游客可以找到旧结构和风格的细节。",
+          "reviewed": "在这座保留了十九世纪原有特色的精美建筑中，游客可以发现旧时结构和风格的细节。"
+        }
+      }
+    },
+    {
+      "id": "sentence-135",
+      "changes": {
+        "prompt": {
+          "original": "It was then that he realized he was having a ______ which would limit his growth.",
+          "reviewed": "It was then that he realized he had a ______ which would limit his growth."
+        }
+      }
+    },
+    {
+      "id": "sentence-138",
+      "changes": {
+        "translation": {
+          "original": "纪录片展示了企鹅覆盖的景观和充满鲸鱼的海洋,但当然,电影制作人会在那里待上几个月来拍摄这么多。",
+          "reviewed": "纪录片展示了遍布企鹅的陆地和鲸鱼众多的海洋；当然，摄制人员需要在那里待上数月才能拍到这么多动物。"
+        }
+      }
+    },
+    {
+      "id": "sentence-144",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "earning"
+            ]
+          ],
+          "reviewed": [
+            [
+              "earning"
+            ],
+            [
+              "to earn"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-147",
+      "changes": {
+        "translation": {
+          "original": "价格很高,但助理们友好高效。",
+          "reviewed": "价格很高，但店员友好且办事高效。"
+        }
+      }
+    },
+    {
+      "id": "sentence-155",
+      "changes": {
+        "prompt": {
+          "original": "To ______ your health and safety, body temperature check is required before you enter the building.",
+          "reviewed": "To ______ your health and safety, a body temperature check is required before you enter the building."
+        }
+      }
+    },
+    {
+      "id": "sentence-156",
+      "changes": {
+        "prompt": {
+          "original": "If you prefer having the all night's ______ in one single spot, go to De Hallen.",
+          "reviewed": "If you prefer having a whole night's ______ in one single spot, go to De Hallen."
+        }
+      }
+    },
+    {
+      "id": "sentence-160",
+      "changes": {
+        "translation": {
+          "original": "她认为冒险是平等的,是男女平等的活动。",
+          "reviewed": "她认为冒险能够让人平等相待——在这种活动中，男女是平等的。"
+        }
+      }
+    },
+    {
+      "id": "sentence-165",
+      "changes": {
+        "prompt": {
+          "original": "Sarah is keen on history and wants to visit a castle with well-known historical ______.",
+          "reviewed": "Sarah is keen on history and wants to visit a castle associated with well-known historical ______."
+        },
+        "translation": {
+          "original": "莎拉对历史很感兴趣,想参观一座有著名历史事件的城堡。",
+          "reviewed": "莎拉热衷于历史，想参观一座与著名历史事件有关的城堡。"
+        }
+      }
+    },
+    {
+      "id": "sentence-167",
+      "changes": {
+        "prompt": {
+          "original": "Tomorrow's English class will be used for science ______.",
+          "reviewed": "Tomorrow's English class will be used for a science ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-173",
+      "changes": {
+        "prompt": {
+          "original": "He wants to share his ______ of taking care of bicycles",
+          "reviewed": "He wants to share his ______ of taking care of bicycles."
+        },
+        "translation": {
+          "original": "他想分享他修理自行车的经验。",
+          "reviewed": "他想分享自己保养自行车的经历。"
+        }
+      }
+    },
+    {
+      "id": "sentence-179",
+      "changes": {
+        "prompt": {
+          "original": "You can also join a personal guided tour for one to six people with an ______ pay, but you must make a reservation.",
+          "reviewed": "You can also join a personal guided tour for one to six people for an ______ charge, but you must make a reservation."
+        }
+      }
+    },
+    {
+      "id": "sentence-187",
+      "changes": {
+        "prompt": {
+          "original": "We have basic swimming lesson for starters, and our professional instructors also offer individual swimming training for advanced learners with reasonable ______.",
+          "reviewed": "We have basic swimming lessons for starters, and our professional instructors also offer individual swimming training for advanced learners at a reasonable ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-190",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "flavours"
+            ]
+          ],
+          "reviewed": [
+            [
+              "flavours"
+            ],
+            [
+              "flavors"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-191",
+      "changes": {
+        "prompt": {
+          "original": "there is a ______ at the entrance of the station.",
+          "reviewed": "There is a ______ at the entrance of the station."
+        }
+      }
+    },
+    {
+      "id": "sentence-193",
+      "changes": {
+        "prompt": {
+          "original": "The ______ fan has published a series of cookbooks.",
+          "reviewed": "The ______ has published a series of cookbooks."
+        }
+      }
+    },
+    {
+      "id": "sentence-195",
+      "changes": {
+        "prompt": {
+          "original": "Weather ______ predicts frequent showers.",
+          "reviewed": "The weather ______ predicts frequent showers."
+        }
+      }
+    },
+    {
+      "id": "sentence-199",
+      "changes": {
+        "translation": {
+          "original": "就像住在冰箱里一样。",
+          "reviewed": "这就像住在冰柜里。"
+        }
+      }
+    },
+    {
+      "id": "sentence-201",
+      "changes": {
+        "prompt": {
+          "original": "After opening, keep in ______.",
+          "reviewed": "After opening, keep in the ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-205",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "Geography"
+            ]
+          ],
+          "reviewed": [
+            [
+              "geography"
+            ]
+          ]
+        },
+        "translation": {
+          "original": "图书馆没有我需要做家庭作业的地里书的副本。",
+          "reviewed": "图书馆没有那本地理书。"
+        }
+      }
+    },
+    {
+      "id": "sentence-207",
+      "changes": {
+        "translation": {
+          "original": "无论如何,他们都得花钱处理食物垃圾,所以\"真正的垃圾食品项目\"",
+          "reviewed": "反正他们都得花钱处理食物垃圾，所以“真正的垃圾食品项目”实际上是在帮他们的忙。"
+        }
+      }
+    },
+    {
+      "id": "sentence-211",
+      "changes": {
+        "prompt": {
+          "original": "Tom needs a set of suit for his ______ party.",
+          "reviewed": "Tom needs a suit for his ______ party."
+        },
+        "translation": {
+          "original": "汤姆需要一套西装参加毕业典礼。",
+          "reviewed": "汤姆需要一套西装参加毕业聚会。"
+        }
+      }
+    },
+    {
+      "id": "sentence-212",
+      "changes": {
+        "prompt": {
+          "original": "she tried to get forest ______ to put the hunting laws into effect.",
+          "reviewed": "She tried to get forest ______ to put the hunting laws into effect."
+        }
+      }
+    },
+    {
+      "id": "sentence-221",
+      "changes": {
+        "prompt": {
+          "original": "To ______ rockets and balls for use on the court, see Reception.",
+          "reviewed": "To ______ rackets and balls for use on the court, see Reception."
+        }
+      }
+    },
+    {
+      "id": "sentence-226",
+      "changes": {
+        "translation": {
+          "original": "彼得急着要把书拿回来。",
+          "reviewed": "彼得并不急着把书拿回来。"
+        }
+      }
+    },
+    {
+      "id": "sentence-234",
+      "changes": {
+        "prompt": {
+          "original": "Customers, ______ can pay as much as they want for it, or even nothing at all.",
+          "reviewed": "Customers, ______, can pay as much as they want for it, or even nothing at all."
+        }
+      }
+    },
+    {
+      "id": "sentence-242",
+      "changes": {
+        "prompt": {
+          "original": "Kindly be ______ that the Swimming Pool will be closed for junior Swimming Contest this Saturday.",
+          "reviewed": "Kindly be ______ that the Swimming Pool will be closed for a junior Swimming Contest this Saturday."
+        }
+      }
+    },
+    {
+      "id": "sentence-244",
+      "changes": {
+        "prompt": {
+          "original": "The head waiter is very ______ about the food and how it is cooked and also from where all the ingredients have come from.",
+          "reviewed": "The head waiter is very ______ about the food and how it is cooked and also where all the ingredients have come from."
+        },
+        "translation": {
+          "original": "领班服务员对食物、烹饪方式以及所有食材的来源都非常了解。",
+          "reviewed": "领班服务员能提供丰富的信息，介绍食物、烹饪方式以及所有食材的来源。"
+        }
+      }
+    },
+    {
+      "id": "sentence-247",
+      "changes": {
+        "prompt": {
+          "original": "As the oldest man made structure in the world existing to this day, it is an ______ for designers and artists as well as the perfect place for walk tours.",
+          "reviewed": "As the oldest man made structure in the world existing to this day, it is an ______ for designers and artists as well as the perfect place for walking tours."
+        }
+      }
+    },
+    {
+      "id": "sentence-249",
+      "changes": {
+        "translation": {
+          "original": "你能安排与金或露西一起去健身课吗?",
+          "reviewed": "你能安排改与金或露西一起去上健身课吗？"
+        }
+      }
+    },
+    {
+      "id": "sentence-252",
+      "changes": {
+        "prompt": {
+          "original": "We have basic swimming lesson for starters, and our professional ______ also offer individual swimming training for advanced learners with reasonable fee.",
+          "reviewed": "We have basic swimming lessons for starters, and our professional ______ also offer individual swimming training for advanced learners at a reasonable fee."
+        }
+      }
+    },
+    {
+      "id": "sentence-258",
+      "changes": {
+        "translation": {
+          "original": "她将接受山姆的电影院邀请。",
+          "reviewed": "她会接受萨姆一起去看电影的邀请。"
+        }
+      }
+    },
+    {
+      "id": "sentence-262",
+      "changes": {
+        "prompt": {
+          "original": "Shopping at the Common Gallery is like stepping into a travel around the world, where every ______ for women can be found.",
+          "reviewed": "Shopping at the Common Gallery is like taking a trip around the world, where every ______ for women can be found."
+        }
+      }
+    },
+    {
+      "id": "sentence-275",
+      "changes": {
+        "prompt": {
+          "original": "Cafe has ______ parking.",
+          "reviewed": "The cafe has ______ parking."
+        }
+      }
+    },
+    {
+      "id": "sentence-281",
+      "changes": {
+        "prompt": {
+          "original": "______ in the center of city, it is quite convenient.",
+          "reviewed": "______ in the center of the city, it is quite convenient."
+        }
+      }
+    },
+    {
+      "id": "sentence-282",
+      "changes": {
+        "prompt": {
+          "original": "Emma prefers a clean and quiet hotel with favourable ______.",
+          "reviewed": "Emma prefers a clean and quiet hotel with a favourable ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-283",
+      "changes": {
+        "translation": {
+          "original": "所有学生的储物柜都正在检查以防止违禁物品。",
+          "reviewed": "正在检查所有学生的储物柜，看是否有违禁物品。"
+        }
+      }
+    },
+    {
+      "id": "sentence-284",
+      "changes": {
+        "prompt": {
+          "original": "I most ______ was the evening.",
+          "reviewed": "What I most ______ was the evening."
+        }
+      }
+    },
+    {
+      "id": "sentence-286",
+      "changes": {
+        "prompt": {
+          "original": "write a short story about a ______ place with magical people.",
+          "reviewed": "Write a short story about a ______ place with magical people."
+        }
+      }
+    },
+    {
+      "id": "sentence-288",
+      "changes": {
+        "prompt": {
+          "original": "One group made a radio news report, another produced a sad documentary about rainforest, and another made a funny advert to promote a trip to ______.",
+          "reviewed": "One group made a radio news report, another produced a sad documentary about rainforests, and another made a funny advert to promote a trip to ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-289",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "marvellous"
+            ]
+          ],
+          "reviewed": [
+            [
+              "marvellous"
+            ],
+            [
+              "marvelous"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-290",
+      "changes": {
+        "prompt": {
+          "original": "Lydia would like a piece of dress with a pair of earrings and a pair of sandals to ______.",
+          "reviewed": "Lydia would like a dress with a pair of earrings and a pair of sandals to ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-295",
+      "changes": {
+        "prompt": {
+          "original": "I become very fond of ______ of school but I realized I had to become a little louder and funnier so I wouldn't get left out of conversations.",
+          "reviewed": "I became very fond of ______ of school but I realized I had to become a little louder and funnier so I wouldn't get left out of conversations."
+        },
+        "translation": {
+          "original": "我变得非常喜欢学校的回忆,但我意识到我必须变得更活泼、更有趣,这样才不会被排除在对话之外。",
+          "reviewed": "我变得很珍惜学校的回忆，但我意识到自己必须说话更响亮、更加风趣，才不会被排除在谈话之外。"
+        }
+      }
+    },
+    {
+      "id": "sentence-305",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "neighbours"
+            ]
+          ],
+          "reviewed": [
+            [
+              "neighbours"
+            ],
+            [
+              "neighbors"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-306",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "neighbourhood"
+            ]
+          ],
+          "reviewed": [
+            [
+              "neighbourhood"
+            ],
+            [
+              "neighborhood"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-310",
+      "changes": {
+        "prompt": {
+          "original": "Visitors, and ______ employees must register at office before entering the school.",
+          "reviewed": "Visitors and ______ employees must register at the office before entering the school."
+        },
+        "translation": {
+          "original": "访客和非计划内的员工在进入学校前必须在办公室登记。",
+          "reviewed": "访客和非当班员工进入学校前必须在办公室登记。"
+        }
+      }
+    },
+    {
+      "id": "sentence-312",
+      "changes": {
+        "translation": {
+          "original": "我阿姨突然来访,没有提前通知我们。",
+          "reviewed": "我阿姨要来，但没提前多久通知我们。"
+        }
+      }
+    },
+    {
+      "id": "sentence-314",
+      "changes": {
+        "translation": {
+          "original": "所有学生的储物柜都正在检查以防止违禁物品。",
+          "reviewed": "正在检查所有学生的储物柜，看是否有违禁物品。"
+        }
+      }
+    },
+    {
+      "id": "sentence-316",
+      "changes": {
+        "translation": {
+          "original": "墨尔本音乐节是一个新的每周一次的了解国家音乐家的场合。",
+          "reviewed": "墨尔本音乐节是一项新的每周活动，可让人了解本国音乐家。"
+        }
+      }
+    },
+    {
+      "id": "sentence-323",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "organisation"
+            ]
+          ],
+          "reviewed": [
+            [
+              "organisation"
+            ],
+            [
+              "organization"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-324",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "organisers"
+            ]
+          ],
+          "reviewed": [
+            [
+              "organisers"
+            ],
+            [
+              "organizers"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-325",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "organize"
+            ]
+          ],
+          "reviewed": [
+            [
+              "organize"
+            ],
+            [
+              "organise"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "sentence-326",
+      "changes": {
+        "translation": {
+          "original": "她们不仅购买自己国家的衣服。",
+          "reviewed": "他们不只购买来自原籍国的衣服。"
+        }
+      }
+    },
+    {
+      "id": "sentence-333",
+      "changes": {
+        "translation": {
+          "original": "他喜欢爬树和玩单杠,尽管他并不特别擅长其中任何一项。",
+          "reviewed": "他喜欢爬树和玩攀爬架，尽管两样都不特别擅长。"
+        }
+      }
+    },
+    {
+      "id": "sentence-338",
+      "changes": {
+        "prompt": {
+          "original": "she ______ at a concert in Dublin.",
+          "reviewed": "She ______ at a concert in Dublin."
+        }
+      }
+    },
+    {
+      "id": "sentence-342",
+      "changes": {
+        "prompt": {
+          "original": "Cars without ______ will be ticketed or pulled at owner's risk and cost.",
+          "reviewed": "Cars without ______ will be ticketed or towed away at the owner's risk and expense."
+        }
+      }
+    },
+    {
+      "id": "sentence-347",
+      "changes": {
+        "translation": {
+          "original": "他从小就对摄影感兴趣,小时候经常和同卵双胞胎哥哥约翰一起花几个小时拍照。",
+          "reviewed": "他从小就对摄影感兴趣，那时他常和同卵双胞胎兄弟约翰一起拿着相机玩上几个小时。"
+        }
+      }
+    },
+    {
+      "id": "sentence-363",
+      "changes": {
+        "translation": {
+          "original": "约有 91% 的残疾人没有上过小学。",
+          "reviewed": "他们中约有 91% 没有上小学。"
+        }
+      }
+    },
+    {
+      "id": "sentence-366",
+      "changes": {
+        "prompt": {
+          "original": "we knew the castle ______ wouldn't be as comfortable as our cosy home.",
+          "reviewed": "We knew the castle ______ wouldn't be as comfortable as our cosy home."
+        }
+      }
+    },
+    {
+      "id": "sentence-373",
+      "changes": {
+        "translation": {
+          "original": "哈里答应他已经照顾好了一切。",
+          "reviewed": "哈里保证他已经处理好了一切。"
+        }
+      }
+    },
+    {
+      "id": "sentence-376",
+      "changes": {
+        "prompt": {
+          "original": "School lost ______ box is almost full.",
+          "reviewed": "The school lost ______ box is almost full."
+        }
+      }
+    },
+    {
+      "id": "sentence-377",
+      "changes": {
+        "translation": {
+          "original": "保护你的手机。",
+          "reviewed": "不使用手机时，请保护好它。"
+        }
+      }
+    },
+    {
+      "id": "sentence-385",
+      "changes": {
+        "prompt": {
+          "original": "All are brand names with a good ______ so the prices are high.",
+          "reviewed": "All are well-known brands offering products of good ______, so the prices are high."
+        },
+        "translation": {
+          "original": "所有都是质量好的品牌,所以价格很高。",
+          "reviewed": "它们都是提供优质产品的知名品牌，所以价格很高。"
+        }
+      }
+    },
+    {
+      "id": "sentence-386",
+      "changes": {
+        "prompt": {
+          "original": "we won't have to stand in a long ______.",
+          "reviewed": "We won't have to stand in a long ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-396",
+      "changes": {
+        "prompt": {
+          "original": "Leave the ticket to the ______ at the entrance.",
+          "reviewed": "Give the ticket to the ______ at the entrance."
+        }
+      }
+    },
+    {
+      "id": "sentence-400",
+      "changes": {
+        "translation": {
+          "original": "你能记得帮我在 7 点的时候录下我最喜欢的节目吗?",
+          "reviewed": "你能记得录下我最喜欢的节目吗？"
+        }
+      }
+    },
+    {
+      "id": "sentence-401",
+      "changes": {
+        "prompt": {
+          "original": "We've done very well with the ______ paper and plastic waste in the school this term.",
+          "reviewed": "We've done very well with the ______ of paper and plastic waste in the school this term."
+        }
+      }
+    },
+    {
+      "id": "sentence-402",
+      "changes": {
+        "translation": {
+          "original": "所有的老商贩仍然在那里,他们有成堆的美味水果和蔬菜、新鲜的鱼和肉,以及Testaccio 的特色菜——上一季降价的鞋子。",
+          "reviewed": "所有老商贩都还在那里，卖着成堆的美味果蔬、新鲜鱼肉，还有 Testaccio 的一大特色——降价出售的上一季鞋子。"
+        }
+      }
+    },
+    {
+      "id": "sentence-412",
+      "changes": {
+        "prompt": {
+          "original": "Nina would like to take a walk around the city at night for an afterdinner ______.",
+          "reviewed": "Nina would like to take a walk around the city at night for after-dinner ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-417",
+      "changes": {
+        "prompt": {
+          "original": "______ book when you have finished.",
+          "reviewed": "______ the book when you have finished."
+        }
+      }
+    },
+    {
+      "id": "sentence-419",
+      "changes": {
+        "acceptedAnswerSets": {
+          "original": [
+            [
+              "rescues"
+            ]
+          ],
+          "reviewed": [
+            [
+              "rescue"
+            ]
+          ]
+        },
+        "translation": {
+          "original": "我们的海洋营地提供的课程旨在提高个人划船和救援知识。",
+          "reviewed": "我们的海上营地课程旨在增进个人对划船和救援的了解。"
+        }
+      }
+    },
+    {
+      "id": "sentence-421",
+      "changes": {
+        "prompt": {
+          "original": "There is no need to make ______.",
+          "reviewed": "There is no need to make a ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-426",
+      "changes": {
+        "prompt": {
+          "original": "Owen and his wife Carol are just ______.",
+          "reviewed": "Owen and his wife Carol are newly ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-433",
+      "changes": {
+        "prompt": {
+          "original": "We have instructors with rich experiences to coach you how to ride in difficult situations in towns and cities, especially doing that during ______.",
+          "reviewed": "We have instructors with extensive experience to teach you how to ride in difficult situations in towns and cities, especially doing that during ______."
+        }
+      }
+    },
+    {
+      "id": "sentence-445",
+      "changes": {
+        "prompt": {
+          "original": "The marvellous thing about ______ food is that shoots often cover all these bases.",
+          "reviewed": "The marvellous thing about ______ food is that photography sessions let you practise several skills at once."
+        },
+        "translation": {
+          "original": "拍摄食物的奇妙之处在于,拍摄通常涵盖所有这些方面。",
+          "reviewed": "拍摄食物的妙处在于，一次摄影活动能让你同时练习多种技巧。"
+        }
+      }
+    },
+    {
+      "id": "sentence-446",
+      "changes": {
+        "prompt": {
+          "original": "Italians have a long tradition of ______ birds who are finding their way north.",
+          "reviewed": "Italians have a long tradition of ______ birds that are finding their way north."
+        }
+      }
+    },
+    {
+      "id": "sentence-451",
+      "changes": {
+        "translation": {
+          "original": "作为两个孩子的单身母亲,我无法负担待在家里。",
+          "reviewed": "作为两个孩子的单身母亲，我承担不起待在家里不工作的代价。"
+        }
+      }
+    },
+    {
+      "id": "sentence-452",
+      "changes": {
+        "prompt": {
+          "original": "We have instructors with rich experiences to coach you how to ride in difficult ______ in towns and cities, especially doing that during rush hours.",
+          "reviewed": "We have instructors with extensive experience to teach you how to ride in difficult ______ in towns and cities, especially doing that during rush hours."
+        }
+      }
+    },
+    {
+      "id": "sentence-456",
+      "changes": {
+        "prompt": {
+          "original": "Mercat has been given a modern makeover several years ago, so it is clean and ______ inside with stalls offering local flavours.",
+          "reviewed": "Mercat was given a modern makeover several years ago, so it is clean and ______ inside with stalls offering local flavours."
+        }
+      }
+    },
+    {
+      "id": "sentence-465",
+      "changes": {
+        "prompt": {
+          "original": "After a ______, he caught the snake with single hand.",
+          "reviewed": "After a ______, he caught the snake with a single hand."
+        }
+      }
+    },
+    {
+      "id": "sentence-472",
+      "changes": {
+        "translation": {
+          "original": "我喜欢我必须关掉其他事情,专心做一件事。",
+          "reviewed": "我喜欢这种能让我放松下来、专注于一件事的感觉。"
+        }
+      }
+    },
+    {
+      "id": "sentence-477",
+      "changes": {
+        "prompt": {
+          "original": "Due to ______ problem, this week's Film Club meeting is postponed.",
+          "reviewed": "Due to a ______ problem, this week's Film Club meeting is postponed."
+        }
+      }
+    },
+    {
+      "id": "sentence-479",
+      "changes": {
+        "prompt": {
+          "original": "To ensure your health and safety, body ______ check is required before you enter the building.",
+          "reviewed": "To ensure your health and safety, a body ______ check is required before you enter the building."
+        }
+      }
+    },
+    {
+      "id": "sentence-481",
+      "changes": {
+        "prompt": {
+          "original": "Italians have a long ______ of shooting birds who are finding their way north.",
+          "reviewed": "Italians have a long ______ of shooting birds that are finding their way north."
+        }
+      }
+    },
+    {
+      "id": "sentence-485",
+      "changes": {
+        "prompt": {
+          "original": "They want a completely ______ relax for a few days.",
+          "reviewed": "They want a completely ______ rest for a few days."
+        },
+        "translation": {
+          "original": "他们想要几天完全不受打扰的放松。",
+          "reviewed": "他们想不受打扰地休息几天。"
+        }
+      }
+    },
+    {
+      "id": "sentence-488",
+      "changes": {
+        "prompt": {
+          "original": "Boehm's Candies is around since 1942. The factory is a ______ Swiss-style building designed and built by the owner.",
+          "reviewed": "Boehm's Candies has been around since 1942. The factory is a ______ Swiss-style building designed and built by the owner."
+        }
+      }
+    },
+    {
+      "id": "sentence-489",
+      "changes": {
+        "translation": {
+          "original": "俱乐部会议因设备故障被取消,具体时期未知。",
+          "reviewed": "俱乐部会议取消，持续多久尚不清楚。"
+        }
+      }
+    },
+    {
+      "id": "sentence-490",
+      "changes": {
+        "prompt": {
+          "original": "But supermarkets are only interested in making money and keeping fresh food coming to their shelves, not ______ waste.",
+          "reviewed": "But supermarkets are only interested in making money and keeping fresh food coming to their shelves, not in avoiding ______ waste."
+        }
+      }
+    }
+  ],
+  "questionIds": [
+    "sentence-011",
+    "sentence-012",
+    "sentence-013",
+    "sentence-014",
+    "sentence-015",
+    "sentence-016",
+    "sentence-017",
+    "sentence-018",
+    "sentence-019",
+    "sentence-020",
+    "sentence-021",
+    "sentence-022",
+    "sentence-023",
+    "sentence-024",
+    "sentence-025",
+    "sentence-026",
+    "sentence-027",
+    "sentence-028",
+    "sentence-029",
+    "sentence-030",
+    "sentence-031",
+    "sentence-032",
+    "sentence-033",
+    "sentence-034",
+    "sentence-035",
+    "sentence-036",
+    "sentence-037",
+    "sentence-038",
+    "sentence-039",
+    "sentence-040",
+    "sentence-041",
+    "sentence-042",
+    "sentence-043",
+    "sentence-044",
+    "sentence-045",
+    "sentence-046",
+    "sentence-047",
+    "sentence-048",
+    "sentence-049",
+    "sentence-050",
+    "sentence-051",
+    "sentence-052",
+    "sentence-053",
+    "sentence-054",
+    "sentence-055",
+    "sentence-056",
+    "sentence-057",
+    "sentence-058",
+    "sentence-059",
+    "sentence-060",
+    "sentence-061",
+    "sentence-062",
+    "sentence-063",
+    "sentence-064",
+    "sentence-065",
+    "sentence-066",
+    "sentence-067",
+    "sentence-068",
+    "sentence-069",
+    "sentence-070",
+    "sentence-071",
+    "sentence-072",
+    "sentence-073",
+    "sentence-074",
+    "sentence-075",
+    "sentence-076",
+    "sentence-077",
+    "sentence-078",
+    "sentence-079",
+    "sentence-080",
+    "sentence-081",
+    "sentence-082",
+    "sentence-083",
+    "sentence-084",
+    "sentence-085",
+    "sentence-086",
+    "sentence-087",
+    "sentence-088",
+    "sentence-089",
+    "sentence-090",
+    "sentence-091",
+    "sentence-092",
+    "sentence-093",
+    "sentence-094",
+    "sentence-095",
+    "sentence-096",
+    "sentence-097",
+    "sentence-098",
+    "sentence-099",
+    "sentence-100",
+    "sentence-101",
+    "sentence-102",
+    "sentence-103",
+    "sentence-104",
+    "sentence-105",
+    "sentence-106",
+    "sentence-107",
+    "sentence-108",
+    "sentence-109",
+    "sentence-110",
+    "sentence-111",
+    "sentence-112",
+    "sentence-113",
+    "sentence-114",
+    "sentence-115",
+    "sentence-116",
+    "sentence-117",
+    "sentence-118",
+    "sentence-119",
+    "sentence-120",
+    "sentence-121",
+    "sentence-122",
+    "sentence-123",
+    "sentence-124",
+    "sentence-125",
+    "sentence-126",
+    "sentence-127",
+    "sentence-128",
+    "sentence-129",
+    "sentence-130",
+    "sentence-131",
+    "sentence-132",
+    "sentence-133",
+    "sentence-134",
+    "sentence-135",
+    "sentence-136",
+    "sentence-137",
+    "sentence-138",
+    "sentence-139",
+    "sentence-140",
+    "sentence-141",
+    "sentence-142",
+    "sentence-143",
+    "sentence-144",
+    "sentence-145",
+    "sentence-146",
+    "sentence-147",
+    "sentence-148",
+    "sentence-149",
+    "sentence-150",
+    "sentence-151",
+    "sentence-152",
+    "sentence-153",
+    "sentence-154",
+    "sentence-155",
+    "sentence-156",
+    "sentence-157",
+    "sentence-158",
+    "sentence-159",
+    "sentence-160",
+    "sentence-161",
+    "sentence-162",
+    "sentence-163",
+    "sentence-164",
+    "sentence-165",
+    "sentence-166",
+    "sentence-167",
+    "sentence-168",
+    "sentence-169",
+    "sentence-170",
+    "sentence-171",
+    "sentence-172",
+    "sentence-173",
+    "sentence-174",
+    "sentence-175",
+    "sentence-176",
+    "sentence-177",
+    "sentence-178",
+    "sentence-179",
+    "sentence-180",
+    "sentence-181",
+    "sentence-182",
+    "sentence-183",
+    "sentence-184",
+    "sentence-185",
+    "sentence-186",
+    "sentence-187",
+    "sentence-188",
+    "sentence-189",
+    "sentence-190",
+    "sentence-191",
+    "sentence-192",
+    "sentence-193",
+    "sentence-194",
+    "sentence-195",
+    "sentence-196",
+    "sentence-197",
+    "sentence-198",
+    "sentence-199",
+    "sentence-200",
+    "sentence-201",
+    "sentence-202",
+    "sentence-203",
+    "sentence-204",
+    "sentence-205",
+    "sentence-206",
+    "sentence-207",
+    "sentence-208",
+    "sentence-209",
+    "sentence-210",
+    "sentence-211",
+    "sentence-212",
+    "sentence-213",
+    "sentence-214",
+    "sentence-215",
+    "sentence-216",
+    "sentence-217",
+    "sentence-218",
+    "sentence-219",
+    "sentence-220",
+    "sentence-221",
+    "sentence-222",
+    "sentence-223",
+    "sentence-224",
+    "sentence-225",
+    "sentence-226",
+    "sentence-227",
+    "sentence-228",
+    "sentence-229",
+    "sentence-230",
+    "sentence-231",
+    "sentence-232",
+    "sentence-233",
+    "sentence-234",
+    "sentence-235",
+    "sentence-236",
+    "sentence-237",
+    "sentence-238",
+    "sentence-239",
+    "sentence-240",
+    "sentence-241",
+    "sentence-242",
+    "sentence-243",
+    "sentence-244",
+    "sentence-245",
+    "sentence-246",
+    "sentence-247",
+    "sentence-248",
+    "sentence-249",
+    "sentence-250",
+    "sentence-251",
+    "sentence-252",
+    "sentence-253",
+    "sentence-254",
+    "sentence-255",
+    "sentence-256",
+    "sentence-257",
+    "sentence-258",
+    "sentence-259",
+    "sentence-260",
+    "sentence-261",
+    "sentence-262",
+    "sentence-263",
+    "sentence-264",
+    "sentence-265",
+    "sentence-266",
+    "sentence-267",
+    "sentence-268",
+    "sentence-269",
+    "sentence-270",
+    "sentence-271",
+    "sentence-272",
+    "sentence-273",
+    "sentence-274",
+    "sentence-275",
+    "sentence-276",
+    "sentence-277",
+    "sentence-278",
+    "sentence-279",
+    "sentence-280",
+    "sentence-281",
+    "sentence-282",
+    "sentence-283",
+    "sentence-284",
+    "sentence-285",
+    "sentence-286",
+    "sentence-287",
+    "sentence-288",
+    "sentence-289",
+    "sentence-290",
+    "sentence-291",
+    "sentence-292",
+    "sentence-293",
+    "sentence-294",
+    "sentence-295",
+    "sentence-296",
+    "sentence-297",
+    "sentence-298",
+    "sentence-299",
+    "sentence-300",
+    "sentence-301",
+    "sentence-302",
+    "sentence-303",
+    "sentence-304",
+    "sentence-305",
+    "sentence-306",
+    "sentence-307",
+    "sentence-308",
+    "sentence-309",
+    "sentence-310",
+    "sentence-311",
+    "sentence-312",
+    "sentence-313",
+    "sentence-314",
+    "sentence-315",
+    "sentence-316",
+    "sentence-317",
+    "sentence-318",
+    "sentence-319",
+    "sentence-320",
+    "sentence-321",
+    "sentence-322",
+    "sentence-323",
+    "sentence-324",
+    "sentence-325",
+    "sentence-326",
+    "sentence-327",
+    "sentence-328",
+    "sentence-329",
+    "sentence-330",
+    "sentence-331",
+    "sentence-332",
+    "sentence-333",
+    "sentence-334",
+    "sentence-335",
+    "sentence-336",
+    "sentence-337",
+    "sentence-338",
+    "sentence-339",
+    "sentence-340",
+    "sentence-341",
+    "sentence-342",
+    "sentence-343",
+    "sentence-344",
+    "sentence-345",
+    "sentence-346",
+    "sentence-347",
+    "sentence-348",
+    "sentence-349",
+    "sentence-350",
+    "sentence-351",
+    "sentence-352",
+    "sentence-353",
+    "sentence-354",
+    "sentence-355",
+    "sentence-356",
+    "sentence-357",
+    "sentence-358",
+    "sentence-359",
+    "sentence-360",
+    "sentence-361",
+    "sentence-362",
+    "sentence-363",
+    "sentence-364",
+    "sentence-365",
+    "sentence-366",
+    "sentence-367",
+    "sentence-368",
+    "sentence-369",
+    "sentence-370",
+    "sentence-371",
+    "sentence-372",
+    "sentence-373",
+    "sentence-374",
+    "sentence-375",
+    "sentence-376",
+    "sentence-377",
+    "sentence-378",
+    "sentence-379",
+    "sentence-380",
+    "sentence-381",
+    "sentence-382",
+    "sentence-383",
+    "sentence-384",
+    "sentence-385",
+    "sentence-386",
+    "sentence-387",
+    "sentence-388",
+    "sentence-389",
+    "sentence-390",
+    "sentence-391",
+    "sentence-392",
+    "sentence-393",
+    "sentence-394",
+    "sentence-395",
+    "sentence-396",
+    "sentence-397",
+    "sentence-398",
+    "sentence-399",
+    "sentence-400",
+    "sentence-401",
+    "sentence-402",
+    "sentence-403",
+    "sentence-404",
+    "sentence-405",
+    "sentence-406",
+    "sentence-407",
+    "sentence-408",
+    "sentence-409",
+    "sentence-410",
+    "sentence-411",
+    "sentence-412",
+    "sentence-413",
+    "sentence-414",
+    "sentence-415",
+    "sentence-416",
+    "sentence-417",
+    "sentence-418",
+    "sentence-419",
+    "sentence-420",
+    "sentence-421",
+    "sentence-422",
+    "sentence-423",
+    "sentence-424",
+    "sentence-425",
+    "sentence-426",
+    "sentence-427",
+    "sentence-428",
+    "sentence-429",
+    "sentence-430",
+    "sentence-431",
+    "sentence-432",
+    "sentence-433",
+    "sentence-434",
+    "sentence-435",
+    "sentence-436",
+    "sentence-437",
+    "sentence-438",
+    "sentence-439",
+    "sentence-440",
+    "sentence-441",
+    "sentence-442",
+    "sentence-443",
+    "sentence-444",
+    "sentence-445",
+    "sentence-446",
+    "sentence-447",
+    "sentence-448",
+    "sentence-449",
+    "sentence-450",
+    "sentence-451",
+    "sentence-452",
+    "sentence-453",
+    "sentence-454",
+    "sentence-455",
+    "sentence-456",
+    "sentence-457",
+    "sentence-458",
+    "sentence-459",
+    "sentence-460",
+    "sentence-461",
+    "sentence-462",
+    "sentence-463",
+    "sentence-464",
+    "sentence-465",
+    "sentence-466",
+    "sentence-467",
+    "sentence-468",
+    "sentence-469",
+    "sentence-470",
+    "sentence-471",
+    "sentence-472",
+    "sentence-473",
+    "sentence-474",
+    "sentence-475",
+    "sentence-476",
+    "sentence-477",
+    "sentence-478",
+    "sentence-479",
+    "sentence-480",
+    "sentence-481",
+    "sentence-482",
+    "sentence-483",
+    "sentence-484",
+    "sentence-485",
+    "sentence-486",
+    "sentence-487",
+    "sentence-488",
+    "sentence-489",
+    "sentence-490",
+    "sentence-491",
+    "sentence-492",
+    "sentence-493",
+    "sentence-494",
+    "sentence-495",
+    "sentence-496",
+    "sentence-497",
+    "sentence-498",
+    "sentence-499",
+    "sentence-500"
+  ]
+}

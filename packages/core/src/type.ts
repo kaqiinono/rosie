@@ -162,6 +162,7 @@ export type WordForms = Partial<Record<WordFormType, string[]>> & {
 }
 
 export interface WordEntry {
+  id?: string
   stage?: string
   unit: string
   lesson: string

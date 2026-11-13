@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
 import { FormSelect, LearningIcon } from '@rosie/ui'
-import { Button } from '@rosie/ui/themes'
+import { Badge, Button } from '@rosie/ui/themes'
 
 const BASE = '/english/words'
 
@@ -25,6 +25,7 @@ export default function AppHeader() {
   const raw = user?.email?.replace('@rosie.app', '') ?? user?.email?.split('@')[0]
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
   const isReading = pathname.includes('/reading')
+  const isPet = pathname.startsWith(`${BASE}/practice/pet`)
   const readingCollection =
     pathname.includes('/reading/story') || searchParams.get('collection') === 'story'
       ? 'story'
@@ -73,7 +74,8 @@ export default function AppHeader() {
           </div>
         )}
 
-        {!isReading && availableStages.length > 0 && (
+        {isPet && <Badge color="green" size="2">PET</Badge>}
+        {!isReading && !isPet && availableStages.length > 0 && (
           <>
             <div className="flex items-center justify-self-end md:hidden">
               <FormSelect

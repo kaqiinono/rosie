@@ -1,0 +1,786 @@
+{
+  "id": "pet-sentence-01",
+  "revision": "1",
+  "kind": "sentence",
+  "title": "高频词选词填空 1–10",
+  "word_pool": [
+    "achieve",
+    "accessible",
+    "act",
+    "accommodation",
+    "admire",
+    "absolutely",
+    "accountant",
+    "accident",
+    "achievement",
+    "accompany"
+  ],
+  "reviewed": true,
+  "items": [
+    {
+      "id": "sentence-001",
+      "kind": "context",
+      "prompt": "First lesson costs ______ nothing when signing up for two months!",
+      "acceptedAnswerSets": [
+        [
+          "absolutely"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "首堂课在报名两个月时完全免费!",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 1
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 1
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 1,
+          "answer": [],
+          "pos": [
+            "adv."
+          ],
+          "sentence": [
+            "First lesson costs _______ nothing",
+            "when signing up for two months!"
+          ],
+          "translation": [
+            "首堂课在报名两个月时完全",
+            "免费!"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 1,
+          "answer": [
+            "absolutely"
+          ],
+          "pos": [
+            "adv."
+          ],
+          "sentence": [
+            "First lesson costs absolutely nothing",
+            "when signing up for two months!"
+          ],
+          "translation": [
+            "首堂课在报名两个月时完全",
+            "免费!"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "First lesson costs absolutely nothing when signing up for two months!",
+      "sourceAnswer": "absolutely",
+      "flags": [],
+      "wordKeyCandidates": [
+        "absolutely"
+      ],
+      "sourcePoolRows": [
+        "06:0006"
+      ],
+      "wordKey": "absolutely",
+      "explanation": "absolutely 修饰 nothing，强调完全免费。",
+      "senseId": "absolutely-1"
+    },
+    {
+      "id": "sentence-002",
+      "kind": "context",
+      "prompt": "... only ______ by private vehicles.",
+      "acceptedAnswerSets": [
+        [
+          "accessible"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "只能通过私人车辆到达。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 2
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 2
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 2,
+          "answer": [],
+          "pos": [
+            "adj."
+          ],
+          "sentence": [
+            "... only _______ by private vehicles."
+          ],
+          "translation": [
+            "只能通过私人车辆到达。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 2,
+          "answer": [
+            "accessible"
+          ],
+          "pos": [
+            "adj."
+          ],
+          "sentence": [
+            "... only accessible by private vehicles."
+          ],
+          "translation": [
+            "只能通过私人车辆到达。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "... only accessible by private vehicles.",
+      "sourceAnswer": "accessible",
+      "flags": [],
+      "wordKeyCandidates": [
+        "accessible"
+      ],
+      "sourcePoolRows": [
+        "06:0002"
+      ],
+      "wordKey": "accessible",
+      "explanation": "accessible by 表示可以借助某种方式到达。",
+      "senseId": "accessible-1"
+    },
+    {
+      "id": "sentence-003",
+      "kind": "context",
+      "prompt": "The park is not responsible for any ______ or injuries.",
+      "acceptedAnswerSets": [
+        [
+          "accidents"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "公园不对任何事故或受伤负责。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 3
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 3
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 3,
+          "answer": [],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "The park is not responsible for any",
+            "_______ or injuries."
+          ],
+          "translation": [
+            "公园不对任何事故或受伤负",
+            "责。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 3,
+          "answer": [
+            "accidents"
+          ],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "The park is not responsible for any",
+            "accidents or injuries."
+          ],
+          "translation": [
+            "公园不对任何事故或受伤负",
+            "责。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "The park is not responsible for any accidents or injuries.",
+      "sourceAnswer": "accidents",
+      "flags": [],
+      "wordKeyCandidates": [
+        "accident"
+      ],
+      "sourcePoolRows": [
+        "06:0008"
+      ],
+      "wordKey": "accident",
+      "explanation": "accidents 与 injuries 并列，表示事故或受伤。",
+      "senseId": "accident-1"
+    },
+    {
+      "id": "sentence-004",
+      "kind": "context",
+      "prompt": "We can get comfortable ______.",
+      "acceptedAnswerSets": [
+        [
+          "accommodation"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "我们可以找到舒适的住宿。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 4
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 4
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 4,
+          "answer": [],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "We can get comfortable _______."
+          ],
+          "translation": [
+            "我们可以找到舒适的住宿。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 4,
+          "answer": [
+            "accommodatio",
+            "n"
+          ],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "We can get comfortable",
+            "accommodation."
+          ],
+          "translation": [
+            "我们可以找到舒适的住宿。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "We can get comfortable accommodation.",
+      "sourceAnswer": "accommodation",
+      "flags": [],
+      "wordKeyCandidates": [
+        "accommodation"
+      ],
+      "sourcePoolRows": [
+        "06:0004"
+      ],
+      "wordKey": "accommodation",
+      "explanation": "accommodation 表示住宿，在这里是不可数名词。",
+      "senseId": "accommodation-1"
+    },
+    {
+      "id": "sentence-005",
+      "kind": "context",
+      "prompt": "Only dogs ______ by owners are allowed in the green flag zone.",
+      "acceptedAnswerSets": [
+        [
+          "accompanied"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "只有有主人陪同的狗允许进入绿旗区。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 5
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 5
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 5,
+          "answer": [],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "Only dogs _______ by owners are",
+            "allowed in the green flag zone."
+          ],
+          "translation": [
+            "只有有主人陪同的狗允许进",
+            "入绿旗区。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 5,
+          "answer": [
+            "accompanied"
+          ],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "Only dogs accompanied by owners are",
+            "allowed in the green flag zone."
+          ],
+          "translation": [
+            "只有有主人陪同的狗允许进",
+            "入绿旗区。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "Only dogs accompanied by owners are allowed in the green flag zone.",
+      "sourceAnswer": "accompanied",
+      "flags": [],
+      "wordKeyCandidates": [
+        "accompany"
+      ],
+      "sourcePoolRows": [
+        "06:0010"
+      ],
+      "wordKey": "accompany",
+      "explanation": "dogs accompanied by owners 表示有主人陪同的狗，accompanied 是过去分词。",
+      "senseId": "accompany-1"
+    },
+    {
+      "id": "sentence-006",
+      "kind": "context",
+      "prompt": "For example, if they are good at maths, they can become an ______.",
+      "acceptedAnswerSets": [
+        [
+          "accountant"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "例如,如果他们擅长数学,他们可以成为会计师。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 6
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 6
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 6,
+          "answer": [],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "For example, if they are good at maths,",
+            "they can become an _______."
+          ],
+          "translation": [
+            "例如,如果他们擅长数学,",
+            "他们可以成为会计师。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 6,
+          "answer": [
+            "accountant"
+          ],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "For example, if they are good at maths,",
+            "they can become an accountant."
+          ],
+          "translation": [
+            "例如,如果他们擅长数学,",
+            "他们可以成为会计师。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "For example, if they are good at maths, they can become an accountant.",
+      "sourceAnswer": "accountant",
+      "flags": [],
+      "wordKeyCandidates": [
+        "accountant"
+      ],
+      "sourcePoolRows": [
+        "06:0007"
+      ],
+      "wordKey": "accountant",
+      "explanation": "an accountant 指一名会计师，an 后用名词单数。",
+      "senseId": "accountant-1"
+    },
+    {
+      "id": "sentence-007",
+      "kind": "context",
+      "prompt": "Tom now realizes that decluttering can help you ______ more than one goal.",
+      "acceptedAnswerSets": [
+        [
+          "achieve"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "汤姆现在意识到,整理杂物可以帮助你实现多个目标。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 7
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 7
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 7,
+          "answer": [],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "Tom now realizes that decluttering can",
+            "help you _______ more than one goal."
+          ],
+          "translation": [
+            "汤姆现在意识到,整理杂物",
+            "可以帮助你实现多个目标。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 7,
+          "answer": [
+            "achieve"
+          ],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "Tom now realizes that decluttering can",
+            "help you achieve more than one goal."
+          ],
+          "translation": [
+            "汤姆现在意识到,整理杂物",
+            "可以帮助你实现多个目标。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "Tom now realizes that decluttering can help you achieve more than one goal.",
+      "sourceAnswer": "achieve",
+      "flags": [],
+      "wordKeyCandidates": [
+        "achieve"
+      ],
+      "sourcePoolRows": [
+        "06:0001"
+      ],
+      "wordKey": "achieve",
+      "explanation": "help you achieve 中 achieve 用动词原形。",
+      "senseId": "achieve-1"
+    },
+    {
+      "id": "sentence-008",
+      "kind": "context",
+      "prompt": "Tommy Caldwell described the ______ as the Moon landing of free soloing.",
+      "acceptedAnswerSets": [
+        [
+          "achievements"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "汤米·考德威尔将这一成就描述为自由单人攀岩领域的\"登月壮举\"。",
+      "source": {
+        "file": "06",
+        "page": 1,
+        "question": 8
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 8
+      },
+      "sourceCells": {
+        "question": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 8,
+          "answer": [],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "Tommy Caldwell described the",
+            "_______ as the Moon landing of free",
+            "soloing."
+          ],
+          "translation": [
+            "汤米·考德威尔将这一成就描",
+            "述为自由单人攀岩领域的\"登",
+            "月壮举\"。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1
+          ],
+          "number": 8,
+          "answer": [
+            "achievements"
+          ],
+          "pos": [
+            "n."
+          ],
+          "sentence": [
+            "Tommy Caldwell described the",
+            "achievements as the Moon landing of",
+            "free soloing."
+          ],
+          "translation": [
+            "汤米·考德威尔将这一成就描",
+            "述为自由单人攀岩领域的\"登",
+            "月壮举\"。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "Tommy Caldwell described the achievements as the Moon landing of free soloing.",
+      "sourceAnswer": "achievements",
+      "flags": [],
+      "wordKeyCandidates": [
+        "achievement"
+      ],
+      "sourcePoolRows": [
+        "06:0009"
+      ],
+      "wordKey": "achievement",
+      "explanation": "achievements 是复数，表示取得的成就。",
+      "senseId": "achievement-1"
+    },
+    {
+      "id": "sentence-009",
+      "kind": "context",
+      "prompt": "Students hoping to ______ in the play need to tell Mrs Walters this week.",
+      "acceptedAnswerSets": [
+        [
+          "act"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "希望参加表演的学生需要在本周告诉沃尔特斯女士。",
+      "source": {
+        "file": "06",
+        "page": 2,
+        "question": 9
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 1,
+        "question": 9
+      },
+      "sourceCells": {
+        "question": {
+          "page": 2,
+          "pages": [
+            2
+          ],
+          "number": 9,
+          "answer": [],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "Students hoping to _______ in the play",
+            "need to tell Mrs Walters this week."
+          ],
+          "translation": [
+            "希望参加表演的学生需要在",
+            "本周告诉沃尔特斯女士。"
+          ]
+        },
+        "answer": {
+          "page": 1,
+          "pages": [
+            1,
+            2
+          ],
+          "number": 9,
+          "answer": [
+            "act"
+          ],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "Students hoping to act in the play",
+            "need to tell Mrs Walters this week."
+          ],
+          "translation": [
+            "希望参加表演的学生需要在",
+            "本周告诉沃尔特斯女士。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "Students hoping to act in the play need to tell Mrs Walters this week.",
+      "sourceAnswer": "act",
+      "flags": [],
+      "wordKeyCandidates": [
+        "act"
+      ],
+      "sourcePoolRows": [
+        "06:0003"
+      ],
+      "wordKey": "act",
+      "explanation": "act in the play 表示在剧中演出。",
+      "senseId": "act-1"
+    },
+    {
+      "id": "sentence-010",
+      "kind": "context",
+      "prompt": "There are lots of chairs to grab a seat and enjoy a glass of wine, or you can just walk around to look up and ______ the building.",
+      "acceptedAnswerSets": [
+        [
+          "admire"
+        ]
+      ],
+      "reviewed": true,
+      "translation": "有很多椅子可以坐下来享受一杯葡萄酒,或者你可以四处走走,抬头欣赏建筑。",
+      "source": {
+        "file": "06",
+        "page": 2,
+        "question": 10
+      },
+      "answerSource": {
+        "file": "07",
+        "page": 2,
+        "question": 10
+      },
+      "sourceCells": {
+        "question": {
+          "page": 2,
+          "pages": [
+            2
+          ],
+          "number": 10,
+          "answer": [],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "There are lots of chairs to grab a seat",
+            "and enjoy a glass of wine, or you can",
+            "just walk around to look up and",
+            "_______ the building."
+          ],
+          "translation": [
+            "有很多椅子可以坐下来享受",
+            "一杯葡萄酒,或者你可以四",
+            "处走走,抬头欣赏建筑。"
+          ]
+        },
+        "answer": {
+          "page": 2,
+          "pages": [
+            2
+          ],
+          "number": 10,
+          "answer": [
+            "admire"
+          ],
+          "pos": [
+            "v."
+          ],
+          "sentence": [
+            "There are lots of chairs to grab a seat",
+            "and enjoy a glass of wine, or you can",
+            "just walk around to look up and",
+            "admire the building."
+          ],
+          "translation": [
+            "有很多椅子可以坐下来享受",
+            "一杯葡萄酒,或者你可以四",
+            "处走走,抬头欣赏建筑。"
+          ]
+        }
+      },
+      "sourceCompletedSentence": "There are lots of chairs to grab a seat and enjoy a glass of wine, or you can just walk around to look up and admire the building.",
+      "sourceAnswer": "admire",
+      "flags": [],
+      "wordKeyCandidates": [
+        "admire"
+      ],
+      "sourcePoolRows": [
+        "06:0005"
+      ],
+      "wordKey": "admire",
+      "explanation": "look up and admire 并列，admire 用动词原形。",
+      "senseId": "admire-1"
+    }
+  ]
+}

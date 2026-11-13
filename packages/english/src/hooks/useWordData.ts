@@ -12,7 +12,7 @@ import {
 import { normalizeWordForms } from '../utils/word-forms'
 
 const SELECT_COLS =
-  'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, part_of_speech, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
+  'id, stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, part_of_speech, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
 
 const CACHE_VER = 'word_cache_v6'
 /** v4 cached the entire word library locally; purge it on first use. */
@@ -165,10 +165,9 @@ async function fetchStageWordEntries(stage: string): Promise<WordEntry[]> {
   while (true) {
     let q = supabase.from('word_entries').select(SELECT_COLS)
     q = stage === NULL_STAGE ? q.is('stage', null) : q.eq('stage', stage)
-    const { data, error } = await q
-      .order('unit')
-      .order('lesson')
-      .range(from, from + FETCH_PAGE_SIZE - 1)
+    q = q.order('unit').order('lesson')
+    if (stage === 'PET') q = q.order('id')
+    const { data, error } = await q.range(from, from + FETCH_PAGE_SIZE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
     all.push(...data.map(fromRow))
@@ -319,6 +318,7 @@ function fromRow(row: Record<string, unknown>): WordEntry {
   const vt = row.vocab_type
   const src = row.image_source
   return {
+    id: typeof row.id === 'string' ? row.id : undefined,
     stage: (row.stage as string) ?? undefined,
     unit: row.unit as string,
     lesson: row.lesson as string,

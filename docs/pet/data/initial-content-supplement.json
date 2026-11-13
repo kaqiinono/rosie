@@ -1,0 +1,1112 @@
+{
+  "method": "local-assistant-source-comparison",
+  "entries": [
+    {
+      "key": "backpack",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "bag",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "belt",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "blouse",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "boot",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "bracelet",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "button",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "cap",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "chain",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "clothes",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "coat",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "collar",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "cotton",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "dress",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "earring",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "fashion",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "glove",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "handbag",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "hat",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "jacket",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "absolutely",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "accessible",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ],
+        "comparative": [
+          "more accessible"
+        ],
+        "superlative": [
+          "most accessible"
+        ]
+      }
+    },
+    {
+      "key": "accident",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "accommodation",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "accompany",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "accountant",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "achieve",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "achievement",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "act",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "admire",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "collect",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "decide",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "spend",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "past": [
+          "spent"
+        ],
+        "pastParticiple": [
+          "spent"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "borrow",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "proud",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ],
+        "comparative": [
+          "prouder"
+        ],
+        "superlative": [
+          "proudest"
+        ]
+      }
+    },
+    {
+      "key": "improve",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "who",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "in",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "to",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "for",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "than",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "at",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "miss",
+      "previousRevision": "2",
+      "revision": "3",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "catch",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 2,
+      "wordForms": {
+        "past": [
+          "caught"
+        ],
+        "pastParticiple": [
+          "caught"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "change",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 3,
+      "wordForms": {
+        "disableGenerated": [
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "arrive",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "platform",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "journey",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "from",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "by",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "if",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "until",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "notice",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "protect",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "wild",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ],
+        "comparative": [
+          "wilder"
+        ],
+        "superlative": [
+          "wildest"
+        ]
+      }
+    },
+    {
+      "key": "fresh",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ],
+        "comparative": [
+          "fresher"
+        ],
+        "superlative": [
+          "freshest"
+        ]
+      }
+    },
+    {
+      "key": "feed",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "past": [
+          "fed"
+        ],
+        "pastParticiple": [
+          "fed"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "keep",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 2,
+      "wordForms": {
+        "past": [
+          "kept"
+        ],
+        "pastParticiple": [
+          "kept"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "there",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "have",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 2,
+      "wordForms": {
+        "thirdPerson": [
+          "has"
+        ],
+        "past": [
+          "had"
+        ],
+        "pastParticiple": [
+          "had"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "of",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "where",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "most",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "disableGenerated": [
+          "plural",
+          "thirdPerson",
+          "presentParticiple",
+          "past",
+          "pastParticiple",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "go",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "thirdPerson": [
+          "goes"
+        ],
+        "past": [
+          "went"
+        ],
+        "pastParticiple": [
+          "gone"
+        ],
+        "disableGenerated": [
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "see",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 1,
+      "wordForms": {
+        "past": [
+          "saw"
+        ],
+        "pastParticiple": [
+          "seen"
+        ],
+        "presentParticiple": [
+          "seeing"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "take",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 2,
+      "wordForms": {
+        "past": [
+          "took"
+        ],
+        "pastParticiple": [
+          "taken"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    },
+    {
+      "key": "write",
+      "previousRevision": "1",
+      "revision": "2",
+      "addedSenses": 0,
+      "wordForms": {
+        "past": [
+          "wrote"
+        ],
+        "pastParticiple": [
+          "written"
+        ],
+        "disableGenerated": [
+          "plural",
+          "comparative",
+          "superlative"
+        ]
+      }
+    }
+  ]
+}

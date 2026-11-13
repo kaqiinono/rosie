@@ -2,6 +2,8 @@
 
 import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from '@rosie/ui/themes'
 import { useWordsContext } from '@rosie/english'
 import { useImmersive } from '@rosie/core'
 import { findPassage, findPassageByKey, findSentenceForWord, findWordByKey, wordKey } from '@rosie/english'
@@ -216,6 +218,12 @@ export default function PracticePage() {
         onToggleVocabType={toggleVocabType}
       />
       <div className="max-w-[1280px] mx-auto px-4 py-5 relative z-[1]">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-[var(--wm-text-dim)]">识词与字母砖练习，或进入 PET 语境应用。</p>
+          <Button asChild variant="soft" color="green">
+            <Link href="/english/words/practice/pet">PET 日常与专项</Link>
+          </Button>
+        </div>
         <PracticeSetup
           scopeLabel={scopeLabel}
           onStart={startPractice}

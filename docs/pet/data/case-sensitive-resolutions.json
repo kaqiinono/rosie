@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-13",
+  "resolutions": [
+    {
+      "existingKey": "it",
+      "baseWord": "it",
+      "baseSourceIds": [
+        "10-main:1455",
+        "cambridge-2025-main:1478"
+      ],
+      "basePrimaryTopic": "basics",
+      "status": "resolved",
+      "newEntries": [
+        {
+          "key": "IT",
+          "word": "IT",
+          "caseSensitive": true,
+          "sourceIds": [
+            "08:0436",
+            "08:1185",
+            "10-topics:0146",
+            "10-topics:0233",
+            "cambridge-2025-topics:0150",
+            "cambridge-2025-topics:0276",
+            "10-main:1454",
+            "cambridge-2025-main:1477"
+          ],
+          "primaryTopic": "communications-technology",
+          "notes": "信息技术 IT /ˌaɪˈtiː/；来源 08 的 /ɪt/ 错误，不复用。it 为代词 /ɪt/。"
+        }
+      ],
+      "notes": "保留旧 key 的普通小写词义；将已列出的另一词性/义项来源移到新增的大小写敏感 key。不得迁移用户掌握度。"
+    },
+    {
+      "existingKey": "may",
+      "baseWord": "may",
+      "baseSourceIds": [
+        "09:0065",
+        "10-main:1644",
+        "cambridge-2025-main:1682"
+      ],
+      "basePrimaryTopic": "basics",
+      "status": "resolved",
+      "newEntries": [
+        {
+          "key": "May",
+          "word": "May",
+          "caseSensitive": true,
+          "sourceIds": [
+            "01:0256",
+            "08:1681",
+            "10-topics:1485",
+            "cambridge-2025-topics:1503",
+            "10-appendix1:0019",
+            "cambridge-2025-appendix1:0019"
+          ],
+          "primaryTopic": "time",
+          "notes": "May 为五月；may 为情态动词。月份范围行仅将其中 May 的映射改为大写键，其他十一月份不受影响。"
+        }
+      ],
+      "notes": "保留旧 key 的普通小写词义；将已列出的另一词性/义项来源移到新增的大小写敏感 key。不得迁移用户掌握度。"
+    },
+    {
+      "existingKey": "miss",
+      "baseWord": "miss",
+      "baseSourceIds": [
+        "01:0457",
+        "08:1592",
+        "10-main:1690",
+        "10-topics:1619",
+        "cambridge-2025-main:1729",
+        "cambridge-2025-topics:1586"
+      ],
+      "basePrimaryTopic": "travel-transport",
+      "status": "resolved",
+      "newEntries": [
+        {
+          "key": "Miss",
+          "word": "Miss",
+          "caseSensitive": true,
+          "sourceIds": [
+            "10-main:1691",
+            "cambridge-2025-main:1730"
+          ],
+          "primaryTopic": "basics",
+          "notes": "Miss 是名字前的称谓；miss 是错过/想念动词。两者同音但释义与词性不同。"
+        }
+      ],
+      "notes": "保留旧 key 的普通小写词义；将已列出的另一词性/义项来源移到新增的大小写敏感 key。不得迁移用户掌握度。"
+    }
+  ],
+  "auditedNoSplit": [
+    {
+      "key": "march",
+      "decision": "仅有三月来源，没有 march 行进动词来源；保留原 key 与显示 March。"
+    },
+    {
+      "key": "august",
+      "decision": "仅有八月来源，没有 august 庄严形容词来源；保留原 key 与显示 August。"
+    },
+    {
+      "key": "china",
+      "decision": "仅有中国来源，没有 china 瓷器来源；保留原 key 与显示 China。"
+    },
+    {
+      "key": "turkey",
+      "decision": "仅有火鸡来源，没有 Turkey 国家条目来源；不新增国家词。"
+    },
+    {
+      "key": "us",
+      "decision": "仅有 us 代词来源；不从例句或标签推导 US 国家缩写。"
+    },
+    {
+      "key": "polish",
+      "decision": "未发现 Polish/polish 明确词条来源；不新增。"
+    },
+    {
+      "key": "arithmetic",
+      "decision": "Arithmetic/arithmetic 为同一算术名词，仅排版大小写差异，不拆分。"
+    },
+    {
+      "key": "internet",
+      "decision": "Internet/internet 为同一互联网名词，仅拼写风格差异，不拆分。"
+    },
+    {
+      "key": "reading",
+      "decision": "只有阅读名词来源，没有 Reading 地名来源；不拆分。"
+    }
+  ]
+}

@@ -26,6 +26,7 @@
     "grammar:render-pdf": "node scripts/extract-grammar-pdf.mjs",
     "story:import": "node scripts/import-story-pdf.mjs",
     "word-pos:backfill": "node --env-file-if-exists=apps/web/.env.local scripts/backfill-word-part-of-speech.mjs",
+    "pet:import": "node --env-file-if-exists=apps/web/.env.local scripts/import-pet-vocabulary.mjs",
     "migrate:math-summary-images": "node scripts/migrate-lesson-summary-images.mjs",
     "calc:audit": "node --import jiti/register scripts/calc-audit.ts",
     "calc:progress": "node --env-file-if-exists=apps/web/.env.local --import jiti/register scripts/calc-progress-maintenance.ts"

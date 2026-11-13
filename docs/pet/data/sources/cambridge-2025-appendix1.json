@@ -1,0 +1,533 @@
+[
+  {
+    "word": "one",
+    "page": 41,
+    "category": "Cardinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0001",
+    "candidateKeys": [
+      "one"
+    ]
+  },
+  {
+    "word": "two",
+    "page": 41,
+    "category": "Cardinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0002",
+    "candidateKeys": [
+      "two"
+    ]
+  },
+  {
+    "word": "three",
+    "page": 41,
+    "category": "Cardinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0003",
+    "candidateKeys": [
+      "three"
+    ]
+  },
+  {
+    "word": "first",
+    "page": 41,
+    "category": "Ordinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0004",
+    "candidateKeys": [
+      "first"
+    ]
+  },
+  {
+    "word": "second",
+    "page": 41,
+    "category": "Ordinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0005",
+    "candidateKeys": [
+      "second"
+    ]
+  },
+  {
+    "word": "third",
+    "page": 41,
+    "category": "Ordinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0006",
+    "candidateKeys": [
+      "third"
+    ]
+  },
+  {
+    "word": "fourth",
+    "page": 41,
+    "category": "Ordinal numbers",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0007",
+    "candidateKeys": [
+      "fourth"
+    ]
+  },
+  {
+    "word": "Monday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0008",
+    "candidateKeys": [
+      "monday"
+    ]
+  },
+  {
+    "word": "Tuesday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0009",
+    "candidateKeys": [
+      "tuesday"
+    ]
+  },
+  {
+    "word": "Wednesday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0010",
+    "candidateKeys": [
+      "wednesday"
+    ]
+  },
+  {
+    "word": "Thursday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0011",
+    "candidateKeys": [
+      "thursday"
+    ]
+  },
+  {
+    "word": "Friday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0012",
+    "candidateKeys": [
+      "friday"
+    ]
+  },
+  {
+    "word": "Saturday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0013",
+    "candidateKeys": [
+      "saturday"
+    ]
+  },
+  {
+    "word": "Sunday",
+    "page": 41,
+    "category": "Days of the week",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0014",
+    "candidateKeys": [
+      "sunday"
+    ]
+  },
+  {
+    "word": "January",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0015",
+    "candidateKeys": [
+      "january"
+    ]
+  },
+  {
+    "word": "February",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0016",
+    "candidateKeys": [
+      "february"
+    ]
+  },
+  {
+    "word": "March",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0017",
+    "candidateKeys": [
+      "march"
+    ]
+  },
+  {
+    "word": "April",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0018",
+    "candidateKeys": [
+      "april"
+    ]
+  },
+  {
+    "word": "May",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0019",
+    "candidateKeys": [
+      "May"
+    ],
+    "normalizationRevision": "pet-source-normalization-2026-11-13-1"
+  },
+  {
+    "word": "June",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0020",
+    "candidateKeys": [
+      "june"
+    ]
+  },
+  {
+    "word": "July",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0021",
+    "candidateKeys": [
+      "july"
+    ]
+  },
+  {
+    "word": "August",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0022",
+    "candidateKeys": [
+      "august"
+    ]
+  },
+  {
+    "word": "September",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0023",
+    "candidateKeys": [
+      "september"
+    ]
+  },
+  {
+    "word": "October",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0024",
+    "candidateKeys": [
+      "october"
+    ]
+  },
+  {
+    "word": "November",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0025",
+    "candidateKeys": [
+      "november"
+    ]
+  },
+  {
+    "word": "December",
+    "page": 41,
+    "category": "Months of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0026",
+    "candidateKeys": [
+      "december"
+    ]
+  },
+  {
+    "word": "spring",
+    "page": 41,
+    "category": "Seasons of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0027",
+    "candidateKeys": [
+      "spring"
+    ]
+  },
+  {
+    "word": "summer",
+    "page": 41,
+    "category": "Seasons of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0028",
+    "candidateKeys": [
+      "summer"
+    ]
+  },
+  {
+    "word": "autumn",
+    "page": 41,
+    "category": "Seasons of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0029",
+    "candidateKeys": [
+      "autumn"
+    ]
+  },
+  {
+    "word": "winter",
+    "page": 41,
+    "category": "Seasons of the year",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0030",
+    "candidateKeys": [
+      "winter"
+    ]
+  },
+  {
+    "word": "Brazil",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0031",
+    "candidateKeys": [
+      "brazil"
+    ]
+  },
+  {
+    "word": "Brazilian",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0032",
+    "candidateKeys": [
+      "brazilian"
+    ]
+  },
+  {
+    "word": "Canada",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0033",
+    "candidateKeys": [
+      "canada"
+    ]
+  },
+  {
+    "word": "Canadian",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0034",
+    "candidateKeys": [
+      "canadian"
+    ]
+  },
+  {
+    "word": "China",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0035",
+    "candidateKeys": [
+      "china"
+    ]
+  },
+  {
+    "word": "Chinese",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0036",
+    "candidateKeys": [
+      "chinese"
+    ]
+  },
+  {
+    "word": "France",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0037",
+    "candidateKeys": [
+      "france"
+    ]
+  },
+  {
+    "word": "French",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0038",
+    "candidateKeys": [
+      "french"
+    ]
+  },
+  {
+    "word": "Ireland",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0039",
+    "candidateKeys": [
+      "ireland"
+    ]
+  },
+  {
+    "word": "Irish",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0040",
+    "candidateKeys": [
+      "irish"
+    ]
+  },
+  {
+    "word": "India",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0041",
+    "candidateKeys": [
+      "india"
+    ]
+  },
+  {
+    "word": "Indian",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0042",
+    "candidateKeys": [
+      "indian"
+    ]
+  },
+  {
+    "word": "Italy",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0043",
+    "candidateKeys": [
+      "italy"
+    ]
+  },
+  {
+    "word": "Italian",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0044",
+    "candidateKeys": [
+      "italian"
+    ]
+  },
+  {
+    "word": "Spain",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0045",
+    "candidateKeys": [
+      "spain"
+    ]
+  },
+  {
+    "word": "Spanish",
+    "page": 41,
+    "category": "Countries, languages and nationalities",
+    "openEnded": true,
+    "id": "cambridge-2025-appendix1:0046",
+    "candidateKeys": [
+      "spanish"
+    ]
+  },
+  {
+    "word": "Africa",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0047",
+    "candidateKeys": [
+      "africa"
+    ]
+  },
+  {
+    "word": "Antarctica",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0048",
+    "candidateKeys": [
+      "antarctica"
+    ]
+  },
+  {
+    "word": "Asia",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0049",
+    "candidateKeys": [
+      "asia"
+    ]
+  },
+  {
+    "word": "Australia",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0050",
+    "candidateKeys": [
+      "australia"
+    ]
+  },
+  {
+    "word": "Europe",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0051",
+    "candidateKeys": [
+      "europe"
+    ]
+  },
+  {
+    "word": "North America",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0052",
+    "candidateKeys": [
+      "north america"
+    ]
+  },
+  {
+    "word": "South America",
+    "page": 41,
+    "category": "Continents",
+    "openEnded": false,
+    "id": "cambridge-2025-appendix1:0053",
+    "candidateKeys": [
+      "south america"
+    ]
+  }
+]

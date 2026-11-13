@@ -1,0 +1,128 @@
+{
+  "sources": [
+    {
+      "id": "01",
+      "title": "PET 核心词汇 700+：主题分类必默清单",
+      "filename": "01_PET 核心词汇 700+：主题分类必默清单.pdf",
+      "pages": 49,
+      "sha256": "6bda693beeb5c34021f07eac421b00213953720f85c26e57bffee0ee8492f454",
+      "inventoryRows": {
+        "01": 712
+      }
+    },
+    {
+      "id": "06",
+      "title": "PET 阅读高频词 500 个｜选词填空练习",
+      "filename": "06_PET 阅读高频词 500 个｜ 选词填空练习.pdf",
+      "pages": 60,
+      "sha256": "7fadb5b14314dc942b157be7a53ffc0b910d5fa1041de7a0ffe30c456d876fdc",
+      "inventoryRows": {
+        "06": 500,
+        "sentence-sets.json": 500
+      }
+    },
+    {
+      "id": "07",
+      "title": "PET 阅读高频词 500 个｜选词填空答案",
+      "filename": "07_PET 阅读高频词 500 个｜选词填空答案.pdf",
+      "pages": 51,
+      "sha256": "b7afe99d25aa34b329967538890e50dd55fd645e2b685c111154c745331862f9",
+      "inventoryRows": {
+        "sentence-sets.json": 500
+      }
+    },
+    {
+      "id": "08",
+      "title": "新版 PET 备考主题词汇表（带音标）",
+      "filename": "08_新版PET备考主题词汇表（带音标）.pdf",
+      "pages": 78,
+      "sha256": "03e12c0d932f69f92eabfdd191f992d9bbba7cbfcfc3d597b709f4e64c23cdb2",
+      "inventoryRows": {
+        "08": 1854
+      }
+    },
+    {
+      "id": "09",
+      "title": "PET 不规则动词表",
+      "filename": "09_PET 不规则动词表.pdf",
+      "pages": 5,
+      "sha256": "c0dabeeaa91a23b243868226ddd29e548da437a16c5ed819be3ac46358fcced6",
+      "inventoryRows": {
+        "09": 96
+      }
+    },
+    {
+      "id": "10",
+      "title": "Cambridge Preliminary Vocabulary List (from 2020, UCLES 2018)",
+      "filename": "10_新版 PET_Vocabulary List.pdf",
+      "pages": 51,
+      "sha256": "85b094be8c214e4da6cb710f0b5450a455ae010ccb4064c5578f68ef6aa139ad",
+      "inventoryRows": {
+        "10-main": 3047,
+        "10-topics": 1875,
+        "10-appendix1": 53
+      }
+    },
+    {
+      "id": "cambridge-2025",
+      "title": "Cambridge B1 Preliminary Vocabulary List (August 2025, CUPA 2025)",
+      "filename": "cambridge-2025.pdf",
+      "pages": 53,
+      "sha256": "df5e3c31bb26205c2cfc2e7a94a0171d4f4769d5c1e42a3615fe6aa1b5fdab29",
+      "inventoryRows": {
+        "cambridge-2025-main": 3123,
+        "cambridge-2025-topics": 1887,
+        "cambridge-2025-appendix1": 53
+      },
+      "notes": [
+        "3122 extracted main-list rows plus the recovered truck cross-reference on page 36.",
+        "Appendix 2 preserves raw page text and structured source rows from all 23 headings. Unresolved composite rows have review entries."
+      ]
+    }
+  ],
+  "candidateCount": 3424,
+  "unresolvedCompositeRows": 2,
+  "unitCounts": {
+    "PET Unit 01": 87,
+    "PET Unit 02": 17,
+    "PET Unit 03": 103,
+    "PET Unit 04": 81,
+    "PET Unit 05": 109,
+    "PET Unit 06": 16,
+    "PET Unit 07": 150,
+    "PET Unit 08": 104,
+    "PET Unit 09": 38,
+    "PET Unit 10": 114,
+    "PET Unit 11": 23,
+    "PET Unit 12": 143,
+    "PET Unit 13": 29,
+    "PET Unit 14": 32,
+    "PET Unit 15": 32,
+    "PET Unit 16": 3,
+    "PET Unit 17": 51,
+    "PET Unit 18": 91,
+    "PET Unit 19": 71,
+    "PET Unit 20": 62,
+    "PET Unit 21": 121,
+    "PET Unit 22": 28,
+    "PET Unit 23": 92,
+    "PET Unit 24": 1827
+  },
+  "normalizationRevision": "pet-source-normalization-2026-11-13-1",
+  "sourceNormalizationResolvedRows": 303,
+  "sourceNormalizationPendingIds": [
+    "08:0019",
+    "08:0088"
+  ],
+  "pendingContentSourceRows": 3,
+  "finalIdentityRevision": "pet-final-identity-2026-11-13-1",
+  "finalReviewedCount": 3423,
+  "pendingContentSourceIds": [
+    "08:0019",
+    "08:0088",
+    "08:1297"
+  ],
+  "finalPendingWordKeys": [
+    "guest guide"
+  ]
+}

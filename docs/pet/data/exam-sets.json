@@ -1,0 +1,689 @@
+[
+  {
+    "id": "pet-exam-school-choice",
+    "revision": "1",
+    "kind": "exam",
+    "title": "A Library for Everyone",
+    "topic": "education",
+    "examMode": "multiple_choice",
+    "passage": "Last term our class wanted to start a small library. We asked families to [1] used books from their neighbours and bring them to school. Once we had enough books, we had to [2] which room to use. The room by the playground was empty, so we chose it. We didn't have to [3] any money on shelves because another class gave us theirs.\n\nEvery Friday, pupils can [4] a book and bring it back the following week. We're [5] of how well the library is doing. Next term we hope to [6] the library by adding a quiet corner where pupils can sit and read.",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-exam-school-choice-1",
+        "kind": "context",
+        "wordKey": "collect",
+        "prompt": "We asked families to ______ used books from their neighbours and bring them to school.",
+        "acceptedAnswerSets": [
+          [
+            "collect"
+          ]
+        ],
+        "explanation": "collect books 表示把分散在各家手中的图书收集起来。",
+        "reviewed": true,
+        "options": [
+          "lend",
+          "collect",
+          "leave",
+          "lose"
+        ]
+      },
+      {
+        "id": "pet-exam-school-choice-2",
+        "kind": "context",
+        "wordKey": "decide",
+        "prompt": "We had to ______ which room to use.",
+        "acceptedAnswerSets": [
+          [
+            "decide"
+          ]
+        ],
+        "explanation": "decide which room to use 表示决定使用哪一间房。",
+        "reviewed": true,
+        "options": [
+          "describe",
+          "lend",
+          "decide",
+          "offer"
+        ]
+      },
+      {
+        "id": "pet-exam-school-choice-3",
+        "kind": "context",
+        "wordKey": "spend",
+        "prompt": "We didn't have to ______ any money on shelves.",
+        "acceptedAnswerSets": [
+          [
+            "spend"
+          ]
+        ],
+        "explanation": "spend money on something 表示花钱购买或添置某物。",
+        "reviewed": true,
+        "options": [
+          "spend",
+          "take",
+          "earn",
+          "save"
+        ]
+      },
+      {
+        "id": "pet-exam-school-choice-4",
+        "kind": "context",
+        "wordKey": "borrow",
+        "prompt": "Pupils can ______ a book and bring it back the following week.",
+        "acceptedAnswerSets": [
+          [
+            "borrow"
+          ]
+        ],
+        "explanation": "图书随后要归还，所以是 borrow（借入）。",
+        "reviewed": true,
+        "options": [
+          "borrow",
+          "lend",
+          "give",
+          "sell"
+        ]
+      },
+      {
+        "id": "pet-exam-school-choice-5",
+        "kind": "context",
+        "wordKey": "proud",
+        "prompt": "We're ______ of how well the library is doing.",
+        "acceptedAnswerSets": [
+          [
+            "proud"
+          ]
+        ],
+        "explanation": "be proud of 表示为某事感到自豪。",
+        "reviewed": true,
+        "options": [
+          "glad",
+          "interested",
+          "pleased",
+          "proud"
+        ]
+      },
+      {
+        "id": "pet-exam-school-choice-6",
+        "kind": "context",
+        "wordKey": "improve",
+        "prompt": "Next term we hope to ______ the library by adding a quiet corner.",
+        "acceptedAnswerSets": [
+          [
+            "improve"
+          ]
+        ],
+        "explanation": "增加阅读角能让图书室更好用，因此用 improve。",
+        "reviewed": true,
+        "options": [
+          "close",
+          "improve",
+          "replace",
+          "lock"
+        ]
+      }
+    ],
+    "origin": "original"
+  },
+  {
+    "id": "pet-exam-school-open",
+    "revision": "1",
+    "kind": "exam",
+    "title": "The School Radio Club",
+    "topic": "education",
+    "examMode": "open_cloze",
+    "passage": "Our school radio club is run by two students [1] record a short programme every Friday. I decided to take part [2] the club’s weekly show when the school year began. At first I was too nervous [3] speak into the microphone. We shared the work: I was responsible [4] recording the interviews, and Anya was in charge of editing them.\n\nNow I feel much more confident [5] I did at the beginning. Our next programme will be about the jobs people do [6] night, while most of us are asleep.",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-exam-school-open-1",
+        "kind": "context",
+        "wordKey": "who",
+        "prompt": "Our school radio club is run by two students ______ record a short programme every Friday.",
+        "acceptedAnswerSets": [
+          [
+            "who"
+          ],
+          [
+            "that"
+          ]
+        ],
+        "explanation": "关系从句修饰 two students，空格处作主语，可用 who 或 that。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-school-open-2",
+        "kind": "context",
+        "wordKey": "in",
+        "prompt": "I decided to take part ______ the club’s weekly show when the school year began.",
+        "acceptedAnswerSets": [
+          [
+            "in"
+          ]
+        ],
+        "explanation": "take part in something 表示参加某项活动。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-school-open-3",
+        "kind": "context",
+        "wordKey": "to",
+        "prompt": "At first I was too nervous ______ speak into the microphone.",
+        "acceptedAnswerSets": [
+          [
+            "to"
+          ]
+        ],
+        "explanation": "too + 形容词 + to do 表示太……而做不到。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-school-open-4",
+        "kind": "context",
+        "wordKey": "for",
+        "prompt": "We shared the work: I was responsible ______ recording the interviews, and Anya was in charge of editing them.",
+        "acceptedAnswerSets": [
+          [
+            "for"
+          ]
+        ],
+        "explanation": "be responsible for doing 表示负责做某事。后面的 be in charge of doing 也是在描述分工。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-school-open-5",
+        "kind": "context",
+        "wordKey": "than",
+        "prompt": "Now I feel much more confident ______ I did at the beginning.",
+        "acceptedAnswerSets": [
+          [
+            "than"
+          ]
+        ],
+        "explanation": "比较级 more confident 后用 than 引出比较对象。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-school-open-6",
+        "kind": "context",
+        "wordKey": "at",
+        "prompt": "Our next programme will be about the jobs people do ______ night, while most of us are asleep.",
+        "acceptedAnswerSets": [
+          [
+            "at"
+          ]
+        ],
+        "explanation": "at night 是固定时间表达，表示在夜里。",
+        "reviewed": true
+      }
+    ],
+    "origin": "original"
+  },
+  {
+    "id": "pet-exam-travel-choice",
+    "revision": "1",
+    "kind": "exam",
+    "title": "The Train to Seabury",
+    "topic": "travel-transport",
+    "examMode": "multiple_choice",
+    "passage": "My cousin and I took the train to Seabury last Saturday. We left the house early because we didn't want to [1] the 8:10 train. We managed to [2] it just as the doors were about to close. The train didn't go all the way to Seabury, so we had to [3] trains at Westford.\n\nThe second train was late, but we still managed to [4] at Seabury before lunch. When we stepped onto the [5], our aunt was there to meet us. It had been a long [6], so we went straight to her house to rest.",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-exam-travel-choice-1",
+        "kind": "context",
+        "wordKey": "miss",
+        "prompt": "We left the house early because we didn't want to ______ the 8:10 train.",
+        "acceptedAnswerSets": [
+          [
+            "miss"
+          ]
+        ],
+        "explanation": "提前出门是为了避免错过火车，miss the train 表示没赶上车。",
+        "reviewed": true,
+        "options": [
+          "miss",
+          "lend",
+          "follow",
+          "repair"
+        ]
+      },
+      {
+        "id": "pet-exam-travel-choice-2",
+        "kind": "context",
+        "wordKey": "catch",
+        "prompt": "We managed to ______ it just as the doors were about to close.",
+        "acceptedAnswerSets": [
+          [
+            "catch"
+          ]
+        ],
+        "explanation": "车门快关闭时及时上了火车，用 catch。",
+        "reviewed": true,
+        "options": [
+          "send",
+          "catch",
+          "hold",
+          "carry"
+        ]
+      },
+      {
+        "id": "pet-exam-travel-choice-3",
+        "kind": "context",
+        "wordKey": "change",
+        "prompt": "The train didn't go all the way to Seabury, so we had to ______ trains at Westford.",
+        "acceptedAnswerSets": [
+          [
+            "change"
+          ]
+        ],
+        "explanation": "前一班车无法直达，change trains 表示换乘。",
+        "reviewed": true,
+        "options": [
+          "drive",
+          "move",
+          "cross",
+          "change"
+        ]
+      },
+      {
+        "id": "pet-exam-travel-choice-4",
+        "kind": "context",
+        "wordKey": "arrive",
+        "prompt": "We still managed to ______ at Seabury before lunch.",
+        "acceptedAnswerSets": [
+          [
+            "arrive"
+          ]
+        ],
+        "explanation": "arrive at 表示到达某个地点或车站。",
+        "reviewed": true,
+        "options": [
+          "reach",
+          "come",
+          "arrive",
+          "leave"
+        ]
+      },
+      {
+        "id": "pet-exam-travel-choice-5",
+        "kind": "context",
+        "wordKey": "platform",
+        "prompt": "When we stepped onto the ______, our aunt was there to meet us.",
+        "acceptedAnswerSets": [
+          [
+            "platform"
+          ]
+        ],
+        "explanation": "下火车后踩到的是车站的站台。",
+        "reviewed": true,
+        "options": [
+          "platform",
+          "timetable",
+          "ticket",
+          "carriage"
+        ]
+      },
+      {
+        "id": "pet-exam-travel-choice-6",
+        "kind": "context",
+        "wordKey": "journey",
+        "prompt": "It had been a long ______, so we went straight to her house to rest.",
+        "acceptedAnswerSets": [
+          [
+            "journey"
+          ]
+        ],
+        "explanation": "journey 指从出发地到目的地的这段旅程。",
+        "reviewed": true,
+        "options": [
+          "mistake",
+          "meeting",
+          "conversation",
+          "journey"
+        ]
+      }
+    ],
+    "origin": "original"
+  },
+  {
+    "id": "pet-exam-travel-open",
+    "revision": "1",
+    "kind": "exam",
+    "title": "A Bike Ride to the Coast",
+    "topic": "travel-transport",
+    "examMode": "open_cloze",
+    "passage": "The cycle path is open [1] seven in the morning to seven in the evening. Some of my friends went to the coast [2] train, but I decided to cycle. Dad said, ‘I don’t know whether it’ll rain. [3] it does, you can leave your bike at the station and take the bus instead.’\n\nLuckily, the weather stayed fine. I kept my map [4] my pocket, so I could take it out whenever I needed it. I had lunch with a friend [5] had cycled there the day before. A shower started just as we were getting ready to leave. We stayed on the beach from the start of the shower [6] the moment the rain stopped.",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-exam-travel-open-1",
+        "kind": "context",
+        "wordKey": "from",
+        "prompt": "The cycle path is open ______ seven in the morning to seven in the evening.",
+        "acceptedAnswerSets": [
+          [
+            "from"
+          ]
+        ],
+        "explanation": "from A to B 表示从某个时间持续到另一个时间。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-travel-open-2",
+        "kind": "context",
+        "wordKey": "by",
+        "prompt": "Some of my friends went to the coast ______ train.",
+        "acceptedAnswerSets": [
+          [
+            "by"
+          ],
+          [
+            "via"
+          ]
+        ],
+        "explanation": "by train 是表示乘火车的常用说法，via train 也能说明交通方式。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-travel-open-3",
+        "kind": "context",
+        "wordKey": "if",
+        "prompt": "Dad said, ‘I don’t know whether it’ll rain. ______ it does, you can leave your bike at the station and take the bus instead.’",
+        "acceptedAnswerSets": [
+          [
+            "if"
+          ],
+          [
+            "when"
+          ],
+          [
+            "whenever"
+          ],
+          [
+            "once"
+          ]
+        ],
+        "explanation": "it does 代替 it rains。if 表示假设；when、whenever 和 once 表示下雨时可以换乘。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-travel-open-4",
+        "kind": "context",
+        "wordKey": "in",
+        "prompt": "I kept my map ______ my pocket, so I could take it out whenever I needed it.",
+        "acceptedAnswerSets": [
+          [
+            "in"
+          ],
+          [
+            "inside"
+          ]
+        ],
+        "explanation": "地图装在口袋里，in 或 inside 都表示在内部。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-travel-open-5",
+        "kind": "context",
+        "wordKey": "who",
+        "prompt": "I had lunch with a friend ______ had cycled there the day before.",
+        "acceptedAnswerSets": [
+          [
+            "who"
+          ],
+          [
+            "that"
+          ]
+        ],
+        "explanation": "关系词作主语，修饰 a friend，可用 who 或 that。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-travel-open-6",
+        "kind": "context",
+        "wordKey": "until",
+        "prompt": "We stayed on the beach from the start of the shower ______ the moment the rain stopped.",
+        "acceptedAnswerSets": [
+          [
+            "until"
+          ],
+          [
+            "till"
+          ],
+          [
+            "to"
+          ]
+        ],
+        "explanation": "until、till 或 from ... to 都可以表示停留从阵雨开始持续到雨停。",
+        "reviewed": true
+      }
+    ],
+    "origin": "original"
+  },
+  {
+    "id": "pet-exam-nature-choice",
+    "revision": "1",
+    "kind": "exam",
+    "title": "A Pond in the Park",
+    "topic": "natural-world",
+    "examMode": "multiple_choice",
+    "passage": "On my first visit to the park, I walked past the pond without even looking. On my next visit, I began to [1] small movements in the water. Our guide said that the low fence helps [2] the frogs by stopping people from walking on their eggs.\n\nThe pond is home to several kinds of [3] animals that live here without anyone looking after them. It contains [4] water, so the animals are different from those you find in the sea. Visitors are asked not to [5] the ducks, because bread is bad for them. Cleaning the water helps to [6] the pond a safe place for the animals all year.",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-exam-nature-choice-1",
+        "kind": "context",
+        "wordKey": "notice",
+        "prompt": "On my next visit, I began to ______ small movements in the water.",
+        "acceptedAnswerSets": [
+          [
+            "notice"
+          ]
+        ],
+        "explanation": "第一次没留意，第二次才注意到水里有动静，用 notice。",
+        "reviewed": true,
+        "options": [
+          "offer",
+          "imagine",
+          "notice",
+          "throw"
+        ]
+      },
+      {
+        "id": "pet-exam-nature-choice-2",
+        "kind": "context",
+        "wordKey": "protect",
+        "prompt": "The low fence helps ______ the frogs by stopping people from walking on their eggs.",
+        "acceptedAnswerSets": [
+          [
+            "protect"
+          ]
+        ],
+        "explanation": "篱笆避免蛙卵被踩到，起到保护作用。",
+        "reviewed": true,
+        "options": [
+          "protect",
+          "collect",
+          "follow",
+          "examine"
+        ]
+      },
+      {
+        "id": "pet-exam-nature-choice-3",
+        "kind": "context",
+        "wordKey": "wild",
+        "prompt": "The pond is home to several kinds of ______ animals that live here without anyone looking after them.",
+        "acceptedAnswerSets": [
+          [
+            "wild"
+          ]
+        ],
+        "explanation": "动物自然生活在池塘里，不靠人饲养，所以用 wild。",
+        "reviewed": true,
+        "options": [
+          "domestic",
+          "frozen",
+          "empty",
+          "wild"
+        ]
+      },
+      {
+        "id": "pet-exam-nature-choice-4",
+        "kind": "context",
+        "wordKey": "fresh",
+        "prompt": "It contains ______ water, so the animals are different from those you find in the sea.",
+        "acceptedAnswerSets": [
+          [
+            "fresh"
+          ]
+        ],
+        "explanation": "fresh water 是淡水，与海水的含盐量不同。",
+        "reviewed": true,
+        "options": [
+          "salt",
+          "fresh",
+          "drinking",
+          "rainy"
+        ]
+      },
+      {
+        "id": "pet-exam-nature-choice-5",
+        "kind": "context",
+        "wordKey": "feed",
+        "prompt": "Visitors are asked not to ______ the ducks, because bread is bad for them.",
+        "acceptedAnswerSets": [
+          [
+            "feed"
+          ]
+        ],
+        "explanation": "bread 提示这里禁止游客给鸭子喂食，用 feed。",
+        "reviewed": true,
+        "options": [
+          "watch",
+          "feed",
+          "count",
+          "draw"
+        ]
+      },
+      {
+        "id": "pet-exam-nature-choice-6",
+        "kind": "context",
+        "wordKey": "keep",
+        "prompt": "Cleaning the water helps to ______ the pond a safe place for the animals all year.",
+        "acceptedAnswerSets": [
+          [
+            "keep"
+          ]
+        ],
+        "explanation": "keep + 宾语 + 名词补足语表示让池塘继续成为安全的栖息地。",
+        "reviewed": true,
+        "options": [
+          "turn",
+          "remain",
+          "belong",
+          "keep"
+        ]
+      }
+    ],
+    "origin": "original"
+  },
+  {
+    "id": "pet-exam-nature-open",
+    "revision": "1",
+    "kind": "exam",
+    "title": "A Home for Bees",
+    "topic": "natural-world",
+    "examMode": "open_cloze",
+    "passage": "In our garden, [1] are two wooden boxes for bees. Since April, several bees [2] made nests in them, and more are arriving this week. I took a close-up photo [3] one of the bees while it was sitting on a leaf. You can see every detail of its wings. My teacher used the picture in a science lesson. Bees carry pollen between flowers. Without them, some plants wouldn't be able [4] make seeds.\n\nOne corner of the garden is a place [5] bees can find flowers from spring to autumn. Of all the flowers in that corner, the purple ones are the [6] popular with the bees. We see more bees on those flowers than on any of the others.",
+    "word_pool": [],
+    "reviewed": true,
+    "items": [
+      {
+        "id": "pet-exam-nature-open-1",
+        "kind": "context",
+        "wordKey": "there",
+        "prompt": "In our garden, ______ are two wooden boxes for bees.",
+        "acceptedAnswerSets": [
+          [
+            "there"
+          ]
+        ],
+        "explanation": "there are 用于说明某处有两个箱子。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-nature-open-2",
+        "kind": "context",
+        "wordKey": "have",
+        "prompt": "Since April, several bees ______ made nests in them, and more are arriving this week.",
+        "acceptedAnswerSets": [
+          [
+            "have"
+          ]
+        ],
+        "explanation": "since April 指从四月到现在，复数主语用 have made。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-nature-open-3",
+        "kind": "context",
+        "wordKey": "of",
+        "prompt": "I took a close-up photo ______ one of the bees while it was sitting on a leaf. You can see every detail of its wings.",
+        "acceptedAnswerSets": [
+          [
+            "of"
+          ]
+        ],
+        "explanation": "a photo of something 表示拍到某事物的照片。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-nature-open-4",
+        "kind": "context",
+        "wordKey": "to",
+        "prompt": "Without them, some plants wouldn't be able ______ make seeds.",
+        "acceptedAnswerSets": [
+          [
+            "to"
+          ]
+        ],
+        "explanation": "be able to do 表示能够做某事。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-nature-open-5",
+        "kind": "context",
+        "wordKey": "where",
+        "prompt": "One corner of the garden is a place ______ bees can find flowers from spring to autumn.",
+        "acceptedAnswerSets": [
+          [
+            "where"
+          ]
+        ],
+        "explanation": "关系从句缺少地点成分，用 where 表示在那里。",
+        "reviewed": true
+      },
+      {
+        "id": "pet-exam-nature-open-6",
+        "kind": "context",
+        "wordKey": "most",
+        "prompt": "Of all the flowers in that corner, the purple ones are the ______ popular with the bees.",
+        "acceptedAnswerSets": [
+          [
+            "most"
+          ]
+        ],
+        "explanation": "the most popular 是最高级，后文也说明其他花上的蜜蜂都更少。",
+        "reviewed": true
+      }
+    ],
+    "origin": "original"
+  }
+]

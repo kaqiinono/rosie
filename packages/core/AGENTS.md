@@ -41,3 +41,7 @@ without importing either subject or the player. No credential storage belongs in
 events so account metadata changes remain visible across page navigation.
 
 `Problem.displayId?: string` is display-only compatibility for existing math classroom questions. New lessons omit it and use correctly numbered real IDs. Keep all persistence, routes, references and ordering based on real IDs.
+
+`WordEntry.id?: string` carries the canonical `word_entries` UUID when loaded from the database.
+Legacy static entries may omit it. Features requiring durable word references must require this
+ID rather than invent one from a spelling string or reuse a different stage's entry.

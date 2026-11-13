@@ -1,0 +1,240 @@
+{
+  "entries": [
+    {
+      "key": "socks",
+      "canonicalTarget": "sock",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "chat room",
+      "canonicalTarget": "chatroom",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "fireworks",
+      "canonicalTarget": "firework",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "herbs",
+      "canonicalTarget": "herb",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "ingredients",
+      "canonicalTarget": "ingredient",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "toes",
+      "canonicalTarget": "toe",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "living-room",
+      "canonicalTarget": "living room",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "facilities",
+      "canonicalTarget": "facility",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "extreme sports",
+      "canonicalTarget": "extreme sport",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "waves",
+      "canonicalTarget": "wave",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "degrees",
+      "canonicalTarget": "degree",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "attractions",
+      "canonicalTarget": "attraction",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "customers",
+      "canonicalTarget": "customer",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "doubts",
+      "canonicalTarget": "doubt",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "dozens",
+      "canonicalTarget": "dozen",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "effects",
+      "canonicalTarget": "effect",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "explanations",
+      "canonicalTarget": "explanation",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "figures",
+      "canonicalTarget": "figure",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "flavours",
+      "canonicalTarget": "flavour",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "habits",
+      "canonicalTarget": "habit",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "materials",
+      "canonicalTarget": "material",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "vegetarians",
+      "canonicalTarget": "vegetarian",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "views",
+      "canonicalTarget": "view",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "forwards",
+      "canonicalTarget": "forward",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "toward",
+      "canonicalTarget": "towards",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "math",
+      "canonicalTarget": "maths",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "apologize",
+      "canonicalTarget": "apologise",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "organize",
+      "canonicalTarget": "organise",
+      "reason": "待最终合并来源、义项和词形，避免重复发布。",
+      "status": "resolved"
+    },
+    {
+      "key": "monday - sunday",
+      "canonicalTargets": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "reason": "星期范围词集，非独立词条。",
+      "status": "resolved"
+    },
+    {
+      "key": "instruction",
+      "canonicalTarget": "instructions",
+      "reason": "保留既有规范词条，合并普通词形或拼写变体的来源；义项需合并保留。",
+      "status": "resolved"
+    },
+    {
+      "key": "headphone",
+      "canonicalTarget": "headphones",
+      "reason": "保留既有规范词条，合并普通词形或拼写变体的来源；义项需合并保留。",
+      "status": "resolved"
+    },
+    {
+      "key": "inquiry",
+      "canonicalTarget": "enquiry",
+      "reason": "保留既有规范词条，合并普通词形或拼写变体的来源；义项需合并保留。",
+      "status": "resolved"
+    },
+    {
+      "key": "advisors",
+      "canonicalTarget": "advisor",
+      "operation": "rename",
+      "reason": "未发布词头规范化，保留原固定位置；原词头与修正依据分别留存。",
+      "status": "resolved"
+    },
+    {
+      "key": "awards",
+      "canonicalTarget": "award",
+      "operation": "rename",
+      "reason": "未发布词头规范化，保留原固定位置；原词头与修正依据分别留存。",
+      "status": "resolved"
+    },
+    {
+      "key": "cheers!",
+      "canonicalTarget": "cheers",
+      "operation": "rename",
+      "reason": "未发布词头规范化，保留原固定位置；原词头与修正依据分别留存。",
+      "status": "resolved"
+    },
+    {
+      "key": "ask for a leave",
+      "canonicalTarget": "ask for leave",
+      "operation": "rename",
+      "reason": "未发布词头规范化，保留原固定位置；原词头与修正依据分别留存。",
+      "status": "resolved"
+    },
+    {
+      "key": "people",
+      "canonicalTarget": "person",
+      "reason": "来源只要求person的普通不规则复数，不另设重复学习词条；复数保留为people。",
+      "status": "resolved"
+    }
+  ],
+  "status": "resolved",
+  "resolutionRevision": "pet-final-identity-2026-11-13-1"
+}

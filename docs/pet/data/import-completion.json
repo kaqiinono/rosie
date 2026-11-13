@@ -1,0 +1,45 @@
+{
+  "completedDate": "2026-11-13",
+  "stages": {
+    "4A": 444,
+    "5A": 274,
+    "5B": 262,
+    "KET": 1366,
+    "PET": 3423,
+    "story": 143
+  },
+  "petWords": 3423,
+  "petContent": 3423,
+  "exerciseSets": 8,
+  "exerciseItems": 54,
+  "missingContent": 0,
+  "priorityCounts": {
+    "core": 661,
+    "reading": 499,
+    "official": 3287,
+    "irregular": 95
+  },
+  "duplicateExactHeadwords": 0,
+  "invalidExerciseWordRefs": 0,
+  "candidateWords": 3424,
+  "pendingWordKeys": [
+    "guest guide"
+  ],
+  "postImportComparison": {
+    "wordsUnchanged": 3423,
+    "contentUnchanged": 3423,
+    "setsUnchanged": 8,
+    "locationConflicts": 0
+  },
+  "reviewMethod": "Existing-library reuse and local assistant source comparison; not a human dictionary-editor sign-off.",
+  "providerDraftsPublished": false,
+  "explicitFormProtectionEntries": 95,
+  "projectBuildOrTestsRun": false,
+  "reports": {
+    "applied": "output/pet/final-import-applied.json",
+    "after": "output/pet/final-import-after.json",
+    "identity": "docs/pet/data/final-identity-reconciliation.json",
+    "unusedDuplicateBackup": "output/pet/unused-plural-duplicates-backup.json",
+    "unusedDuplicateCleanup": "output/pet/unused-plural-cleanup-receipt.json"
+  }
+}

@@ -1,0 +1,985 @@
+{
+  "source": "Cambridge August 2025 B1 Preliminary Vocabulary List",
+  "pages": 53,
+  "mainPages": [
+    4,
+    40
+  ],
+  "mainRows": 3123,
+  "mainUniqueHeadwordStrings": 3116,
+  "oldRows": 3047,
+  "oldUniqueHeadwordStrings": 3044,
+  "addedHeadwordStrings": [
+    {
+      "word": "annoyed",
+      "raw": "annoyed (adj)",
+      "page": 5,
+      "pos": "(adj)"
+    },
+    {
+      "word": "Arithmetic",
+      "raw": "Arithmetic (n)",
+      "page": 5,
+      "pos": "(n)"
+    },
+    {
+      "word": "background (experience)",
+      "raw": "background (experience) (n)",
+      "page": 6,
+      "pos": "(n)"
+    },
+    {
+      "word": "banker",
+      "raw": "banker (n)",
+      "page": 6,
+      "pos": "(n)"
+    },
+    {
+      "word": "bargain",
+      "raw": "bargain (n)",
+      "page": 6,
+      "pos": "(n)"
+    },
+    {
+      "word": "bossy",
+      "raw": "bossy (adj)",
+      "page": 7,
+      "pos": "(adj)"
+    },
+    {
+      "word": "bottle bank",
+      "raw": "bottle bank (n)",
+      "page": 7,
+      "pos": "(n)"
+    },
+    {
+      "word": "boxing",
+      "raw": "boxing (n)",
+      "page": 7,
+      "pos": "(n)"
+    },
+    {
+      "word": "bush",
+      "raw": "bush (n)",
+      "page": 7,
+      "pos": "(n)"
+    },
+    {
+      "word": "cash machine",
+      "raw": "cash machine (n)",
+      "page": 8,
+      "pos": "(n)"
+    },
+    {
+      "word": "chill out",
+      "raw": "chill out (phr v)",
+      "page": 9,
+      "pos": "(phr v)"
+    },
+    {
+      "word": "climate change",
+      "raw": "climate change (n)",
+      "page": 9,
+      "pos": "(n)"
+    },
+    {
+      "word": "clothing",
+      "raw": "clothing (n)",
+      "page": 9,
+      "pos": "(n)"
+    },
+    {
+      "word": "completely",
+      "raw": "completely (adv)",
+      "page": 9,
+      "pos": "(adv)"
+    },
+    {
+      "word": "cookery",
+      "raw": "cookery (n)",
+      "page": 10,
+      "pos": "(n)"
+    },
+    {
+      "word": "delayed",
+      "raw": "delayed (adj)",
+      "page": 11,
+      "pos": "(adj)"
+    },
+    {
+      "word": "dial up",
+      "raw": "dial up (phr v)",
+      "page": 11,
+      "pos": "(phr v)"
+    },
+    {
+      "word": "Dr / doctor",
+      "raw": "Dr / doctor (n)",
+      "page": 12,
+      "pos": "(n)"
+    },
+    {
+      "word": "driver’s licence",
+      "raw": "driver’s licence (Br Eng) (Am Eng: driver’s license) (n)",
+      "page": 12,
+      "pos": "(n)"
+    },
+    {
+      "word": "episode",
+      "raw": "episode (n)",
+      "page": 13,
+      "pos": "(n)"
+    },
+    {
+      "word": "farmland",
+      "raw": "farmland (n)",
+      "page": 14,
+      "pos": "(n)"
+    },
+    {
+      "word": "folder (computer)",
+      "raw": "folder (computer)(n)",
+      "page": 15,
+      "pos": "(n)"
+    },
+    {
+      "word": "football player",
+      "raw": "football player (n)",
+      "page": 15,
+      "pos": "(n)"
+    },
+    {
+      "word": "for sale",
+      "raw": "for sale (phr)",
+      "page": 15,
+      "pos": "(phr)"
+    },
+    {
+      "word": "gale",
+      "raw": "gale (n)",
+      "page": 15,
+      "pos": "(n)"
+    },
+    {
+      "word": "graduate",
+      "raw": "graduate (n & v)",
+      "page": 16,
+      "pos": "(n & v)"
+    },
+    {
+      "word": "guided",
+      "raw": "guided (adj)",
+      "page": 17,
+      "pos": "(adj)"
+    },
+    {
+      "word": "handlebars",
+      "raw": "handlebars (n)",
+      "page": 17,
+      "pos": "(n)"
+    },
+    {
+      "word": "high jump",
+      "raw": "high jump (n)",
+      "page": 17,
+      "pos": "(n)"
+    },
+    {
+      "word": "hoodie",
+      "raw": "hoodie (n)",
+      "page": 18,
+      "pos": "(n)"
+    },
+    {
+      "word": "horse-riding",
+      "raw": "horse-riding(n)",
+      "page": 18,
+      "pos": "(n)"
+    },
+    {
+      "word": "humour/humor",
+      "raw": "humour/humor (n)",
+      "page": 18,
+      "pos": "(n)"
+    },
+    {
+      "word": "in case",
+      "raw": "in case (adv & conj)",
+      "page": 18,
+      "pos": "(adv & conj)"
+    },
+    {
+      "word": "inexpensive",
+      "raw": "inexpensive (adj)",
+      "page": 18,
+      "pos": "(adj)"
+    },
+    {
+      "word": "initial",
+      "raw": "initial (n)",
+      "page": 19,
+      "pos": "(n)"
+    },
+    {
+      "word": "interviewer",
+      "raw": "interviewer (n)",
+      "page": 19,
+      "pos": "(n)"
+    },
+    {
+      "word": "inventor",
+      "raw": "inventor (n)",
+      "page": 19,
+      "pos": "(n)"
+    },
+    {
+      "word": "laundry",
+      "raw": "laundry (n)",
+      "page": 20,
+      "pos": "(n)"
+    },
+    {
+      "word": "lead (to)",
+      "raw": "lead (to) (v)",
+      "page": 20,
+      "pos": "(v)"
+    },
+    {
+      "word": "lecturer",
+      "raw": "lecturer (n)",
+      "page": 20,
+      "pos": "(n)"
+    },
+    {
+      "word": "librarian",
+      "raw": "librarian (n)",
+      "page": 20,
+      "pos": "(n)"
+    },
+    {
+      "word": "long jump",
+      "raw": "long jump (n)",
+      "page": 21,
+      "pos": "(n)"
+    },
+    {
+      "word": "mainly",
+      "raw": "mainly (adv)",
+      "page": 21,
+      "pos": "(adv)"
+    },
+    {
+      "word": "microphone",
+      "raw": "microphone (n)",
+      "page": 22,
+      "pos": "(n)"
+    },
+    {
+      "word": "monthly",
+      "raw": "monthly (adj)",
+      "page": 22,
+      "pos": "(adj)"
+    },
+    {
+      "word": "mostly",
+      "raw": "mostly (adv)",
+      "page": 22,
+      "pos": "(adv)"
+    },
+    {
+      "word": "nest",
+      "raw": "nest (n)",
+      "page": 23,
+      "pos": "(n)"
+    },
+    {
+      "word": "novelist",
+      "raw": "novelist (n)",
+      "page": 23,
+      "pos": "(n)"
+    },
+    {
+      "word": "on vacation",
+      "raw": "on vacation (prep phr)",
+      "page": 24,
+      "pos": "(prep phr)"
+    },
+    {
+      "word": "operator",
+      "raw": "operator (n)",
+      "page": 24,
+      "pos": "(n)"
+    },
+    {
+      "word": "pass on",
+      "raw": "pass on (phr v)",
+      "page": 25,
+      "pos": "(phr v)"
+    },
+    {
+      "word": "plot",
+      "raw": "plot (n)",
+      "page": 26,
+      "pos": "(n)"
+    },
+    {
+      "word": "policewoman",
+      "raw": "policewoman (n)",
+      "page": 26,
+      "pos": "(n)"
+    },
+    {
+      "word": "pottery",
+      "raw": "pottery (n)",
+      "page": 26,
+      "pos": "(n)"
+    },
+    {
+      "word": "programmer",
+      "raw": "programmer (n)",
+      "page": 27,
+      "pos": "(n)"
+    },
+    {
+      "word": "properly (as in working properly)",
+      "raw": "properly (as in working properly) (adv)",
+      "page": 27,
+      "pos": "(adv)"
+    },
+    {
+      "word": "publisher",
+      "raw": "publisher (n)",
+      "page": 27,
+      "pos": "(n)"
+    },
+    {
+      "word": "racing",
+      "raw": "racing (n)",
+      "page": 28,
+      "pos": "(n)"
+    },
+    {
+      "word": "railroad",
+      "raw": "railroad (n)",
+      "page": 28,
+      "pos": "(n)"
+    },
+    {
+      "word": "reduced",
+      "raw": "reduced (adj)",
+      "page": 28,
+      "pos": "(adj)"
+    },
+    {
+      "word": "regularly",
+      "raw": "regularly (adv)",
+      "page": 28,
+      "pos": "(adv)"
+    },
+    {
+      "word": "retirement",
+      "raw": "retirement (n)",
+      "page": 29,
+      "pos": "(n)"
+    },
+    {
+      "word": "riding",
+      "raw": "riding (n)",
+      "page": 29,
+      "pos": "(n)"
+    },
+    {
+      "word": "roommate",
+      "raw": "roommate (n)",
+      "page": 29,
+      "pos": "(n)"
+    },
+    {
+      "word": "sailor",
+      "raw": "sailor (n)",
+      "page": 30,
+      "pos": "(n)"
+    },
+    {
+      "word": "security guard",
+      "raw": "security guard (n)",
+      "page": 30,
+      "pos": "(n)"
+    },
+    {
+      "word": "shopper",
+      "raw": "shopper (n)",
+      "page": 31,
+      "pos": "(n)"
+    },
+    {
+      "word": "show up",
+      "raw": "show up (phr v)",
+      "page": 31,
+      "pos": "(phr v)"
+    },
+    {
+      "word": "sleepy",
+      "raw": "sleepy (adj)",
+      "page": 32,
+      "pos": "(adj)"
+    },
+    {
+      "word": "sleeveless",
+      "raw": "sleeveless (adj)",
+      "page": 32,
+      "pos": "(adj)"
+    },
+    {
+      "word": "slide",
+      "raw": "slide (n)",
+      "page": 32,
+      "pos": "(n)"
+    },
+    {
+      "word": "snowfall",
+      "raw": "snowfall (n)",
+      "page": 32,
+      "pos": "(n)"
+    },
+    {
+      "word": "specially",
+      "raw": "specially (adv)",
+      "page": 33,
+      "pos": "(adv)"
+    },
+    {
+      "word": "tip (advice)",
+      "raw": "tip (advice) (n)",
+      "page": 36,
+      "pos": "(n)"
+    },
+    {
+      "raw": "truck (Am Eng) (Br Eng: lorry)",
+      "page": 36,
+      "x": 323.63,
+      "y": 581.215,
+      "word": "truck"
+    },
+    {
+      "word": "underwater",
+      "raw": "underwater (adj)",
+      "page": 37,
+      "pos": "(adj)"
+    },
+    {
+      "word": "unsure",
+      "raw": "unsure (adj)",
+      "page": 37,
+      "pos": "(adj)"
+    },
+    {
+      "word": "wetsuit/wet suit",
+      "raw": "wetsuit/wet suit (n)",
+      "page": 39,
+      "pos": "(n)"
+    },
+    {
+      "word": "while",
+      "raw": "while (n)",
+      "page": 39,
+      "pos": "(n)"
+    }
+  ],
+  "removedHeadwordStrings": [
+    {
+      "word": "cage",
+      "raw": "cage (n)",
+      "page": 8
+    },
+    {
+      "word": "crazy",
+      "raw": "crazy (adj)",
+      "page": 10
+    },
+    {
+      "word": "Dr",
+      "raw": "Dr (n)",
+      "page": 12
+    },
+    {
+      "word": "iinitial",
+      "raw": "iinitial (n)",
+      "page": 18
+    },
+    {
+      "word": "lead",
+      "raw": "lead (v)",
+      "page": 20
+    },
+    {
+      "word": "MP3 player",
+      "raw": "MP3 player (n)",
+      "page": 22
+    }
+  ],
+  "duplicates": [
+    {
+      "word": "accident",
+      "rows": [
+        {
+          "word": "accident",
+          "raw": "accident (n)",
+          "page": 4,
+          "pos": "(n)"
+        },
+        {
+          "word": "accident",
+          "raw": "accident (n)",
+          "page": 4,
+          "pos": "(n)"
+        }
+      ]
+    },
+    {
+      "word": "camera",
+      "rows": [
+        {
+          "word": "camera",
+          "raw": "camera (n)",
+          "page": 8,
+          "pos": "(n)"
+        },
+        {
+          "word": "camera",
+          "raw": "camera (n)",
+          "page": 11,
+          "pos": "(n)"
+        }
+      ]
+    },
+    {
+      "word": "comment",
+      "rows": [
+        {
+          "word": "comment",
+          "raw": "comment (v)",
+          "page": 9,
+          "pos": "(v)"
+        },
+        {
+          "word": "comment",
+          "raw": "comment (n)",
+          "page": 9,
+          "pos": "(n)"
+        }
+      ]
+    },
+    {
+      "word": "exchange",
+      "rows": [
+        {
+          "word": "exchange",
+          "raw": "exchange (n)",
+          "page": 13,
+          "pos": "(n)"
+        },
+        {
+          "word": "exchange",
+          "raw": "exchange (v)",
+          "page": 13,
+          "pos": "(v)"
+        }
+      ]
+    },
+    {
+      "word": "live",
+      "rows": [
+        {
+          "word": "live",
+          "raw": "live (v)",
+          "page": 21,
+          "pos": "(v)"
+        },
+        {
+          "word": "live",
+          "raw": "live (adj)",
+          "page": 21,
+          "pos": "(adj)"
+        }
+      ]
+    },
+    {
+      "word": "miss",
+      "rows": [
+        {
+          "word": "miss",
+          "raw": "miss (v)",
+          "page": 22,
+          "pos": "(v)"
+        },
+        {
+          "word": "Miss",
+          "raw": "Miss (n)",
+          "page": 22,
+          "pos": "(n)"
+        }
+      ]
+    },
+    {
+      "word": "run",
+      "rows": [
+        {
+          "word": "run",
+          "raw": "run (v)",
+          "page": 30,
+          "pos": "(v)"
+        },
+        {
+          "word": "run",
+          "raw": "run (n )",
+          "page": 30,
+          "pos": "(n )"
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "raw": "driver’s licence (Br Eng) (Am Eng: driver’s",
+      "page": 12,
+      "x": 323.63,
+      "y": 132.845
+    },
+    {
+      "raw": "truck (Am Eng) (Br Eng: lorry)",
+      "page": 36,
+      "x": 323.63,
+      "y": 581.215
+    }
+  ],
+  "status": "Literal headword and theme comparisons. Confirm extraction, aliases, and wording before interpreting them as lexical changes.",
+  "themeDifferences": [
+    {
+      "topic": "clothes-accessories",
+      "oldRows": 85,
+      "currentRows": 88,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [
+        "clothing",
+        "hoodie",
+        "wetsuit"
+      ],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "colours",
+      "oldRows": 15,
+      "currentRows": 15,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "communications-technology",
+      "oldRows": 93,
+      "currentRows": 96,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0114",
+        "cambridge-2025-topics:0116",
+        "cambridge-2025-topics:0155",
+        "cambridge-2025-topics:0191"
+      ],
+      "newCandidateKeys": [
+        "comment",
+        "microphone",
+        "post",
+        "share"
+      ],
+      "oldOnlyCandidateKeys": [
+        "mp3 player"
+      ]
+    },
+    {
+      "topic": "education",
+      "oldRows": 82,
+      "currentRows": 83,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0202",
+        "cambridge-2025-topics:0234"
+      ],
+      "newCandidateKeys": [
+        "graduate"
+      ],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "entertainment-media",
+      "oldRows": 115,
+      "currentRows": 117,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0305",
+        "cambridge-2025-topics:0317"
+      ],
+      "newCandidateKeys": [
+        "classical",
+        "episode",
+        "humour",
+        "plot"
+      ],
+      "oldOnlyCandidateKeys": [
+        "classical music",
+        "mp3 player"
+      ]
+    },
+    {
+      "topic": "environment",
+      "oldRows": 14,
+      "currentRows": 15,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [
+        "waste"
+      ],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "food-drink",
+      "oldRows": 157,
+      "currentRows": 158,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0416",
+        "cambridge-2025-topics:0482"
+      ],
+      "newCandidateKeys": [
+        "cookery"
+      ],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "health-medicine-exercise",
+      "oldRows": 102,
+      "currentRows": 101,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0657"
+      ],
+      "newCandidateKeys": [
+        "feel better",
+        "feel ill",
+        "feel sick",
+        "toe"
+      ],
+      "oldOnlyCandidateKeys": [
+        "heart",
+        "toes"
+      ]
+    },
+    {
+      "topic": "hobbies-leisure",
+      "oldRows": 62,
+      "currentRows": 65,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0686",
+        "cambridge-2025-topics:0696"
+      ],
+      "newCandidateKeys": [
+        "chill out",
+        "cookery",
+        "pottery"
+      ],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "house-home",
+      "oldRows": 143,
+      "currentRows": 142,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:0778",
+        "cambridge-2025-topics:0792",
+        "cambridge-2025-topics:0806",
+        "cambridge-2025-topics:0812",
+        "cambridge-2025-topics:0851",
+        "cambridge-2025-topics:0865",
+        "cambridge-2025-topics:0868"
+      ],
+      "newCandidateKeys": [
+        "alarm"
+      ],
+      "oldOnlyCandidateKeys": [
+        "alarm clock"
+      ]
+    },
+    {
+      "topic": "language",
+      "oldRows": 31,
+      "currentRows": 31,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "feelings-opinions-experiences",
+      "oldRows": 144,
+      "currentRows": 144,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "buildings",
+      "oldRows": 48,
+      "currentRows": 49,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1071",
+        "cambridge-2025-topics:1073"
+      ],
+      "newCandidateKeys": [
+        "apartment block",
+        "apartment building"
+      ],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "countryside",
+      "oldRows": 35,
+      "currentRows": 35,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "town-city",
+      "oldRows": 36,
+      "currentRows": 36,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1168"
+      ],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "services",
+      "oldRows": 18,
+      "currentRows": 18,
+      "currentUnresolvedRows": [],
+      "newCandidateKeys": [
+        "café",
+        "tourist information centre"
+      ],
+      "oldOnlyCandidateKeys": [
+        "tourist information"
+      ]
+    },
+    {
+      "topic": "shopping",
+      "oldRows": 61,
+      "currentRows": 62,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1232"
+      ],
+      "newCandidateKeys": [
+        "department",
+        "store"
+      ],
+      "oldOnlyCandidateKeys": [
+        "department store"
+      ]
+    },
+    {
+      "topic": "sport",
+      "oldRows": 129,
+      "currentRows": 129,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1289",
+        "cambridge-2025-topics:1299",
+        "cambridge-2025-topics:1308",
+        "cambridge-2025-topics:1333",
+        "cambridge-2025-topics:1344",
+        "cambridge-2025-topics:1353",
+        "cambridge-2025-topics:1362",
+        "cambridge-2025-topics:1380",
+        "cambridge-2025-topics:1384"
+      ],
+      "newCandidateKeys": [
+        "costume"
+      ],
+      "oldOnlyCandidateKeys": [
+        "swimming costume"
+      ]
+    },
+    {
+      "topic": "natural-world",
+      "oldRows": 97,
+      "currentRows": 97,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1386",
+        "cambridge-2025-topics:1403"
+      ],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "time",
+      "oldRows": 46,
+      "currentRows": 46,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1498",
+        "cambridge-2025-topics:1502",
+        "cambridge-2025-topics:1510",
+        "cambridge-2025-topics:1513"
+      ],
+      "newCandidateKeys": [
+        "friday",
+        "monday",
+        "saturday",
+        "sunday",
+        "thursday",
+        "tuesday",
+        "wednesday"
+      ],
+      "oldOnlyCandidateKeys": [
+        "monday - sunday"
+      ]
+    },
+    {
+      "topic": "travel-transport",
+      "oldRows": 180,
+      "currentRows": 179,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1536",
+        "cambridge-2025-topics:1559",
+        "cambridge-2025-topics:1589",
+        "cambridge-2025-topics:1592",
+        "cambridge-2025-topics:1661",
+        "cambridge-2025-topics:1671",
+        "cambridge-2025-topics:1683"
+      ],
+      "newCandidateKeys": [
+        "driver's licence",
+        "driving licence",
+        "visitor"
+      ],
+      "oldOnlyCandidateKeys": [
+        "licence"
+      ]
+    },
+    {
+      "topic": "weather",
+      "oldRows": 38,
+      "currentRows": 38,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1718"
+      ],
+      "newCandidateKeys": [],
+      "oldOnlyCandidateKeys": []
+    },
+    {
+      "topic": "work-jobs",
+      "oldRows": 144,
+      "currentRows": 143,
+      "currentUnresolvedRows": [
+        "cambridge-2025-topics:1765",
+        "cambridge-2025-topics:1837",
+        "cambridge-2025-topics:1883"
+      ],
+      "newCandidateKeys": [
+        "football player"
+      ],
+      "oldOnlyCandidateKeys": []
+    }
+  ]
+}

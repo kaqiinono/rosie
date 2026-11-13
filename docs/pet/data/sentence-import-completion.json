@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-13",
+  "projectId": "yvukypevtqblhjdhkatb",
+  "status": "completed",
+  "reviewMethod": "local-assistant-source-comparison",
+  "newReviewedItems": 490,
+  "newPublishedSets": 49,
+  "pet_words": 3423,
+  "published_sets": 57,
+  "published_items": 544,
+  "sentence_items": 500,
+  "distinct_item_ids": 544,
+  "invalid_word_references": 0,
+  "sentence_sets": 50,
+  "readback": {
+    "wordsUnchanged": 3423,
+    "contentUnchanged": 3423,
+    "setsUnchanged": 57,
+    "locationConflicts": 0,
+    "pendingSets": 0,
+    "deferredSets": 0
+  },
+  "reports": [
+    "output/pet/sentence-batch-applied.json",
+    "output/pet/sentence-final-preview.json",
+    "output/pet/sentence-final-applied.json",
+    "output/pet/sentence-final-after.json"
+  ],
+  "reviewAudit": "docs/pet/data/sentence-review-audit.json",
+  "projectBuildTestsRun": false,
+  "externalAiProviderUsed": false
+}

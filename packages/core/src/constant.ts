@@ -40,6 +40,8 @@ export const STORAGE_KEYS = {
   ENGLISH_SEL_STAGE: 'english-sel-stage',
   ENGLISH_SEL_UNITS: 'english-sel-units',
   ENGLISH_SEL_LESSONS: 'english-sel-lessons',
+  /** PET unfinished-session actions only; cloud owns completed answers and progress. */
+  PET_PENDING_SESSION: 'pet-pending-session-v1',
   WEEKLY_PLAN_LAST_LESSONS: 'weekly-plan-last-lessons',
   /** 创建多日计划时上次选择的词库（stage）集合，下次进入直接预选 */
   WEEKLY_PLAN_LAST_STAGES: 'weekly-plan-last-stages',

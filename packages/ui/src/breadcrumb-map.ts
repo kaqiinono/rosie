@@ -54,6 +54,9 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['chinese', 'garden'], label: '识字加油站' },
   { pattern: ['english'], label: '英语' },
   { pattern: ['english', 'library'], label: '词库' },
+  { pattern: ['english', 'words'], label: '单词' },
+  { pattern: ['english', 'words', 'practice'], label: '单词练习' },
+  { pattern: ['english', 'words', 'practice', 'pet'], label: 'PET 日常与专项' },
   { pattern: ['english', 'words', 'reading'], label: '阅读' },
   { pattern: ['english', 'words', 'reading', 'story'], label: 'Story' },
   {

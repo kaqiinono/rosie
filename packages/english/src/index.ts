@@ -173,3 +173,5 @@ export { default as ListeningDrawer } from './components/reading/ListeningDrawer
 export { listeningClipsFor, playableListeningClips } from './utils/listening-clips'
 
 export { useAudioSlots } from './hooks/useBaiduReadingAudio'
+
+export { default as PetLearningPage } from './pet/PetLearningPage'
