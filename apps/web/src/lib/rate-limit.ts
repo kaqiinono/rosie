@@ -11,6 +11,11 @@ interface RateLimitEntry {
 const localStore = new Map<string, RateLimitEntry>()
 let lastCleanup = Date.now()
 const CLEANUP_INTERVAL = 60_000
+const DISTRIBUTED_TIMEOUT_MS = 1_500
+const DISTRIBUTED_COOLDOWN_MS = 30_000
+let distributedRetryAt = 0
+let distributedProbeInFlight = false
+let distributedFailureVersion = 0
 
 export function getRateLimitPolicy(pathname: string): RateLimitPolicy {
   // A seek can issue several byte-range requests; keep an explicit bounded allowance.
@@ -66,6 +71,14 @@ export async function isDistributedRateLimited(input: {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !serviceRoleKey) return null
+  if (Date.now() < distributedRetryAt || distributedProbeInFlight) return null
+
+  // After a failure, let only one request probe recovery per instance.
+  const isRecoveryProbe = distributedRetryAt !== 0
+  if (isRecoveryProbe) distributedProbeInFlight = true
+  const failureVersion = distributedFailureVersion
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), DISTRIBUTED_TIMEOUT_MS)
 
   try {
     const keyHash = await sha256(input.identity)
@@ -83,10 +96,22 @@ export async function isDistributedRateLimited(input: {
         p_window_seconds: Math.ceil(input.policy.windowMs / 1000),
       }),
       cache: 'no-store',
+      signal: controller.signal,
     })
-    if (!response.ok) return null
-    return (await response.json()) === true
+    if (!response.ok) throw new Error('Rate limit backend unavailable')
+    const limited: unknown = await response.json()
+    if (typeof limited !== 'boolean') throw new Error('Invalid rate limit response')
+
+    // An older successful request must not undo a newer request's failure.
+    if (failureVersion === distributedFailureVersion) distributedRetryAt = 0
+    return limited
   } catch {
+    distributedFailureVersion += 1
+    distributedRetryAt = Date.now() + DISTRIBUTED_COOLDOWN_MS
     return null
+  } finally {
+    clearTimeout(timeout)
+    controller.abort()
+    if (isRecoveryProbe) distributedProbeInFlight = false
   }
 }
