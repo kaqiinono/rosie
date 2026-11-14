@@ -40,6 +40,13 @@ export interface UserSessionStore<T> {
 
 const globalRegistry = new Map<string, UserSessionStore<unknown>>()
 
+/** Refresh an already-loaded derived view after a successful related mutation. */
+export function refreshSessionStore(storeKey: string, userId: string): Promise<void> {
+  const store = globalRegistry.get(storeKey)
+  if (!store || store.getSnapshot(userId).status !== 'ready') return Promise.resolve()
+  return store.refreshInBackground(userId)
+}
+
 /** Invalidate one store (all users) or every registered store when key omitted. */
 export function invalidateSessionStore(storeKey?: string): void {
   if (storeKey) {

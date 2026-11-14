@@ -34,6 +34,7 @@ export const STORAGE_KEYS = {
   AI_TEACHING_SESSION_ID: 'ai-teaching-session-id-v1',
   /** AI 悬浮助手在当前设备上的可拖动位置。 */
   AI_ASSISTANT_POSITION: 'ai-assistant-position-v1',
+  TIME_TREE_LAUNCHER_POSITION: 'time-tree-launcher-position-v1',
   MATH_SIDEBAR_COLLAPSED: 'math-sidebar-collapsed',
   /** 语法单元页左侧目录栏是否收起（仅桌面端生效） */
   GRAMMAR_SIDEBAR_COLLAPSED: 'grammar-sidebar-collapsed',

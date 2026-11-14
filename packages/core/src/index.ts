@@ -17,3 +17,5 @@ export * from './authz'
 export * from './baiduErrors'
 export * from './useBaiduMediaError'
 export * from './voucherColors'
+
+export { useFloatingLauncherPosition } from './useFloatingLauncherPosition'
