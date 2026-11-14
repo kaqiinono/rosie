@@ -17,6 +17,7 @@ import { SUBJECTS, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { gardenAudio } from '@/components/tree-demo/garden/audio'
 import { kidDayFits, kidNote, kidReward, kidTime } from './kidStepCopy'
 import { HomeworkNotesDialog } from './HomeworkNotesDialog'
+import HomeworkContentPanel from './HomeworkContentPanel'
 import { finishAndPop } from './finishStep'
 import type { TreeController } from './useTimeTree'
 
@@ -76,7 +77,8 @@ export function StepPanel({
   homework?: boolean
 }) {
   const tree = api.tree!
-  const [now, setNow] = useState(Date.now)
+  const [localNow, setNow] = useState(Date.now)
+  const now = localNow + api.clockOffsetMs
   const [editingNote, setEditingNote] = useState(false)
   const [move, setMove] = useState(false)
   const [manual, setManual] = useState(false)
@@ -86,6 +88,10 @@ export function StepPanel({
   const [end, setEnd] = useState('')
   const mounted = useRef(true)
   const finishingRef = useRef(false)
+  const prepareKey = useRef('')
+  const [prepareAttempt, setPrepareAttempt] = useState(0)
+  const [preparing, setPreparing] = useState(false)
+  const [prepareError, setPrepareError] = useState('')
   const running = tree.steps.find((s) => s.start && !s.end)
   const overdue = !!step.planned && step.planned < tree.today
   useEffect(() => {
@@ -99,6 +105,22 @@ export function StepPanel({
     const t = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(t)
   }, [step.start, step.end])
+  useEffect(() => {
+    if (!step.practiceEntryName || step.practice !== undefined || step.end || step.skipped || !step.planned || step.planned > tree.today || api.busy) return
+    const requestKey = `${step.id}:${prepareAttempt}`
+    if (prepareKey.current === requestKey) return
+    prepareKey.current = requestKey
+    queueMicrotask(() => {
+      if (prepareKey.current !== requestKey) return
+      setPreparing(true)
+      setPrepareError('')
+    })
+    void api.run({ kind: 'preparePractice', id: step.id }).then((result) => {
+      if (!mounted.current || prepareKey.current !== requestKey) return
+      setPreparing(false)
+      if (!result) setPrepareError('暂时无法读取本次内容，请重试。')
+    })
+  }, [step.id, step.practiceEntryName, step.practice, step.end, step.skipped, step.planned, tree.today, prepareAttempt, api])
   async function finishNow() {
     if (api.busy || finishingRef.current) return
     finishingRef.current = true
@@ -130,6 +152,18 @@ export function StepPanel({
   if (editingNote) {
     return <HomeworkNotesDialog step={step} api={api} close={() => setEditingNote(false)} />
   }
+  const homeworkContent = step.practice || preparing || prepareError ? (
+    <HomeworkContentPanel
+      name={step.practice?.name}
+      row={step.practice?.row}
+      href={step.practice?.href}
+      exhausted={step.practice?.exhausted}
+      loading={!step.practice && preparing}
+      error={!step.practice && prepareError ? api.message || prepareError : undefined}
+      disabled={api.busy}
+      onRetry={() => setPrepareAttempt((n) => n + 1)}
+    />
+  ) : null
   const noteButton = (
     <Button variant="soft" disabled={api.busy} onClick={() => setEditingNote(true)}>备注</Button>
   )
@@ -182,6 +216,7 @@ export function StepPanel({
               </Text>
             </StickerCard>
           )}
+          {homeworkContent}
           <Flex direction="column" align="center" gap="2">
             {step.skipped || (step.end && !finishing) ? (
               <Button size="3" color="pink" onClick={close}>
@@ -328,6 +363,7 @@ export function StepPanel({
         <Text size="2">
           计划 {step.planned ?? '先不做'} · 原排期 {step.scheduled} · 截止 {step.deadline}
         </Text>
+        {homeworkContent}
         {step.start && (
           <Text>
             开始 {dayOf(step.start)} {clock(step.start)}

@@ -21,10 +21,12 @@ async function request(
     },
     body: JSON.stringify({ ...action, revision, knownRevision: cached?.revision }),
   })
-  if (response.status === 204 && cached) return cached
+  const serverTime = Date.parse(response.headers.get('X-Tree-Time') ?? '')
+  const clockOffsetMs = Number.isFinite(serverTime) ? serverTime - Date.now() : 0
+  if (response.status === 204 && cached) return { ...cached, clockOffsetMs }
   const result = await response.json()
   if (!response.ok) throw new Error(result.error || '读取失败，请重试。')
-  return result as Snapshot
+  return { ...(result as Snapshot), clockOffsetMs }
 }
 const store = createUserSessionStore<Snapshot | null>('time_tree', {
   empty: null,
@@ -78,7 +80,10 @@ export function useTimeTree() {
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
       if (action.kind === 'acceptBox') invalidateSessionStore('draw_pool_entries')
-      if (action.kind === 'openBox' || action.kind === 'acceptBox') invalidateSessionStore('draw_wheel_entries')
+      if (action.kind === 'openBox' || action.kind === 'acceptBox') {
+        invalidateSessionStore('draw_wheel_entries')
+        invalidateSessionStore('draw_workshop')
+      }
       return next.tree
     } catch (e) {
       setMessage(e instanceof Error ? e.message : '保存失败，请重试。')
@@ -91,6 +96,7 @@ export function useTimeTree() {
   }
   return {
     tree: data?.tree ?? null,
+    clockOffsetMs: data?.clockOffsetMs ?? 0,
     user,
     busy,
     run,

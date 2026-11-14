@@ -3,6 +3,7 @@ import type { Homework } from '@rosie/tasks'
 import { createAdminSupabase, getUserFromRequest } from '@/lib/api-auth'
 import { isValidParentPin, verifyParentPin } from '@/lib/parent-pin'
 import { act, newTree, roll, TreeConflict } from '@/lib/time-tree/engine'
+import { bindPractice, settlePractice } from '@/lib/time-tree/practice'
 import { schedule } from '@/lib/time-tree/schedule'
 import { dayOf, shift, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
         latest.data?.revision === input.knownRevision &&
         latest.data?.today === dayOf(new Date())
       ) {
-        return new NextResponse(null, { status: 204 })
+        return new NextResponse(null, { status: 204, headers: { 'X-Tree-Time': new Date().toISOString() } })
       }
     }
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -77,9 +78,18 @@ export async function POST(req: Request) {
         }
         schedule(tree, templates, previousDay, shift(today, 6))
       }
+      const step = tree.steps.find((s) => s.id === input.id)
+      if (step && !step.end && ['preparePractice', 'start', 'completeUntimed', 'record'].includes(input.kind)) {
+        const templateId = step.occurrence.split('/')[0]
+        const template = await db.from('task_homework').select('*').eq('user_id', user.id).eq('id', templateId).maybeSingle()
+        if (template.error) throw template.error
+        try { bindPractice(tree, step, template.data as Homework | undefined) }
+        catch (error) { return failure(error instanceof Error ? error.message : '练习入口配置无效', 409) }
+      }
       act(tree, input, now)
+      if (step && ['finish', 'completeUntimed', 'record', 'skip'].includes(input.kind)) settlePractice(tree, step)
       if (saved.data && original === JSON.stringify(tree) && input.kind !== 'openBox')
-        return NextResponse.json({ revision, tree })
+        return NextResponse.json({ revision, tree }, { headers: { 'X-Tree-Time': new Date().toISOString() } })
       const { data, error } = await db.rpc('commit_time_tree', {
         p_user: user.id,
         p_revision: revision,
@@ -87,7 +97,7 @@ export async function POST(req: Request) {
         p_action: input.kind,
         p_ticket: input.kind === 'acceptBox' ? input.id : null,
       })
-      if (!error) return NextResponse.json(data)
+      if (!error) return NextResponse.json(data, { headers: { 'X-Tree-Time': new Date().toISOString() } })
       if (error.message !== 'tree_changed') throw error
     }
     return failure('进度已变化，请重试。', 409)

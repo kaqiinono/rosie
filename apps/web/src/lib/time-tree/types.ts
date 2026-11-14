@@ -1,6 +1,9 @@
+import type { PracticeProgress, StepPractice } from './practice'
 import type { Apple, CoreSubject, SubjectKey } from '@/components/tree-demo/garden/model'
 
 export interface WorkStep {
+  practice?: StepPractice | null
+  practiceEntryName?: string
   id: string
   occurrence: string
   name: string
@@ -35,6 +38,7 @@ export interface Rules {
 export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4 }
 
 export interface TreeData {
+  practiceProgress?: Record<string, PracticeProgress>
   today: string
   firstDay: string
   afterSchool: boolean
@@ -57,6 +61,7 @@ export interface TreeData {
 
 export type ActionKind =
   | 'sync'
+  | 'preparePractice'
   | 'school'
   | 'start'
   | 'finish'
@@ -86,6 +91,7 @@ export interface TreeAction {
   pin?: string
 }
 export interface Snapshot {
+  clockOffsetMs?: number
   revision: number
   tree: TreeData
 }

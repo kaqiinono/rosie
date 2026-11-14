@@ -1,5 +1,6 @@
+import { completionReward } from '@/lib/time-tree/rewards'
 import { capacityOf, SUBJECTS } from '@/components/tree-demo/garden/model'
-import { dayOf, elapsed, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { elapsed, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 
 /** 孩子卡片上的说明：这次备注优先，否则用作业说明。 */
 export function kidNote(step: WorkStep): string {
@@ -31,36 +32,10 @@ function flowerPhrase(step: WorkStep): string {
   return `${step.stages.length} 朵${SUBJECTS[step.subject].label}小花`
 }
 
-/** 按当天已经按时完成的作业，估算这次按时做完能拿到的阳光和水滴。 */
-function previewReward(tree: TreeData, step: WorkStep): { sun: number; water: number } {
-  const peers = tree.steps.filter(
-    (p) =>
-      p.id !== step.id &&
-      p.end &&
-      p.start &&
-      dayOf(p.end) === tree.today &&
-      elapsed(p.start, p.end) <= p.minutes,
-  )
-  const sun = Math.max(
-    0,
-    Math.min(
-      step.stages.length,
-      10 - peers.reduce((sum, p) => sum + p.sun, 0),
-      20 - tree.sun,
-    ),
-  )
-  const water = Math.max(
-    0,
-    Math.min(peers.length + 1 > 5 ? 0 : peers.length + 1 === 3 ? 2 : 1, 12 - tree.water),
-  )
-  return { sun, water }
-}
-
 export function kidReward(tree: TreeData, step: WorkStep, now: number): string {
   const flower = flowerPhrase(step)
   if (step.skipped) return ''
   if (step.end) {
-    if (!step.start) return flower ? `树上开出 ${flower}！` : '做完啦！'
     const gifts = [step.sun ? `☀️+${step.sun}` : '', step.water ? `💧+${step.water}` : ''].filter(
       Boolean,
     )
@@ -69,27 +44,9 @@ export function kidReward(tree: TreeData, step: WorkStep, now: number): string {
     if (flower) return `开出 ${flower}！本次没有阳光和水滴`
     return '做完啦！'
   }
-  if (step.start) {
-    const spent = Math.max(0, Math.floor((now - Date.parse(step.start)) / 60000))
-    if (spent > step.minutes) {
-      return flower
-        ? `做完仍会开出 ${flower}。本次没有阳光和水滴`
-        : '本次没有阳光和水滴'
-    }
-  }
-  const today = (!!step.planned && step.planned <= tree.today) || !!step.start
-  if (!today) {
-    return flower
-      ? `做完开 ${flower}。按时完成可得阳光和水滴`
-      : '按时完成可得阳光和水滴'
-  }
-  const { sun, water } = previewReward(tree, step)
-  const gifts = [sun ? `☀️+${sun}` : '', water ? `💧+${water}` : ''].filter(Boolean)
-  if (gifts.length && flower)
-    return `做完开 ${flower}。按时完成另得 ${gifts.join(' ')}`
-  if (gifts.length) return `按时完成可得 ${gifts.join(' ')}`
-  if (flower) return `做完开 ${flower}。今天的阳光和水滴已攒满`
-  return '做完也会被大树记住哦'
+  const base = completionReward(tree, step, tree.today, false)
+  const early = !step.start || now - Date.parse(step.start) < step.minutes * 60000
+  return `${flower ? `做完开出 ${flower}！` : ''}完成就得 ☀️+${base.sun} 💧+${base.water}。${early ? `提前完成奖励翻倍，额外得 ☀️+${base.sun} 💧+${base.water}！` : '坚持做完也有完整奖励！'}`
 }
 
 export function kidDayFits(tree: TreeData, step: WorkStep, day: string): boolean {

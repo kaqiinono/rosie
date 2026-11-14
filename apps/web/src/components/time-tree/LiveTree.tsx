@@ -13,10 +13,12 @@ import { CORE_SUBJECTS, SUBJECTS } from '@/components/tree-demo/garden/model'
 import { gardenAudio } from '@/components/tree-demo/garden/audio'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
 import { shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { isEarly } from '@/lib/time-tree/rewards'
 import { sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
 import { useTimeTree } from './useTimeTree'
+import { MinimizeTimeTreeButton } from './TimeTreeLauncher'
 import '@/components/tree-demo/garden/garden.css'
 
 function bump(el: HTMLElement | null): void {
@@ -122,6 +124,7 @@ export default function LiveTree() {
   const [itemId, setItem] = useState('')
   const [pin, setPin] = useState('')
   const [notice, notify] = useState('')
+  const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
   const [sound, setSound] = useState(true)
   const [hour, setHour] = useState(() => new Date().getHours())
   const [fresh, setFresh] = useState<Record<string, 'born'>>({})
@@ -314,6 +317,7 @@ export default function LiveTree() {
     if (!outcome.ok) return
     if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin)
     notify(doneNotice(outcome.step))
+    setRewardStep(outcome.step)
   }
   function openItem(kind: ItemKind, id: string) {
     if (kind === 'bud') {
@@ -348,6 +352,7 @@ export default function LiveTree() {
           bubbles={state.buds.filter((b) => states[b.id])}
           slots={state.bubbleSlots}
           states={states}
+          clockOffsetMs={api.clockOffsetMs}
           startedAt={Object.fromEntries(
             air.filter((s) => s.start && !s.end).map((s) => [s.id, s.start!]),
           )}
@@ -382,6 +387,7 @@ export default function LiveTree() {
             <Button asChild size="1" variant="soft">
               <Link href="/setting/time-tree">家长设置</Link>
             </Button>
+            <MinimizeTimeTreeButton disabled={busy} />
           </Flex>
         </StickerCard>
       </header>
@@ -491,9 +497,26 @@ export default function LiveTree() {
             bloomOrigin.current = null
             if (bloom) sow(finished, next, true, saved)
             notify(doneNotice(finished))
+            setRewardStep(finished)
           }}
         />
       )}
+      <AppDialog open={!!rewardStep} title={rewardStep && isEarly(rewardStep) ? '提前完成，奖励翻倍！' : '完成啦，坚持就有收获！'} onOpenChange={(open) => { if (!open) setRewardStep(null) }}>
+        {rewardStep && (
+          <Flex direction="column" gap="4" align="center" p="4">
+            <Text size="4" weight="bold">{rewardStep.name}</Text>
+            <Text size="6" weight="bold">☀️ +{rewardStep.sun}　💧 +{rewardStep.water}</Text>
+            {isEarly(rewardStep) && (
+              <Flex direction="column" gap="2" align="center">
+                <Badge color="amber" size="3">提前完成额外奖励</Badge>
+                <Text size="5" weight="bold" color="amber">☀️ +{rewardStep.sun / 2}　💧 +{rewardStep.water / 2}</Text>
+                <Text size="2" color="gray">额外奖励已包含在上方总奖励中</Text>
+              </Flex>
+            )}
+            <Button onClick={() => setRewardStep(null)}>太棒了！</Button>
+          </Flex>
+        )}
+      </AppDialog>
       <AppDialog
         open={!!dialog}
         closeDisabled={busy}

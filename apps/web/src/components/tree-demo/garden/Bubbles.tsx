@@ -42,6 +42,7 @@ type Props = {
   states?: Record<string, BubbleState>
   slots: Record<string, number>
   /** 进行中泡泡的开始时刻。没有开始时刻的泡泡不画进度环。 */
+  clockOffsetMs?: number
   startedAt?: Record<string, string>
   onOpen: (budId: string) => void
   /** 进行中泡泡按住转满后松开。没传则仍是点一下打开。 */
@@ -141,9 +142,10 @@ function HoldRing({ progress, color }: { progress: number; color: string }) {
 }
 
 /** 放学以后飘在树旁边和上方的泡泡，同时最多 4 个，各占一个固定天空位置 */
-export default function Bubbles({ bubbles, slots, states, startedAt, onOpen, onHoldFinish, holdLocked = false }: Props) {
+export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, onHoldFinish, holdLocked = false }: Props) {
   const timing = bubbles.some((bud) => states?.[bud.id] === 'running' && startedAt?.[bud.id])
-  const [now, setNow] = useState(() => Date.now())
+  const [localNow, setNow] = useState(() => Date.now())
+  const now = localNow + clockOffsetMs
   const [holdingId, setHoldingId] = useState<string | null>(null)
   const [holdRing, setHoldRing] = useState<{ id: string; progress: number } | null>(null)
   const holdRef = useRef<HoldGesture | null>(null)

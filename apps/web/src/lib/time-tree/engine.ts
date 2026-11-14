@@ -1,8 +1,8 @@
+import { completionReward, isEarly } from './rewards'
 import { CORE_SUBJECTS, capacityOf } from '@/components/tree-demo/garden/model'
 import {
   dayOf,
   defaultRules,
-  elapsed,
   shift,
   type TreeAction,
   type TreeData,
@@ -113,16 +113,7 @@ function finish(tree: TreeData, s: WorkStep, end: string) {
   requireState(s.start, '请先开始做。')
   s.end = end
   s.popped = s.slot === null
-  if (elapsed(s.start, end) > s.minutes) return
-  const day = dayOf(end)
-  const others = tree.steps.filter(
-    (p) =>
-      p !== s && p.end && p.start && dayOf(p.end) === day && elapsed(p.start, p.end) <= p.minutes,
-  )
-  const totalSun = others.reduce((sum, p) => sum + p.sun, 0)
-  s.sun = Math.max(0, Math.min(s.stages.length, 10 - totalSun, 20 - tree.sun))
-  const n = others.length + 1
-  s.water = Math.min(n > 5 ? 0 : n === 3 ? 2 : 1, 12 - tree.water)
+  Object.assign(s, completionReward(tree, s, dayOf(end), isEarly(s)))
   tree.sun += s.sun
   tree.water += s.water
 }
@@ -240,7 +231,13 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       requireState(!s.start, '正在计时，请使用「完成了」。')
       requireState((s.planned ?? s.scheduled) <= day, '请在作业当天完成。')
       s.end = day
+      Object.assign(s, completionReward(tree, s, day, false))
+      tree.sun += s.sun
+      tree.water += s.water
       s.popped = s.slot === null
+      break
+    case 'preparePractice':
+      requireState(!s.end && !!s.planned && s.planned <= day, '请在作业当天查看练习内容。')
       break
     case 'start': {
       if (s.start || s.end) return

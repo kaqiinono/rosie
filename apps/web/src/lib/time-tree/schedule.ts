@@ -40,6 +40,10 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   for (const t of active.sort(
     (a, b) => Number(b.cycle === 'daily') - Number(a.cycle === 'daily'),
   )) {
+    for (const step of tree.steps) {
+      if (step.occurrence.startsWith(t.id + '/') && step.practice === undefined && !step.start && !step.end)
+        step.practiceEntryName = t.practice_binding?.name
+    }
     const first = dayOf(t.created_at) > tree.firstDay ? dayOf(t.created_at) : tree.firstDay
     for (let day = from; day <= through; day = shift(day, 1)) {
       if (day < first) continue
@@ -73,6 +77,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
         const step: WorkStep = {
           id: occurrence + '/' + index,
           occurrence,
+          practiceEntryName: t.practice_binding?.name,
           name: parts.length === 1 ? t.name : t.name + '（' + (index + 1) + '/2）',
           notes: t.notes,
           subject: t.subject,
