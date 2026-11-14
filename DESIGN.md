@@ -1,5 +1,44 @@
 # Rosie design context
 
+## Exam responsive media (approved 2026-11-14)
+
+Authored widths cap images rather than force a fixed footprint. Image options form complete
+label-and-image cards in a wrapping Flex row. Each card has a readable minimum derived from
+the authored image width, clamped to 224–320px and capped by the container. Readability wins
+over keeping all three options on one line: narrow screens may show one option per row.
+Read-only admin previews and student activities offer a full-viewport image-and-answer view:
+clicking an image opens its activity, removes image width caps and scrolls to that image.
+Answer state stays shared; the existing audio engine remains mounted, with transport controls
+in the dialog footer. The authoring mode keeps its independent image editor.
+Repeated references to the same audio slot are consolidated beside the activity heading.
+Distinct slots/segments remain separate, even if their track labels match. These presentation
+changes neither approve nor publish exam content. Build and interaction verification remain
+manual per the user's workflow.
+
+## Exam question alignment (approved 2026-11-14)
+
+Exam questions use borderless white StickerCard soft surfaces with 16px radius and 12px
+padding; background contrast replaces repeated outlines. Classification uses an auto-fit grid
+whose minimum column width combines the longest measured full prompt, 32px choice circles, gaps and the
+authoring rail only when edit mode is active. Read-only/student layouts reserve no edit space;
+column sizing uses the actual spacing tokens and padding rather than a fixed extra allowance.
+Sentence prompts use the same intrinsic measurement as short words; reduce columns before
+wrapping an otherwise fitting prompt-and-choice row. Use as many readable columns as fit,
+without forcing three columns or leaving the fixed-width 24rem strip from the earlier design.
+Short text-only prompts (up to three words/24 characters throughout the scored group) share
+a measured regular 18px column. Numbers stay secondary and centered; options remain nearby.
+All letter/judgment prompts and examples use row-first wrapping Flex: options share the row
+whenever space permits, and wrap below only when necessary. Gray choices become deep blue with bold
+white lettering when selected; keyboard focus keeps its visible outline.
+Examples are full-width pale-yellow strips with a clear label. When the public authored
+example explicitly identifies a choice, highlight it within the complete, non-interactive
+option set; otherwise keep all options neutral and retain the example text without guessing.
+Handwriting surfaces auto-fit at a 20rem minimum and retain full-width word answers.
+Generic question and image-choice surfaces also omit decorative borders. Functional input
+boundaries remain. Shared passages and inline answer typography remain unchanged. The admin
+edit rail and colored dashed selection outlines appear only in edit mode. Validation remains
+manual per project instructions.
+
 This document records the existing light-theme foundation and the approved tasks timetable direction. It does not redesign other subject modules.
 
 ## Runtime ownership
@@ -30,6 +69,14 @@ Course form: use a white sticky action header, slate-50 canvas and white rounded
 ## Verification boundary
 
 User explicitly reserves all build/test/lint/typecheck/browser verification for manual execution. Source review is not evidence of rendered accessibility or visual correctness. Manual scenarios are recorded in the tasks README.
+
+Exam authoring readiness uses Chinese, actionable tasks rather than raw validator output.
+Show the original question number, material/resource label and source page where available;
+merge only duplicate diagnostics for the same location. Keep blockers and incomplete-report
+warnings first, show six tasks initially, and disclose the remaining count. Raw paths, codes
+and original messages belong in optional technical details. Use existing StickerCard and
+Themes controls; preserve publication gates and prevent leaving with unsaved edits through
+new task links. Empty task lists never imply approval to publish.
 
 ## Math question-bank filters
 
@@ -157,3 +204,46 @@ verification authorization supersedes the historical manual-only verification no
 ## Course risk and Gantt
 
 The tasks homepage leads with risk-ranked course batches, reusing white/slate panels, emerald controls, Chinese typography and amber caution text. The existing daily incomplete/backlog task flow follows it. Risk cards and timeline consume the same persisted solver output. Natural date columns use weekend tint only as orientation; capacity is always manually marked. Compressed available-slot columns explicitly say non-natural time scale. Formal, forecast and fixed work use text plus solid/dashed/double borders. Mobile uses daily disclosures and the same course/task text detail list. Native platform controls, task-page feedback and package UX ownership remain canonical. Verification for this approved task includes authorized local tests, isolated env-free production build and simulated-persistence browser fixtures.
+
+## Exam image authoring (approved 2026-11-13)
+
+Use the grammar editor's source/preview relationship in a three-column admin workspace:
+task list, original page with normalized crop, electronic question preview. On narrow screens
+stack these in the same order. Maintain PageShell, StickerCard, Radix controls, warm paper/amber
+palette and Chinese system typography. The crop rectangle and highlighted image position
+identify the active task. Shared owner: `packages/ui/src/ImageCropper.tsx`.
+Grammar's modal wraps it in AppDialog. Original images use authenticated Blob URLs, revoked
+on task/account change. Dirty navigation uses AppDialog; unknown saves keep the original
+request for retry. Completion comes from saved bindings. Delete authoring tasks and unused
+originals only, preserving finished question images and their links. Runtime verification
+remains manual per the user; no screenshot or browser acceptance is claimed.
+
+Prepared reference crops upload in the resumable authoring CLI. Bound images open in review
+mode with the actual saved result; only explicit correction opens the cropper. The left task
+cards distinguish prepared files from human review: pending, flagged, approved. Default to
+pending plus flagged, mark approvals visibly, and persist review state against the saved file
+so replacements require another review. No-problem review does not re-upload the image.
+
+## 考一考题型模拟页
+
+`/dev-preview/exams` 为 14 种题面提供内存交互，目录与当前题面分栏，小屏改为上下排列。材料使用纸色 StickerCard；题图直接属于 AnswerChoiceGroup 选项；篇章空位显示题号和已选词；开放空位使用 Themes TextField。控制颜色、焦点和禁用状态由共享组件拥有。原题节选与自拟样例明确标记，无题库写入；用户确认前不批量改题。题型覆盖与手动验收见 docs/exams-question-rendering.md。
+
+长文选择模拟页按「文章 → 全部题目」排列，不显示题号切换栏、悬浮题干或依据卡片。每句句尾图标直接切换整句暖黄高亮，标记归属整篇文章，标题旁提供撤销和清除。标记不暗示正确性，不强制先标记再作答。
+
+阅读句尾标记按钮使用系统自带的 🖍️ emoji（14px），不依赖图标包或远程资源，无需额外缓存；emoji 外观由设备字体决定，选中状态由按钮的琥珀色背景表示。学习工具栏继续使用 LearningIcon。
+
+手写 demo 使用紧凑锚点面板：约 280×140px 的横向书写区，原空位按钮作为锚点，无背景遮罩。仅在四周有不覆盖文字、题图、控件的空间时浮出；否则在完整题目下方插入面板，推开后续内容。撤销、清空、取消、写好了沿用共享控件，原始笔迹仍需确认回填。第 11、15 项保留这一模式；正式开放填空经用户确认后复用，由服务端手写能力控制启用，默认弹窗保持原行为；运行验收由用户手动进行。
+
+确认后的交互由正式答题、提交复盘和管理预览共用：结构化活动控制材料分组；逐空选项在空位弹出；配对沿用两次点选连线；阅读标记不新增题号切换或依据卡。原卷开放输入保留输入，不生成候选答案。第 15 项手写批阅流程只在模拟页保留原始笔迹并演示待批阅、家长评价和复盘，用户已确认后，正式版复用相同交互并增加家长 PIN、原始笔迹保存、待批阅与追加批阅记录；新增数据库迁移应用后启用。正式阅读标记在数据库能力缺失时明确提示仅本页保留。
+
+## 作业内容预览（2026-11-14）
+
+`/dev-preview/homework-content` 采用纵向「科目 → 已保存内容 → 具体项目 → 内容面板」布局。选择后立即展示，不再使用自拟示例或要求打开抽屉。与生命树共用 HomeworkContentPanel，正文、媒体与详情入口完全同源；面板沿用纸色 StickerCard 和 Radix 控件。内容缺失如实显示，不用模拟数据填补。原泡泡操作及正式详情页行为保持不变，验证由用户手动进行。
+
+## 作业范围分步选择（2026-11-14）
+
+新增/编辑作业内容使用一步一选的大卡片向导，替代三列横向级联。RadioCards/CheckboxCards 使用 size=3，完整标题换行、单列布局；每页只有当前层级，底栏提供上一步/下一步或确认加入。英语最后一级课程可多选，整单元与语文整册提供显式加入入口。点击选项只改变本地草稿，确认加入后才读取该组资源；已有条目去重保留，并按课程序合并。已选课程摘要支持移除，具体题目与高级字段默认折叠。
+
+AppDialog.mobileFullscreen 是手机表单的共享开关：小于640px全屏，页头/底栏固定在同一滚动体之外并保留安全区；桌面维持常规弹窗。原生命树内容面板、泡泡操作与课程递进事务保持不变。按用户要求不自动运行构建、测试或浏览器验收。
+
+作业范围卡片改用 FlowRadioCards/FlowCheckboxCards：自适应内容宽度，Flex 换行，保留48px最小点击高度，长标题换行；不铺满每一行。课程流程隐藏手填链接，确认加入后自动生成并显示内容/资源预览，空清单不展示空的高级编辑区。

@@ -31,6 +31,7 @@ packages/
   math/      @rosie/math    — 人教版 lessons 12–44 + sea + catalog + quiz + weekly plan
   english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
                               + grammar (剑桥初级英语语法 116 单元，内容存 Supabase，CLI 提取)
+  exams/     @rosie/exams   — 考一考：KET 内容/审核、练习模考、词汇补练与报告；API 由 web 承载
   flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
   audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
   chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一下 / 二上 / 二下）
@@ -40,7 +41,7 @@ packages/
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
 `math`→ui,rewards; `math-content`→math-kit,ui; `english`→player,ui,rewards; `chinese`→ui,rewards; `ai`→core,ui,player;
-`flipbook`→english,player; `audio`→flipbook, english,player. A package must never import another subject module outside this DAG, and
+`flipbook`→english,player; `audio`→flipbook, english,player; `exams`→core,ui,player. A package must never import another subject module outside this DAG, and
 `core`/`ui`/`rewards`/`player` never import a subject module.
 
 **Imports & routes:** routes stay in `apps/web/src/app/**` and import the packages. Most
@@ -93,8 +94,9 @@ All commands run from the repo root; Turborepo fans them out across workspaces.
 The web dev server writes to `apps/web/.next-dev`. Production build and preview share
 `apps/web/.next`, so compiling while the dev server is open keeps their artifacts separate.
 `pnpm dev` and `pnpm fresh` load the optional, gitignored `apps/web/.env.proxy.local`
-at Node startup. For local HTTPS proxy access on Node 24, set `NODE_USE_ENV_PROXY=1`,
-`HTTPS_PROXY`, and `NO_PROXY` there. Restart the dev server after changing this file.
+at Node startup. The dev command explicitly enables `--use-env-proxy` on Node 24;
+setting `NODE_USE_ENV_PROXY` only inside the env file does not reliably activate fetch proxying.
+Set `HTTPS_PROXY` and `NO_PROXY` there. Restart the dev server after changing this file.
 
 ```bash
 pnpm install                              # install all workspaces
@@ -202,7 +204,9 @@ is unset, `/api/word-image` returns 503 (`no_pexels_key` / `no_service_role`).
 
 API rate limiting uses `public.check_api_rate_limit` from migration `0006` with service-role-only
 execution. Middleware stores only a SHA-256 identity hash and falls back to an instance-local
-counter if the RPC is temporarily unavailable.
+counter if the RPC is temporarily unavailable. The RPC request and response body share a 1.5-second
+timeout. Failures open a 30-second per-instance cooldown; subsequent requests use local limiting,
+and only one recovery probe is allowed after the cooldown before distributed limiting resumes.
 
 Locally, env lives in `apps/web/.env.local` (moved there with the app in the monorepo migration).
 
@@ -267,6 +271,7 @@ module, **read that package's AGENTS.md** (scoped, up to date) instead of relyin
 | 口算   | `@rosie/calc`     | `apps/web/src/app/calc/**` (thin shells)    | `packages/calc/AGENTS.md`     |
 | 数学   | `@rosie/math`     | `apps/web/src/app/math/**`                  | `packages/math/AGENTS.md`     |
 | 英语   | `@rosie/english`  | `apps/web/src/app/english/**`               | `packages/english/AGENTS.md`  |
+| 考试   | `@rosie/exams`    | `apps/web/src/app/exams/**`, `/admin/exams` | `packages/exams/AGENTS.md`    |
 | 绘本   | `@rosie/flipbook` | `apps/web/src/app/flipbook/**`              | `packages/flipbook/AGENTS.md` |
 | 音频   | `@rosie/audio`    | `apps/web/src/app/audio/**`, `/admin/audio` | `packages/audio/AGENTS.md`    |
 
@@ -275,17 +280,99 @@ Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils),
 `@rosie/tasks` reads owner-scoped timetable data through core. See `packages/tasks/AGENTS.md`.
 Adding a new math lesson is a guided flow — see `.Codex/skills/add-lesson` + `docs/add-new-lesson.md`.
 
+### 考一考
+
+`/admin/exams/images` provides a source-page crop task workspace. Temporary originals are
+admin-only in private Supabase Storage; finished crops automatically upload to shared Baidu
+and bind to the draft's image slot with version checks and idempotent receipts. Deleting an
+authoring task cleans unused originals while preserving electronic questions, finished images
+and bindings. Cleanup protects published/current content and historical attempt references.
+See `docs/exams-image-workbench.md` for configuration, applied migrations and manual acceptance.
+
+`@rosie/exams` owns versioned KET content, complete-group practice, mock attempts,
+submitted-scope review, parent/admin assessment, independent vocabulary review and reports.
+The web app owns every route and server adapter. `/exams/ket` links to practice, ongoing
+attempts and `/exams/reports`; `/admin/exams` manages draft/review/publication, and
+`/admin/exams/attempts` requires an explicit target user. `/admin/sync` has an on-demand
+exam media panel. All private APIs use no-store responses and SW NetworkOnly rules.
+
+Draft and publication edits use version checks and server audit records. Attempts freeze
+content/media revisions, register material-family exposure before disclosure, and persist
+answers, timing and operation receipts through service-only RPCs. Mock timeout freezes the
+last saved answers; listening uses the reviewed finite program with an exclusive player lease
+and recorded technical interruptions. PIN authorization opens only the current speaking
+Part script for ten minutes. Private recordings and manual assessment history remain
+owner-scoped; ungraded writing/speaking is pending, not zero. Optional reflection reasons
+are stored separately and never inferred from skill tags or used to change scores.
+
+Vocabulary links use canonical `word_entries.id` plus validated snapshots. An app-layer
+bridge joins exams and English; exams never imports English. Exam word-review batches and
+new-material application evidence do not write mastery, Boss, plans or rewards. Reports
+separate first independent/new-material evidence from help, repeated work and interruptions.
+
+The seven local exam migrations, source bundles, importer and runtime source are written;
+the user subsequently authorized and completed the seven hosted migrations through this task.
+Both full papers and both Trainer training bundles are now imported as drafts with private
+solutions; extraction samples remain unimported. Image binding is handled by the crop workbench;
+audio binding remains manual. Publication and
+application runtime checks remain unexecuted. See
+`docs/exams-environment-status.md` for the applied versions and configuration record.
+Real authoring bundles in `packages/exams/source-data` stay outside browser imports. Media,
+source/solution review and real vocabulary links must be completed before explicit publication.
+See `packages/exams/AGENTS.md`, `docs/exams-manual-acceptance.md` and the exam handoff for
+current contracts, content gaps and the manual acceptance sequence.
+
+### Practice entry management
+
+`/setting/task-entries` manages owner-scoped named links and full ordered parameter lists. Homework
+selects only an entry and start row; immutable bindings and per-occurrence snapshots protect ongoing
+work from catalog edits. Garden revision commits advance each whole homework occurrence once.
+Web owns subject catalog adapters and first-visit preset creation (including English reading and grammar).
+See `docs/task-practice-entries.md`; migration `20261113160000_task_practice_entries.sql` is required.
+
+### Lucky wheel
+
+`/draw` reproduces the supplied lucky-wheel demo in an isolated same-origin renderer
+(`apps/web/public/draw-wheel/`) with an authenticated React host. The full workshop,
+weighted server draws, preferences and history share the existing reward/penalty catalog
+with life-tree blind boxes. Entries are repeatable; optional no-repeat disables them.
+Fulfilment retains entries. Tree reservations protect edits and are released on redemption.
+The service-only workshop RPC uses pool locks, catalog revisions and operation receipts.
+`draw_workshop` is a user session store; no persistent business state is stored locally.
+Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database. See
+`packages/rewards/AGENTS.md` and `docs/draw-wheel.md` for contracts and manual acceptance.
+
 ### Life tree
+
+The life tree header can minimize the page to a draggable launcher above the AI assistant.
+Minimizing returns home, and the launcher stays available during navigation until the tree
+reopens. Both launchers share the core drag hook and save their positions independently.
 
 `/time-tree`, the execution list at `/tasks/homework` and the homework view of `/today/calendar`
 share the account's versioned Supabase garden via `POST /api/time-tree`. The route derives the
 owner and timestamps on the server, snapshots homework occurrences, and atomically commits
-timing, rewards and blind-box reservations. Parent PIN gates time entry, wish redemption and
+timing, rewards and blind-box reservations. Completion always grants uncapped base sunlight and water;
+early timed completion doubles both, with a reward dialog highlighting the bonus. API responses
+provide server time for client countdown calibration. Parent PIN gates time entry, wish redemption and
 next-day settings at `/setting/time-tree`. See `tree.md` for the live rules.
 
 ### Dev previews
 
+`/dev-preview/homework-content` selects actual owner-scoped saved task content by subject and parameter row, then directly renders the same `HomeworkContentPanel` used by life-tree details. It reads `usePracticeEntries` without creating presets, binding occurrences or writing progress. Detail URLs resolve the selected row's real variables. The preview uses the current catalog; life-tree retains its frozen occurrence snapshot. See `docs/homework-content-demo.md`.
+
 `apps/web/src/app/dev-preview/**` holds visual-only demo pages with static mock data (no Supabase).
+`/dev-preview/exams` remains the in-memory review surface for 14 exam presentations plus a
+handwriting assessment workflow demo. It shares `AnswerChoiceGroup`, `MatchingBoard`,
+`InlineChoiceField` and `SentenceHighlightText` with formal exam rendering. The handwriting
+assessment workflow is approved for formal use, gated by the new handwriting migration
+(`20261113170244`, applied; readiness RPC returns true). The demo creates no attempt or learning record;
+code and source-referenced samples live in `apps/web/src/components/exams-preview/`.
+Formal attempt, submitted review and admin previews use `ExamGroupRenderer` with authored
+activities, answer slots and sentence ranges. Four corrected r2 drafts retain 36 media bindings;
+they remain unpublished and frozen old attempts remain unchanged. The sentence-annotation
+migration `20261113163105` is applied; the service-only capability RPC returns true.
+The capability fallback remains for environments without this migration.
+See `docs/exams-question-rendering.md` and `packages/exams/AGENTS.md`.
 `/dev-preview/time-tree` is a playable, in-memory prototype of the 时间成长树 (rules in `tree.md`), adapted
 from the standalone 泡泡愿望树 demo: a full-viewport 2D SVG tree whose canopy is split into leaf regions
 (today + 6 days + faded history regions), floating bubbles, flowers/apples/stones, day/night sky, canvas
@@ -393,3 +480,20 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - 发现多个页面重复实现同一控件，或新需求适合沉淀为共享组件时，主动提醒用户，列出复用场景、可复用的现有组件或 Radix Themes 组件，以及建议的公开接口；用户确认后再封装并登记。
 - 调用处可安排控件在页面中的位置与外部间距。禁止通过 `className`、`style`、父级选择器或事件拦截覆盖受控组件的外观，以及悬停、按下、焦点、禁用、加载等交互状态。
 - 组件能力不足时，先说明具体使用场景、现有接口的限制和建议扩展的接口，等待用户确认后再实施。确认前禁止在业务页复制组件、直接使用底层原语或临时覆盖样式绕过限制。
+
+`/dev-preview/exams` now opens the 14-pattern in-memory question interaction gallery in
+`apps/web/src/components/exams-preview/ExamTypePreview.tsx`. It uses student-visible excerpts,
+provided question-image crops and explicitly labelled synthetic examples; no source-data or
+private solutions are imported. Local microphone recording is optional and never uploaded.
+Question-bank revisions await user review. See `docs/exams-question-rendering.md` for coverage,
+recognition rules, gaps and manual acceptance. The earlier single-notice preview remains in
+`ExamAnswerPreview.tsx` but is no longer the route entry.
+
+Task-entry rows also hold display content and multiple media references. Opening a due bubble uses
+`preparePractice` to bind without starting its timer. Inline audio/video use the shared player;
+English sentence and Chinese reading/recognition/words/poem/accumulation content comes from
+existing source data. See `docs/task-practice-entries.md` for resource discovery and refresh behavior.
+
+## 数据迁移执行偏好
+
+用户已明确授权：后续开发任务涉及的数据迁移由代理自动执行并核对结果，不再要求用户手动操作或重复确认。仅应用当前任务所需迁移；先确认项目、远端历史和依赖，不夹带无关待执行迁移，不使用 `--include-all` 强推。成功后核对远端记录及必要的只读元数据，并同步本地迁移版本与状态文档。此授权不包含无关数据删除或数据库重置；构建、测试仍按用户的手动控制规则执行。
