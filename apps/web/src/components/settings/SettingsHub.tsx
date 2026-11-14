@@ -15,6 +15,7 @@ interface SettingTool {
 }
 
 const PERSONAL_TOOLS: SettingTool[] = [
+  { href: '/setting/task-entries', emoji: '🔗', title: '作业内容管理', description: '维护作业内容与有序内容列表。', from: 'rgba(16,185,129,0.15)', to: 'rgba(34,197,94,0.12)', ring: 'rgba(16,185,129,0.3)' },
   {
     href: '/setting/time-tree', emoji: '🌳', title: '生命树设置', description: '调整苹果与心愿兑换阈值。',
     from: 'rgba(16,185,129,0.15)', to: 'rgba(34,197,94,0.12)', ring: 'rgba(16,185,129,0.3)',
@@ -129,6 +130,15 @@ export const ADMIN_TOOLS: SettingTool[] = [
     from: 'rgba(13,148,136,0.14)',
     to: 'rgba(59,130,246,0.08)',
     ring: 'rgba(13,148,136,0.28)',
+  },
+  {
+    href: '/admin/exams',
+    emoji: '📝',
+    title: '考试管理',
+    description: '管理真题与模拟卷草稿、审核发布，并处理缺图裁切任务。',
+    from: 'rgba(245,158,11,0.14)',
+    to: 'rgba(245,158,11,0.10)',
+    ring: 'rgba(245,158,11,0.28)',
   },
   {
     href: '/admin/math-lesson-id-audit',

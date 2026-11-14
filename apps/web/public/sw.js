@@ -16,7 +16,11 @@ precacheAndRoute([
 
 // Private content must bypass every destination cache, including image/PDF navigations.
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/api/baidu/sync/') || url.pathname === '/api/baidu/video/materials',
+  ({ url }) =>
+    url.pathname === '/api/draw-wheel' || url.pathname.startsWith('/api/draw-wheel/') ||
+    url.pathname === '/api/exams' || url.pathname.startsWith('/api/exams/') ||
+    url.pathname === '/api/admin/exams' || url.pathname.startsWith('/api/admin/exams/') ||
+    url.pathname.startsWith('/api/baidu/sync/') || url.pathname === '/api/baidu/video/materials',
   new NetworkOnly(),
 )
 

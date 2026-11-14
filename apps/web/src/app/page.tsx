@@ -13,6 +13,7 @@ const modules = [
   { href: '/math', title: '数学乐园', icon: '🔢', tint: 'bg-indigo-100' },
   { href: '/english', title: '英语天地', icon: '📖', tint: 'bg-emerald-100' },
   { href: '/chinese', title: '语文园地', icon: '📜', tint: 'bg-orange-100' },
+  { href: '/exams/ket', title: '考一考', icon: '📝', tint: 'bg-amber-100' },
   { href: '/ai', title: 'AI 助手', icon: '✨', tint: 'bg-cyan-100' },
   { href: '/mistakes', title: '错题本', icon: '📕', tint: 'bg-rose-100' },
   { href: '/vouchers', title: '我的奖券', icon: '⭐', tint: 'bg-yellow-100' },
