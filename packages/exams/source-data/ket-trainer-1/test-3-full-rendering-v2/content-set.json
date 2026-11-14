@@ -1,0 +1,16 @@
+{
+  "id": "ket-trainer-1:test-3",
+  "kind": "mock_paper",
+  "title": "KET Test 3 · 完整保留测评草稿",
+  "source": {
+    "id": "ket-trainer-1",
+    "title": "剑桥KET官方模考题精讲精练1",
+    "fileHash": "db60e05ceb2c421ea5982b6e092dcfe6b75ca24348a24860bd164f1a97dedada"
+  },
+  "purpose": "reserved",
+  "template": {
+    "id": "ket-schools-2020-v1",
+    "version": 1
+  },
+  "testNumber": 3
+}

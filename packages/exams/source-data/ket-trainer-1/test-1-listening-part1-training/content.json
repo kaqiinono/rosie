@@ -1,0 +1,4247 @@
+{
+  "schemaVersion": 1,
+  "id": "ket-trainer-1:test-1:training:listening:part-1:set:r1",
+  "contentSetId": "ket-trainer-1:test-1:training:listening:part-1:set",
+  "revision": 1,
+  "status": "draft",
+  "materials": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:people",
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:people-family",
+      "role": "training",
+      "title": "Exercise 1 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:people-image",
+          "alt": "Three people labelled Tom, Axel and Niko."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training",
+            "region": {
+              "x": 0.535,
+              "y": 0.235,
+              "width": 0.415,
+              "height": 0.245
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:rooms",
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:rooms-family",
+      "role": "training",
+      "title": "Exercise 3 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:rooms-image",
+          "alt": "Three rooms labelled A, B and C, with an example lamp label and numbered objects 1–11."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.695,
+              "width": 0.865,
+              "height": 0.19
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:tennis-days",
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-family",
+      "role": "training",
+      "title": "Exercise 6 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image",
+          "alt": "Three diary pictures labelled A, B and C: Saturday, Sunday and Thursday."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.375,
+              "width": 0.72,
+              "height": 0.13
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:coffee-places",
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-family",
+      "role": "training",
+      "title": "Exercise 9 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image",
+          "alt": "Three café pictures labelled A, B and C."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.81,
+              "width": 0.75,
+              "height": 0.115
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example",
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example-family",
+      "role": "training",
+      "title": "Exercise 7 printed example links",
+      "blocks": [
+        {
+          "id": "image",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example-image",
+          "alt": "The printed Exercise 7 example and its two drawn links to the reply list; pending source-conflict review."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training",
+            "region": {
+              "x": 0.08,
+              "y": 0.58,
+              "width": 0.79,
+              "height": 0.15
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:replies",
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:replies-family",
+      "role": "training",
+      "title": "Exercise 7 replies, also used by Exercise 8",
+      "blocks": [
+        {
+          "id": "reply-list",
+          "kind": "text",
+          "text": "No, let’s drive.\nI would prefer coffee.\nYes, that sounds delicious.\nGood idea. She’s really clever.\nYes, and let’s take a ball.\nShe’s very busy at the moment.\nIt’s just started to rain.\nFine. It’s only a 5-minute walk to the station."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+      "role": "training",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "instructions": [
+        {
+          "id": "heading-1",
+          "kind": "text",
+          "text": "VOCABULARY: DESCRIBING PEOPLE"
+        },
+        {
+          "id": "exercise-1",
+          "kind": "text",
+          "text": "1 Who do these words describe? Write T (Tom), A (Axel) or N (Niko)."
+        },
+        {
+          "id": "exercise-2",
+          "kind": "text",
+          "text": "2 Who is the woman describing? Listen and choose the correct picture in Exercise 1."
+        },
+        {
+          "id": "heading-3",
+          "kind": "text",
+          "text": "VOCABULARY: PARTS OF THE HOME"
+        },
+        {
+          "id": "exercise-3",
+          "kind": "text",
+          "text": "3 Label the pictures with words from the box."
+        },
+        {
+          "id": "exercise-4",
+          "kind": "text",
+          "text": "4 Look at the pictures in Exercise 3. If the sentence is right, put a tick (✓). If it is wrong, put a cross (✗)."
+        },
+        {
+          "id": "heading-5",
+          "kind": "text",
+          "text": "GRAMMAR: FUTURE FORMS"
+        },
+        {
+          "id": "exercise-5",
+          "kind": "text",
+          "text": "5 Listen to the sentences and decide if they are about the present or the future. Write P (present) or F (future)."
+        },
+        {
+          "id": "exercise-6",
+          "kind": "text",
+          "text": "6 When are they going to play tennis? Listen and choose the correct picture."
+        },
+        {
+          "id": "heading-7",
+          "kind": "text",
+          "text": "VOCABULARY: SUGGESTIONS"
+        },
+        {
+          "id": "exercise-7",
+          "kind": "text",
+          "text": "7 Match each suggestion with two possible replies."
+        },
+        {
+          "id": "exercise-8",
+          "kind": "text",
+          "text": "8 Is each reply in Exercise 7 used to agree or disagree with the suggestion? Write A (agree) or D (disagree) next to each reply."
+        },
+        {
+          "id": "exercise-9",
+          "kind": "text",
+          "text": "9 Where do they agree to have coffee? Listen and choose the correct picture."
+        }
+      ],
+      "materialIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:people",
+        "ket-trainer-1:test-1:training:listening:part-1:rooms",
+        "ket-trainer-1:test-1:training:listening:part-1:tennis-days",
+        "ket-trainer-1:test-1:training:listening:part-1:coffee-places",
+        "ket-trainer-1:test-1:training:listening:part-1:suggestion-example",
+        "ket-trainer-1:test-1:training:listening:part-1:replies"
+      ],
+      "optionPools": [
+        {
+          "id": "people",
+          "options": [
+            {
+              "id": "T",
+              "label": "T"
+            },
+            {
+              "id": "A",
+              "label": "A"
+            },
+            {
+              "id": "N",
+              "label": "N"
+            }
+          ],
+          "allowReuse": true
+        },
+        {
+          "id": "home",
+          "options": [
+            {
+              "id": "1",
+              "label": "armchair"
+            },
+            {
+              "id": "2",
+              "label": "bed"
+            },
+            {
+              "id": "3",
+              "label": "bookcase"
+            },
+            {
+              "id": "4",
+              "label": "cooker"
+            },
+            {
+              "id": "5",
+              "label": "cupboard"
+            },
+            {
+              "id": "6",
+              "label": "desk"
+            },
+            {
+              "id": "7",
+              "label": "fridge"
+            },
+            {
+              "id": "8",
+              "label": "lamp"
+            },
+            {
+              "id": "9",
+              "label": "pillow"
+            },
+            {
+              "id": "10",
+              "label": "sink"
+            },
+            {
+              "id": "11",
+              "label": "sofa"
+            },
+            {
+              "id": "12",
+              "label": "television"
+            }
+          ],
+          "allowReuse": false
+        },
+        {
+          "id": "suggestion-replies",
+          "options": [
+            {
+              "id": "reply-1",
+              "label": "No, let’s drive."
+            },
+            {
+              "id": "reply-2",
+              "label": "I would prefer coffee."
+            },
+            {
+              "id": "reply-3",
+              "label": "Yes, that sounds delicious."
+            },
+            {
+              "id": "reply-4",
+              "label": "Good idea. She’s really clever."
+            },
+            {
+              "id": "reply-5",
+              "label": "Yes, and let’s take a ball."
+            },
+            {
+              "id": "reply-6",
+              "label": "She’s very busy at the moment."
+            },
+            {
+              "id": "reply-7",
+              "label": "It’s just started to rain."
+            },
+            {
+              "id": "reply-8",
+              "label": "Fine. It’s only a 5-minute walk to the station."
+            }
+          ],
+          "allowReuse": false
+        }
+      ],
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-example",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-example"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. Example: tall — T."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-1"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. blonde"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. short"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-3",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-3"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. beard"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-4",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-4"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. T-shirt"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-5",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-5"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. fat"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-6",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-6"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. short hair"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-7",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-7"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. slim"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-8",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-8"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. coat"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-9",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-9"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. dark hair"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-10",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-10"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. long hair"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-11",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-11"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. shorts"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-12",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-12"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. trousers"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-13",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-13"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. jeans"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-14",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1-14"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. shirt"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "people"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Who is the woman describing? Listen and choose the correct picture in Exercise 1."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-01"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "T",
+              "label": "Tom"
+            },
+            {
+              "id": "A",
+              "label": "Axel"
+            },
+            {
+              "id": "N",
+              "label": "Niko"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-example",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-example"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Example: lamp."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-1"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 1 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 2 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-3",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-3"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 3 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-4",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-4"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 4 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-5",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-5"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 5 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-6",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-6"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 6 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-7",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-7"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 7 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-8",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-8"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 8 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-9",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-9"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 9 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-10",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-10"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 10 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-11",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3-11"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Label picture number 11 with a word from the box."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_picture_vocabulary",
+            "primarySkillId": "identify_words_from_pictures",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 29,
+                "printedPage": "28",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "gap_fill",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "home"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-example",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-example"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. Example: The lamp is on the table next to the bed. ✓"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-1"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. The pillow is under the bed."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. The bookcase is between the armchair and the sofa."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-3",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-3"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. The desk is against the wall."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-4",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-4"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. The fridge is next to the cooker."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-5",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-5"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. The lamp is in the living room."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-6",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4-6"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. There is a cupboard under the sink."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "right",
+              "label": "✓"
+            },
+            {
+              "id": "wrong",
+              "label": "✗"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-example",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-example"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Example: P."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-1"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 1: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 2: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-3",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-3"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 3: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-4",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-4"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 4: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-5",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-5"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 5: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-6",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-6"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 6: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-7",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-7"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 7: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-8",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5-8"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 5. Sentence 8: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "P",
+              "label": "P (present)"
+            },
+            {
+              "id": "F",
+              "label": "F (future)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:6",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "6"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 6. When are they going to play tennis? Listen and choose the correct picture."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-03"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A"
+            },
+            {
+              "id": "B",
+              "label": "B"
+            },
+            {
+              "id": "C",
+              "label": "C"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-example",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "7-example"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. Example: Let’s go to the park."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_suggestion_matching",
+            "primarySkillId": "recognise_suggestion_replies",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "matching",
+          "items": [
+            {
+              "id": "reply-1",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "First reply"
+                }
+              ]
+            },
+            {
+              "id": "reply-2",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "Second reply"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "suggestion-replies"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "7-1"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. What about having a chocolate cake?"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_suggestion_matching",
+            "primarySkillId": "recognise_suggestion_replies",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "matching",
+          "items": [
+            {
+              "id": "reply-1",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "First reply"
+                }
+              ]
+            },
+            {
+              "id": "reply-2",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "Second reply"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "suggestion-replies"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "7-2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. Shall we go by train?"
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_suggestion_matching",
+            "primarySkillId": "recognise_suggestion_replies",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "matching",
+          "items": [
+            {
+              "id": "reply-1",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "First reply"
+                }
+              ]
+            },
+            {
+              "id": "reply-2",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "Second reply"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "suggestion-replies"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-3",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "7-3"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. We could ask Paula to help."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_suggestion_matching",
+            "primarySkillId": "recognise_suggestion_replies",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "matching",
+          "items": [
+            {
+              "id": "reply-1",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "First reply"
+                }
+              ]
+            },
+            {
+              "id": "reply-2",
+              "prompt": [
+                {
+                  "id": "slot",
+                  "kind": "text",
+                  "text": "Second reply"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "suggestion-replies"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-1"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. No, let’s drive."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-2",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-2"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. I would prefer coffee."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-3",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-3"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. Yes, that sounds delicious."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-4",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-4"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. Good idea. She’s really clever."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-5",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-5"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. Yes, and let’s take a ball."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-6",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-6"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. She’s very busy at the moment."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-example-D",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-example-D"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. Printed example: It’s just started to rain. — D."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-example-A",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "8-example-A"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 8. Printed example: Fine. It’s only a 5-minute walk to the station. — A."
+            }
+          ],
+          "classification": {
+            "domain": "vocabulary",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A (agree)"
+            },
+            {
+              "id": "D",
+              "label": "D (disagree)"
+            }
+          ]
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:9",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 1,
+            "role": "training",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "9"
+          },
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 9. Where do they agree to have coffee? Listen and choose the correct picture."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-04"
+            }
+          ],
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "training_identification",
+            "primarySkillId": "identify_specific_information",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 30,
+                "printedPage": "29",
+                "role": "training"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "answerType": "single_choice",
+          "options": [
+            {
+              "id": "A",
+              "label": "A"
+            },
+            {
+              "id": "B",
+              "label": "B"
+            },
+            {
+              "id": "C",
+              "label": "C"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training"
+          },
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "guidance": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:overview",
+      "role": "guidance",
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "blocks": [
+        {
+          "id": "overview",
+          "kind": "text",
+          "text": "In this part, you:\n• read five questions and look at three possible picture answers\n• listen to five short conversations and choose the right answer (A, B or C) for each"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "guidance"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:suggestion-tip",
+      "role": "guidance",
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "blocks": [
+        {
+          "id": "tip",
+          "kind": "text",
+          "text": "当听到一位说话者提出建议时，要仔细听其他说话者是如何回应的。他们是否同意这个建议呢？"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "guidance"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "vocabularyLinks": [],
+  "mediaSlots": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:people-image",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": null,
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training",
+            "region": {
+              "x": 0.535,
+              "y": 0.235,
+              "width": 0.415,
+              "height": 0.245
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "question_image"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:rooms-image",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": null,
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.695,
+              "width": 0.865,
+              "height": 0.19
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "question_image"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": null,
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.375,
+              "width": 0.72,
+              "height": 0.13
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "question_image"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": null,
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.81,
+              "width": 0.75,
+              "height": 0.115
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "question_image"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example-image",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": null,
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training",
+            "region": {
+              "x": 0.08,
+              "y": 0.58,
+              "width": 0.79,
+              "height": 0.15
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "question_image"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-01",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": "01",
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "training_audio"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-02",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": "02",
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "training_audio"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-03",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": "03",
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "training_audio"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-04",
+      "target": {
+        "kind": "group",
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      },
+      "sourceTrackLabel": "04",
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "student",
+      "purpose": "training_audio"
+    }
+  ],
+  "mediaBindingRevisionId": null,
+  "readiness": {
+    "exam": {
+      "status": "blocked",
+      "reason": "Exercise 7 source conflict: printed page 29 links the park example to the station reply; printed page 171 pairs the train suggestion with the ball reply. Human source review required; no matching answers asserted."
+    },
+    "explanations": {
+      "status": "blocked",
+      "reason": "Exercise 7 source conflict: printed page 29 links the park example to the station reply; printed page 171 pairs the train suggestion with the ball reply. Human source review required; no matching answers asserted."
+    }
+  }
+}

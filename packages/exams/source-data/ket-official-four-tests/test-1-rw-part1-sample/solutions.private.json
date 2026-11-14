@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "contentRevisionId": "ket-official-four-tests:test-1:rw-part1-sample:revision-1",
+  "solutions": [
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1",
+      "answerType": "single_choice",
+      "correctOptionId": "B",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 94,
+            "printedPage": "93",
+            "role": "solution"
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "这则通知让丢了蓝色运动包的学生去校办公室，因为有人捡到了这个包。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 9,
+            "printedPage": "8",
+            "role": "exam",
+            "region": {
+              "x": 0.08,
+              "y": 0.325,
+              "width": 0.86,
+              "height": 0.18
+            }
+          },
+          "quote": "Found: blue sports bag\nCollect from school office\n(with student ID card)",
+          "materialId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:material",
+          "blockId": "notice"
+        }
+      ],
+      "distractors": [
+        {
+          "optionId": "A",
+          "explanation": {
+            "text": "学生需要出示身份卡以证明包属于自己，但这并不是说有人在包里发现了别人的身份卡。",
+            "provenance": {
+              "origin": "source",
+              "sources": [
+                {
+                  "sourceId": "ket-official-four-tests",
+                  "pdfPage": 94,
+                  "printedPage": "93",
+                  "role": "solution"
+                }
+              ],
+              "review": {
+                "status": "pending"
+              }
+            }
+          }
+        },
+        {
+          "optionId": "C",
+          "explanation": {
+            "text": "通知的意思是：包已经被找到了，只是失主还没领取。",
+            "provenance": {
+              "origin": "source",
+              "sources": [
+                {
+                  "sourceId": "ket-official-four-tests",
+                  "pdfPage": 94,
+                  "printedPage": "93",
+                  "role": "solution"
+                }
+              ],
+              "review": {
+                "status": "pending"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "teacherNotes": [],
+  "mediaSlots": []
+}

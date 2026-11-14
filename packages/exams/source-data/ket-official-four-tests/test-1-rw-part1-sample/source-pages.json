@@ -1,0 +1,20 @@
+[
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 9,
+    "printedPage": "8",
+    "role": "exam",
+    "region": {
+      "x": 0.08,
+      "y": 0.325,
+      "width": 0.86,
+      "height": 0.18
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 94,
+    "printedPage": "93",
+    "role": "solution"
+  }
+]

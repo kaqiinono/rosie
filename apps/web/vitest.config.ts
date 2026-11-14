@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       'server-only': path.resolve(__dirname, './tests/server-only.ts'),
+      '@rosie/exams/validation': path.resolve(__dirname, '../../packages/exams/src/validation/index.ts'),
       '@': path.resolve(__dirname, './src'),
     },
   },

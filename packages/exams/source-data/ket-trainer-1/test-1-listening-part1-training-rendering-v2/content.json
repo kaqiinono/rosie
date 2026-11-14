@@ -1,0 +1,4717 @@
+{
+  "id": "ket-trainer-1:test-1:training:listening:part-1:set:r2",
+  "groups": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+      "role": "training",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "example",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: tall — T."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "T · Tom",
+          "displayLabel": "练习 1 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "blonde"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 1 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "2",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "short"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 2 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "3",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "beard"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 3 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "4",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "T-shirt"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 4 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "5",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "fat"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 5 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-6",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "6",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "short hair"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 6 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-7",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "7",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "slim"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-7"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 7 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-8",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "8",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "coat"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-8"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 8 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-9",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "9",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "dark hair"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-9"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 9 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-10",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "10",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "long hair"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-10"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 10 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-11",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "11",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "shorts"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-11"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 11 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-12",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "12",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "trousers"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-12"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 12 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-13",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "13",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "jeans"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-13"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 13 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:1-14",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "14",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "shirt"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-14"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 1 · 第 14 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:2",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Who is the woman describing? Listen and choose the correct picture in Exercise 1."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-01"
+            }
+          ],
+          "options": [
+            {
+              "id": "T",
+              "label": "Tom",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.3614457831325301,
+                "height": 1
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:people-image"
+            },
+            {
+              "id": "A",
+              "label": "Axel",
+              "imageRegion": {
+                "x": 0.38554216867469865,
+                "y": 0,
+                "width": 0.30120481927710846,
+                "height": 1
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:people-image"
+            },
+            {
+              "id": "N",
+              "label": "Niko",
+              "imageRegion": {
+                "x": 0.6987951807228914,
+                "y": 0,
+                "width": 0.30120481927710846,
+                "height": 1
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:people-image"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 2",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: lamp."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "lamp",
+          "displayLabel": "练习 3 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 1 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 1 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 2 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 2 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 3 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 3 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 4 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 4 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 5 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 5 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-6",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 6 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 6 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-7",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 7 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-7"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 7 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-8",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 8 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-8"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 8 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-9",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 9 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-9"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 9 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-10",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 10 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-10"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 10 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:3-11",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Label picture number 11 with a word from the box."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-11"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 29,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "28"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 3 · 第 11 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_words_from_pictures",
+            "questionTypeId": "training_picture_vocabulary",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "example",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: The lamp is on the table next to the bed. ✓"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "✓",
+          "displayLabel": "练习 4 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "The pillow is under the bed."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 1 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "2",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "The bookcase is between the armchair and the sofa."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 2 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "3",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "The desk is against the wall."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 3 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "4",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "The fridge is next to the cooker."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 4 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "5",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "The lamp is in the living room."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 5 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:4-6",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "6",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "There is a cupboard under the sink."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 6 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "example",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: P."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "P",
+          "displayLabel": "练习 5 · 例题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 1: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 1 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "2",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 2: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 2 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "3",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 3: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 3 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "4",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 4: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 4 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "5",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 5: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 5 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-6",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "6",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 6: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 6 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-7",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "7",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 7: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-7"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 7 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:5-8",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "8",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sentence 8: write P (present) or F (future)."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-02"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "5-8"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 5 · 第 8 题",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:6",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 6. When are they going to play tennis? Listen and choose the correct picture."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-03"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageRegion": {
+                "x": 0.05365506536090206,
+                "y": 0.056298755186722095,
+                "width": 0.27823198541915567,
+                "height": 0.886207468879668
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageRegion": {
+                "x": 0.38365114109059834,
+                "y": 0.056298755186722095,
+                "width": 0.27823198541915567,
+                "height": 0.886207468879668
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageRegion": {
+                "x": 0.7136472168202945,
+                "y": 0.056298755186722095,
+                "width": 0.27823198541915567,
+                "height": 0.886207468879668
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "6"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 6",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-example",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. Example: Let’s go to the park."
+            }
+          ],
+          "options": [
+            {
+              "id": "reply-1",
+              "label": "No, let’s drive."
+            },
+            {
+              "id": "reply-2",
+              "label": "I would prefer coffee."
+            },
+            {
+              "id": "reply-3",
+              "label": "Yes, that sounds delicious."
+            },
+            {
+              "id": "reply-4",
+              "label": "Good idea. She’s really clever."
+            },
+            {
+              "id": "reply-5",
+              "label": "Yes, and let’s take a ball."
+            },
+            {
+              "id": "reply-6",
+              "label": "She’s very busy at the moment."
+            },
+            {
+              "id": "reply-7",
+              "label": "It’s just started to rain."
+            },
+            {
+              "id": "reply-8",
+              "label": "Fine. It’s only a 5-minute walk to the station."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "7-example"
+          },
+          "answerType": "multiple_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "exampleText": "原书示例连线见图（原书与答案存在冲突，待审核）",
+          "displayLabel": "练习 7 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_suggestion_replies",
+            "questionTypeId": "training_suggestion_matching",
+            "knowledgePointIds": []
+          },
+          "selectionCount": 2
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-1",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. What about having a chocolate cake?"
+            }
+          ],
+          "options": [
+            {
+              "id": "reply-1",
+              "label": "No, let’s drive."
+            },
+            {
+              "id": "reply-2",
+              "label": "I would prefer coffee."
+            },
+            {
+              "id": "reply-3",
+              "label": "Yes, that sounds delicious."
+            },
+            {
+              "id": "reply-4",
+              "label": "Good idea. She’s really clever."
+            },
+            {
+              "id": "reply-5",
+              "label": "Yes, and let’s take a ball."
+            },
+            {
+              "id": "reply-6",
+              "label": "She’s very busy at the moment."
+            },
+            {
+              "id": "reply-7",
+              "label": "It’s just started to rain."
+            },
+            {
+              "id": "reply-8",
+              "label": "Fine. It’s only a 5-minute walk to the station."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "7-1"
+          },
+          "answerType": "multiple_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 7 · 第 1 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_suggestion_replies",
+            "questionTypeId": "training_suggestion_matching",
+            "knowledgePointIds": []
+          },
+          "selectionCount": 2
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-2",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. Shall we go by train?"
+            }
+          ],
+          "options": [
+            {
+              "id": "reply-1",
+              "label": "No, let’s drive."
+            },
+            {
+              "id": "reply-2",
+              "label": "I would prefer coffee."
+            },
+            {
+              "id": "reply-3",
+              "label": "Yes, that sounds delicious."
+            },
+            {
+              "id": "reply-4",
+              "label": "Good idea. She’s really clever."
+            },
+            {
+              "id": "reply-5",
+              "label": "Yes, and let’s take a ball."
+            },
+            {
+              "id": "reply-6",
+              "label": "She’s very busy at the moment."
+            },
+            {
+              "id": "reply-7",
+              "label": "It’s just started to rain."
+            },
+            {
+              "id": "reply-8",
+              "label": "Fine. It’s only a 5-minute walk to the station."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "7-2"
+          },
+          "answerType": "multiple_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 7 · 第 2 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_suggestion_replies",
+            "questionTypeId": "training_suggestion_matching",
+            "knowledgePointIds": []
+          },
+          "selectionCount": 2
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:7-3",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 7. We could ask Paula to help."
+            }
+          ],
+          "options": [
+            {
+              "id": "reply-1",
+              "label": "No, let’s drive."
+            },
+            {
+              "id": "reply-2",
+              "label": "I would prefer coffee."
+            },
+            {
+              "id": "reply-3",
+              "label": "Yes, that sounds delicious."
+            },
+            {
+              "id": "reply-4",
+              "label": "Good idea. She’s really clever."
+            },
+            {
+              "id": "reply-5",
+              "label": "Yes, and let’s take a ball."
+            },
+            {
+              "id": "reply-6",
+              "label": "She’s very busy at the moment."
+            },
+            {
+              "id": "reply-7",
+              "label": "It’s just started to rain."
+            },
+            {
+              "id": "reply-8",
+              "label": "Fine. It’s only a 5-minute walk to the station."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "7-3"
+          },
+          "answerType": "multiple_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 7 · 第 3 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_suggestion_replies",
+            "questionTypeId": "training_suggestion_matching",
+            "knowledgePointIds": []
+          },
+          "selectionCount": 2
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "No, let’s drive."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 8 · 第 1 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "2",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "I would prefer coffee."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 8 · 第 2 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "3",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Yes, that sounds delicious."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 8 · 第 3 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "4",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Good idea. She’s really clever."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 8 · 第 4 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "5",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Yes, and let’s take a ball."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 8 · 第 5 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-6",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "6",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "She’s very busy at the moment."
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 8 · 第 6 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-example-D",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "D",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Printed example: It’s just started to rain. — D."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-example-D"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "D",
+          "displayLabel": "练习 8 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:8-example-A",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "A",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Printed example: Fine. It’s only a 5-minute walk to the station. — A."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "8-example-A"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "A",
+          "displayLabel": "练习 8 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:listening:part-1:9",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 9. Where do they agree to have coffee? Listen and choose the correct picture."
+            },
+            {
+              "id": "audio",
+              "kind": "audio",
+              "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:track-04"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageRegion": {
+                "x": 0.006666666666666672,
+                "y": 0.043478260869564286,
+                "width": 0.27999999999999997,
+                "height": 0.9130434782608695
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageRegion": {
+                "x": 0.3466666666666667,
+                "y": 0.043478260869564286,
+                "width": 0.27999999999999997,
+                "height": 0.9130434782608695
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageRegion": {
+                "x": 0.6866666666666666,
+                "y": 0.043478260869564286,
+                "width": 0.27999999999999997,
+                "height": 0.9130434782608695
+              },
+              "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "9"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 30,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "29"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 9",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "identify_specific_information",
+            "questionTypeId": "training_identification",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "listening",
+      "activities": [
+        {
+          "id": "exercise-1",
+          "title": "Exercise 1",
+          "layout": "handwriting",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:people"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:1-example",
+            "ket-trainer-1:test-1:training:listening:part-1:1-1",
+            "ket-trainer-1:test-1:training:listening:part-1:1-2",
+            "ket-trainer-1:test-1:training:listening:part-1:1-3",
+            "ket-trainer-1:test-1:training:listening:part-1:1-4",
+            "ket-trainer-1:test-1:training:listening:part-1:1-5",
+            "ket-trainer-1:test-1:training:listening:part-1:1-6",
+            "ket-trainer-1:test-1:training:listening:part-1:1-7",
+            "ket-trainer-1:test-1:training:listening:part-1:1-8",
+            "ket-trainer-1:test-1:training:listening:part-1:1-9",
+            "ket-trainer-1:test-1:training:listening:part-1:1-10",
+            "ket-trainer-1:test-1:training:listening:part-1:1-11",
+            "ket-trainer-1:test-1:training:listening:part-1:1-12",
+            "ket-trainer-1:test-1:training:listening:part-1:1-13",
+            "ket-trainer-1:test-1:training:listening:part-1:1-14"
+          ],
+          "instructionIds": [
+            "heading-1",
+            "exercise-1"
+          ],
+          "handwritingSize": "letter",
+          "choicePresentation": {
+            "kind": "letters",
+            "options": [
+              {
+                "value": "T",
+                "label": "T = Tom"
+              },
+              {
+                "value": "A",
+                "label": "A = Axel"
+              },
+              {
+                "value": "N",
+                "label": "N = Niko"
+              }
+            ]
+          }
+        },
+        {
+          "id": "exercise-2",
+          "title": "Exercise 2",
+          "layout": "questions",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:people"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:2"
+          ],
+          "instructionIds": [
+            "exercise-2"
+          ]
+        },
+        {
+          "id": "exercise-3",
+          "title": "Exercise 3",
+          "layout": "handwriting",
+          "wordBank": [
+            "armchair",
+            "bed",
+            "bookcase",
+            "cooker",
+            "cupboard",
+            "desk",
+            "fridge",
+            "lamp",
+            "pillow",
+            "sink",
+            "sofa",
+            "television"
+          ],
+          "positions": [
+            {
+              "x": 14.450867052023122,
+              "y": 73.15789473684211,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-1"
+            },
+            {
+              "x": 24.855491329479765,
+              "y": 62.63157894736841,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-2"
+            },
+            {
+              "x": 34.104046242774565,
+              "y": 44.73684210526319,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-3"
+            },
+            {
+              "x": 49.71098265895954,
+              "y": 21.052631578947388,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-4"
+            },
+            {
+              "x": 61.84971098265896,
+              "y": 21.052631578947388,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-5"
+            },
+            {
+              "x": 47.97687861271676,
+              "y": 90.5263157894737,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-6"
+            },
+            {
+              "x": 61.84971098265896,
+              "y": 90.5263157894737,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-7"
+            },
+            {
+              "x": 82.65895953757227,
+              "y": 5.789473684210531,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-8"
+            },
+            {
+              "x": 95.37572254335261,
+              "y": 5.789473684210531,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-9"
+            },
+            {
+              "x": 76.30057803468208,
+              "y": 76.31578947368422,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-10"
+            },
+            {
+              "x": 96.53179190751447,
+              "y": 76.31578947368422,
+              "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-11"
+            }
+          ],
+          "imageSlotId": "ket-trainer-1:test-1:training:listening:part-1:rooms-image",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:3-example",
+            "ket-trainer-1:test-1:training:listening:part-1:3-1",
+            "ket-trainer-1:test-1:training:listening:part-1:3-2",
+            "ket-trainer-1:test-1:training:listening:part-1:3-3",
+            "ket-trainer-1:test-1:training:listening:part-1:3-4",
+            "ket-trainer-1:test-1:training:listening:part-1:3-5",
+            "ket-trainer-1:test-1:training:listening:part-1:3-6",
+            "ket-trainer-1:test-1:training:listening:part-1:3-7",
+            "ket-trainer-1:test-1:training:listening:part-1:3-8",
+            "ket-trainer-1:test-1:training:listening:part-1:3-9",
+            "ket-trainer-1:test-1:training:listening:part-1:3-10",
+            "ket-trainer-1:test-1:training:listening:part-1:3-11"
+          ],
+          "instructionIds": [
+            "heading-3",
+            "exercise-3"
+          ],
+          "handwritingSize": "word"
+        },
+        {
+          "id": "exercise-4",
+          "title": "Exercise 4",
+          "layout": "handwriting",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:rooms"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:4-example",
+            "ket-trainer-1:test-1:training:listening:part-1:4-1",
+            "ket-trainer-1:test-1:training:listening:part-1:4-2",
+            "ket-trainer-1:test-1:training:listening:part-1:4-3",
+            "ket-trainer-1:test-1:training:listening:part-1:4-4",
+            "ket-trainer-1:test-1:training:listening:part-1:4-5",
+            "ket-trainer-1:test-1:training:listening:part-1:4-6"
+          ],
+          "instructionIds": [
+            "exercise-4"
+          ],
+          "handwritingSize": "letter",
+          "choicePresentation": {
+            "kind": "judgment",
+            "options": [
+              {
+                "value": "✓",
+                "label": "✓ 对"
+              },
+              {
+                "value": "✗",
+                "label": "✗ 错"
+              }
+            ]
+          }
+        },
+        {
+          "id": "exercise-5",
+          "title": "Exercise 5",
+          "layout": "handwriting",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:5-example",
+            "ket-trainer-1:test-1:training:listening:part-1:5-1",
+            "ket-trainer-1:test-1:training:listening:part-1:5-2",
+            "ket-trainer-1:test-1:training:listening:part-1:5-3",
+            "ket-trainer-1:test-1:training:listening:part-1:5-4",
+            "ket-trainer-1:test-1:training:listening:part-1:5-5",
+            "ket-trainer-1:test-1:training:listening:part-1:5-6",
+            "ket-trainer-1:test-1:training:listening:part-1:5-7",
+            "ket-trainer-1:test-1:training:listening:part-1:5-8"
+          ],
+          "instructionIds": [
+            "heading-5",
+            "exercise-5"
+          ],
+          "handwritingSize": "letter",
+          "choicePresentation": {
+            "kind": "letters",
+            "options": [
+              {
+                "value": "P",
+                "label": "P = present（现在）"
+              },
+              {
+                "value": "F",
+                "label": "F = future（将来）"
+              }
+            ]
+          }
+        },
+        {
+          "id": "exercise-6",
+          "title": "Exercise 6",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:6"
+          ],
+          "instructionIds": [
+            "exercise-6"
+          ]
+        },
+        {
+          "id": "exercise-7",
+          "title": "Exercise 7",
+          "layout": "questions",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:suggestion-example"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:7-example",
+            "ket-trainer-1:test-1:training:listening:part-1:7-1",
+            "ket-trainer-1:test-1:training:listening:part-1:7-2",
+            "ket-trainer-1:test-1:training:listening:part-1:7-3"
+          ],
+          "instructionIds": [
+            "heading-7",
+            "exercise-7"
+          ]
+        },
+        {
+          "id": "exercise-8",
+          "title": "Exercise 8",
+          "layout": "handwriting",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:replies"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:8-1",
+            "ket-trainer-1:test-1:training:listening:part-1:8-2",
+            "ket-trainer-1:test-1:training:listening:part-1:8-3",
+            "ket-trainer-1:test-1:training:listening:part-1:8-4",
+            "ket-trainer-1:test-1:training:listening:part-1:8-5",
+            "ket-trainer-1:test-1:training:listening:part-1:8-6",
+            "ket-trainer-1:test-1:training:listening:part-1:8-example-D",
+            "ket-trainer-1:test-1:training:listening:part-1:8-example-A"
+          ],
+          "instructionIds": [
+            "exercise-8"
+          ],
+          "handwritingSize": "letter",
+          "choicePresentation": {
+            "kind": "letters",
+            "options": [
+              {
+                "value": "A",
+                "label": "A = agree（同意）"
+              },
+              {
+                "value": "D",
+                "label": "D = disagree（不同意）"
+              }
+            ]
+          }
+        },
+        {
+          "id": "exercise-9",
+          "title": "Exercise 9",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:listening:part-1:9"
+          ],
+          "instructionIds": [
+            "exercise-9"
+          ]
+        }
+      ],
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          },
+          {
+            "role": "training",
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "materialIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:people",
+        "ket-trainer-1:test-1:training:listening:part-1:rooms",
+        "ket-trainer-1:test-1:training:listening:part-1:tennis-days",
+        "ket-trainer-1:test-1:training:listening:part-1:coffee-places",
+        "ket-trainer-1:test-1:training:listening:part-1:suggestion-example",
+        "ket-trainer-1:test-1:training:listening:part-1:replies"
+      ],
+      "optionPools": [
+        {
+          "id": "people",
+          "options": [
+            {
+              "id": "T",
+              "label": "T"
+            },
+            {
+              "id": "A",
+              "label": "A"
+            },
+            {
+              "id": "N",
+              "label": "N"
+            }
+          ],
+          "allowReuse": true
+        },
+        {
+          "id": "home",
+          "options": [
+            {
+              "id": "1",
+              "label": "armchair"
+            },
+            {
+              "id": "2",
+              "label": "bed"
+            },
+            {
+              "id": "3",
+              "label": "bookcase"
+            },
+            {
+              "id": "4",
+              "label": "cooker"
+            },
+            {
+              "id": "5",
+              "label": "cupboard"
+            },
+            {
+              "id": "6",
+              "label": "desk"
+            },
+            {
+              "id": "7",
+              "label": "fridge"
+            },
+            {
+              "id": "8",
+              "label": "lamp"
+            },
+            {
+              "id": "9",
+              "label": "pillow"
+            },
+            {
+              "id": "10",
+              "label": "sink"
+            },
+            {
+              "id": "11",
+              "label": "sofa"
+            },
+            {
+              "id": "12",
+              "label": "television"
+            }
+          ],
+          "allowReuse": false
+        },
+        {
+          "id": "suggestion-replies",
+          "options": [
+            {
+              "id": "reply-1",
+              "label": "No, let’s drive."
+            },
+            {
+              "id": "reply-2",
+              "label": "I would prefer coffee."
+            },
+            {
+              "id": "reply-3",
+              "label": "Yes, that sounds delicious."
+            },
+            {
+              "id": "reply-4",
+              "label": "Good idea. She’s really clever."
+            },
+            {
+              "id": "reply-5",
+              "label": "Yes, and let’s take a ball."
+            },
+            {
+              "id": "reply-6",
+              "label": "She’s very busy at the moment."
+            },
+            {
+              "id": "reply-7",
+              "label": "It’s just started to rain."
+            },
+            {
+              "id": "reply-8",
+              "label": "Fine. It’s only a 5-minute walk to the station."
+            }
+          ],
+          "allowReuse": false
+        }
+      ],
+      "instructions": [
+        {
+          "id": "heading-1",
+          "kind": "text",
+          "text": "DESCRIBING PEOPLE",
+          "presentation": {
+            "role": "heading",
+            "prefix": "VOCABULARY",
+            "originalText": "VOCABULARY: DESCRIBING PEOPLE"
+          }
+        },
+        {
+          "id": "exercise-1",
+          "kind": "text",
+          "text": "Who do these words describe? Write T (Tom), A (Axel) or N (Niko).",
+          "presentation": {
+            "role": "instruction",
+            "number": "1",
+            "originalText": "1 Who do these words describe? Write T (Tom), A (Axel) or N (Niko)."
+          }
+        },
+        {
+          "id": "exercise-2",
+          "kind": "text",
+          "text": "Who is the woman describing? Listen and choose the correct picture in Exercise 1.",
+          "presentation": {
+            "role": "instruction",
+            "number": "2",
+            "originalText": "2 Who is the woman describing? Listen and choose the correct picture in Exercise 1."
+          }
+        },
+        {
+          "id": "heading-3",
+          "kind": "text",
+          "text": "PARTS OF THE HOME",
+          "presentation": {
+            "role": "heading",
+            "prefix": "VOCABULARY",
+            "originalText": "VOCABULARY: PARTS OF THE HOME"
+          }
+        },
+        {
+          "id": "exercise-3",
+          "kind": "text",
+          "text": "Label the pictures with words from the box.",
+          "presentation": {
+            "role": "instruction",
+            "number": "3",
+            "originalText": "3 Label the pictures with words from the box."
+          }
+        },
+        {
+          "id": "exercise-4",
+          "kind": "text",
+          "text": "Look at the pictures in Exercise 3. If the sentence is right, put a tick (✓). If it is wrong, put a cross (✗).",
+          "presentation": {
+            "role": "instruction",
+            "number": "4",
+            "originalText": "4 Look at the pictures in Exercise 3. If the sentence is right, put a tick (✓). If it is wrong, put a cross (✗)."
+          }
+        },
+        {
+          "id": "heading-5",
+          "kind": "text",
+          "text": "FUTURE FORMS",
+          "presentation": {
+            "role": "heading",
+            "prefix": "GRAMMAR",
+            "originalText": "GRAMMAR: FUTURE FORMS"
+          }
+        },
+        {
+          "id": "exercise-5",
+          "kind": "text",
+          "text": "Listen to the sentences and decide if they are about the present or the future. Write P (present) or F (future).",
+          "presentation": {
+            "role": "instruction",
+            "number": "5",
+            "originalText": "5 Listen to the sentences and decide if they are about the present or the future. Write P (present) or F (future)."
+          }
+        },
+        {
+          "id": "exercise-6",
+          "kind": "text",
+          "text": "When are they going to play tennis? Listen and choose the correct picture.",
+          "presentation": {
+            "role": "instruction",
+            "number": "6",
+            "originalText": "6 When are they going to play tennis? Listen and choose the correct picture."
+          }
+        },
+        {
+          "id": "heading-7",
+          "kind": "text",
+          "text": "SUGGESTIONS",
+          "presentation": {
+            "role": "heading",
+            "prefix": "VOCABULARY",
+            "originalText": "VOCABULARY: SUGGESTIONS"
+          }
+        },
+        {
+          "id": "exercise-7",
+          "kind": "text",
+          "text": "Match each suggestion with two possible replies.",
+          "presentation": {
+            "role": "instruction",
+            "number": "7",
+            "originalText": "7 Match each suggestion with two possible replies."
+          }
+        },
+        {
+          "id": "exercise-8",
+          "kind": "text",
+          "text": "Is each reply in Exercise 7 used to agree or disagree with the suggestion? Write A (agree) or D (disagree) next to each reply.",
+          "presentation": {
+            "role": "instruction",
+            "number": "8",
+            "originalText": "8 Is each reply in Exercise 7 used to agree or disagree with the suggestion? Write A (agree) or D (disagree) next to each reply."
+          }
+        },
+        {
+          "id": "exercise-9",
+          "kind": "text",
+          "text": "Where do they agree to have coffee? Listen and choose the correct picture.",
+          "presentation": {
+            "role": "instruction",
+            "number": "9",
+            "originalText": "9 Where do they agree to have coffee? Listen and choose the correct picture."
+          }
+        }
+      ]
+    }
+  ],
+  "status": "draft",
+  "guidance": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:overview",
+      "role": "guidance",
+      "blocks": [
+        {
+          "id": "overview",
+          "kind": "text",
+          "text": "In this part, you:\n• read five questions and look at three possible picture answers\n• listen to five short conversations and choose the right answer (A, B or C) for each"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "guidance",
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:suggestion-tip",
+      "role": "guidance",
+      "blocks": [
+        {
+          "id": "tip",
+          "kind": "text",
+          "text": "当听到一位说话者提出建议时，要仔细听其他说话者是如何回应的。他们是否同意这个建议呢？"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "guidance",
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    }
+  ],
+  "revision": 2,
+  "materials": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:people",
+      "role": "training",
+      "title": "Exercise 1 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "alt": "Three people labelled Tom, Axel and Niko.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:people-image"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:people-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.535,
+              "y": 0.235,
+              "width": 0.415,
+              "height": 0.245
+            },
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:rooms",
+      "role": "training",
+      "title": "Exercise 3 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "alt": "Three rooms labelled A, B and C, with an example lamp label and numbered objects 1–11.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:rooms-image"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:rooms-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.695,
+              "width": 0.865,
+              "height": 0.19
+            },
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:tennis-days",
+      "role": "training",
+      "title": "Exercise 6 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "alt": "Three diary pictures labelled A, B and C: Saturday, Sunday and Thursday.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.375,
+              "width": 0.72,
+              "height": 0.13
+            },
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:coffee-places",
+      "role": "training",
+      "title": "Exercise 9 pictures",
+      "blocks": [
+        {
+          "id": "image",
+          "alt": "Three café pictures labelled A, B and C.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.81,
+              "width": 0.75,
+              "height": 0.115
+            },
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example",
+      "role": "training",
+      "title": "Exercise 7 printed example links",
+      "blocks": [
+        {
+          "id": "image",
+          "alt": "The printed Exercise 7 example and its two drawn links to the reply list; pending source-conflict review.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example-image"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.08,
+              "y": 0.58,
+              "width": 0.79,
+              "height": 0.15
+            },
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:replies",
+      "role": "training",
+      "title": "Exercise 7 replies, also used by Exercise 8",
+      "blocks": [
+        {
+          "id": "reply-list",
+          "kind": "text",
+          "text": "No, let’s drive.\nI would prefer coffee.\nYes, that sounds delicious.\nGood idea. She’s really clever.\nYes, and let’s take a ball.\nShe’s very busy at the moment.\nIt’s just started to rain.\nFine. It’s only a 5-minute walk to the station."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:listening:part-1:replies-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    }
+  ],
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "pending"
+    }
+  },
+  "mediaSlots": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:people-image",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.535,
+              "y": 0.235,
+              "width": 0.415,
+              "height": 0.245
+            },
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:rooms-image",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.695,
+              "width": 0.865,
+              "height": 0.19
+            },
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:tennis-days-image",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.375,
+              "width": 0.72,
+              "height": 0.13
+            },
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:coffee-places-image",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.075,
+              "y": 0.81,
+              "width": 0.75,
+              "height": 0.115
+            },
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:suggestion-example-image",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.08,
+              "y": 0.58,
+              "width": 0.79,
+              "height": 0.15
+            },
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-01",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "training_audio",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 29,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "28"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": "01"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-02",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "training_audio",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": "02"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-03",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "training_audio",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": "03"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:track-04",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:listening:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "training_audio",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 30,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "29"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": "04"
+    }
+  ],
+  "contentSetId": "ket-trainer-1:test-1:training:listening:part-1:set",
+  "schemaVersion": 1,
+  "vocabularyLinks": [],
+  "mediaBindingRevisionId": "3bd3188e-ea06-4ee1-ab33-0b1ba917bae6"
+}

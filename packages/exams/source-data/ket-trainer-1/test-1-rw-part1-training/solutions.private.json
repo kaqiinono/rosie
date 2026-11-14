@@ -1,0 +1,1286 @@
+{
+  "schemaVersion": 1,
+  "contentRevisionId": "ket-trainer-1:test-1:training:reading_writing:part-1:set:r1",
+  "solutions": [
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 11,
+            "printedPage": "10",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 11,
+            "printedPage": "10",
+            "role": "training"
+          },
+          "quote": "S"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "S"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "S"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "S"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "S"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "S"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "S"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "S"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-7:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-7",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-8:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:1-8",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "S"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "S"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 11,
+            "printedPage": "10",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 11,
+            "printedPage": "10",
+            "role": "training"
+          },
+          "quote": "forest"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "forest"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "picnic"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "picnic"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "instead"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "instead"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "on time"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "on time"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "walk"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "walk"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "borrow"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "borrow"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 12,
+            "printedPage": "11",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 12,
+            "printedPage": "11",
+            "role": "training"
+          },
+          "quote": "children, teenagers"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "children"
+          },
+          {
+            "gapId": "gap-2",
+            "value": "teenagers"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "teenagers, adults"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "teenagers"
+          },
+          {
+            "gapId": "gap-2",
+            "value": "adults"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "children, adults"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "children"
+          },
+          {
+            "gapId": "gap-2",
+            "value": "adults"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "children, teenagers"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "children"
+          },
+          {
+            "gapId": "gap-2",
+            "value": "teenagers"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "teenagers, adults"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "teenagers"
+          },
+          {
+            "gapId": "gap-2",
+            "value": "adults"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 12,
+            "printedPage": "11",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 12,
+            "printedPage": "11",
+            "role": "training"
+          },
+          "quote": "can’t"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "can’t"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "need"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "need"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "must"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "must"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "can"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "can"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "should"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "should"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "solution"
+          },
+          "quote": "will"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "will"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    }
+  ],
+  "teacherNotes": [
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:teacher-overview",
+      "role": "teacher_notes",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "Task type: three-option multiple choice – understanding notices, emails and messages – six items\nTopic focus: language of notices\nTraining\nTell students that they will read six texts (notices, emails or messages) in Part 1."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:teacher-exercise-1",
+      "role": "teacher_notes",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "1 In this exercise, students decide whether each pair of words/phrases are similar or different in meaning. Tell students that the notices, emails and messages in Part 1 often use similar words. Ask them to write S (similar) or D (different) next to each pair. Check the answers as a class.\nElicit or give students a few more pairs that are similar or different, e.g. money / cash, lesson / class, football / ball game, safe / dangerous."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:teacher-exercise-2",
+      "role": "teacher_notes",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "2 This exercise uses some of the words from Exercise 1 in context. Ask students what sort of text they think each sentence comes from (Example email, 1 notice, 2 message or email, 3 notice, 4 notice or email, 5 notice or email).\nStudents then complete the task, choosing a word from Exercise 1 for each gap.\nExtension\nIn pairs, students make more sentences using some of the remaining words from Exercise 1. Tell students to make two sentences for pairs of words with similar meanings, e.g. He drives to work. / He goes by car."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:teacher-exercise-3",
+      "role": "teacher_notes",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "3 Revise the words children, teenagers and adults. Elicit the age ranges for each word (0~12, 13~19, 18+). Explain that the notices all say that only one age group can do the activity. Students write the two age groups that cannot do it."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:teacher-exercise-4",
+      "role": "teacher_notes",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "4 Before doing this exercise, revise the modals which appear in the box: can, can’t, must, need, should and will. Remind students that they are followed by infinitive without to. Put some examples on the board as well as some common errors, e.g. I must do my homework. [Crossed-out source errors: I must doing my homework. I must to do my homework.]\nIn this exercise, students complete sentences which explain the meaning of the notice by adding the correct modals."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 165,
+            "printedPage": "164",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "mediaSlots": []
+}

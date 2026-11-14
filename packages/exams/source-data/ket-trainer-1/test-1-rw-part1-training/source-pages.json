@@ -1,0 +1,50 @@
+[
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 11,
+    "printedPage": "10",
+    "role": "training"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 12,
+    "printedPage": "11",
+    "role": "training"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 165,
+    "printedPage": "164",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 165,
+    "printedPage": "164",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 11,
+    "printedPage": "10",
+    "role": "training",
+    "region": {
+      "x": 0.115,
+      "y": 0.55,
+      "width": 0.385,
+      "height": 0.215
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 11,
+    "printedPage": "10",
+    "role": "guidance"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 12,
+    "printedPage": "11",
+    "role": "guidance"
+  }
+]

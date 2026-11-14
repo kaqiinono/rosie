@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "id": "ket-trainer-1:test-3:rw-part1-sample:revision-1",
+  "contentSetId": "ket-trainer-1:test-3:rw-part1-sample",
+  "revision": 1,
+  "status": "draft",
+  "materials": [
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1:material",
+      "familyId": "ket-trainer-1:adam-football-plan",
+      "role": "exam",
+      "title": "Adam 的足球训练短信",
+      "blocks": [
+        {
+          "id": "message",
+          "kind": "text",
+          "text": "John,\nYou know I said that football practice will be on Wednesday ... Well, it isn’t – it’s on Thursday. Sorry!\nSee you there.\nCheers, Adam"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 79,
+            "printedPage": "78",
+            "role": "exam",
+            "region": {
+              "x": 0.06,
+              "y": 0.27,
+              "width": 0.88,
+              "height": 0.23
+            }
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-trainer-1:test-3:exam:reading_writing:part-1:1:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1",
+          "location": {
+            "sourceId": "ket-trainer-1",
+            "testNumber": 3,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why has Adam written this message?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "to ask if John wants to play football"
+            },
+            {
+              "id": "B",
+              "label": "to tell John that Adam can’t play football"
+            },
+            {
+              "id": "C",
+              "label": "to let John know about a change of plan"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "reading_intent",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-trainer-1",
+                "pdfPage": 79,
+                "printedPage": "78",
+                "role": "exam",
+                "region": {
+                  "x": 0.06,
+                  "y": 0.27,
+                  "width": 0.88,
+                  "height": 0.23
+                }
+              }
+            ],
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 79,
+            "printedPage": "78",
+            "role": "exam",
+            "region": {
+              "x": 0.06,
+              "y": 0.27,
+              "width": 0.88,
+              "height": 0.23
+            }
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "guidance": [],
+  "vocabularyLinks": [],
+  "mediaSlots": [],
+  "mediaBindingRevisionId": null,
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "blocked",
+      "reason": "原书此页只提供答案，尚未编写和审核逐题解析。"
+    }
+  }
+}

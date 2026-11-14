@@ -1,0 +1,5029 @@
+{
+  "solutions": [
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "it isn’t – it’s on Thursday.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:rw-p1-1"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:1",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "短信把训练日期从Wednesday更正为Thursday，因此是通知计划改变；并未取消训练，也不是首次邀请。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 79,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "78"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:2:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Hear how he got ideas for his books",
+          "source": {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:rw-p1-2"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:2",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Meet与Hear说明活动是见作者并听他讲书籍创作灵感；没有提到售书，也不是让学生阅读探险故事。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 79,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "78"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:3:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Tickets are available for $4",
+          "source": {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:rw-p1-3"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:3",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Tickets are available表明现在可以买票；票价已包含大巴和门票，因此无需选择交通方式或询问是否需要票。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 79,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "78"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:4:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "I think I left my scarf in your flat after the party. Have you seen it?",
+          "source": {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:rw-p1-4"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:4",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Lizzie询问聚会后遗落的围巾是否在Jenny家；买新的只是找不到时的打算。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 80,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "79"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:5:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Can I use yours? I’ll give it back in maths tomorrow.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:rw-p1-5"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:5",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Can I use yours与give it back说明想借球拍；最后提作业只是顺带聊天，不是主要请求。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 80,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "79"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:6:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Class 3, at 9 am, please go and join Class 4 in Room 7C for geography.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:rw-p1-6"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:6",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Class 3要加入Class 4在7C上课，所以今天教室人数比平时多；通知没有改变Class 4上课时间，也没有说明取消明天课程。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 80,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "79"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:7:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "she often appears on TV, talking about tennis matches at major competitions.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-3",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:7",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Tracy现在在电视上讲解重要网球赛事，对应题目所指的媒体工作。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:8:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "she helped large numbers of people become interested in gymnastics.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-4",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:8",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Nadia的表现让更多人喜欢体操，对应让这项运动更受欢迎。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "C"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:9:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "she was 15 and still too young to drive",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-3",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:9",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Tracy赢得汽车时只有15岁，年龄不足以开车，所以奖品当时不能使用。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:10:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "at the age of 17, the American became the youngest ever sports person to earn a million dollars.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-3",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:10",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "17岁赚到一百万美元说明Tracy年少时就变得富有。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:11:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "she was the only under-14-year-old to take part in the 2016 Olympics",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:11",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Gaurika是该届奥运会唯一不足14岁的选手，因此是最年轻的参赛者。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "A"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:12:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Everyone thought that nobody could do this",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-4",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:12",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "这句话指Nadia取得10.0满分；此前人们认为无人能做到。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "C"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:13:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Gaurika is from Nepal",
+          "source": {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:teenage-sports-superstars"
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-2:13",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Gaurika来自尼泊尔，而文章另说如今家在英国，对应出生国与居住国不同。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "statement",
+            "optionId": "A"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:14:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "But not everyone opens their own company.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:isabella-rose-taylor"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-3:14",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "前两句说年少有爱好或职业打算很常见；转折后强调开公司才是不寻常之处。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 83,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "82"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:15:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "these colours helped her to think of new clothes which she could make.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:isabella-rose-taylor"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-3:15",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "画画时使用的颜色启发了服装设计，不是直接把颜料涂到衣服上。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 83,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "82"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:16:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "she has made one room into an office, and another into a studio",
+          "source": {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          },
+          "blockId": "text-3",
+          "materialId": "ket-trainer-1:test-3:material:isabella-rose-taylor"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-3:16",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "把不同房间改成办公室和工作室表明她为在家工作改造了房间。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 83,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "82"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:17:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Above all, she really knows what is needed to succeed in the world of fashion.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          },
+          "blockId": "text-4",
+          "materialId": "ket-trainer-1:test-3:material:isabella-rose-taylor"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-3:17",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Above all之后给出作者最重要的判断依据：她懂得在时尚行业成功需要什么。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 83,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "82"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:18:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Isabella just made clothes for fun. But people liked her designs, so soon she started selling them online.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          },
+          "blockId": "text-3",
+          "materialId": "ket-trainer-1:test-3:material:isabella-rose-taylor"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-3:18",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "全文描述她从兴趣制衣发展为经营公司，因此标题应概括爱好变职业。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 83,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "82"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:19:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "because there weren’t any other pupils",
+          "source": {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:ferry-to-school"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:19",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "没有其他学生导致学校必须关闭，close表示停办；complete与finish不表示学校停止营业。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:20:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "it is small",
+          "source": {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:ferry-to-school"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:20",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "小船只能在好天气使用，only表示限制；almost/nearly表示几乎，与条件限制不符。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:21:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "A much larger boat is (21) ........ in bad weather.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:ferry-to-school"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:21",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "恶劣天气需要更大的船，is needed构成被动语态；liked与had不符合语义。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:22:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "the ferry across the sea",
+          "source": {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:ferry-to-school"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:22",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "catch the ferry表示赶乘渡船，是本句需要的动宾搭配。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:23:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "the night at a friend’s house instead",
+          "source": {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:ferry-to-school"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:23",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "stay the night表示留宿；在朋友家过夜用staying最合适。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:24:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "travel a long (24) ........ to school each day",
+          "source": {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          },
+          "blockId": "text-2",
+          "materialId": "ket-trainer-1:test-3:material:ferry-to-school"
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:24",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "a long way表示很远的路程；transport不表示距离，mile为可数单位不能这样与a long搭配。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:example-0:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "This is (0) ........ best holiday ever!",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:example-0",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "best为最高级，前面使用定冠词the；此题是原书示例，不计分。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-0",
+            "value": "the"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:25:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Plakias is such (25) ........ beautiful place.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:25",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "such a + 形容词 + 单数可数名词，place前需要不定冠词a。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-25",
+            "value": "a"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:26:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "you can have as (26) ........ as you want",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:26",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "as much as you want表示想吃多少就吃多少，省略的食物量按不可数量处理。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-26",
+            "value": "much"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:27:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "There’s lots for everyone in my family (27) ........ do",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:27",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "lots ... to do用不定式说明有许多事情可做。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-27",
+            "value": "to"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:28:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "try windsurfing (28) ........ the first time",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:28",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "for the first time为固定短语，表示第一次。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-28",
+            "value": "for"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:29:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "I (29) ........ never done it before",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:29",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "never done it before需要现在完成时，I后用have；原书同时给出缩写’ve。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-29",
+            "value": "have"
+          }
+        ],
+        [
+          {
+            "gapId": "gap-29",
+            "value": "'ve"
+          }
+        ],
+        [
+          {
+            "gapId": "gap-29",
+            "value": "’ve"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:30:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "I (30) ........ like to come back next year",
+          "source": {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          },
+          "blockId": "text-1",
+          "materialId": "ket-trainer-1:test-3:material:jake-plakias-email"
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:30",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "would like to表示想要；原书同时给出缩写’d。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-30",
+            "value": "would"
+          }
+        ],
+        [
+          {
+            "gapId": "gap-30",
+            "value": "'d"
+          }
+        ],
+        [
+          {
+            "gapId": "gap-30",
+            "value": "’d"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-6:31:solution",
+      "role": "solution",
+      "samples": [
+        {
+          "id": "publisher-sample-31",
+          "text": "Hi Malcolm,\nI’m writing to you because I’m having a barbecue party this Saturday. Would you like to come? It’s at my house at 7 pm. Could you bring some crisps or some orange juice or something like that? That would be brilliant.\nI hope to see you there.\nCheers,\nTommy",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ]
+          },
+          "originalScore": null,
+          "originalComments": [],
+          "supplementaryComments": [
+            {
+              "text": "范文分别说明聚会类型、时间和地点，发出邀请，并建议带薯片或橙汁；这些是任务点覆盖示例，不是唯一可接受答案，也不是官方分数。",
+              "provenance": {
+                "origin": "supplement",
+                "review": {
+                  "status": "pending"
+                },
+                "sources": [
+                  {
+                    "role": "exam",
+                    "pdfPage": 87,
+                    "sourceId": "ket-trainer-1",
+                    "printedPage": "86"
+                  },
+                  {
+                    "role": "solution",
+                    "pdfPage": 193,
+                    "sourceId": "ket-trainer-1",
+                    "printedPage": "192"
+                  }
+                ],
+                "authorship": "ai_assisted"
+              }
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "quote": "tell Malcolm about your party",
+          "source": {
+            "role": "exam",
+            "pdfPage": 87,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "86"
+          }
+        }
+      ],
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-6:31",
+      "distractors": [],
+      "explanations": [],
+      "taskGuidance": [
+        {
+          "text": "至少25词。先交代聚会信息，再明确询问Malcolm是否愿意来，最后建议带什么。可用Would you like to ...?和Could you bring ...?。评分须由人工按已审核量表完成；原书范文未附分数。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 87,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "86"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-7:32:solution",
+      "role": "solution",
+      "samples": [
+        {
+          "id": "publisher-sample-32",
+          "text": "My sister and I were going home after school today when we saw something on the street. It was a lady’s handbag. We picked it up and found a name and phone number inside. My sister rang the number, and an old lady answered. My sister told her that we had found her bag. She told us where she lived, and so we took it to her house. ‘Thank you so much,’ she said. ‘I was looking for it everywhere!’",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ]
+          },
+          "originalScore": null,
+          "originalComments": [],
+          "supplementaryComments": [
+            {
+              "text": "范文依照发现手提包、打电话联系失主、送还手提包的顺序串联三幅图。人物姓名等可自行设定，但应保持图中事件关系；原书没有附范文得分。",
+              "provenance": {
+                "origin": "supplement",
+                "review": {
+                  "status": "pending"
+                },
+                "sources": [
+                  {
+                    "role": "exam",
+                    "pdfPage": 88,
+                    "sourceId": "ket-trainer-1",
+                    "printedPage": "87"
+                  },
+                  {
+                    "role": "solution",
+                    "pdfPage": 193,
+                    "sourceId": "ket-trainer-1",
+                    "printedPage": "192"
+                  }
+                ],
+                "authorship": "ai_assisted"
+              }
+            }
+          ]
+        }
+      ],
+      "evidence": [
+        {
+          "quote": "Look at the three pictures. Write the story shown in the pictures.",
+          "source": {
+            "role": "exam",
+            "pdfPage": 88,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "87"
+          }
+        }
+      ],
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-7:32",
+      "distractors": [],
+      "explanations": [],
+      "taskGuidance": [
+        {
+          "text": "至少35词，并覆盖全部三幅图：路上发现手提包、根据包内信息联系失主、把包送还。用时间顺序连接事件，注意过去时和人物指代。图片尚未绑定，当前草稿不可用于正式作答。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 88,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "87"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:1:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "so ten past seven actually.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-1:1",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "女孩先猜7:30，但父亲查后更正为ten past seven，即7:10，对应B。6:30是前面的体育节目。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:2:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "She’s asking her friend Sarah, you know, our neighbour’s daughter",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-1:2",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "妈妈说Diana正在问朋友Sarah数学作业，Sarah是邻居家的女儿，对应女孩图片C；不是姑姨或男同学。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:3:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "On that little table next to my bed would be great.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-1:3",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "问的是将把表放哪里。妈妈指定床旁小桌，对应A；厨房是发现手表的位置，沙发是她原先以为放表的地方。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:4:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "I walked all the way home because the bus was late. It took an hour!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-1:4",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "女孩累是因为公交晚点后步行一小时回家，对应C；她并未打网球，也还没帮忙整理房间。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:5:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Isn’t it going to be cloudy on Sunday?",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-1:5",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "对话谈周日会多云但温度约25度，对应A；下雨只是另一个男孩回忆度假游泳经历。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-2:6:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "This one’s in the Bridge Stadium. That’s B-R-I-D-G-E.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-2:6",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "地点改为Bridge Stadium，并逐字母拼写B-R-I-D-G-E；不是上次去的City Stadium。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-6",
+            "value": "Bridge"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-2:7:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "it’s better for us to get the three-nine-five",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-2:7",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "274路半小时一班，建议搭十分钟一班的395路。原书写395 (any convention)；此草稿先登记数字395，文字写法待单独审核。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-7",
+            "value": "395"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-2:8:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "we only pay four fifty each.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-2:8",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "通常票价£10，但父亲是俱乐部会员，本次每人实际只付£4.50；题面已印£，答案不再重复币种。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-8",
+            "value": "4.50"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-2:9:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "you’ll need a coat.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-2:9",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "天气冷，讲话者明确说不要只穿jacket，要穿coat。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-9",
+            "value": "coat"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-2:10:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "bring a snack because the cafés are expensive.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-2:10",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "带零食是因为咖啡馆贵；水可以免费领取，所以不用带水。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      },
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-10",
+            "value": "snack"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:11:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "I went with the family who live next to us.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-3:11",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "住在隔壁的一家人就是邻居；同学去的是工厂，而不是城堡。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:12:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Yeah, it rained, but I didn’t mind.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-3:12",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "参观那天下雨，因此wet；冷且刮风说的是今天，不是参观日。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:13:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "especially the Queen’s bathroom.\nHitomi: Me too!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-3:13",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Freddie最喜欢王后的浴室，Hitomi用Me too表示同意；她觉得黄色卧室很奇怪。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 157,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "156"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:14:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "To get some information about wild birds.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-3:14",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "Freddie明确说为了了解野鸟；拍照是他的爱好，遇见历史老师也不等于参观目的。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:15:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "next month, you can see some cars that are over fifty years old!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-3:15",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "旧车展示在下个月；赛跑在下周，绘画课程在明年夏天。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:16:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "The next bit was difficult though. I needed my mum to explain it to me!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-4:16",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "开头很清楚、最后也能理解，困难的是中间的next bit，需要妈妈解释。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:17:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "I’ve never heard music like that before or seen some of those instruments before.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-4:17",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "题目问男孩Tom的意见。他觉得演奏不错且音乐、乐器新奇，所以unusual；terrible是女孩的看法。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:18:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Shall I phone mum now to say we’ll be at the café in the main square in 30 minutes?",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-4:18",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "他们要到中心广场咖啡馆见妈妈；看球是出发前在家做的事，买报纸是请妈妈顺便做。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:19:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "we’re allowed to go to the park today!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-4:19",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "已有地理项目还缺照片，所以今天去公园上课；不是新项目，也没有说延长课时。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:20:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "Her husband travels a lot in his job, showing tourists round different cities.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-4:20",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "丈夫带游客参观不同城市，职业是导游；画画是Emma的工作，餐馆只说明住所位置。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:example-0:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "the hall was a long way from the rest of the school!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 94,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "93"
+          },
+          {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-5:example-0",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "原书示例中hall离学校其余部分很远，对应F；此示例不计分。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "hall",
+            "optionId": "F"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:21:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "you could always hear the traffic in the street outside or the crowds of people waiting for the buses.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-5:21",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "总能听到街道交通和等公交人群的声音，说明食堂嘈杂noisy；不是说食堂拥挤。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "cafeteria",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:22:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "dirty and not warm enough!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-5:22",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "图书馆脏，对应not clean；说不够暖并不等于选项too warm，也明确否定太小。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "library",
+            "optionId": "C"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:23:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "they didn’t have the latest equipment.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-5:23",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "没有最新设备说明教室不现代，对应not modern。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "classrooms",
+            "optionId": "D"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:24:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "They were so slow, you could walk faster! I don’t know why we had them!",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-5:24",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "电梯慢得不如走路，讲话者质疑它的用途，对应not useful。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "lift",
+            "optionId": "E"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:25:solution",
+      "role": "solution",
+      "evidence": [
+        {
+          "quote": "There wasn’t enough space for two desks and the bookshelves.",
+          "source": {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        }
+      ],
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:listening:part-5:25",
+      "distractors": [],
+      "explanations": [
+        {
+          "text": "容不下两张桌子和书架，说明办公室太小，对应too small。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 158,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "157"
+              },
+              {
+                "role": "solution",
+                "pdfPage": 193,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "192"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "office",
+            "optionId": "G"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:speaking:part-1:1:solution",
+      "role": "solution",
+      "evidence": [],
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 201,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "200"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:speaking:part-1:1",
+      "distractors": [],
+      "explanations": [],
+      "reviewGuidance": [
+        {
+          "text": "本Part是个人访谈，没有唯一正确答案。按考官脚本依次进行基本信息、季节与节日、食物两个主题；扩展回答应围绕个人经历作连贯说明。此说明为AI辅助补充，尚未审核，不代表官方评分等级。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 201,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "200"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        },
+        {
+          "text": "记录候选人的实际回答后，由获授权成人依据经审核的口语量表评价语法词汇、发音、互动与整体表现；未批改不记零分。不得把示例国家Mexico当作应答答案。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 201,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "200"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:speaking:part-2:2:solution",
+      "role": "solution",
+      "evidence": [],
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 202,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "201"
+          }
+        ]
+      },
+      "questionId": "ket-trainer-1:test-3:exam:speaking:part-2:2",
+      "distractors": [],
+      "explanations": [],
+      "reviewGuidance": [
+        {
+          "text": "围绕图中的动作片、新闻、足球、歌唱和历史节目交流喜好并说明理由；注意回应同伴而非分别背诵独白。考官可使用脚本中的追问。没有统一喜好或唯一正确答案。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "region": {
+                  "x": 0.06,
+                  "y": 0.1,
+                  "width": 0.89,
+                  "height": 0.36
+                },
+                "pdfPage": 209,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "208"
+              },
+              {
+                "role": "teacher_notes",
+                "pdfPage": 202,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "201"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        },
+        {
+          "text": "第二阶段谈独自或与他人看电视的偏好，以及一周不同日子看电视的时间。可接受个人真实答案；本草稿不生成官方分数。",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "teacher_notes",
+                "pdfPage": 202,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "201"
+              }
+            ],
+            "authorship": "ai_assisted"
+          }
+        }
+      ]
+    }
+  ],
+  "mediaSlots": [
+    {
+      "id": "ket-trainer-1:test-3:source-page-79",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-80",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-81",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 81,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "80"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-82",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-83",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-84",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 84,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "83"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-85",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-86",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-87",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 87,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "86"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-88",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 88,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "87"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-89",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-90",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-91",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 91,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "90"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-92",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 92,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "91"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-93",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 93,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "92"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-94",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 94,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "93"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-157",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-158",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-193",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "solution",
+            "pdfPage": 193,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "192"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-201",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 201,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "200"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-202",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 202,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "201"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:source-page-209",
+      "target": {
+        "id": "ket-trainer-1:test-3",
+        "kind": "content_set"
+      },
+      "purpose": "source_page",
+      "segment": null,
+      "audience": "admin",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 209,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "208"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    }
+  ],
+  "teacherNotes": [
+    {
+      "id": "ket-trainer-1:test-3:note:listening-part-1-transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Track 55 · Listening Part 1 · Questions 1–5"
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "1 What time does the nature programme start?\nDad: Are you going to watch the nature programme after dinner tonight, Catherine?\nCatherine: Yes, I think it begins at seven thirty, doesn’t it, dad?\nDad: Let me check ... Oh, it’s on just after the six-thirty sports programme, so ten past seven actually. We can have dinner earlier than usual if you like.\nCatherine: Great!"
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "2 Who is Diana talking to on her mobile?\nBoy: Mum, who’s Diana phoning? Is she calling Aunt Christine about borrowing her bike?\nMum: She’s asking her friend Sarah, you know, our neighbour’s daughter, about some maths homework. Have you done your homework?\nBoy: I’m doing a project with David, remember? He’s coming a bit later so that we can work here.\nMum: Oh, yes. You did tell me about David."
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "3 Where will Henry put his mum’s watch?\nHenry: Mum, is this your watch here next to the cooker?\nMum: Oh, yes! Thank you, Henry, I was looking for it a minute ago in the sitting room. I thought it was on the sofa.\nHenry: Shall I leave it in the kitchen or put it in your bedroom?\nMum: On that little table next to my bed would be great.\nHenry: OK."
+        },
+        {
+          "id": "text-5",
+          "kind": "text",
+          "text": "4 Why is the girl tired?\nGirl: I think I’ll go to bed early tonight.\nBoy: Yeah, you look tired. Did you play tennis with Jane after school?\nGirl: She played with someone else. I walked all the way home because the bus was late. It took an hour!\nBoy: Wow! But can you help me tidy my bedroom?\nGirl: Erm, sorry!"
+        },
+        {
+          "id": "text-6",
+          "kind": "text",
+          "text": "5 What will the weather be like on Sunday?\nBoy 1: I’m going swimming in the lake on Sunday with my mum and dad. Do you want to come?\nBoy 2: Isn’t it going to be cloudy on Sunday?\nBoy 1: That doesn’t matter because it’ll be about 25 degrees. Mum checked the temperature.\nBoy 2: Oh, OK then. I went swimming when it was raining on holiday. It was really funny!"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:listening:part-1:all:group"
+      ],
+      "sectionId": "listening",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:listening-part-2-transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Track 56 · Part 2 · Questions 6–10"
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Emin: Hi. I’m phoning about the football match that we’re going to. It’s on Saturday. But it isn’t in the City Stadium like the last football match we went to. This one’s in the Bridge Stadium. That’s B-R-I-D-G-E. You know, near the river!"
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "Can you come to my house at half past two? Then we can go to the match together by bus. Bus number two-seven-four only goes every thirty minutes, so it’s better for us to get the three-nine-five, which is every ten minutes."
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "The tickets are usually ten pounds, but because my dad’s a member of the football club, we only pay four fifty each. That’s not bad, is it?"
+        },
+        {
+          "id": "text-5",
+          "kind": "text",
+          "text": "It’s going to be a bit cold, so don’t wear just a jacket—you’ll need a coat. I’m going to wear my red one because that’s our team’s colour!"
+        },
+        {
+          "id": "text-6",
+          "kind": "text",
+          "text": "Oh, and another thing, bring a snack because the cafés are expensive. You can get water there for free, so don’t bring water."
+        },
+        {
+          "id": "text-7",
+          "kind": "text",
+          "text": "I think that’s everything. Bye!"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:listening:part-2:all:group"
+      ],
+      "sectionId": "listening",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:listening-part-3-transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Track 57 · Part 3 · Questions 11–15"
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Hitomi: Hi, Freddie. I went to Hardin Castle on Saturday.\nFreddie: Did you go with your family or was it a class trip, Hitomi?\nHitomi: My class visited a factory. I went with the family who live next to us.\nFreddie: But the weather wasn’t good on Saturday ...\nHitomi: Yeah, it rained, but I didn’t mind. It wasn’t cold and windy like today. Today’s worse!\nFreddie: I went to Hardin Castle last year. I saw the dining room ... but I liked upstairs better, especially the Queen’s bathroom.\nHitomi: Me too! I thought the yellow bedroom was strange. Why did you go to the castle? Was it to take photos? I know that’s your hobby."
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "Freddie: To get some information about wild birds. And I saw my history teacher when I was there!\nHitomi: Did you talk to him?\nFreddie: Yes. There are lots of interesting things to do at the castle. Next week, there’s a race. You have to run five kilometres. Then, next month, you can see some cars that are over fifty years old!\nHitomi: Do they do painting courses?\nFreddie: The next one’s next summer!"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:listening:part-3:all:group"
+      ],
+      "sectionId": "listening",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 157,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "156"
+          },
+          {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:listening-part-4-transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Track 58 · Part 4 · Questions 16–20"
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "16 You will hear a girl talking about a video. Which part of the video didn’t she understand?\nMillie: I liked that film about animals that live in the Amazon Forest. It started by showing the different places different animals like to live in, and all that bit was clear. The next bit was difficult though. I needed my mum to explain it to me! Then the last part was good and I didn’t have any problems understanding it."
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "17 You will hear two friends talking about a concert. What’s the boy’s opinion of the concert?\nJess: I didn’t like the school concert yesterday, mainly because the musicians hadn’t practised enough. They were really bad, I think.\nTom: Really? I think they played well, but I’ve never heard music like that before or seen some of those instruments before.\nJess: It must be interesting to play new stuff, I guess.\nTom: Exactly! Doing the same thing’s awful."
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "18 You will hear a boy talking to his dad about going to the city centre. Why are they going to the city centre?\nBoy: When are we going to the city centre?\nDad: I just want to see the end of this football match. Then, we can go.\nBoy: Shall I phone mum now to say we’ll be at the café in the main square in 30 minutes?\nDad: Yes, please. And could you ask her to get today’s newspaper for me?\nBoy: Sure."
+        },
+        {
+          "id": "text-5",
+          "kind": "text",
+          "text": "19 You will hear a teacher talking to his class. What information is he giving his students?\nMan: Listen, everyone. Because you still need some photos to add to your geography project, we’re allowed to go to the park today! I know you love working there, but you must still make sure you do your school work carefully. We’re coming back to the classroom at ten, so that we have time to put everything away."
+        },
+        {
+          "id": "text-6",
+          "kind": "text",
+          "text": "20 You will hear a boy talking about his sister, Emma. Who has Emma married?\nBoy: My sister Emma got married last week to a guy she met in Paris. And now she lives in an apartment above that restaurant called Marco’s in Green Street. She finished studying art and design last year and has just got a job drawing pictures for a book! Her husband travels a lot in his job, showing tourists round different cities."
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:listening:part-4:all:group"
+      ],
+      "sectionId": "listening",
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:listening-part-5-transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Track 59 · Part 5 · Questions 21–25"
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Angela: Uncle Edward, we’re moving into our new school next month. They’ve built it next to the old one.\nEdward: Fantastic! There were some problems with your old one, weren’t there?\nAngela: Yes, like the hall was a long way from the rest of the school!\nEdward: But what was wrong with the cafeteria?\nAngela: Well, you could always hear the traffic in the street outside or the crowds of people waiting for the buses.\nEdward: Oh, OK. And your library?\nAngela: It wasn’t too small or anything like that, just ... dirty and not warm enough!\nEdward: But were the classrooms OK?\nAngela: Yeah..., my class used the ones on the second floor, but they didn’t have the latest equipment.\nEdward: That’s a pity. Was there a lift?\nAngela: They were so slow, you could walk faster! I don’t know why we had them!\nEdward: I went to your school office once.\nAngela: There wasn’t enough space for two desks and the bookshelves. But the secretary liked it and said the shelves were quite useful.\nEdward: Oh."
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:listening:part-5:all:group"
+      ],
+      "sectionId": "listening",
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 158,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "157"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:listening-answer-transfer-instruction",
+      "kind": "teaching_guidance",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Source instruction: You now have 6 minutes to write your answers on the answer sheet."
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:listening:part-5:all:group"
+      ],
+      "sectionId": "listening",
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 94,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "93"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:speaking-part-1-script",
+      "kind": "examiner_script",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Test 3 · Speaking Part 1 · Source duration label: 3–4 minutes."
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Phase 1\nExaminer: To each candidate in turn.\nWhat’s your name, please?\nHow old are you?\nWhere are you from?\nBack-up prompt: Are you from (Mexico)?"
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "Phase 2\nExaminer: Now, let’s talk about different times of the year.\nCandidate A, what seasons are there during the year in your country?\nBack-up prompt: Are there four seasons in your country?\nWhich time of year is special in your country?\nBack-up prompt: Is New Year a special time in your country?\nCandidate B, when are the school holidays in your country?\nBack-up prompt: Do you have school holidays in August?\nWhat is the weather usually like in December in your country?\nBack-up prompt: Is it usually cold here in December?"
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "Extended Response\nNow, Candidate A, please tell me something about your favourite time of the year.\nBack-up questions:\nDo you like the summer?\nDo you spend time with family at this time of the year?\nDo you go somewhere nice at your favourite time of year?"
+        },
+        {
+          "id": "text-5",
+          "kind": "text",
+          "text": "Examiner: Now, let’s talk about food.\nCandidate B, who cooks the food in your family?\nBack-up prompt: Do you cook for your family?\nWhat kind of food do you eat every week?\nBack-up prompt: Do you eat vegetables every week?\nCandidate A, what are the cafés like in your town?\nBack-up prompt: Are there any good cafés in your town?\nWhere does your family buy food from?\nBack-up prompt: Does your family buy food from a market?"
+        },
+        {
+          "id": "text-6",
+          "kind": "text",
+          "text": "Extended Response\nNow, Candidate B, please tell me something about a meal that you enjoy eating.\nBack-up questions:\nDo you have this meal with your family?\nWho makes it?\nDo you often eat this meal?"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:speaking:part-1:all:group"
+      ],
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 201,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "200"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:note:speaking-part-2-script",
+      "kind": "examiner_script",
+      "role": "teacher_notes",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Test 3 · Speaking Part 2 · Source duration label: 5–6 minutes."
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Phase 1 (source label: 3–4 minutes)\nExaminer: Now, in this part of the test you are going to talk together.\nShow Test 3 visuals (page 208) to both candidates.\nHere are some pictures that show different television programmes.\nDo you like these different types of television programmes? Say why or why not.\nI’ll say that again.\nDo you like these different types of television programmes? Say why or why not.\nAll right? Now, talk together."
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "Candidates: [Response space in the source.]\nAllow a minimum of 1 minute (maximum of 2 minutes) before moving on to the following questions."
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "Examiner / Candidates: Use as appropriate. Ask each candidate at least one question.\nDo you think ...\n... watching action films on TV is exciting?\n... watching the news on TV is sad?\n... watching football matches on TV is interesting?\n... watching singing on TV is fun?\n... watching programmes about history on TV is boring?\nOptional prompts: Why?/Why not? What do you think?"
+        },
+        {
+          "id": "text-5",
+          "kind": "text",
+          "text": "Examiner: So, Candidate A, which of these television programmes do you like best?\nAnd you, Candidate B, which of these television programmes do you like best?\nThank you. (Can I have the visuals, please?)\nRetrieve the visuals."
+        },
+        {
+          "id": "text-6",
+          "kind": "text",
+          "text": "Phase 2 (source label: Up to 2 minutes)\nExaminer: Now, do you prefer watching television alone or with other people, Candidate B? (Why?)\nAnd what about you, Candidate A? (Do you prefer watching television alone or with other people?) (Why?)\nHow much time do you spend watching television on different days of the week, Candidate A? (Why?)\nAnd you, Candidate B? (How much time do you spend watching television on different days of the week?) (Why?)\nThank you. That is the end of the test."
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-3:exam:speaking:part-2:all:group"
+      ],
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "teacher_notes",
+            "pdfPage": 202,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "201"
+          }
+        ]
+      }
+    }
+  ],
+  "schemaVersion": 1,
+  "contentRevisionId": "ket-trainer-1:test-3:revision-2"
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "contentRevisionId": "ket-trainer-1:test-3:rw-part1-sample:revision-1",
+  "solutions": [
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-1:1",
+      "answerType": "single_choice",
+      "correctOptionId": "C",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 193,
+            "printedPage": "192",
+            "role": "solution"
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 79,
+            "printedPage": "78",
+            "role": "exam",
+            "region": {
+              "x": 0.06,
+              "y": 0.27,
+              "width": 0.88,
+              "height": 0.23
+            }
+          },
+          "quote": "John,\nYou know I said that football practice will be on Wednesday ... Well, it isn’t – it’s on Thursday. Sorry!\nSee you there.\nCheers, Adam",
+          "materialId": "ket-trainer-1:test-3:exam:reading_writing:part-1:1:material",
+          "blockId": "message"
+        }
+      ],
+      "distractors": []
+    }
+  ],
+  "teacherNotes": [],
+  "mediaSlots": []
+}

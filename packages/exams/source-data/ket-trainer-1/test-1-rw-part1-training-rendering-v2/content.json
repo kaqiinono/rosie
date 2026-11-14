@@ -1,0 +1,2176 @@
+{
+  "id": "ket-trainer-1:test-1:training:reading_writing:part-1:set:r2",
+  "groups": [
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training",
+      "role": "training",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-example",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. Example: entrance / door — S."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "exampleText": "S",
+          "displayLabel": "练习 1 · 例题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "example",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-1",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. on foot / walk"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 1 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-2",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. picnic / fast food"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 2 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "2",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-3",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. on time / late"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 3 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "3",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-4",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. pupils / students"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 4 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "4",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-5",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. instead / as well"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 5 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "5",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-6",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. by car / drive"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 6 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "6",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-7",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. lend / borrow"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-7"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 7 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "7",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:1-8",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 1. forest / wood"
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "1-8"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "displayLabel": "练习 1 · 第 8 题",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "recognise_meaning",
+            "questionTypeId": "training_vocabulary",
+            "knowledgePointIds": []
+          },
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "8",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Example: We got lost in the forest. There are so many trees!"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "forest",
+          "displayLabel": "练习 2 · 例题",
+          "optionPoolId": "exercise-1-words",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Summer ______ 3 pm in Arnos Park. Bring your own food!",
+              "answerSlots": [
+                {
+                  "end": 25,
+                  "gapId": "gap-1",
+                  "start": 19,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-1",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 2 · 第 1 题",
+          "optionPoolId": "exercise-1-words",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Hi Jack, I can’t come on Monday. Can we meet on Tuesday ______?",
+              "answerSlots": [
+                {
+                  "end": 74,
+                  "gapId": "gap-1",
+                  "start": 68,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-2",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 2 · 第 2 题",
+          "optionPoolId": "exercise-1-words",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Bus leaves at 8 am. Please be ______.",
+              "answerSlots": [
+                {
+                  "end": 48,
+                  "gapId": "gap-1",
+                  "start": 42,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-3",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 2 · 第 3 题",
+          "optionPoolId": "exercise-1-words",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Students who ______ to school must change their shoes.",
+              "answerSlots": [
+                {
+                  "end": 31,
+                  "gapId": "gap-1",
+                  "start": 25,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-4",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 2 · 第 4 题",
+          "optionPoolId": "exercise-1-words",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:2-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 2. Pupils who need to ______ a hockey stick should come to the gym at 1:15 pm.",
+              "answerSlots": [
+                {
+                  "end": 37,
+                  "gapId": "gap-1",
+                  "start": 31,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:2-5",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "2-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 11,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "10"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 2 · 第 5 题",
+          "optionPoolId": "exercise-1-words",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            },
+            {
+              "id": "gap-2",
+              "label": "2",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Example: This film is for adults only. children and teenagers."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "any",
+          "exampleText": "children and teenagers",
+          "displayLabel": "练习 3 · 例题",
+          "optionPoolId": "ages",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            },
+            {
+              "id": "gap-2",
+              "label": "2",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Play area for under 8s only. ______ and ______",
+              "answerSlots": [
+                {
+                  "end": 47,
+                  "gapId": "gap-1",
+                  "start": 41,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-1",
+                  "sourceText": "______"
+                },
+                {
+                  "end": 58,
+                  "gapId": "gap-2",
+                  "start": 52,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-1",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "any",
+          "displayLabel": "练习 3 · 第 1 题",
+          "optionPoolId": "ages",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            },
+            {
+              "id": "gap-2",
+              "label": "2",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Art competition for 13~19 year-olds. ______ and ______",
+              "answerSlots": [
+                {
+                  "end": 55,
+                  "gapId": "gap-1",
+                  "start": 49,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-2",
+                  "sourceText": "______"
+                },
+                {
+                  "end": 66,
+                  "gapId": "gap-2",
+                  "start": 60,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-2",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "any",
+          "displayLabel": "练习 3 · 第 2 题",
+          "optionPoolId": "ages",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            },
+            {
+              "id": "gap-2",
+              "label": "2",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Holidays for 20~35 year-olds. ______ and ______",
+              "answerSlots": [
+                {
+                  "end": 48,
+                  "gapId": "gap-1",
+                  "start": 42,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-3",
+                  "sourceText": "______"
+                },
+                {
+                  "end": 59,
+                  "gapId": "gap-2",
+                  "start": 53,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-3",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "any",
+          "displayLabel": "练习 3 · 第 3 题",
+          "optionPoolId": "ages",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:3-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            },
+            {
+              "id": "gap-2",
+              "label": "2",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 3. Kids’ bike race. No-one over 12 please! ______ and ______",
+              "answerSlots": [
+                {
+                  "end": 58,
+                  "gapId": "gap-1",
+                  "start": 52,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-4",
+                  "sourceText": "______"
+                },
+                {
+                  "end": 69,
+                  "gapId": "gap-2",
+                  "start": 63,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:3-4",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "3-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "any",
+          "displayLabel": "练习 3 · 第 4 题",
+          "optionPoolId": "ages",
+          "classification": {
+            "domain": "vocabulary",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-example",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. Example: No credit cards under £5. You can’t use a credit card if you spend less than £5."
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-example"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "exampleText": "can’t",
+          "displayLabel": "练习 4 · 例题",
+          "optionPoolId": "modals",
+          "classification": {
+            "domain": "grammar",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-1",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. Free entry for under 8s.\nYounger children don’t ______ to pay.",
+              "answerSlots": [
+                {
+                  "end": 66,
+                  "gapId": "gap-1",
+                  "start": 60,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-1",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-1"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 1 题",
+          "optionPoolId": "modals",
+          "classification": {
+            "domain": "grammar",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-2",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. No talking in the library!\nYou ______ be quiet in the library.",
+              "answerSlots": [
+                {
+                  "end": 49,
+                  "gapId": "gap-1",
+                  "start": 43,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-2",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-2"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 2 题",
+          "optionPoolId": "modals",
+          "classification": {
+            "domain": "grammar",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-3",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. German spoken here.\nStaff ______ speak German.",
+              "answerSlots": [
+                {
+                  "end": 44,
+                  "gapId": "gap-1",
+                  "start": 38,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-3",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-3"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 3 题",
+          "optionPoolId": "modals",
+          "classification": {
+            "domain": "grammar",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-4",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. Please give your seat to those who need it.\nYou ______ offer your seat to others.",
+              "answerSlots": [
+                {
+                  "end": 66,
+                  "gapId": "gap-1",
+                  "start": 60,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-4",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-4"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 4 题",
+          "optionPoolId": "modals",
+          "classification": {
+            "domain": "grammar",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-1:training:reading_writing:part-1:4-5",
+          "gaps": [
+            {
+              "id": "gap-1",
+              "label": "1",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Exercise 4. Discounts for members.\nMembers ______ pay less.",
+              "answerSlots": [
+                {
+                  "end": 49,
+                  "gapId": "gap-1",
+                  "start": 43,
+                  "questionId": "ket-trainer-1:test-1:training:reading_writing:part-1:4-5",
+                  "sourceText": "______"
+                }
+              ]
+            }
+          ],
+          "scoring": {
+            "kind": "unscored",
+            "points": 0
+          },
+          "location": {
+            "role": "training",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 1,
+            "questionNumber": "4-5"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "training",
+                "pdfPage": 12,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "11"
+              }
+            ],
+            "authorship": "ai_assisted"
+          },
+          "answerOrder": "fixed",
+          "displayLabel": "练习 4 · 第 5 题",
+          "optionPoolId": "modals",
+          "classification": {
+            "domain": "grammar",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "use_words_in_context",
+            "questionTypeId": "training_gap_fill",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "activities": [
+        {
+          "id": "exercise-1",
+          "title": "Exercise 1",
+          "layout": "handwriting",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:reading_writing:part-1:words"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-example",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-1",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-2",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-3",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-4",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-5",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-6",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-7",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:1-8"
+          ],
+          "instructionIds": [
+            "exercise-1"
+          ],
+          "handwritingSize": "letter",
+          "choicePresentation": {
+            "kind": "letters",
+            "options": [
+              {
+                "value": "S",
+                "label": "S = similar meanings（意思相近）"
+              },
+              {
+                "value": "D",
+                "label": "D = different meanings（意思不同）"
+              }
+            ]
+          }
+        },
+        {
+          "id": "exercise-2",
+          "title": "Exercise 2",
+          "layout": "questions",
+          "materialIds": [
+            "ket-trainer-1:test-1:training:reading_writing:part-1:picnic"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:reading_writing:part-1:2-example",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:2-1",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:2-2",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:2-3",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:2-4",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:2-5"
+          ],
+          "instructionIds": [
+            "exercise-2"
+          ]
+        },
+        {
+          "id": "exercise-3",
+          "title": "Exercise 3",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:reading_writing:part-1:3-example",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:3-1",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:3-2",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:3-3",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:3-4"
+          ],
+          "instructionIds": [
+            "exercise-3"
+          ]
+        },
+        {
+          "id": "exercise-4",
+          "title": "Exercise 4",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-1:training:reading_writing:part-1:4-example",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:4-1",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:4-2",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:4-3",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:4-4",
+            "ket-trainer-1:test-1:training:reading_writing:part-1:4-5"
+          ],
+          "instructionIds": [
+            "grammar-heading",
+            "exercise-4"
+          ]
+        }
+      ],
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 11,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "10"
+          },
+          {
+            "role": "training",
+            "pdfPage": 12,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "11"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "materialIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:words",
+        "ket-trainer-1:test-1:training:reading_writing:part-1:picnic"
+      ],
+      "optionPools": [
+        {
+          "id": "ages",
+          "options": [
+            {
+              "id": "children",
+              "label": "children"
+            },
+            {
+              "id": "teenagers",
+              "label": "teenagers"
+            },
+            {
+              "id": "adults",
+              "label": "adults"
+            }
+          ],
+          "allowReuse": true
+        },
+        {
+          "id": "modals",
+          "options": [
+            {
+              "id": "1",
+              "label": "can"
+            },
+            {
+              "id": "2",
+              "label": "can’t"
+            },
+            {
+              "id": "3",
+              "label": "must"
+            },
+            {
+              "id": "4",
+              "label": "need"
+            },
+            {
+              "id": "5",
+              "label": "should"
+            },
+            {
+              "id": "6",
+              "label": "will"
+            }
+          ],
+          "allowReuse": false
+        },
+        {
+          "id": "exercise-1-words",
+          "options": [
+            {
+              "id": "word-1",
+              "label": "entrance"
+            },
+            {
+              "id": "word-2",
+              "label": "door"
+            },
+            {
+              "id": "word-3",
+              "label": "on foot"
+            },
+            {
+              "id": "word-4",
+              "label": "walk"
+            },
+            {
+              "id": "word-5",
+              "label": "picnic"
+            },
+            {
+              "id": "word-6",
+              "label": "fast food"
+            },
+            {
+              "id": "word-7",
+              "label": "on time"
+            },
+            {
+              "id": "word-8",
+              "label": "late"
+            },
+            {
+              "id": "word-9",
+              "label": "pupils"
+            },
+            {
+              "id": "word-10",
+              "label": "students"
+            },
+            {
+              "id": "word-11",
+              "label": "instead"
+            },
+            {
+              "id": "word-12",
+              "label": "as well"
+            },
+            {
+              "id": "word-13",
+              "label": "by car"
+            },
+            {
+              "id": "word-14",
+              "label": "drive"
+            },
+            {
+              "id": "word-15",
+              "label": "lend"
+            },
+            {
+              "id": "word-16",
+              "label": "borrow"
+            },
+            {
+              "id": "word-17",
+              "label": "forest"
+            },
+            {
+              "id": "word-18",
+              "label": "wood"
+            }
+          ],
+          "allowReuse": true
+        }
+      ],
+      "instructions": [
+        {
+          "id": "exercise-1",
+          "kind": "text",
+          "text": "Look at the pairs of words and phrases. Write S for those with similar meanings and D for those with different meanings.",
+          "presentation": {
+            "role": "instruction",
+            "number": "1",
+            "originalText": "1 Look at the pairs of words and phrases. Write S for those with similar meanings and D for those with different meanings."
+          }
+        },
+        {
+          "id": "exercise-2",
+          "kind": "text",
+          "text": "Now complete the sentences with some of the words from Exercise 1.",
+          "presentation": {
+            "role": "instruction",
+            "number": "2",
+            "originalText": "2 Now complete the sentences with some of the words from Exercise 1."
+          }
+        },
+        {
+          "id": "exercise-3",
+          "kind": "text",
+          "text": "Who CANNOT do each activity? Use two words from the box for each notice.",
+          "presentation": {
+            "role": "instruction",
+            "number": "3",
+            "originalText": "3 Who CANNOT do each activity? Use two words from the box for each notice."
+          }
+        },
+        {
+          "id": "grammar-heading",
+          "kind": "text",
+          "text": "MODAL VERBS",
+          "presentation": {
+            "role": "heading",
+            "prefix": "GRAMMAR",
+            "originalText": "GRAMMAR: MODAL VERBS"
+          }
+        },
+        {
+          "id": "exercise-4",
+          "kind": "text",
+          "text": "Read the notices. Complete the sentences with words from the box.",
+          "presentation": {
+            "role": "instruction",
+            "number": "4",
+            "originalText": "4 Read the notices. Complete the sentences with words from the box."
+          }
+        }
+      ]
+    }
+  ],
+  "status": "draft",
+  "guidance": [
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:part-description",
+      "role": "guidance",
+      "blocks": [
+        {
+          "id": "overview",
+          "kind": "text",
+          "text": "In this part, you:\n• read six notices, emails or messages\n• answer a multiple-choice question about each text"
+        },
+        {
+          "id": "tip",
+          "kind": "text",
+          "text": "第1部分中会使用不同的方式表达相同的事物。通知、邮件或消息中的某个单词或短语可能与问题中某个不同的单词或短语的意思相同。"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "guidance",
+            "pdfPage": 11,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "10"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:age-modal-tips",
+      "role": "guidance",
+      "blocks": [
+        {
+          "id": "age-tip",
+          "kind": "text",
+          "text": "第1部分经常会考查与年龄有关的词语，如 adult、child 和 teenager。"
+        },
+        {
+          "id": "modal-tip",
+          "kind": "text",
+          "text": "与通知有关的问题中经常使用 can、will、must、might、should 之类的单词。你一定要知道它们的意思。"
+        }
+      ],
+      "groupIds": [
+        "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training"
+      ],
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "guidance",
+            "pdfPage": 12,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "11"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    }
+  ],
+  "revision": 2,
+  "materials": [
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:words",
+      "role": "training",
+      "title": "VOCABULARY: FOCUS ON MEANING",
+      "blocks": [
+        {
+          "id": "word-pairs",
+          "kind": "text",
+          "text": "entrance / door\non foot / walk\npicnic / fast food\non time / late\npupils / students\ninstead / as well\nby car / drive\nlend / borrow\nforest / wood"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:reading_writing:part-1:words-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "pdfPage": 11,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "10"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:picnic",
+      "role": "training",
+      "title": "Exercise 2 illustration",
+      "blocks": [
+        {
+          "id": "picnic-image",
+          "alt": "People having a picnic in a park.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-1:training:reading_writing:part-1:picnic-image"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-1:training:reading_writing:part-1:picnic-family",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.115,
+              "y": 0.55,
+              "width": 0.385,
+              "height": 0.215
+            },
+            "pdfPage": 11,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "10"
+          }
+        ],
+        "authorship": "ai_assisted"
+      }
+    }
+  ],
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "pending"
+    }
+  },
+  "mediaSlots": [
+    {
+      "id": "ket-trainer-1:test-1:training:reading_writing:part-1:picnic-image",
+      "target": {
+        "id": "ket-trainer-1:test-1:training:reading_writing:part-1:complete-training",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "training",
+            "region": {
+              "x": 0.115,
+              "y": 0.55,
+              "width": 0.385,
+              "height": 0.215
+            },
+            "pdfPage": 11,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "10"
+          }
+        ],
+        "authorship": "ai_assisted"
+      },
+      "sourceTrackLabel": null
+    }
+  ],
+  "contentSetId": "ket-trainer-1:test-1:training:reading_writing:part-1:set",
+  "schemaVersion": 1,
+  "vocabularyLinks": [],
+  "mediaBindingRevisionId": "2211c2d1-e871-46d0-b985-4fdd8cd36663"
+}

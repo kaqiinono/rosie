@@ -1,0 +1,20 @@
+[
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 79,
+    "printedPage": "78",
+    "role": "exam",
+    "region": {
+      "x": 0.06,
+      "y": 0.27,
+      "width": 0.88,
+      "height": 0.23
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 193,
+    "printedPage": "192",
+    "role": "solution"
+  }
+]

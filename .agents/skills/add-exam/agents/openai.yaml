@@ -1,0 +1,4 @@
+interface:
+  display_name: "添加考试内容"
+  short_description: "从试卷文件提取完整电子题库、导入草稿并准备原页裁图任务"
+  default_prompt: "使用 $add-exam 将我提供的试卷及配套文件完整添加到 Rosie 考一考，导入草稿并准备图片裁切任务，保留待审核项。"

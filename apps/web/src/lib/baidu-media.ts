@@ -7,6 +7,35 @@ interface NetdiskFile {
   path: string
   isdir: number
 }
+export interface BaiduFileFingerprint {
+  size: number
+  md5: string | null
+  modifiedAt: number | null
+}
+export interface BaiduFileMetadata extends BaiduFileFingerprint {
+  id: string
+  path: string
+}
+
+function fingerprint(info: Record<string, unknown>): BaiduFileFingerprint {
+  const size = Number(info.size)
+  const modified = Number(info.server_mtime)
+  if (!Number.isSafeInteger(size) || size < 0) throw Error('baidu_invalid_response')
+  return {
+    size, md5: typeof info.md5 === 'string' && /^[0-9a-f]{32}$/i.test(info.md5) ? info.md5.toLowerCase() : null,
+    modifiedAt: Number.isSafeInteger(modified) && modified > 0 ? modified : null,
+  }
+}
+
+export async function readBaiduFileMetadata(fsId: string, token: string): Promise<BaiduFileMetadata | null> {
+  const id = exactBaiduId(fsId)
+  const metadata = await baiduJson('/rest/2.0/xpan/multimedia', { method: 'filemetas', fsids: `[${id}]`, dlink: '0' }, token)
+  const info: unknown = Array.isArray(metadata.list) ? metadata.list[0] : null
+  if (!info || typeof info !== 'object') return null
+  const file = info as Record<string, unknown>
+  if (exactBaiduId(file.fs_id) !== id || file.isdir !== 0 || typeof file.path !== 'string') return null
+  return { id, path: file.path, ...fingerprint(file) }
+}
 interface DirectoryCache {
   files: NetdiskFile[]
   expires: number
@@ -134,6 +163,7 @@ export async function fetchBaiduFileById(
   kind: 'audio' | 'video' | 'material',
   token: string,
   expectedPath?: string,
+  expectedFingerprint?: BaiduFileFingerprint,
 ): Promise<Response | null> {
   const id = exactBaiduId(fsId)
   const metadata = await baiduJson(
@@ -158,6 +188,11 @@ export async function fetchBaiduFileById(
     (kind === 'video' && !/\.mp4$/i.test(info.path))
   )
     return null
+  if (expectedFingerprint) {
+    const actual = fingerprint(info as Record<string, unknown>)
+    if (actual.size !== expectedFingerprint.size || actual.md5 !== expectedFingerprint.md5
+      || actual.modifiedAt !== expectedFingerprint.modifiedAt) throw Error('baidu_file_changed')
+  }
   if (typeof info.dlink !== 'string') throw Error('baidu_download_failed')
   let download = safeDownloadUrl(info.dlink)
   const headers = new Headers({ 'User-Agent': 'pan.baidu.com', 'Accept-Encoding': 'identity' })

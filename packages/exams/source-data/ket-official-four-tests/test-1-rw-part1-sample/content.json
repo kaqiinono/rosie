@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "id": "ket-official-four-tests:test-1:rw-part1-sample:revision-1",
+  "contentSetId": "ket-official-four-tests:test-1:rw-part1-sample",
+  "revision": 1,
+  "status": "draft",
+  "materials": [
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:material",
+      "familyId": "ket-official-four-tests:blue-sports-bag",
+      "role": "exam",
+      "title": "失物招领告示",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Found: blue sports bag\nCollect from school office\n(with student ID card)"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 9,
+            "printedPage": "8",
+            "role": "exam",
+            "region": {
+              "x": 0.08,
+              "y": 0.325,
+              "width": 0.86,
+              "height": 0.18
+            }
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1",
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "answerType": "single_choice",
+          "prompt": [],
+          "options": [
+            {
+              "id": "A",
+              "label": "A student has found the wrong ID card in his sports bag."
+            },
+            {
+              "id": "B",
+              "label": "The person who lost his bag can get it from the school office."
+            },
+            {
+              "id": "C",
+              "label": "If you find a lost sports bag, please take it to the school office."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "reading_intent",
+            "knowledgePointIds": [],
+            "topicIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 9,
+                "printedPage": "8",
+                "role": "exam",
+                "region": {
+                  "x": 0.08,
+                  "y": 0.325,
+                  "width": 0.86,
+                  "height": 0.18
+                }
+              }
+            ],
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 9,
+            "printedPage": "8",
+            "role": "exam",
+            "region": {
+              "x": 0.08,
+              "y": 0.325,
+              "width": 0.86,
+              "height": 0.18
+            }
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "guidance": [],
+  "vocabularyLinks": [],
+  "mediaSlots": [],
+  "mediaBindingRevisionId": null,
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "pending"
+    }
+  }
+}

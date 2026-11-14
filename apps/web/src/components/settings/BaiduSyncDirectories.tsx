@@ -19,7 +19,8 @@ import { SyncPending, useSyncConfirmation } from './SyncControls'
 const loading = () => <SyncPending />
 const BaiduMathVideoManager = dynamic(() => import('./BaiduMathVideoManager'), { loading })
 const EnglishAudioManager = dynamic(() => import('./EnglishAudioManager'), { loading })
-const tabs = ['路径', '数学', '英语'] as const
+const ExamsMediaManager = dynamic(() => import('./ExamsMediaManager'), { loading })
+const tabs = ['路径', '数学', '英语', '考试'] as const
 type SyncTab = (typeof tabs)[number]
 
 type OpenDirectory = SyncDirectoryPage & { root: SyncDirectory }
@@ -59,9 +60,14 @@ function SyncWorkspace({ user }: { user: User }) {
   const userId = user.id
   const authorization = useSyncAuthorization(user)
   const [tab, setTab] = useState<SyncTab>('路径')
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('panel') === 'exams' || params.get('tab') === 'exams' || params.has('revisionId')) setTab('考试')
+  }, [])
   const panel = useRef<HTMLDivElement>(null)
   const { confirm, dialog } = useSyncConfirmation()
   const [list, setList] = useState<SyncDirectoryList | null>(null)
+  const visibleDirectories = list?.directories.filter(directory => directory.managedBy !== 'exam_images') ?? []
   const [opened, setOpened] = useState<OpenDirectory | null>(null)
   const [input, setInput] = useState('')
   const [operation, setOperation] = useState('')
@@ -214,6 +220,8 @@ function SyncWorkspace({ user }: { user: User }) {
                     <BaiduMathVideoManager key={list.generation} paths={list} />
                   ) : item === '英语' ? (
                     <EnglishAudioManager key={list.generation} userId={userId} paths={list} />
+                  ) : item === '考试' ? (
+                    <ExamsMediaManager key={list.generation} userId={userId} paths={list} />
                   ) : (
                     <Flex direction="column" gap="3">
                       <Flex align="center" justify="between" gap="2" wrap="wrap">
@@ -258,13 +266,13 @@ function SyncWorkspace({ user }: { user: User }) {
                           </Button>
                         </Flex>
                       </Form>
-                      {!list.directories.length && (
+                      {!visibleDirectories.length && (
                         <Text size="2" color="gray">
                           尚未添加授权路径。
                         </Text>
                       )}
                       <Flex direction="column" gap="2" role="list">
-                        {list.directories.map((root) => (
+                        {visibleDirectories.map((root) => (
                           <Flex key={root.id} role="listitem" align="center" gap="2" wrap="wrap">
                             <Box flexGrow="1" minWidth="0">
                               <Text size="2" wrap="pretty" className="break-all">

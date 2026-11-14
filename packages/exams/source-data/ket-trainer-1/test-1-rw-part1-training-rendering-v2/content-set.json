@@ -1,0 +1,17 @@
+{
+  "id": "ket-trainer-1:test-1:training:reading_writing:part-1:set",
+  "kind": "training_unit",
+  "title": "Test 1 Reading and Writing Part 1 — Training",
+  "source": {
+    "id": "ket-trainer-1",
+    "title": "剑桥KET 官方模考题精讲精练 1",
+    "edition": "User-supplied 218-page scan; printed Training Test 1",
+    "fileHash": "db60e05ceb2c421ea5982b6e092dcfe6b75ca24348a24860bd164f1a97dedada"
+  },
+  "purpose": "training",
+  "template": {
+    "id": "ket-schools-2020-v1",
+    "version": 1
+  },
+  "testNumber": 1
+}

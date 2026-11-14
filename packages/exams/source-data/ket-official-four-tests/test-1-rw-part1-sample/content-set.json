@@ -1,0 +1,16 @@
+{
+  "id": "ket-official-four-tests:test-1:rw-part1-sample",
+  "source": {
+    "id": "ket-official-four-tests",
+    "title": "KET青少版官方真题1（新题型，2021版）",
+    "fileHash": "1e67451d011e83999712119387dc40a5cdc5d260090bfde2758428bd8646c0c6"
+  },
+  "testNumber": 1,
+  "title": "KET Test 1 · Reading and Writing Part 1 第1题样本",
+  "kind": "official_paper",
+  "template": {
+    "id": "ket-schools-2020-v1",
+    "version": 1
+  },
+  "purpose": "training"
+}

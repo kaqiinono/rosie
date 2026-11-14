@@ -1,0 +1,338 @@
+[
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 79,
+    "printedPage": "78",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 80,
+    "printedPage": "79",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 81,
+    "printedPage": "80",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 82,
+    "printedPage": "81",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 83,
+    "printedPage": "82",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 84,
+    "printedPage": "83",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 85,
+    "printedPage": "84",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 86,
+    "printedPage": "85",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 87,
+    "printedPage": "86",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 88,
+    "printedPage": "87",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 88,
+    "printedPage": "87",
+    "role": "exam",
+    "region": {
+      "x": 0.05,
+      "y": 0.25,
+      "width": 0.89,
+      "height": 0.2
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.1,
+      "y": 0.245,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.385,
+      "y": 0.245,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.67,
+      "y": 0.245,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.1,
+      "y": 0.47,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.385,
+      "y": 0.47,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.67,
+      "y": 0.47,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.1,
+      "y": 0.69,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.385,
+      "y": 0.69,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 89,
+    "printedPage": "88",
+    "role": "exam",
+    "region": {
+      "x": 0.67,
+      "y": 0.69,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam",
+    "region": {
+      "x": 0.1,
+      "y": 0.16,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam",
+    "region": {
+      "x": 0.385,
+      "y": 0.16,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam",
+    "region": {
+      "x": 0.67,
+      "y": 0.16,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam",
+    "region": {
+      "x": 0.1,
+      "y": 0.38,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam",
+    "region": {
+      "x": 0.385,
+      "y": 0.38,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 90,
+    "printedPage": "89",
+    "role": "exam",
+    "region": {
+      "x": 0.67,
+      "y": 0.38,
+      "width": 0.265,
+      "height": 0.145
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 91,
+    "printedPage": "90",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 92,
+    "printedPage": "91",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 93,
+    "printedPage": "92",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 94,
+    "printedPage": "93",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 157,
+    "printedPage": "156",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 158,
+    "printedPage": "157",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 193,
+    "printedPage": "192",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 201,
+    "printedPage": "200",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 202,
+    "printedPage": "201",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 209,
+    "printedPage": "208",
+    "role": "exam",
+    "region": {
+      "x": 0.06,
+      "y": 0.1,
+      "width": 0.89,
+      "height": 0.36
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 209,
+    "printedPage": "208",
+    "role": "exam"
+  }
+]

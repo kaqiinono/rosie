@@ -1,0 +1,110 @@
+[
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 29,
+    "printedPage": "28",
+    "role": "training"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 30,
+    "printedPage": "29",
+    "role": "training"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 172,
+    "printedPage": "171",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 172,
+    "printedPage": "171",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 143,
+    "printedPage": "142",
+    "role": "solution",
+    "region": {
+      "x": 0.055,
+      "y": 0.165,
+      "width": 0.44,
+      "height": 0.735
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 29,
+    "printedPage": "28",
+    "role": "training",
+    "region": {
+      "x": 0.535,
+      "y": 0.235,
+      "width": 0.415,
+      "height": 0.245
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 29,
+    "printedPage": "28",
+    "role": "training",
+    "region": {
+      "x": 0.075,
+      "y": 0.695,
+      "width": 0.865,
+      "height": 0.19
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 30,
+    "printedPage": "29",
+    "role": "training",
+    "region": {
+      "x": 0.075,
+      "y": 0.375,
+      "width": 0.72,
+      "height": 0.13
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 30,
+    "printedPage": "29",
+    "role": "training",
+    "region": {
+      "x": 0.075,
+      "y": 0.81,
+      "width": 0.75,
+      "height": 0.115
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 30,
+    "printedPage": "29",
+    "role": "training",
+    "region": {
+      "x": 0.08,
+      "y": 0.58,
+      "width": 0.79,
+      "height": 0.15
+    }
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 29,
+    "printedPage": "28",
+    "role": "guidance"
+  },
+  {
+    "sourceId": "ket-trainer-1",
+    "pdfPage": 30,
+    "printedPage": "29",
+    "role": "guidance"
+  }
+]

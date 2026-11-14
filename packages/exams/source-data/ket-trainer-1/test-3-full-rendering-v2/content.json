@@ -1,0 +1,6506 @@
+{
+  "id": "ket-trainer-1:test-3:revision-2",
+  "groups": [
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:1",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why has Adam written this message?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "to ask if John wants to play football"
+            },
+            {
+              "id": "B",
+              "label": "to tell John that Adam can’t play football"
+            },
+            {
+              "id": "C",
+              "label": "to let John know about a change of plan"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "1"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 79,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "78"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:rw-p1-1"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:2:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:2",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Pupils can"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "buy books."
+            },
+            {
+              "id": "B",
+              "label": "read about explorers."
+            },
+            {
+              "id": "C",
+              "label": "come and listen to a writer."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "2"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 79,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "78"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:rw-p1-2"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:3:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:3",
+          "prompt": [],
+          "options": [
+            {
+              "id": "A",
+              "label": "You can now buy tickets for the museum trip."
+            },
+            {
+              "id": "B",
+              "label": "Tell Mr Goss how you want to travel to the museum."
+            },
+            {
+              "id": "C",
+              "label": "Mr Goss will tell you if you need a ticket to the museum."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "3"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 79,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "78"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:rw-p1-3"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:4:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:4",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why has Lizzie written this?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "to invite Jenny to a party"
+            },
+            {
+              "id": "B",
+              "label": "to tell Jenny about a shopping trip"
+            },
+            {
+              "id": "C",
+              "label": "to ask about something that she’s lost"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "4"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 80,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "79"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:rw-p1-4"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:5:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:5",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Mike wants to"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "play tennis with Dave."
+            },
+            {
+              "id": "B",
+              "label": "borrow something from Dave."
+            },
+            {
+              "id": "C",
+              "label": "get help from Dave with the homework."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "5"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 80,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "79"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:rw-p1-5"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:6:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-1:6",
+          "prompt": [],
+          "options": [
+            {
+              "id": "A",
+              "label": "There isn’t a geography lesson tomorrow."
+            },
+            {
+              "id": "B",
+              "label": "Class 4’s lesson is happening at a different time today."
+            },
+            {
+              "id": "C",
+              "label": "There will be more people in Room 7C than usual today."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "6"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 80,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "79"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:rw-p1-6"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:7",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person now works as a journalist?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person now works as a journalist?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "7"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:8",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person made her sport more popular?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person made her sport more popular?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "8"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:9",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person won something that she couldn’t use?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person won something that she couldn’t use?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "9"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:10",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person became rich when she was young?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person became rich when she was young?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "10"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:11",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person was the youngest person in a competition?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person was the youngest person in a competition?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "11"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:12",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person did something that people believed was not possible?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person did something that people believed was not possible?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "12"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:13",
+          "items": [
+            {
+              "id": "statement",
+              "prompt": [
+                {
+                  "id": "statement",
+                  "kind": "text",
+                  "text": "Which sports person was born in one country and now lives in another?"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which sports person was born in one country and now lives in another?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "13"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 81,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "80"
+              },
+              {
+                "role": "exam",
+                "pdfPage": 82,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "81"
+              }
+            ]
+          },
+          "optionPoolId": "sports-people",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_cross_text_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "matching",
+          "materialIds": [
+            "ket-trainer-1:test-3:material:teenage-sports-superstars"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:7",
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:8",
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:9",
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:10",
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:11",
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:12",
+            "ket-trainer-1:test-3:exam:reading_writing:part-2:13"
+          ],
+          "instructionIds": [
+            "instruction-1"
+          ]
+        }
+      ],
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 81,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "80"
+          },
+          {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:teenage-sports-superstars"
+      ],
+      "optionPools": [
+        {
+          "id": "sports-people",
+          "options": [
+            {
+              "id": "A",
+              "label": "Gaurika Singh"
+            },
+            {
+              "id": "B",
+              "label": "Tracy Austin"
+            },
+            {
+              "id": "C",
+              "label": "Nadia Comăneci"
+            }
+          ],
+          "allowReuse": true
+        }
+      ],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:14",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What does the writer say is unusual about Isabella Rose Taylor?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "She planned her future career when she was very young."
+            },
+            {
+              "id": "B",
+              "label": "She started her own business when she was very young."
+            },
+            {
+              "id": "C",
+              "label": "She got interested in fashion when she was very young."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "14"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 84,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "83"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:15",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What does Isabella say about painting and making clothes?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "It is important to paint good pictures of clothes."
+            },
+            {
+              "id": "B",
+              "label": "The colours in her paintings gave her ideas for clothes to make."
+            },
+            {
+              "id": "C",
+              "label": "She uses paint to put her favourite colours on the clothes she makes."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "15"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 84,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "83"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:16",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What do we learn about Isabella’s home?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "Everything for her business is done in the same room at home."
+            },
+            {
+              "id": "B",
+              "label": "Her home is too small, so she’s looking for another one."
+            },
+            {
+              "id": "C",
+              "label": "She’s made changes to her home so that she can work there."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "16"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 84,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "83"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:17",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why does the writer think that Isabella will do well in the future?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "She is already very popular online."
+            },
+            {
+              "id": "B",
+              "label": "She understands the fashion business."
+            },
+            {
+              "id": "C",
+              "label": "She has brilliant people who work for her."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "17"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 84,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "83"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:18",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What is the best title for the article?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "The girl who can’t wait to start working in fashion soon"
+            },
+            {
+              "id": "B",
+              "label": "The problem with working and studying"
+            },
+            {
+              "id": "C",
+              "label": "A hobby that is becoming a career"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "18"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 84,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "83"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_main_idea",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          },
+          {
+            "role": "exam",
+            "pdfPage": 84,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "83"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:isabella-rose-taylor"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:19",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Choose the word for gap 19."
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "close"
+            },
+            {
+              "id": "B",
+              "label": "complete"
+            },
+            {
+              "id": "C",
+              "label": "finish"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "19"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_lexical_cloze",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": [
+              "vocabulary_school"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:20",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Choose the word for gap 20."
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "almost"
+            },
+            {
+              "id": "B",
+              "label": "only"
+            },
+            {
+              "id": "C",
+              "label": "nearly"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "20"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_lexical_cloze",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": [
+              "adverb_only"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:21",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Choose the word for gap 21."
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "needed"
+            },
+            {
+              "id": "B",
+              "label": "liked"
+            },
+            {
+              "id": "C",
+              "label": "had"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "21"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_lexical_cloze",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": [
+              "passive_voice"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:22",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Choose the word for gap 22."
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "travel"
+            },
+            {
+              "id": "B",
+              "label": "make"
+            },
+            {
+              "id": "C",
+              "label": "catch"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "22"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_lexical_cloze",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": [
+              "transport_collocation"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:23",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Choose the word for gap 23."
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "resting"
+            },
+            {
+              "id": "B",
+              "label": "staying"
+            },
+            {
+              "id": "C",
+              "label": "sleeping"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "23"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_lexical_cloze",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": [
+              "stay_the_night"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-4:24",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Choose the word for gap 24."
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "way"
+            },
+            {
+              "id": "B",
+              "label": "transport"
+            },
+            {
+              "id": "C",
+              "label": "mile"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "24"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 85,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "84"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_lexical_cloze",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": [
+              "a_long_way"
+            ]
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "materialIds": [
+            "ket-trainer-1:test-3:material:ferry-to-school"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:reading_writing:part-4:19",
+            "ket-trainer-1:test-3:exam:reading_writing:part-4:20",
+            "ket-trainer-1:test-3:exam:reading_writing:part-4:21",
+            "ket-trainer-1:test-3:exam:reading_writing:part-4:22",
+            "ket-trainer-1:test-3:exam:reading_writing:part-4:23",
+            "ket-trainer-1:test-3:exam:reading_writing:part-4:24"
+          ],
+          "instructionIds": [
+            "instruction-1"
+          ]
+        }
+      ],
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:ferry-to-school"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:example-0",
+          "gaps": [
+            {
+              "id": "gap-0",
+              "label": "Example 0",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: 0 THE"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "example-0"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "exampleText": "the",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_superlative",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "definite_article"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:25",
+          "gaps": [
+            {
+              "id": "gap-25",
+              "label": "25",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write one word for gap 25."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "25"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_grammar_cloze",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "indefinite_article"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:26",
+          "gaps": [
+            {
+              "id": "gap-26",
+              "label": "26",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write one word for gap 26."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "26"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_grammar_cloze",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "quantifier_much"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:27",
+          "gaps": [
+            {
+              "id": "gap-27",
+              "label": "27",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write one word for gap 27."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "27"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_grammar_cloze",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "infinitive"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:28",
+          "gaps": [
+            {
+              "id": "gap-28",
+              "label": "28",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write one word for gap 28."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "28"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_grammar_cloze",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "for_the_first_time"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:29",
+          "gaps": [
+            {
+              "id": "gap-29",
+              "label": "29",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write one word for gap 29."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "29"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_grammar_cloze",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "present_perfect"
+            ]
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-5:30",
+          "gaps": [
+            {
+              "id": "gap-30",
+              "label": "30",
+              "maxWords": 1
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write one word for gap 30."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "30"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 86,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "85"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_grammar_cloze",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": [
+              "would_like"
+            ]
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "materialIds": [
+            "ket-trainer-1:test-3:material:jake-plakias-email"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:example-0",
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:25",
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:26",
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:27",
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:28",
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:29",
+            "ket-trainer-1:test-3:exam:reading_writing:part-5:30"
+          ],
+          "instructionIds": [
+            "instruction-1",
+            "instruction-2"
+          ]
+        }
+      ],
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:jake-plakias-email"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, write the correct answer."
+        },
+        {
+          "id": "instruction-2",
+          "kind": "text",
+          "text": "Write ONE word for each gap."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-6:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-6:31",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-writing-v1"
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 6,
+            "testNumber": 3,
+            "questionNumber": "31"
+          },
+          "answerType": "writing",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 87,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "86"
+              }
+            ]
+          },
+          "minimumWords": 25,
+          "classification": {
+            "domain": "writing",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "writing_task_coverage",
+            "questionTypeId": "email_note",
+            "knowledgePointIds": [
+              "email_invitation"
+            ]
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 6,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 87,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "86"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:exam:reading_writing:part-6:all:group:task-material"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "Write 25 words or more."
+        },
+        {
+          "id": "instruction-2",
+          "kind": "text",
+          "text": "Write the email on your answer sheet."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-7:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:reading_writing:part-7:32",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Write the story shown in the three pictures."
+            }
+          ],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-writing-v1"
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "reading_writing",
+            "partNumber": 7,
+            "testNumber": 3,
+            "questionNumber": "32"
+          },
+          "answerType": "writing",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 88,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "87"
+              }
+            ]
+          },
+          "minimumWords": 35,
+          "classification": {
+            "domain": "writing",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "writing_narrative_sequence",
+            "questionTypeId": "picture_story",
+            "knowledgePointIds": [
+              "past_tense_narrative"
+            ]
+          }
+        }
+      ],
+      "sectionId": "reading_writing",
+      "partNumber": 7,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 88,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "87"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:found-handbag-story"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "Look at the three pictures."
+        },
+        {
+          "id": "instruction-2",
+          "kind": "text",
+          "text": "Write the story shown in the pictures."
+        },
+        {
+          "id": "instruction-3",
+          "kind": "text",
+          "text": "Write 35 words or more."
+        },
+        {
+          "id": "instruction-4",
+          "kind": "text",
+          "text": "Write the story on your answer sheet."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-1:1",
+          "prompt": [
+            {
+              "id": "task-1-1",
+              "kind": "text",
+              "text": "What time does the nature programme start?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-1-option-A"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-1-option-B"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-1-option-C"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "1"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 89,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "88"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_specific_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-1:2",
+          "prompt": [
+            {
+              "id": "task-2-1",
+              "kind": "text",
+              "text": "Who is Diana talking to on her mobile?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-2-option-A"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-2-option-B"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-2-option-C"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "2"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 89,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "88"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_specific_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-1:3",
+          "prompt": [
+            {
+              "id": "task-3-1",
+              "kind": "text",
+              "text": "Where will Henry put his mum’s watch?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-3-option-A"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-3-option-B"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-3-option-C"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "3"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 89,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "88"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_specific_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-1:4",
+          "prompt": [
+            {
+              "id": "task-4-1",
+              "kind": "text",
+              "text": "Why is the girl tired?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-4-option-A"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-4-option-B"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-4-option-C"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "4"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 90,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "89"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_specific_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-1:5",
+          "prompt": [
+            {
+              "id": "task-5-1",
+              "kind": "text",
+              "text": "What will the weather be like on Sunday?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-5-option-A"
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-5-option-B"
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-trainer-1:test-3:media:listening-5-option-C"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "5"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 90,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "89"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_specific_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "listening",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:listening:part-1:1",
+            "ket-trainer-1:test-3:exam:listening:part-1:2",
+            "ket-trainer-1:test-3:exam:listening:part-1:3",
+            "ket-trainer-1:test-3:exam:listening:part-1:4",
+            "ket-trainer-1:test-3:exam:listening:part-1:5"
+          ],
+          "instructionIds": [
+            "instruction-1",
+            "audio"
+          ]
+        }
+      ],
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          },
+          {
+            "role": "exam",
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:exam:listening:part-1:all:group:task-material"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct picture."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-trainer-1:test-3:media:listening-part-1-audio"
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-2:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-2:6",
+          "gaps": [
+            {
+              "id": "gap-6",
+              "label": "Name of stadium:",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Name of stadium:"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "6"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 91,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "90"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_spelling",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-2:7",
+          "gaps": [
+            {
+              "id": "gap-7",
+              "label": "Bus number:",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Bus number:"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "7"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 91,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "90"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_numbers",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-2:8",
+          "gaps": [
+            {
+              "id": "gap-8",
+              "label": "Cost of ticket: £",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Cost of ticket: £"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "8"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 91,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "90"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_prices",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-2:9",
+          "gaps": [
+            {
+              "id": "gap-9",
+              "label": "Wear:",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Wear:"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "9"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 91,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "90"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_instruction",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-2:10",
+          "gaps": [
+            {
+              "id": "gap-10",
+              "label": "Bring:",
+              "maxWords": null
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Bring:"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "10"
+          },
+          "answerType": "gap_fill",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 91,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "90"
+              }
+            ]
+          },
+          "answerOrder": "fixed",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_instruction",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "listening",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "materialIds": [
+            "ket-trainer-1:test-3:material:football-match-notes"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:listening:part-2:6",
+            "ket-trainer-1:test-3:exam:listening:part-2:7",
+            "ket-trainer-1:test-3:exam:listening:part-2:8",
+            "ket-trainer-1:test-3:exam:listening:part-2:9",
+            "ket-trainer-1:test-3:exam:listening:part-2:10"
+          ],
+          "instructionIds": [
+            "instruction-1",
+            "instruction-2",
+            "audio"
+          ]
+        }
+      ],
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 91,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "90"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:football-match-notes"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, write the correct answer in the gap. Write one word or a number or a date or a time."
+        },
+        {
+          "id": "instruction-2",
+          "kind": "text",
+          "text": "You will hear a boy leaving a message for a friend about a football match."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-trainer-1:test-3:media:listening-part-2-audio"
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-3:11",
+          "prompt": [
+            {
+              "id": "task-11-1",
+              "kind": "text",
+              "text": "Who did Hitomi go to Hardin Castle with?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "her classmates"
+            },
+            {
+              "id": "B",
+              "label": "her family"
+            },
+            {
+              "id": "C",
+              "label": "her neighbours"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "11"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 92,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "91"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_dialogue_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-3:12",
+          "prompt": [
+            {
+              "id": "task-12-1",
+              "kind": "text",
+              "text": "What was the weather like?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "cold"
+            },
+            {
+              "id": "B",
+              "label": "wet"
+            },
+            {
+              "id": "C",
+              "label": "windy"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "12"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 92,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "91"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_dialogue_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-3:13",
+          "prompt": [
+            {
+              "id": "task-13-1",
+              "kind": "text",
+              "text": "What do Hitomi and Freddie both like best at Hardin Castle?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "the Queen’s bathroom"
+            },
+            {
+              "id": "B",
+              "label": "the yellow bedroom"
+            },
+            {
+              "id": "C",
+              "label": "the dining room"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "13"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 92,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "91"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_dialogue_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-3:14",
+          "prompt": [
+            {
+              "id": "task-14-1",
+              "kind": "text",
+              "text": "Freddie went to the castle because he wanted"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "to learn about history."
+            },
+            {
+              "id": "B",
+              "label": "to take photos."
+            },
+            {
+              "id": "C",
+              "label": "to find out about birds."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "14"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 92,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "91"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_dialogue_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-3:15",
+          "prompt": [
+            {
+              "id": "task-15-1",
+              "kind": "text",
+              "text": "What’s on at the castle next month?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "a running race"
+            },
+            {
+              "id": "B",
+              "label": "an exhibition of old cars"
+            },
+            {
+              "id": "C",
+              "label": "a painting course"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "testNumber": 3,
+            "questionNumber": "15"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 92,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "91"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_dialogue_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "listening",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:listening:part-3:11",
+            "ket-trainer-1:test-3:exam:listening:part-3:12",
+            "ket-trainer-1:test-3:exam:listening:part-3:13",
+            "ket-trainer-1:test-3:exam:listening:part-3:14",
+            "ket-trainer-1:test-3:exam:listening:part-3:15"
+          ],
+          "instructionIds": [
+            "instruction-1",
+            "instruction-2",
+            "audio"
+          ]
+        }
+      ],
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 92,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "91"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:exam:listening:part-3:all:group:task-material"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "instruction-2",
+          "kind": "text",
+          "text": "You will hear Hitomi talking to her friend Freddie about her visit to Hardin Castle."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-trainer-1:test-3:media:listening-part-3-audio"
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-4:16",
+          "prompt": [
+            {
+              "id": "task-16-1",
+              "kind": "text",
+              "text": "You will hear a girl talking about a video.\nWhich part of the video didn’t she understand?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "the beginning"
+            },
+            {
+              "id": "B",
+              "label": "the middle"
+            },
+            {
+              "id": "C",
+              "label": "the end"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "16"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 93,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "92"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_sequence",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-4:17",
+          "prompt": [
+            {
+              "id": "task-17-1",
+              "kind": "text",
+              "text": "You will hear two friends talking about a concert.\nWhat’s the boy’s opinion of the concert?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "It was boring."
+            },
+            {
+              "id": "B",
+              "label": "It was terrible."
+            },
+            {
+              "id": "C",
+              "label": "It was unusual."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "17"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 93,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "92"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_opinion",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-4:18",
+          "prompt": [
+            {
+              "id": "task-18-1",
+              "kind": "text",
+              "text": "You will hear a boy talking to his dad about going to the city centre.\nWhy are they going to the city centre?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "to meet someone"
+            },
+            {
+              "id": "B",
+              "label": "to buy something"
+            },
+            {
+              "id": "C",
+              "label": "to watch something"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "18"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 93,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "92"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_purpose",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-4:19",
+          "prompt": [
+            {
+              "id": "task-19-1",
+              "kind": "text",
+              "text": "You will hear a teacher talking to his class.\nWhat information is he giving his students?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "They’re going to start a new project."
+            },
+            {
+              "id": "B",
+              "label": "They’re going to have their lesson outside."
+            },
+            {
+              "id": "C",
+              "label": "They’re going to have a longer lesson."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "19"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 93,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "92"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_main_idea",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-4:20",
+          "prompt": [
+            {
+              "id": "task-20-1",
+              "kind": "text",
+              "text": "You will hear a boy talking about his sister, Emma.\nWho has Emma married?"
+            }
+          ],
+          "options": [
+            {
+              "id": "A",
+              "label": "an artist"
+            },
+            {
+              "id": "B",
+              "label": "a tour guide"
+            },
+            {
+              "id": "C",
+              "label": "a cook"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "testNumber": 3,
+            "questionNumber": "20"
+          },
+          "answerType": "single_choice",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 93,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "92"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_person_identification",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "listening",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "materialIds": [],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:listening:part-4:16",
+            "ket-trainer-1:test-3:exam:listening:part-4:17",
+            "ket-trainer-1:test-3:exam:listening:part-4:18",
+            "ket-trainer-1:test-3:exam:listening:part-4:19",
+            "ket-trainer-1:test-3:exam:listening:part-4:20"
+          ],
+          "instructionIds": [
+            "instruction-1",
+            "audio"
+          ]
+        }
+      ],
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 93,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "92"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:exam:listening:part-4:all:group:task-material"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-trainer-1:test-3:media:listening-part-4-audio"
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-5:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-5:example-0",
+          "items": [
+            {
+              "id": "hall",
+              "prompt": [
+                {
+                  "id": "place",
+                  "kind": "text",
+                  "text": "hall"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: hall → F"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "example-0"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 94,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "93"
+              }
+            ]
+          },
+          "exampleText": "too far",
+          "optionPoolId": "school-problems",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_matching",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-5:21",
+          "items": [
+            {
+              "id": "cafeteria",
+              "prompt": [
+                {
+                  "id": "place",
+                  "kind": "text",
+                  "text": "cafeteria"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "cafeteria"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "21"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 94,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "93"
+              }
+            ]
+          },
+          "optionPoolId": "school-problems",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_matching",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-5:22",
+          "items": [
+            {
+              "id": "library",
+              "prompt": [
+                {
+                  "id": "place",
+                  "kind": "text",
+                  "text": "library"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "library"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "22"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 94,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "93"
+              }
+            ]
+          },
+          "optionPoolId": "school-problems",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_matching",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-5:23",
+          "items": [
+            {
+              "id": "classrooms",
+              "prompt": [
+                {
+                  "id": "place",
+                  "kind": "text",
+                  "text": "classrooms"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "classrooms"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "23"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 94,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "93"
+              }
+            ]
+          },
+          "optionPoolId": "school-problems",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_matching",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-5:24",
+          "items": [
+            {
+              "id": "lift",
+              "prompt": [
+                {
+                  "id": "place",
+                  "kind": "text",
+                  "text": "lift"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "lift"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "24"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 94,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "93"
+              }
+            ]
+          },
+          "optionPoolId": "school-problems",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_matching",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          }
+        },
+        {
+          "id": "ket-trainer-1:test-3:exam:listening:part-5:25",
+          "items": [
+            {
+              "id": "office",
+              "prompt": [
+                {
+                  "id": "place",
+                  "kind": "text",
+                  "text": "office"
+                }
+              ]
+            }
+          ],
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "office"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "testNumber": 3,
+            "questionNumber": "25"
+          },
+          "answerType": "matching",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "pdfPage": 94,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "93"
+              }
+            ]
+          },
+          "optionPoolId": "school-problems",
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_matching",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "listening",
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "matching",
+          "materialIds": [
+            "ket-trainer-1:test-3:material:old-school-places"
+          ],
+          "questionIds": [
+            "ket-trainer-1:test-3:exam:listening:part-5:example-0",
+            "ket-trainer-1:test-3:exam:listening:part-5:21",
+            "ket-trainer-1:test-3:exam:listening:part-5:22",
+            "ket-trainer-1:test-3:exam:listening:part-5:23",
+            "ket-trainer-1:test-3:exam:listening:part-5:24",
+            "ket-trainer-1:test-3:exam:listening:part-5:25"
+          ],
+          "instructionIds": [
+            "instruction-1",
+            "instruction-2",
+            "audio"
+          ]
+        }
+      ],
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 94,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "93"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:old-school-places"
+      ],
+      "optionPools": [
+        {
+          "id": "school-problems",
+          "options": [
+            {
+              "id": "A",
+              "label": "crowded"
+            },
+            {
+              "id": "B",
+              "label": "noisy"
+            },
+            {
+              "id": "C",
+              "label": "not clean"
+            },
+            {
+              "id": "D",
+              "label": "not modern"
+            },
+            {
+              "id": "E",
+              "label": "not useful"
+            },
+            {
+              "id": "F",
+              "label": "too far"
+            },
+            {
+              "id": "G",
+              "label": "too small"
+            },
+            {
+              "id": "H",
+              "label": "too warm"
+            }
+          ],
+          "allowReuse": false
+        }
+      ],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "instruction-2",
+          "kind": "text",
+          "text": "You will hear Angela talking to her uncle about the problems with her old school. What problem was there in each place in the school?"
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-trainer-1:test-3:media:listening-part-5-audio"
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:speaking:part-1:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:speaking:part-1:1",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-speaking-v1"
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "speaking",
+            "partNumber": 1,
+            "testNumber": 3,
+            "questionNumber": "1"
+          },
+          "answerType": "speaking",
+          "provenance": {
+            "origin": "supplement",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [],
+            "authorship": "ai_assisted"
+          },
+          "classification": {
+            "domain": "speaking",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "speaking_personal_information",
+            "questionTypeId": "interview",
+            "knowledgePointIds": []
+          }
+        }
+      ],
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "supplement",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [],
+        "authorship": "ai_assisted"
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:exam:speaking:part-1:all:group:task-material"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "Listen to the examiner and answer the questions."
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:speaking:part-2:all:group",
+      "role": "exam",
+      "questions": [
+        {
+          "id": "ket-trainer-1:test-3:exam:speaking:part-2:2",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Do you like these different types of television programmes? Say why or why not."
+            }
+          ],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-speaking-v1"
+          },
+          "location": {
+            "role": "exam",
+            "sourceId": "ket-trainer-1",
+            "sectionId": "speaking",
+            "partNumber": 2,
+            "testNumber": 3,
+            "questionNumber": "2"
+          },
+          "answerType": "speaking",
+          "provenance": {
+            "origin": "source",
+            "review": {
+              "status": "pending"
+            },
+            "sources": [
+              {
+                "role": "exam",
+                "region": {
+                  "x": 0.06,
+                  "y": 0.1,
+                  "width": 0.89,
+                  "height": 0.36
+                },
+                "pdfPage": 209,
+                "sourceId": "ket-trainer-1",
+                "printedPage": "208"
+              }
+            ]
+          },
+          "classification": {
+            "domain": "speaking",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "speaking_interaction",
+            "questionTypeId": "picture_discussion",
+            "knowledgePointIds": [
+              "expressing_preferences",
+              "giving_reasons"
+            ]
+          }
+        }
+      ],
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.06,
+              "y": 0.1,
+              "width": 0.89,
+              "height": 0.36
+            },
+            "pdfPage": 209,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "208"
+          }
+        ]
+      },
+      "materialIds": [
+        "ket-trainer-1:test-3:material:speaking-tv-programmes"
+      ],
+      "optionPools": [],
+      "instructions": [
+        {
+          "id": "instruction-1",
+          "kind": "text",
+          "text": "Do you like these different types of television programmes? Say why or why not."
+        }
+      ]
+    }
+  ],
+  "status": "draft",
+  "guidance": [],
+  "revision": 2,
+  "materials": [
+    {
+      "id": "ket-trainer-1:test-3:material:rw-p1-1",
+      "role": "exam",
+      "title": "Adam 的足球训练短信",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "John,\nYou know I said that football practice will be on Wednesday ... Well, it isn’t – it’s on Thursday. Sorry!\nSee you there.\nCheers, Adam"
+        }
+      ],
+      "familyId": "ket-trainer-1:adam-football-plan",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:rw-p1-2",
+      "role": "exam",
+      "title": "School Festival of Books",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "SCHOOL FESTIVAL OF BOOKS\nMeet Ralph Sparks.\nHear how he got ideas for his books, including History of Exploring the New World.\nThurs 9 am, Room D31."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:rw-p1-2",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:rw-p1-3",
+      "role": "exam",
+      "title": "Science Museum trip",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Science Museum trip next Friday\nTickets are available for $4 (for coach transport to the museum, and for museum entry).\nIf you’re interested, see Mr Goss."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:rw-p1-3",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 79,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "78"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:rw-p1-4",
+      "role": "exam",
+      "title": "Lizzie 给 Jenny 的邮件",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "From: Lizzie\nTo: Jenny\n\nJenny,\nI think I left my scarf in your flat after the party. Have you seen it? Otherwise I’ll buy another one.\nLizzie"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:rw-p1-4",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:rw-p1-5",
+      "role": "exam",
+      "title": "Mike 借球拍短信",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Hi Dave,\nI broke my tennis racket. Can I use yours? I’ll give it back in maths tomorrow. By the way, wasn’t the homework difficult?\nMike"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:rw-p1-5",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:rw-p1-6",
+      "role": "exam",
+      "title": "Geography classroom notice",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Mr Gregson is away today. Class 3, at 9 am, please go and join Class 4 in Room 7C for geography. Mr Gregson will be back tomorrow."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:rw-p1-6",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 80,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "79"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:teenage-sports-superstars",
+      "role": "exam",
+      "title": "Three teenage sports superstars",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Three teenage sports superstars",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Gaurika is from Nepal, and she was the only under-14-year-old to take part in the 2016 Olympics in Rio de Janeiro. She swam the 100 metres backstroke for Nepal. Home for Gaurika these days is in the UK, and she trains at the Copthall Swimming Club, where the coaches have trained other world-class swimmers. Her father, Paras Singh, travels with her around the world when she goes to a competition.",
+          "sentences": [
+            {
+              "id": "sentence-2",
+              "end": 114,
+              "start": 0,
+              "sourceText": "Gaurika is from Nepal, and she was the only under-14-year-old to take part in the 2016 Olympics in Rio de Janeiro."
+            },
+            {
+              "id": "sentence-3",
+              "end": 160,
+              "start": 115,
+              "sourceText": "She swam the 100 metres backstroke for Nepal."
+            },
+            {
+              "id": "sentence-4",
+              "end": 307,
+              "start": 161,
+              "sourceText": "Home for Gaurika these days is in the UK, and she trains at the Copthall Swimming Club, where the coaches have trained other world-class swimmers."
+            },
+            {
+              "id": "sentence-5",
+              "end": 398,
+              "start": 308,
+              "sourceText": "Her father, Paras Singh, travels with her around the world when she goes to a competition."
+            }
+          ]
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "When Tracy Austin was given a car as a prize in a tennis competition in Stuttgart, Germany, she was 15 and still too young to drive, but she was already a professional tennis player. Then, at the age of 17, the American became the youngest ever sports person to earn a million dollars. Before long, she was the world’s number one player. These days, she often appears on TV, talking about tennis matches at major competitions.",
+          "sentences": [
+            {
+              "id": "sentence-2",
+              "end": 182,
+              "start": 0,
+              "sourceText": "When Tracy Austin was given a car as a prize in a tennis competition in Stuttgart, Germany, she was 15 and still too young to drive, but she was already a professional tennis player."
+            },
+            {
+              "id": "sentence-3",
+              "end": 285,
+              "start": 183,
+              "sourceText": "Then, at the age of 17, the American became the youngest ever sports person to earn a million dollars."
+            },
+            {
+              "id": "sentence-4",
+              "end": 337,
+              "start": 286,
+              "sourceText": "Before long, she was the world’s number one player."
+            },
+            {
+              "id": "sentence-5",
+              "end": 426,
+              "start": 338,
+              "sourceText": "These days, she often appears on TV, talking about tennis matches at major competitions."
+            }
+          ]
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "When Romanian gymnast Nadia took part in the Olympic Games in Montreal, Canada, in 1976, she immediately became one of the most famous sports people in the world. She got perfect scores of 10.0 in seven different events. Everyone thought that nobody could do this and, in fact, 9.9 was the highest number that the score board could show. She did so well that she helped large numbers of people become interested in gymnastics.",
+          "sentences": [
+            {
+              "id": "sentence-2",
+              "end": 162,
+              "start": 0,
+              "sourceText": "When Romanian gymnast Nadia took part in the Olympic Games in Montreal, Canada, in 1976, she immediately became one of the most famous sports people in the world."
+            },
+            {
+              "id": "sentence-3",
+              "end": 220,
+              "start": 163,
+              "sourceText": "She got perfect scores of 10.0 in seven different events."
+            },
+            {
+              "id": "sentence-4",
+              "end": 337,
+              "start": 221,
+              "sourceText": "Everyone thought that nobody could do this and, in fact, 9.9 was the highest number that the score board could show."
+            },
+            {
+              "id": "sentence-5",
+              "end": 426,
+              "start": 338,
+              "sourceText": "She did so well that she helped large numbers of people become interested in gymnastics."
+            }
+          ]
+        },
+        {
+          "id": "portrait-1",
+          "alt": "Portrait of Gaurika Singh",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-3:media:rw-p2-portrait-1",
+          "aspectRatio": 1
+        },
+        {
+          "id": "portrait-2",
+          "alt": "Portrait of Tracy Austin",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-3:media:rw-p2-portrait-2",
+          "aspectRatio": 1
+        },
+        {
+          "id": "portrait-3",
+          "alt": "Portrait of Nadia Comăneci",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-3:media:rw-p2-portrait-3",
+          "aspectRatio": 1
+        },
+        {
+          "id": "profile-heading-1",
+          "kind": "text",
+          "text": "Gaurika Singh, swimmer",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "profile-heading-2",
+          "kind": "text",
+          "text": "Tracy Austin, tennis player",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "profile-heading-3",
+          "kind": "text",
+          "text": "Nadia Comăneci, gymnast",
+          "presentation": {
+            "role": "heading"
+          }
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:teenage-sports-superstars",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          }
+        ]
+      },
+      "layout": [
+        {
+          "id": "title",
+          "bodyBlockIds": [
+            "text-1"
+          ]
+        },
+        {
+          "id": "profile-1",
+          "headingBlockId": "profile-heading-1",
+          "bodyBlockIds": [
+            "text-2"
+          ],
+          "imageBlockId": "portrait-1",
+          "imageSide": "right"
+        },
+        {
+          "id": "profile-2",
+          "headingBlockId": "profile-heading-2",
+          "bodyBlockIds": [
+            "text-3"
+          ],
+          "imageBlockId": "portrait-2",
+          "imageSide": "left"
+        },
+        {
+          "id": "profile-3",
+          "headingBlockId": "profile-heading-3",
+          "bodyBlockIds": [
+            "text-4"
+          ],
+          "imageBlockId": "portrait-3",
+          "imageSide": "right"
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:isabella-rose-taylor",
+      "role": "exam",
+      "title": "Isabella Rose Taylor",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Lots of people become good at something when they are young. And quite a lot of children know what career they want to follow when they are older. But not everyone opens their own company. This is exactly what Isabella Rose Taylor has done. She started designing clothes when she was eight years old.",
+          "sentences": [
+            {
+              "id": "sentence-1",
+              "end": 60,
+              "start": 0,
+              "sourceText": "Lots of people become good at something when they are young."
+            },
+            {
+              "id": "sentence-2",
+              "end": 146,
+              "start": 61,
+              "sourceText": "And quite a lot of children know what career they want to follow when they are older."
+            },
+            {
+              "id": "sentence-3",
+              "end": 188,
+              "start": 147,
+              "sourceText": "But not everyone opens their own company."
+            },
+            {
+              "id": "sentence-4",
+              "end": 240,
+              "start": 189,
+              "sourceText": "This is exactly what Isabella Rose Taylor has done."
+            },
+            {
+              "id": "sentence-5",
+              "end": 300,
+              "start": 241,
+              "sourceText": "She started designing clothes when she was eight years old."
+            }
+          ]
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "At the time, she was a keen painter. She used a lot of reds, blues and yellows, and these colours helped her to think of new clothes which she could make.",
+          "sentences": [
+            {
+              "id": "sentence-1",
+              "end": 36,
+              "start": 0,
+              "sourceText": "At the time, she was a keen painter."
+            },
+            {
+              "id": "sentence-2",
+              "end": 154,
+              "start": 37,
+              "sourceText": "She used a lot of reds, blues and yellows, and these colours helped her to think of new clothes which she could make."
+            }
+          ]
+        },
+        {
+          "id": "text-3",
+          "kind": "text",
+          "text": "When she started designing and making clothes, Isabella just made clothes for fun. But people liked her designs, so soon she started selling them online. Now she has a business and takes part in fashion shows. She runs her business from the family home, where she has made one room into an office, and another into a studio where the clothes are made.",
+          "sentences": [
+            {
+              "id": "sentence-1",
+              "end": 82,
+              "start": 0,
+              "sourceText": "When she started designing and making clothes, Isabella just made clothes for fun."
+            },
+            {
+              "id": "sentence-2",
+              "end": 153,
+              "start": 83,
+              "sourceText": "But people liked her designs, so soon she started selling them online."
+            },
+            {
+              "id": "sentence-3",
+              "end": 209,
+              "start": 154,
+              "sourceText": "Now she has a business and takes part in fashion shows."
+            },
+            {
+              "id": "sentence-4",
+              "end": 351,
+              "start": 210,
+              "sourceText": "She runs her business from the family home, where she has made one room into an office, and another into a studio where the clothes are made."
+            }
+          ]
+        },
+        {
+          "id": "text-4",
+          "kind": "text",
+          "text": "Isabella has also found time to finish school and get a college degree. She’s intelligent, and she has thousands of followers online who love her stuff. It’s brilliant that she already has people who work for her. Above all, she really knows what is needed to succeed in the world of fashion. And I am sure that she will.",
+          "sentences": [
+            {
+              "id": "sentence-1",
+              "end": 71,
+              "start": 0,
+              "sourceText": "Isabella has also found time to finish school and get a college degree."
+            },
+            {
+              "id": "sentence-2",
+              "end": 152,
+              "start": 72,
+              "sourceText": "She’s intelligent, and she has thousands of followers online who love her stuff."
+            },
+            {
+              "id": "sentence-3",
+              "end": 213,
+              "start": 153,
+              "sourceText": "It’s brilliant that she already has people who work for her."
+            },
+            {
+              "id": "sentence-4",
+              "end": 292,
+              "start": 214,
+              "sourceText": "Above all, she really knows what is needed to succeed in the world of fashion."
+            },
+            {
+              "id": "sentence-5",
+              "end": 321,
+              "start": 293,
+              "sourceText": "And I am sure that she will."
+            }
+          ]
+        },
+        {
+          "id": "text-5",
+          "kind": "text",
+          "text": "“The way I see it is I get to follow my dream and be a teenager at the same time. I think I’m pretty lucky,” she says.",
+          "sentences": [
+            {
+              "id": "sentence-1",
+              "end": 81,
+              "start": 0,
+              "sourceText": "“The way I see it is I get to follow my dream and be a teenager at the same time."
+            },
+            {
+              "id": "sentence-2",
+              "end": 118,
+              "start": 82,
+              "sourceText": "I think I’m pretty lucky,” she says."
+            }
+          ]
+        },
+        {
+          "id": "portrait",
+          "alt": "Portrait of Isabella Rose Taylor",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-3:media:isabella-portrait",
+          "aspectRatio": 0.793918918918919
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:isabella-rose-taylor",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          }
+        ]
+      },
+      "layout": [
+        {
+          "id": "introduction",
+          "bodyBlockIds": [
+            "text-1",
+            "text-2",
+            "text-3"
+          ],
+          "imageBlockId": "portrait",
+          "imageSide": "right"
+        },
+        {
+          "id": "continuation",
+          "bodyBlockIds": [
+            "text-4",
+            "text-5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:ferry-to-school",
+      "role": "exam",
+      "title": "Ferry to School",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Ferry to School"
+        },
+        {
+          "id": "text-2",
+          "kind": "text",
+          "text": "Most pupils go to school each day on foot or by car, but Jordan Basford is different. He lives on the Scottish island of Egilsay. There, the school had to (19) ........ because there weren’t any other pupils. The nearest school is in Rousay, across the sea. His family have a boat, but it is small, and they can (20) ........ use it in good weather. A much larger boat is (21) ........ in bad weather. So every day, Jordan has to (22) ........ the ferry across the sea to go to school. He usually comes back home afterwards, but sometimes he phones home to say that he’s (23) ........ the night at a friend’s house instead. “I know I have to travel a long (24) ........ to school each day,” he says. “But I don’t mind.”",
+          "answerSlots": [
+            {
+              "end": 168,
+              "start": 155,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:19",
+              "sourceText": "(19) ........"
+            },
+            {
+              "end": 325,
+              "start": 312,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:20",
+              "sourceText": "(20) ........"
+            },
+            {
+              "end": 385,
+              "start": 372,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:21",
+              "sourceText": "(21) ........"
+            },
+            {
+              "end": 443,
+              "start": 430,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:22",
+              "sourceText": "(22) ........"
+            },
+            {
+              "end": 584,
+              "start": 571,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:23",
+              "sourceText": "(23) ........"
+            },
+            {
+              "end": 669,
+              "start": 656,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-4:24",
+              "sourceText": "(24) ........"
+            }
+          ]
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:ferry-to-school",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 85,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "84"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:jake-plakias-email",
+      "role": "exam",
+      "title": "Jake 的度假邮件",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "From: Jake\nTo:\n\nHi guys!\nThis is (0) ........ best holiday ever! Plakias is such (25) ........ beautiful place. The meals in the hotel are fantastic. For breakfast, you can have as (26) ........ as you want.\nI usually have yoghurt with lots of fruit. There’s lots for everyone in my family (27) ........ do, so we’re all enjoying it. Tomorrow I’m going to try windsurfing (28) ........ the first time. I’m really excited because I (29) ........ never done it before, but dad says it’s easy. In fact, I love it here so much that I (30) ........ like to come back next year!\nSee you soon.\nJake",
+          "answerSlots": [
+            {
+              "end": 45,
+              "gapId": "gap-0",
+              "start": 33,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:example-0",
+              "sourceText": "(0) ........"
+            },
+            {
+              "end": 94,
+              "gapId": "gap-25",
+              "start": 81,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:25",
+              "sourceText": "(25) ........"
+            },
+            {
+              "end": 194,
+              "gapId": "gap-26",
+              "start": 181,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:26",
+              "sourceText": "(26) ........"
+            },
+            {
+              "end": 303,
+              "gapId": "gap-27",
+              "start": 290,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:27",
+              "sourceText": "(27) ........"
+            },
+            {
+              "end": 385,
+              "gapId": "gap-28",
+              "start": 372,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:28",
+              "sourceText": "(28) ........"
+            },
+            {
+              "end": 444,
+              "gapId": "gap-29",
+              "start": 431,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:29",
+              "sourceText": "(29) ........"
+            },
+            {
+              "end": 543,
+              "gapId": "gap-30",
+              "start": 530,
+              "questionId": "ket-trainer-1:test-3:exam:reading_writing:part-5:30",
+              "sourceText": "(30) ........"
+            }
+          ]
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:jake-plakias-email",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 86,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "85"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:found-handbag-story",
+      "role": "exam",
+      "title": "Three-picture story",
+      "blocks": [
+        {
+          "id": "picture-sequence",
+          "alt": "Three pictures for the story, in the source order.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-3:media:rw-p7-three-pictures"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:found-handbag-story",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 88,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "87"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:football-match-notes",
+      "role": "exam",
+      "title": "Football match",
+      "blocks": [
+        {
+          "id": "notes",
+          "kind": "table",
+          "rows": [
+            [
+              "Day:",
+              "Saturday"
+            ],
+            [
+              "Name of stadium:",
+              "(6) ........"
+            ],
+            [
+              "Bus number:",
+              "(7) ........"
+            ],
+            [
+              "Cost of ticket:",
+              "(8) £ ........"
+            ],
+            [
+              "Wear:",
+              "(9) ........"
+            ],
+            [
+              "Bring:",
+              "(10) ........"
+            ]
+          ],
+          "headers": [
+            "Football match",
+            ""
+          ],
+          "answerSlots": [
+            {
+              "end": 12,
+              "row": 1,
+              "gapId": "gap-6",
+              "start": 0,
+              "column": 1,
+              "questionId": "ket-trainer-1:test-3:exam:listening:part-2:6",
+              "sourceText": "(6) ........"
+            },
+            {
+              "end": 12,
+              "row": 2,
+              "gapId": "gap-7",
+              "start": 0,
+              "column": 1,
+              "questionId": "ket-trainer-1:test-3:exam:listening:part-2:7",
+              "sourceText": "(7) ........"
+            },
+            {
+              "end": 14,
+              "row": 3,
+              "gapId": "gap-8",
+              "start": 6,
+              "column": 1,
+              "questionId": "ket-trainer-1:test-3:exam:listening:part-2:8",
+              "sourceText": "........"
+            },
+            {
+              "end": 12,
+              "row": 4,
+              "gapId": "gap-9",
+              "start": 0,
+              "column": 1,
+              "questionId": "ket-trainer-1:test-3:exam:listening:part-2:9",
+              "sourceText": "(9) ........"
+            },
+            {
+              "end": 13,
+              "row": 5,
+              "gapId": "gap-10",
+              "start": 0,
+              "column": 1,
+              "questionId": "ket-trainer-1:test-3:exam:listening:part-2:10",
+              "sourceText": "(10) ........"
+            }
+          ]
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:football-match-notes",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 91,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "90"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:old-school-places",
+      "role": "exam",
+      "title": "Places and problems",
+      "blocks": [
+        {
+          "id": "text-1",
+          "kind": "text",
+          "text": "Places: hall (Example 0), cafeteria (21), library (22), classrooms (23), lift (24), office (25)."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:old-school-places",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 94,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "93"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:material:speaking-tv-programmes",
+      "role": "exam",
+      "title": "Test 3 · Visuals",
+      "blocks": [
+        {
+          "id": "visuals",
+          "alt": "Test 3 television programme pictures. The Test 4 section is excluded.",
+          "kind": "image",
+          "mediaSlotId": "ket-trainer-1:test-3:media:speaking-test3-visuals"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:speaking-tv-programmes",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.06,
+              "y": 0.1,
+              "width": 0.89,
+              "height": 0.36
+            },
+            "pdfPage": 209,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "208"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:reading_writing:part-6:all:group:task-material",
+      "role": "exam",
+      "title": "reading_writing Part 6",
+      "blocks": [
+        {
+          "id": "task-31-1",
+          "kind": "text",
+          "text": "You are planning a party. Write an email to your English friend Malcolm.\nIn your email:\n• tell Malcolm about your party\n• ask if Malcolm wants to come\n• suggest what Malcolm should bring."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:exam:reading_writing:part-6:all:group:task-material",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 87,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "86"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group:task-material",
+      "role": "exam",
+      "title": "listening Part 1",
+      "blocks": [
+        {
+          "id": "task-1-1",
+          "kind": "text",
+          "text": "What time does the nature programme start?"
+        },
+        {
+          "id": "task-2-1",
+          "kind": "text",
+          "text": "Who is Diana talking to on her mobile?"
+        },
+        {
+          "id": "task-3-1",
+          "kind": "text",
+          "text": "Where will Henry put his mum’s watch?"
+        },
+        {
+          "id": "task-4-1",
+          "kind": "text",
+          "text": "Why is the girl tired?"
+        },
+        {
+          "id": "task-5-1",
+          "kind": "text",
+          "text": "What will the weather be like on Sunday?"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:exam:listening:part-1:all:group:task-material",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          },
+          {
+            "role": "exam",
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-3:all:group:task-material",
+      "role": "exam",
+      "title": "listening Part 3",
+      "blocks": [
+        {
+          "id": "task-11-1",
+          "kind": "text",
+          "text": "Who did Hitomi go to Hardin Castle with?"
+        },
+        {
+          "id": "task-12-1",
+          "kind": "text",
+          "text": "What was the weather like?"
+        },
+        {
+          "id": "task-13-1",
+          "kind": "text",
+          "text": "What do Hitomi and Freddie both like best at Hardin Castle?"
+        },
+        {
+          "id": "task-14-1",
+          "kind": "text",
+          "text": "Freddie went to the castle because he wanted"
+        },
+        {
+          "id": "task-15-1",
+          "kind": "text",
+          "text": "What’s on at the castle next month?"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:exam:listening:part-3:all:group:task-material",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 92,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "91"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:listening:part-4:all:group:task-material",
+      "role": "exam",
+      "title": "listening Part 4",
+      "blocks": [
+        {
+          "id": "task-16-1",
+          "kind": "text",
+          "text": "You will hear a girl talking about a video.\nWhich part of the video didn’t she understand?"
+        },
+        {
+          "id": "task-17-1",
+          "kind": "text",
+          "text": "You will hear two friends talking about a concert.\nWhat’s the boy’s opinion of the concert?"
+        },
+        {
+          "id": "task-18-1",
+          "kind": "text",
+          "text": "You will hear a boy talking to his dad about going to the city centre.\nWhy are they going to the city centre?"
+        },
+        {
+          "id": "task-19-1",
+          "kind": "text",
+          "text": "You will hear a teacher talking to his class.\nWhat information is he giving his students?"
+        },
+        {
+          "id": "task-20-1",
+          "kind": "text",
+          "text": "You will hear a boy talking about his sister, Emma.\nWho has Emma married?"
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:exam:listening:part-4:all:group:task-material",
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 93,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "92"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-3:exam:speaking:part-1:all:group:task-material",
+      "role": "exam",
+      "title": "speaking Part 1",
+      "blocks": [
+        {
+          "id": "task-1-1",
+          "kind": "text",
+          "text": "Answer the examiner’s questions about yourself."
+        }
+      ],
+      "familyId": "ket-trainer-1:test-3:exam:speaking:part-1:all:group:task-material",
+      "provenance": {
+        "origin": "supplement",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [],
+        "authorship": "ai_assisted"
+      }
+    }
+  ],
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "pending"
+    }
+  },
+  "mediaSlots": [
+    {
+      "id": "ket-trainer-1:test-3:media:rw-p2-portrait-1",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:rw-p2-portrait-2",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:rw-p2-portrait-3",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:reading_writing:part-2:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 82,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "81"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:isabella-portrait",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:reading_writing:part-3:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": false,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 83,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "82"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:rw-p7-three-pictures",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:reading_writing:part-7:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.05,
+              "y": 0.25,
+              "width": 0.89,
+              "height": 0.2
+            },
+            "pdfPage": 88,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "87"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-part-1-audio",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "exam_listening",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": "55"
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-1-option-A",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.1,
+              "y": 0.245,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-1-option-B",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.385,
+              "y": 0.245,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-1-option-C",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.67,
+              "y": 0.245,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-2-option-A",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.1,
+              "y": 0.47,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-2-option-B",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.385,
+              "y": 0.47,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-2-option-C",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.67,
+              "y": 0.47,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-3-option-A",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.1,
+              "y": 0.69,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-3-option-B",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.385,
+              "y": 0.69,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-3-option-C",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.67,
+              "y": 0.69,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 89,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "88"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-4-option-A",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.1,
+              "y": 0.16,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-4-option-B",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.385,
+              "y": 0.16,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-4-option-C",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.67,
+              "y": 0.16,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-5-option-A",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.1,
+              "y": 0.38,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-5-option-B",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.385,
+              "y": 0.38,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-5-option-C",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-1:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.67,
+              "y": 0.38,
+              "width": 0.265,
+              "height": 0.145
+            },
+            "pdfPage": 90,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "89"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-part-2-audio",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-2:all:group",
+        "kind": "group"
+      },
+      "purpose": "exam_listening",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 91,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "90"
+          }
+        ]
+      },
+      "sourceTrackLabel": "56"
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-part-3-audio",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-3:all:group",
+        "kind": "group"
+      },
+      "purpose": "exam_listening",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 92,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "91"
+          }
+        ]
+      },
+      "sourceTrackLabel": "57"
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-part-4-audio",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-4:all:group",
+        "kind": "group"
+      },
+      "purpose": "exam_listening",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 93,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "92"
+          }
+        ]
+      },
+      "sourceTrackLabel": "58"
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:listening-part-5-audio",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:listening:part-5:all:group",
+        "kind": "group"
+      },
+      "purpose": "exam_listening",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "pdfPage": 94,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "93"
+          }
+        ]
+      },
+      "sourceTrackLabel": "59"
+    },
+    {
+      "id": "ket-trainer-1:test-3:media:speaking-test3-visuals",
+      "target": {
+        "id": "ket-trainer-1:test-3:exam:speaking:part-2:all:group",
+        "kind": "group"
+      },
+      "purpose": "question_image",
+      "segment": null,
+      "audience": "student",
+      "playback": null,
+      "required": true,
+      "provenance": {
+        "origin": "source",
+        "review": {
+          "status": "pending"
+        },
+        "sources": [
+          {
+            "role": "exam",
+            "region": {
+              "x": 0.06,
+              "y": 0.1,
+              "width": 0.89,
+              "height": 0.36
+            },
+            "pdfPage": 209,
+            "sourceId": "ket-trainer-1",
+            "printedPage": "208"
+          }
+        ]
+      },
+      "sourceTrackLabel": null
+    }
+  ],
+  "contentSetId": "ket-trainer-1:test-3",
+  "schemaVersion": 1,
+  "vocabularyLinks": [],
+  "mediaBindingRevisionId": "2ebeb5b1-65ea-4816-be16-8992631a0a16"
+}

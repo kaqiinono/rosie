@@ -1,0 +1,2740 @@
+{
+  "schemaVersion": 1,
+  "contentRevisionId": "ket-trainer-1:test-1:training:listening:part-1:set:r1",
+  "solutions": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training"
+          },
+          "quote": "T"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "T"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "A"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "A"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "N"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "N"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "A"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "T"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "T"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "T"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "T"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-7:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-7",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A / N"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "A"
+          }
+        ],
+        [
+          {
+            "gapId": "gap-1",
+            "value": "N"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-8:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-8",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "N"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "N"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-9:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-9",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "T"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "T"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-10:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-10",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "A"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-11:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-11",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "A"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-12:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-12",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "T"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "T"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-13:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-13",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "N"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "N"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:1-14:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:1-14",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "T"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "T"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "He’s short but not very fat, I would say he is quite slim. He has long, straight, blonde hair. Today he’s wearing a white T-shirt and shorts."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 29,
+            "printedPage": "28",
+            "role": "training"
+          },
+          "quote": "lamp"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "lamp"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "pillow"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "pillow"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "bed"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "bed"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "desk"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "desk"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "sink"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "sink"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "cooker"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "cooker"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "cupboard"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "cupboard"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-7:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-7",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "fridge"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "fridge"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-8:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-8",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "television"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "television"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-9:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-9",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "armchair"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "armchair"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-10:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-10",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "bookcase"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "bookcase"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:3-11:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:3-11",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "sofa"
+        }
+      ],
+      "distractors": [],
+      "answerType": "gap_fill",
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "gap-1",
+            "value": "sofa"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          },
+          "quote": "right"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "right"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "wrong"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "wrong"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "wrong"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "wrong"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "right"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "right"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "right"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "right"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "wrong"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "wrong"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:4-6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:4-6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "right"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "right"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-example:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-example",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          },
+          "quote": "P"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "Jane is wearing a pink blouse."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "P"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "F"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "It might rain."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "F"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "P"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "Joanne wants to go to the match."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "P"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "P"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "They love playing hockey."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "P"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "F"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "Are we going to go out today?"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "F"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "F"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "I think he’ll help us."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "F"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "P"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "I’d prefer to have pizza."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "P"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-7:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-7",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "P"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "Are you enjoying the party?"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "P"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:5-8:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:5-8",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "F"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "I’m meeting Sam at the bus stop."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "F"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "Girl: I want to play tennis tomorrow.\nBoy: The tennis courts are busy on Saturdays. I’d prefer to play on Sunday.\nGirl: I’m going to visit my grandmother on Sunday. She hasn’t been feeling well since Thursday.\nBoy: OK, then, but we’ll need to get there early."
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-1:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-1",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-2:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-2",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-3:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-3",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-4:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-4",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-5:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-5",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-6:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-6",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-example-D:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-example-D",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          },
+          "quote": "D"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:8-example-A:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:8-example-A",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 30,
+            "printedPage": "29",
+            "role": "training"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:9:solution",
+      "role": "solution",
+      "questionId": "ket-trainer-1:test-1:training:listening:part-1:9",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "solution"
+          },
+          "quote": "B"
+        },
+        {
+          "source": {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          },
+          "quote": "Man: Where shall we have coffee?\nWoman: What about the café next to the pharmacy?\nMan: I went there yesterday with my sister. We could try the one inside the bookshop.\nWoman: It’s a bit expensive, isn’t it?\nMan: Don’t worry. I’m paying!"
+        }
+      ],
+      "distractors": [],
+      "answerType": "single_choice",
+      "correctOptionId": "B"
+    }
+  ],
+  "teacherNotes": [
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-overview",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "Task type: three-option visual multiple choice – listening to identify specific information – two-speaker short conversations – five items\nTopic focus: describing people, parts of the home\nTraining\nTell students that in Part 1 they have to choose the correct picture."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-1",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "1 Part 1 sometimes includes a question about a person’s appearance. Ask the students to look at the pictures and suggest a few words to describe each man. Tell students to read the words and match each one with the man which it best describes."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-2",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "2 Tell students they will hear a woman talking about one of the three men. Students listen and answer the question.\nTell students to work in pairs and describe one of the pictures. When their description is finished, the partner guesses which of the men was described."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-3",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "3 Ask students to look at the pictures and say which rooms they can see. Tell students to label the pictures with the words from the box.\nA2 Key candidates often misspell the words sitting room, living room and kitchen as seating room, leaving room and kichen. Revise the spellings of rooms in the house."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-4",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "4 Tell students that in Part 1 they will often need to understand prepositions, e.g. on and under.\nStudents read the sentences and put a tick or cross next to each of them.\nExtension\nAsk students to draw a floor plan of a room in their house. Tell students to work in pairs and, without showing their picture to their partner, describe what there is and where it is.\nA2 Key candidates often make mistakes using the present continuous. Remind them that it is used to talk about both present and future time. In the future, it is used for arrangements, e.g. I’m meeting my friend later."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-5",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "5 In this exercise, students will hear examples of different ways to talk about the future. Review the different ways to talk about the future before playing the recording.\nStudents listen to the sentences and write P (present) or F (future).\nA2 Key candidates often think will is the only future form. Remind them that will + verb is only one way to talk about the future.\nExtension\nAsk students to look at the audioscript and highlight different ways of talking about the future (might + verb, want to + verb, going to + verb, I think ... will + verb, ’d prefer to + verb, present continuous). They do not need to practise or produce all of these. However, they need to be aware that there is more than one way of talking about the future."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-6",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "6 Play the recording and tell students to answer the question."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-7",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "7 Explain that all four sentences are suggestions and that we can reply to suggestions with Yes or No. Tell students that if we say No to a suggestion, we usually give a reason. Give an example.\nAsk students to do the exercise and tell them that there is one Yes reply and one No reply for each suggestion.\n1 I would prefer coffee. Yes, that sounds delicious.\n2 No, let’s drive. Yes, and let’s take a ball.\n3 Good idea. She’s really clever. She’s very busy at the moment."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-8",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "8 Tell students to look at the replies in Exercise 7 and write A or D. Point out that not all the replies start with Yes or No.\nUsed to agree (A): Yes, that sounds delicious. Good idea. She’s really clever. Yes, and let’s take a ball.\nUsed to disagree (D): No, let’s drive. I would prefer coffee. She’s very busy at the moment."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:teacher-exercise-9",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "teaching_guidance",
+      "blocks": [
+        {
+          "id": "text",
+          "kind": "text",
+          "text": "9 Tell students to listen to the recording and focus on the suggestion and response carefully."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 172,
+            "printedPage": "171",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-trainer-1:test-1:training:listening:part-1:private-training-transcripts",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-trainer-1:test-1:training:listening:part-1:complete-training"
+      ],
+      "kind": "listening_transcript",
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "Audioscripts — Test 1 — LISTENING PART 1 — Training\n2 [01]\nWoman: He’s short but not very fat, I would say he is quite slim. He has long, straight, blonde hair. Today he’s wearing a white T-shirt and shorts.\n5 [02]\nExample\nMan: Jane is wearing a pink blouse.\n1 Man: It might rain.\n2 Man: Joanne wants to go to the match.\n3 Man: They love playing hockey.\n4 Man: Are we going to go out today?\n5 Man: I think he’ll help us.\n6 Man: I’d prefer to have pizza.\n7 Man: Are you enjoying the party?\n8 Man: I’m meeting Sam at the bus stop.\n6 [03]\nGirl: I want to play tennis tomorrow.\nBoy: The tennis courts are busy on Saturdays. I’d prefer to play on Sunday.\nGirl: I’m going to visit my grandmother on Sunday. She hasn’t been feeling well since Thursday.\nBoy: OK, then, but we’ll need to get there early.\n9 [04]\nMan: Where shall we have coffee?\nWoman: What about the café next to the pharmacy?\nMan: I went there yesterday with my sister. We could try the one inside the bookshop.\nWoman: It’s a bit expensive, isn’t it?\nMan: Don’t worry. I’m paying!"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-trainer-1",
+            "pdfPage": 143,
+            "printedPage": "142",
+            "role": "solution",
+            "region": {
+              "x": 0.055,
+              "y": 0.165,
+              "width": 0.44,
+              "height": 0.735
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "mediaSlots": []
+}

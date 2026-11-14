@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node --env-file-if-exists=.env.proxy.local ./node_modules/next/dist/bin/next dev --turbopack",
+    "dev": "node --use-env-proxy --env-file-if-exists=.env.proxy.local ./node_modules/next/dist/bin/next dev --turbopack",
     "fresh": "rm -rf .next-dev && pnpm run dev",
     "build": "next build",
     "start": "next start",
@@ -25,6 +25,7 @@
     "@rosie/chinese": "workspace:*",
     "@rosie/core": "workspace:*",
     "@rosie/english": "workspace:*",
+    "@rosie/exams": "workspace:*",
     "@rosie/flipbook": "workspace:*",
     "@rosie/math": "workspace:*",
     "@rosie/math-content": "workspace:*",

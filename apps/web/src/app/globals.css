@@ -14,6 +14,7 @@
 @source "../../../../packages/math-content/src";
 @source "../../../../packages/math/src";
 @source "../../../../packages/english/src";
+@source "../../../../packages/exams/src";
 @source "../../../../packages/flipbook/src";
 @source "../../../../packages/audio/src";
 @source "../../../../packages/chinese/src";
@@ -183,22 +184,7 @@
     display: block;
   }
 
-  .rosieload-scurry,
-  .rosieload-bounce,
-  .rosieload-face-right,
-  .rosieload-face-left,
-  .rosieload-shadow,
-  .rosieload-blink,
-  .rosieload-turn-body,
-  .rosieload-turn-shadow,
-  .rosieload-round-turn-sprite,
-  .rosieload-confetti {
-    animation: none;
-  }
 
-  .rosieload-face-left {
-    opacity: 0;
-  }
 }
 
 /* ── LoadingOverlay：方案三「左右蹦蹦」── */
@@ -421,3 +407,23 @@
   100% { transform: translateX(280%) }
 }
 
+
+/* Keep loading reduced-motion overrides after all loading animation declarations. */
+@media (prefers-reduced-motion: reduce) {
+  .rosieload-scurry,
+  .rosieload-bounce,
+  .rosieload-face-right,
+  .rosieload-face-left,
+  .rosieload-shadow,
+  .rosieload-blink,
+  .rosieload-turn-body,
+  .rosieload-turn-shadow,
+  .rosieload-round-turn-sprite,
+  .rosieload-confetti {
+    animation: none;
+  }
+
+  .rosieload-face-left {
+    opacity: 0;
+  }
+}

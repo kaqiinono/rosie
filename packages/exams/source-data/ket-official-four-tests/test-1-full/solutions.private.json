@@ -1,0 +1,4184 @@
+{
+  "schemaVersion": 1,
+  "contentRevisionId": "ket-official-four-tests:test-1:full:revision-1",
+  "solutions": [
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1",
+      "answerType": "single_choice",
+      "correctOptionId": "B",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 94,
+            "printedPage": "93",
+            "role": "solution"
+          }
+        ],
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "这则通知让丢了蓝色运动包的学生去校办公室，因为有人捡到了这个包。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 9,
+            "printedPage": "8",
+            "role": "exam",
+            "region": {
+              "x": 0.08,
+              "y": 0.325,
+              "width": 0.86,
+              "height": 0.18
+            }
+          },
+          "quote": "Found: blue sports bag\nCollect from school office\n(with student ID card)",
+          "materialId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:1:material",
+          "blockId": "notice"
+        }
+      ],
+      "distractors": [
+        {
+          "optionId": "A",
+          "explanation": {
+            "text": "学生需要出示身份卡以证明包属于自己，但这并不是说有人在包里发现了别人的身份卡。",
+            "provenance": {
+              "origin": "source",
+              "sources": [
+                {
+                  "sourceId": "ket-official-four-tests",
+                  "pdfPage": 94,
+                  "printedPage": "93",
+                  "role": "solution"
+                }
+              ],
+              "review": {
+                "status": "pending"
+              }
+            }
+          }
+        },
+        {
+          "optionId": "C",
+          "explanation": {
+            "text": "通知的意思是：包已经被找到了，只是失主还没领取。",
+            "provenance": {
+              "origin": "source",
+              "sources": [
+                {
+                  "sourceId": "ket-official-four-tests",
+                  "pdfPage": 94,
+                  "printedPage": "93",
+                  "role": "solution"
+                }
+              ],
+              "review": {
+                "status": "pending"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:2:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:2",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。由于3.1室装修，Gray老师不能照常使用该教室。这则通知旨在告诉她的学生们，他们必须改用4.2室，直到周五（room 4.2 until Friday）。选项A不正确，因为通知没有说Gray老师周五前不来学校。选项B不正确，因为Gray老师的课不会改为这周其他时间，改变的只是上课地点。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:3:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:3",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。学校的厨房将暂时停止供应热食午餐（school kitchen will be closed for hot lunches），即下周的午餐中将没有该类型的食物。选项A和选项B不正确，因为学校食堂仍会提供一些其他类型的食物：We can still serve sandwiches and salads.（我们仍将提供三明治和沙拉。）",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:4:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:4",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Mark问Suzy今天是否应去给她看他完成的历史作业。选项B不正确。Mark已经做完了作业，因此不需要Suzy帮他完成。选项C不正确。Mark没有说Suzy应该把作业交给老师，他只提到自己将把作业交给老师。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:5:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:5",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。Ben告诉Tom这场音乐会仍有剩余的门票可购买，也建议Tom告诉其他人这个消息。选项A不正确。Tom不需要再上网查询是否还有音乐会门票可以购买，因为Ben已经告诉了他There are some tickets left（还有一些余票）。选项C不正确。Ben已经告诉Tom，音乐会结束后他的爸爸会来“接我们（pick us up）”，所以Tom不需要再让自己的爸爸来接他们。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-1:6:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-1:6",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。俱乐部成员希望Jones老师教他们使用摄影方面的软件，所以Jones老师现在正在提出要教他们使用。选项B不正确。没有成员告诉Jones老师自己想要离开摄影俱乐部。选项C不正确。是俱乐部成员想要了解更多关于摄影软件的知识，而不是Jones老师。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:7:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:7",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。Kojo解释了为什么不喜欢书的结尾。他认为这本书很棒，除了最后几页（the last few pages），即书的结尾，并认为这几页里的情节不怎么真实（doesn’t seem real）。换句话说，Kojo认为结尾不可信。选项A不正确。Jian也谈到了书的结尾，但是他喜欢这个结尾。他提到了when I got to the last page, I was quite upset that there wasn’t more（当我读到最后一页时，我很伤心，因为没有更多内容可读了）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 94,
+                "printedPage": "93",
+                "role": "solution"
+              },
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "7",
+            "optionId": "C"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:8:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:8",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。Max说他以前喜欢看那本书中的图画。一般过去时（enjoyed / loved）的使用表明动作是在过去发生的。这里指的是，Max在不识字的童年时期，父母给他读他最喜欢的那本书中的故事时，他会去看那些图画。他现在长大了，虽然仍喜欢书中的故事，但不像以前那么关注图画了。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "8",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:9:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:9",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Jian说明了他是从什么地方得到这本书的：in a box of old books that a neighbour gave me（在邻居给我的一箱旧书中）。选项B不正确。Max提到他把书给了他的妹妹（little sister）且她也喜欢这本书（and she loves it too），但没有说他是如何得到这本书的。选项C不正确。Kojo只提到了他的朋友也读了这本书（My friend read it too），但并没有给出详细信息说明他是如何得到这本书的。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "9",
+            "optionId": "A"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:10:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:10",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。唯有Kojo表示喜欢了解与自己的生活不同的生活。在文中，他提到it was about people growing up in a place which I knew nothing about（它讲的是在我完全不了解的地方成长的人的事）。选项A不正确。Jian详细介绍了故事中的人物，即It’s about two friends who play a game（它讲的是两个朋友的故事，他们玩了一个游戏）。但是，他未提及他们的生活和自己的完全不同。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "10",
+            "optionId": "C"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:11:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:11",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Jian谈到了书中两个主角的故事：It’s about two friends who play a game, and how it changes their lives.（它讲的是两个朋友玩一个游戏，以及这个游戏如何改变了他们的生活的故事。）选项B不正确。Max谈到了书的作者，而非情节：I suppose what you write about changes as your life changes.（我觉得，当你的生活改变时，你写的东西也会发生变化。）",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "11",
+            "optionId": "A"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:12:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:12",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。Max说到了他看的书不是很有名，因为not many people have heard of it（听说过它的人不多）。not hearing of something（没听说过某事物）表示人们haven’t found out about something（不清楚关于某事物的情况），即很多人都不知道Max喜欢的那本书。选项A不正确，因为Jian那段文章里说的情况恰好相反，他最喜欢的那本书很有名（well-known）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "12",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-2:13:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-2:13",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Jian读完整本书时感到伤心。他表示自己was quite upset that there wasn’t more（很伤心，因为没有更多内容可读了）。也就是说，这本书太有趣了，他不希望故事结束。选项C不正确。Kojo提到他不喜欢书的结尾，但这与因为书读完而感到伤心是不同的。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 95,
+                "printedPage": "94",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "13",
+            "optionId": "A"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-3:14:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-3:14",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Pat能够做出美味的奶酪是因为她家农场的工人告诉了她哪里做得不对，从而帮助了她（the workers told me what I was doing wrong and that helped）。也就是说，她听从了得到的建议。选项B不正确，因为她妈妈只向她展示了如何制作酸奶，而不是奶酪。选项C不正确，因为Pat第一次自己制作奶酪时，it wasn’t great（做的奶酪不怎么样）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-3:15:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-3:15",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。Pat制作奶酪所需的牛奶来自她父母农场里的奶牛（cows on their farm）。文章解释说，制作奶酪时，Pat can just ask them when she needs more（Pat需要更多［牛奶］时，只要向他们要就可以了）。句中的them指Pat的父母。选项A不正确。虽然Pat的邻居给了她一头奶牛，让她饲养，但这头奶牛还没到产奶的年龄。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-3:16:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-3:16",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。文章中，Pat说由于赢得了奶酪制作奖，更多人知道了她家的奶酪。选项B不正确。虽然他们将要做一些广告（going to do some advertisements），但文中并未提到Pat会出现在广告中。选项C不正确，因为她只是在新西兰销售奶酪，并未被邀请去新西兰。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-3:17:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-3:17",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。Pat说，目前在生活中更重要的事是doing well in my studies（搞好学业）。选项A不正确，因为她只是发布一些网络版的食谱（some online recipes），而不是写一本食谱书。选项C不正确。Pat并没有说最重要的事是把奶酪卖给餐馆，她说的是希望有餐馆会买一些她的奶酪。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-3:18:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-3:18",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。最后一道题是考查文章整体主旨的问题，所以答案来自文章的各个部分。第一段中，Pat解释了她是如何学会制作奶酪的；第二段讲了她从哪里得到制作奶酪的核心原料（牛奶）；第三段讲的是她赢得奶酪制作奖的事；最后一段说明了她在奶酪制作方面的未来计划。选项A不正确，因为文中没有给出Pat一家开始制作奶酪的原因。选项B不正确，因为只有第三段提到了竞赛赢得的奖项，而这不是全文的主旨。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-4:19:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-4:19",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。learning（学习）是正确答案，因为只有该答案能表达Philo T. Farnsworth花费了大量时间“学习”它（spent a lot of time learning about it）。选项B和选项C不正确。studying（学习；研究）和understanding（理解）的意思都与learning相似，但它们都不能与后面的about搭配。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-4:20:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-4:20",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。三个单词在意思上接近，但结合语境看，competition（竞赛）是最佳选项。选项B不正确，因为match（比赛）是一种分团队进行的体育比赛。选项A不正确，因为game（游戏；运动，比赛）指的是一种活动或体育运动。match和game都不能用来准确描述young engineers（年轻的工程师们）参加的竞赛。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 96,
+                "printedPage": "95",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-4:21:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-4:21",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。started his own business（开办了他自己的企业）所表达的意思是对的。选项A和选项B不正确。Farnsworth不管是“变成（became）”还是“转动（turned）”他自己的企业，在语意上都说不通。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-4:22:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-4:22",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。能与空格后面的of搭配的选项只有way（方法）。选项A和选项C不正确。plan（计划）和thing（事物）都不能与of搭配。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-4:23:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-4:23",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。能表达Farnsworth因自己的点子而获得了100万美元（$1 million for his idea）的只有offered（提供，出价）。选项C不正确。只有Farnsworth可以出售自己的创意，another company（另一家公司）不可能“卖给（sold）”Farnsworth他自己的创意。选项B不正确。文章虽然提到公司给了Farnsworth钱，但公司不可能亲自“拿着（took）”100万美元去交给他。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-4:24:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-4:24",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。these days（如今）是一个固定短语。选项A和选项C不正确，因为times（时代）或years（年）都不能与空格前的these搭配来表示“如今”。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:example-0:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:example-0",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 16,
+            "printedPage": "15",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 16,
+            "printedPage": "15",
+            "role": "exam"
+          },
+          "quote": "['from']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "example-0",
+            "value": "from"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:25:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:25",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是the。biggest country（最大的国家）前需要用the，因为Rachel在此处表达的是最高级，采用的结构为“the + 形容词的最高级 + 名词”。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "['the']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "25",
+            "value": "the"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:26:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:26",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是by。by是一个常见的介词，可与不同类型的交通工具搭配来表达某人的出行方式（例如：by train, by bus, by bike, 等等）。在本题中，Rachel就是在告诉Chris自己如何travelled from Los Angeles to Seattle（从洛杉矶到西雅图）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "['by']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "26",
+            "value": "by"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:27:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:27",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是a。要构成短语a very long time（一段很长的时间），冠词a必不可少。短语“a ... time”可用来描述特定长度的一段时间。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "['a']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "27",
+            "value": "a"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:28:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:28",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是but, (al)though或however。这些词都能表示后文与前文提到的My family liked Los Angeles best（我的家人最喜欢洛杉矶）形成了转折对比。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "['but', 'although', 'though', 'however']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "28",
+            "value": "but"
+          }
+        ],
+        [
+          {
+            "gapId": "28",
+            "value": "although"
+          }
+        ],
+        [
+          {
+            "gapId": "28",
+            "value": "though"
+          }
+        ],
+        [
+          {
+            "gapId": "28",
+            "value": "however"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:29:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:29",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是than。空格处应填than，因为Rachel在对比西雅图和洛杉矶的大小：It’s smaller than Los Angeles。也就是意在说明“西雅图比洛杉矶小”。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "['than']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "29",
+            "value": "than"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-5:30:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-5:30",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是it。在句子it rained almost every day（几乎每天都下雨）中，代词it必不可少，因为it是用来指代天气的。it还可用来指代时间、日期或距离，例如：What time is it?（几点了？）",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 85,
+            "printedPage": "84",
+            "role": "solution"
+          },
+          "quote": "['it']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "30",
+            "value": "it"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-6:31:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-6:31",
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 86,
+            "printedPage": "85",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 86,
+            "printedPage": "85",
+            "role": "solution"
+          },
+          "quote": "Writing sample answers"
+        }
+      ],
+      "distractors": [],
+      "samples": [
+        {
+          "id": "ket-official-four-tests:test-1:exam:reading_writing:part-6:31:sample-A",
+          "text": "Dear Lee,\nAs you know, me and my family are going camping next weekend, but as we are such good friends, I have decided that you can be our guest. My mother said I need to expirience the outdoors a bit more.\nYou have got to bring your own equitment, since we don’t have any extra. Don’t forget your flashlight, sleeping bag, and an extra coat!\nI hope you can come,\nyour friend",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 86,
+                "printedPage": "85",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 15,
+            "maximum": 15,
+            "source": {
+              "sourceId": "ket-official-four-tests",
+              "pdfPage": 86,
+              "printedPage": "85",
+              "role": "solution"
+            }
+          },
+          "originalComments": [
+            {
+              "text": "这封邮件写得很好。应包含的三个内容要点都得到清楚表达，作文向读者充分传达了有关信息。文中使用了多种连接词和衔接手段（but, as, since），行文连贯，前后衔接合理。虽然存在一些小的拼写错误，但是与主题相关的词语使用恰当（guest, the outdoors, flashlight, sleping bag）。考生熟练运用了多种简单的语法结构（are going, you can be, You have got to, Don’t forget）。\n原书分项得分：内容5；条理性5；语言5；总分15。",
+              "provenance": {
+                "origin": "source",
+                "sources": [
+                  {
+                    "sourceId": "ket-official-four-tests",
+                    "pdfPage": 86,
+                    "printedPage": "85",
+                    "role": "solution"
+                  }
+                ],
+                "authorship": "ai_assisted",
+                "review": {
+                  "status": "pending"
+                }
+              }
+            }
+          ],
+          "supplementaryComments": []
+        },
+        {
+          "id": "ket-official-four-tests:test-1:exam:reading_writing:part-6:31:sample-B",
+          "text": "Hi Lee,\nDo you want to come with me and my family, because we will go to a camping? If you want to come please bring some sandwiches.\nText me soon\nLove, Viktor",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 86,
+                "printedPage": "85",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 9,
+            "maximum": 15,
+            "source": {
+              "sourceId": "ket-official-four-tests",
+              "pdfPage": 86,
+              "printedPage": "85",
+              "role": "solution"
+            }
+          },
+          "originalComments": [
+            {
+              "text": "这封邮件写得还可以。虽然没有写清去露营的原因，但是涵盖了其他内容要点。内容前后衔接合理，但仅有and和because两个连接词。考生熟练运用了简单的语法结构（Do you want to come with me, we will go, If you want to come）。但是，不考虑题目已给出的词语，作文中的词汇丰富性只达到基础水平（sandwiches）。\n原书分项得分：内容3；条理性3；语言3；总分9。",
+              "provenance": {
+                "origin": "source",
+                "sources": [
+                  {
+                    "sourceId": "ket-official-four-tests",
+                    "pdfPage": 86,
+                    "printedPage": "85",
+                    "role": "solution"
+                  }
+                ],
+                "authorship": "ai_assisted",
+                "review": {
+                  "status": "pending"
+                }
+              }
+            }
+          ],
+          "supplementaryComments": []
+        }
+      ],
+      "taskGuidance": []
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:reading_writing:part-7:32:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:reading_writing:part-7:32",
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 87,
+            "printedPage": "86",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 87,
+            "printedPage": "86",
+            "role": "solution"
+          },
+          "quote": "Writing sample answers"
+        }
+      ],
+      "distractors": [],
+      "samples": [
+        {
+          "id": "ket-official-four-tests:test-1:exam:reading_writing:part-7:32:sample-A",
+          "text": "One day Sam and Zac were hanging out and walking on the road and they saw 20£. They were so happy. They grabbed the 20 pounds and ran to the icecream shop. They ordered two large vanilla icecreams. They ate their icecream and continued with their day.",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 87,
+                "printedPage": "86",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 14,
+            "maximum": 15,
+            "source": {
+              "sourceId": "ket-official-four-tests",
+              "pdfPage": 87,
+              "printedPage": "86",
+              "role": "solution"
+            }
+          },
+          "originalComments": [
+            {
+              "text": "这个故事写得很好。文章涵盖了三个内容要点且表述清晰，向读者充分传达了有关信息。连接词的运用水平很基础，却有效衔接了故事各部分，行文连贯。考生恰当使用了日常词汇（hanging out, icecream shop［应为ice-cream shop］, vanilla），也能正确运用简单的语法结构（They were, ran to, They ordered, continued with）。\n原书分项得分：内容5；条理性4；语言5；总分14。",
+              "provenance": {
+                "origin": "source",
+                "sources": [
+                  {
+                    "sourceId": "ket-official-four-tests",
+                    "pdfPage": 87,
+                    "printedPage": "86",
+                    "role": "solution"
+                  }
+                ],
+                "authorship": "ai_assisted",
+                "review": {
+                  "status": "pending"
+                }
+              }
+            }
+          ],
+          "supplementaryComments": []
+        },
+        {
+          "id": "ket-official-four-tests:test-1:exam:reading_writing:part-7:32:sample-B",
+          "text": "One evening, Jia Le and You Xiang wanted to back thier home. Went they were walking home, they saw a money.\nThey picked it up. You Xiang wanted to use this money to buy some toy. Jia Le disaccept You Xiang. Jia Le said that they wanted to returned the money to the owner. But, they don’t who is the owner of this money\nSo, they took the to police station. One of the police said that they are honest boy.",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 87,
+                "printedPage": "86",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 8,
+            "maximum": 15,
+            "source": {
+              "sourceId": "ket-official-four-tests",
+              "pdfPage": 87,
+              "printedPage": "86",
+              "role": "solution"
+            }
+          },
+          "originalComments": [
+            {
+              "text": "这个故事写得还可以。考生对第三幅图的理解有误，但是把其他内容要点都写出来了。考生使用简单的连接词和一些衔接手段把故事各部分衔接起来（they, it, this money, who）。词汇运用较为恰当（home, money, owner, police station, honest）。简单语法结构的使用基本正确（wanted to, picked it up, they took, One of the police said），但出现的错误有时可能会影响理解（back thier home, disaccept, took the to police）。\n原书分项得分：内容2；条理性3；语言3；总分8。",
+              "provenance": {
+                "origin": "source",
+                "sources": [
+                  {
+                    "sourceId": "ket-official-four-tests",
+                    "pdfPage": 87,
+                    "printedPage": "86",
+                    "role": "solution"
+                  }
+                ],
+                "authorship": "ai_assisted",
+                "review": {
+                  "status": "pending"
+                }
+              }
+            }
+          ],
+          "supplementaryComments": []
+        }
+      ],
+      "taskGuidance": []
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-1:1:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-1:1",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。男孩说到了we got a bus（我们乘坐了公交车）。选项A不正确。男孩提到the taxis were all busy（出租车都很忙），并在最后表示Next time, I’ll wait for a taxi（下次，我会等出租车），这说的是以后听音乐会的时候而不是这一次。选项B不正确，因为男孩说：... but there are no trains after 10 o’clock.（……但是10点以后就没有火车了。）",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 97,
+                "printedPage": "96",
+                "role": "solution"
+              },
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-1:2:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-1:2",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。女孩说：... I looked for my swimming costume in my bag, but I only had my towel!（……我在包里找泳衣，但我只带了毛巾！）这说明她没有泳衣，也就是忘带泳衣了。选项A不正确，因为她提到I only had my towel（我只带了毛巾）。选项B不正确，因为当女孩的爸爸问她是否需要更多钱时，她回答说Thanks, but I’ve got enough（谢谢，但我的钱足够）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-1:3:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-1:3",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。男孩说as soon as I get in after lessons I have to help make sandwiches for the journey（我放学后一到家就得帮忙做旅行要带的三明治）。也就是说，这是他放学回家后要做的第一件事。选项A不正确。男孩说他爸爸得去取火车票，说明男孩不用去取火车票。选项B不正确。男孩说：I’ve almost finished. ... I can do it later tonight.（我就快收拾完了。……我可以今天晚上再收拾收拾。）因此，他会收拾行李，但这不是他放学后要做的第一件事。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-1:4:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-1:4",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。女孩说：It was actually in the back of my dad’s car.（它实际上在我爸的汽车的后座上。）选项B不正确。男孩说：Maybe it fell out of your bag!（可能它从你的包里掉出来了！）女孩同意，觉得有这个可能，但她并不是在包里找到了手机。选项C不正确。女孩说：... I even looked in my classroom desk!（……我甚至在教室的课桌里都找过了！）但是，她并没有说在课桌里找到了手机。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-1:5:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-1:5",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。他们会按如下顺序参观三个地方：1）城堡；2）博物馆；3）剧院。女士提议说Maybe we could go to the castle before we go there（或许我们在去那里［博物馆］之前可以先去城堡）。男士同意了。他们还一致同意在参观完博物馆后去剧院。女士说：Let’s do that after we finish visiting the museum.（参观完博物馆后，咱们就去把戏票用了。）因此，他们首先要参观的地方是城堡。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-2:6:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-2:6",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是25(th) June或June 25(th)。男士说明了We start on June 25th（我们在6月25日开始）。他还提到另外两个课程：一个于7月16日开始，另一个于8月6日开始。但是，本题是关于第一批课程的。6月早于7月和8月，因此后两个日期不正确。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "['25 June', '25th June', 'June 25', 'June 25th']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "6",
+            "value": "25 June"
+          }
+        ],
+        [
+          {
+            "gapId": "6",
+            "value": "25th June"
+          }
+        ],
+        [
+          {
+            "gapId": "6",
+            "value": "June 25"
+          }
+        ],
+        [
+          {
+            "gapId": "6",
+            "value": "June 25th"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-2:7:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-2:7",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是play(s)。男士介绍说we’ll teach you how to ... write a play for young actors（我们将教你如何……给年轻的演员们写剧本）。按照题目要求“Write one word or a number or a date or a time（填写一个单词或一个数字或一个日期或一个时间）”，你应该只填play（或plays），不能写a play或a play for young actors，因为那样单词数量就过多了。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 98,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "['play', 'plays']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "7",
+            "value": "play"
+          }
+        ],
+        [
+          {
+            "gapId": "7",
+            "value": "plays"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-2:8:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-2:8",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是band。男士说：You’ll meet ... a very well-known band who’ve just finished a world tour!（你将见到……一支非常有名的乐队，他们刚刚结束世界巡演！）这句话告诉我们，该乐队是世界闻名的，与题干中的world famous呼应。不能填写journalist（记者），因为男士并没有说这个记者很有名。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "['band']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "8",
+            "value": "band"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-2:9:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-2:9",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是T-shirt。男士提到：Everyone gets a T-shirt to wear at camp.（每个人都会得到一件用于夏令营上穿的T恤衫。）本题问的是学生将会“收到”什么，所以snacks（零食）、sneakers（运动鞋）和shorts（短裤）均不是正确答案——这些是学生得自己带或穿的东西。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "['T-shirt']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "9",
+            "value": "T-shirt"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-2:10:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-2:10",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是238。男士说：If you book before midnight, you’ll get a discount! $476 is the usual price, but now it’s half-price – $238.（如果在半夜12点前预订，你将享受折扣！日常价是476美元，而现在是半价——238美元。）不能填写476，因为476是全价。本题问的是折扣价，也就是价格低的那一个。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "['238']"
+        }
+      ],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "10",
+            "value": "238"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-3:11:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-3:11",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Edward说道：My classes were at the sports centre last year, but they moved to the college.（我的舞蹈课去年在体育中心开办，但后来搬到了学院里。）换句话说，现在他在学院上课，但去年是在体育中心。选项B不正确。Edward说舞蹈学校的课太贵了（too expensive there）。这告诉我们，他不在舞蹈学校上课。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-3:12:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-3:12",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。Michaela说她的课一周上一次（Once a week）。Edward问她：You’ve been to four classes already, haven’t you?（你已经上了四次课，是吗？）她给出了肯定的答复。这告诉了我们正确答案。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-3:13:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-3:13",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。Edward说：And, what’s really nice, if you do something well, you get a little packet of sweets.（而且，真正好的是，如果你哪里做得不错，就会得到一小包糖果。）这说明老师会送给学生礼物。选项A不正确。Edward提到了She laughs when we make mistakes, but in a nice way（当我们犯错误时她会笑，但没有恶意），但这并不是在说他认为老师很有趣。选项C不正确。Edward说：She quickly shows us what to do instead of explaining, which is OK most of the time.（她会迅速向我们展示要做什么，而不是进行解释，这在多数情况下行得通。）这说明老师并不对事情进行解释。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-3:14:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-3:14",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项A。Michaela说明了I just wear comfortable trousers and a shirt（我只是穿舒服的裤子和衬衫）。选项B不正确。她提到When I wore shorts and a T-shirt, they weren’t warm enough（我以前穿短裤和T恤衫时，觉得不够暖和），这说明她不再穿这些。选项C不正确，因为她提到trainers and a sweater aren’t good for dancing in（穿运动鞋和毛衣不便于跳舞）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 99,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "A"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-3:15:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-3:15",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。Edward提到I always have fun with my classmates（我和同学们在一起时总是很开心）。选项A不正确，因为他说了Remembering the different dances isn’t easy（记住那些不同的舞蹈并不容易）。选项B不正确，因为他觉得课上用的音乐并不是很好。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-4:16:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-4:16",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。女孩说：A bag! He hasn’t got anything to put his sports kit in.（一个包！他还没有东西用来装他的运动用品。）这告诉我们，这个包是实用的。选项A不正确，因为她并没有说这个包是便宜的还是贵的。选项B不正确，因为她未提及包的尺寸。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-4:17:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-4:17",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。当女孩说这款游戏的价格是45英镑时，男孩说that’s too much（价格太高了）。选项A不正确。男孩之前确实已经玩过这个游戏，但这不是他不购买的原因。选项C不正确，因为男孩没有说他可以从朋友那里借到这个游戏。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-4:18:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-4:18",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。男孩说，from up here（从上面这里看），羊群看起来像花朵。也就是说，他们在高处。选项A不正确。男孩提到when we were near the farm（我们在农场附近时），句子里用的是过去时，说明他们现在已不在农场附近。选项B不正确，因为女孩提到we came out of the wood（我们从树林出来了）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-4:19:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-4:19",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。女孩说，杂志上的一篇广告写到one lucky reader and their family can win a trip to Canada（一位幸运读者和家人可以赢得一次加拿大之旅）。男士表示I’ll put my name on the form（我要在表格上填我的名字），这说明他要加入这场竞争。选项A不正确。男士想要赢得加拿大之旅，而不是想自己花钱预订。选项C不正确，因为男士说了I hardly ever read magazines（我几乎不看杂志），而且他也没说要买一本杂志。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-4:20:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-4:20",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项B。男孩说：... Jack came to see me ... It was too late to go out afterwards.（……Jack来找我了……后来太晚了，没法再出门。）这说明他和朋友Jack待在家里。选项A不正确。男孩提到I was going to（我本打算去），也就是他本来计划去购物，但是他没去，因为朋友来了。选项C不正确，因为是他的同学来拜访他了——Jack came to see me（Jack来找我了），而不是他去拜访同学了。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:example-0:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-5:example-0",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 24,
+            "printedPage": "23",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 24,
+            "printedPage": "23",
+            "role": "exam"
+          },
+          "quote": "B"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "example-0",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:21:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-5:21",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项F。Beth说Edward’s bringing something to carry all the stuff to eat（Edward将带一个东西来装所有的食物）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "F"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "21",
+            "optionId": "F"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:22:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-5:22",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项C。Beth表示：I’ve decided to pack a small drum because my guitar’s too heavy.（我决定带一个小鼓，因为我的吉他太沉了。）",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "C"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "22",
+            "optionId": "C"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:23:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-5:23",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项H。Jack说Dan’s offered to bring some things for playing games, some bats and balls（Dan主动提出带些娱乐运动用的东西，一些球拍和球）。也就是说，Dan会带运动器材。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 100,
+                "printedPage": "99",
+                "role": "solution"
+              },
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 101,
+                "printedPage": "100",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "H"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "23",
+            "optionId": "H"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:24:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-5:24",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项E。Jack提到Yolanda时说她has lots of art equipment（有很多美术用具）。备选项中的pencils and paints（铅笔和颜料）是美术用具。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 101,
+                "printedPage": "100",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "E"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "24",
+            "optionId": "E"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:25:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:listening:part-5:25",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [
+        {
+          "text": "正确答案是选项G。Jack说：... we thought we should have something where everyone takes part, answering questions in teams. So he’s going to prepare and bring that.（……我们认为应该准备一些大家都能参与的事，像是分组回答问题。所以他打算准备那样的东西并带过来。）选项A不正确。虽然Beth说了I was talking to Gordon about maybe bringing a board game（我和Gordon说过或许可以带个棋类游戏），但是Jack表示Actually, I discussed that with him and we thought we should have ...（实际上，我和他讨论过这事，我们认为应该准备……［智力竞赛］）。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 101,
+                "printedPage": "100",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "source": {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          "quote": "G"
+        }
+      ],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "25",
+            "optionId": "G"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:speaking:part-1:task:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:speaking:part-1:task",
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 153,
+            "printedPage": "152",
+            "role": "solution"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 154,
+            "printedPage": "153",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "reviewGuidance": [
+        {
+          "text": "Maksim 回答恰当，经常给出细节。他基本不需要帮助和提示，但对“过得开心的一个周末”这个问题理解有误，回答成了“周末的习惯”：In the weekends I enjoy to cycling（周末，我喜欢骑脚踏车兜风）。这影响了他对后面两题的回答。\nMaksim 对多种简单语法结构的运用能力尚可，还使用了多种恰当的词语来谈论日常话题。\nMaksim 的发音大体清楚易懂，但对问题 What is easy for you about learning a new language?（对你来说，学习一门新语言，哪方面比较简单？）的回答并不清楚。他在一定程度上掌握了单个语音的发音、单词重音和句子的重读位置。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 153,
+                "printedPage": "152",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        },
+        {
+          "text": "Ayla-Su 能够进行简单的交谈，但有一些困难，给出的回答一般很简短。她有时不理解问题，因此考官需要通过备用问题给予帮助。她未能答出最后一个问题：Is watching films a good way to learn a new language?（看电影是学习一门新语言的好方法吗？）\n由于 Ayla-Su 的回答基本都较简短，所以她使用的语法结构和词汇的丰富程度有限。但是，她展现了较好的语言把控能力，例如：No, because my friends don’t understand English.（不，因为我的朋友们不懂英语。）\nAyla-Su 的发音清楚易懂，大体上较好地掌握了单个语音的发音和词句的重读模式，但是爱用 /ə/ 音来拖长单词尾音。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 153,
+                "printedPage": "152",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        },
+        {
+          "text": "Part 1 应试技巧\n虽然有的问题仅需简短回答，但尽可能多说一些，例如，使用 No, I’m not，而不是只说 No。\n可以请考官重复问题。尝试学习可用来提出这一请求的不同语句。例如，不必总说 I don’t understand，而是可以问 Can you repeat that?\n仔细听完整个问题，这样才能够正确回答。例如，回答关于过去经历的问题时，谈论现在的习惯就是答非所问。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 153,
+                "printedPage": "152",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:speaking:part-2:task:solution",
+      "role": "solution",
+      "questionId": "ket-official-four-tests:test-1:exam:speaking:part-2:task",
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 153,
+            "printedPage": "152",
+            "role": "solution"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 154,
+            "printedPage": "153",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "reviewGuidance": [
+        {
+          "text": "Maksim 可以进行简单的交流，不需要提示和帮助。对 Ayla-Su 的发言和考官的提问都能作出恰当、充分的回应。他还鼓励了 Ayla-Su 参与讨论：Do you like to wear the hat?（你喜欢戴这顶帽子吗？）\nMaksim 较成功地运用了多种语法结构和与话题有关的词语：It’s beautiful and it has got so many options.（它很漂亮，而且有那么多种选择。）他在回答中大胆尝试复杂表达，导致有时对语言把控不佳，例如最后关于太阳镜的发言：I think it’s no so like décor. 他对简单语法结构的掌握大体较好，但也存在错误：In the school we can take all jewellery, but I didn’t take it.\nMaksim 的发音大体清楚易懂，但也有一些发音不太清晰的情况，例如谈论太阳镜和手表的部分。当语速较快时，对单个语音和重读模式的把控会受影响，尤其是在词尾和语句结尾。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 153,
+                "printedPage": "152",
+                "role": "solution"
+              },
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 154,
+                "printedPage": "153",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        },
+        {
+          "text": "Ayla-Su 通过选出要首先谈论的图片（提出 I like sunglasses）来发起讨论。然后，通过问题 Do you like watch?（你喜欢手表吗？），她请 Maksim 评论下一幅画，使交谈进一步展开。她对 Maksim 较长的发言回应吃力，但能够恰当回答考官和 Maksim 的直接提问。例如，针对问题 Do you like to wear the hat?（你喜欢戴帽子吗？），她回答了 No, because it’s not beautiful（不，因为它不好看）。不过，她一般不能展开回答。\nAyla-Su 能正确使用简单的语法结构，也能使用恰当的词汇谈论日常话题。\nAyla-Su 讲话清楚易懂，大体上较好地掌握了语音特点。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 153,
+                "printedPage": "152",
+                "role": "solution"
+              },
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 154,
+                "printedPage": "153",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        },
+        {
+          "text": "Part 2 应试技巧\n在第二部分的开头，你需要和同组另一名考生交流。练习使用多种不同的表达方式来进行提问和回答，让讨论流畅自然，避免每次都用同样的措辞。\n不必和另一名考生持一致观点。即使他/她说很喜欢某事物，你也可以说不喜欢。\n在口语考试的第二部分要尽量给出较长的回答。想象考官或另一名考生一直在问你 Why?，你应在他们问出 Why? 之前就主动给出相关信息。",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 154,
+                "printedPage": "153",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "teacherNotes": [
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-1:complete-group:private-transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:listening:part-1:complete-group"
+      ],
+      "kind": "listening_transcript",
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "Test One. There are five parts to the test. You will hear each piece twice. We will now stop for a moment before we start the test. Please ask any questions now because you must NOT speak during the test.\nNow look at the instructions for Part One.\nFor each question, choose the correct answer.\nOne. How did Stan and his dad get home from the concert?\nGirl: How was the concert, Stan? You look tired!\nBoy: I am. It was great, but Dad and I got home really late.\nGirl: Isn’t there a train station near the concert hall?\nBoy: There is, but there are no trains after 10 o’clock. And the taxis were all busy, so we got a bus. It took so long! Next time I’ll wait for a taxi!\nNow listen again.\n[repeat]\nTwo. What’s the girl forgotten?\nMan: Why are you back home so soon? You should be on your way to the swimming pool!\nGirl: I know, Dad. But I forgot something.\nMan: Oh, do you need more money for the bus?\nGirl: Thanks, but I’ve got enough. When I got to the pool, I looked for my swimming costume in my bag, but I only had my towel!\nNow listen again.\n[repeat]\nThree. What will the boy do first after he gets home from school?\nBoy: We’re going to stay with my cousins tomorrow.\nGirl: Are you all ready to go?\nBoy: Almost. Dad has to pick up the train tickets, and as soon as I get in after lessons I have to help make sandwiches for the journey.\nGirl: Have you packed?\nBoy: I’ve almost finished. I won’t need many clothes and I can do it later tonight.\nNow listen again.\n[repeat]\nFour. Where did the girl find her phone?\nGirl: I couldn’t find my phone for four days. I looked everywhere. I never take my phone to school, but I even looked in my classroom desk!\nBoy: Bad luck!\nGirl: It was actually in the back of my dad’s car. I saw it when he gave me a lift to school this morning.\nBoy: Maybe it fell out of your bag!\nGirl: Yeah, maybe.\nNow listen again.\n[repeat]\nFive. Where are the two friends going to go first today?\nMan: So, how about going to the museum before it gets too busy?\nWoman: Maybe we could go to the castle before we go there? It’s too sunny to be inside a museum right now.\nMan: Alright, but we’ve got to use our theatre tickets by today.\nWoman: Let’s do that after we finish visiting the museum.\nMan: Sure.\nNow listen again.\n[repeat]\nThat is the end of Part One."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 88,
+            "printedPage": "87",
+            "role": "solution"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 89,
+            "printedPage": "88",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-2:complete-group:private-transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 2,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:listening:part-2:complete-group"
+      ],
+      "kind": "listening_transcript",
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "Now look at Part Two.\nFor each question, write the correct answer in the gap. Write one word or a number or a date or a time. Look at questions 6–10 now. You have ten seconds.\nYou will hear a man talking about a course for teenagers who are interested in working on the radio.\nMan: This year’s Radio Camp is going to be at our radio station on 102 Golden Street.\nOur popular three-week summer camps are already getting full! We start on June 25th, but if you can’t come then, there’s another camp starting on July 16th, and the last one’s on August 6th.\nAt camp, we’ll teach you how to use radio equipment and to write a play for young actors. This summer you won’t learn how to write about the news.\nYou’ll meet the local journalist, Luke Berry, and a very well-known band who’ve just finished a world tour! We’ll tell you who it is when you join.\nEveryone gets a T-shirt to wear at camp. All you need to bring are your own snacks and some great ideas. And wear comfortable clothes like sneakers and shorts.\nIf you book before midnight, you’ll get a discount! $476 is the usual price, but now it’s half-price – $238. To get this special offer, visit our website.\nNow listen again.\n[repeat]\nThat is the end of Part Two."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 89,
+            "printedPage": "88",
+            "role": "solution"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 90,
+            "printedPage": "89",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-3:complete-group:private-transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 3,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:listening:part-3:complete-group"
+      ],
+      "kind": "listening_transcript",
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "Now look at Part Three.\nFor each question, choose the correct answer. Look at questions 11–15 now. You have twenty seconds.\nYou will hear Edward talking to his friend Michaela about dance classes.\nMichaela: Hi, Edward, do you go to the dance school for your dance classes?\nEdward: Hi, Michaela. They’re too expensive there. My classes were at the sports centre last year, but they moved to the college.\nMichaela: Oh, OK.\nEdward: And how often do you have classes?\nMichaela: Once a week, and it’s an eight-week course.\nEdward: You’ve been to four classes already, haven’t you?\nMichaela: That’s right. Is your teacher good?\nEdward: She quickly shows us what to do instead of explaining, which is OK most of the time. She laughs when we make mistakes, but in a nice way! And, what’s really nice, if you do something well, you get a little packet of sweets.\nMichaela: Oh, nice!\nEdward: What do you wear for your classes?\nMichaela: When I wore shorts and a T-shirt, they weren’t warm enough, and trainers and a sweater aren’t good for dancing in, so I just wear comfortable trousers and a shirt.\nEdward: Me too.\nMichaela: Do you enjoy your classes?\nEdward: Yes. Remembering the different dances isn’t easy, but I always have fun with my classmates. I wish I could choose the music – it’s not very good!\nNow listen again.\n[repeat]\nThat is the end of Part Three."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 90,
+            "printedPage": "89",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-4:complete-group:private-transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 4,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:listening:part-4:complete-group"
+      ],
+      "kind": "listening_transcript",
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "Now look at Part Four.\nFor each question, choose the correct answer.\nSixteen. You will hear a brother and sister talking about a present for their cousin, Ben. Why did the girl choose the bag?\nBoy: Did you manage to get Ben’s birthday present?\nGirl: Yes, I wanted to get a towel he can use after swimming, but they were all very expensive. I thought about a football poster, but the ones in the shop were enormous and his room’s small.\nBoy: What did you get?\nGirl: A bag! He hasn’t got anything to put his sports kit in.\nBoy: Great choice!\nNow listen again.\n[repeat]\nSeventeen. You will hear a boy talking to a friend about a computer game. Why doesn’t he buy it now?\nGirl: How about this computer game? It’s £45.\nBoy: I really loved playing it at my friend’s house. But that’s too much.\nGirl: But it’s worth it! I borrowed it from my cousin and didn’t want to give it back!\nBoy: I’d love to get it, and then we can play it for as long as we like. But I’ll have to save up for it.\nNow listen again.\n[repeat]\nEighteen. You will hear two friends talking together. Where are they?\nGirl: What a fantastic view! You can see all the way down the valley to the lake.\nBoy: Look at the sheep we passed when we were near the farm! They look like white flowers from up here.\nGirl: You know, I wanted to stop when we came out of the wood, but I’m glad we kept going.\nBoy: So am I.\nNow listen again.\n[repeat]\nNineteen. You will hear a girl, Kate, talking to her father. What’s Kate’s father going to do?\nGirl: Have you seen this advert, Dad?\nMan: Which advert? ... No, I haven’t. I hardly ever read magazines.\nGirl: It says one lucky reader and their family can win a trip to Canada to see where they film my favourite TV series. You have to be over eighteen to take part.\nMan: Then I’ll put my name on the form. I’d love to visit Canada.\nNow listen again.\n[repeat]\nTwenty. You will hear two friends talking about last weekend. What did the boy do?\nGirl: How was your weekend? Did you buy that book you need for school?\nBoy: I was going to, but Jack came to see me on Saturday. He was absent from school last week, so he needed to borrow my notes. It was too late to go out afterwards.\nGirl: Never mind, I’m passing that shop later, so I can get it for you.\nBoy: Thanks.\nNow listen again.\n[repeat]\nThat is the end of Part Four."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 91,
+            "printedPage": "90",
+            "role": "solution"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 92,
+            "printedPage": "91",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:listening:part-5:complete-group:private-transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 5,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:listening:part-5:complete-group"
+      ],
+      "kind": "listening_transcript",
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "Now look at Part Five.\nFor each question, choose the correct answer. Look at questions 21–25 now. You have fifteen seconds.\nYou will hear Beth talking to Jack about a class trip. What will each person bring on the trip?\nBeth: It’s only two days before the class trip, Jack!\nJack: Yes. Everyone’s agreed what they’re going to bring. I’m bringing my good camera, so we can get some group photos.\nBeth: Great. And I know Edward’s bringing something to carry all the stuff to eat, which’ll be really helpful.\nJack: Good idea. And what about you, Beth?\nBeth: Well, I think it’ll be nice to have some music. I’ve decided to pack a small drum because my guitar’s too heavy.\nJack: Yes, of course. And Dan’s offered to bring some things for playing games, some bats and balls, I think.\nBeth: That’ll be great, but not everyone wants to do activities that make you tired.\nJack: Yolanda’s thought of that! She has lots of art equipment, which we can all share.\nBeth: Good idea. And I was talking to Gordon about maybe bringing a board game. What do you think?\nJack: Actually, I discussed that with him and we thought we should have something where everyone takes part, answering questions in teams. So he’s going to prepare and bring that.\nNow listen again.\n[repeat]\nThat is the end of Part Five.\nYou now have six minutes to write your answers on the answer sheet.\n[ping]\nYou have one more minute.\n[ping]\nThat is the end of the test."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 92,
+            "printedPage": "91",
+            "role": "solution"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 93,
+            "printedPage": "92",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:speaking:part-1:complete-group:examiner-script",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:speaking:part-1:complete-group"
+      ],
+      "kind": "examiner_script",
+      "blocks": [
+        {
+          "id": "script",
+          "kind": "text",
+          "text": "Part 1 (3–4 minutes)\nPhase 1\nInterlocutor\nTo both candidates\nGood morning / afternoon / evening.\nCan I have your mark sheets, please?\n接过考生的评分表，递给仅负责评分的考官*。\nI’m ……, and this is …… .\nTo Candidate A\nWhat’s your name?\nTo Candidate B\nAnd what’s your name?\nB, how old are you?\nFor UK, ask: Where do you come from?\n备用提示语: Are you from (Spain, etc.)?\nFor non-UK, ask: Where do you live?\n备用提示语: Do you live in ... (name of district / town, etc.)?\nThank you.\nA, how old are you?\nFor UK, ask: Where do you come from?\n备用提示语: Are you from (Spain, etc.)?\nFor non-UK, ask: Where do you live?\n备用提示语: Do you live in ... (name of district / town, etc.)?\nThank you.\n* 考场上一般有两名考官，即一名与考生互动的考官（Interlocutor）和一名不参与互动、仅负责评分的考官（Assessor）。两名考官将针对不同方面给考生打分。\nPhase 2\nInterlocutor\nNow, let’s talk about weekends.\nA, what’s your favourite day at the weekend?\n备用提示语: Is Friday / Saturday your favourite day at the weekend?\nWhat do you usually eat for lunch at the weekend?\n备用提示语: Do you usually eat pizza for lunch at the weekend?\nB, where are you going next weekend?\n备用提示语: Are you going to see your friends next weekend?\nWhat do people in your family enjoy doing at the weekend?\n备用提示语: Do people in your family enjoy watching TV at the weekend?\n展开陈述题: Now, A, please tell me something about a weekend that you enjoyed.\n备用问题:\nWhat did you do during the weekend?\nWhat was the weather like?\nWhat did you enjoy most about the weekend?\nInterlocutor\nNow, let’s talk about languages.\nB, where do you study English?\n备用提示语: Do you study English at home?\nWhat languages can you learn at school?\n备用提示语: Can you learn Chinese at school?\nA, how often do you speak English?\n备用提示语: Do you speak English every day?\nWhat is easy for you about learning a new language?\n备用提示语: Is learning to read a new language easy for you?\n展开陈述题: Now, B, please tell me something about good ways for you to learn a new language.\n备用问题:\nDo you use a computer to learn a new language?\nDo you practise speaking a new language with friends?\nIs watching films a good way to learn a new language?"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 73,
+            "printedPage": "72",
+            "role": "teacher_notes"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 74,
+            "printedPage": "73",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:exam:speaking:part-2:complete-group:examiner-script",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:speaking:part-2:complete-group"
+      ],
+      "kind": "examiner_script",
+      "blocks": [
+        {
+          "id": "script",
+          "kind": "text",
+          "text": "Part 2 (5–6 minutes)\nPhase 1\nInterlocutor (3~4分钟)\nNow, in this part of the test you are going to talk together.\n将此部分考试所用的图片材料（见第159页）置于考生面前。\nHere are some pictures that show different things to wear.\nDo you like these different things to wear? Say why or why not.\nI’ll say that again.\nDo you like these different things to wear? Say why or why not.\nAll right? Now, talk together.\nCandidates: ........................................\n在问接下来的问题前，给考生至少1分钟（至多2分钟）的时间交谈。\nInterlocutor / Candidates\n根据情况提问。问每名考生至少一个问题。\nDo you think ...\n... wearing jeans is boring?\n... wearing sunglasses is important?\n... wearing trainers is cool?\n... wearing a cap in the sun is a good idea?\n... wearing a watch is useful?\n可选用以下提示: Why? / Why not? What do you think?\nInterlocutor\nSo, A, which of these things to wear do you like best?\nAnd you, B, which of these things to wear do you like best?\nThank you. (Can I have the booklet, please?) 收回口语试题材料。\nPhase 2\nInterlocutor 不超过2分钟\nNow, do you prefer wearing a watch or using your phone to tell the time, B? (Why?)\nAnd what about you, A? (Do you prefer wearing a watch or using your phone to tell the time?) (Why?)\nWhat kind of jewellery can you wear at school, A? (Why?)\nAnd what about you, B? (What kind of jewellery can you wear at school?) (Why?)\nThank you. That is the end of the test."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 75,
+            "printedPage": "74",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:speaking:part-2:overall-examiner-feedback",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:speaking:part-2:complete-group"
+      ],
+      "kind": "scoring_guidance",
+      "blocks": [
+        {
+          "id": "overall-feedback",
+          "kind": "text",
+          "text": "整体评价\nMaksim\n语法和词汇\nMaksim 用了多种语法结构，包括情态动词等较复杂的结构。对语法和词汇的掌握足够熟练，但存在明显错误，如在动词形式、时态和介词运用方面。\n使用了多种恰当的词语来讨论相应话题。\n发音\nMaksim 的发音大体清楚易懂，但他对语音特点的把控有时会因语速快而受影响。\n互动交流\nMaksim 能够进行简单的交谈，能得体地发起对话和进行应答，仅需极少的提示和帮助。\n总体表现\nMaksim 掌握了日常情景中的交流，能够组织较长的话语并运用一些较复杂的表达。\nAyla-Su\n语法和词汇\nAyla-Su 熟练掌握了简单的语法结构，能够使用恰当的词汇谈论日常话题。\n她的回答简短，因而没能展现出对更丰富的语法结构和词汇的掌握。\n发音\nAyla-Su 的发音清楚易懂。单个语音的发音大体清晰，重读模式基本恰当。\n互动交流\nAyla-Su 能够进行简单的交谈，但有一些困难。她在考试全程中都需要提示和帮助。\n总体表现\nAyla-Su 能在熟悉的日常情景中交流简单的信息。她的话语往往非常短，说话时频频迟疑，而且需要提示。"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 154,
+            "printedPage": "153",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-1:speaking:part-1:overall-examiner-feedback",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "groupIds": [
+        "ket-official-four-tests:test-1:exam:speaking:part-1:complete-group"
+      ],
+      "kind": "scoring_guidance",
+      "blocks": [
+        {
+          "id": "overall-feedback",
+          "kind": "text",
+          "text": "整体评价\nMaksim\n语法和词汇\nMaksim 用了多种语法结构，包括情态动词等较复杂的结构。对语法和词汇的掌握足够熟练，但存在明显错误，如在动词形式、时态和介词运用方面。\n使用了多种恰当的词语来讨论相应话题。\n发音\nMaksim 的发音大体清楚易懂，但他对语音特点的把控有时会因语速快而受影响。\n互动交流\nMaksim 能够进行简单的交谈，能得体地发起对话和进行应答，仅需极少的提示和帮助。\n总体表现\nMaksim 掌握了日常情景中的交流，能够组织较长的话语并运用一些较复杂的表达。\nAyla-Su\n语法和词汇\nAyla-Su 熟练掌握了简单的语法结构，能够使用恰当的词汇谈论日常话题。\n她的回答简短，因而没能展现出对更丰富的语法结构和词汇的掌握。\n发音\nAyla-Su 的发音清楚易懂。单个语音的发音大体清晰，重读模式基本恰当。\n互动交流\nAyla-Su 能够进行简单的交谈，但有一些困难。她在考试全程中都需要提示和帮助。\n总体表现\nAyla-Su 能在熟悉的日常情景中交流简单的信息。她的话语往往非常短，说话时频频迟疑，而且需要提示。"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 154,
+            "printedPage": "153",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "mediaSlots": [
+    {
+      "id": "ket-official-four-tests:test-1:speaking:example-video",
+      "target": {
+        "kind": "content_set",
+        "id": "ket-official-four-tests:test-1:full"
+      },
+      "sourceTrackLabel": "Speaking test video",
+      "required": false,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 73,
+            "printedPage": "72",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "audience": "review",
+      "purpose": "speaking_example"
+    }
+  ]
+}

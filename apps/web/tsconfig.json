@@ -5,6 +5,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@rosie/tasks": ["../../packages/tasks/src/index.ts"],
+      "@rosie/exams": ["../../packages/exams/src/index.ts"],
+      "@rosie/exams/validation": ["../../packages/exams/src/validation/index.ts"],
       "@rosie/english/*": ["../../packages/english/src/*"],
       "@rosie/math/*": ["../../packages/math/src/*"],
       "@rosie/math-kit/*": ["../../packages/math-kit/src/*"],

@@ -8,7 +8,7 @@ import { getBaiduAccountContext } from '@/lib/baidu-token'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-export type SyncDirectory = { id: string; path: string }
+export type SyncDirectory = { id: string; path: string; managedBy?: 'exam_images' }
 export type SyncDirectoryList = { generation: string; directories: SyncDirectory[] }
 export type SyncDirectoryPage = {
   path: string
@@ -52,8 +52,30 @@ async function manageDirectories(request: Request) {
         .eq('account_id', account.accountId)
         .order('path')
       if (error) throw Error('baidu_storage_error')
+      // Initial crop jobs record directoryId=null when the upload workflow owns
+      // directory creation. Keep bookmarks available to binding/access checks;
+      // only the path-management list hides these automatically managed entries.
+      const automaticPaths = new Set<string>()
+      const paths = (data ?? []).map(directory => directory.path)
+      if (paths.length) {
+        for (let start = 0; ; start += 1000) {
+          const jobs = await createAdminSupabase().from('exam_image_crop_jobs')
+            .select('destination')
+            .eq('destination->>accountId', account.accountId)
+            .is('destination->>directoryId', null)
+            .in('destination->>mainPath', paths)
+            .order('request_id')
+            .range(start, start + 999)
+          if (jobs.error) throw Error('baidu_storage_error')
+          for (const job of jobs.data ?? []) {
+            if (typeof job.destination?.mainPath === 'string') automaticPaths.add(job.destination.mainPath)
+          }
+          if ((jobs.data?.length ?? 0) < 1000 || automaticPaths.size === paths.length) break
+        }
+      }
       return NextResponse.json(
-        { generation: account.generation, directories: data } satisfies SyncDirectoryList,
+        { generation: account.generation, directories: (data ?? []).map(directory => automaticPaths.has(directory.path)
+          ? { ...directory, managedBy: 'exam_images' as const } : directory) } satisfies SyncDirectoryList,
         { headers },
       )
     }
