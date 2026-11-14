@@ -43,7 +43,8 @@ export default function LessonProblemRoutePage({
   detailProps,
   scratchActions,
 }: LessonProblemRoutePageProps) {
-  const id1 = parseInt(problemId, 10)
+  const exactIndex = problems.findIndex((problem) => problem.id === problemId)
+  const id1 = exactIndex >= 0 ? exactIndex + 1 : /^\d+$/.test(problemId) ? Number(problemId) : NaN
   const problem = Number.isNaN(id1) || id1 < 1 ? undefined : problems[id1 - 1]
 
   const scratchValue = useMemo(

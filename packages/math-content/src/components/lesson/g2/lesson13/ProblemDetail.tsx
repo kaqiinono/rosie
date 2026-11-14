@@ -7,6 +7,7 @@ import LessonProblemDetailHeader from '@rosie/math-kit/components/shared/LessonP
 import LessonProblemNavBar from '@rosie/math-kit/components/shared/LessonProblemNavBar'
 import ProblemAnswerSection from '@rosie/math-kit/components/shared/ProblemAnswerSection'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
+import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
 import { TAG_STYLE, lesson13ProblemTip } from '../../../../utils/g2/lesson13-data'
@@ -48,6 +49,7 @@ export default function ProblemDetail({
         className="text-text-secondary [&>strong]:text-text-primary rounded-lg border-l-3 border-amber-300 bg-amber-50 px-3.5 py-3 text-sm leading-relaxed [&>strong]:font-bold"
         dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
       />
+      {problem.figureNode && <ProblemFigureImage problem={problem} />}
     </div>
   )
   const answerDom = (

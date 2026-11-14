@@ -1,6 +1,6 @@
 'use client'
 
-import { lessonReplayKey, orderedSummaryKeys } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, orderedLessonReplayKeys, orderedSummaryKeys } from '@rosie/math-kit/utils/lesson-registry'
 import { useMemo, useState } from 'react'
 import type { MathVideoEditor } from '@/lib/baidu-math-video-report-types'
 import { Box, Button, Flex, Text, TextField } from '@rosie/ui/themes'
@@ -10,24 +10,26 @@ type Props = {
   picks: Record<string, string>
   problemId: string
   disabled?: boolean
+  onlyUnbound?: boolean
   choose: (id: string) => void
 }
-export default function MathVideoFilePicker({ editor, picks, problemId, disabled, choose }: Props) {
+export default function MathVideoFilePicker({ editor, picks, problemId, disabled, onlyUnbound = false, choose }: Props) {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(0)
   const used = new Map(Object.entries(picks).map(([problem, file]) => [file, problem]))
   const labels = new Map(editor.problems.map((p) => [p.id, p.label]))
   labels.set(lessonReplayKey(editor.lessonKey), '整讲回放')
+  for (const key of orderedLessonReplayKeys(editor.lessonKey, Object.keys(picks))) labels.set(key, '整讲回放')
   for (const key of orderedSummaryKeys(editor.lessonKey, Object.keys(picks)))
     labels.set(key, '本讲总结视频')
   const files = useMemo(() => {
     const collator = new Intl.Collator('zh-CN', { numeric: true })
     return Object.entries(editor.files).sort((a, b) => collator.compare(a[1], b[1]))
   }, [editor.files])
-  const matches = useMemo(() => {
+  const matches = (() => {
     const query = search.trim().toLowerCase()
-    return query ? files.filter(([, name]) => name.toLowerCase().includes(query)) : files
-  }, [files, search])
+    return files.filter(([id, name]) => (!query || name.toLowerCase().includes(query)) && (!onlyUnbound || (!used.has(id) && !editor.occupied[id])))
+  })()
   const currentPage = Math.min(page, Math.max(0, Math.ceil(matches.length / 30) - 1))
   const offset = currentPage * 30
   return (

@@ -1,4 +1,4 @@
-import { lessonReplayKey, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, lessonReplayOrder, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
 import 'server-only'
 import { SEA_LESSON_MAP } from '@rosie/math/utils/sea-data'
 import { problemCardDisplayId } from '@rosie/math-kit/utils/problem-display-id'
@@ -126,7 +126,7 @@ export async function publishVideoBindings(
   ids.add(lessonReplayKey(lessonKey))
   const used = new Set<string>()
   for (const [problemId, fileId] of Object.entries(picks)) {
-    if ((!ids.has(problemId) && !summaryReplayOrder(lessonKey, problemId)) || typeof fileId !== 'string' || !fileId || used.has(fileId))
+    if ((!ids.has(problemId) && !lessonReplayOrder(lessonKey, problemId) && !summaryReplayOrder(lessonKey, problemId)) || typeof fileId !== 'string' || !fileId || used.has(fileId))
       throw Error('invalid_picks')
     used.add(fileId)
   }

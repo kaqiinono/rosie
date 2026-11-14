@@ -11,7 +11,8 @@ import type { Problem } from '@rosie/core'
 import { QUIZ_ALL_ENTRIES_MAP } from '../../utils/quiz-lesson-meta'
 import { migrateProblemIdForAudit } from '../../admin/legacy-migration-map'
 import ProblemVideoReplay from '@rosie/math-kit/components/shared/ProblemVideoReplay'
-import { useProblemImageUrl } from '@rosie/math-kit/hooks/useProblemImageUrl'
+import ProblemSolutionView from '@rosie/ui/ProblemSolutionView'
+import AnalysisImage from '@rosie/ui/AnalysisImage'
 import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import {
   computeQuizPoints,
@@ -52,11 +53,11 @@ function hasCustomPrintWidget(problem: Problem): boolean {
   return mode === 'custom-widget' || mode === 'readonly-puzzle-numeric'
 }
 
-function GridReferenceAnswer({ problem, savedAnswer }: {
+function GridReferenceAnswer({ problem, savedAnswer, analysisImage }: {
   problem: Problem
+  analysisImage?: string
   savedAnswer?: QuizAnswerRecord
 }) {
-  const analysisImage = useProblemImageUrl(problem, 'analysis')
   if (analysisImage) return <p>见下方题解图。</p>
 
   const state = savedAnswer?.interactiveState
@@ -71,10 +72,12 @@ export function QuizPaperPrintSheet({
   printMode,
   scratchByProblem,
   pageBreakAfter,
+  analysisImages,
 }: {
   paper: QuizPaper
   printMode: QuizPrintMode
   scratchByProblem?: Map<string, ScratchObject[]>
+  analysisImages?: ReadonlyMap<string, string>
   pageBreakAfter?: boolean
 }) {
   const pointsArr = computeQuizPoints(paper.problems.length)
@@ -124,6 +127,7 @@ export function QuizPaperPrintSheet({
             )
           }
           const { problem, lessonId } = entry
+          const analysisImage = analysisImages?.get(problem.id) ?? problem.analysisImg
           const grade = gradeOf(lessonId)
           const answerMode = getProblemAnswerMode(problem)
           const pts = pointsArr[i] ?? 0
@@ -167,7 +171,7 @@ export function QuizPaperPrintSheet({
                         <p key={index}>{q.finalQ} {q.finalAns}{q.finalUnit}</p>
                       ))
                     ) : (
-                      <GridReferenceAnswer problem={problem} savedAnswer={record} />
+                      <GridReferenceAnswer problem={problem} savedAnswer={record} analysisImage={analysisImage} />
                     )}
                   </div>
                   {problem.verticalPuzzle?.solutionFills && !problem.verticalPuzzle.readonly && (
@@ -176,7 +180,17 @@ export function QuizPaperPrintSheet({
                       interactiveState={problem.verticalPuzzle.solutionFills}
                     />
                   )}
-                  <QuizProblemSolution problem={problem} className="print-solution mt-3" />
+                  {(problem.analysis.length > 0 || analysisImage) && (
+                    <ProblemSolutionView
+                      className="print-solution mt-3"
+                      variant="indigo"
+                      heading="题解"
+                      headingIcon="📖"
+                      analysis={problem.analysis}
+                      allowTrustedHtml
+                      image={analysisImage && <AnalysisImage src={analysisImage} alt={`${problem.title} · 题解图`} />}
+                    />
+                  )}
                   <div className="no-print mt-2">
                     <ProblemVideoReplay problem={problem} />
                   </div>

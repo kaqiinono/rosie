@@ -54,7 +54,7 @@ export default function ProblemWorkspace({
   }, [])
 
   const handleDefaultDontKnow = useCallback(async () => {
-    if (!user || !scratchCtx?.section) return
+    if (!user || !scratchCtx?.section || runtime?.preview) return
     const inProgress = await findInProgressAttempt(user.id, problem.id, null)
     await submitPracticeAttempt({
       userId: user.id,
@@ -66,7 +66,7 @@ export default function ProblemWorkspace({
       paperId: null,
       attemptId: inProgress?.id ?? null,
     })
-  }, [user, scratchCtx, problem])
+  }, [user, scratchCtx, problem, runtime?.preview])
 
   const handleDontKnow = useCallback(async () => {
     if (settling || attempted) return

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react'
+import { useProblemWorkspaceRuntime } from './ProblemWorkspaceRuntime'
 import { useAuth } from '@rosie/core'
 import { useMathPracticeStats } from '@rosie/math-kit/hooks/useMathPracticeStats'
 import { useMathWrong } from '@rosie/math-kit/hooks/useMathWrong'
@@ -44,7 +45,9 @@ export function createLessonProvider(displayName: string): {
   }
 
   function Provider({ children }: { children: ReactNode }): ReactNode {
-    const { user } = useAuth()
+    const { user: authenticatedUser } = useAuth()
+    const preview = useProblemWorkspaceRuntime()?.preview ?? false
+    const user = preview ? null : authenticatedUser
     const {
       practiceCount,
       correctCount,
@@ -67,6 +70,7 @@ export function createLessonProvider(displayName: string): {
     }, [correctCount])
 
     const handleSolve = useCallback(async (id: string) => {
+      if (preview) return
       const newCount = (correctCount[id] ?? 0) + 1
 
       void awardStars('blue', 1)
@@ -80,27 +84,27 @@ export function createLessonProvider(displayName: string): {
       } else {
         setToast(`⭐ 第${newCount}次答对！继续保持！`)
       }
-    }, [correctCount, awardStars])
+    }, [correctCount, awardStars, preview])
 
     const addWrong = useCallback(
       (id: string) => {
-        addWrongRow(id)
+        if (!preview) addWrongRow(id)
       },
-      [addWrongRow],
+      [addWrongRow, preview],
     )
 
     const removeWrong = useCallback(
       (id: string) => {
-        void removeWrongRow(id)
+        if (!preview) void removeWrongRow(id)
       },
-      [removeWrongRow],
+      [removeWrongRow, preview],
     )
 
     const markResolvedCb = useCallback(
       (id: string) => {
-        void markResolvedRow(id)
+        if (!preview) void markResolvedRow(id)
       },
-      [markResolvedRow],
+      [markResolvedRow, preview],
     )
 
     const scratchActions = useMemo(

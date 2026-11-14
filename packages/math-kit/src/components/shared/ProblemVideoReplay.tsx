@@ -7,7 +7,7 @@ import { supabase, useAuth, probeBaiduMedia, baiduResponseMessage, type Problem 
 import { useProblemVideoCatalog } from '../../hooks/useProblemVideoCatalog'
 import { problemCardDisplayId } from '../../utils/problem-display-id'
 import {
-  lessonReplayKey,
+  orderedLessonReplayKeys,
   lessonKeyFromProblemId,
   orderedSummaryKeys,
 } from '../../utils/lesson-registry'
@@ -177,14 +177,15 @@ export default function ProblemVideoReplay({ problem }: Props) {
 }
 
 export function LessonVideoReplay({ lessonKey }: { lessonKey: string }) {
-  return (
-    <ReplayButton
-      videoKey={lessonReplayKey(lessonKey)}
-      featured
-      label="本讲回放"
-      title={`第 ${lessonKey.split('-')[1]} 讲 · 完整回放`}
-    />
-  )
+  const { user } = useAuth()
+  const { status, keys } = useProblemVideoCatalog(user, lessonKey)
+  const ordered = orderedLessonReplayKeys(lessonKey, [...keys])
+  if (status !== 'ready' || !ordered.length) return null
+  return <div className="flex flex-col gap-2">
+    {ordered.map((key, index) => <ReplayButton key={key} videoKey={key} featured
+      label={ordered.length === 1 ? '本讲回放' : `本讲回放 · ${index + 1}`}
+      title={`第 ${lessonKey.split('-')[1]} 讲 · 完整回放${ordered.length > 1 ? ` · ${index + 1}` : ''}`} />)}
+  </div>
 }
 
 export function LessonSummaryVideos({ lessonKey }: { lessonKey: string }) {

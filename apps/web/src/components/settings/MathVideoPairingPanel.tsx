@@ -6,10 +6,12 @@ import {
   type MathVideoEditor,
   type VideoProblem,
 } from '@/lib/baidu-math-video-report-types'
-import { AppDialog } from '@rosie/ui'
-import { Badge, Box, Button, Card, Flex, Grid, Heading, Text } from '@rosie/ui/themes'
+import { AppDialog, StickerCard } from '@rosie/ui'
+import { Badge, Box, Button, Flex, Grid, Heading, Text } from '@rosie/ui/themes'
 import {
   lessonReplayKey,
+  lessonReplayOrder,
+  orderedLessonReplayKeys,
   orderedSummaryKeys,
   summaryReplayKey,
   summaryReplayOrder,
@@ -21,6 +23,8 @@ type Props = {
   problems: VideoProblem[]
   picks: Record<string, string>
   busy: boolean
+  onlyUnbound: boolean
+  reorder: (left: string, right: string) => void
   choose: (problemId: string, fileId: string | null) => void
 }
 
@@ -33,7 +37,7 @@ function subscribeLayout(update: () => void) {
 const desktopLayout = () => window.matchMedia(desktopQuery).matches
 const serverLayout = () => false
 
-export default function MathVideoPairingPanel({ editor, problems, picks, busy, choose }: Props) {
+export default function MathVideoPairingPanel({ editor, problems, picks, busy, onlyUnbound, reorder, choose }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const desktop = useSyncExternalStore(subscribeLayout, desktopLayout, serverLayout)
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -42,16 +46,17 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
   const wholeLesson = {
     id: lessonReplayKey(editor.lessonKey),
     label: '整讲回放',
-    title: '完整课堂视频',
+    title: '可连续添加多个视频',
   }
   const summary = { id: 'summary', label: '本讲总结视频', title: '可连续添加多个视频' }
   const summaryKeys = orderedSummaryKeys(editor.lessonKey, Object.keys(picks))
-  const targets = [wholeLesson, summary, ...problems]
+  const fullKeys = orderedLessonReplayKeys(editor.lessonKey, Object.keys(picks))
+  const targets = [wholeLesson, summary, ...problems].filter((target) => !onlyUnbound ||
+    (target.id === wholeLesson.id ? !fullKeys.length : target.id === summary.id ? !summaryKeys.length : !picks[target.id]))
   const active =
     targets.find((p) => p.id === selectedId) ??
-    problems.find((p) => !picks[p.id]) ??
-    problems[0] ??
-    wholeLesson
+    targets.find((p) => p.id !== wholeLesson.id && p.id !== summary.id && !picks[p.id]) ??
+    targets[0]
   const bindings = new Map(editor.bindings.map((b) => [b.problemId, b]))
 
   useEffect(() => {
@@ -71,10 +76,12 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
 
   function assign(fileId: string) {
     if (!active || busy || !editor.version || picks[active.id] === fileId) return
-    if (active.id === summary.id) {
-      const last = summaryKeys[summaryKeys.length - 1]
-      const order = last ? summaryReplayOrder(editor.lessonKey, last) + 1 : 1
-      choose(summaryReplayKey(editor.lessonKey, order), fileId)
+    if (active.id === summary.id || active.id === wholeLesson.id) {
+      const full = active.id === wholeLesson.id
+      const keys = full ? fullKeys : summaryKeys
+      const last = keys[keys.length - 1]
+      const order = last ? (full ? lessonReplayOrder : summaryReplayOrder)(editor.lessonKey, last) + 1 : 1
+      choose((full ? lessonReplayKey : summaryReplayKey)(editor.lessonKey, order), fileId)
       return
     }
     choose(active.id, fileId)
@@ -90,103 +97,75 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
   const videoList = (
     <>
       <Text as="p" mb="2" size="2" weight="medium" aria-live="polite">
-        当前匹配：{active.label} · {active.title}
+        {active ? `当前匹配：${active.label} · ${active.title}` : '没有待绑定的题目；可关闭“只看未绑定”继续添加。'}
       </Text>
       <MathVideoFilePicker
         editor={editor}
         picks={picks}
-        problemId={active.id}
-        disabled={busy || !editor.version}
+        problemId={active?.id ?? ''}
+        disabled={busy || !editor.version || !active}
         choose={assign}
+        onlyUnbound={onlyUnbound}
       />
     </>
   )
 
   return (
-    <Grid columns={{ initial: '1', sm: '2' }} gap="3" align="start">
-      <Card>
+    <Grid columns={{ initial: '1', md: '2' }} gap="3" align="start">
+      <StickerCard size="sm">
         <Heading as="h4" size="3" mb="2">
           讲次视频与题目（{problems.length} 题）
         </Heading>
         <Box ref={list} role="list" aria-label="题目列表" maxHeight="24rem" overflowY="auto">
           {targets.map((p) => {
-            const file = picks[p.id]
-            const old = bindings.get(p.id)
-            const name =
-              file && (editor.files[file] ?? (old && bindingValue(old) === file ? old.name : file))
-            const selected = p.id === active.id
-            const isSummary = p.id === summary.id
+            const selected = p.id === active?.id
+            const multi = p.id === summary.id || p.id === wholeLesson.id
+            const keys = p.id === summary.id ? summaryKeys : p.id === wholeLesson.id ? fullKeys : picks[p.id] ? [p.id] : []
             return (
               <Box key={p.id} role="listitem" ref={selected ? selectedRow : undefined} py="2">
-                <Flex justify="between" align="start" gap="2" wrap="wrap">
-                  <Text size="2" weight="medium">
-                    {p.label} · {p.title}
-                  </Text>
-                  <Button
-                    size="1"
-                    variant={selected ? 'solid' : 'soft'}
-                    aria-pressed={selected}
-                    aria-label={'选择 ' + p.label}
-                    disabled={busy}
-                    onClick={() => selectProblem(p.id)}
-                  >
-                    {selected ? '当前题目' : '选择'}
-                  </Button>
-                </Flex>
-                {isSummary ? (
-                  <>
-                    <Badge color="gray" mt="1">
-                      已绑定 {summaryKeys.length} 个
-                    </Badge>
-                    {summaryKeys.map((key) => {
+                <StickerCard size="sm" radius="md" elevation="flat" tone={selected ? 'accent' : 'white'}>
+                  <Flex direction="column" gap="3">
+                    <Grid columns="minmax(0, 1fr) 5rem" align="start" gap="2">
+                      <Text size="2" weight="medium">{p.label} · {p.title}</Text>
+                      <Box flexShrink="0">
+                        <Button size="1" variant={selected ? 'solid' : 'soft'} aria-pressed={selected}
+                          aria-label={'选择 ' + p.label} disabled={busy} onClick={() => selectProblem(p.id)}>
+                          {multi ? '添加视频' : selected ? '当前题目' : '选择视频'}
+                        </Button>
+                      </Box>
+                    </Grid>
+                  <Flex direction="column" gap="2" minWidth="0">
+                    {multi && <Badge color="gray">已绑定 {keys.length} 个</Badge>}
+                    {!keys.length && <Text size="1" color="gray">未绑定</Text>}
+                    {keys.map((key, index) => {
                       const id = picks[key]!
-                      const filename = editor.files[id] ?? bindings.get(key)?.name ?? id
-                      return (
-                        <Flex key={key} align="center" justify="between" gap="2" mt="1">
-                          <Text size="1" color="gray" className="break-all">
-                            {filename}
-                            {editor.version && !editor.files[id] && '（文件缺失）'}
-                          </Text>
-                          <Button
-                            size="1"
-                            variant="soft"
-                            color="red"
-                            disabled={busy}
-                            aria-label={'解绑 ' + filename}
-                            onClick={() => choose(key, null)}
-                          >
-                            解绑
-                          </Button>
+                      const old = bindings.get(key)
+                      const filename = editor.files[id] ?? (old && bindingValue(old) === id ? old.name : id)
+                      return <Grid key={key} columns="minmax(0, 1fr) 5rem" align="start" gap="2">
+                        <Flex direction="column" gap="1" minWidth="0">
+                        <Text size="1" color="gray" className="break-all">
+                          {multi && `${index + 1}. `}{filename}
+                          {editor.version && !editor.files[id] && '（文件缺失）'}
+                          {editor.occupied[id] && '（已被其他讲次占用，请改选）'}
+                        </Text>
+                        {multi && <Flex gap="1" wrap="wrap">
+                            <Button size="1" variant="soft" aria-label={'上移 ' + filename}
+                              disabled={busy || index === 0 || !editor.files[id] || !editor.files[picks[keys[index - 1]!]!]}
+                              onClick={() => reorder(key, keys[index - 1]!)}>上移</Button>
+                            <Button size="1" variant="soft" aria-label={'下移 ' + filename}
+                              disabled={busy || index === keys.length - 1 || !editor.files[id] || !editor.files[picks[keys[index + 1]!]!]}
+                              onClick={() => reorder(key, keys[index + 1]!)}>下移</Button>
+                        </Flex>}
                         </Flex>
-                      )
+                        <Box>
+                          <Button size="1" variant="soft" color="red" disabled={busy} aria-label={'解绑 ' + filename}
+                            onClick={() => choose(key, null)}>解绑</Button>
+                        </Box>
+                      </Grid>
                     })}
-                  </>
-                ) : (
-                  <Flex align="center" justify="between" gap="2" mt="1">
-                    <Text size="1" color="gray" className="break-all">
-                      {name || '未绑定'}
-                      {file && editor.version && !editor.files[file] && '（文件缺失）'}
-                      {file &&
-                        editor.occupied[file] &&
-                        ' · 已被 ' + editor.occupied[file].problemId + ' 占用，请改选。'}
-                    </Text>
-                    {file && (
-                      <Button
-                        size="1"
-                        variant="soft"
-                        color="red"
-                        disabled={busy}
-                        aria-label={'解绑 ' + p.label}
-                        onClick={() => {
-                          setSelectedId(p.id)
-                          choose(p.id, null)
-                        }}
-                      >
-                        解绑
-                      </Button>
-                    )}
                   </Flex>
-                )}
+                  </Flex>
+                </StickerCard>
               </Box>
             )
           })}
@@ -196,14 +175,14 @@ export default function MathVideoPairingPanel({ editor, problems, picks, busy, c
             没有符合筛选条件的题目。
           </Text>
         )}
-      </Card>
+      </StickerCard>
       {desktop ? (
-        <Card>
+        <StickerCard size="sm">
           <Heading as="h4" size="3" mb="2">
             视频列表
           </Heading>
           {videoList}
-        </Card>
+        </StickerCard>
       ) : (
         <AppDialog
           title="选择回放视频"

@@ -4,6 +4,8 @@ import { createContext, useContext } from 'react'
 import type { AnswerCheckResult } from '@rosie/core'
 
 export type ProblemWorkspaceRuntimeValue = {
+  /** Local answer feedback only; never write learning records or rewards. */
+  preview?: boolean
   onCorrect: (answerSnapshot: unknown, result: AnswerCheckResult) => void | Promise<void>
   onWrong: (answerSnapshot: unknown, result: AnswerCheckResult) => void | Promise<void>
   onDontKnow: () => void | Promise<void>

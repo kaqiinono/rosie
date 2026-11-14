@@ -1,6 +1,6 @@
 'use client'
 
-import { lessonReplayKey, orderedSummaryKeys } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, orderedLessonReplayKeys, orderedSummaryKeys } from '@rosie/math-kit/utils/lesson-registry'
 import { useState } from 'react'
 import type { MathVideoEditor } from '@/lib/baidu-math-video-report-types'
 import { Box, Button, Card, Flex, Text } from '@rosie/ui/themes'
@@ -10,6 +10,7 @@ export default function MathVideoReport({ editor }: { editor: MathVideoEditor })
   const [expanded, setExpanded] = useState<string[]>([])
   const labels = new Map(editor.problems.map((p) => [p.id, p.label + ' · ' + p.title]))
   labels.set(lessonReplayKey(editor.lessonKey), '整讲回放')
+  for (const key of orderedLessonReplayKeys(editor.lessonKey, editor.bindings.map((b) => b.problemId))) labels.set(key, '整讲回放')
   for (const key of orderedSummaryKeys(
     editor.lessonKey,
     editor.bindings.map((b) => b.problemId),

@@ -1,6 +1,6 @@
 'use client'
 
-import { lessonReplayKey, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
+import { lessonReplayKey, lessonReplayOrder, summaryReplayOrder } from '@rosie/math-kit/utils/lesson-registry'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isAdminUser, useAuth, SOURCE_LABELS } from '@rosie/core'
 import {
@@ -13,6 +13,7 @@ import {
   Heading,
   Text,
   TextField,
+  Switch,
 } from '@rosie/ui/themes'
 import { SyncPending, SyncSelect, useSyncConfirmation } from './SyncControls'
 import { CourseMainDirectory, type SyncChosenDirectory } from './SyncDirectoryChooser'
@@ -54,6 +55,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
   const [picks, setPicks] = useState<Picks>({})
   const [sources, setSources] = useState<VideoSource[]>(['lesson'])
   const [questionSearch, setQuestionSearch] = useState('')
+  const [onlyUnbound, setOnlyUnbound] = useState(false)
   const [batchIssues, setBatchIssues] = useState<Record<string, string>>({})
   const [showIssues, setShowIssues] = useState(false)
   const [choosing, setChoosing] = useState(false)
@@ -140,6 +142,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
     editor?.problems.filter(
       (p) =>
         sources.includes(p.source) &&
+        (!onlyUnbound || !picks[p.id]) &&
         [p.id, p.label, p.title].some((value) => value.toLowerCase().includes(query)),
     ) ?? []
   const bankIds = new Set(editor?.problems.map((p) => p.id))
@@ -149,6 +152,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
     editor?.bindings.filter(
       (b) =>
         !bankIds.has(b.problemId) &&
+        !lessonReplayOrder(lessonKey, b.problemId) &&
         !summaryReplayOrder(lessonKey, b.problemId) &&
         picks[b.problemId],
     ) ?? []
@@ -455,6 +459,7 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
             onChange={(e) => setQuestionSearch(e.target.value)}
           />
           <Flex align="center" wrap="wrap" gap="2">
+            <Text as="label" size="2"><Flex align="center" gap="2"><Switch checked={onlyUnbound} onCheckedChange={setOnlyUnbound} />只看未绑定</Flex></Text>
             <Button
               variant="soft"
               disabled={busy || !editor.version || !visibleProblems.some((p) => !picks[p.id])}
@@ -489,6 +494,14 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
             problems={visibleProblems}
             picks={picks}
             busy={busy}
+            onlyUnbound={onlyUnbound}
+            reorder={(left, right) => {
+              setPicks((prev) => {
+                if (!prev[left] || !prev[right]) return prev
+                return { ...prev, [left]: prev[right], [right]: prev[left] }
+              })
+              setMessage('')
+            }}
             choose={choose}
           />
           {retired.map((b) => (
@@ -535,12 +548,12 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
                   {editor.mainPath ?? '未绑定'} · 题目绑定{' '}
                   {
                     editor.bindings.filter(
-                      (b) => b.problemId !== fullKey && !summaryReplayOrder(lessonKey, b.problemId),
+                      (b) => !lessonReplayOrder(lessonKey, b.problemId) && !summaryReplayOrder(lessonKey, b.problemId),
                     ).length
                   }{' '}
                   个 · 总结视频{' '}
                   {editor.bindings.filter((b) => summaryReplayOrder(lessonKey, b.problemId)).length}{' '}
-                  个 · 整讲回放：{published.get(fullKey)?.name ?? '未绑定'}
+                  个 · 整讲回放：{editor.bindings.filter((b) => lessonReplayOrder(lessonKey, b.problemId)).length} 个
                 </Text>
               )}
               <Button

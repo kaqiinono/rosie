@@ -44,7 +44,7 @@ export function useProblemAnswer(
 
   const persistAttempt = useCallback(
     async (correct: boolean, answerSnapshot: unknown) => {
-      if (!user) return
+      if (!user || runtime?.preview) return
       const inProgress = await findInProgressAttempt(user.id, problem.id, null)
       await submitPracticeAttempt({
         userId: user.id,
@@ -57,7 +57,7 @@ export function useProblemAnswer(
         attemptId: inProgress?.id ?? null,
       })
     },
-    [user, scratchCtx, problem],
+    [user, scratchCtx, problem, runtime?.preview],
   )
 
   const submit = useCallback(
@@ -87,7 +87,7 @@ export function useProblemAnswer(
 
         try {
           setFeedback(result)
-          if (result.ok) {
+          if (result.ok && !runtime?.preview) {
             await ctx.handleSolve(problem.id)
             options?.onCorrect?.(result)
           }

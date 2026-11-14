@@ -12,6 +12,7 @@ import {
 import type { QuizPaper } from '@rosie/math/hooks/useMathQuiz'
 import type { ScratchObject } from '@rosie/math-kit/components/shared/ScratchPad/scratch-pad-types'
 import { fetchQuizScratchObjectsMap } from '@rosie/math-kit/utils/math-scratch-db'
+import { useQuizAnswerImages } from '@rosie/math/hooks/useQuizAnswerImages'
 import { LoadingOverlay } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 
@@ -93,6 +94,8 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
 
   const printMode = userPrintMode ?? autoPrintMode
 
+  const images = useQuizAnswerImages(papers, answerKey)
+
   if (loading) {
     return (
       <div className="flex min-h-dvh flex-col">
@@ -163,7 +166,12 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
               </Button>
             </div>
           )}
+          {images.failed && (
+            <Button size="1" variant="soft" onClick={images.retry}>图解加载失败，重试</Button>
+          )}
           <Button
+            loading={images.pending}
+            disabled={images.pending || images.failed}
             onClick={() => window.print()}
             variant="solid"
             color="indigo"
@@ -180,6 +188,7 @@ export default function QuizBatchPrintPage({ params }: { params: Promise<{ batch
           <QuizPaperPrintSheet
             key={paper.id}
             paper={paper}
+            analysisImages={images.urls}
             printMode={answerKey ? 'answers' : printMode}
             scratchByProblem={scratchByPaper.get(paper.id)}
             pageBreakAfter={i < papers.length - 1}

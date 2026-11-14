@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createUserSessionStore, supabase, type UserSessionStore } from '@rosie/core'
 import { lessonByKey } from '../utils/lesson-registry'
@@ -68,6 +69,7 @@ export function replaceProblemVideoCatalog(userId: string, catalog: ProblemVideo
 }
 
 export function useProblemVideoCatalog(user: User | null, lessonKey: string | undefined) {
+  const [retrying, setRetrying] = useState(false)
   const validLesson = lessonKey !== undefined && Boolean(lessonByKey(lessonKey))
   const catalogStore = validLesson ? getCatalogStore(lessonKey!) : disabledStore
   const { data, isLoading, error } = catalogStore.useSessionData(validLesson ? user : null)
@@ -75,7 +77,7 @@ export function useProblemVideoCatalog(user: User | null, lessonKey: string | un
     ? 'signed-out'
     : !validLesson
       ? 'unknown'
-      : isLoading
+      : isLoading || retrying
         ? 'loading'
         : error
           ? 'error'
@@ -87,8 +89,15 @@ export function useProblemVideoCatalog(user: User | null, lessonKey: string | un
     syncedAt: data.syncedAt,
     summaryNames: data.summaryNames,
     count: data.keys.size,
+    keys: data.keys,
     hasVideo: (key: string) => status === 'ready' && data.keys.has(key),
-    retry: () => (user && validLesson ? catalogStore.ensureLoaded(user.id) : Promise.resolve()),
+    retry: async () => {
+      if (!user || !validLesson || retrying) return
+      setRetrying(true)
+      try { await catalogStore.refreshInBackground(user.id) }
+      catch { /* The shared store exposes the error through status. */ }
+      finally { setRetrying(false) }
+    },
   }
 }
 
@@ -96,11 +105,14 @@ export function useProblemVideoCatalog(user: User | null, lessonKey: string | un
 export async function loadProblemVideoCatalog(
   userId: string,
   lessonKey: string,
+  refresh = false,
 ): Promise<ReadonlySet<string>> {
   if (!lessonByKey(lessonKey)) return new Set()
   const store = getCatalogStore(lessonKey)
-  await store.ensureLoaded(userId)
+  if (refresh) await store.refreshInBackground(userId)
+  else await store.ensureLoaded(userId)
   const snapshot = store.getSnapshot(userId)
-  if (snapshot.status !== 'ready' || !snapshot.data.syncedAt) return new Set()
+  if (snapshot.error || snapshot.status !== 'ready') throw new Error('回放绑定读取失败，请重试')
+  if (!snapshot.data.syncedAt) return new Set()
   return snapshot.data.keys
 }

@@ -8,6 +8,7 @@ import LessonSummary from '@rosie/math-kit/components/shared/LessonSummary'
 import {
   LESSON_TIP,
   LESSON_SUMMARY,
+  PLANTING_SUMMARY,
   PROBLEM_TYPES,
   TAG_STYLE,
 } from '../../../../utils/g2/lesson13-data'
@@ -48,20 +49,14 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
             <p key={line}>{line}</p>
           ))}
           <ol className="space-y-2 rounded-lg bg-amber-50 p-4 text-amber-900">
-            {LESSON_SUMMARY.slice(2, 6).map((line) => (
+            {LESSON_SUMMARY.slice(2).map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ol>
-          <details className="rounded-lg border border-amber-100 p-3">
-            <summary className="cursor-pointer font-semibold text-amber-800">
-              植树与间隔应用
-            </summary>
-            <div className="mt-2 space-y-2">
-              {LESSON_SUMMARY.slice(6).map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-          </details>
+          <h3 className="font-bold text-amber-900">植树问题</h3>
+          {PLANTING_SUMMARY.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
         </div>
         <LessonSummaryVideos lessonKey="2-13" />
       </StickerCard>
@@ -85,10 +80,16 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
       </StickerCard>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <StickerCard asChild elevation="sm" radius="md">
+          <Link href={`${BASE}/pretest`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">📝 课前测</div>
+            <p className="text-text-muted text-xs">共 {problems.pretest.length} 题</p>
+          </Link>
+        </StickerCard>
+        <StickerCard asChild elevation="sm" radius="md">
           <Link href={`${BASE}/lesson`} className="no-underline">
             <div className="mb-1 text-sm font-bold">📖 课堂讲解</div>
             <p className="text-text-muted text-xs">
-              11 道例题＋3 道练一练 · 共 {problems.lesson.length} 题
+              共 {problems.lesson.length} 题
             </p>
           </Link>
         </StickerCard>

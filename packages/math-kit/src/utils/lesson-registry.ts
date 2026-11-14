@@ -115,8 +115,21 @@ export function problemIdForLesson(lessonKey: string, suffix: string): string {
 
 /** 讲次总结 sentinel：`2-1__SUMMARY` */
 /** Reserved binding for the complete lesson recording, outside the question bank. */
-export function lessonReplayKey(lessonKey: string): string {
-  return lessonKey + '-full-replay'
+export function lessonReplayKey(lessonKey: string, order = 1): string {
+  return lessonKey + '-full-replay' + (order === 1 ? '' : '-' + order)
+}
+
+export function lessonReplayOrder(lessonKey: string, key: string): number {
+  const base = lessonReplayKey(lessonKey)
+  if (key === base) return 1
+  if (!key.startsWith(base + '-')) return 0
+  const suffix = key.slice(base.length + 1)
+  return /^[1-9][0-9]{0,14}$/.test(suffix) && Number(suffix) >= 2 ? Number(suffix) : 0
+}
+
+export function orderedLessonReplayKeys(lessonKey: string, keys: string[]): string[] {
+  return keys.filter(key => lessonReplayOrder(lessonKey, key))
+    .sort((a, b) => lessonReplayOrder(lessonKey, a) - lessonReplayOrder(lessonKey, b))
 }
 
 /** Ordered replay bindings share the lesson publication with the full recording. */
