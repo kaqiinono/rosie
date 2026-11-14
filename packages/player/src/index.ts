@@ -3,3 +3,5 @@ export { default as PlayerDock } from './PlayerDock'
 export * from './usePlaylistPlayer'
 export * from './audio-manager-types'
 export * from './audio-compress'
+
+export * from './usePlaybackProgram'

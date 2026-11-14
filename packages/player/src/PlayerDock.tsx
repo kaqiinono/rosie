@@ -5,11 +5,14 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import type { PlaylistPlayer } from './usePlaylistPlayer'
 import type { LoopMode } from './audio-manager-types'
+import type { PlaybackProgramController } from './usePlaybackProgram'
 
 const LOOP_MODE_LABEL: Record<LoopMode, string> = { order: '顺序', one: '单曲', all: '列表' }
 
 type Props = {
-  player: PlaylistPlayer
+  player?: PlaylistPlayer
+  /** A finite assessment program exposes status only; transport commands stay in the engine. */
+  program?: PlaybackProgramController
   /** 当前曲是否已在「我的最爱」。省略则不渲染收藏桃心（例如 reading 自管队列、无收藏夹）。 */
   isFavorite?: boolean
   /** 由调用方接 collections.toggleFavorite(player.current)。省略则隐藏桃心。 */
@@ -17,6 +20,12 @@ type Props = {
   theme?: 'dark' | 'light'
   /** Opt in to a seek bar without changing existing dock layouts. */
   showProgress?: boolean
+  /** Quiet playback removes decorative highlights, glow and repeated animation. */
+  appearance?: 'default' | 'quiet'
+  /** Inline playback stays in document flow, including its queue and video. */
+  placement?: 'floating' | 'inline'
+  density?: 'normal' | 'compact'
+  onClose?: () => void
 }
 
 /**
@@ -26,14 +35,28 @@ type Props = {
  */
 export default function PlayerDock({
   player,
+  program,
   isFavorite,
   onToggleFavorite,
   showProgress = false,
+  appearance = 'default',
+  placement = 'floating',
+  density = 'normal',
+  onClose,
 }: Props) {
   const [videoMinimized, setVideoMinimized] = useState(false)
   const [showQueue, setShowQueue] = useState(false)
   const [position, setPosition] = useState(0)
   const [duration, setDuration] = useState(0)
+
+  if (program) {
+    const { audioRef, status, label } = program
+    return <section aria-label="听力播放" className="flex flex-col gap-2">
+      <video ref={audioRef} hidden playsInline preload="none" />
+      <p className="text-sm" role="status" aria-live="polite">{status === 'playing' ? '正在播放' : status === 'waiting' ? '作答等待' : status === 'ended' ? '播放完成，请手动提交' : status === 'failed' ? '播放中断，请申请恢复' : '等待播放'} · {label}</p>
+    </section>
+  }
+  if (!player) return null
 
   // Destructure so render only reads state/callbacks, not the ref-bearing player object.
   const {
@@ -64,14 +87,20 @@ export default function PlayerDock({
   const loopActive = loopMode !== 'order'
 
   const total = queue.length
+  const quiet = appearance === 'quiet'
+  const inline = placement === 'inline'
+  const comfortable = quiet || inline
+  const touchTarget = comfortable ? 'min-h-11 min-w-11' : undefined
 
   return (
     <>
-      {/* 浮动视频画面：始终在 DOM，纯音频时移出视口以保持 ref 稳定。 */}
+      {/* 媒体元素始终挂载；inline 视频留在文档流，纯音频仅隐藏画面。 */}
       <div
-        className="fixed z-40 overflow-hidden rounded-2xl bg-black transition-all duration-300"
+        className={inline
+          ? clsx('relative mx-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-black', !showVideoOverlay && 'hidden')
+          : 'fixed z-40 overflow-hidden rounded-2xl bg-black transition-all duration-300'}
         style={
-          showVideoOverlay
+          inline ? undefined : showVideoOverlay
             ? {
                 bottom: '88px',
                 right: '16px',
@@ -105,12 +134,12 @@ export default function PlayerDock({
           }}
         />
         <div className="flex items-center justify-between bg-black/60 px-3 py-1.5">
-          <span className="truncate text-[11px] font-bold text-white/80">{current?.label}</span>
+          <span className={clsx('truncate font-bold text-white/80', comfortable ? 'text-xs' : 'text-[11px]')}>{current?.label}</span>
           {/* native-ok: 该包不能依赖 @rosie/ui */}
           <button
             type="button"
             onClick={() => setVideoMinimized(true)}
-            className="ml-2 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold text-white/60 transition hover:bg-white/10 hover:text-white"
+            className={clsx('ml-2 shrink-0 rounded px-1.5 py-0.5 font-bold text-white/60 transition hover:bg-white/10 hover:text-white', touchTarget, comfortable ? 'text-xs' : 'text-[10px]')}
           >
             收起
           </button>
@@ -118,8 +147,22 @@ export default function PlayerDock({
       </div>
 
       {/* 底部停靠条（队列空时不显示；上面的媒体元素始终挂载，保证首次播放可控制） */}
-      {total > 0 && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-3">
+      {density === 'compact' && <section aria-label="媒体播放器" className="w-full rounded-2xl border-2 border-amber-700 bg-amber-100 px-3 py-2 text-amber-950">
+        <div className="flex items-center justify-between gap-2">
+          <span className="min-w-0 truncate text-sm font-bold">{current?.label ?? '正在准备播放…'}</span>
+          {/* native-ok: player cannot depend on ui */}
+          <button type="button" aria-label="关闭播放器" className="min-h-11 min-w-11 rounded-full text-xl" onClick={() => { stop(); onClose?.() }}>×</button>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* native-ok: player cannot depend on ui */}
+          <button type="button" aria-label={live ? '暂停' : '播放'} disabled={!current} onClick={togglePause} className="min-h-11 min-w-11 rounded-full bg-amber-300">{live ? 'Ⅱ' : '▶'}</button>
+          {/* native-ok: player cannot depend on ui */}
+          <input type="range" aria-label="播放进度" className="min-w-0 flex-1 accent-amber-700" min={0} max={duration || 1} step={0.1} value={Math.min(position, duration || 1)} disabled={!duration} onChange={event => { if (audioRef.current) audioRef.current.currentTime = Number(event.target.value) }} />
+          <span className="text-xs tabular-nums">{formatPlaybackTime(position)} / {formatPlaybackTime(duration)}</span>
+        </div>
+      </section>}
+      {total > 0 && density !== 'compact' && (
+        <div className={inline ? 'relative w-full' : 'pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-3'}>
           {/* 播放列表面板 */}
           {showQueue && (
             <div className="pointer-events-auto mx-auto mb-2 max-w-2xl overflow-hidden rounded-2xl bg-[#1b1410] ring-1 ring-white/10">
@@ -129,7 +172,7 @@ export default function PlayerDock({
                 <button
                   type="button"
                   onClick={() => setShowQueue(false)}
-                  className="rounded-full px-2 py-0.5 text-[11px] font-bold text-white/55 transition hover:bg-white/10 hover:text-white"
+                  className={clsx('rounded-full px-2 py-0.5 font-bold text-white/55 transition hover:bg-white/10 hover:text-white', touchTarget, comfortable ? 'text-xs' : 'text-[11px]')}
                 >
                   收起
                 </button>
@@ -145,12 +188,14 @@ export default function PlayerDock({
                         onClick={() => jumpTo(i)}
                         className={clsx(
                           'flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2.5 py-2 text-left transition',
+                          comfortable && 'min-h-11',
                           playing ? 'bg-orange-400/15' : 'hover:bg-white/5',
                         )}
                       >
                         <span
                           className={clsx(
-                            'w-5 shrink-0 text-center font-mono text-[11px]',
+                            'w-5 shrink-0 text-center font-mono',
+                            comfortable ? 'text-xs' : 'text-[11px]',
                             playing ? 'text-orange-300' : 'text-white/35',
                           )}
                         >
@@ -171,7 +216,7 @@ export default function PlayerDock({
                         onClick={() => removeAt(i)}
                         aria-label="从播放列表移除"
                         title="移除"
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] text-white/40 transition hover:bg-red-500/20 hover:text-red-300"
+                        className={clsx('flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] text-white/40 transition hover:bg-red-500/20 hover:text-red-300', touchTarget)}
                       >
                         <CloseIcon />
                       </button>
@@ -183,25 +228,25 @@ export default function PlayerDock({
           )}
 
           <div
-            className="pointer-events-auto relative isolate mx-auto flex max-w-2xl flex-col gap-2 overflow-hidden rounded-[1.6rem] px-2.5 py-2.5 ring-1 ring-orange-600/40 sm:flex-row sm:items-center sm:gap-2 sm:py-2"
+            className={clsx('pointer-events-auto relative isolate mx-auto flex max-w-2xl flex-col gap-2 overflow-hidden rounded-[1.6rem] px-2.5 py-2.5 ring-1 ring-orange-600/40', !inline && 'sm:flex-row sm:items-center sm:gap-2 sm:py-2')}
             style={{
               background: '#f59e0b',
               boxShadow: '0 4px 0 #b45309',
-              animation: live ? 'var(--animate-player-glow)' : undefined,
+              animation: live && !quiet ? 'var(--animate-player-glow)' : undefined,
             }}
           >
-            <span
+            {!quiet && <span
               aria-hidden
               className={clsx(
                 'pointer-events-none absolute inset-x-4 top-0 h-px',
                 live ? 'bg-white' : 'bg-white/40',
               )}
-            />
+            />}
 
             {/* 信息行：均衡器 + 曲目（小屏单独占一行） */}
             <div className="flex min-w-0 items-center gap-2 sm:flex-1">
               {/* 均衡器 */}
-              <Equalizer live={live} />
+              <Equalizer live={live} quiet={quiet} />
 
               {/* 曲目信息 */}
               <div className="relative min-w-0 flex-1 leading-tight">
@@ -213,7 +258,8 @@ export default function PlayerDock({
                     <Link
                       href={current.refLink}
                       title="跳转"
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] text-white/70 transition hover:bg-white/20 hover:text-white"
+                      aria-label="跳转到内容"
+                      className={clsx('flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-white/70 transition hover:bg-white/20 hover:text-white', touchTarget, comfortable ? 'text-xs' : 'text-[11px]')}
                     >
                       →
                     </Link>
@@ -227,7 +273,9 @@ export default function PlayerDock({
                     aria-label="播放列表"
                     title="查看播放列表"
                     className={clsx(
-                      'flex items-center gap-1 rounded-full px-1.5 font-mono text-[10px] tracking-wide transition',
+                      'flex items-center gap-1 rounded-full px-1.5 font-mono tracking-wide transition',
+                      touchTarget,
+                      comfortable ? 'text-xs' : 'text-[10px]',
                       showQueue
                         ? 'bg-white/25 text-white'
                         : 'text-white/70 hover:bg-white/15 hover:text-white',
@@ -240,14 +288,14 @@ export default function PlayerDock({
                     <button // native-ok: 该包不能依赖 @rosie/ui
                       type="button"
                       onClick={() => setVideoMinimized(false)}
-                      className="rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-bold text-white transition hover:bg-white/30"
+                      className={clsx('rounded-full bg-white/20 px-1.5 py-0.5 font-bold text-white transition hover:bg-white/30', touchTarget, comfortable ? 'text-xs' : 'text-[10px]')}
                     >
                       展开视频
                     </button>
                   )}
                 </div>
                 {showProgress && (
-                  <div className="mt-1 flex items-center gap-2 text-[10px] font-bold text-orange-950 tabular-nums">
+                  <div className={clsx('mt-1 flex items-center gap-2 font-bold text-orange-950 tabular-nums', comfortable ? 'text-xs' : 'text-[10px]')}>
                     <span>{formatPlaybackTime(position)}</span>
                     <input
                       type="range"
@@ -268,7 +316,7 @@ export default function PlayerDock({
                         element.currentTime = target
                         setPosition(target)
                       }}
-                      className="h-6 min-w-0 flex-1 cursor-pointer accent-orange-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-950 disabled:cursor-wait"
+                      className={clsx('flex-1 cursor-pointer accent-orange-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-950 disabled:cursor-wait', comfortable ? 'h-11 min-w-11' : 'h-6 min-w-0')}
                     />
                     <span>{formatPlaybackTime(duration)}</span>
                   </div>
@@ -277,18 +325,19 @@ export default function PlayerDock({
             </div>
 
             {/* 控件行：小屏换到第二行、可自动换行避免压缩 */}
-            <div className="flex w-full flex-wrap items-center justify-center gap-1.5 sm:w-auto sm:flex-nowrap">
-              <GhostButton label="上一首" onClick={prev}>
+            <div className={clsx('flex w-full flex-wrap items-center justify-center gap-1.5', !inline && 'sm:w-auto sm:flex-nowrap')}>
+              <GhostButton label="上一首" onClick={prev} comfortable={comfortable}>
                 <PrevIcon />
               </GhostButton>
               <PrimaryDial
                 label={isPaused ? '继续播放' : '暂停'}
                 onClick={togglePause}
-                pulse={live}
+                pulse={live && !quiet}
+                comfortable={comfortable}
               >
                 {isPaused ? <PlayIcon /> : <PauseIcon />}
               </PrimaryDial>
-              <GhostButton label="下一首" onClick={next}>
+              <GhostButton label="下一首" onClick={next} comfortable={comfortable}>
                 <NextIcon />
               </GhostButton>
 
@@ -300,7 +349,9 @@ export default function PlayerDock({
                 title={`${LOOP_MODE_LABEL[loopMode]}播放（点击切换）`}
                 aria-label={`循环模式：${LOOP_MODE_LABEL[loopMode]}`}
                 className={clsx(
-                  'group relative flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-[11px] font-bold transition active:scale-95',
+                  'group relative flex h-8 shrink-0 items-center gap-1 rounded-full px-2 font-bold transition active:scale-95',
+                  touchTarget,
+                  comfortable ? 'text-xs' : 'text-[11px]',
                   loopActive
                     ? 'bg-white text-orange-600 shadow-[0_2px_0_rgba(0,0,0,0.25)] ring-1 ring-orange-200/70'
                     : 'bg-black/15 text-white/90 ring-1 ring-black/10 hover:bg-black/25',
@@ -319,7 +370,7 @@ export default function PlayerDock({
                 onClick={cycleLoopCount}
                 title="循环次数（点击切换）"
                 aria-label={`循环次数：${loopCount === Infinity ? '无限' : loopCount}`}
-                className="flex h-8 shrink-0 items-center justify-center rounded-full bg-black/15 px-2 font-mono text-[12px] font-bold text-white tabular-nums ring-1 ring-black/10 transition hover:bg-black/25 active:scale-95"
+                className={clsx('flex h-8 shrink-0 items-center justify-center rounded-full bg-black/15 px-2 font-mono text-[12px] font-bold text-white tabular-nums ring-1 ring-black/10 transition hover:bg-black/25 active:scale-95', touchTarget)}
               >
                 {loopCount === Infinity ? '∞' : `×${loopCount}`}
               </button>
@@ -333,6 +384,7 @@ export default function PlayerDock({
                   title={isFavorite ? '从我的最爱移除' : '加入我的最爱'}
                   className={clsx(
                     'flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition active:scale-90',
+                    touchTarget,
                     isFavorite
                       ? 'bg-white text-pink-500 shadow-[0_2px_0_rgba(0,0,0,0.25)] ring-1 ring-pink-200'
                       : 'bg-black/15 text-white/85 ring-1 ring-black/10 hover:bg-black/25 hover:text-white',
@@ -349,7 +401,7 @@ export default function PlayerDock({
                 onClick={stop}
                 aria-label="停止播放"
                 title="停止播放"
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/15 text-[12px] text-white/85 ring-1 ring-black/10 transition hover:bg-red-500 hover:text-white"
+                className={clsx('flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/15 text-[12px] text-white/85 ring-1 ring-black/10 transition hover:bg-red-500 hover:text-white', touchTarget)}
               >
                 <CloseIcon />
               </button>
@@ -366,7 +418,7 @@ function formatPlaybackTime(value: number): string {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 }
 
-function Equalizer({ live }: { live: boolean }) {
+function Equalizer({ live, quiet }: { live: boolean; quiet: boolean }) {
   const bars = [{ delay: '0ms' }, { delay: '180ms' }, { delay: '90ms' }, { delay: '260ms' }]
   return (
     <div
@@ -377,10 +429,11 @@ function Equalizer({ live }: { live: boolean }) {
         <span
           key={i}
           className={clsx(
-            'block w-[3px] origin-bottom rounded-full bg-white shadow-[0_0_4px_rgba(255,255,255,0.6)]',
+            'block w-[3px] origin-bottom rounded-full bg-white',
+            !quiet && 'shadow-[0_0_4px_rgba(255,255,255,0.6)]',
             live ? 'h-5' : 'h-1.5',
           )}
-          style={live ? { animation: 'var(--animate-eq)', animationDelay: b.delay } : undefined}
+          style={live && !quiet ? { animation: 'var(--animate-eq)', animationDelay: b.delay } : undefined}
         />
       ))}
     </div>
@@ -392,11 +445,13 @@ function PrimaryDial({
   children,
   onClick,
   pulse,
+  comfortable,
 }: {
   label: string
   children: React.ReactNode
   onClick: () => void
   pulse?: boolean
+  comfortable?: boolean
 }) {
   return (
     <button // native-ok: 该包不能依赖 @rosie/ui
@@ -408,6 +463,7 @@ function PrimaryDial({
         'relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-orange-600',
         'shadow-[0_3px_0_rgba(0,0,0,0.3)]',
         'ring-1 ring-orange-200/70 transition-transform active:scale-90',
+        comfortable && 'min-h-11 min-w-11',
       )}
     >
       {pulse && (
@@ -426,10 +482,12 @@ function GhostButton({
   label,
   children,
   onClick,
+  comfortable,
 }: {
   label: string
   children: React.ReactNode
   onClick: () => void
+  comfortable?: boolean
 }) {
   return (
     <button // native-ok: 该包不能依赖 @rosie/ui
@@ -437,7 +495,7 @@ function GhostButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/90 transition hover:bg-white/20 hover:text-white active:scale-90"
+      className={clsx('flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/90 transition hover:bg-white/20 hover:text-white active:scale-90', comfortable && 'min-h-11 min-w-11')}
     >
       {children}
     </button>

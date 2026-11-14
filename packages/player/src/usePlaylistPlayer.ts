@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { ordinaryPlaybackAllowed, subscribePlaybackLease } from './playbackLease'
 import {
   LOOP_COUNTS,
   trackKey,
@@ -61,6 +62,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
   }, [queue]);
 
   const playAt = useCallback((tracks: PlayerTrack[], i: number) => {
+    if (!ordinaryPlaybackAllowed()) return
     const el = audioRef.current
     const track = tracks[i]
     if (!el || !track) return
@@ -73,7 +75,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
 
   const play = useCallback(
     (tracks: PlayerTrack[], startIndex = 0) => {
-      if (tracks.length === 0) return
+      if (!ordinaryPlaybackAllowed() || tracks.length === 0) return
       loopsDoneRef.current = 0
       setQueue(tracks)
       queueRef.current = tracks
@@ -84,6 +86,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
 
   const pendingStart = useRef(0)
   const playWhenReady = useCallback(async (track: PlayerTrack) => {
+    if (!ordinaryPlaybackAllowed()) throw new Error('Playback is reserved by an assessment program')
     const el = audioRef.current
     if (!el) throw new Error('Media element unavailable')
     const attempt = ++pendingStart.current
@@ -107,6 +110,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
 
   const enqueue = useCallback(
     (tracks: PlayerTrack[]) => {
+      if (!ordinaryPlaybackAllowed()) return
       const existing = queueRef.current
       const seen = new Set(existing.map(dedupeKey))
       const additions: PlayerTrack[] = []
@@ -141,6 +145,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
   }, [])
 
   const togglePause = useCallback(() => {
+    if (!ordinaryPlaybackAllowed()) return
     const el = audioRef.current
     if (!el || !el.src) return
     if (el.paused) void el.play().catch(() => {})
@@ -204,6 +209,7 @@ export function usePlaylistPlayer(): PlaylistPlayer {
   }, [])
 
   const onEnded = useCallback(() => {
+    if (!ordinaryPlaybackAllowed()) return
     const q = queueRef.current
     if (q.length === 0) return
     if (loopMode === 'one') {
@@ -232,7 +238,14 @@ export function usePlaylistPlayer(): PlaylistPlayer {
     else setIsPlaying(false)
   }, [loopMode, loopCount, index, playAt, stop])
 
-  const notifyPlay = useCallback(() => setIsPaused(false), [])
+  const notifyPlay = useCallback(() => {
+    if (!ordinaryPlaybackAllowed()) { audioRef.current?.pause(); setIsPaused(true); return }
+    setIsPaused(false)
+  }, [])
+
+  useEffect(() => subscribePlaybackLease(() => {
+    if (!ordinaryPlaybackAllowed()) { audioRef.current?.pause(); setIsPaused(true) }
+  }), [])
   const notifyPause = useCallback(() => setIsPaused(true), [])
 
   // 卸载即停
