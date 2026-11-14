@@ -3,8 +3,11 @@ export { default as AccountBar } from './AccountBar'
 export { default as AnalysisImage } from './AnalysisImage'
 export { default as ProblemSolutionView } from './ProblemSolutionView'
 export type { SolutionPanelVariant } from './ProblemSolutionView'
-export { BookOpen, Headphones, Pause, Pencil, Printer, Volume2 } from 'lucide-react'
+export { BookOpen, Check, Eraser, Headphones, Pause, Pencil, Printer, Undo2, Volume2, X } from 'lucide-react'
 export { default as ArrowIcon } from './ArrowIcon'
+export { JudgmentIconButton, LetterChoiceButton } from './JudgmentIconButton'
+export { RegionEditButton } from './RegionEditButton'
+export { RegionEditActions } from './RegionEditActions'
 export { LearningIcon, type LearningIconName } from './LearningIcon'
 export { default as AuthGuard } from './AuthGuard'
 export { default as AdminGuard } from './AdminGuard'
@@ -24,6 +27,12 @@ export * from './CandyButton'
 export { default as JellyButton } from './JellyButton'
 export * from './JellyButton'
 export { AppDialog } from './AppDialog'
+export { AnswerChoiceGroup } from './AnswerChoiceGroup'
+export type {
+  AnswerChoiceFeedback,
+  AnswerChoiceGroupProps,
+  AnswerChoiceOption,
+} from './AnswerChoiceGroup'
 export { FormSelect } from './FormSelect'
 export type { FormSelectOption, FormSelectProps } from './FormSelect'
 export { StickerCard } from './StickerCard'
@@ -41,3 +50,19 @@ export type {
 } from './StickerCard'
 
 export { LinkButton } from './LinkButton'
+export { ImageCropper } from './ImageCropper'
+export type { ImageCropRegion, ImageCropperProps } from './ImageCropper'
+export { MatchingBoard } from './MatchingBoard'
+export type { MatchingBoardProps, MatchingBoardItem } from './MatchingBoard'
+export { HandwritingField } from './HandwritingField'
+export type { HandwritingAnswer, HandwritingPoint, HandwritingStroke, HandwritingFieldProps } from './HandwritingField'
+export { InlineChoiceField } from './InlineChoiceField'
+export { SentenceHighlightText } from './SentenceHighlightText'
+export type { SentenceRange } from './SentenceHighlightText'
+
+export { FloatingLauncherCloseButton } from './FloatingLauncherCloseButton'
+
+export { InlineHandwritingPad } from './InlineHandwritingPad'
+export { ImageZoomTarget } from './ImageZoomTarget'
+
+export { FlowRadioCards, FlowCheckboxCards } from './FlowChoiceCards'

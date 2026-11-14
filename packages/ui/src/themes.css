@@ -36,9 +36,156 @@
   box-shadow: 0 3px 0 0 var(--accent-11);
 }
 
+/*
+ * 浅色琥珀实心底是亮黄。近黑或深棕字又冷又硬。
+ * 用橘棕（orange-11）掺一点琥珀深棕，字更暖、也没那么扎。
+ * 深色主题里这两档是浅色，不能套用。
+ * 后一条把嵌套的非琥珀主题拨回对比色，避免根主题的琥珀选择器盖住它们。
+ */
+.radix-themes.light[data-accent-color='amber']
+  .rt-BaseButton:where(.rt-variant-solid):not([data-disabled], .rt-high-contrast):where(
+    :not([data-accent-color]),
+    [data-accent-color=''],
+    [data-accent-color='amber']
+  ) {
+  color: color-mix(in srgb, var(--orange-11) 70%, var(--amber-12));
+}
+
+.radix-themes.light:not([data-accent-color='amber'])
+  .rt-BaseButton:where(.rt-variant-solid):not([data-disabled], .rt-high-contrast):where(
+    :not([data-accent-color]),
+    [data-accent-color='']
+  ) {
+  color: var(--accent-contrast);
+}
+
+.radix-themes.light
+  .rt-BaseButton:where(.rt-variant-solid):not([data-disabled], .rt-high-contrast)[data-accent-color='amber'] {
+  color: color-mix(in srgb, var(--orange-11) 70%, var(--amber-12));
+}
+
 /* 次要按钮：同色系的 2px 柔和描边，像一张小贴纸。 */
 .rt-BaseButton:where(.rt-variant-soft):not([data-disabled]) {
   box-shadow: inset 0 0 0 2px var(--accent-a4);
+}
+
+/* Region editing sits inside the right edge without changing content geometry. */
+.rosie-RegionEditActions {
+  display: flex;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 32px;
+}
+
+.rosie-RegionEditActions > .rt-BaseButton,
+.rosie-RegionEditActions > .rt-BaseButton:hover,
+.rosie-RegionEditActions > .rt-BaseButton:active {
+  width: 32px;
+  min-width: 32px;
+  max-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.rt-BaseButton.rosie-RegionEditButton,
+.rt-BaseButton.rosie-RegionEditButton:hover,
+.rt-BaseButton.rosie-RegionEditButton:active {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  width: auto;
+  min-width: 0;
+  max-width: 32px;
+  height: 100%;
+  max-height: 32px;
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.rosie-RegionEditButton > svg {
+  flex-shrink: 0;
+  max-height: 100%;
+}
+
+/* Compact judgment choices keep a quiet, borderless resting state. */
+.rt-BaseButton.rosie-JudgmentIconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rt-BaseButton.rosie-JudgmentIconButton,
+.rt-BaseButton.rosie-JudgmentIconButton:hover,
+.rt-BaseButton.rosie-JudgmentIconButton:active {
+  transform: none;
+}
+
+.rosie-JudgmentIconButton > svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.rt-BaseButton.rosie-JudgmentIconButton[aria-pressed='false'] {
+  border: 0;
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  .rt-BaseButton.rosie-JudgmentIconButton[aria-pressed='false']:not([data-disabled]):hover {
+    background-color: var(--orange-4);
+    color: var(--orange-11);
+    box-shadow: 0 3px 0 0 var(--orange-8);
+  }
+}
+
+.rt-BaseButton.rosie-JudgmentIconButton[data-appearance='quiet'] {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+.rt-BaseButton.rosie-JudgmentIconButton[data-appearance='quiet'][aria-pressed='false'] {
+  background-color: var(--gray-3);
+  color: var(--gray-12);
+  box-shadow: none;
+}
+.rt-BaseButton.rosie-JudgmentIconButton[data-appearance='quiet'][aria-pressed='true'] {
+  background-color: var(--blue-11);
+  color: white;
+  box-shadow: none;
+}
+.rt-BaseButton.rosie-JudgmentIconButton[data-appearance='quiet'][data-demonstration] {
+  opacity: 1;
+}
+.rt-BaseButton.rosie-JudgmentIconButton[data-appearance='quiet']:focus-visible {
+  outline: 3px solid var(--blue-8);
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .rt-BaseButton.rosie-JudgmentIconButton[data-appearance='quiet'][aria-pressed='false']:not([data-disabled]):hover {
+    background-color: var(--gray-5);
+    color: var(--gray-12);
+    box-shadow: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -125,27 +272,33 @@ a.rt-Button[aria-current='page'] {
 .rt-PopoverContent,
 .rt-BaseMenuContent {
   border: 2px solid var(--kid-line);
-  box-shadow: 0 4px 0 0 var(--kid-edge), 0 14px 28px -10px rgba(120, 70, 0, 0.22);
+  box-shadow: 0 4px 0 0 var(--kid-edge);
 }
 
 /* ---------- Dialog ---------- */
 
 .rt-BaseDialogOverlay::before {
   background-color: rgba(94, 58, 12, 0.38);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
 }
 
 .rt-BaseDialogContent {
   border: 3px solid var(--kid-line);
   border-radius: 28px;
-  box-shadow: 0 8px 0 0 var(--kid-edge), 0 28px 48px -16px rgba(120, 70, 0, 0.3);
+  box-shadow: 0 8px 0 0 var(--kid-edge);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .rt-BaseDialogContent[data-state='open'] {
     animation: rt-kid-pop 0.42s var(--kid-spring);
   }
+  .rt-BaseDialogContent[data-presentation='drawer'][data-state='open'] {
+    animation: rt-kid-drawer 0.25s ease-out;
+  }
+}
+
+@keyframes rt-kid-drawer {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes rt-kid-pop {
@@ -181,9 +334,144 @@ a.rt-Button[aria-current='page'] {
   font-weight: var(--font-weight-bold);
 }
 
+/* ---------- AnswerChoiceGroup ---------- */
+
+/* AnswerChoiceGroup owns its label hit area; consumers use only its public props. */
+.rosie-AnswerChoiceGroup {
+  --cursor-radio: pointer;
+}
+
+.rosie-AnswerChoiceGroup[data-readonly] {
+  --cursor-radio: default;
+}
+
+.rosie-AnswerChoiceGroup .rt-BaseRadioRoot[data-state='unchecked']:not(:disabled)::before {
+  background-color: var(--gray-4);
+}
+
+.rosie-AnswerChoiceGroup .rt-BaseRadioRoot:focus-visible::before {
+  outline-color: var(--accent-11);
+}
+
+.rosie-AnswerChoiceOption {
+  border-radius: var(--radius-3);
+  cursor: var(--cursor-radio);
+}
+
+.rosie-AnswerChoiceGroup[data-disabled] .rosie-AnswerChoiceOption {
+  cursor: var(--cursor-disabled);
+}
+
+.rosie-AnswerChoiceGroup:not([data-disabled]):not([data-readonly]) .rosie-AnswerChoiceOption:hover {
+  background-color: var(--gray-2);
+}
+
+.rosie-AnswerChoiceLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* ---------- 浮层层级 ---------- */
 
 /* Select / Popover / DropdownMenu 的弹出层要盖过手写的 fixed z-[100] 全屏编辑器（Radix 的 popper 外层会沿用内容的 z-index）。 */
 .rt-PopperContent {
   z-index: 300;
+}
+
+/* Image and word-bank choices share the radio group's hit area. */
+.rosie-ImageZoomTarget {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+.rosie-ImageZoomTarget .rosie-ImageZoomTarget-trigger {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: var(--space-2);
+  align-items: start;
+  justify-content: end;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  cursor: zoom-in;
+}
+.rosie-ImageZoomTarget .rosie-ImageZoomTarget-trigger:hover {
+  background: transparent;
+  outline: 2px solid var(--accent-8);
+  outline-offset: -2px;
+}
+.rosie-AnswerChoiceGroup[data-layout='images'] {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+.rosie-AnswerChoiceGroup[data-layout='images'] > .rosie-AnswerChoiceImageUnit {
+  flex: 1 1 var(--choice-image-min-width, 14rem);
+  min-width: min(100%, var(--choice-image-min-width, 14rem));
+  max-width: 100%;
+}
+.rosie-AnswerChoiceGroup[data-layout='images'] .rosie-AnswerChoiceLabel {
+  flex: 1;
+}
+.rosie-AnswerChoiceGroup[data-layout='grid'] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.rosie-AnswerChoiceGroup[data-layout='grid'] .rosie-AnswerChoiceLabel {
+  flex: 1;
+}
+@media (min-width: 640px) {
+  .rosie-AnswerChoiceGroup[data-layout='grid'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Phone form workflow: header and footer stay outside the single scrolling body. */
+@media (max-width: 639px) {
+  .rt-DialogContent[data-mobile-fullscreen='true'] {
+    position: fixed !important;
+    inset: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    padding-top: max(var(--dialog-content-padding), env(safe-area-inset-top)) !important;
+    padding-bottom: max(var(--dialog-content-padding), env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* Public flow choice layout: intrinsic width, wrap on phones, no stretched last row. */
+.rosie-flow-choice-cards.rt-Grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+.rosie-flow-choice-cards > .rt-BaseCard {
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 48px;
+  text-align: start;
+  justify-content: flex-start;
+  overflow-wrap: anywhere;
+}
+
+/* Course titles align in equal-width columns; narrow containers fall back to one. */
+.rosie-flow-choice-cards.rt-Grid[data-layout='equal'] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.rosie-flow-choice-cards[data-layout='equal'] > .rt-BaseCard {
+  width: 100%;
 }

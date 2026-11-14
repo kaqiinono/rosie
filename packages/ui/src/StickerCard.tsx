@@ -16,14 +16,16 @@ export type StickerCardTone =
   | 'info'
 export type StickerCardSize = 'none' | 'sm' | 'md' | 'lg'
 export type StickerCardElevation = 'flat' | 'sm' | 'md' | 'lg'
-export type StickerCardRadius = 'md' | 'lg'
+export type StickerCardRadius = 'md' | 'lg' | 'left' | 'right' | 'none'
 
 export type StickerCardProps = Omit<HTMLAttributes<HTMLElement>, 'color'> & {
   children?: ReactNode
-  /** 渲染的元素，默认 div。列表项用 li，语义区块用 section / article。 */
-  as?: 'div' | 'section' | 'article' | 'aside' | 'li' | 'header' | 'footer'
+  /** 渲染的元素，默认 div。列表项用 li，导航用 nav，语义区块用 section / article。 */
+  as?: 'div' | 'section' | 'article' | 'aside' | 'nav' | 'li' | 'header' | 'footer'
   /** 底色：white 通用；paper 奶油色（嵌套在白卡里的次级块）；accent 强调；其余为状态色。 */
   tone?: StickerCardTone
+  /** Soft surfaces separate content by color, with no outline or shadow. Quote is a content-width strip: gray fill and a left bar only. */
+  variant?: 'outlined' | 'soft' | 'quote'
   /** 内边距：none=0，sm=12px，md=16px（≥sm 屏 20px），lg=24px。 */
   size?: StickerCardSize
   /** 底边厚度：flat 无，sm 2px（列表项），md 4px（默认），lg 6px（主面板）。 */
@@ -61,6 +63,9 @@ const ELEVATION: Record<StickerCardElevation, string> = {
 }
 
 const RADIUS: Record<StickerCardRadius, string> = {
+  none: 'rounded-none',
+  left: 'rounded-l-2xl rounded-r-none',
+  right: 'rounded-l-none rounded-r-2xl',
   md: 'rounded-2xl',
   lg: 'rounded-3xl',
 }
@@ -72,6 +77,7 @@ const INTERACTIVE =
 export function StickerCard({
   as = 'div',
   tone = 'white',
+  variant = 'outlined',
   size = 'md',
   elevation = 'md',
   radius = 'lg',
@@ -83,10 +89,11 @@ export function StickerCard({
 }: StickerCardProps) {
   const Tag: ElementType = as
   const classes = clsx(
-    'border-2',
-    TONE[tone],
+    variant === 'quote' ? 'border-y-0 border-r-0 border-l-4 border-l-[var(--gray-8)] bg-[var(--gray-a3)]'
+      : variant === 'soft' ? 'border-0' : 'border-2',
+    variant !== 'quote' && TONE[tone],
     SIZE[size],
-    ELEVATION[elevation],
+    variant === 'outlined' && ELEVATION[elevation],
     RADIUS[radius],
     interactive && INTERACTIVE,
     className,

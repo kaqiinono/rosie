@@ -2,7 +2,7 @@
 
 import { Dialog, Flex, IconButton } from '@radix-ui/themes'
 import { X } from 'lucide-react'
-import type { ReactElement, ReactNode } from 'react'
+import type { ReactElement, ReactNode, RefObject } from 'react'
 
 type AppDialogProps = {
   title: string
@@ -18,6 +18,15 @@ type AppDialogProps = {
    * none=内容自带头部（如带「取消 / 保存」的表单），共享组件只提供外壳、无障碍标题与滚动。
    */
   chrome?: 'standard' | 'none'
+  /** Drawer uses the same focus/escape contract, with a full-height trailing panel. */
+  presentation?: 'dialog' | 'drawer' | 'fullscreen'
+  /** Full viewport on phones; retain the standard dialog on wider screens. */
+  mobileFullscreen?: boolean
+  /** Remains visible outside the scrolling content, e.g. media transport. */
+  footer?: ReactNode
+  /** scroll=正文整体滚动；fill=正文撑满剩余高度，由内部区块自己滚动。 */
+  contentLayout?: 'scroll' | 'fill'
+  returnFocusRef?: RefObject<HTMLElement | null>
   open?: boolean
   closeDisabled?: boolean
   onOpenChange?: (open: boolean) => void
@@ -33,6 +42,11 @@ export function AppDialog({
   trigger,
   size = 'standard',
   chrome = 'standard',
+  presentation = 'dialog',
+  mobileFullscreen = false,
+  footer,
+  contentLayout = 'scroll',
+  returnFocusRef,
   open,
   closeDisabled = false,
   onOpenChange,
@@ -43,18 +57,28 @@ export function AppDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger && <Dialog.Trigger>{trigger}</Dialog.Trigger>}
       <Dialog.Content
+        data-presentation={presentation}
+        data-mobile-fullscreen={mobileFullscreen || undefined}
         {...(description ? {} : { 'aria-describedby': undefined })}
-        maxWidth={MAX_WIDTH[size]}
-        maxHeight="88dvh"
+        maxWidth={presentation === 'fullscreen' ? '100vw' : presentation === 'drawer' ? 'min(64rem, 100vw)' : MAX_WIDTH[size]}
+        maxHeight={presentation !== 'dialog' ? '100dvh' : '88dvh'}
         style={{
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           ...(bare ? { padding: 0 } : null),
+          ...(presentation !== 'dialog' ? {
+            position: 'fixed', top: 0, right: 0, bottom: 0, left: 'auto',
+            margin: 0, width: '100vw', height: '100dvh', borderRadius: 0,
+          } : null),
         }}
         onEscapeKeyDown={(event) => {
           if (closeDisabled) event.preventDefault()
         }}
+        onCloseAutoFocus={returnFocusRef ? (event) => {
+          event.preventDefault()
+          returnFocusRef.current?.focus({ preventScroll: true })
+        } : undefined}
         onInteractOutside={(event) => {
           if (closeDisabled) event.preventDefault()
         }}
@@ -107,12 +131,13 @@ export function AppDialog({
         <div
           className={
             bare
-              ? 'min-h-0 overflow-y-auto'
-              : '-mx-[var(--dialog-content-padding)] -mb-[var(--dialog-content-padding)] min-h-0 overflow-y-auto px-[var(--dialog-content-padding)] pb-[var(--dialog-content-padding)]'
+              ? `min-h-0 flex-1 ${contentLayout === 'fill' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`
+              : `-mx-[var(--dialog-content-padding)] ${footer ? '' : '-mb-[var(--dialog-content-padding)]'} min-h-0 flex-1 px-[var(--dialog-content-padding)] pb-[var(--dialog-content-padding)] ${contentLayout === 'fill' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`
           }
         >
           {children}
         </div>
+        {footer && <Flex direction="column" flexShrink="0" pt="3">{footer}</Flex>}
       </Dialog.Content>
     </Dialog.Root>
   )

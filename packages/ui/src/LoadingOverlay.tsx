@@ -89,11 +89,11 @@ function ScurryLoading() {
 }
 
 /** 方案五：圆球身体 sprite 转圈（8 帧真实视角），身体起伏 + 脚下阴影 */
-function RoundSpinLoading({ inContent = false }: { inContent?: boolean }) {
+function RoundSpinLoading({ inContent = false, quiet = false }: { inContent?: boolean; quiet?: boolean }) {
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="rosieload-turn-body drop-shadow-[0_12px_18px_rgba(0,0,0,0.25)]">
+        <div className={quiet ? undefined : 'rosieload-turn-body drop-shadow-[0_12px_18px_rgba(0,0,0,0.25)]'}>
           <div
             role="img"
             aria-label="Rosie 开心地转圈"
@@ -101,7 +101,7 @@ function RoundSpinLoading({ inContent = false }: { inContent?: boolean }) {
           />
         </div>
         {/* visual-ok: 吉祥物脚下的地面投影，属于插画 */}
-        <div className="rosieload-turn-shadow -mt-1 h-2.5 w-20 rounded-full bg-black blur-[2px]" />
+        {!quiet && <div className="rosieload-turn-shadow -mt-1 h-2.5 w-20 rounded-full bg-black blur-[2px]" />}
       </div>
       <p className={inContent ? 'text-text-secondary text-sm font-semibold' : CAPTION_STYLE}>
         加载中...
@@ -188,19 +188,19 @@ function ConfettiBackdrop() {
   )
 }
 
-type LoadingOverlayProps = { visible: boolean; placement?: 'overlay' | 'content' }
+type LoadingOverlayProps = { visible: boolean; placement?: 'overlay' | 'content'; appearance?: 'default' | 'quiet' }
 
-export default function LoadingOverlay({ visible, placement = 'overlay' }: LoadingOverlayProps) {
+export default function LoadingOverlay({ visible, placement = 'overlay', appearance = 'default' }: LoadingOverlayProps) {
   if (!visible) return null
-  if (placement === 'content') {
+  if (placement === 'content' || appearance === 'quiet') {
     return (
       <div
         role="status"
-        className="relative flex flex-1 flex-col items-center justify-center gap-3 overflow-hidden"
+        className={placement === 'content' ? 'relative flex flex-1 flex-col items-center justify-center gap-3 overflow-hidden' : 'fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-3 bg-surface-dim'}
       >
-        <ConfettiBackdrop />
+        {appearance !== 'quiet' && <ConfettiBackdrop />}
         <div className="relative flex flex-col items-center gap-3">
-          <RoundSpinLoading inContent />
+          <RoundSpinLoading inContent quiet={appearance === 'quiet'} />
         </div>
       </div>
     )
