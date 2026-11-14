@@ -32,6 +32,7 @@ src/
 全局学习页面由 `AiFloatingAssistant` 提供可收起的对话抽屉；它不跳转路由，并把当前 pathname
 映射为 `ChatContext` 传给聊天 API。完整 `/ai` 页面用于长对话。浮层在 `/ai`、auth、admin 和
 沉浸式页面隐藏，关闭浮层只隐藏 UI，不卸载聊天状态。
+启动器通过 core 的 `useFloatingLauncherPosition` 拖动和保存位置，应用层生命树浮标复用同一 hook。
 
 ## 数据流
 

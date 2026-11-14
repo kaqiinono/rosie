@@ -13,6 +13,10 @@ vi.mock('@rosie/core', () => ({
       })),
     },
   },
+  createUserSessionStore: <T,>(_key: string, options: { empty: T }) => ({
+    useSessionData: () => ({ data: options.empty, isLoading: false, error: null }),
+  }),
+  useAuth: () => ({ user: null, loading: false }),
 }))
 
 vi.mock('next/navigation', () => ({

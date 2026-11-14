@@ -4,21 +4,18 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
-  type CSSProperties,
-  type KeyboardEvent as ReactKeyboardEvent,
-  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { STORAGE_KEYS, useImmersive } from '@rosie/core'
+import { STORAGE_KEYS, useFloatingLauncherPosition, useImmersive } from '@rosie/core'
 import type { AgentBlock, AiSubject, ChatContext, LessonNote, SimilarProblem } from '../types'
 import { findManifestByHref, findManifestByProblemId } from '../server/tools/resolve-links'
 import AiChatPanel from './AiChatPanel'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
 import { IconButton } from '@rosie/ui/themes'
+import { FloatingLauncherCloseButton } from '@rosie/ui'
 
 export function shouldShowAiAssistant(pathname: string, isImmersive: boolean): boolean {
   if (isImmersive) return false
@@ -69,29 +66,6 @@ type AiFloatingAssistantProps = {
   }
 }
 
-type LauncherPosition = { x: number; y: number }
-type DragStart = LauncherPosition & { pointerX: number; pointerY: number; pointerId: number }
-
-const LAUNCHER_EDGE_GAP = 8
-const DRAG_THRESHOLD = 6
-
-function clampLauncherPosition(
-  position: LauncherPosition,
-  width: number,
-  height: number,
-): LauncherPosition {
-  return {
-    x: Math.min(
-      Math.max(LAUNCHER_EDGE_GAP, position.x),
-      Math.max(LAUNCHER_EDGE_GAP, window.innerWidth - width - LAUNCHER_EDGE_GAP),
-    ),
-    y: Math.min(
-      Math.max(LAUNCHER_EDGE_GAP, position.y),
-      Math.max(LAUNCHER_EDGE_GAP, window.innerHeight - height - LAUNCHER_EDGE_GAP),
-    ),
-  }
-}
-
 export function findVisibleActiveProblem(candidates: HTMLElement[]): HTMLElement | undefined {
   for (let index = candidates.length - 1; index >= 0; index -= 1) {
     const element = candidates[index]
@@ -134,8 +108,6 @@ export default function AiFloatingAssistant({
   const pathname = usePathname()
   const { isImmersive } = useImmersive()
   const [open, setOpen] = useState(false)
-  const [launcherPosition, setLauncherPosition] = useState<LauncherPosition | null>(null)
-  const [dragging, setDragging] = useState(false)
   // 仅本次页面生命周期内隐藏；刷新后重新出现（不持久化）。对话抽屉打开时不会隐藏。
   const [dismissed, setDismissed] = useState(false)
   const launcherHidden = dismissed && !open
@@ -144,10 +116,13 @@ export default function AiFloatingAssistant({
     hasAttempted: boolean
     title?: string
   } | null>(null)
-  const launcherRef = useRef<HTMLButtonElement>(null)
-  const dragStartRef = useRef<DragStart | null>(null)
-  const didDragRef = useRef(false)
-  const suppressClickRef = useRef(false)
+  const visible = shouldShowAiAssistant(pathname, isImmersive)
+  const { launcherRef, launcherStyle, dragging, consumeDragClick, handlers } =
+    useFloatingLauncherPosition({
+      storageKey: STORAGE_KEYS.AI_ASSISTANT_POSITION,
+      visible: visible && !launcherHidden,
+      draggable: !open,
+    })
   const context = useMemo<ChatContext>(() => {
     const manifestEntry = findManifestByHref(pathname)
     const activeProblemEntry = activeProblem
@@ -193,7 +168,7 @@ export default function AiFloatingAssistant({
   const closeAssistant = useCallback(() => {
     setOpen(false)
     requestAnimationFrame(() => launcherRef.current?.focus())
-  }, [])
+  }, [launcherRef])
 
   const openAssistant = useCallback(() => {
     const candidates = Array.from(
@@ -214,124 +189,6 @@ export default function AiFloatingAssistant({
     setOpen(true)
   }, [])
 
-  const saveLauncherPosition = useCallback((position: LauncherPosition) => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.AI_ASSISTANT_POSITION, JSON.stringify(position))
-    } catch {
-      // The launcher remains draggable when browser storage is unavailable.
-    }
-  }, [])
-
-  const positionLauncher = useCallback(
-    (position: LauncherPosition, persist = false) => {
-      const launcher = launcherRef.current
-      // 隐藏时（display:none）尺寸为 0，不计算也不保存位置
-      if (!launcher || launcher.offsetWidth === 0) return
-      const nextPosition = clampLauncherPosition(
-        position,
-        launcher.offsetWidth,
-        launcher.offsetHeight,
-      )
-      setLauncherPosition(nextPosition)
-      if (persist) saveLauncherPosition(nextPosition)
-    },
-    [saveLauncherPosition],
-  )
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.AI_ASSISTANT_POSITION)
-      if (!saved) return
-      const parsed: unknown = JSON.parse(saved)
-      if (typeof parsed === 'object' && parsed !== null) {
-        const candidate = parsed as Record<string, unknown>
-        if (typeof candidate.x === 'number' && typeof candidate.y === 'number') {
-          const savedPosition = { x: candidate.x, y: candidate.y }
-          requestAnimationFrame(() => positionLauncher(savedPosition))
-        }
-      }
-    } catch {
-      // Ignore malformed or unavailable local storage and use the default corner.
-    }
-  }, [positionLauncher])
-
-  useEffect(() => {
-    const keepLauncherOnScreen = () => {
-      if (launcherPosition) positionLauncher(launcherPosition, true)
-    }
-    window.addEventListener('resize', keepLauncherOnScreen)
-    return () => window.removeEventListener('resize', keepLauncherOnScreen)
-  }, [launcherPosition, positionLauncher])
-
-  const handleLauncherPointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (open || event.button !== 0) return
-    const rect = event.currentTarget.getBoundingClientRect()
-    dragStartRef.current = {
-      x: rect.left,
-      y: rect.top,
-      pointerX: event.clientX,
-      pointerY: event.clientY,
-      pointerId: event.pointerId,
-    }
-    didDragRef.current = false
-    event.currentTarget.setPointerCapture(event.pointerId)
-  }
-
-  const handleLauncherPointerMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    const start = dragStartRef.current
-    if (!start || start.pointerId !== event.pointerId) return
-    const deltaX = event.clientX - start.pointerX
-    const deltaY = event.clientY - start.pointerY
-    if (!didDragRef.current && Math.hypot(deltaX, deltaY) < DRAG_THRESHOLD) return
-    didDragRef.current = true
-    setDragging(true)
-    positionLauncher({ x: start.x + deltaX, y: start.y + deltaY })
-  }
-
-  const finishLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    const start = dragStartRef.current
-    if (!start || start.pointerId !== event.pointerId) return
-    dragStartRef.current = null
-    setDragging(false)
-    if (didDragRef.current) {
-      suppressClickRef.current = true
-      positionLauncher(
-        {
-          x: start.x + event.clientX - start.pointerX,
-          y: start.y + event.clientY - start.pointerY,
-        },
-        true,
-      )
-    }
-  }
-
-  const cancelLauncherDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    if (dragStartRef.current?.pointerId !== event.pointerId) return
-    dragStartRef.current = null
-    didDragRef.current = false
-    suppressClickRef.current = false
-    setDragging(false)
-    if (launcherPosition) saveLauncherPosition(launcherPosition)
-  }
-
-  const handleLauncherKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
-    const movement: Record<string, LauncherPosition> = {
-      ArrowLeft: { x: -24, y: 0 },
-      ArrowRight: { x: 24, y: 0 },
-      ArrowUp: { x: 0, y: -24 },
-      ArrowDown: { x: 0, y: 24 },
-    }
-    const delta = movement[event.key]
-    if (!delta || open) return
-    event.preventDefault()
-    const rect = event.currentTarget.getBoundingClientRect()
-    positionLauncher({ x: rect.left + delta.x, y: rect.top + delta.y }, true)
-  }
-
-  const launcherStyle: CSSProperties | undefined = launcherPosition
-    ? { left: launcherPosition.x, top: launcherPosition.y, right: 'auto', bottom: 'auto' }
-    : undefined
-
   useEffect(() => {
     onVisibilityChange?.(open)
   }, [onVisibilityChange, open])
@@ -345,7 +202,7 @@ export default function AiFloatingAssistant({
     return () => window.removeEventListener('keydown', closeOnEscape)
   }, [closeAssistant, open])
 
-  if (!shouldShowAiAssistant(pathname, isImmersive)) return null
+  if (!visible) return null
 
   return (
     <>
@@ -357,43 +214,27 @@ export default function AiFloatingAssistant({
         {/* native-ok: 可拖动、键盘微调位置的悬浮启动器，依赖 pointer 事件与内联定位，Radix Button 无法承载 */}
         <button
           ref={launcherRef}
+          data-ai-floating-launcher
           type="button"
           aria-label={open ? '收起不不' : '打开不不，可拖动调整位置'}
           aria-expanded={open}
           title={open ? '收起不不' : '拖动可移开，方向键也可调整位置'}
-          onClick={() => {
-            if (suppressClickRef.current) {
-              suppressClickRef.current = false
-              return
-            }
+          onClick={(event) => {
+            if (event.detail > 0 && consumeDragClick()) return
             if (open) closeAssistant()
             else openAssistant()
           }}
-          onKeyDown={handleLauncherKeyDown}
-          onPointerDown={handleLauncherPointerDown}
-          onPointerMove={handleLauncherPointerMove}
-          onPointerUp={finishLauncherDrag}
-          onPointerCancel={cancelLauncherDrag}
+          {...handlers}
           className={`grid size-14 touch-none place-items-center rounded-full bg-rose-100 shadow-[inset_0_-4px_0_var(--color-rose-200)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sky-500 ${dragging ? 'cursor-grabbing' : 'cursor-grab motion-safe:transition-transform motion-safe:hover:-translate-y-0.5'}`}
         >
           <RosieAssistantAvatar className="pointer-events-none size-12" />
         </button>
         {!open && (
-          <IconButton
-            type="button"
-            aria-label="暂时隐藏不不，刷新页面后恢复"
+          <FloatingLauncherCloseButton
+            label="暂时隐藏不不，刷新页面后恢复"
             title="暂时隐藏，刷新页面后恢复"
-            size="1"
-            radius="full"
-            variant="surface"
-            color="gray"
-            className="absolute -top-2 -right-2"
-            onClick={() => setDismissed(true)}
-          >
-            <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="m3 3 6 6m0-6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </IconButton>
+            onClose={() => setDismissed(true)}
+          />
         )}
       </div>
 
