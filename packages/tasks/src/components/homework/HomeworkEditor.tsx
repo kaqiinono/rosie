@@ -22,6 +22,7 @@ import {
   type HomeworkPriority,
   type HomeworkSubject,
 } from '../../homework'
+import PracticeEntryPicker from './PracticeEntryPicker'
 import { localDate } from '../../time'
 
 type Props = {
@@ -47,6 +48,7 @@ function toInput(homework?: Homework): HomeworkInput {
     estimated_minutes: homework.estimated_minutes,
     notes: homework.notes,
     enabled: homework.enabled,
+    practice_binding: homework.practice_binding ?? null,
   }
 }
 
@@ -86,6 +88,11 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
   }
 
   async function submit() {
+    const binding = input.practice_binding
+    if (binding?.rows.length && !binding.rows.some((row) => row.id === binding.startId)) {
+      setError('请逐级选择到具体开始项。')
+      return
+    }
     const message = validateHomework(input)
     if (message) {
       setError(message)
@@ -144,7 +151,9 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
               </Text>
               <Select.Root
                 value={draft.subject}
-                onValueChange={(value) => patch({ subject: value as HomeworkSubject })}
+                onValueChange={(value) => {
+                  if (value !== draft.subject) patch({ subject: value as HomeworkSubject, practice_binding: null })
+                }}
               >
                 <Select.Trigger aria-label="所属科目" />
                 <Select.Content>
@@ -347,6 +356,8 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
           )}
 
           {nextDates && <Text as="p" size="2" aria-live="polite">{nextDates}</Text>}
+
+          <PracticeEntryPicker key={draft.subject} subject={draft.subject} value={draft.practice_binding ?? null} onChange={(practice_binding) => patch({ practice_binding })} />
 
           <Row label="备注" hint="可选">
             <TextArea

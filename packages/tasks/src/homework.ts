@@ -1,3 +1,4 @@
+import type { PracticeBinding } from './practiceEntries'
 import { dateAfter } from './time'
 
 export type HomeworkSubject = 'chinese' | 'math' | 'english' | 'life'
@@ -49,6 +50,7 @@ export interface Homework {
   enabled: boolean
   created_at: string
   updated_at: string
+  practice_binding?: PracticeBinding | null
 }
 
 /** 表单与写库共用的字段；id 存在表示编辑。 */

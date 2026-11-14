@@ -9,3 +9,17 @@ The production life tree at /time-tree generates owner-scoped occurrences from t
 The homework tab and /today/calendar share the execution records via /api/time-tree.
 Template dates and elapsed-time reporting use Asia/Shanghai. Never substitute preview seed data
 for a failed request or generate performance timestamps from estimated minutes.
+
+## 练习入口
+
+`/setting/task-entries` maintains owner-scoped named relative-path templates and complete ordered parameter rows. `practiceEntries.ts` owns the pure URL/binding contract; `usePracticeEntries` uses the core session store. Homework selects an entry and a starting row only, storing an immutable `practice_binding` snapshot. Changing unrelated homework fields preserves its binding key. Explicit entry/start changes or syncing creates a new execution version. Subject catalog adapters live in web, not tasks. See `docs/task-practice-entries.md`.
+
+Practice parameter rows may include `content` blocks and multiple `resources`. Resource URLs use stable same-origin media bindings or explicit HTTPS direct links. Auto-discovery status distinguishes errors from empty results; manual edits, deletions and ordering survive refresh. Subject-specific discovery and playback live in web.
+
+Entry management filters its list, quick links and catalog sources by subject. The list and the homework entry menu show the most recently updated entry first. Homework entry choices are restricted to the homework subject; changing that subject clears the entire draft binding (including the starting row), without mutating existing garden snapshots.
+
+Homework starting rows use cascading selectors from optional row `selectionPath` metadata (legacy snapshots infer groups from their existing variables). Parent changes clear descendants and the draft start ID; saving requires a concrete row. Selecting the original starting row preserves the binding key. Classification only locates the starting row: it never filters, sorts or truncates the binding's ordered rows. Catalog adapters populate labels; entry management permits manual hierarchy edits.
+
+`PracticeStartPicker` 从 barrel 导出，可选 `purpose="content"` 用于真实内容预览的逐级定位，隐藏起点保存/递进说明；默认 `start` 行为保持不变。预览不调用 bindEntry 或写入任何绑定。
+
+Content management now selects subject and cascading course scope, with no standalone catalog-kind control. Web generates ordered rows and resolves resources only for the selected scope. `selectionPath` plus row IDs retains the selected snapshot; `values.contentType` and optional `requiresRecite` select shared presentation. No database shape or progression transaction changed. See docs/task-practice-entries.md.
