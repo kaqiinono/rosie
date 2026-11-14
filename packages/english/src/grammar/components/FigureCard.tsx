@@ -4,6 +4,7 @@ import { GrammarScanImage } from './GrammarScanImage'
 
 import type { GrammarFigure } from '../types'
 import { grammarPageImageUrl } from '../types'
+import { StickerCard } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 
 interface FigureCardProps {
@@ -18,21 +19,21 @@ interface FigureCardProps {
 export function FigureCard({ figure, isAdmin, onPreview, onRecrop, onRemove }: FigureCardProps) {
   const url = grammarPageImageUrl(figure.path)
   return (
-    <div className="group relative self-start">
-      <Button
-        type="button"
-        onClick={() => onPreview(figure)}
-        variant="outline"
-        color="gray"
-        size="2"
-      >
-        <GrammarScanImage
-          loading="lazy"
-          src={url}
-          alt={`插图（原书 p.${figure.page}）`}
-          className="max-h-64 w-auto max-w-full"
-        />
-      </Button>
+    <div className="group relative max-w-full self-start">
+      <StickerCard asChild tone="white" size="none" elevation="sm" radius="md" className="block max-w-full overflow-hidden p-0">
+        <button // native-ok: 图片预览需按原图比例撑开容器；Radix Button 的固定高度会使图片溢出并覆盖后续内容
+          type="button"
+          onClick={() => onPreview(figure)}
+          className="block max-w-full overflow-hidden p-0"
+        >
+          <GrammarScanImage
+            loading="lazy"
+            src={url}
+            alt={`插图（原书 p.${figure.page}）`}
+            className="block max-h-64 w-auto max-w-full"
+          />
+        </button>
+      </StickerCard>
       {isAdmin && (
         <div className="absolute top-1 right-1 flex gap-1 opacity-80">
           {onRecrop && (

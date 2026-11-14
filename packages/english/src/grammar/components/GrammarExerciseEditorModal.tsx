@@ -548,5 +548,5 @@ export function GrammarExerciseEditorModal({
     </div>
   )
 
-  return createPortal(editor, document.body)
+  return createPortal(editor, document.querySelector('.radix-themes') ?? document.body)
 }

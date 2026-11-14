@@ -18,6 +18,9 @@ interface WordsContextValue {
   user: User | null
   vocab: WordEntry[]
   isVocabLoading: boolean
+  entryScopeReady: boolean
+  entryScopeIndexReady: boolean
+  entryScopeError: unknown
   /** Every textbook (stage) that exists in the word library. */
   availableStages: string[]
   /** lesson key (`unit::lesson`) → stage; resolves cross-textbook entries. */
@@ -112,7 +115,7 @@ export function WordsProvider({
       ? selStage
       : null
 
-  const { vocab, upsertByStage, isLoading: isVocabLoading } = useWordData(
+  const { vocab, upsertByStage, isLoading: isVocabLoading, ready: vocabReady, error: vocabError } = useWordData(
     user,
     stageMode ? { stage: stageForFetch } : undefined,
   )
@@ -207,6 +210,9 @@ export function WordsProvider({
   return (
     <WordsContext.Provider value={{
       user, vocab, isVocabLoading, availableStages, lessonStage, upsertByStage,
+      entryScopeIndexReady: stageMode ? !stageIndex.isLoading : vocabReady,
+      entryScopeReady: vocabReady && (!stageMode || !stageIndex.isLoading),
+      entryScopeError: vocabError || (stageMode ? stageIndex.error : null),
       masteryMap, recordBatch, recordRecallAttempt,
       selStage, setSelStage,
       selUnits, setSelUnits,

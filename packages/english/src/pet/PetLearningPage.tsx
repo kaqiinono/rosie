@@ -237,7 +237,7 @@ function PetLearningContent({ user }: { user: User }) {
               <Button disabled={!canStart || (!currentPlan && !filteredWords.length) || adaptive.isLoading || Boolean(adaptive.error)} loading={busy} onClick={() => void mainline()}>
                 {currentPlan ? currentPlan.status === 'active' ? '继续 PET 主线' : '查看 PET 计划' : '建立 PET 学习计划'}
               </Button>
-              {adaptive.error && <p role="alert" className="mt-2 text-sm">学习计划加载失败。<Button variant="soft" size="1" onClick={() => void adaptive.reloadPlans()}>重试</Button></p>}
+              {adaptive.error != null && <p role="alert" className="mt-2 text-sm">学习计划加载失败。<Button variant="soft" size="1" onClick={() => void adaptive.reloadPlans()}>重试</Button></p>}
             </StickerCard>
             <StickerCard tone="accent">
               <h2 className="text-lg font-bold">到期再见一面</h2>

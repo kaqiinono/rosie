@@ -440,48 +440,40 @@ function GrammarUnitPageInner({ unitNumber, book }: { unitNumber: number; book: 
             )}
           </header>
 
-          <div className="bg-surface/95 shadow-sticker ring-border-light sticky top-16 z-30 mx-auto flex rounded-full p-1 ring-1 sm:top-3">
-            {(
-              [
-                { id: 'lesson', label: '📖 讲解' },
-                { id: 'exercise', label: '✏️ 练习' },
-                { id: 'original', label: '📄 原文' },
-              ] as { id: Tab; label: string }[]
-            ).map((t) => (
+          <div className="sticky top-16 z-30 mx-auto flex max-w-full flex-col items-center gap-2 sm:top-3 sm:flex-row">
+            <div className="bg-surface/95 shadow-sticker ring-border-light flex max-w-full items-center gap-1 rounded-full p-1 ring-1">
+              {(
+                [
+                  { id: 'lesson', label: '📖 讲解' },
+                  { id: 'exercise', label: '✏️ 练习' },
+                  { id: 'original', label: '📄 原文' },
+                ] as { id: Tab; label: string }[]
+              ).map((t) => (
+                <Button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  variant={tab === t.id ? 'solid' : 'ghost'}
+                  color={tab === t.id ? 'sky' : 'gray'}
+                  size="2"
+                  aria-pressed={tab === t.id}
+                >
+                  {t.label}
+                </Button>
+              ))}
+            </div>
+            {isAdmin && tab !== 'original' && (
               <Button
-                key={t.id}
-                onClick={() => setTab(t.id)}
-                variant={tab === t.id ? 'solid' : 'ghost'}
-                color={tab === t.id ? 'sky' : 'gray'}
+                type="button"
+                onClick={() => {
+                  if (tab === 'lesson') setLessonEditing(true)
+                  if (tab === 'exercise') setExerciseEditGroup(0)
+                }}
+                variant="outline"
+                color="purple"
                 size="2"
               >
-                {t.label}
+                ⚙ {tab === 'lesson' ? '管理讲解' : '管理练习'}
               </Button>
-            ))}
-            {isAdmin && tab !== 'original' && (
-              <>
-                <span className="bg-border-light mx-1 my-1 w-px" aria-hidden="true" />
-                <Button
-                  type="button"
-                  onClick={() => {
-                    if (tab === 'lesson') setLessonEditing(true)
-                    if (tab === 'exercise') setExerciseEditGroup(0)
-                  }}
-                  aria-label={tab === 'lesson' ? '管理讲解' : '管理练习'}
-                  variant="ghost"
-                  color="purple"
-                  size="1"
-                  className="sm:text-sm"
-                >
-                  <span
-                    className="transition-transform group-hover:rotate-45 motion-reduce:transform-none"
-                    aria-hidden="true"
-                  >
-                    ⚙
-                  </span>
-                  <span>{tab === 'lesson' ? '管理讲解' : '管理练习'}</span>
-                </Button>
-              </>
             )}
           </div>
 

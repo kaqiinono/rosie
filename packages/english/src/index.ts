@@ -170,8 +170,15 @@ export {
 export { GRAMMAR_INDEX } from './grammar/grammar-index'
 export * from './grammar/types'
 export { default as ListeningDrawer } from './components/reading/ListeningDrawer'
-export { listeningClipsFor, playableListeningClips } from './utils/listening-clips'
+export { listeningClipsFor, playableListeningClips, readingSegments } from './utils/listening-clips'
 
 export { useAudioSlots } from './hooks/useBaiduReadingAudio'
 
 export { default as PetLearningPage } from './pet/PetLearningPage'
+
+export { ExamWordReviewCard } from './components/ExamWordReviewCard'
+export type { ExamWordReviewCardProps } from './components/ExamWordReviewCard'
+export { ExamWordReviewSession } from './components/ExamWordReviewSession'
+export type { ExamWordReviewSessionProps } from './components/ExamWordReviewSession'
+
+export { usePracticeEntryScope } from './hooks/usePracticeEntryScope'

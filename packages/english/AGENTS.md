@@ -10,6 +10,10 @@ audio, flipbook).
 
 ## What's inside
 
+Grammar `FigureCropModal` now wraps the shared `@rosie/ui` `ImageCropper` in `AppDialog`.
+Its existing `onConfirm(blob)` upload/save contract is unchanged; exams uses the same crop
+primitive with a normalized initial region and inline preview. No direct exams/English dependency.
+
 - **Vocabulary (`components/words/`)** — flash cards, quiz runner, spelling tiles, study/practice
   phases, daily + weekly-plan sessions, mastery panels, monster-eat error feedback, xlsx import.
   Mastery uses the spaced-repetition stage system (logic in `@rosie/core`'s `masteryUtils`).
@@ -320,3 +324,7 @@ Baidu audio session. Clip streams use the shared account's `5A/listening/U3L2` d
 `narrationCues` and listening anchors. Exercise instructions and spoken dates stay in the
 full recording only. Clip-local `singleRead` times exclude the surrounding silence;
 the drawer also loops single-reading files when they end before the three-second wait.
+
+Named homework entries can open cards/practice with `stage`, comma-separated `units`, and comma-separated `lessons` (`unit::lesson`). `usePracticeEntryScope` waits for the requested stage data, applies the URL scope once and clears stale word/mastery filters. Explicit invalid scopes display an error. Reading entries use `/english/words/reading/{key}`; grammar entries use `/english/grammar/{book}/{unitId}`. Catalog generation is owned by the web task-entry adapter.
+
+Task-entry sentence rows use the existing `readingSegments` and listening target conventions (`paragraph-sentence`). The app stores English text/available translation and discovers explicit clip slots, verified legacy clip files and narration cue segments; unavailable translations or timestamps are never synthesized. `readingSegments` is exported for this adapter.

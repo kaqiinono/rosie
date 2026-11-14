@@ -250,8 +250,9 @@ function readCachedStageIndex(userId: string): StageIndex | null {
 }
 
 /** Stage list + lesson→stage map; hydrate from cache, refresh in background. */
-export function useStageIndex(user: User | null): StageIndex {
+export function useStageIndex(user: User | null): StageIndex & { isLoading: boolean; error: unknown } {
   const userId = user?.id ?? null
+  const [status, setStatus] = useState<{ userId: string | null; loading: boolean; error: unknown }>({ userId, loading: !!userId, error: null })
   const [index, setIndex] = useState<StageIndex>(() => {
     if (!userId) return EMPTY_STAGE_INDEX
     return readCachedStageIndex(userId) ?? EMPTY_STAGE_INDEX
@@ -259,6 +260,7 @@ export function useStageIndex(user: User | null): StageIndex {
 
   useEffect(() => {
     if (!userId) return
+    setStatus({ userId, loading: true, error: null })
     purgeLegacyFullCache()
     let cancelled = false
     void fetchStageIndex()
@@ -270,14 +272,15 @@ export function useStageIndex(user: User | null): StageIndex {
           /* ignore */
         }
         setIndex(fresh)
+        setStatus({ userId, loading: false, error: null })
       })
-      .catch(() => undefined)
+      .catch((error: unknown) => { if (!cancelled) setStatus({ userId, loading: false, error }) })
     return () => {
       cancelled = true
     }
   }, [userId])
 
-  return index
+  return { ...index, isLoading: !!userId && (status.userId !== userId || status.loading), error: status.userId === userId ? status.error : null }
 }
 
 async function upsertWordRows(creator: string, words: WordEntry[]) {

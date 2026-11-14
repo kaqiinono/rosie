@@ -1801,5 +1801,5 @@ export function GrammarLessonEditorModal({
     </div>
   )
 
-  return createPortal(modal, document.body)
+  return createPortal(modal, document.querySelector('.radix-themes') ?? document.body)
 }

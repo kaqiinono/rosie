@@ -1,5 +1,8 @@
 'use client'
 
+import { LoadingOverlay } from '@rosie/ui'
+import { usePracticeEntryScope } from '@rosie/english'
+
 import { useMemo, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -13,6 +16,7 @@ import { serializePrintTypes } from '@rosie/english'
 import type { SpellButtonStyle } from '@rosie/english'
 
 export default function PracticePage() {
+  const entryScope = usePracticeEntryScope()
   const {
     vocab, filteredWords, isVocabLoading, lessonStage,
     selStage, setSelStage,
@@ -197,6 +201,9 @@ export default function PracticePage() {
       return next
     })
   }, [setSelWords])
+
+  if (entryScope.pending) return <div className="relative min-h-[60dvh]"><LoadingOverlay visible placement="content" /></div>
+  if (entryScope.error) return <p role="alert" className="p-4">{entryScope.error}</p>
 
   return (
     <>

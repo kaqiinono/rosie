@@ -41,3 +41,16 @@ export async function fetchBaiduReadingAudio(key: string, range: string | null, 
   const path = baiduReadingPath(key, clip)
   return path ? fetchBaiduMedia(path, range, signal, 'audio') : null
 }
+
+/** Explicit resource discovery only; ordinary playback does not scan clip directories. */
+export async function listBaiduListeningKeys(): Promise<{ keys: string[]; complete: boolean }> {
+  const groups = await Promise.allSettled(Object.entries(LISTENING_CLIP_COUNTS).map(async ([key, count]) => {
+    const lesson = key.slice(3).toUpperCase()
+    const files = await listBaiduDirectory(`${ROOT}/5A/listening/${lesson}`)
+    const paths = new Set(files.map((file) => file.path))
+    return Array.from({ length: count }, (_, index) => String(index + 1).padStart(2, '0'))
+      .filter((clip) => paths.has(baiduReadingPath(key, clip)!))
+      .map((clip) => `${key}#legacy-clip:${clip}`)
+  }))
+  return { keys: groups.flatMap((group) => group.status === 'fulfilled' ? group.value : []), complete: groups.every((group) => group.status === 'fulfilled') }
+}

@@ -57,6 +57,8 @@ interface WeeklyPlanSessionProps {
   onBack: () => void
   /** Practice route (`/weekly/[id]/practice`): enter and start today's study immediately */
   autoStart?: boolean
+  /** Homework opens one planned day. Absent keeps today's session. */
+  startDate?: string | null
 }
 
 type Phase = 'week-view' | 'study' | 'quiz' | 'done'
@@ -159,6 +161,7 @@ export default function WeeklyPlanSession({
   vocab,
   onBack,
   autoStart = false,
+  startDate = null,
 }: WeeklyPlanSessionProps) {
   const { user } = useAuth()
   const { masteryMap, recordBatch, practiceButtonStyle, setPracticeButtonStyle } = useWordsContext()
@@ -499,12 +502,12 @@ export default function WeeklyPlanSession({
   useEffect(() => {
     if (!autoStart || autoStartDoneRef.current || snap0) return
     if (phase !== 'week-view') return
-    const today = todayStr()
-    if (!plan.days.some((d) => d.date === today)) return
-    if (buildSessionWords(today).length === 0) return
+    const target = startDate ?? todayStr()
+    if (!plan.days.some((d) => d.date === target)) return
+    if (buildSessionWords(target).length === 0) return
     autoStartDoneRef.current = true
-    startStudy(today)
-  }, [autoStart, snap0, phase, plan.days, buildSessionWords, startStudy])
+    startStudy(target)
+  }, [autoStart, startDate, snap0, phase, plan.days, buildSessionWords, startStudy])
 
   const resumePendingSession = useCallback(() => {
     const snap = pickBestPendingSnapshot(plan.id, plan.pendingSession)

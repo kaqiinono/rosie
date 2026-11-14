@@ -1,5 +1,8 @@
 'use client'
 
+import { LoadingOverlay } from '@rosie/ui'
+import { usePracticeEntryScope } from '@rosie/english'
+
 import { useState, useCallback, useMemo } from 'react'
 import { useWordsContext } from '@rosie/english'
 import { shuffle, wordKey } from '@rosie/english'
@@ -10,6 +13,7 @@ import { CardsGrid } from '@rosie/english'
 import { useImmersive } from '@rosie/core'
 
 export default function CardsPage() {
+  const entryScope = usePracticeEntryScope()
   const { setIsImmersive } = useImmersive()
   const {
     vocab,
@@ -141,6 +145,9 @@ export default function CardsPage() {
     setSelWords(new Set())
     resetCards()
   }, [setSelVocabTypes, setSelWords, resetCards])
+
+  if (entryScope.pending) return <div className="relative min-h-[60dvh]"><LoadingOverlay visible placement="content" /></div>
+  if (entryScope.error) return <p role="alert" className="p-4">{entryScope.error}</p>
 
   return (
     <>

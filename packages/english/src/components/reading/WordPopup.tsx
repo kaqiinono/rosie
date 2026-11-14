@@ -21,12 +21,20 @@ import {
 import SpeakButton from '../words/SpeakButton'
 import { Button, IconButton } from '@rosie/ui/themes'
 
+export interface WordSourceContext {
+  title: string
+  sentence: string
+  matchedForm: string
+}
+
 interface WordPopupProps {
   entry: WordEntry | null
   matchedForm?: WordFormMatch | null
   entries?: WordEntry[]
-  passage: ReadingPassage
+  passage?: ReadingPassage
+  sourceContext?: WordSourceContext
   mastery: WordMasteryInfo | undefined
+  showMastery?: boolean
   onEntryChange?: (entry: WordEntry) => void
   onClose: () => void
 }
@@ -73,7 +81,9 @@ export default function WordPopup({
   matchedForm,
   entries = [],
   passage,
+  sourceContext,
   mastery,
+  showMastery = true,
   onEntryChange,
   onClose,
 }: WordPopupProps) {
@@ -108,8 +118,8 @@ export default function WordPopup({
   const maxStage = isHard ? GRADUATED_STAGE_HARD : GRADUATED_STAGE_NORMAL
   const stagePercent = Math.min(100, Math.round((stage / maxStage) * 100))
 
-  const found = findSentenceForWord(passage, entry)
-  const sentenceMatch = found?.sentence.match(buildEntryRegex(entry))?.[0]
+  const found = sourceContext?.sentence ? { sentence: sourceContext.sentence } : passage ? findSentenceForWord(passage, entry) : null
+  const sentenceMatch = sourceContext?.matchedForm || found?.sentence.match(buildEntryRegex(entry))?.[0]
   const effectiveMatch =
     matchedForm ?? (sentenceMatch ? resolveWordFormMatch(sentenceMatch, [entry]) : null)
   const isInflected = effectiveMatch && effectiveMatch.source !== 'base'
@@ -149,7 +159,7 @@ export default function WordPopup({
         <div className="px-5 pt-5 pr-14 pb-2">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="text-2xl font-extrabold text-gray-900">{entry.word}</h3>
-            {MASTERY_ICON[level] && (
+            {showMastery && MASTERY_ICON[level] && (
               <span
                 className="ring-kid-line inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-bold text-gray-600 ring-1"
                 title={LEVEL_LABEL[level]}
@@ -181,7 +191,7 @@ export default function WordPopup({
             <span className="ring-kid-line rounded-full bg-slate-50 px-2.5 py-1 text-slate-600 ring-1">
               {entry.unit} · {entry.lesson}
             </span>
-            {passage.stage === 'story' && (
+            {passage?.stage === 'story' && (
               <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 ring-1 ring-amber-200">
                 故事来源 · {passage.unit} · {passage.title}
               </span>
@@ -201,7 +211,7 @@ export default function WordPopup({
           {found && (
             <div className="rounded-xl bg-amber-50 p-3 ring-1 ring-amber-200/60">
               <div className="mb-1 flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-amber-700 uppercase">
-                <span>📖</span> 课文原句
+                <span>📖</span> {sourceContext?.title ?? '课文原句'}
               </div>
               <p className="text-[14px] leading-relaxed text-gray-800">
                 {highlightSentence(found.sentence, entry)}
@@ -218,7 +228,7 @@ export default function WordPopup({
             </div>
           )}
 
-          <div>
+          {showMastery && <div>
             <div className="mb-1.5 flex items-center justify-between text-[11px] font-bold tracking-wider text-gray-400 uppercase">
               <span>掌握度</span>
               <span className="text-gray-600 normal-case">
@@ -238,7 +248,7 @@ export default function WordPopup({
                 {isHard && <span className="text-rose-500">困难</span>}
               </div>
             )}
-          </div>
+          </div>}
         </div>
 
         {currentIndex >= 0 && entries.length > 1 && (

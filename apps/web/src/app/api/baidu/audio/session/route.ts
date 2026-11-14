@@ -5,6 +5,7 @@ import {
   BAIDU_AUDIO_COOKIE,
   BAIDU_AUDIO_COOKIE_PATH,
   listBaiduReadingKeys,
+  listBaiduListeningKeys,
 } from '@/lib/baidu-reading-audio'
 
 import { listEnglishAudioSlots } from '@/lib/baidu-english-audio'
@@ -24,18 +25,20 @@ export async function POST(req: NextRequest) {
   const token = getBearerToken(req)
   if (!user || !token) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
   try {
-    const [legacy, bindings] = await Promise.allSettled([
+    const [legacy, bindings, clips] = await Promise.allSettled([
       listBaiduReadingKeys(),
       listEnglishAudioSlots(),
+      req.nextUrl.searchParams.get('resources') === '1' ? listBaiduListeningKeys() : Promise.resolve({ keys: [], complete: true }),
     ])
-    if (legacy.status === 'rejected' && (bindings.status === 'rejected' || !bindings.value.length))
+    if (legacy.status === 'rejected' && (bindings.status === 'rejected' || !bindings.value.length) && (clips.status === 'rejected' || !clips.value.keys.length))
       throw legacy.reason
     const keys = [
       ...(legacy.status === 'fulfilled' ? legacy.value : []),
       ...(bindings.status === 'fulfilled' ? bindings.value : []),
+      ...(clips.status === 'fulfilled' ? clips.value.keys : []),
     ]
     const response = NextResponse.json(
-      { keys },
+      { keys, catalogComplete: legacy.status === 'fulfilled' && bindings.status === 'fulfilled' && clips.status === 'fulfilled' && clips.value.complete },
       { headers: { 'Cache-Control': 'private, no-store' } },
     )
     // Restricted to audio routes; each stream validates this session with Supabase.
