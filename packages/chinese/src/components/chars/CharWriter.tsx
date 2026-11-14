@@ -9,6 +9,8 @@ export interface CharWriterProps {
   mode: 'animate' | 'quiz'
   size?: number
   onQuizComplete?: (summary: { totalMistakes: number }) => void
+  /** Optional offline fixture; omitted for the existing character loader. */
+  characterData?: { strokes: string[]; medians: number[][][]; radStrokes?: number[] }
 }
 
 export default function CharWriter({
@@ -16,6 +18,7 @@ export default function CharWriter({
   mode,
   size = 220,
   onQuizComplete,
+  characterData,
 }: CharWriterProps) {
   const targetRef = useRef<HTMLDivElement>(null)
   const writerRef = useRef<HanziWriter | null>(null)
@@ -44,6 +47,7 @@ export default function CharWriter({
         drawingWidth: 5,
         showHintAfterMisses: 3,
         highlightOnComplete: true,
+        ...(characterData ? { charDataLoader: () => characterData } : {}),
       })
       writerRef.current = writer
 
@@ -64,7 +68,7 @@ export default function CharWriter({
       writerRef.current = null
       el.innerHTML = ''
     }
-  }, [char, mode, size])
+  }, [char, mode, size, characterData])
 
   return (
     <div className="flex justify-center">

@@ -105,6 +105,7 @@ export type {
 } from './components/ChinesePageLayout'
 
 // Components
+export { default as WordFlashCard } from './components/chars/WordFlashCard'
 export { default as CharFlashCard } from './components/chars/CharFlashCard'
 export { default as CharWriter } from './components/chars/CharWriter'
 export type { CharWriterProps } from './components/chars/CharWriter'
