@@ -1,132 +1,148 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
-import { useAuth } from '@rosie/core'
-import { changePool, entriesStore, poolLabels, wheelStore, type PoolKind } from '@rosie/rewards'
-import { AppDialog, LoadingOverlay, PageShell, StickerCard } from '@rosie/ui'
-import { Button, TextField } from '@rosie/ui/themes'
-import DrawWheel from './DrawWheel'
+import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth, useImmersive } from '@rosie/core'
+import { changeWorkshop, workshopStore, type WorkshopCommand } from '@rosie/rewards'
+import { AppDialog, LoadingOverlay } from '@rosie/ui'
+import { Button } from '@rosie/ui/themes'
+
+type Confirmation = { id: string; title: string; description: string }
+const CHANNEL = 'rosie-draw-v1'
 
 export default function DrawPage() {
   const { user } = useAuth()
-  return (
-    <PageShell title="抽一抽" icon="🎡" width="narrow">
-      {user ? <Pools key={user.id} user={user} /> : <Waiting />}
-    </PageShell>
-  )
+  return user ? <Workshop key={user.id} user={user} /> : <div className="relative h-dvh"><LoadingOverlay visible placement="content" /></div>
 }
 
-function Waiting() {
-  return <div className="grid min-h-[calc(100dvh-8rem)] place-items-center"><LoadingOverlay visible placement="content" /></div>
-}
+function Workshop({ user }: { user: NonNullable<ReturnType<typeof useAuth>['user']> }) {
+  const router = useRouter()
+  const { setIsImmersive } = useImmersive()
+  const { error } = workshopStore.useSessionData(user)
+  const frame = useRef<HTMLIFrameElement>(null)
+  const [ready, setReady] = useState(false)
+  const [frameError, setFrameError] = useState('')
+  const [generation, setGeneration] = useState(0)
+  const [retrying, setRetrying] = useState(false)
+  const [confirmation, setConfirmation] = useState<Confirmation | null>(null)
+  const confirmationRef = useRef<Confirmation | null>(null)
 
-type SignedInUser = NonNullable<ReturnType<typeof useAuth>['user']>
+  useEffect(() => {
+    setIsImmersive(true)
+    return () => setIsImmersive(false)
+  }, [setIsImmersive])
 
-function Pools({ user }: { user: SignedInUser }) {
-  const { data, isLoading, error: loadError } = wheelStore.useSessionData(user)
-  const [kind, setKind] = useState<PoolKind>('reward')
-  const [action, setAction] = useState<'draw' | 'add' | 'accept' | 'reload' | null>(null)
-  const [spin, setSpin] = useState<string | null>(null)
-  const [adding, setAdding] = useState(false)
-  const [name, setName] = useState('')
-  const [error, setError] = useState('')
-  const lock = useRef(false)
-  const stop = useCallback(() => { setSpin(null); lock.current = false }, [])
-  const rows = data.filter(entry => entry.kind === kind)
-  const pending = rows.find(entry => entry.pending_ticket)
-  const busy = !!action || !!spin
-  const label = poolLabels[kind]
-
-  function showAdd() {
-    setError('')
-    setName('')
-    setAdding(true)
-  }
-
-  async function run(operation: 'draw' | 'add' | 'accept' | 'reload') {
-    if (lock.current) return
-    lock.current = true
-    setAction(operation)
-    setError('')
-    let animating = false
-    try {
-      if (operation === 'reload') {
-        await wheelStore.refreshInBackground(user.id)
+  useEffect(() => {
+    let mounted = true
+    let working = false
+    const reply = (id: string, value?: unknown, message?: string) => {
+      if (!mounted) return
+      frame.current?.contentWindow?.postMessage({ channel: CHANNEL, type: 'response', id, value, error: message }, window.location.origin)
+    }
+    const onMessage = async (event: MessageEvent<unknown>) => {
+      if (event.origin !== window.location.origin || event.source !== frame.current?.contentWindow) return
+      const data = event.data
+      if (!data || typeof data !== 'object') return
+      const message = data as Record<string, unknown>
+      if (message.channel !== CHANNEL) return
+      if (message.type === 'ready') { window.clearTimeout(timer); setReady(true); setFrameError(''); return }
+      if (message.type === 'fatal') { setReady(false); setFrameError(typeof message.error === 'string' ? message.error : '转盘载入失败。'); return }
+      if (message.type === 'home') { router.push('/'); return }
+      if (typeof message.id !== 'string') return
+      const id = message.id
+      if (message.type === 'confirm') {
+        if (confirmationRef.current) { reply(id, false); return }
+        const options: Record<string, { title: string; description: string }> = {
+          delete: { title: '删除这个条目？', description: `「${typeof message.name === 'string' ? message.name.slice(0, 100) : ''}」将从共享奖池删除，历史记录保留。` },
+          reset: { title: '恢复默认列表？', description: '当前类型的自定义条目将被替换为 demo 默认列表；历史记录保留。生命树已预留的条目会阻止此操作。' },
+          clearHistory: { title: '清空战绩记录？', description: '当前账号的奖励和惩罚记录都会从小本本清空，不能在页面恢复。奖池条目不受影响。' },
+        }
+        const option = typeof message.action === 'string' ? options[message.action] : undefined
+        if (!option) { reply(id, false); return }
+        const next = { id, ...option }
+        confirmationRef.current = next
+        setConfirmation(next)
         return
       }
-      if (operation === 'add' && !name.trim()) return
-      if (operation === 'accept' && !pending?.pending_ticket) return
-      const result = await changePool(kind, operation, operation === 'add'
-        ? { p_name: name.trim() } : operation === 'accept' ? { p_id: pending?.pending_ticket ?? undefined } : {})
-      if (operation === 'add' || operation === 'accept') entriesStore.invalidate(user.id)
-      if (operation === 'add') setAdding(false)
-      await wheelStore.refreshInBackground(user.id)
-      if (operation === 'draw') {
-        if (!result) setError('当前没有可抽取的条目。')
-        else if (wheelStore.getSessionData(user.id)?.some(entry => entry.pending_ticket === result.ticket)) {
-          animating = true
-          setSpin(result.ticket)
-        } else setError('奖池已更新，请再转一次。')
-      }
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : '操作未完成，请重试。')
-      if (operation !== 'reload') {
-        await wheelStore.refreshInBackground(user.id).catch(() => undefined)
-      }
-    } finally {
-      setAction(null)
-      if (!animating) lock.current = false
+      if (message.type !== 'request' || !message.command || typeof message.command !== 'object') return
+      if (working) { reply(id, undefined, '上一项操作尚未完成。'); return }
+      working = true
+      try {
+        const command = message.command as Record<string, unknown>
+        if (command.action === 'read') {
+          if (command.refresh === true) await workshopStore.refreshInBackground(user.id)
+          else await workshopStore.ensureLoaded(user.id)
+          const snapshot = workshopStore.getSessionData(user.id)
+          if (!snapshot) throw new Error('奖池暂时不可用。')
+          reply(id, { snapshot, result: null })
+        } else {
+          const result = await changeWorkshop(user.id, command as unknown as WorkshopCommand)
+          reply(id, result)
+        }
+      } catch (cause) {
+        reply(id, undefined, cause instanceof Error ? cause.message : '请求失败，请重新读取。')
+      } finally { working = false }
     }
+    window.addEventListener('message', onMessage)
+    const timer = window.setTimeout(() => {
+      if (mounted) setFrameError(current => current || '转盘载入超时，请重试。')
+    }, 55000)
+    return () => {
+      mounted = false
+      window.clearTimeout(timer)
+      window.removeEventListener('message', onMessage)
+    }
+  }, [user.id, router, generation])
+
+  function answer(accepted: boolean) {
+    const pending = confirmationRef.current
+    if (!pending) return
+    frame.current?.contentWindow?.postMessage({ channel: CHANNEL, type: 'response', id: pending.id, value: accepted }, window.location.origin)
+    confirmationRef.current = null
+    setConfirmation(null)
   }
 
-  if (isLoading) return <Waiting />
-  if (loadError) return (
-    <div role="alert" className="space-y-3 text-center">
-      <p>暂时读不到奖惩池。</p>
-      <Button loading={action === 'reload'} onClick={() => void run('reload')}>重新读取</Button>
-    </div>
-  )
+  async function retry() {
+    if (retrying) return
+    setRetrying(true)
+    try {
+      await workshopStore.refreshInBackground(user.id)
+      setFrameError('')
+      setReady(false)
+      setGeneration(value => value + 1)
+    } catch (cause) {
+      setFrameError(cause instanceof Error ? cause.message : '读取失败，请重试。')
+    } finally { setRetrying(false) }
+  }
 
+  const problem = !ready ? frameError || (error instanceof Error ? error.message : '') : ''
   return (
-    <StickerCard as="section" className="mx-auto max-w-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div role="group" aria-label="选择转盘" className="flex items-center gap-2">
-          {(['reward', 'penalty'] as const).map(pool => (
-            <Button key={pool} size="3" color={pool === 'reward' ? 'amber' : 'violet'}
-              variant={kind === pool ? 'solid' : 'soft'} aria-pressed={kind === pool} disabled={busy}
-              onClick={() => { setKind(pool); setError('') }}>
-              {pool === 'reward' ? '🎁 奖励' : '⚡ 惩罚'}
-            </Button>
-          ))}
+    <main className="relative h-dvh overflow-hidden">
+      <iframe
+        key={generation}
+        ref={frame}
+        title="星愿奇趣大转盘"
+        src="/draw-wheel/index.html?v=1"
+        className="block h-full w-full border-0"
+        style={{ visibility: ready ? 'visible' : 'hidden' }}
+        allow="autoplay"
+      />
+      {!ready && !problem && <LoadingOverlay visible placement="content" />}
+      {problem && (
+        <div role="alert" className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-kid-paper px-6 text-center">
+          <p>{problem}</p>
+          <div className="flex gap-3">
+            <Button variant="soft" onClick={() => router.push('/')}>返回首页</Button>
+            <Button loading={retrying} onClick={() => void retry()}>重新读取</Button>
+          </div>
         </div>
-        <Button color={kind === 'reward' ? 'amber' : 'violet'} variant="soft" disabled={busy} onClick={showAdd}>＋ 添加{label}</Button>
-      </div>
-      <div className="mt-5 space-y-4">
-        <DrawWheel kind={kind} entries={rows} busy={busy} spinningTicket={spin} onStop={stop}
-          onAction={() => rows.length ? void run('draw') : showAdd()} />
-        {action === 'draw' && <p role="status" className="text-center">正在抽取…</p>}
-        {pending && !spin && action !== 'draw' && (
-          <StickerCard tone={kind === 'reward' ? 'warning' : 'paper'} size="sm" elevation="flat" className="space-y-2 text-center">
-            <p className="text-sm">抽中的{label}</p>
-            <p aria-live="polite" className="text-xl font-bold break-all">{pending.name}</p>
-            <Button color={kind === 'reward' ? 'amber' : 'violet'} loading={action === 'accept'} disabled={busy}
-              onClick={() => void run('accept')}>{kind === 'reward' ? '领取奖励' : '接受惩罚'}</Button>
-          </StickerCard>
-        )}
-        {error && !adding && <p role="alert" className="text-center text-rose-700">{error}</p>}
-      </div>
-      <AppDialog open={adding} title={'添加' + label} closeDisabled={busy} onOpenChange={next => {
-        if (!busy) { setAdding(next); setError('') }
-      }}>
-        <form className="space-y-4" onSubmit={event => { event.preventDefault(); void run('add') }}>
-          <label className="grid gap-2">
-            {label}名称
-            <TextField.Root value={name} maxLength={100} required disabled={busy} onChange={event => setName(event.target.value)} />
-          </label>
-          {error && <p role="alert" className="text-rose-700">{error}</p>}
-          <Button type="submit" loading={action === 'add'} disabled={busy || !name.trim()}>添加到转盘</Button>
-        </form>
+      )}
+      <AppDialog open={!!confirmation} onOpenChange={open => { if (!open) answer(false) }} title={confirmation?.title ?? '确认操作'} description={confirmation?.description}>
+        <div className="flex justify-end gap-3">
+          <Button variant="soft" onClick={() => answer(false)}>取消</Button>
+          <Button color="red" onClick={() => answer(true)}>确认</Button>
+        </div>
       </AppDialog>
-    </StickerCard>
+    </main>
   )
 }

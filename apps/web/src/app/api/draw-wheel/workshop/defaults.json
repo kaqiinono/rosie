@@ -1,0 +1,130 @@
+[
+  {
+    "text": "吃一个美味冰淇淋",
+    "emoji": "🍦",
+    "color": "#FF6B6B",
+    "weight": 1,
+    "kind": "reward",
+    "position": 0
+  },
+  {
+    "text": "看20分钟动画片",
+    "emoji": "📺",
+    "color": "#FF9F1C",
+    "weight": 1,
+    "kind": "reward",
+    "position": 1
+  },
+  {
+    "text": "挑一个心仪小玩具",
+    "emoji": "🧸",
+    "color": "#FFD166",
+    "weight": 1,
+    "kind": "reward",
+    "position": 2
+  },
+  {
+    "text": "免做一次小家务",
+    "emoji": "🎫",
+    "color": "#06D6A0",
+    "weight": 1,
+    "kind": "reward",
+    "position": 3
+  },
+  {
+    "text": "今晚由你点一道菜",
+    "emoji": "🍕",
+    "color": "#4CC9F0",
+    "weight": 1,
+    "kind": "reward",
+    "position": 4
+  },
+  {
+    "text": "周末晚睡15分钟",
+    "emoji": "🌙",
+    "color": "#7209B7",
+    "weight": 1,
+    "kind": "reward",
+    "position": 5
+  },
+  {
+    "text": "去公园玩滑滑梯",
+    "emoji": "🛝",
+    "color": "#F72585",
+    "weight": 1,
+    "kind": "reward",
+    "position": 6
+  },
+  {
+    "text": "奖励3颗闪亮贴纸",
+    "emoji": "⭐",
+    "color": "#4361EE",
+    "weight": 2,
+    "kind": "reward",
+    "position": 7
+  },
+  {
+    "text": "学小青蛙跳 5 下",
+    "emoji": "🐸",
+    "color": "#9B5DE5",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 0
+  },
+  {
+    "text": "对着大家做3个鬼脸",
+    "emoji": "😜",
+    "color": "#F15BB5",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 1
+  },
+  {
+    "text": "大声唱一首儿歌",
+    "emoji": "🎤",
+    "color": "#00BBF9",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 2
+  },
+  {
+    "text": "学小猫咪喵喵叫3声",
+    "emoji": "🐱",
+    "color": "#00F5D4",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 3
+  },
+  {
+    "text": "整理书桌 3 分钟",
+    "emoji": "🧹",
+    "color": "#FF6B6B",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 4
+  },
+  {
+    "text": "给爸妈捶背 1 分钟",
+    "emoji": "💆",
+    "color": "#FF9F1C",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 5
+  },
+  {
+    "text": "讲一个搞笑冷笑话",
+    "emoji": "❄️",
+    "color": "#8338EC",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 6
+  },
+  {
+    "text": "跳一段搞怪开心舞",
+    "emoji": "💃",
+    "color": "#3A86FF",
+    "weight": 1,
+    "kind": "penalty",
+    "position": 7
+  }
+]

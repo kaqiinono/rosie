@@ -1,10 +1,10 @@
 'use client'
 
-import { createUserSessionStore, supabase } from '@rosie/core'
+import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie/core'
 
 export type PoolKind = 'reward' | 'penalty'
 export const poolLabels = { reward: '奖励', penalty: '惩罚' }
-export interface PoolEntry { id: string; name: string; kind: PoolKind; tree_eligible?: boolean }
+export interface PoolEntry { id: string; name: string; kind: PoolKind; tree_eligible?: boolean; enabled?: boolean }
 export interface DrawResult extends PoolEntry { ticket: string }
 
 export interface WheelEntry extends PoolEntry {
@@ -31,7 +31,7 @@ export const entriesStore = createUserSessionStore<PoolEntry[]>('draw_pool_entri
   empty: [],
   async fetch(userId) {
     const { data, error } = await supabase.from('draw_pool_entries')
-      .select('id,name,kind,tree_eligible').eq('user_id', userId).order('name')
+      .select('id,name,kind,tree_eligible,enabled').eq('user_id', userId).order('name')
     if (error) throw error
     return data as PoolEntry[]
   },
@@ -44,5 +44,6 @@ export async function changePool(kind: PoolKind, action: 'add' | 'delete' | 'dra
     if (error.message === 'draw_changed') throw new Error('这张卡已处理或移除，请关闭后重新抽取。')
     throw new Error('操作未完成，请稍后重试。')
   }
+  invalidateSessionStore('draw_workshop')
   return data as DrawResult | null
 }

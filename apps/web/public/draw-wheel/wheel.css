@@ -1,0 +1,1425 @@
+
+    :root {
+      /* Reward Mode Theme (Default: Candy Carnival) */
+      --bg-1: #fff6e6;
+      --bg-2: #ffe5ee;
+      --bg-3: #e8f8ff;
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-solid: #ffffff;
+      --surface-soft: #fff9f2;
+      --surface-tint: #fff0e3;
+      --border-soft: #ffd9c7;
+      --text-main: #3d243b;
+      --text-sub: #7a5c75;
+      --text-muted: #a68ca2;
+      --primary: #ff6b57;
+      --primary-hover: #ff523b;
+      --primary-dark: #d93f2b;
+      --primary-glow: rgba(255, 107, 87, 0.35);
+      --secondary: #ffb703;
+      --secondary-dark: #d98d00;
+      --accent-teal: #2ec4b6;
+      --accent-teal-dark: #1f9d91;
+      --bezel-outer: #ff7a59;
+      --bezel-inner: #ffbe0b;
+      --bezel-shadow: rgba(235, 94, 40, 0.32);
+      --card-shadow: 0 18px 42px rgba(154, 77, 103, 0.13); /* visual-ok: 转盘演示自带插画阴影 */
+      --font-sans: "Nunito", "PingFang SC", "Hiragino Maru Gothic ProN", "YouYuan", "Microsoft YaHei UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body[data-mode="punishment"] {
+      /* Punishment Mode Theme (Playful Monster Arcade) */
+      --bg-1: #1e123b;
+      --bg-2: #2f1554;
+      --bg-3: #142a4f;
+      --surface: rgba(39, 24, 71, 0.88);
+      --surface-solid: #28184a;
+      --surface-soft: #331e5d;
+      --surface-tint: #3e2570;
+      --border-soft: rgba(182, 130, 255, 0.28);
+      --text-main: #ffffff;
+      --text-sub: #d7c4ff;
+      --text-muted: #9e87cf;
+      --primary: #ff4791;
+      --primary-hover: #ff2e82;
+      --primary-dark: #c91e63;
+      --primary-glow: rgba(255, 71, 145, 0.45);
+      --secondary: #00f5d4;
+      --secondary-dark: #00b89e;
+      --accent-teal: #9b5de5;
+      --accent-teal-dark: #7434c7;
+      --bezel-outer: #6c2bd9;
+      --bezel-inner: #00f5d4;
+      --bezel-shadow: rgba(155, 93, 229, 0.45);
+      --card-shadow: 0 20px 50px rgba(8, 3, 24, 0.55); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      background:
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+        radial-gradient(circle at 12% 18%, var(--bg-3) 0%, transparent 45%),
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+        radial-gradient(circle at 88% 15%, var(--bg-2) 0%, transparent 48%),
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+        linear-gradient(155deg, var(--bg-1) 0%, var(--bg-2) 55%, var(--bg-3) 100%);
+      background-attachment: fixed;
+      transition: background 0.55s ease, color 0.35s ease;
+      overflow-x: hidden;
+      line-height: 1.45;
+    }
+
+    /* Ambient Floating Decor */
+    .ambient-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .float-shape {
+      position: absolute;
+      opacity: 0.45;
+      font-size: 28px;
+      animation: floatDrift linear infinite;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
+      user-select: none;
+    }
+
+    body[data-mode="punishment"] .float-shape {
+      opacity: 0.55;
+      filter: drop-shadow(0 0 12px rgba(0, 245, 212, 0.35));
+    }
+
+    @keyframes floatDrift {
+      0% { transform: translateY(105vh) rotate(0deg) scale(0.9); opacity: 0; }
+      10% { opacity: 0.5; }
+      90% { opacity: 0.5; }
+      100% { transform: translateY(-15vh) rotate(360deg) scale(1.1); opacity: 0; }
+    }
+
+    /* Confetti Fullscreen Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* Main Container */
+    .app-shell {
+      position: relative;
+      z-index: 2;
+      max-width: 1320px;
+      margin: 0 auto;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      padding: 16px 20px 32px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      background: var(--surface);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      backdrop-filter: blur(14px);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      -webkit-backdrop-filter: blur(14px);
+      border: 2px solid var(--border-soft);
+      border-radius: 26px;
+      padding: 10px 18px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      box-shadow: 0 6px 14px var(--primary-glow); /* visual-ok: 转盘演示自带插画阴影 */
+      animation: wobbleLogo 4s ease-in-out infinite;
+    }
+
+    @keyframes wobbleLogo {
+      0%, 100% { transform: rotate(-4deg) scale(1); }
+      50% { transform: rotate(5deg) scale(1.06); }
+    }
+
+    .brand-title {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    /* 3D Mode Switcher */
+    .mode-switcher {
+      display: flex;
+      align-items: center;
+      background: var(--surface-tint);
+      border: 2px solid var(--border-soft);
+      border-radius: 999px;
+      padding: 4px;
+      gap: 6px;
+      position: relative;
+    }
+
+    .mode-btn {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 900;
+      padding: 9px 20px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-sub);
+      background: transparent;
+      transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .mode-btn:hover {
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .mode-btn.active[data-target-mode="reward"] {
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(135deg, #ff7a59, #ffb703);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(255, 122, 89, 0.42), inset 0 2px 3px rgba(255, 255, 255, 0.4); /* visual-ok: 转盘演示自带插画阴影 */
+      transform: scale(1.03);
+    }
+
+    .mode-btn.active[data-target-mode="punishment"] {
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(135deg, #ff4791, #7b2cbf);
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(255, 71, 145, 0.5), inset 0 2px 3px rgba(255, 255, 255, 0.35); /* visual-ok: 转盘演示自带插画阴影 */
+      transform: scale(1.03);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill-toggle {
+      border: 2px solid var(--border-soft);
+      background: var(--surface-soft);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 7px 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .pill-toggle:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .pill-toggle.on {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--primary-glow); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    /* Main Workspace Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(350px, 0.88fr);
+      gap: 20px;
+      align-items: start;
+      flex: 1;
+    }
+
+    /* Left: Wheel Stage Card */
+    .stage-card {
+      background: var(--surface);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      backdrop-filter: blur(16px);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid var(--border-soft);
+      border-radius: 34px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      padding: 18px 20px 22px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-card::before {
+      content: "";
+      position: absolute;
+      inset: -40% -20% auto;
+      height: 260px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* Mascot Companion Strip */
+    .mascot-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .mascot-avatar {
+      width: 66px;
+      height: 66px;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+    }
+
+    .mascot-avatar:hover {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .mascot-avatar.bounce {
+      animation: mascotJump 0.55s ease-in-out infinite alternate;
+    }
+
+    @keyframes mascotJump {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-7px) scale(1.06); }
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: var(--surface-solid);
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06); /* visual-ok: 转盘演示自带插画阴影 */
+      max-width: 440px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      border-width: 8px 10px 8px 0;
+      border-style: solid;
+      border-color: transparent var(--border-soft) transparent transparent;
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 50%;
+      transform: translateY(-50%);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      border-width: 6px 8px 6px 0;
+      border-style: solid;
+      border-color: transparent var(--surface-solid) transparent transparent;
+    }
+
+    /* Wheel Stage Wrapper */
+    .wheel-stage {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      z-index: 2;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .wheel-stage.flip-switch {
+      animation: modeFlip 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modeFlip {
+      0% { transform: scale(0.92) rotateY(0deg); }
+      50% { transform: scale(1.04) rotateY(90deg); }
+      100% { transform: scale(1) rotateY(0deg); }
+    }
+
+    .wheel-stage.charging {
+      animation: chargeShake 0.1s linear infinite;
+    }
+
+    @keyframes chargeShake {
+      0%, 100% { transform: translate(0, 0) scale(0.985); }
+      25% { transform: translate(-2px, 1px) scale(0.985); }
+      50% { transform: translate(2px, -1px) scale(0.985); }
+      75% { transform: translate(-1px, -2px) scale(0.985); }
+    }
+
+    .wheel-halo {
+      position: absolute;
+      inset: 4%;
+      border-radius: 50%;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: radial-gradient(circle, var(--primary-glow) 35%, transparent 72%);
+      filter: blur(18px);
+      z-index: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .wheel-stage:hover .wheel-halo {
+      transform: scale(1.05);
+    }
+
+    #wheel-canvas {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: block;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.2));
+    }
+
+    /* Center Arcade Spin Cap Overlay (Visual Polish + Crisp Interaction) */
+    .wheel-center-btn {
+      position: absolute;
+      z-index: 4;
+      width: 22%;
+      height: 22%;
+      border-radius: 50%;
+      border: 4px solid #ffffff;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      font-family: inherit;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      box-shadow:
+        0 8px 0 var(--primary-dark),
+        0 14px 24px rgba(0, 0, 0, 0.28), /* visual-ok: 转盘演示自带插画阴影 */
+        inset 0 4px 8px rgba(255, 255, 255, 0.45); /* visual-ok: 转盘演示自带插画阴影 */
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+      pointer-events: none; /* Let parent wheel-stage capture unified click & hold */
+    }
+
+    .wheel-stage:hover .wheel-center-btn {
+      transform: scale(1.05);
+    }
+
+    .wheel-stage:active .wheel-center-btn,
+    .wheel-stage.charging .wheel-center-btn {
+      transform: translateY(4px) scale(0.96);
+      box-shadow:
+        0 3px 0 var(--primary-dark),
+        0 6px 12px rgba(0, 0, 0, 0.25), /* visual-ok: 转盘演示自带插画阴影 */
+        inset 0 4px 8px rgba(255, 255, 255, 0.4); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    .wheel-center-btn .cap-emoji {
+      font-size: clamp(18px, 3vw, 26px);
+      line-height: 1;
+    }
+
+    .wheel-center-btn .cap-label {
+      font-size: clamp(11px, 1.5vw, 15px);
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .wheel-center-btn.spinning {
+      animation: pulseSpinCap 0.45s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseSpinCap {
+      0% { transform: scale(0.96); }
+      100% { transform: scale(1.04); }
+    }
+
+    /* Power Charge Meter */
+    .power-bar-wrap {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .power-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+
+    .power-track {
+      height: 14px;
+      background: var(--surface-tint);
+      border: 2px solid var(--border-soft);
+      border-radius: 999px;
+      overflow: hidden;
+      padding: 2px;
+    }
+
+    .power-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(90deg, #4cc9f0, #ffb703, #ff4791, #ff0055);
+      transition: width 0.05s linear;
+      box-shadow: 0 0 10px var(--primary-glow); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    /* Bottom Spin Controls */
+    .spin-controls {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      z-index: 2;
+    }
+
+    .btn-arcade {
+      border: none;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 17px;
+      padding: 13px 28px;
+      border-radius: 20px;
+      color: #ffffff;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      box-shadow: 0 6px 0 var(--primary-dark), 0 12px 24px var(--primary-glow); /* visual-ok: 转盘演示自带插画阴影 */
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, filter 0.2s ease;
+    }
+
+    .btn-arcade:hover:not(:disabled) {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    .btn-arcade:active:not(:disabled) {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 var(--primary-dark), 0 5px 12px var(--primary-glow); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    .btn-arcade:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      border: 2px solid var(--border-soft);
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 10px 16px;
+      border-radius: 16px;
+      color: var(--text-main);
+      background: var(--surface-solid);
+      box-shadow: 0 4px 0 var(--border-soft);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .btn-secondary:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--border-soft);
+    }
+
+    .btn-secondary.active-flag {
+      background: var(--secondary);
+      border-color: var(--secondary-dark);
+      box-shadow: 0 4px 0 var(--secondary-dark);
+      color: #1f1635;
+    }
+
+    /* Right: Control & Customization Panel */
+    .panel-card {
+      background: var(--surface);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      backdrop-filter: blur(16px);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      -webkit-backdrop-filter: blur(16px);
+      border: 2px solid var(--border-soft);
+      border-radius: 30px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      padding: 16px 18px 20px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--surface-tint);
+      padding: 5px;
+      border-radius: 18px;
+      border: 2px solid var(--border-soft);
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-sub);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--surface-solid);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    .badge-count {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    /* Add Item Form */
+    .add-box {
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      border-radius: 22px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .add-box-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .add-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .emoji-trigger {
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
+      border-radius: 15px;
+      border: 2px solid var(--border-soft);
+      background: var(--surface-solid);
+      font-size: 24px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .emoji-trigger:hover {
+      transform: scale(1.06);
+      border-color: var(--primary);
+    }
+
+    .text-input {
+      flex: 1;
+      min-width: 0;
+      height: 46px;
+      border-radius: 15px;
+      border: 2px solid var(--border-soft);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 14px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .text-input::placeholder {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .add-options-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .weight-pills {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .weight-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-sub);
+      margin-right: 2px;
+    }
+
+    .w-pill {
+      border: 2px solid var(--border-soft);
+      background: var(--surface-solid);
+      color: var(--text-sub);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .w-pill.active {
+      background: var(--primary);
+      border-color: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    .btn-add-submit {
+      border: none;
+      border-radius: 14px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(135deg, var(--accent-teal), var(--primary));
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      padding: 9px 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.12s ease;
+    }
+
+    .btn-add-submit:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .btn-add-submit:active {
+      transform: translateY(2px);
+    }
+
+    /* Emoji Popover */
+    .emoji-popover {
+      position: absolute;
+      top: 96px;
+      left: 14px;
+      right: 14px;
+      z-index: 30;
+      background: var(--surface-solid);
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24); /* visual-ok: 转盘演示自带插画阴影 */
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .emoji-popover.open {
+      display: flex;
+      animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92) translateY(-6px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+      max-height: 170px;
+      overflow-y: auto;
+    }
+
+    .emoji-opt {
+      border: none;
+      background: transparent;
+      font-size: 22px;
+      padding: 5px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .emoji-opt:hover {
+      background: var(--surface-tint);
+      transform: scale(1.18);
+    }
+
+    /* Quick Idea Chips */
+    .presets-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .presets-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--text-sub);
+    }
+
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .preset-chip {
+      border: 1.5px dashed var(--border-soft);
+      background: var(--surface-soft);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.16s ease;
+    }
+
+    .preset-chip:hover {
+      border-style: solid;
+      border-color: var(--primary);
+      background: var(--surface-tint);
+      transform: translateY(-2px);
+    }
+
+    /* Items List Toolbar */
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .list-stats {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+
+    .mini-tools {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      border: 1.5px solid var(--border-soft);
+      background: var(--surface-soft);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .mini-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    /* Slice List */
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 330px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .items-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .items-list::-webkit-scrollbar-thumb {
+      background: var(--border-soft);
+      border-radius: 999px;
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface-solid);
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 8px 10px;
+      transition: transform 0.16s ease, opacity 0.2s ease, border-color 0.2s ease;
+    }
+
+    .item-row:hover {
+      border-color: var(--primary);
+    }
+
+    .item-row.disabled {
+      opacity: 0.52;
+      background: var(--surface-soft);
+    }
+
+    .item-color-dot {
+      width: 14px;
+      height: 30px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .item-emoji {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-meta {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      border: none;
+      background: var(--surface-tint);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      height: 30px;
+      min-width: 30px;
+      padding: 0 7px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .icon-btn.danger:hover {
+      background: #ef233c;
+      color: #ffffff;
+    }
+
+    /* Inline Edit Row */
+    .edit-row-form {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .edit-input {
+      flex: 1;
+      min-width: 0;
+      height: 34px;
+      border-radius: 10px;
+      border: 2px solid var(--primary);
+      background: var(--surface-soft);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 0 10px;
+      outline: none;
+    }
+
+    /* History Tab */
+    .history-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 410px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface-solid);
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 10px 12px;
+    }
+
+    .history-item.done {
+      opacity: 0.72;
+    }
+
+    .history-badge {
+      font-size: 11px;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 999px;
+      color: #ffffff;
+    }
+
+    .history-badge.reward { background: #ff7a59; }
+    .history-badge.punishment { background: #9b5de5; }
+
+    .stamp-btn {
+      border: 2px solid var(--border-soft);
+      background: var(--surface-soft);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .stamp-btn.stamped {
+      background: #2ec4b6;
+      border-color: #1f9d91;
+      color: #ffffff;
+      transform: rotate(-3deg);
+    }
+
+    .empty-box {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 800;
+      background: var(--surface-soft);
+      border: 2px dashed var(--border-soft);
+      border-radius: 18px;
+    }
+
+    /* Result Celebration Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      background: rgba(20, 12, 36, 0.68);
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .result-card {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface-solid);
+      border: 4px solid var(--secondary);
+      border-radius: 34px;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      padding: 28px 24px 24px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); /* visual-ok: 转盘演示自带插画阴影 */
+      overflow: hidden;
+      animation: cardPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes cardPop {
+      0% { transform: scale(0.55) rotate(-5deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .sunburst-bg {
+      position: absolute;
+      inset: -60%;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255, 190, 11, 0.14) 0deg 15deg,
+        transparent 15deg 30deg
+      );
+      animation: slowSpin 16s linear infinite;
+      pointer-events: none;
+    }
+
+    body[data-mode="punishment"] .sunburst-bg {
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(0, 245, 212, 0.12) 0deg 15deg,
+        transparent 15deg 30deg
+      );
+    }
+
+    @keyframes slowSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #ffffff;
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 4px 12px var(--primary-glow); /* visual-ok: 转盘演示自带插画阴影 */
+    }
+
+    .result-emoji-big {
+      font-size: 76px;
+      line-height: 1.1;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+      animation: resultBounce 0.9s ease-in-out infinite alternate;
+    }
+
+    @keyframes resultBounce {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-10px) scale(1.08); }
+    }
+
+    .result-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .result-desc {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-sub);
+      background: var(--surface-tint);
+      padding: 10px 16px;
+      border-radius: 16px;
+      width: 100%;
+    }
+
+    .result-meta {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .result-actions button {
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* Toast */
+    .toast-box {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(90px);
+      z-index: 1100;
+      background: rgba(34, 24, 58, 0.94);
+      color: #ffffff;
+      padding: 11px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28); /* visual-ok: 转盘演示自带插画阴影 */
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast-box.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 980px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      .wheel-stage {
+        max-width: 430px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .app-shell {
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+        padding: 10px 12px 24px;
+      }
+      .top-bar {
+        justify-content: center;
+        padding: 10px 12px;
+      }
+      .mode-btn {
+        padding: 8px 14px;
+        font-size: 14px;
+      }
+      .stage-card {
+    /* visual-ok: 用户明确要求 lucky-wheel demo 1:1 还原，仅隔离转盘页面使用 */
+        padding: 14px 12px 18px;
+        border-radius: 26px;
+      }
+      .wheel-stage {
+        max-width: 340px;
+      }
+      .emoji-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+      .result-title {
+        font-size: 23px;
+      }
+    }
+  
+
+/* Host integration. The source demo owns this isolated page's visual tokens. */
+[hidden] { display: none !important; }
+.save-indicator {
+  position: fixed; z-index: 1200; top: 8px; left: 50%; transform: translateX(-50%);
+  padding: 8px 18px; border: 2px solid var(--border-soft); border-radius: 999px;
+  background: var(--surface-solid); color: var(--text-main); font-size: 13px; font-weight: 800;
+}
+.recovery-bar {
+  position: fixed; z-index: 1300; bottom: 16px; left: 50%; transform: translateX(-50%);
+  width: min(92vw, 620px); padding: 14px; border: 2px solid var(--primary); border-radius: 20px;
+  background: var(--surface-solid); color: var(--text-main); display: flex; align-items: center; gap: 12px;
+}
+.recovery-bar > span { flex: 1; }
+.item-color-dot { padding: 0; cursor: pointer; }
+.emoji-cycle { background: transparent; border: none; padding: 0; cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 3px solid var(--accent-teal); outline-offset: 4px; }
+.item-name { overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .ambient-layer { display: none; }
+}

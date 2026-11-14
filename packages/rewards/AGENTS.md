@@ -12,13 +12,34 @@ admin/vouchers/today/math/english — it is NOT calc-specific (despite some `use
 
 **Tables:** `calc_sessions`, voucher/wallet tables. Barrel: `import { … } from '@rosie/rewards'`.
 
-Personal draw pools power the wheel at /draw and /setting/draw-pools. The home menu links to /draw.
-The read-only /api/draw-wheel route verifies the session and reads the owner's entries,
-pending ticket, round and reservation status from the existing pool tables. Only the server chooses the winning entry. Pool mutations
-use change_draw_pool, which serializes changes per account and pool. Accept with
-the draw ticket, not the entry ID. Penalties track accepted rounds independently
-of the wallet and voucher system.
+Personal draw pools are shared by /draw, /setting/draw-pools and the life tree.
+`/draw` embeds the user-approved lucky-wheel renderer under `apps/web/public/draw-wheel/`;
+its React host owns authentication, LoadingOverlay, AppDialog confirmations and the
+same-origin/source-checked message bridge. Credentials never enter the renderer.
+This isolated route intentionally preserves the supplied demo's exact visual styling.
 
-The parent can mark reward entries tree_eligible in /setting/draw-pools. The life-tree blind box
-reserves a separate tree_ticket under the same owner/reward pool lock as the home draw.
-Both draws skip each other's reservation and acceptance consumes the shared entry.
+`drawWorkshop.ts` owns the per-user `draw_workshop` session store and authenticated
+`/api/draw-wheel/workshop` reads/mutations. Persistent preferences, catalog metadata and
+history live in Supabase. `change_draw_workshop` is service-only; web derives the owner.
+Both pool rows are locked reward → penalty, then the profile; catalog triggers advance
+its revision for tree and legacy edits too. Mutation UUID receipts prevent duplicate
+draws on transport retries; the server selects by weight and returns a frozen wheel
+for the animation. Stale edits fail and require a fresh read. Defaults seed only a new,
+completely empty shared catalog; deliberately emptied lists stay empty.
+
+Rewards and penalties are repeatable by default. noRepeatMode disables a selected item;
+全亮 re-enables available items. History fulfilment changes only its stamp, never deletes
+the catalog item. The latest 80 non-cleared results are shown, matching the supplied demo.
+History snapshots survive rename/delete/reset; clearing archives history without erasing
+operation receipts. Pending life-tree results can only be redeemed in the tree.
+
+The parent marks rewards tree_eligible in /setting/draw-pools. The tree reserves enabled,
+tree-eligible entries using the same reward pool lock and weights. Reservation prevents
+workshop drawing/editing/deletion/reset. noRepeatMode disables the selected tree reward
+at reservation; acceptance releases tree_ticket, retains the entry and stamps history.
+The legacy change_draw_pool signature and GET /api/draw-wheel remain compatible; old
+pending tickets are migrated into history and accepting them no longer deletes entries.
+
+Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database.
+See `docs/draw-wheel.md` for the manual acceptance cases. Do not run build/tests without a user request. Required task migrations are
+automatically executed under the user’s standing authorization in root AGENTS.md.

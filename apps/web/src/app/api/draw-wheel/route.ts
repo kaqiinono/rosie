@@ -11,8 +11,8 @@ export async function GET(request: Request) {
     const db = createAdminSupabase()
     const [entries, states] = await Promise.all([
       db.from('draw_pool_entries')
-        .select('id,name,kind,tree_ticket,accepted_round')
-        .eq('user_id', user.id).order('name').order('id'),
+        .select('id,name,kind,tree_ticket,enabled,position')
+        .eq('user_id', user.id).order('position').order('id'),
       db.from('draw_pool_state')
         .select('kind,round_no,pending_id,ticket')
         .eq('user_id', user.id),
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
         name: entry.name,
         kind: entry.kind,
         reserved: entry.tree_ticket != null,
-        drawn: entry.kind === 'penalty' && entry.accepted_round >= (state?.round_no ?? 1),
+        drawn: !entry.enabled,
         pending_ticket: state?.pending_id === entry.id ? state?.ticket : null,
       }
     })

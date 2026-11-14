@@ -61,8 +61,8 @@ function PoolEditor({
       <h2 className="text-lg font-black">{label}池</h2>
       <p className="text-text-secondary mt-1 text-sm">
         {kind === 'reward'
-          ? '接受后，这项奖励会从池中移除。'
-          : '每轮随机抽遍所有惩罚，接受后保留。'}
+          ? '与转盘、生命树共用；兑现后保留，开启“抽后移出”则停用。'
+          : '按转盘权重随机抽取；默认可重复，开启“抽后移出”则停用。'}
       </p>
       <form
         className="my-4 flex gap-2"
@@ -98,7 +98,7 @@ function PoolEditor({
       <ul className="divide-border-light divide-y">
         {entries.map((entry) => (
           <li key={entry.id} className="flex items-center justify-between gap-4 py-2">
-            <span className="break-all">{entry.name}</span>
+            <span className="break-all">{entry.name}{entry.enabled === false ? "（已停用，可在转盘点亮）" : ""}</span>
             {kind === 'reward' && renderTreeToggle?.({ checked: !!entry.tree_eligible, disabled: busy, name: entry.name, onChange: value => void allowInTree(entry, value) })}
             {/* native-ok: 该包不能依赖 @rosie/ui */}
             <button

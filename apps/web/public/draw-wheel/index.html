@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>🎡 星愿奇趣大转盘 · 奖励与惩罚乐园</title>
+  <link rel="stylesheet" href="./wheel.css?v=1">
+</head>
+<body style="visibility:hidden" data-mode="reward">
+  <div class="ambient-layer" id="ambient-layer"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-shell">
+    <!-- Top Header & Mode Switcher -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-logo" id="brand-logo">🎡</div>
+        <div>
+          <div class="brand-title">
+            <span id="app-title-text">星愿奇趣大转盘</span>
+          </div>
+          <div class="brand-sub" id="app-subtitle-text">点一点转盘，看看今天的幸运惊喜！</div>
+        </div>
+      </div>
+
+      <div class="mode-switcher" role="group" aria-label="转盘模式切换">
+        <button class="mode-btn active" id="btn-mode-reward" data-target-mode="reward" type="button">
+          <span>🎁</span><span>幸运奖励转盘</span>
+        </button>
+        <button class="mode-btn" id="btn-mode-punishment" data-target-mode="punishment" type="button">
+          <span>😜</span><span>欢乐惩罚转盘</span>
+        </button>
+      </div>
+
+      <div class="top-actions"><button class="pill-toggle" id="btn-home" type="button" aria-label="返回首页">⌂</button>
+        <button class="pill-toggle on" id="btn-sound" type="button" title="开启/关闭酷炫音效">
+          <span id="sound-icon">🔊</span><span>音效开</span>
+        </button>
+        <button class="pill-toggle" id="btn-voice" type="button" title="语音读出抽中结果">
+          <span>🗣️</span><span>语音播报</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Stage + Customizer -->
+    <main class="main-grid">
+      <!-- Left: Interactive Wheel Stage -->
+      <section class="stage-card">
+        <div class="mascot-row">
+          <div class="mascot-avatar" id="mascot-avatar" role="button" tabindex="0" aria-label="吉祥物打招呼" title="点我打招呼！"></div>
+          <div class="speech-bubble" id="mascot-speech" aria-live="polite">
+            欢迎来到幸运奖励乐园！点击转盘就能抽奖啦，长按还能蓄力发射哦！✨
+          </div>
+        </div>
+
+        <div class="wheel-stage" id="wheel-stage" role="button" tabindex="0" aria-label="转动幸运转盘" title="点击转盘抽奖！长按蓄力超高速旋转！">
+          <div class="wheel-halo"></div>
+          <canvas id="wheel-canvas"></canvas>
+          <div class="wheel-center-btn" id="wheel-center-btn">
+            <span class="cap-emoji" id="cap-emoji">🎁</span>
+            <span class="cap-label" id="cap-label">点我抽奖</span>
+          </div>
+        </div>
+
+        <div class="power-bar-wrap">
+          <div class="power-header">
+            <span id="power-status-text">⚡ 蓄力发射槽（直接点转盘即可开转，按住可蓄力加速）</span>
+            <span id="power-pct">0%</span>
+          </div>
+          <div class="power-track">
+            <div class="power-fill" id="power-fill"></div>
+          </div>
+        </div>
+
+        <div class="spin-controls">
+          <button class="btn-arcade" id="btn-main-spin" type="button">
+            <span>🚀</span><span id="btn-main-spin-text">立即转动抽奖！</span>
+          </button>
+          <button class="btn-secondary" id="btn-mystery-toggle" type="button" title="隐藏转盘内容，变成神秘盲盒转盘">
+            <span>🙈</span><span>盲盒模式</span>
+          </button>
+          <button class="btn-secondary" id="btn-norepeat-toggle" type="button" title="抽中后自动从本轮转盘移出，避免重复">
+            <span>🎯</span><span>抽后移出</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right: Customizer & History -->
+      <aside class="panel-card">
+        <div class="panel-tabs">
+          <button class="tab-btn active" id="tab-edit" type="button" aria-pressed="true">
+            <span>🎨 转盘工坊</span>
+            <span class="badge-count" id="active-slice-badge">8</span>
+          </button>
+          <button class="tab-btn" id="tab-history" type="button" aria-pressed="false">
+            <span>🏆 战绩小本本</span>
+            <span class="badge-count" id="history-count-badge">0</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Wheel Customizer -->
+        <div id="view-edit" style="display:flex; flex-direction:column; gap:13px;">
+          <form class="add-box" id="add-item-form" novalidate>
+            <div class="add-box-title">
+              <span id="add-box-heading">✨ 添加新奖励到转盘</span>
+              <span style="font-size:12px; color:var(--text-muted);" id="add-tip">添加后立即上盘</span>
+            </div>
+
+            <div class="add-input-row">
+              <button class="emoji-trigger" id="btn-emoji-pick" type="button" title="更换可爱图标">🎁</button>
+              <input
+                class="text-input"
+                id="input-item-name"
+                type="text"
+                maxlength="100" aria-label="奖惩名称"
+                autocomplete="off"
+                placeholder="输入奖励，例如：吃一个冰淇淋..."
+              />
+            </div>
+
+            <div class="add-options-row">
+              <div class="weight-pills">
+                <span class="weight-label">中奖占比:</span>
+                <button class="w-pill active" data-weight="1" type="button">1x 标准</button>
+                <button class="w-pill" data-weight="2" type="button">2x 翻倍</button>
+                <button class="w-pill" data-weight="3" type="button">3x 超大</button>
+              </div>
+              <button class="btn-add-submit" type="submit">
+                <span>➕</span><span>添加到转盘</span>
+              </button>
+            </div>
+
+            <!-- Emoji Picker Popover -->
+            <div class="emoji-popover" id="emoji-popover">
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:900; color:var(--text-sub);">
+                <span>挑选一个超酷的表情图标 👇</span>
+                <button type="button" id="btn-close-emoji" style="border:none; background:none; color:var(--text-sub); font-weight:900; cursor:pointer;">✕ 关闭</button>
+              </div>
+              <div class="emoji-grid" id="emoji-grid"></div>
+            </div>
+          </form>
+
+          <!-- One-Click Fun Presets -->
+          <div class="presets-section">
+            <div class="presets-header">
+              <span id="presets-title">💡 趣味灵感一键加（点一下就进转盘）</span>
+              <button class="mini-btn" id="btn-refresh-presets" type="button">🎲 换一批</button>
+            </div>
+            <div class="preset-chips" id="preset-chips"></div>
+          </div>
+
+          <!-- Current Wheel Slices -->
+          <div class="list-toolbar">
+            <div class="list-stats" id="list-stats">当前转盘共 8 个有效格</div>
+            <div class="mini-tools">
+              <button class="mini-btn" id="btn-shuffle" type="button" title="打乱转盘格子排列顺序">🔀 洗牌</button>
+              <button class="mini-btn" id="btn-enable-all" type="button" title="恢复所有已停用的格子">👀 全亮</button>
+              <button class="mini-btn" id="btn-reset-default" type="button" title="恢复成默认趣味列表">♻️ 恢复默认</button>
+            </div>
+          </div>
+
+          <div class="items-list" id="items-list"></div>
+        </div>
+
+        <!-- Tab 2: History & Stamp Wall -->
+        <div id="view-history" class="hidden" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="history-stats-grid">
+            <div class="stat-box">
+              <div class="stat-num" id="stat-total-spins">0</div>
+              <div class="stat-lbl">🎡 累计转盘次数</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num" id="stat-total-rewards">0</div>
+              <div class="stat-lbl">🎁 抽中奖励数</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num" id="stat-total-punishments">0</div>
+              <div class="stat-lbl">😜 完成惩罚数</div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:13px; font-weight:800; color:var(--text-sub);">点击右侧印章可打卡“已兑现 / 已完成”！</span>
+            <button class="mini-btn" id="btn-clear-history" type="button">🧹 清空记录</button>
+          </div>
+
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Celebration Modal -->
+  <div class="modal-backdrop" id="result-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+    <div class="result-card">
+      <div class="sunburst-bg"></div>
+      <div class="result-inner">
+        <div class="result-pill" id="modal-badge">🎁 幸运大奖降临！</div>
+        <div class="result-emoji-big" id="modal-emoji">🍦</div>
+        <div class="result-title" id="modal-title">吃一个美味冰淇淋</div>
+        <div class="result-desc" id="modal-desc">太棒啦！快去找爸爸妈妈兑现你的超级奖励吧！</div>
+        <div class="result-meta" id="modal-meta">中奖概率 12.5% · 已自动记录到战绩小本本</div>
+        <div class="result-actions">
+          <button class="btn-secondary" id="modal-btn-done" type="button">
+            <span>🌟</span><span id="modal-btn-done-text">收下并打卡！</span>
+          </button>
+          <button class="btn-arcade" id="modal-btn-again" type="button" style="padding:11px 16px; font-size:15px;">
+            <span>🔄</span><span>再转一次！</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-box" id="toast-box" role="status" aria-live="polite">
+    <span id="toast-icon">✨</span>
+    <span id="toast-text">提示内容</span>
+  </div>
+
+<script type="module" src="./wheel.js?v=1"></script>
+</body>
+</html>
