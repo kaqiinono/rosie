@@ -19,11 +19,8 @@ import { buildSessionSummaryProps } from '../utils/calc-session-summary'
 import {
   calcPlannedQuestionCount,
   calcExpandedQuestionCount,
-  clampSessionQuestionCount,
-  MAX_SESSION_QUESTION_COUNT,
 } from '../utils/calc-planned-question-count'
-import CustomCountInput, { COUNT_OPTIONS } from '../components/CustomCountInput'
-import SessionTimingControls from '../components/SessionTimingControls'
+import CalcStartPanel from '../components/CalcStartPanel'
 import { useCalcProblemState } from '../hooks/useCalcProblemState'
 import { calculateAllCoverage } from '../utils/calc-coverage'
 import { calculateAllStructureCoverage } from '../utils/calc-structure-coverage'
@@ -459,65 +456,9 @@ export default function CalcHomePage() {
         </section>
 
         {/* Per-session count + CTA. This does not persist over the parent-owned setting. */}
-        <section className="rounded-2xl border border-violet-300/20 bg-violet-400/[0.07] p-4">
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <div>
-              <h2 className="text-[13px] font-extrabold text-violet-100">本次目标题量</h2>
-              <p className="mt-0.5 text-[11px] text-violet-200/50">
-                默认使用口算配置中的 {totalQuestions} 题，仅本次有效
-              </p>
-            </div>
-            <span className="shrink-0 text-lg font-black text-violet-300 tabular-nums">
-              {currentSessionCount} 题
-            </span>
-          </div>
-          <div className="mb-3 flex flex-wrap gap-2" aria-label="选择本次练习题量">
-            {COUNT_OPTIONS.map((count) => {
-              const selected = currentSessionCount === count
-              return (
-                <button
-                  key={count}
-                  type="button"
-                  onClick={() => setSessionCount(count)}
-                  aria-pressed={selected}
-                  className="min-h-11 min-w-11 rounded-xl px-3 text-[13px] font-extrabold tabular-nums transition-all active:scale-95"
-                  style={{
-                    background: selected ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
-                    border: `1.5px solid ${selected ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
-                    color: selected ? '#c4b5fd' : 'rgba(196,181,253,0.6)',
-                  }}
-                >
-                  {count}
-                </button>
-              )
-            })}
-            <CustomCountInput
-              count={currentSessionCount}
-              onChange={(count) => setSessionCount(clampSessionQuestionCount(count))}
-              max={MAX_SESSION_QUESTION_COUNT}
-              size="md"
-            />
-          </div>
-          <div className="mb-4 border-t border-white/10 pt-3">
-            <SessionTimingControls
-              timingMode={currentTimingMode}
-              bonusSec={currentBonusSec}
-              onChangeMode={setSessionTimingMode}
-              onChangeBonus={setSessionBonusSec}
-            />
-          </div>
-          <button
-            type="button"
-            onClick={handleStart}
-            className="w-full rounded-2xl px-5 py-4 text-[17px] font-black text-white transition-all hover:-translate-y-0.5 active:translate-y-0"
-            style={{
-              background: '#a855f7',
-              boxShadow: '0 3px 0 rgba(139,92,246,0.45), 0 1px 0 rgba(255,255,255,0.12) inset',
-            }}
-          >
-            🚀 开始口算 · 预计 {expandedSessionCount} 题 →
-          </button>
-        </section>
+        <CalcStartPanel totalQuestions={totalQuestions} currentSessionCount={currentSessionCount} expandedSessionCount={expandedSessionCount}
+          currentTimingMode={currentTimingMode} currentBonusSec={currentBonusSec} setSessionCount={setSessionCount}
+          setSessionTimingMode={setSessionTimingMode} setSessionBonusSec={setSessionBonusSec} handleStart={handleStart} />
 
         {/* Secondary entries */}
         <div className="grid grid-cols-2 gap-3">
