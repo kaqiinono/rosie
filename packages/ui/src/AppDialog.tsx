@@ -19,7 +19,7 @@ type AppDialogProps = {
    */
   chrome?: 'standard' | 'none'
   /** Drawer uses the same focus/escape contract, with a full-height trailing panel. */
-  presentation?: 'dialog' | 'drawer' | 'fullscreen'
+  presentation?: 'dialog' | 'drawer' | 'bottom-drawer' | 'fullscreen'
   /** Full viewport on phones; retain the standard dialog on wider screens. */
   mobileFullscreen?: boolean
   /** Remains visible outside the scrolling content, e.g. media transport. */
@@ -60,7 +60,7 @@ export function AppDialog({
         data-presentation={presentation}
         data-mobile-fullscreen={mobileFullscreen || undefined}
         {...(description ? {} : { 'aria-describedby': undefined })}
-        maxWidth={presentation === 'fullscreen' ? '100vw' : presentation === 'drawer' ? 'min(64rem, 100vw)' : MAX_WIDTH[size]}
+        maxWidth={presentation === 'fullscreen' || presentation === 'bottom-drawer' ? '100vw' : presentation === 'drawer' ? 'min(64rem, 100vw)' : MAX_WIDTH[size]}
         maxHeight={presentation !== 'dialog' ? '100dvh' : '88dvh'}
         style={{
           display: 'flex',
@@ -70,6 +70,9 @@ export function AppDialog({
           ...(presentation !== 'dialog' ? {
             position: 'fixed', top: 0, right: 0, bottom: 0, left: 'auto',
             margin: 0, width: '100vw', height: '100dvh', borderRadius: 0,
+          } : null),
+          ...(presentation === 'bottom-drawer' ? {
+            top: 'auto', left: 0, height: '92dvh', borderRadius: '28px 28px 0 0',
           } : null),
         }}
         onEscapeKeyDown={(event) => {

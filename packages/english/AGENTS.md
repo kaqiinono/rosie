@@ -328,3 +328,14 @@ the drawer also loops single-reading files when they end before the three-second
 Named homework entries can open cards/practice with `stage`, comma-separated `units`, and comma-separated `lessons` (`unit::lesson`). `usePracticeEntryScope` waits for the requested stage data, applies the URL scope once and clears stale word/mastery filters. Explicit invalid scopes display an error. Reading entries use `/english/words/reading/{key}`; grammar entries use `/english/grammar/{book}/{unitId}`. Catalog generation is owned by the web task-entry adapter.
 
 Task-entry sentence rows use the existing `readingSegments` and listening target conventions (`paragraph-sentence`). The app stores English text/available translation and discovers explicit clip slots, verified legacy clip files and narration cue segments; unavailable translations or timestamps are never synthesized. `readingSegments` is exported for this adapter.
+
+`ListeningClipText` owns the shared highlighted English and optional Chinese translation used by
+the reading listening drawer and task-entry sentence previews. Web previews reuse `ResourcePlayer`
+for authenticated clip/ranged-narration playback; selecting or replaying audio is explicit, and
+collapsing the preview unmounts its player and stops playback.
+
+Web's `ReadingPassageDetail` is shared by the reading route and task-entry full-text drawers.
+The drawer retains the original layout, navigation, floating listening/player controls and
+weekly reading behavior, supplying only the passage key and scroll-container ref. Reading rows open the drawer directly;
+sentence previews offer 查看全文 and stop their local audio before opening it. Closing the drawer
+unmounts the reader and stops its audio without discarding the entry editor.

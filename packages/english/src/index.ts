@@ -170,6 +170,7 @@ export {
 export { GRAMMAR_INDEX } from './grammar/grammar-index'
 export * from './grammar/types'
 export { default as ListeningDrawer } from './components/reading/ListeningDrawer'
+export { default as ListeningClipText } from './components/reading/ListeningClipText'
 export { listeningClipsFor, playableListeningClips, readingSegments } from './utils/listening-clips'
 
 export { useAudioSlots } from './hooks/useBaiduReadingAudio'

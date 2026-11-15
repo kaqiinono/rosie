@@ -31,7 +31,7 @@ export default function PracticeStartPicker({ value, onChange, purpose = 'start'
   let candidates = visible
   for (let depth = 0; candidates.length; depth++) {
     const nodes = [...new Map(candidates.flatMap(({ path }) => path[depth] ? [[path[depth].id, path[depth]] as const] : [])).values()]
-    nodes.sort((a, b) => b.label.localeCompare(a.label, 'zh-CN', { numeric: true }))
+    nodes.sort((a, b) => a.label.localeCompare(b.label, 'zh-CN', { numeric: true }))
     if (!nodes.length) break
     const level = [...new Set(nodes.map((node) => node.level))].join(' / ')
     const index = depth

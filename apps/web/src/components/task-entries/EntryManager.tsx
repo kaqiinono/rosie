@@ -210,7 +210,7 @@ export default function EntryManager({ initialSubject = 'math' }: { initialSubje
                     ? <Flex gap="2" wrap="wrap" aria-label="已关联资源">{row.resources.map((resource) => <Badge key={resource.id} variant="soft" radius="full" color={resource.type === 'video' ? 'amber' : resource.type === 'audio' ? 'blue' : 'gray'}>{resource.label}</Badge>)}</Flex>
                     : !lessonResources(row).length && <Text size="2" color="gray">{row.values.sentenceId ? '尚未绑定单句音频' : '暂无关联媒体'}</Text>}
               </>}
-              {previewId === row.id && <EntryRowPreview row={row} />}
+              {previewId === row.id && <EntryRowPreview row={row} onClose={() => setPreviewId(null)} />}
             </Flex>
           </StickerCard>)}
         </> : <Text size="2">固定链接，无需填写变量列表。</Text>}

@@ -857,7 +857,7 @@
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       gap: 4px;
-      max-height: 170px;
+      max-height: 268px;
       overflow-y: auto;
     }
 

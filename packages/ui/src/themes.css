@@ -294,6 +294,14 @@ a.rt-Button[aria-current='page'] {
   .rt-BaseDialogContent[data-presentation='drawer'][data-state='open'] {
     animation: rt-kid-drawer 0.25s ease-out;
   }
+  .rt-BaseDialogContent[data-presentation='bottom-drawer'][data-state='open'] {
+    animation: rt-kid-bottom-drawer 0.25s ease-out;
+  }
+}
+
+@keyframes rt-kid-bottom-drawer {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
 @keyframes rt-kid-drawer {

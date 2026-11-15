@@ -20,7 +20,7 @@ export function lessonResources(row: PracticeEntryRow): PracticeContentBlock[] {
 }
 
 export default function LessonResourceTags({ row }: { row: PracticeEntryRow }) {
-  const blocks = lessonResources(row)
+  const blocks = lessonResources(row).filter((block) => block.title !== '句子')
   if (!blocks.length) return null
   return <Flex gap="2" wrap="wrap" aria-label="本课资源">
     {blocks.map((block, index) => <Badge key={`${block.title}:${index}`} variant="soft" radius="full" color={tone(block.title)}>{block.title}</Badge>)}

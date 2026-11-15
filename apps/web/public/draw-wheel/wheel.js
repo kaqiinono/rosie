@@ -1,5 +1,5 @@
 // Visual renderer adapted from the supplied lucky-wheel.html. No auth or persistent local data.
-import { REWARD_PALETTE, PUNISHMENT_PALETTE, PRESET_POOL, EMOJI_CHOICES, KEYWORD_EMOJIS } from './presets.js?v=1';
+import { REWARD_PALETTE, PUNISHMENT_PALETTE, PRESET_POOL, EMOJI_CHOICES, KEYWORD_EMOJIS } from './presets.js?v=2';
 import { request, confirmAction, signal } from './bridge.js?v=1';
 let state = { mode:'reward', soundOn:true, voiceOn:false, mysteryMode:false, noRepeatMode:false, rewards:[], punishments:[], history:[] };
 let revision = 0;

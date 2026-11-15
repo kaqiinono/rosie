@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useBaiduMediaError } from '@rosie/core'
 import { Button, Switch } from '@rosie/ui/themes'
 import type { ListeningClip } from '../../utils/listening-clips'
+import ListeningClipText from './ListeningClipText'
 
 // Keep three seconds of the recorded writing pause after the first reading.
 const SINGLE_READ_WAIT_SECONDS = 3
@@ -147,7 +148,7 @@ export default function ListeningDrawer({
   }
 
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const settingRow = 'flex min-h-11 items-center justify-between gap-3 text-sm text-slate-700'
+  const settingRow = 'flex min-h-11 items-center justify-start gap-2 text-sm text-slate-700'
 
   const panel = panelOpen && (
     <section
@@ -258,14 +259,7 @@ export default function ListeningDrawer({
         hidden={collapsed || choosing}
         className="min-h-16 overflow-y-auto py-3 sm:py-4"
       >
-        <p lang="en" className="text-2xl leading-[1.45] font-semibold text-slate-900">
-          <mark className="rounded-sm bg-amber-100 box-decoration-clone text-inherit">
-            {clip.english}
-          </mark>
-        </p>
-        {translate && (
-          <p className="mt-2 text-base leading-relaxed text-slate-600">{clip.chinese}</p>
-        )}
+        <ListeningClipText english={clip.english} chinese={clip.chinese} showTranslation={translate} />
         {failed && <p role="alert">{errorMessage}</p>}
       </div>
       <div

@@ -1,5 +1,17 @@
 # Rosie design context
 
+## Task-entry reading drawers (approved 2026-11-15)
+
+Reading previews open the shared original reader in an AppDialog drawer. Sentence previews
+use the same bottom drawer (92dvh, rounded top corners), with a light paper reading background.
+The standalone reading route retains its existing dark background. Sentence previews
+retain their compact listening controls and offer 查看全文 for the same drawer. The drawer only
+hosts the reader and closes it: the original layout, navigation, floating playback/listening
+controls and reading-progress behavior are preserved. The host supplies the passage key and
+scroll container so scrolling targets the drawer. Opening it stops the sentence player;
+closing it unmounts all reading audio while preserving the editor draft. Build and runtime
+checks remain manual.
+
 ## Exam responsive media (approved 2026-11-14)
 
 Authored widths cap images rather than force a fixed footprint. Image options form complete

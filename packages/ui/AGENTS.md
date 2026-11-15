@@ -2,6 +2,9 @@
 
 Shared **presentational** components used across modules. No data fetching, no business logic.
 
+`AppDialog presentation="bottom-drawer"` opens a full-width, 92dvh bottom sheet with rounded
+top corners and reduced-motion-aware entrance. It preserves the shared close/focus contract.
+
 **Contents:** `CandyButton`/`JellyButton` (+ presets/tiles), `StickerCard`, `PageShell`, `StatTile`, `DarkScope`, `BrandLogo`, `SelectControl`,
 `PageBreadcrumb`, `ArrowIcon`,
 `OrbBackground`, `LoadingOverlay`, `ModuleCard`, `AccountBar`, `AuthGuard`, `NavigationLink`,

@@ -10,12 +10,18 @@ import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
 import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import { resourceHref, type PracticeEntryRow, type PracticeResource } from '@rosie/tasks'
 
-function ResourcePlayer({ resource, close, onMediaReady }: { resource: PracticeResource; close: () => void; onMediaReady?: (ref: RefObject<HTMLVideoElement | null> | undefined) => void }) {
+export function ResourcePlayer({ resource, close, onMediaReady, loop = false }: { resource: PracticeResource; close: () => void; onMediaReady?: (ref: RefObject<HTMLVideoElement | null> | undefined) => void; loop?: boolean }) {
   const player = usePlaylistPlayer()
   const { audioRef, stop, playWhenReady } = player
   const [busy, setBusy] = useState(true)
   const [error, setError] = useState('')
   const [attempt, retry] = useState(0)
+  useEffect(() => {
+    const element = audioRef.current
+    if (!element) return
+    element.loop = loop
+    return () => { element.loop = false }
+  }, [audioRef, loop])
   useEffect(() => {
     onMediaReady?.(audioRef)
     return () => onMediaReady?.(undefined)
@@ -46,7 +52,8 @@ function ResourcePlayer({ resource, close, onMediaReady }: { resource: PracticeR
     const bound = () => {
       if (!ready) return
       if (end !== undefined && element.currentTime >= end) {
-        element.pause(); element.currentTime = start
+        if (!element.loop) element.pause()
+        element.currentTime = start
       } else if (element.currentTime < start) element.currentTime = start
     }
     const onPlaying = () => { clearTimer(); setBusy(false) }

@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react'
 import type { PracticeEntryRow } from '@rosie/tasks'
 import { Flex, Text } from '@rosie/ui/themes'
+import SentenceRowPreview from './SentenceRowPreview'
+import { findPassageByKey } from '@rosie/english'
+import ReadingPreviewDrawer from './ReadingPreviewDrawer'
 
 type MathBrief = { title: string; text: string; question: string }
 
 /** Management preview: the question or saved text, without the answer workspace. */
-export default function EntryRowPreview({ row }: { row: PracticeEntryRow }) {
+export default function EntryRowPreview({ row, onClose }: { row: PracticeEntryRow; onClose: () => void }) {
   const problemId = row.values.problemId
   const [math, setMath] = useState<MathBrief | null>(null)
   const [missing, setMissing] = useState(false)
@@ -25,6 +28,10 @@ export default function EntryRowPreview({ row }: { row: PracticeEntryRow }) {
     return () => { cancelled = true }
   }, [problemId])
   const blocks = (row.content ?? []).filter((block) => block.title || block.text)
+  if (row.values.sentenceId) return <SentenceRowPreview key={row.id} row={row} />
+  if (row.values.key && findPassageByKey(row.values.key)) {
+    return <ReadingPreviewDrawer passageKey={row.values.key} open onClose={onClose} />
+  }
   return <Flex direction="column" gap="1">
     {problemId && !math && !missing && <Text size="2" color="gray" role="status">正在读取题目…</Text>}
     {math && <>
