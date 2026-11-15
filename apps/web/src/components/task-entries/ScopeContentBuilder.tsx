@@ -7,9 +7,8 @@ import { Badge, Button, CheckboxCards, Flex, Heading, RadioCards, Text } from '@
 import type { PracticeEntry, PracticeEntryRow } from '@rosie/tasks'
 import EnglishPlanPicker from './EnglishPlanPicker'
 import { LessonResourceLine, SelectionLessonList } from './LessonResourceTags'
-import { attachResources } from './resources'
 import { loadScopeCatalog, sameCatalogItem, scopeNodes, type LearningMode, type ScopeNode } from './scopeCatalog'
-import type { Catalog } from './catalog'
+import { generateCatalogRows, type Catalog } from './catalog'
 
 function mergeChildren(parents: ScopeNode[]): ScopeNode[] {
   const combined = new Map<string, ScopeNode>()
@@ -297,30 +296,20 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
     const additions = items.filter(row => !existing.has(row.id))
     try {
       let resolved: PracticeEntryRow[]
-      try { resolved = additions.length ? await attachResources(additions) : [] }
+      try { resolved = await generateCatalogRows(catalog, additions) }
       catch (cause) {
         const message = cause instanceof Error ? cause.message : '资源读取失败，请在清单中重试'
         resolved = additions.map(row => ({ ...row, resourceStatus: 'error', resourceError: message }))
       }
       if (token !== generation.current) return
       // Replace drops old list rows. Rows still in the new selection keep their saved resources.
-      const kept = replace ? items.flatMap(row => { const saved = existing.get(row.id); return saved ? [saved] : [] }) : previous
+      const selectedIds = new Set(items.map(row => row.id))
+      const kept = replace ? previous.filter(row => selectedIds.has(row.id)) : previous
       const merged = [...kept, ...resolved]
-      const order = new Map(allRows.map((row, index) => [row.id, index]))
-      merged.sort((a, b) => {
-        if (subject === 'english') {
-          for (const key of ['stage', 'unit', 'lesson', 'sentenceId']) {
-            const diff = (a.values[key] ?? '').localeCompare(b.values[key] ?? '', 'en', { numeric: true })
-            if (diff) return diff
-          }
-          return a.id.localeCompare(b.id)
-        }
-        return (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER)
-      })
       latest.current.onChange({ path: catalog.path, rows: merged, ...(!latest.current.name.trim() ? { name: label.slice(0, 120) } : {}) })
       const failed = resolved.filter(row => row.resourceStatus === 'error').length
       const outcome = replace ? `已删除旧清单，留下这次的 ${merged.length} 项` : additions.length ? `已加入 ${additions.length} 项` : '这些内容已经在清单中'
-      setNotice(`${outcome}${failed ? `，其中 ${failed} 项资源未读取成功，可在清单中重试。` : replace || additions.length ? '，将按课程顺序学习。' : '。'}`)
+      setNotice(`${outcome}${failed ? `，其中 ${failed} 项资源未读取成功，可在清单中重试。` : kept.length && additions.length ? '，保留原有顺序，新内容按课程顺序追加。' : !kept.length && additions.length ? '，将按课程顺序学习。' : '。'}`)
       setPhase('added')
     } finally {
       if (token === generation.current) { setGenerating(false); setWriting(null); latest.current.onBusyChange(false) }

@@ -24,6 +24,7 @@ import {
 } from '../../homework'
 import PracticeEntryPicker from './PracticeEntryPicker'
 import { localDate } from '../../time'
+import { defaultPracticeProgression, validatePracticeProgression } from '../../practiceProgression'
 
 type Props = {
   /** 传入表示编辑；缺省为新增。 */
@@ -38,6 +39,7 @@ function toInput(homework?: Homework): HomeworkInput {
     name: homework.name,
     subject: homework.subject,
     cycle: homework.cycle,
+    include_weekends: homework.include_weekends ?? true,
     times_per_week: homework.times_per_week,
     times_per_cycle: homework.times_per_cycle,
     priority: homework.priority,
@@ -101,7 +103,22 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
     setSaving(true)
     setError('')
     try {
-      await onSave(input)
+      let practice_binding = input.practice_binding
+      if (practice_binding?.rows.length) {
+        const progression = {
+          ...(practice_binding.progression ?? defaultPracticeProgression(localDate())),
+          skipWeekends: input.cycle === 'daily' && input.include_weekends === false,
+        }
+        const previous = homework?.practice_binding
+        const changed = !previous || previous.key !== practice_binding.key || !previous.progression ||
+          progression.enabled !== previous.progression.enabled || progression.mode !== previous.progression.mode ||
+          (progression.amount ?? 1) !== (previous.progression.amount ?? 1) ||
+          progression.weekday !== previous.progression.weekday || progression.skipWeekends !== previous.progression.skipWeekends
+        if (changed) progression.anchorDate = localDate()
+        validatePracticeProgression(progression)
+        practice_binding = { ...practice_binding, key: changed ? crypto.randomUUID() : practice_binding.key, progression }
+      }
+      await onSave({ ...input, practice_binding })
       onClose()
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : '保存失败，请重试。')
@@ -168,10 +185,6 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
             <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
               <Text size="2" weight="bold">
                 优先级
-                <Text size="1" color="gray" weight="regular">
-                  {' '}
-                  P0 最高，P4 最低
-                </Text>
               </Text>
               <Select.Root
                 value={draft.priority}
@@ -189,7 +202,7 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
             </Flex>
           </Flex>
 
-          <Flex gap="3" wrap="wrap">
+          <Flex gap="3" wrap={draft.cycle === 'daily' ? 'nowrap' : 'wrap'} align="end">
             <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
               <Text size="2" weight="bold">
                 作业周期
@@ -215,6 +228,19 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
                 </Select.Content>
               </Select.Root>
             </Flex>
+            {draft.cycle === 'daily' && (
+              <Flex asChild align="center" gap="2" flexShrink="0" pb="1">
+                <label>
+                  <Switch
+                    aria-label="包含周末（周六和周日）"
+                    checked={draft.include_weekends ?? false}
+                    disabled={saving}
+                    onCheckedChange={(checked) => patch({ include_weekends: checked })}
+                  />
+                  <Text size="2" className="whitespace-nowrap">包含周末</Text>
+                </label>
+              </Flex>
+            )}
             {(draft.cycle === 'weekly' || draft.cycle === 'custom') && (
               <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
                 <Text size="2" weight="bold">

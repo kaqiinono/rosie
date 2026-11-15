@@ -21,7 +21,7 @@ export default function PracticeEntryPicker({ subject, value, onChange }: Props)
     if (id === value?.entryId) return
     const selected = entries.find((item) => item.id === id)
     if (!selected) return
-    try { onChange({ ...bindEntry(selected, selected.rows[0]?.id ?? null), startId: null }) }
+    try { onChange({ ...bindEntry(selected, selected.rows[0]?.id ?? null), startId: null, progression: value?.progression }) }
     catch (cause) { setMessage(cause instanceof Error ? cause.message : '入口无效') }
   }
   return <Flex direction="column" gap="2">
@@ -38,7 +38,7 @@ export default function PracticeEntryPicker({ subject, value, onChange }: Props)
     {mismatched && <Flex direction="column" gap="1"><Text size="2" color="red">原入口不属于当前科目，请重新选择。</Text><Button type="button" variant="soft" onClick={() => onChange(null)}>移除原入口</Button></Flex>}
     {!mismatched && !!value?.rows.length && <PracticeStartPicker key={value.key} value={value} onChange={onChange} />}
     {entry && value && <Button type="button" size="1" variant="soft" onClick={() => {
-      try { onChange(bindEntry(entry, entry.rows.some((r) => r.id === value.startId) ? value.startId : entry.rows[0]?.id ?? null)); setMessage('已同步入口内容，将从所选开始项重新递进；保存作业后生效。') }
+      try { onChange({ ...bindEntry(entry, entry.rows.some((r) => r.id === value.startId) ? value.startId : entry.rows[0]?.id ?? null), progression: value.progression }); setMessage('已同步入口内容，将从所选开始项重新递进；保存作业后生效。') }
       catch (cause) { setMessage(cause instanceof Error ? cause.message : '同步失败') }
     }}>同步入口内容并重设起点</Button>}
     {message && <Text size="2" role="status">{message}</Text>}

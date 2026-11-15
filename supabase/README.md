@@ -115,3 +115,15 @@ The user also authorized automatic execution of future task-required data migrat
 see the standing migration preference in root AGENTS.md. Inspect the exact scope and
 remote history, apply the task's migration, and verify it without delegating execution
 back to the user.
+
+## Homework migration reconciliation (2026-11-15)
+
+Applied through the connected migration API to `yvukypevtqblhjdhkatb`:
+- `20261115104319_task_homework_include_weekends.sql`: preserves existing rows as true, defaults new rows to false.
+- `20261115104405_apply_task_practice_presets.sql`: installs the missing owner-scoped, security-invoker preset function.
+
+Local filenames match remote history; both migrations notify PostgREST to reload its schema.
+Read-back confirmed the non-null boolean/default and authenticated-only preset execution.
+Progression mode, quantity and grouped snapshots use existing JSON fields and need no further migration.
+The unrelated historical `20261018040000_fold_calc_report_into_settlement.sql` remains pending.
+No application build or tests were run.

@@ -12,14 +12,9 @@ export async function loadScopeCatalog(subject: 'math' | 'english' | 'chinese', 
       const x = a.rows[0].values; const y = b.rows[0].values
       return Number(x.grade) - Number(y.grade) || Number(x.seq) - Number(y.seq) || (LESSON_SOURCE_BTNS[`${x.grade}-${x.seq}`]?.findIndex(item => item.key === x.section) ?? 0) - (LESSON_SOURCE_BTNS[`${y.grade}-${y.seq}`]?.findIndex(item => item.key === y.section) ?? 0)
     })
-    return { ...catalogs[0], groups: groups.map(group => ({ ...group, id: `${group.id}:${group.rows[0].values.section}`, rows: group.rows.map(row => ({ ...row, values: { ...row.values, contentType: 'math-question' } })) })) }
+    return { ...catalogs[0], groups: groups.map(group => ({ ...group, id: `${group.id}:${group.rows[0].values.section}` })) }
   }
-  const catalog = await buildCatalog(subject === 'chinese' ? 'chineseCourse' : mode === 'listening' ? 'englishSentences' : 'englishReading', '')
-  return { ...catalog, groups: catalog.groups.map(group => ({ ...group, rows: group.rows.map(row => ({
-    ...row,
-    selectionPath: practiceSelectionPath(row),
-    values: { ...row.values, contentType: subject === 'chinese' ? 'chinese-course' : mode === 'listening' ? 'english-sentence' : 'english-reading' },
-  })) })) }
+  return buildCatalog(subject === 'chinese' ? 'chineseCourse' : mode === 'listening' ? 'englishSentences' : 'englishReading', '')
 }
 
 /** Match a saved row to the current catalog row even when only the business key is shared. */

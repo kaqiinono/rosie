@@ -39,6 +39,8 @@ export interface Homework {
   subject: HomeworkSubject
   priority: HomeworkPriority
   cycle: HomeworkCycle
+  /** Missing on legacy rows means weekends were included. Only applies to daily work. */
+  include_weekends?: boolean
   times_per_week: number | null
   times_per_cycle: number | null
   start_weekday: number | null
@@ -61,6 +63,7 @@ export const EMPTY_HOMEWORK: HomeworkInput = {
   subject: 'chinese',
   priority: 'P2',
   cycle: 'daily',
+  include_weekends: false,
   times_per_week: null,
   times_per_cycle: null,
   start_weekday: null,
@@ -116,6 +119,7 @@ export function weekdaySpan(start: number, end: number): number {
 
 /** 返回第一条错误提示；通过校验返回空串。 */
 export function validateHomework(input: HomeworkInput): string {
+  if (input.include_weekends !== undefined && typeof input.include_weekends !== 'boolean') return '请选择是否包含周末。'
   if (!input.name.trim()) return '请填写作业名称。'
   if (!HOMEWORK_PRIORITIES.includes(input.priority)) return '请选择作业优先级。'
   if (input.name.trim().length > 120) return '作业名称最多 120 个字。'
@@ -158,10 +162,10 @@ export function validateHomework(input: HomeworkInput): string {
 export function describeSchedule(
   item: Pick<
     Homework,
-    'cycle' | 'times_per_week' | 'times_per_cycle' | 'start_weekday' | 'end_weekday' | 'start_date' | 'end_date'
+    'cycle' | 'include_weekends' | 'times_per_week' | 'times_per_cycle' | 'start_weekday' | 'end_weekday' | 'start_date' | 'end_date'
   >,
 ): string {
-  if (item.cycle === 'daily') return '每天'
+  if (item.cycle === 'daily') return item.include_weekends === false ? '每天 · 仅周一至周五' : '每天 · 包含周末'
   if (item.cycle === 'monthly') return `每个自然月完成 ${item.times_per_cycle} 次`
   if (needsCycleStart(item.cycle)) {
     const rule = `从 ${item.start_date} 起，${HOMEWORK_CYCLES[item.cycle]}完成 ${item.times_per_cycle} 次`

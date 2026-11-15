@@ -50,32 +50,21 @@ export function useTimeTree() {
     const refresh = () => {
       if (!document.hidden && !lock.current) void store.refreshInBackground(id).catch(() => {})
     }
-    const syncTemplates = () => {
-      if (!lock.current)
-        void request(id, { kind: 'sync' })
-          .then((next) => {
-            if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
-              store.replaceSessionData(id, next)
-          })
-          .catch(() => {})
-    }
-    window.addEventListener('rosie:homework-changed', syncTemplates)
     const interval = window.setInterval(refresh, 15000)
     window.addEventListener('focus', refresh)
     return () => {
       clearInterval(interval)
-      window.removeEventListener('rosie:homework-changed', syncTemplates)
       window.removeEventListener('focus', refresh)
     }
   }, [id])
-  async function run(action: TreeAction) {
+  async function run(action: TreeAction, expectedRevision?: number) {
     if (!id || lock.current) return null
     lock.current = true
     setBusy(true)
     setMessage('')
     try {
       // finish 后再 pop 时，组件还没重渲染，闭包里的 revision 已过期。
-      const revision = store.getSessionData(id)?.revision ?? data?.revision
+      const revision = expectedRevision ?? store.getSessionData(id)?.revision ?? data?.revision
       const next = await request(id, action, revision)
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
@@ -96,11 +85,12 @@ export function useTimeTree() {
   }
   return {
     tree: data?.tree ?? null,
+    revision: data?.revision,
     clockOffsetMs: data?.clockOffsetMs ?? 0,
     user,
     busy,
     run,
-    message,
+    message: message || (error ? '作业同步失败，请刷新重试。' : ''),
     error,
     isLoading: loading || isLoading,
   }

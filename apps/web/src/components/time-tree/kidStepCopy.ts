@@ -1,5 +1,5 @@
 import { completionReward } from '@/lib/time-tree/rewards'
-import { capacityOf, SUBJECTS } from '@/components/tree-demo/garden/model'
+import { SUBJECTS } from '@/components/tree-demo/garden/model'
 import { elapsed, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 
 /** 孩子卡片上的说明：这次备注优先，否则用作业说明。 */
@@ -49,9 +49,3 @@ export function kidReward(tree: TreeData, step: WorkStep, now: number): string {
   return `${flower ? `做完开出 ${flower}！` : ''}完成就得 ☀️+${base.sun} 💧+${base.water}。${early ? `提前完成奖励翻倍，额外得 ☀️+${base.sun} 💧+${base.water}！` : '坚持做完也有完整奖励！'}`
 }
 
-export function kidDayFits(tree: TreeData, step: WorkStep, day: string): boolean {
-  const load = tree.steps
-    .filter((p) => p.id !== step.id && !p.skipped && p.planned === day)
-    .reduce((n, p) => n + p.stages.length, 0)
-  return load + step.stages.length <= capacityOf(day)
-}

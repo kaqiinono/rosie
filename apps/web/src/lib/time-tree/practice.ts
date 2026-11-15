@@ -1,4 +1,4 @@
-import { entryHref, validateEntry, type Homework, type PracticeBinding, type PracticeEntryRow } from '@rosie/tasks'
+import { entryHref, scheduledPracticeRow, validateEntry, type Homework, type PracticeBinding, type PracticeEntryRow } from '@rosie/tasks'
 import type { TreeData, WorkStep } from './types'
 
 export interface PracticeProgress {
@@ -8,26 +8,43 @@ export interface PracticeProgress {
   activeOccurrence: string | null
 }
 export interface StepPractice {
+  calendarBased?: boolean
   key: string
   name: string
   row: PracticeEntryRow | null
+  /** Frozen consecutive content batch. Missing on legacy single-item snapshots. */
+  items?: { row: PracticeEntryRow; href: string }[]
   href: string | null
   exhausted: boolean
 }
 
-/** Called before due-task preview / start / untimed completion / manual recording, inside the garden revision transaction. */
+export function calendarPractice(binding: PracticeBinding, day: string): StepPractice {
+  const { row, rows, exhausted } = scheduledPracticeRow(binding, day)
+  return {
+    key: binding.key, name: binding.name, row: row ? structuredClone(row) : null,
+    items: rows.map((item) => ({ row: structuredClone(item), href: entryHref(binding.path, item.values) })),
+    href: exhausted ? null : entryHref(binding.path, row?.values ?? {}), exhausted, calendarBased: true,
+  }
+}
+
+/** Called before task preview / start / untimed completion / manual recording, including early work, inside the garden revision transaction. */
 export function bindPractice(tree: TreeData, step: WorkStep, homework?: Homework): void {
   if (step.practice !== undefined) return
-  const peers = tree.steps.filter((s) => s.occurrence === step.occurrence)
-  const previous = peers.find((s) => s.practice !== undefined)
+  const binding = homework?.practice_binding
+  if (!binding) { step.practice = null; return }
+  const peers = tree.steps.filter((s) => s.occurrence === step.occurrence && !s.end && !s.skipped)
+  const previous = tree.steps.find((s) => s.occurrence === step.occurrence && s.practice?.key === binding.key)
   if (previous) {
     step.practice = previous.practice ? structuredClone(previous.practice) : null
     return
   }
-  const binding = homework?.practice_binding
-  if (!binding) { step.practice = null; return }
   if (!/^[0-9a-f-]{36}$/i.test(binding.key)) throw new Error('练习配置无效，请重新选择入口')
   validateEntry({ ...binding, subject: homework!.subject })
+  if (binding.progression) {
+    const snapshot = calendarPractice(binding, step.scheduled)
+    for (const peer of peers) if (peer.practice === undefined) peer.practice = structuredClone(snapshot)
+    return
+  }
   const progress = tree.practiceProgress ??= {}
   const templatePrefix = step.occurrence.split('/')[0] + '/'
   if (Object.values(progress).some((p) => p.activeOccurrence && p.activeOccurrence !== step.occurrence && p.activeOccurrence.startsWith(templatePrefix)))
@@ -53,7 +70,7 @@ export function bindPractice(tree: TreeData, step: WorkStep, homework?: Homework
 
 /** All split steps complete = one advance. Skipping releases the reservation without consuming a row. */
 export function settlePractice(tree: TreeData, step: WorkStep): void {
-  if (!step.practice) return
+  if (!step.practice || step.practice.calendarBased) return
   const cursor = tree.practiceProgress?.[step.practice.key]
   if (!cursor || cursor.activeOccurrence !== step.occurrence) return
   const peers = tree.steps.filter((s) => s.occurrence === step.occurrence)

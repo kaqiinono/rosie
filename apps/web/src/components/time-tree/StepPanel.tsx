@@ -7,6 +7,7 @@ import {
   clock,
   dayOf,
   elapsed,
+  isMustDo,
   shift,
   timing,
   type TreeData,
@@ -14,8 +15,7 @@ import {
   type TreeAction,
 } from '@/lib/time-tree/types'
 import { SUBJECTS, type SubjectKey } from '@/components/tree-demo/garden/model'
-import { gardenAudio } from '@/components/tree-demo/garden/audio'
-import { kidDayFits, kidNote, kidReward, kidTime } from './kidStepCopy'
+import { kidNote, kidReward, kidTime } from './kidStepCopy'
 import { HomeworkNotesDialog } from './HomeworkNotesDialog'
 import HomeworkContentPanel from './HomeworkContentPanel'
 import { finishAndPop } from './finishStep'
@@ -106,7 +106,7 @@ export function StepPanel({
     return () => clearInterval(t)
   }, [step.start, step.end])
   useEffect(() => {
-    if (!step.practiceEntryName || step.practice !== undefined || step.end || step.skipped || !step.planned || step.planned > tree.today || api.busy) return
+    if (!step.practiceEntryName || step.practice !== undefined || step.end || step.skipped || !step.planned || api.busy) return
     const requestKey = `${step.id}:${prepareAttempt}`
     if (prepareKey.current === requestKey) return
     prepareKey.current = requestKey
@@ -125,7 +125,6 @@ export function StepPanel({
     if (api.busy || finishingRef.current) return
     finishingRef.current = true
     onBeforeFinish?.(step)
-    gardenAudio.ensure()
     setFinishing(true)
     const outcome = await finishAndPop(api.run, step)
     finishingRef.current = false
@@ -145,10 +144,6 @@ export function StepPanel({
     if (!result) return
     close()
   }
-  async function moveTo(day: string, keepOpen: boolean) {
-    const result = await api.run({ kind: 'move', id: step.id, day })
-    if (result && !keepOpen) close()
-  }
   if (editingNote) {
     return <HomeworkNotesDialog step={step} api={api} close={() => setEditingNote(false)} />
   }
@@ -156,6 +151,7 @@ export function StepPanel({
     <HomeworkContentPanel
       name={step.practice?.name}
       row={step.practice?.row}
+      items={step.practice?.items}
       href={step.practice?.href}
       exhausted={step.practice?.exhausted}
       loading={!step.practice && preparing}
@@ -171,11 +167,7 @@ export function StepPanel({
     const subject = SUBJECTS[step.subject]
     const note = kidNote(step)
     const reward = kidReward(tree, step, now)
-    const tomorrow = shift(tree.today, 1)
-    const todayFits = kidDayFits(tree, step, tree.today)
-    const tomorrowFits = kidDayFits(tree, step, tomorrow)
     const later = !!step.planned && step.planned > tree.today
-    const parked = !step.planned
     const other = running && running.id !== step.id ? running : null
     const busy = api.busy || finishing
     return (
@@ -195,8 +187,14 @@ export function StepPanel({
               <Badge variant="soft" radius="full" color={SUBJECT_BADGE[step.subject]}>
                 {subject.label}
               </Badge>
+              {step.planned === tree.today && (
+                <Badge variant="soft" radius="full" color={isMustDo(step.priority) ? 'pink' : 'gray'}>
+                  {isMustDo(step.priority) ? '今天要做' : '可以明天做'}
+                </Badge>
+              )}
               <Heading as="h2" size="5" className="break-words max-w-full">{step.name}</Heading>
               <Text size="2" color="gray">{kidTime(step, now)}</Text>
+              {step.planned && <Text size="2" color="gray">计划日期 {step.planned}</Text>}
             </Flex>
             <IconButton variant="soft" color="gray" aria-label="关闭" disabled={busy} onClick={close}>
               <span aria-hidden="true">×</span>
@@ -235,104 +233,28 @@ export function StepPanel({
               <Button size="3" color="amber" onClick={() => select(other.id)}>
                 👉 先回去做完那个
               </Button>
-            ) : !later && !parked ? (
+            ) : (
               <Flex gap="2" wrap="wrap" justify="center">
+                {step.planned && (
+                  <Button
+                    size="3"
+                    color="pink"
+                    loading={api.busy}
+                    onClick={() => void submit({ kind: 'start' })}
+                  >
+                    {overdue ? '🌟 开始补做' : later ? '🌟 提前做' : '🌟 开始吧！'}
+                  </Button>
+                )}
                 <Button
                   size="3"
-                  color="pink"
-                  loading={api.busy}
-                  onClick={() => void submit({ kind: 'start' })}
+                  variant="soft"
+                  color="violet"
+                  disabled={api.busy}
+                  onClick={() => void submit({ kind: 'nextDay' })}
                 >
-                  {overdue ? '🌟 补做也开花！' : '🌟 开始吧！'}
+                  🌙 挪到下一天
                 </Button>
-                {tomorrowFits && (
-                  <Button
-                    size="3"
-                    variant="soft"
-                    color="violet"
-                    disabled={api.busy}
-                    onClick={() => void moveTo(tomorrow, false)}
-                  >
-                    🌙 明天再做
-                  </Button>
-                )}
               </Flex>
-            ) : parked ? (
-              <>
-                {!todayFits && (
-                  <Text size="3" align="center">
-                    {tomorrowFits ? '今天的叶子已经挤满啦' : '这两天的叶子都挤满啦，先让它待着吧'}
-                  </Text>
-                )}
-                {todayFits && (
-                  <Button
-                    size="3"
-                    color="pink"
-                    loading={api.busy}
-                    onClick={() => void moveTo(tree.today, true)}
-                  >
-                    🌟 今天就做！
-                  </Button>
-                )}
-                {tomorrowFits && (
-                  <Button
-                    size="3"
-                    variant={todayFits ? 'soft' : 'solid'}
-                    color="violet"
-                    loading={api.busy}
-                    onClick={() => void moveTo(tomorrow, false)}
-                  >
-                    🌙 明天再做
-                  </Button>
-                )}
-                {!todayFits && !tomorrowFits && (
-                  <Button size="3" variant="soft" onClick={close}>
-                    先放着吧
-                  </Button>
-                )}
-              </>
-            ) : (
-              <>
-                {!todayFits && (
-                  <Text size="3" align="center">
-                    {step.planned === tomorrow || tomorrowFits
-                      ? '今天的叶子已经挤满啦'
-                      : '这两天的叶子都挤满啦，先让它待着吧'}
-                  </Text>
-                )}
-                {step.planned === tomorrow ? (
-                  <Button size="3" color="violet" onClick={close}>
-                    🌙 明天再来
-                  </Button>
-                ) : (
-                  tomorrowFits && (
-                    <Button
-                      size="3"
-                      color="violet"
-                      loading={api.busy}
-                      onClick={() => void moveTo(tomorrow, false)}
-                    >
-                      🌙 明天再做
-                    </Button>
-                  )
-                )}
-                {todayFits && (
-                  <Button
-                    size="3"
-                    variant={step.planned === tomorrow || tomorrowFits ? 'soft' : 'solid'}
-                    color="pink"
-                    loading={api.busy}
-                    onClick={() => void moveTo(tree.today, true)}
-                  >
-                    🌟 今天就做！
-                  </Button>
-                )}
-                {!todayFits && step.planned !== tomorrow && !tomorrowFits && (
-                  <Button size="3" variant="soft" onClick={close}>
-                    先放着吧
-                  </Button>
-                )}
-              </>
             )}
           </Flex>
           {api.message && (
@@ -361,7 +283,7 @@ export function StepPanel({
           <Text className="whitespace-pre-wrap break-words"><strong>本次备注</strong>　{step.planNote}</Text>
         )}
         <Text size="2">
-          计划 {step.planned ?? '先不做'} · 原排期 {step.scheduled} · 截止 {step.deadline}
+          计划 {step.planned ?? '未排期'} · 原排期 {step.scheduled} · 截止 {step.deadline}
         </Text>
         {homeworkContent}
         {step.start && (
@@ -453,18 +375,18 @@ export function StepPanel({
               <Button onClick={() => select(running.id)}>返回正在做的作业</Button>
             ) : (
               <Button
-                disabled={!step.planned || step.planned > tree.today}
+                disabled={!step.planned}
                 loading={api.busy}
                 onClick={() => void submit({ kind: 'start' })}
               >
-                {overdue ? '开始补做' : '开始做'}
+                {overdue ? '开始补做' : step.planned && step.planned > tree.today ? '提前做' : '开始做'}
               </Button>
             )}
             <Grid columns="2" gap="2">
               <Button
                 variant="soft"
                 color="green"
-                disabled={api.busy || (step.planned ?? step.scheduled) > tree.today}
+                disabled={api.busy}
                 onClick={() => void submit({ kind: 'completeUntimed' })}
               >
                 直接完成
@@ -477,20 +399,12 @@ export function StepPanel({
               >
                 不用做
               </Button>
-              {step.slot !== null && (
-                <Button
-                  variant="soft"
-                  disabled={api.busy}
-                  onClick={() => void submit({ kind: 'return' })}
-                >
-                  放回花苞
-                </Button>
-              )}
-              {(overdue || step.slot === null) && (
-                <Button variant="soft" onClick={() => setMove(!move)}>
-                  改日期
-                </Button>
-              )}
+              <Button variant="soft" disabled={api.busy} onClick={() => setMove(!move)}>
+                改日期
+              </Button>
+              <Button variant="soft" disabled={api.busy} onClick={() => void submit({ kind: 'nextDay' })}>
+                挪到下一天
+              </Button>
               {noteButton}
             </Grid>
             {move && (
@@ -505,13 +419,6 @@ export function StepPanel({
                     {day.slice(5)}
                   </Button>
                 ))}
-                <Button
-                  disabled={api.busy}
-                  variant="soft"
-                  onClick={() => void submit({ kind: 'move', day: null })}
-                >
-                  先不做
-                </Button>
               </Flex>
             )}
           </>

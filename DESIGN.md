@@ -1,5 +1,13 @@
 # Rosie design context
 
+## Life-tree menu (approved 2026-11-15)
+
+The minimize icon stays outside the status panel, beside the mobile menu trigger.
+The mobile popover uses a narrow single column, one status or action per row;
+the desktop status panel keeps its inline layout.
+Its trigger is the shared 🌼 小口袋 button: cream paper, warm outline, rounded sticker
+shape and a pressed bottom edge. A slight flower tilt signals the open state; no chevron.
+
 ## Task-entry reading drawers (approved 2026-11-15)
 
 Reading previews open the shared original reader in an AppDialog drawer. Sentence previews

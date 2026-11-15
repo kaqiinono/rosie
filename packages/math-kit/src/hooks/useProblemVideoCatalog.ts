@@ -8,11 +8,12 @@ import { parseProblemVideoCatalog, type ProblemVideoCatalog } from '../utils/pro
 
 interface CachedCatalog {
   summaryNames: Record<string, string>
+  replayNames: Record<string, string>
   keys: Set<string>
   syncedAt: string | null
 }
 
-const empty: CachedCatalog = { summaryNames: {}, keys: new Set<string>(), syncedAt: null }
+const empty: CachedCatalog = { summaryNames: {}, replayNames: {}, keys: new Set<string>(), syncedAt: null }
 const stores = new Map<string, UserSessionStore<CachedCatalog>>()
 const disabledStore = createUserSessionStore<CachedCatalog>('math_video_catalog:disabled', {
   empty,
@@ -38,7 +39,12 @@ function getCatalogStore(lessonKey: string): UserSessionStore<CachedCatalog> {
       )
       if (!response.ok) throw new Error('video_catalog_unavailable')
       const catalog = parseProblemVideoCatalog(await response.json(), lessonKey)
-      return { summaryNames: catalog.summaryNames, keys: new Set(catalog.keys), syncedAt: catalog.syncedAt }
+      return {
+        summaryNames: catalog.summaryNames,
+        replayNames: catalog.replayNames,
+        keys: new Set(catalog.keys),
+        syncedAt: catalog.syncedAt,
+      }
     },
   })
   stores.set(lessonKey, store)
@@ -65,6 +71,7 @@ export function replaceProblemVideoCatalog(userId: string, catalog: ProblemVideo
     keys: new Set(catalog.keys),
     syncedAt: catalog.syncedAt,
     summaryNames: catalog.summaryNames,
+    replayNames: catalog.replayNames,
   })
 }
 
@@ -88,6 +95,7 @@ export function useProblemVideoCatalog(user: User | null, lessonKey: string | un
     status,
     syncedAt: data.syncedAt,
     summaryNames: data.summaryNames,
+    replayNames: data.replayNames ?? {},
     count: data.keys.size,
     keys: data.keys,
     hasVideo: (key: string) => status === 'ready' && data.keys.has(key),

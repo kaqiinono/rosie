@@ -120,6 +120,11 @@ function LessonEditor({ userId, paths }: { userId: string; paths: SyncDirectoryL
             .filter((b) => b.available && summaryReplayOrder(next.lessonKey, b.problemId))
             .map((b) => [b.problemId, b.name]),
         ),
+        replayNames: Object.fromEntries(
+          next.bindings
+            .filter((b) => b.available && lessonReplayOrder(next.lessonKey, b.problemId))
+            .map((b) => [b.problemId, b.name]),
+        ),
         lessonKey: next.lessonKey,
         keys: next.bindings.filter((b) => b.available).map((b) => b.problemId),
         syncedAt: next.savedAt,

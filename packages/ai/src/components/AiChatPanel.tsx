@@ -14,7 +14,8 @@ import AiMessageRenderer from './agent/AiMessageRenderer'
 import RosieAssistantAvatar from './RosieAssistantAvatar'
 import AiVoiceInput from './AiVoiceInput'
 import '../ai-chat.css'
-import { Button, TextField } from '@rosie/ui/themes'
+import { StickerCard } from '@rosie/ui'
+import { Badge, Button, TextField } from '@rosie/ui/themes'
 
 type ChatMessage = {
   id: string
@@ -26,16 +27,10 @@ type ChatMessage = {
 }
 
 const EXAMPLE_PROMPTS = [
-  { icon: 'Aa', subject: '英语', prompt: 'apple 是什么意思？', tone: 'emerald' },
-  { icon: '文', subject: '语文', prompt: '小蝌蚪找妈妈讲什么？', tone: 'amber' },
-  { icon: '×', subject: '数学', prompt: '打字员那道题怎么做？', tone: 'indigo' },
+  { subject: '英语', prompt: 'apple 是什么意思？', color: 'green' },
+  { subject: '语文', prompt: '小蝌蚪找妈妈讲什么？', color: 'amber' },
+  { subject: '数学', prompt: '打字员那道题怎么做？', color: 'indigo' },
 ] as const
-
-const PROMPT_TONES = {
-  emerald: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
-  amber: 'bg-amber-50 text-amber-700 ring-amber-100',
-  indigo: 'bg-indigo-50 text-indigo-700 ring-indigo-100',
-} as const
 
 const MATH_PROBLEM_PROMPTS = [
   '帮我复习这个讲次的重点内容',
@@ -330,27 +325,31 @@ export default function AiChatPanel({
     >
       <div className="flex-1 space-y-5 overflow-y-auto px-1 py-5 sm:px-2 sm:py-6">
         {context?.subject === 'math' && (context.activeContent?.problemId || context.lessonPage) ? (
-          <section
+          <StickerCard
+            as="section"
             aria-labelledby="ai-math-context-title"
-            className="shadow-sticker-sm rounded-2xl border border-indigo-100 bg-indigo-50 p-3.5 text-left"
+            tone="info"
+            size="sm"
+            elevation="sm"
+            radius="md"
           >
-            <p className="text-[11px] font-black tracking-wider text-indigo-500 uppercase">
+            <p
+              id={context.activeContent?.title ? undefined : 'ai-math-context-title'}
+              className="text-[11px] font-black tracking-wider text-sky-700 uppercase"
+            >
               {context.activeContent?.problemId ? '已识别当前题目' : '已识别当前讲次'}
             </p>
             {context.activeContent?.title ? (
-              <h3
-                id="ai-math-context-title"
-                className="mt-1 text-sm leading-5 font-black text-slate-800"
-              >
+              <h3 id="ai-math-context-title" className="mt-1 text-sm leading-5 font-black text-slate-800">
                 {context.activeContent.title}
               </h3>
             ) : null}
-            <p className="mt-1 text-xs leading-5 text-slate-500">
+            <p className="mt-1 text-xs leading-5 text-slate-600">
               {context.activeContent?.problemId
                 ? '不用重复输入题目，选择一个问题就可以开始。'
                 : '选择一个问题，让 AI 帮你复习这个讲次。'}
             </p>
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className={`mt-3 grid gap-2 ${mode === 'overlay' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
               {MATH_PROBLEM_PROMPTS.map((prompt) => (
                 <Button
                   key={prompt}
@@ -378,44 +377,62 @@ export default function AiChatPanel({
                 </Button>
               ) : null}
             </div>
-          </section>
+          </StickerCard>
         ) : null}
 
         {messages.length === 0 && !context?.activeContent?.problemId && !context?.lessonPage ? (
-          <div className="mx-auto flex w-full max-w-2xl flex-col items-center py-3 text-center sm:py-8">
-            <div className="relative">
-              <div className="absolute inset-0 scale-110 rounded-full bg-amber-200/60" />
-              <RosieAssistantAvatar className="shadow-sticker relative size-20 rounded-[28px] ring-4 ring-white" />
+          <div
+            className={`mx-auto flex w-full max-w-2xl flex-col items-center text-center ${
+              mode === 'overlay' ? 'py-2' : 'py-3 sm:py-8'
+            }`}
+          >
+            <div className="relative size-24">
+              <span
+                aria-hidden
+                className="absolute top-1/2 left-1/2 size-16 -translate-x-1/2 -translate-y-[38%] rounded-full bg-rose-100 shadow-sticker"
+              />
+              <RosieAssistantAvatar className="relative size-full" />
             </div>
-            <h3 className="mt-5 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+            <h3 className="mt-3 text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
               嗨，很高兴和你一起学习！
             </h3>
             <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
               你可以直接说出不会的地方，也可以从下面选一个问题开始。
             </p>
-            <div className="mt-6 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-3">
+            <div
+              className={`mt-5 grid w-full gap-2.5 ${
+                mode === 'overlay' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-3'
+              }`}
+            >
               {EXAMPLE_PROMPTS.map((item) => (
-                <Button
+                <StickerCard
                   key={item.prompt}
-                  type="button"
-                  aria-label={item.prompt}
-                  onClick={() => void sendMessage(item.prompt)}
-                  variant="outline"
-                  color="gray"
-                  size="2"
+                  asChild
+                  interactive
+                  tone="white"
+                  size="sm"
+                  elevation="sm"
+                  radius="md"
+                  className="h-full min-w-0"
                 >
-                  <span
-                    className={`grid size-9 place-items-center rounded-xl text-xs font-black ring-1 ${PROMPT_TONES[item.tone]}`}
+                  <button // native-ok: 多行问题卡，Radix Button 是 inline-flex 居中，放不下学科和整句问题
+                    type="button"
+                    aria-label={item.prompt}
+                    onClick={() => void sendMessage(item.prompt)}
+                    className={
+                      mode === 'overlay'
+                        ? 'flex w-full items-center gap-3 text-left'
+                        : 'flex h-full w-full flex-col items-start gap-2 text-left'
+                    }
                   >
-                    {item.icon}
-                  </span>
-                  <span className="mt-3 block text-[10px] font-black tracking-wider text-slate-400 uppercase">
-                    {item.subject}
-                  </span>
-                  <span className="mt-1 block text-sm leading-5 font-bold text-slate-700 group-hover:text-violet-700">
-                    {item.prompt}
-                  </span>
-                </Button>
+                    <Badge variant="soft" radius="full" color={item.color}>
+                      {item.subject}
+                    </Badge>
+                    <span className="min-w-0 text-sm leading-5 font-bold text-slate-800">
+                      {item.prompt}
+                    </span>
+                  </button>
+                </StickerCard>
               ))}
             </div>
             <div className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[11px] font-semibold text-slate-400">
@@ -446,13 +463,13 @@ export default function AiChatPanel({
       </div>
 
       {error ? (
-        <p className="mx-2 mb-3 rounded-xl bg-rose-50 px-3 py-2 text-sm font-medium text-rose-600 ring-1 ring-rose-100">
-          {error}
-        </p>
+        <StickerCard tone="danger" size="sm" elevation="flat" radius="md" className="mx-2 mb-3">
+          <p className="text-sm font-medium text-red-800">{error}</p>
+        </StickerCard>
       ) : null}
 
       {teachingSession ? (
-        <div className="mx-2 mb-3 rounded-2xl bg-sky-50 p-4 ring-1 ring-sky-100">
+        <StickerCard tone="info" size="sm" elevation="flat" radius="md" className="mx-2 mb-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm font-semibold text-sky-900">
               当前阶段：{STAGE_LABELS[teachingSession.teachingStage]}
@@ -520,12 +537,12 @@ export default function AiChatPanel({
                 : '本次学习已暂停。'}
             </p>
           )}
-        </div>
+        </StickerCard>
       ) : null}
 
       <div className="border-kid-line sticky bottom-0 mt-auto border-t bg-white px-1 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-2">
         <form
-          className="border-kid-line shadow-sticker flex items-center gap-2 rounded-2xl border-2 bg-white p-1.5 focus-within:border-violet-300 focus-within:ring-4 focus-within:ring-violet-100/70"
+          className="flex items-center gap-2"
           onSubmit={(e) => {
             e.preventDefault()
             void sendMessage(input)

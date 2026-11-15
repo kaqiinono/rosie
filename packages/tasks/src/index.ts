@@ -3,6 +3,8 @@ export { default as HomeworkPage } from './HomeworkPage'
 export type { Homework } from './homework'
 
 export * from './practiceEntries'
+export * from './practiceProgression'
 export { usePracticeEntries } from './usePracticeEntries'
+export { useHomeworkData } from './useHomeworkData'
 
 export { default as PracticeStartPicker } from './components/homework/PracticeStartPicker'

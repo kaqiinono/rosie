@@ -1,8 +1,9 @@
 import { completionReward, isEarly } from './rewards'
-import { CORE_SUBJECTS, capacityOf } from '@/components/tree-demo/garden/model'
+import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
 import {
   dayOf,
   defaultRules,
+  isMustDo,
   shift,
   type TreeAction,
   type TreeData,
@@ -29,6 +30,10 @@ export function newTree(day: string): TreeData {
     upcoming: null,
     sun: 0,
     water: 0,
+    streak: 0,
+    lastDoneDay: null,
+    goalAwardedOn: null,
+    diary: [],
     magicDay: null,
     exchanges: [],
     boxReady: false,
@@ -37,32 +42,66 @@ export function newTree(day: string): TreeData {
   }
 }
 
-function fill(tree: TreeData) {
-  if (!tree.afterSchool) return
-  const slots = new Set(tree.steps.map((s) => s.slot))
-  const candidates = tree.steps.filter(
-    (s) =>
-      s.slot === null &&
-      !s.popped &&
-      !s.skipped &&
-      s.planned &&
-      s.planned <= tree.today &&
-      s.returned !== tree.today,
-  )
-  candidates.sort(
-    (a, b) =>
-      Number(!a.start) - Number(!b.start) ||
-      Number(a.planned !== tree.today) - Number(b.planned !== tree.today) ||
-      a.priority.localeCompare(b.priority) ||
-      a.deadline.localeCompare(b.deadline) ||
-      a.id.localeCompare(b.id),
-  )
-  for (let i = 0; i < 4; i++) {
-    if (slots.has(i)) continue
-    const next = candidates.shift()
-    if (!next) break
-    next.slot = i
+const GOAL_WATER = 2
+
+function remember(tree: TreeData, icon: string, text: string, at: string): void {
+  const note = { id: crypto.randomUUID(), t: at, icon, text }
+  tree.diary = [note, ...(tree.diary ?? [])].slice(0, 80)
+}
+
+function markDoneToday(tree: TreeData): void {
+  if (tree.lastDoneDay === tree.today) return
+  tree.streak = tree.lastDoneDay === shift(tree.today, -1) ? (tree.streak ?? 0) + 1 : 1
+  tree.lastDoneDay = tree.today
+}
+
+function awardGoal(tree: TreeData, at: string): void {
+  if (tree.goalAwardedOn === tree.today) return
+  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority))
+  if (!must.length || must.some((s) => !s.end)) return
+  tree.water += GOAL_WATER
+  tree.goalAwardedOn = tree.today
+  remember(tree, '🎯', '今天要做的都完成啦，奖励水滴 +2', at)
+}
+
+function onCompleted(tree: TreeData, step: WorkStep, at: string): void {
+  const makeup = !!step.planned && step.planned < tree.today
+  remember(tree, makeup ? '🍂' : '🌸', `${makeup ? '补做完成' : '做完了'}「${step.name}」`, at)
+  markDoneToday(tree)
+  awardGoal(tree, at)
+}
+
+/** 今天还没做完的，以及正在做的，全部飞成泡泡。过期还没开始的留在枯萎箱。 */
+export function placeTodayBubbles(tree: TreeData): void {
+  const visible = tree.steps.filter((s) => {
+    if (s.skipped) return false
+    if (s.start && !s.end) return true
+    if (s.end && !s.popped && dayOf(s.end) === tree.today) return true
+    if (s.planned !== tree.today) return false
+    return !s.end || !s.popped
+  })
+  const ids = new Set(visible.map((s) => s.id))
+  for (const step of tree.steps) if (!ids.has(step.id)) step.slot = null
+  const used = new Set<number>()
+  for (const step of visible) {
+    if (step.slot !== null && !used.has(step.slot)) used.add(step.slot)
+    else step.slot = null
   }
+  let slot = 0
+  const ordered = [...visible].sort(
+    (a, b) => a.priority.localeCompare(b.priority) || a.deadline.localeCompare(b.deadline) || a.id.localeCompare(b.id),
+  )
+  for (const step of ordered) {
+    if (step.slot !== null) continue
+    while (used.has(slot)) slot += 1
+    step.slot = slot
+    used.add(slot)
+    slot += 1
+  }
+}
+
+function fill(tree: TreeData) {
+  placeTodayBubbles(tree)
 }
 
 export function roll(tree: TreeData, today: string) {
@@ -116,6 +155,7 @@ function finish(tree: TreeData, s: WorkStep, end: string) {
   Object.assign(s, completionReward(tree, s, dayOf(end), isEarly(s)))
   tree.sun += s.sun
   tree.water += s.water
+  onCompleted(tree, s, end)
 }
 
 export function act(tree: TreeData, action: TreeAction, now: string) {
@@ -192,6 +232,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
     if (apple.kind === 'rainbow' && (!tree.lastBox || day >= shift(tree.lastBox, 7)))
       tree.boxReady = true
     tree.apples = tree.apples.filter((a) => a.id !== id)
+    remember(tree, apple.kind === 'rainbow' ? '🌈' : '🍎', apple.kind === 'rainbow' ? '摘下了彩虹果' : '摘下了一颗果子', now)
     return
   }
   if (kind === 'magic') {
@@ -224,38 +265,30 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         part.slot = null
       }
       fill(tree)
+      awardGoal(tree, now)
       break
     }
     case 'completeUntimed':
       if (s.end) return
       requireState(!s.start, '正在计时，请使用「完成了」。')
-      requireState((s.planned ?? s.scheduled) <= day, '请在作业当天完成。')
       s.end = day
       Object.assign(s, completionReward(tree, s, day, false))
       tree.sun += s.sun
       tree.water += s.water
       s.popped = s.slot === null
+      onCompleted(tree, s, now)
       break
     case 'preparePractice':
-      requireState(!s.end && !!s.planned && s.planned <= day, '请在作业当天查看练习内容。')
+      requireState(!s.end && !!s.planned, '请先安排作业日期。')
       break
     case 'start': {
       if (s.start || s.end) return
-      requireState(s.planned && s.planned <= day, '请先把作业安排到今天。')
+      requireState(s.planned, '请先安排作业日期。')
       requireState(!tree.steps.some((other) => other.start && !other.end), '请先处理正在做的作业。')
       s.start = now
       s.returned = null
-      if (tree.afterSchool && s.slot === null) {
-        // An off-tree start must be visible even when all four slots await popping.
-        const replace =
-          tree.steps.find((other) => other.slot !== null && !other.start) ??
-          tree.steps.find((other) => other.slot !== null && other.end)
-        if (replace && tree.steps.filter((other) => other.slot !== null).length >= 4) {
-          s.slot = replace.slot
-          replace.slot = null
-        }
-        fill(tree)
-      }
+      if (s.planned && s.planned < day) remember(tree, '🍂', `开始补做「${s.name}」`, now)
+      fill(tree)
       break
     }
     case 'finish':
@@ -295,29 +328,21 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       fill(tree)
       break
     case 'return':
-    case 'move': {
+    case 'move':
+    case 'nextDay': {
       requireState(!s.start && !s.end, '已开始或完成的作业不能改期。')
-      if (kind === 'move') {
+      if (kind === 'nextDay') {
+        const base = s.planned && s.planned > day ? s.planned : day
+        s.planned = shift(base, 1)
+      } else if (kind === 'move') {
         const target = action.day
-        requireState(
-          target === null ||
-            (target &&
-              target >= day &&
-              target <= shift(day, 6) &&
-              /^\d{4}-\d{2}-\d{2}$/.test(target)),
-          '请选择七天内的日期。',
-        )
-        if (target) {
-          const load = tree.steps
-            .filter((p) => p !== s && !p.skipped && p.planned === target)
-            .reduce((n, p) => n + p.stages.length, 0)
-          requireState(load + s.stages.length <= capacityOf(target), '这天的叶区已经排满了。')
-        }
+        requireState(target && /^\d{4}-\d{2}-\d{2}$/.test(target) && target >= day, '请选择今天或以后的日期。')
         s.planned = target
       }
       s.returned = kind === 'return' ? day : null
       s.slot = null
       fill(tree)
+      awardGoal(tree, now)
       break
     }
     case 'water': {

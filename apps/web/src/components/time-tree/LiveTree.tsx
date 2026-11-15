@@ -1,22 +1,24 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { AppDialog, StickerCard } from '@rosie/ui'
-import { Badge, Button, Flex, Text, TextField } from '@rosie/ui/themes'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from 'react'
+import { AppDialog, PocketMenuButton, StickerCard } from '@rosie/ui'
+import { Badge, Button, Flex, Popover, Text, TextField } from '@rosie/ui/themes'
 import TreeScene, { type ItemKind, type TreeSceneHandle } from '@/components/tree-demo/garden/TreeScene'
 import Sky, { daypartOf } from '@/components/tree-demo/garden/Sky'
-import Bubbles, { type BubbleState } from '@/components/tree-demo/garden/Bubbles'
+import type { BubbleState } from '@/components/tree-demo/garden/Bubbles'
+import ScatteredBubbles from './ScatteredBubbles'
 import StonePanel from '@/components/tree-demo/garden/StonePanel'
 import { buildRegions, todayCenter } from '@/components/tree-demo/garden/layout'
-import { CORE_SUBJECTS, SUBJECTS } from '@/components/tree-demo/garden/model'
-import { gardenAudio } from '@/components/tree-demo/garden/audio'
+import { CORE_SUBJECTS, SUBJECTS, type Apple, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
-import { shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
 import { isEarly } from '@/lib/time-tree/rewards'
 import { sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
+import DayTasksDialog from './DayTasksDialog'
 import { useTimeTree } from './useTimeTree'
 import { MinimizeTimeTreeButton } from './TimeTreeLauncher'
 import '@/components/tree-demo/garden/garden.css'
@@ -28,20 +30,100 @@ function bump(el: HTMLElement | null): void {
   el.classList.add('tg-bump')
 }
 
+const PILE_COLOR = { chinese: 'red', math: 'amber', english: 'blue' } as const
+
+function isCoreSubject(color: SubjectKey): color is CoreSubject {
+  return color === 'chinese' || color === 'math' || color === 'english'
+}
+
 function doneNotice(step: Pick<WorkStep, 'name' | 'sun' | 'water'>): string {
   const reward = step.sun || step.water ? ` · ☀️ +${step.sun} · 💧 +${step.water}` : ''
   return `🌸 ${step.name}完成啦！${reward}`
 }
 
-function ParkedTasks({ steps, onSelect }: { steps: WorkStep[]; onSelect: (id: string) => void }) {
+const statusQuery = '(min-width: 48rem)'
+function subscribeStatusLayout(update: () => void) {
+  const media = window.matchMedia(statusQuery)
+  media.addEventListener('change', update)
+  return () => media.removeEventListener('change', update)
+}
+const inlineStatus = () => window.matchMedia(statusQuery).matches
+const serverStatus = () => true
+
+interface StatusContentProps {
+  mustCount: number
+  mustDone: number
+  streak: number
+  sun: number
+  water: number
+  laterCount: number
+  vertical: boolean
+  sunRef: RefObject<HTMLSpanElement | null>
+  waterRef: RefObject<HTMLSpanElement | null>
+  onDiary: () => void
+  onLater: () => void
+}
+
+/** 顶部进度与入口区。桌面内联展示，移动端收进「菜单」浮层，两处共用同一份结构。 */
+function TreeStatusContent({
+  mustCount,
+  mustDone,
+  streak,
+  sun,
+  water,
+  laterCount,
+  vertical,
+  sunRef,
+  waterRef,
+  onDiary,
+  onLater,
+}: StatusContentProps) {
+  return (
+    <Flex gap="2" direction={vertical ? 'column' : 'row'} align={vertical ? 'stretch' : 'center'} wrap={vertical ? 'nowrap' : 'wrap'}>
+      <Badge color="pink" variant="soft" radius="full">
+        {mustCount ? `🎯 ${mustDone}/${mustCount}` : '🎯 没有必做'}
+      </Badge>
+      <Badge color="orange" variant="soft" radius="full">
+        🔥 {streak} 天
+      </Badge>
+      <Badge ref={sunRef} color="amber">
+        ☀️ {sun}
+      </Badge>
+      <Badge ref={waterRef} color="sky">
+        💧 {water}
+      </Badge>
+      <Button size="1" variant="soft" onClick={onDiary}>
+        📔 日记
+      </Button>
+      {laterCount > 0 && (
+        <Button size="1" variant="soft" onClick={onLater}>
+          更后面 {laterCount}
+        </Button>
+      )}
+      <Button asChild size="1" variant="soft">
+        <Link href="/setting/time-tree">家长设置</Link>
+      </Button>
+    </Flex>
+  )
+}
+
+function GroupedSteps({
+  steps,
+  empty,
+  onSelect,
+}: {
+  steps: WorkStep[]
+  empty: string
+  onSelect: (id: string) => void
+}) {
   const groups = new Map<string, WorkStep[]>()
   for (const step of steps) {
-    if (step.skipped || step.planned || step.end) continue
-    const group = groups.get(step.scheduled)
+    const day = step.planned ?? step.scheduled
+    const group = groups.get(day)
     if (group) group.push(step)
-    else groups.set(step.scheduled, [step])
+    else groups.set(day, [step])
   }
-  if (!groups.size) return <Text>这里暂时没有作业。</Text>
+  if (!groups.size) return <Text>{empty}</Text>
 
   return (
     <Flex direction="column" gap="4">
@@ -118,14 +200,16 @@ export default function LiveTree() {
   const api = useTimeTree()
   const { tree, busy, run } = api
   const [stepId, setStep] = useState<string | null>(null)
-  const [dialog, show] = useState<'' | 'park' | 'box' | 'wish' | 'apple' | 'flower' | 'fruitList'>(
-    '',
-  )
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const desktop = useSyncExternalStore(subscribeStatusLayout, inlineStatus, serverStatus)
+  const [taskDays, setTaskDays] = useState<string[] | null>(null)
+  const [dialog, show] = useState<'' | 'wilt' | 'later' | 'diary' | 'box' | 'wish' | 'flower' | 'fruitList'>('')
+  const [rainbowAt, setRainbowAt] = useState<{ id: string; x: number; y: number } | null>(null)
+  const [floats, setFloats] = useState<{ id: number; x: number; y: number; text: string; color: string }[]>([])
   const [itemId, setItem] = useState('')
   const [pin, setPin] = useState('')
   const [notice, notify] = useState('')
   const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
-  const [sound, setSound] = useState(true)
   const [hour, setHour] = useState(() => new Date().getHours())
   const [fresh, setFresh] = useState<Record<string, 'born'>>({})
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
@@ -133,9 +217,13 @@ export default function LiveTree() {
   const treeRef = useRef<TreeSceneHandle>(null)
   const sunRef = useRef<HTMLSpanElement>(null)
   const waterRef = useRef<HTMLSpanElement>(null)
+  const menuRef = useRef<HTMLButtonElement>(null)
   const bloomOrigin = useRef<{ id: string; at: { x: number; y: number } | null } | null>(null)
+  const piles = useRef<Partial<Record<SubjectKey, HTMLElement | null>>>({})
+  const picking = useRef(false)
+  const boxTimer = useRef<number | null>(null)
+  const floatSeq = useRef(0)
   const canvas = useRef<HTMLCanvasElement>(null)
-  const dock = useRef<HTMLDivElement>(null)
   const rail = useRef<HTMLElement>(null)
   const scene = useRef<HTMLDivElement>(null)
   const state = useMemo(() => (tree ? sceneState(tree) : null), [tree])
@@ -157,22 +245,17 @@ export default function LiveTree() {
       return { ...region, plannedMinutes: { completed: 0, total } }
     })
   }, [state, tree])
-  useEffect(() => {
-    gardenAudio.setSound(sound)
-  }, [sound])
   const ready = !!tree
   useEffect(() => {
-    if (!ready || !canvas.current || !dock.current) return
+    if (!ready || !canvas.current || !rail.current) return
     const effects = new GardenFx()
     effects.attach(canvas.current, () => null)
     fx.current = effects
     const obs = new ResizeObserver(() => {
-      // 树的底边 = 按钮坞高（桌面）；手机再加上底部宝石条高，见 garden.css
-      scene.current?.style.setProperty('--tg-dock-h', (dock.current?.offsetHeight ?? 64) + 'px')
+      // 窄屏只为合并面板的实际高度留位，宽屏释放整个底部。
       scene.current?.style.setProperty('--tg-rail-h', (rail.current?.offsetHeight ?? 0) + 'px')
       effects.resize()
     })
-    obs.observe(dock.current)
     if (rail.current) obs.observe(rail.current)
     if (scene.current) obs.observe(scene.current)
     const timer = setInterval(() => setHour(new Date().getHours()), 60000)
@@ -180,7 +263,6 @@ export default function LiveTree() {
       clearInterval(timer)
       obs.disconnect()
       effects.detach()
-      gardenAudio.dispose()
       fx.current = null
     }
   }, [ready])
@@ -189,6 +271,32 @@ export default function LiveTree() {
     const timer = setTimeout(() => notify(''), 3500)
     return () => clearTimeout(timer)
   }, [notice])
+  const celebrated = useRef<{ goal: string | null; day: string | null } | null>(null)
+  useEffect(() => {
+    if (!tree) return
+    const goal = tree.goalAwardedOn ?? null
+    const day = tree.lastDoneDay ?? null
+    const previous = celebrated.current
+    celebrated.current = { goal, day }
+    if (!previous) return
+    const parts: string[] = []
+    if (goal === tree.today && previous.goal !== goal) parts.push('今日目标达成，💧+2')
+    if ((tree.streak ?? 0) > 1 && previous.day !== day) parts.push(`连续 ${tree.streak} 天`)
+    if (parts.length) notify((current) => [current, ...parts].filter(Boolean).join(' · '))
+  }, [tree, notify])
+  useEffect(() => {
+    return () => {
+      if (boxTimer.current !== null) window.clearTimeout(boxTimer.current)
+    }
+  }, [])
+  useEffect(() => {
+    if (!rainbowAt) return
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape') setRainbowAt(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [rainbowAt])
   if (!tree || !state)
     return (
       <main className="flex min-h-dvh flex-col">
@@ -196,6 +304,11 @@ export default function LiveTree() {
       </main>
     )
   const air = tree.steps.filter((s) => s.slot !== null)
+  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority))
+  const mustDone = must.filter((s) => s.end).length
+  const wilted = tree.steps.filter((s) => !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
+  const horizon = shift(tree.today, 6)
+  const laterSteps = tree.steps.filter((s) => !s.skipped && !s.end && !!s.planned && s.planned > horizon)
   const states: Record<string, BubbleState> = Object.fromEntries(
     air.map((s): [string, BubbleState] => [
       s.id,
@@ -209,7 +322,6 @@ export default function LiveTree() {
     ]),
   )
   const step = tree.steps.find((s) => s.id === stepId)
-  const fruit = tree.apples.find((a) => a.id === itemId)
   const flower = tree.steps.find((s) => s.id === itemId.split('#')[0])
   const lastWish = tree.exchanges.at(-1)
   const nextWish = lastWish && shift(lastWish, 7)
@@ -220,6 +332,28 @@ export default function LiveTree() {
     show('')
     setPin('')
   }
+  const closeMenu = () => setMobileMenuOpen(false)
+  const status = (
+    <TreeStatusContent
+      mustCount={must.length}
+      mustDone={mustDone}
+      streak={tree.streak ?? 0}
+      sun={tree.sun}
+      water={tree.water}
+      laterCount={laterSteps.length}
+      vertical={!desktop}
+      sunRef={sunRef}
+      waterRef={waterRef}
+      onDiary={() => {
+        closeMenu()
+        show('diary')
+      }}
+      onLater={() => {
+        closeMenu()
+        show('later')
+      }}
+    />
+  )
 
   function bubbleCenter(id: string): { x: number; y: number } | null {
     const el = scene.current?.querySelector<HTMLElement>(`[data-bubble-id="${id}"]`)
@@ -236,9 +370,11 @@ export default function LiveTree() {
     })
     setFresh((prev) => ({ ...prev, [id]: 'born' }))
   }
-  function flyCount(from: { x: number; y: number }, el: HTMLSpanElement | null, color: string, dy: number) {
-    if (!el || !fx.current) return
-    const box = el.getBoundingClientRect()
+  function flyCount(from: { x: number; y: number }, el: HTMLElement | null, color: string, dy: number) {
+    // 移动端菜单收起时 ☀️/💧 徽章未挂载，改用「菜单」按钮作为落点，保持奖励动效。
+    const target = el ?? menuRef.current
+    if (!target || !fx.current) return
+    const box = target.getBoundingClientRect()
     fx.current.orb(
       from.x,
       from.y + dy,
@@ -247,7 +383,7 @@ export default function LiveTree() {
       color,
       7,
       0.85,
-      () => bump(el),
+      () => bump(target),
     )
   }
   function sow(
@@ -259,11 +395,8 @@ export default function LiveTree() {
     const from = bubbleCenter(step.id) ?? origin
     const ids = step.stages.map((_, index) => `${step.id}#${index}`)
     const effects = fx.current
-    gardenAudio.ensure()
-    gardenAudio.pop()
     if (!from || !effects) {
       if (ids.length) {
-        gardenAudio.bloom()
         for (const id of ids) showFlower(id)
       }
       return
@@ -319,21 +452,131 @@ export default function LiveTree() {
     notify(doneNotice(outcome.step))
     setRewardStep(outcome.step)
   }
-  function openItem(kind: ItemKind, id: string) {
+  function scenePoint(clientX: number, clientY: number): { x: number; y: number } {
+    const rect = scene.current?.getBoundingClientRect()
+    return { x: clientX - (rect?.left ?? 0), y: clientY - (rect?.top ?? 0) }
+  }
+  function applePoint(id: string, rect?: DOMRect): { x: number; y: number } {
+    if (rect && rect.width > 0) return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+    for (const region of regions) {
+      const hit = region.placed.find((item) => item.item.id === id)
+      if (!hit) continue
+      const at = treeRef.current?.toClient(hit.x, hit.y)
+      if (at) return at
+    }
+    const apple = tree?.apples.find((item) => item.id === id)
+    const region = apple && regions.find((item) => item.dateKey === apple.dateKey || item.mergedKeys.includes(apple.dateKey))
+    if (region) {
+      const at = treeRef.current?.toClient(region.geom.cx, region.geom.cy)
+      if (at) return at
+    }
+    const center = todayCenter()
+    return treeRef.current?.toClient(center.x, center.y) ?? { x: window.innerWidth / 2, y: window.innerHeight * 0.42 }
+  }
+  function addFloat(x: number, y: number, text: string, color: string): void {
+    const at = scenePoint(x, y - 28)
+    const id = ++floatSeq.current
+    setFloats((prev) => [...prev, { id, x: at.x, y: at.y, text, color }])
+    window.setTimeout(() => setFloats((prev) => prev.filter((item) => item.id !== id)), 1200)
+  }
+  function releaseApple(id: string): void {
+    setHidden((prev) => {
+      if (!prev.has(id)) return prev
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
+  }
+  function rainbowChooserStyle(at: { x: number; y: number }): { left: number; top: number; transform: string } {
+    const local = scenePoint(at.x, at.y)
+    const width = scene.current?.clientWidth ?? 360
+    const height = scene.current?.clientHeight ?? 640
+    const left = Math.min(Math.max(local.x, 132), Math.max(132, width - 132))
+    const below = local.y < 150
+    const top = below ? Math.min(local.y + 36, height - 88) : Math.min(Math.max(local.y, 128), height - 48)
+    return { left, top, transform: below ? 'translate(-50%, 0)' : 'translate(-50%, -120%)' }
+  }
+  async function commitPick(apple: Apple, color: SubjectKey, at: { x: number; y: number }) {
+    if (picking.current || busy) return
+    if (apple.kind === 'rainbow' && !isCoreSubject(color)) return
+    picking.current = true
+    setRainbowAt(null)
+    setHidden((prev) => {
+      const next = new Set(prev)
+      next.add(apple.id)
+      return next
+    })
+    const meta = SUBJECTS[color]
+    const pile = piles.current[color] ?? null
+    const box = pile?.getBoundingClientRect()
+    const to = box
+      ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
+      : { x: at.x, y: Math.min(window.innerHeight - 72, at.y + 200) }
+    const rainbow = apple.kind === 'rainbow'
+    const landed = () => {
+      bump(pile)
+    }
+    const effects = fx.current
+    if (effects && !effects.prefersReducedMotion()) {
+      effects.pluck(at.x, at.y, to.x, to.y, meta.color, meta.deep, rainbow, landed)
+    } else landed()
+    addFloat(at.x, at.y, `${rainbow ? '🌈 ' : ''}+1 ${meta.stone}`, meta.color)
+    try {
+      const next = await run(
+        rainbow && isCoreSubject(color) ? { kind: 'pick', id: apple.id, color } : { kind: 'pick', id: apple.id },
+      )
+      if (!next || next.apples.some((item) => item.id === apple.id)) {
+        releaseApple(apple.id)
+        return
+      }
+      if (rainbow && next.boxReady) {
+        const wait = effects?.prefersReducedMotion() ? 0 : 980
+        if (boxTimer.current !== null) window.clearTimeout(boxTimer.current)
+        boxTimer.current = window.setTimeout(() => {
+          boxTimer.current = null
+          show('box')
+        }, wait)
+      }
+    } finally {
+      picking.current = false
+    }
+  }
+  function beginPick(id: string, at: { x: number; y: number }) {
+    if (!tree || busy || picking.current) return
+    const apple = tree.apples.find((item) => item.id === id)
+    if (!apple) return
+    if (apple.kind === 'rainbow') {
+      setRainbowAt({ id, x: at.x, y: at.y })
+      return
+    }
+    void commitPick(apple, apple.kind, at)
+  }
+  function openItem(kind: ItemKind, id: string, rect?: DOMRect) {
     if (kind === 'bud') {
       if (states[id] === 'done') void clickBubble(id)
       else setStep(id)
       return
     }
+    if (kind === 'apple') {
+      beginPick(id, applePoint(id, rect))
+      return
+    }
+    setRainbowAt(null)
     setItem(id)
     show(kind)
   }
   return (
     <div
       ref={scene}
-      className="tg-scene tg-scene--rail-bottom z-40"
+      className="tg-scene tg-scene--responsive-rail z-40"
       data-daypart={daypartOf(hour)}
-      onPointerDownCapture={() => gardenAudio.ensure()}
+      onPointerDownCapture={(event) => {
+        if (!rainbowAt) return
+        const node = event.target
+        const element = node instanceof Element ? node : node instanceof Node ? node.parentElement : null
+        if (element?.closest('[data-rainbow-pick]')) return
+        setRainbowAt(null)
+      }}
     >
       <Sky daypart={daypartOf(hour)} />
       <div className="tg-tree-wrap">
@@ -344,11 +587,13 @@ export default function LiveTree() {
           fresh={fresh}
           hidden={hidden}
           onItem={openItem}
-          onParked={() => show('park')}
+          onParked={() => show('wilt')}
+          bin={{ title: '枯萎箱', count: wilted.length }}
+          onRegion={(region) => setTaskDays(region.dateKey ? [region.dateKey] : region.mergedKeys)}
         />
       </div>
-      <div className="tg-bubble-area">
-        <Bubbles
+        <ScatteredBubbles
+          priorities={Object.fromEntries(air.map((step) => [step.id, step.priority]))}
           bubbles={state.buds.filter((b) => states[b.id])}
           slots={state.bubbleSlots}
           states={states}
@@ -360,38 +605,32 @@ export default function LiveTree() {
           onHoldFinish={(id) => void completeRunning(id)}
           holdLocked={busy}
         />
-      </div>
-      <header className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
-        <Flex gap="2" align="center">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
+        <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
           <StickerCard asChild interactive size="sm" tone="paper" elevation="sm">
             <Link href="/">← 首页</Link>
           </StickerCard>
           <span className="tg-logo">🌳 生命树</span>
         </Flex>
-        <StickerCard size="sm" tone="paper">
-          <Flex gap="2" align="center" wrap="wrap">
-            <Button
-              size="1"
-              variant="soft"
-              aria-label={sound ? '关闭声音' : '开启声音'}
-              onClick={() => setSound(!sound)}
-            >
-              {sound ? '🔊' : '🔇'}
-            </Button>
-            <Badge ref={sunRef} color="amber">
-              ☀️ {tree.sun}
-            </Badge>
-            <Badge ref={waterRef} color="sky">
-              💧 {tree.water}
-            </Badge>
-            <Button asChild size="1" variant="soft">
-              <Link href="/setting/time-tree">家长设置</Link>
-            </Button>
-            <MinimizeTimeTreeButton disabled={busy} />
-          </Flex>
-        </StickerCard>
+        <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
+        {desktop ? (
+          <StickerCard data-tree-obstacle className="pointer-events-auto" size="sm" tone="paper">
+            {status}
+          </StickerCard>
+        ) : (
+          <Popover.Root open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <Popover.Trigger>
+              <PocketMenuButton ref={menuRef} data-tree-obstacle className="pointer-events-auto" aria-label="小口袋菜单" />
+            </Popover.Trigger>
+            <Popover.Content side="bottom" align="end" sideOffset={8} size="2" className="tg-status-pop">
+              {status}
+            </Popover.Content>
+          </Popover.Root>
+        )}
+          <MinimizeTimeTreeButton disabled={busy} />
+        </Flex>
       </header>
-      <aside ref={rail} className="tg-stone-rail" aria-label="宝石与盲盒">
+      <aside ref={rail} data-tree-obstacle className="tg-stone-rail" aria-label="宝石与工具">
         <StonePanel
           bottomOnMobile
           state={state}
@@ -410,7 +649,9 @@ export default function LiveTree() {
               )}
             </>
           }
-          registerPile={() => {}}
+          registerPile={(key, el) => {
+            piles.current[key] = el
+          }}
         />
         <StickerCard size="sm" tone="paper" className="mt-2 max-md:hidden">
           <Flex direction="column" gap="2">
@@ -432,31 +673,12 @@ export default function LiveTree() {
             )}
           </Flex>
         </StickerCard>
-      </aside>
-      <div
-        ref={dock}
-        className="absolute inset-x-0 bottom-0 z-10 flex justify-center p-3"
-      >
-        <StickerCard size="sm" tone="paper" elevation="sm" className="flex max-w-full flex-wrap justify-center gap-2">
-          <Button
-            loading={busy}
-            onClick={async () => {
-              const t = await run({ kind: 'school' })
-              if (t && !t.steps.some((s) => s.slot !== null))
-                notify(
-                  t.steps.some((s) => s.end && s.planned === t.today)
-                    ? '今天的作业做完啦'
-                    : '今天没有待做的作业',
-                )
-            }}
-          >
-            {tree.afterSchool ? '补满泡泡' : '🫧 放学了'}
-          </Button>
+        <StickerCard size="sm" tone="paper" elevation="sm" className="tg-rail-tools flex flex-col items-stretch justify-center gap-2">
           <Button
             color="amber"
             disabled={busy || tree.sun < 8 || tree.magicDay === tree.today}
             onClick={async () => {
-              if (await run({ kind: 'magic' })) gardenAudio.magic()
+              await run({ kind: 'magic' })
             }}
           >
             ☀️ 阳光魔法 · 8
@@ -468,12 +690,46 @@ export default function LiveTree() {
             <Link href="/today/calendar?view=homework">作业日历</Link>
           </Button>
         </StickerCard>
-      </div>
+      </aside>
       <canvas
         ref={canvas}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-20 size-full"
       />
+      <div className="pointer-events-none absolute inset-0 z-30">
+        {floats.map((item) => (
+          <span key={item.id} className="tg-float-text" style={{ left: item.x, top: item.y, color: item.color }}>
+            {item.text}
+          </span>
+        ))}
+      </div>
+      {rainbowAt && (
+        <div
+          role="group"
+          aria-label="彩虹果放进哪一堆"
+          data-rainbow-pick
+          className="absolute z-30"
+          style={rainbowChooserStyle(rainbowAt)}
+        >
+          <div className="tg-rainbow-pick flex max-w-[19rem] flex-wrap justify-center gap-2">
+            {CORE_SUBJECTS.map((color) => (
+              <Button
+                key={color}
+                size="2"
+                color={PILE_COLOR[color]}
+                disabled={busy}
+                aria-label={`放进${SUBJECTS[color].stone}`}
+                onClick={() => {
+                  const apple = tree.apples.find((item) => item.id === rainbowAt.id)
+                  if (apple) void commitPick(apple, color, { x: rainbowAt.x, y: rainbowAt.y })
+                }}
+              >
+                {SUBJECTS[color].emoji} {SUBJECTS[color].stone}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
       {(api.message || notice) && (
         <div
           role="status"
@@ -481,6 +737,15 @@ export default function LiveTree() {
         >
           <StickerCard size="sm">{api.message || notice}</StickerCard>
         </div>
+      )}
+      {taskDays && !step && !rewardStep && (
+        <DayTasksDialog
+          tree={tree}
+          days={taskDays}
+          busy={busy}
+          onClose={() => setTaskDays(null)}
+          onSelect={setStep}
+        />
       )}
       {step && (
         <StepPanel
@@ -517,8 +782,16 @@ export default function LiveTree() {
           </Flex>
         )}
       </AppDialog>
+      <DiaryDialog
+        open={dialog === 'diary'}
+        entries={(tree.diary ?? []).map((entry) => ({ ...entry, t: Date.parse(entry.t) }))}
+        totalPops={(tree.diary ?? []).filter((entry) => entry.icon === '🌸' || entry.icon === '🍂').length}
+        rings={state.rings}
+        exchanges={tree.exchanges.length}
+        onClose={close}
+      />
       <AppDialog
-        open={!!dialog}
+        open={!!dialog && dialog !== 'diary'}
         closeDisabled={busy}
         onOpenChange={(open) => {
           if (!open) close()
@@ -526,21 +799,39 @@ export default function LiveTree() {
         title={
           {
             '': '生命树',
-            park: '先不做',
+            wilt: '枯萎箱',
+            later: '更后面的作业',
+            diary: '成长日记',
             box: '🎁 我的盲盒',
             wish: '兑换心愿',
-            apple: '摘苹果',
             flower: flower?.name,
             fruitList: '待摘的苹果',
           }[dialog] || '生命树'
         }
       >
         <Flex direction="column" gap="3">
-          {dialog === 'park' && (
-            <ParkedTasks steps={tree.steps} onSelect={(id) => {
-              close()
-              setStep(id)
-            }} />
+          {dialog === 'wilt' && (
+            <>
+              <Text size="2" color="gray">这些日子过去了还没做完。点进去就能补做。</Text>
+              <GroupedSteps
+                steps={wilted}
+                empty="现在没有枯萎的作业。"
+                onSelect={(id) => {
+                  close()
+                  setStep(id)
+                }}
+              />
+            </>
+          )}
+          {dialog === 'later' && (
+            <GroupedSteps
+              steps={laterSteps}
+              empty="七天里都排得下。"
+              onSelect={(id) => {
+                close()
+                setStep(id)
+              }}
+            />
           )}
           {dialog === 'wish' && (
             <>
@@ -593,36 +884,18 @@ export default function LiveTree() {
           )}
           {dialog === 'fruitList' &&
             tree.apples.map((a) => (
-              <Button key={a.id} variant="soft" onClick={() => openItem('apple', a.id)}>
-                {a.dateKey} · {a.kind === 'rainbow' ? '🌈 彩虹果' : SUBJECTS[a.kind].label + '苹果'}
-              </Button>
-            ))}
-          {dialog === 'apple' &&
-            fruit &&
-            (fruit.kind === 'rainbow' ? (
-              CORE_SUBJECTS.map((color) => (
-                <Button
-                  key={color}
-                  loading={busy}
-                  onClick={async () => {
-                    const t = await run({ kind: 'pick', id: itemId, color })
-                    if (t) show(t.boxReady ? 'box' : '')
-                  }}
-                >
-                  🌈 放进{SUBJECTS[color].stone}
-                </Button>
-              ))
-            ) : (
               <Button
-                loading={busy}
-                onClick={async () => {
-                  if (await run({ kind: 'pick', id: itemId })) {
-                    gardenAudio.reward()
-                    close()
-                  }
+                key={a.id}
+                variant="soft"
+                disabled={busy}
+                onClick={() => {
+                  const at = applePoint(a.id)
+                  close()
+                  if (a.kind === 'rainbow') setRainbowAt({ id: a.id, x: at.x, y: at.y })
+                  else void commitPick(a, a.kind, at)
                 }}
               >
-                🍎 摘下苹果
+                {a.dateKey} · {a.kind === 'rainbow' ? '🌈 彩虹果' : SUBJECTS[a.kind].label + '苹果'}
               </Button>
             ))}
           {dialog === 'box' &&

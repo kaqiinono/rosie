@@ -18,7 +18,7 @@ export const CATALOG_KINDS_BY_SUBJECT: Record<'math' | 'chinese' | 'english' | '
   english: ['englishCards', 'englishPractice', 'englishReading', 'englishSentences', 'englishGrammar'],
   life: [],
 }
-export async function buildCatalog(kind: CatalogKind, section: string): Promise<Catalog> {
+async function buildRawCatalog(kind: CatalogKind, section: string): Promise<Catalog> {
   if (kind === 'math') {
     const [{ SEA_LESSONS }, { lessonByKey }, { sectionSourceLabel }] = await Promise.all([
       import('@rosie/math/utils/sea-data'), import('@rosie/math-kit/utils/lesson-registry'), import('@rosie/math-kit/utils/problem-location'),
@@ -98,9 +98,36 @@ export async function buildCatalog(kind: CatalogKind, section: string): Promise<
   return { subject: 'english', path: `/english/words/${kind === 'englishCards' ? 'cards' : 'practice'}?stage={stage}&units={unit}&lessons={lessonKey}`, groups: [...groups.values()] }
 }
 
+/** Shared metadata for both first-use presets and the course picker. */
+export async function buildCatalog(kind: CatalogKind, section: string): Promise<Catalog> {
+  const catalog = await buildRawCatalog(kind, section)
+  const contentType = kind === 'math' ? 'math-question' : kind === 'englishReading' ? 'english-reading'
+    : kind === 'englishSentences' ? 'english-sentence' : kind === 'chineseCourse' ? 'chinese-course' : undefined
+  return { ...catalog, groups: catalog.groups.map((group) => ({ ...group, rows: group.rows.map((row) => ({
+    ...row,
+    selectionPath: practiceSelectionPath(row),
+    values: contentType ? { ...row.values, contentType } : row.values,
+  })) })) }
+}
+
+/** Only pass newly selected catalog rows: saved rows must retain user edits and ordering. */
+export async function generateCatalogRows(catalog: Catalog, selected = catalog.groups.flatMap((group) => group.rows)): Promise<PracticeEntryRow[]> {
+  const order = new Map(catalog.groups.flatMap((group) => group.rows).map((row, index) => [row.id, index]))
+  const rows = [...selected].sort((a, b) => {
+    if (catalog.subject === 'english' && a.values.stage && b.values.stage) {
+      for (const key of ['stage', 'unit', 'lesson', 'sentenceId']) {
+        const difference = (a.values[key] ?? '').localeCompare(b.values[key] ?? '', 'en', { numeric: true })
+        if (difference) return difference
+      }
+    }
+    return (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER)
+  })
+  return rows.length ? attachResources(rows) : []
+}
+
 export async function loadCatalog(kind: CatalogKind, section: string): Promise<Catalog> {
   const catalog = await buildCatalog(kind, section)
-  const rows = await attachResources(catalog.groups.flatMap((group) => group.rows).map((row) => ({ ...row, selectionPath: practiceSelectionPath(row) })))
+  const rows = await generateCatalogRows(catalog)
   const byId = new Map(rows.map((row) => [row.id, row]))
   return { ...catalog, groups: catalog.groups.map((group) => ({ ...group, rows: group.rows.map((row) => byId.get(row.id)!) })) }
 }

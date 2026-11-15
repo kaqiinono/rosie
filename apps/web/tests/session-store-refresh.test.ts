@@ -1,7 +1,22 @@
 import { describe, it, expect, vi } from 'vitest'
-import { createUserSessionStore } from '@rosie/core'
+import { createUserSessionStore, refreshSessionStore } from '@rosie/core'
 
 describe('createUserSessionStore.refreshInBackground', () => {
+  it('refreshes after a mutation even when the derived store is still initially loading', async () => {
+    let finishInitial!: (value: string[]) => void
+    const key = 'test_mutation_loading_' + Math.random()
+    const fetch = vi.fn(async () => ['new homework'])
+    fetch.mockImplementationOnce(() => new Promise(resolve => { finishInitial = resolve }))
+    const store = createUserSessionStore<string[]>(key, { empty: [], fetch })
+    const initial = store.ensureLoaded('child')
+    const refreshed = refreshSessionStore(key, 'child')
+    finishInitial(['old homework'])
+    await initial
+    await refreshed
+    expect(store.getSessionData('child')).toEqual(['new homework'])
+    expect(store.getSnapshot('another-child').status).toBe('idle')
+  })
+
   it('keeps ready data visible while a background refresh runs', async () => {
     let resolveFetch!: (v: string[]) => void
     const fetch = vi.fn(

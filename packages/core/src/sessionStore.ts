@@ -40,11 +40,16 @@ export interface UserSessionStore<T> {
 
 const globalRegistry = new Map<string, UserSessionStore<unknown>>()
 
-/** Refresh an already-loaded derived view after a successful related mutation. */
-export function refreshSessionStore(storeKey: string, userId: string): Promise<void> {
+/** Refresh a loaded/loading derived view after a successful related mutation. */
+export async function refreshSessionStore(storeKey: string, userId: string): Promise<void> {
   const store = globalRegistry.get(storeKey)
-  if (!store || store.getSnapshot(userId).status !== 'ready') return Promise.resolve()
-  return store.refreshInBackground(userId)
+  if (!store) return
+  const status = store.getSnapshot(userId).status
+  if (status === 'idle') return
+  // An initial request may have read the data before the related mutation.
+  // Wait for it, then issue a fresh request instead of losing the notification.
+  if (status === 'loading') await store.ensureLoaded(userId).catch(() => undefined)
+  await store.refreshInBackground(userId)
 }
 
 /** Invalidate one store (all users) or every registered store when key omitted. */

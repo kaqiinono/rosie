@@ -58,28 +58,28 @@ function ExpandedProblemCard({
   const practiceStyle = problemPracticeStyle(count)
 
   const cardBody = (
-    <>
-      <div className="bg-app-blue-light text-app-blue-dark flex h-8 min-w-8 shrink-0 items-center justify-center rounded-lg px-2 text-xs font-semibold whitespace-nowrap tabular-nums">
-        {problemCardDisplayId(problem)}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="text-text-primary text-sm leading-snug font-semibold break-words">
+    <div className="w-full min-w-0 text-left">
+      <div className="flex items-start gap-2">
+        <div className="bg-app-blue-light text-app-blue-dark flex h-8 min-w-8 shrink-0 items-center justify-center rounded-lg px-2 text-xs font-semibold whitespace-nowrap tabular-nums">
+          {problemCardDisplayId(problem)}
+        </div>
+        <div className="text-text-primary min-w-0 flex-1 pt-1 text-sm leading-snug font-semibold break-words">
           {problem.title}
         </div>
-        <div className="text-text-secondary mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px]">
-          <span
-            className={`rounded px-1.5 py-0.5 font-medium ${tagStyles[problem.tag] || 'bg-gray-100 text-gray-600'}`}
-          >
-            {problem.tagLabel}
-          </span>
-          <span className="shrink-0 font-medium tabular-nums">难度 {problem.difficulty}/5</span>
-          <AnalysisGuideBadge hasImage={hasAnalysis} variant="metadata" />
-          {sourceLabel && <span className="max-w-full truncate font-medium">{sourceLabel}</span>}
-          <PracticeCountBadge count={count} compact />
-        </div>
+        <span className="shrink-0 pt-1 text-base">{MASTERY_ICON[level]}</span>
       </div>
-      <span className="shrink-0 text-base">{MASTERY_ICON[level]}</span>
-    </>
+      <div className="text-text-secondary mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px]">
+        <span
+          className={`rounded px-1.5 py-0.5 font-medium ${tagStyles[problem.tag] || 'bg-gray-100 text-gray-600'}`}
+        >
+          {problem.tagLabel}
+        </span>
+        <span className="shrink-0 font-medium tabular-nums">难度 {problem.difficulty}/5</span>
+        <AnalysisGuideBadge hasImage={hasAnalysis} variant="metadata" />
+        {sourceLabel && <span className="max-w-full truncate font-medium">{sourceLabel}</span>}
+        <PracticeCountBadge count={count} compact />
+      </div>
+    </div>
   )
 
   return (

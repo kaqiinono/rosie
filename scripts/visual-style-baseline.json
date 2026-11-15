@@ -24,9 +24,6 @@
   "packages/ai/src/components/AiAssistantPage.tsx": {
     "hand-card": 2
   },
-  "packages/ai/src/components/AiChatPanel.tsx": {
-    "hand-card": 1
-  },
   "packages/ai/src/components/AiFloatingAssistant.tsx": {
     "hand-card": 1
   },

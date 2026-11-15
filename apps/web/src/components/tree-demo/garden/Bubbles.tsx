@@ -37,7 +37,7 @@ const TAP_SLOP = 12
 const HOLD_PAD = 18
 const RETRACT_MS = 180
 
-type Props = {
+export type BubblesProps = {
   bubbles: Bud[]
   states?: Record<string, BubbleState>
   slots: Record<string, number>
@@ -49,9 +49,14 @@ type Props = {
   onHoldFinish?: (budId: string) => void
   /** 正在记账时不要开始新的按住完成。 */
   holdLocked?: boolean
+  /** 排成一排时用较小尺寸。 */
+  compact?: boolean
+  positions?: Record<string, { x: number; y: number }>
+  /** Actual responsive diameters, shared with collision placement. */
+  sizes?: Record<string, number>
 }
 
-type BubbleStyle = CSSProperties & Record<'--tg-size' | '--tg-tint' | '--tg-dur' | '--tg-delay', string>
+type BubbleStyle = CSSProperties & Record<'--tg-size' | '--tg-tint' | '--tg-dur' | '--tg-delay' | '--tg-drift-x' | '--tg-drift-y', string>
 
 type HoldGesture = {
   id: string
@@ -141,8 +146,8 @@ function HoldRing({ progress, color }: { progress: number; color: string }) {
   )
 }
 
-/** 放学以后飘在树旁边和上方的泡泡，同时最多 4 个，各占一个固定天空位置 */
-export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, onHoldFinish, holdLocked = false }: Props) {
+/** 飘在树上的作业泡泡。生命树会一次放出当天全部，原型仍用四个固定位置。 */
+export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
   const timing = bubbles.some((bud) => states?.[bud.id] === 'running' && startedAt?.[bud.id])
   const [localNow, setNow] = useState(() => Date.now())
   const now = localNow + clockOffsetMs
@@ -362,13 +367,15 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
         const holdable = status === 'running' && !!onHoldFinish
         const hint = holdable ? '，按住开花，点一下查看' : ''
         const style: BubbleStyle = {
-          '--tg-size': `clamp(${72 + n * 4}px, ${12 + n}vw, ${104 + n * 10}px)`,
+          '--tg-size': sizes?.[bud.id] ? `${sizes[bud.id]}px` : compact ? '4.35rem' : `clamp(${72 + n * 4}px, ${12 + n}vw, ${104 + n * 10}px)`,
           '--tg-tint': SUBJECT_TINT[bud.subject],
-          '--tg-dur': `${3.8 + (slot % 3) * 0.7}s`,
-          '--tg-delay': `${-slot * 0.9}s`,
+          '--tg-dur': `${positions ? 6.4 + (slot % 7) * 0.73 : 3.8 + (slot % 3) * 0.7}s`,
+          '--tg-delay': `${-slot * 1.37}s`,
+          '--tg-drift-x': `${(slot % 2 ? -1 : 1) * (5 + slot % 4)}px`,
+          '--tg-drift-y': `${6 + slot % 3}px`,
         }
         return (
-          <div key={bud.id} className="tg-bslot" data-slot={slot}>
+          <div key={bud.id} className="tg-bslot" data-slot={slot} style={positions?.[bud.id] ? { left: positions[bud.id].x, top: positions[bud.id].y } : undefined}>
             {/* native-ok: 泡泡是游戏物件，不是标准按钮，用 div + role=button 并支持键盘 */}
             <div
               role="button"

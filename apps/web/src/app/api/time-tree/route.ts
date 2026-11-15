@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server'
 import type { Homework } from '@rosie/tasks'
 import { createAdminSupabase, getUserFromRequest } from '@/lib/api-auth'
 import { isValidParentPin, verifyParentPin } from '@/lib/parent-pin'
-import { act, newTree, roll, TreeConflict } from '@/lib/time-tree/engine'
+import { act, newTree, placeTodayBubbles, roll, TreeConflict } from '@/lib/time-tree/engine'
 import { bindPractice, settlePractice } from '@/lib/time-tree/practice'
 import { schedule } from '@/lib/time-tree/schedule'
+import { regenerateHomework, regenerationTargets } from '@/lib/time-tree/regenerate'
 import { dayOf, shift, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
 export const dynamic = 'force-dynamic'
@@ -31,21 +32,6 @@ export async function POST(req: Request) {
       if (error || !(await verifyParentPin(input.pin, data)))
         return failure('家长密码验证失败。', 403)
     }
-    // Most cross-device polls only need the version; avoid transferring the journal twice.
-    if (input.kind === 'sync' && Number.isSafeInteger(input.knownRevision)) {
-      const latest = await db
-        .from('time_tree_gardens')
-        .select('revision,today:garden->>today')
-        .eq('user_id', user.id)
-        .maybeSingle()
-      if (latest.error) throw latest.error
-      if (
-        latest.data?.revision === input.knownRevision &&
-        latest.data?.today === dayOf(new Date())
-      ) {
-        return new NextResponse(null, { status: 204, headers: { 'X-Tree-Time': new Date().toISOString() } })
-      }
-    }
     for (let attempt = 0; attempt < 3; attempt++) {
       const saved = await db
         .from('time_tree_gardens')
@@ -61,8 +47,21 @@ export async function POST(req: Request) {
       const tree: TreeData = saved.data?.garden ?? newTree(today)
       const original = JSON.stringify(tree)
       const previousDay = tree.today
+      if (input.kind === 'regenerate') {
+        if (previousDay !== today)
+          return failure('日期已变化，请刷新作业后重新预览。', 409)
+        const range = input.regenerate
+        const validDate = (value: unknown): value is string => typeof value === 'string' &&
+          /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) &&
+          new Date(value).toISOString().slice(0, 10) === value
+        if (!range || !validDate(range.from) || !validDate(range.through) || range.from < today ||
+          range.through < range.from || range.through > shift(today, 365) || !Number.isSafeInteger(range.expectedCount) || range.expectedCount < 0)
+          return failure('请选择今天起一年内的有效日期范围。', 400)
+        if (regenerationTargets(tree, range.from, range.through).count !== range.expectedCount)
+          return failure('待替换数量已变化，请重新预览后确认。', 409)
+      }
       roll(tree, today)
-      if (input.kind === 'school' || input.kind === 'sync' || today !== previousDay) {
+      if (input.kind === 'school' || input.kind === 'sync' || input.kind === 'regenerate' || today !== previousDay) {
         const templates: Homework[] = []
         for (let offset = 0; ; offset += 500) {
           const page = await db
@@ -76,7 +75,9 @@ export async function POST(req: Request) {
           templates.push(...(page.data as Homework[]))
           if (page.data.length < 500) break
         }
-        schedule(tree, templates, previousDay, shift(today, 6))
+        if (input.kind === 'regenerate' && input.regenerate)
+          regenerateHomework(tree, templates, input.regenerate.from, input.regenerate.through)
+        else schedule(tree, templates, previousDay, shift(today, 6))
       }
       const step = tree.steps.find((s) => s.id === input.id)
       if (step && !step.end && ['preparePractice', 'start', 'completeUntimed', 'record'].includes(input.kind)) {
@@ -86,7 +87,8 @@ export async function POST(req: Request) {
         try { bindPractice(tree, step, template.data as Homework | undefined) }
         catch (error) { return failure(error instanceof Error ? error.message : '练习入口配置无效', 409) }
       }
-      act(tree, input, now)
+      if (input.kind !== 'regenerate') act(tree, input, now)
+      placeTodayBubbles(tree)
       if (step && ['finish', 'completeUntimed', 'record', 'skip'].includes(input.kind)) settlePractice(tree, step)
       if (saved.data && original === JSON.stringify(tree) && input.kind !== 'openBox')
         return NextResponse.json({ revision, tree }, { headers: { 'X-Tree-Time': new Date().toISOString() } })

@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { isAdaptivePlanPath } from './englishPlans'
-import { dailyCalcPath, ensureEntryPresets } from './presets'
+import { applyEntryPresets, dailyCalcPath, presetApplyMessage } from './presets'
 import { AppDialog, LoadingOverlay, PageBreadcrumb, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Grid, Heading, Select, Text, TextField } from '@rosie/ui/themes'
 import { entryVariables, usePracticeEntries, type PracticeEntry } from '@rosie/tasks'
@@ -25,20 +25,36 @@ export default function EntryManager({ initialSubject = 'math' }: { initialSubje
   const [subject, setSubject] = useState<Draft['subject']>(initialSubject)
   const api = usePracticeEntries()
   const userId = api.user?.id
-  const [initializing, setInitializing] = useState(true)
-  const [setupError, setSetupError] = useState('')
-  const [setupAttempt, retrySetup] = useState(0)
-  useEffect(() => {
-    if (!userId) return
-    let cancelled = false
-    setInitializing(true); setSetupError('')
-    void ensureEntryPresets(userId).then(async () => { if (!cancelled) await api.refresh() })
-      .catch((error: unknown) => { if (!cancelled) setSetupError(error instanceof Error ? error.message : '预设内容初始化失败') })
-      .finally(() => { if (!cancelled) setInitializing(false) })
-    return () => { cancelled = true }
-    // The owner and explicit retry control initialization; store refresh is owner-scoped.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, setupAttempt])
+  const [presetBusy, setPresetBusy] = useState(false)
+  const presetLock = useRef(false)
+  const [presetFollowUp, setPresetFollowUp] = useState(false)
+  const [presetMessage, setPresetMessage] = useState('')
+  const [presetIsError, setPresetIsError] = useState(false)
+  async function applyPresets() {
+    if (!userId || presetLock.current) return
+    presetLock.current = true
+    setPresetBusy(true)
+    setPresetIsError(false)
+    setPresetMessage('正在读取课程并预设…')
+    try {
+      const result = await applyEntryPresets(userId)
+      setPresetFollowUp(true)
+      const summary = presetApplyMessage(result)
+      try {
+        await api.refresh()
+        setPresetMessage(summary)
+      } catch {
+        setPresetIsError(true)
+        setPresetMessage(`${summary}列表刷新失败，请重试读取。`)
+      }
+    } catch (error) {
+      setPresetIsError(true)
+      setPresetMessage(error instanceof Error ? error.message : '预设内容失败')
+    } finally {
+      presetLock.current = false
+      setPresetBusy(false)
+    }
+  }
   const [editing, setEditing] = useState<PracticeEntry | null | undefined>(undefined)
   const [draft, setDraft] = useState<Draft>(empty)
   const [busy, setBusy] = useState(false)
@@ -100,15 +116,20 @@ export default function EntryManager({ initialSubject = 'math' }: { initialSubje
   }
   return <Flex direction="column" gap="4" p="4" maxWidth="1100px" mx="auto" minHeight="85dvh">
     <PageBreadcrumb variant="inline" />
-    <Flex justify="between" align="center"><Heading>作业内容管理</Heading><Button onClick={() => open(null)}>新增内容</Button></Flex>
-    <Text color="gray">维护作业内容及完整列表。作业只需选择内容与开始项，各自记录进度。</Text>
+    <Flex justify="between" align="center" gap="3" wrap="wrap">
+      <Heading>作业内容管理</Heading>
+      <Flex gap="2" wrap="wrap">
+        <Button variant="soft" loading={presetBusy} disabled={!userId || presetBusy} onClick={() => void applyPresets()}>{presetFollowUp ? '更新预设' : '内容预设'}</Button>
+        <Button onClick={() => open(null)}>新增内容</Button>
+      </Flex>
+    </Flex>
+    <Text color="gray">维护作业内容及完整列表。进入页面只读取已保存的内容。点「内容预设」时才会检查：还没有就新增，已经有过就按当前预设更新。作业只需选择内容与开始项，各自记录进度。</Text>
+    {presetMessage && <Text role={presetIsError ? 'alert' : 'status'}>{presetMessage}</Text>}
     <Select.Root value={subject} onValueChange={(value) => setSubject(value as Draft['subject'])}>
       <Select.Trigger aria-label="筛选内容科目" /><Select.Content>{Object.entries(subjects).map(([id, label]) => <Select.Item key={id} value={id}>{label}</Select.Item>)}</Select.Content>
     </Select.Root>
     {message && editing === undefined && <Text role="status">{message}</Text>}
-    {setupError && <Flex direction="column" gap="2"><Text role="alert">预设内容创建失败：{setupError}</Text><Button variant="soft" onClick={() => retrySetup((value) => value + 1)}>重新创建预设内容</Button></Flex>}
-    {initializing && <Text role="status">正在准备三科预设内容…</Text>}
-    {api.isLoading || initializing ? <Flex flexGrow="1" position="relative"><LoadingOverlay visible placement="content" /></Flex> : api.error ?
+    {api.isLoading ? <Flex flexGrow="1" position="relative"><LoadingOverlay visible placement="content" /></Flex> : api.error ?
       <Button loading={busy} onClick={async () => { setBusy(true); try { await api.refresh() } catch { setMessage('读取失败，请重试') } finally { setBusy(false) } }}>读取失败，重试</Button> : <>
       {!entries.length && <Text>本科目还没有作业内容。</Text>}
       {entries.map((entry) => <StickerCard key={entry.id} size="md">
@@ -200,6 +221,11 @@ export default function EntryManager({ initialSubject = 'math' }: { initialSubje
                   <Button size="1" variant="soft" onClick={() => setPreviewId(previewId === row.id ? null : row.id)}>{previewId === row.id ? '收起预览' : '预览内容'}</Button>
                   <Button size="1" variant="soft" aria-label={`上移${row.label}`} disabled={index === 0} onClick={() => moveRow(index, -1)}>上移</Button>
                   <Button size="1" variant="soft" aria-label={`下移${row.label}`} disabled={index === draft.rows.length - 1} onClick={() => moveRow(index, 1)}>下移</Button>
+                  <Button size="1" variant="soft" color="red" aria-label={`删除${row.label}`} disabled={busy || refreshingResources || loadingCatalog} onClick={() => {
+                    setDraft(previous => ({ ...previous, rows: previous.rows.filter(item => item.id !== row.id) }))
+                    if (previewId === row.id) setPreviewId(null)
+                    setMessage(`已从清单移除「${row.label}」，保存后生效。`)
+                  }}>删除此项</Button>
                 </Flex>
               </Flex>
               {rowsExpanded && <>

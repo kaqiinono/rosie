@@ -412,12 +412,36 @@
   animation: tg-spin 9s linear infinite;
 }
 
-/* ---------- 泡泡：空中四个固定位置 ---------- */
+/* ---------- 泡泡：原型固定位置；生命树按安全区域散落 ---------- */
 .tg-bslot {
   position: absolute;
   z-index: 4;
   transform: translate(-50%, -50%);
   pointer-events: auto;
+}
+.tg-bubble-area--scattered {
+  inset: var(--tg-stage-top) var(--tg-stage-right) var(--tg-tree-bottom, 4rem) 0;
+  pointer-events: none;
+}
+.tg-bubble-area--scattered .tg-bslot:has(.tg-bubble:is(:hover, :focus-visible, :active, [data-holding='true'])) {
+  z-index: 5;
+}
+.tg-bubble-area--scattered .tg-bubble {
+  animation-name: tg-drift;
+}
+.tg-bubble-area--scattered .tg-bubble-in {
+  animation-duration: var(--tg-dur);
+  animation-delay: var(--tg-delay);
+}
+.tg-bubble-area--scattered .tg-bubble:is(:hover, :focus-visible, :active),
+.tg-bubble-area--scattered .tg-bubble:is(:hover, :focus-visible, :active) .tg-bubble-in {
+  animation-play-state: paused;
+}
+@keyframes tg-drift {
+  0%, 100% { translate: 0 0; }
+  23% { translate: var(--tg-drift-x) calc(-1 * var(--tg-drift-y)); }
+  51% { translate: calc(-0.35 * var(--tg-drift-x)) calc(-0.6 * var(--tg-drift-y)); }
+  78% { translate: calc(-0.8 * var(--tg-drift-x)) calc(0.45 * var(--tg-drift-y)); }
 }
 .tg-bslot[data-slot='0'] {
   left: 13%;
@@ -463,6 +487,62 @@
 }
 /* 手机：宝石面板沉到底部横排，右侧不再占位，把整块宽度和高度尽量让给树。
    由 LiveTree 写入 --tg-dock-h（底部按钮坞高）与 --tg-rail-h（宝石条高）。 */
+.tg-scene--responsive-rail {
+  --tg-tree-bottom: 0.5rem;
+}
+.tg-scene--responsive-rail .tg-bubble-area--scattered {
+  /* Use all open sky, including the gap between the two header groups.
+     Measured controls, panels and day leaves supply the actual obstacles. */
+  inset: 0;
+}
+.tg-scene--responsive-rail .tg-stone-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  bottom: 0.5rem;
+}
+/* Desktop panels retain their original appearance. */
+.tg-scene--responsive-rail .tg-stone-rail > * {
+  flex-shrink: 0;
+  min-width: 0;
+}
+@media (width < 48rem) {
+  .tg-scene--responsive-rail {
+    --tg-stage-right: 0px;
+    --tg-stage-top: var(--tg-header-height, 5rem);
+    --tg-tree-bottom: calc(var(--tg-rail-h, 0px) + 1rem + env(safe-area-inset-bottom, 0px));
+  }
+  .tg-scene--responsive-rail .tg-stone-rail {
+    inset: auto 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    width: auto;
+    margin-block: 0;
+    max-height: 42dvh;
+    overflow-y: auto;
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+  .tg-scene--responsive-rail .tg-rail-tools {
+    align-self: stretch;
+    min-width: 10rem;
+    max-width: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .tg-scene--responsive-rail .tg-rail-tools .rt-BaseButton {
+    white-space: nowrap;
+  }
+}
+@media (width < 23rem) {
+  .tg-scene--responsive-rail .tg-stone-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tg-scene--responsive-rail .tg-rail-tools {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
 .tg-scene--rail-bottom {
   --tg-tree-bottom: var(--tg-dock-h, 4rem);
 }
@@ -677,6 +757,25 @@
     transform: translateY(-12px) scale(0.92);
   }
 }
+.tg-rainbow-pick {
+  transform-origin: center;
+  animation: tg-pop-in 0.35s var(--tg-spring);
+}
+@keyframes tg-pop-in {
+  from {
+    transform: scale(0.4);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+/* 菜单浮层挂在 .tg-scene 外的 portal 上，需重新提供场景动效变量，否则 .tg-bump 的 animation 简写失效。
+   层级由 Radix Themes 自己管理，开合动画沿用库自带。 */
+.tg-status-pop {
+  --tg-spring: var(--ease-spring);
+  width: min(12rem, calc(100vw - 1.5rem));
+  max-width: calc(100vw - 1.5rem);
+}
 .tg-bump {
   animation: tg-bump 0.45s var(--tg-spring);
 }
@@ -726,7 +825,9 @@
   .tg-bubble-in,
   .tg-bubble-bead,
   .tg-born,
-  .tg-gem-glow {
+  .tg-gem-glow,
+  .tg-rainbow-pick,
+  .tg-status-pop {
     animation: none !important;
   }
 }

@@ -36,6 +36,7 @@ export type {
 export { FormSelect } from './FormSelect'
 export type { FormSelectOption, FormSelectProps } from './FormSelect'
 export { StickerCard } from './StickerCard'
+export { PocketMenuButton } from './PocketMenuButton'
 export { DarkScope } from './DarkScope'
 export { PageShell } from './PageShell'
 export type { PageShellProps, PageShellTone, PageShellWidth } from './PageShell'

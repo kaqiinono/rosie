@@ -149,6 +149,15 @@ class GardenAudio {
       this.tone(1320, t + 0.09, 0.25, 'sine', 0.18)
     })
   }
+  /** 摘苹果：先一声脆响，再往上弹一个音 */
+  pluck(): void {
+    this.play((t) => {
+      this.noise(t, 0.07, 0.42, 980)
+      this.tone(520, t, 0.1, 'triangle', 0.36, null, 840)
+      this.tone(1040, t + 0.07, 0.16, 'sine', 0.18)
+      this.tone(1560, t + 0.14, 0.2, 'sine', 0.1)
+    })
+  }
   reward(): void {
     this.play((t) => [72, 76, 79, 84, 88].forEach((m, i) => this.tone(this.midi(m), t + i * 0.09, 0.7, 'triangle', 0.26)))
   }

@@ -29,6 +29,18 @@ export interface WorkStep {
   audit: { at: string; previousStart: string | null; previousEnd: string | null }[]
 }
 
+/** P0、P1 是今天要做，计入今日目标。P2 及以后可以挪到下一天。 */
+export function isMustDo(priority: string): boolean {
+  return priority === 'P0' || priority === 'P1'
+}
+
+export interface DiaryNote {
+  id: string
+  t: string
+  icon: string
+  text: string
+}
+
 export interface Rules {
   chinese: number
   math: number
@@ -43,6 +55,8 @@ export interface TreeData {
   firstDay: string
   afterSchool: boolean
   steps: WorkStep[]
+  /** Unstarted weekend occurrences excluded by their daily template; retain notes for re-enabling. */
+  weekendExcludedSteps?: WorkStep[]
   apples: Apple[]
   stones: Record<SubjectKey, number>
   remainder: Record<CoreSubject, number>
@@ -52,6 +66,13 @@ export interface TreeData {
   upcoming: { day: string; rules: Rules } | null
   sun: number
   water: number
+  /** 连续有完成记录的天数 */
+  streak?: number
+  /** 最近一次真正做完作业的日期 */
+  lastDoneDay?: string | null
+  /** 今日目标奖励已发放的日期 */
+  goalAwardedOn?: string | null
+  diary?: DiaryNote[]
   magicDay: string | null
   exchanges: string[]
   boxReady: boolean
@@ -61,6 +82,7 @@ export interface TreeData {
 
 export type ActionKind =
   | 'sync'
+  | 'regenerate'
   | 'preparePractice'
   | 'school'
   | 'start'
@@ -70,6 +92,7 @@ export type ActionKind =
   | 'pop'
   | 'return'
   | 'move'
+  | 'nextDay'
   | 'record'
   | 'saveNotes'
   | 'water'
@@ -81,6 +104,7 @@ export type ActionKind =
   | 'acceptBox'
 export interface TreeAction {
   kind: ActionKind
+  regenerate?: { from: string; through: string; expectedCount: number }
   notes?: { id: string; previous: string; value: string }[]
   id?: string
   day?: string | null

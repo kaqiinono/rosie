@@ -29,6 +29,9 @@ type Props = {
   hidden: ReadonlySet<string>
   onItem: (kind: ItemKind, id: string, rect: DOMRect) => void
   onParked: () => void
+  onRegion?: (region: Region) => void
+  /** 树旁箱子。不传时仍是原型里的「先不做」。 */
+  bin?: { title: string; count: number }
 }
 
 const PETAL: Record<SubjectKey, { light: string; deep: string }> = {
@@ -211,20 +214,33 @@ function itemLabel(kind: ItemKind, state: GardenState, id: string): string {
   return b ? `${b.overdue ? '灰色花苞' : '花苞'}：${b.name}` : '花苞'
 }
 
-function RegionLabel({ region }: { region: Region }) {
+function RegionLabel({ region, onOpen }: { region: Region; onOpen?: () => void }) {
   const { cx, cy, ry } = region.geom
   const today = region.tone === 'today'
   const lines: string[] = [`${region.label} ${region.sub}`]
   const minutes = region.plannedMinutes
   if (minutes) lines.push(today ? `完成 ${minutes.completed} / ${minutes.total}分钟` : `共 ${minutes.total}分钟`)
-  else if (region.tone !== 'history') lines.push(`已排 ${region.load}/${region.capacity}`)
+  else if (region.tone !== 'history' && region.load > 0) lines.push(`已排 ${region.load} 朵花`)
   const size = (today ? 14 : 12) - (minutes ? 2 : 0)
   const w = Math.max(...lines.map((l) => textWidth(l, size))) + 18
   const h = lines.length * (size + 4) + 8
   const y = cy + ry * (today ? 1.0 : 0.98)
-  const full = !minutes && region.tone !== 'history' && region.load >= region.capacity
   return (
-    <g pointerEvents="none">
+    <g
+      data-tree-obstacle
+      pointerEvents={onOpen ? 'auto' : 'none'}
+      className={onOpen ? 'cursor-pointer outline-offset-4 hover:opacity-90 focus-visible:outline-2 focus-visible:outline-amber-700' : undefined}
+      role={onOpen ? 'button' : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      aria-label={onOpen ? `${lines.join('，')}，查看任务列表` : undefined}
+      onClick={onOpen}
+      onKeyDown={onOpen ? (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onOpen()
+        }
+      } : undefined}
+    >
       <rect
         x={cx - w / 2}
         y={y - h / 2}
@@ -254,7 +270,7 @@ function RegionLabel({ region }: { region: Region }) {
           textAnchor="middle"
           fontSize={i === 0 ? size : size - 1}
           fontWeight={i === 0 ? 800 : 600}
-          fill={i === 1 && full ? '#c92a2a' : '#4a3728'}
+          fill="#4a3728"
         >
           {l}
         </text>
@@ -281,12 +297,13 @@ const FILL_PUFFS: [number, number, number, number][] = [
 ]
 
 const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
-  { state, regions, fresh, hidden, onItem, onParked },
+  { state, regions, fresh, hidden, onItem, onParked, onRegion, bin },
   ref,
 ) {
   const svgRef = useRef<SVGSVGElement>(null)
   const crownRef = useRef<SVGEllipseElement>(null)
-  const parked = state.buds.filter((b) => b.dateKey === null).length
+  const parked = bin?.count ?? state.buds.filter((b) => b.dateKey === null).length
+  const binTitle = bin?.title ?? '先不做'
 
   useImperativeHandle(ref, () => ({
     toClient(x, y) {
@@ -439,6 +456,7 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
             <g key={r.key} className="tg-region" opacity={hist ? 0.95 : 1}>
               {today && <ellipse cx={cx} cy={cy} rx={rx + 34} ry={ry + 30} fill="url(#tg-glow-gold)" opacity="0.8" />}
               <ellipse
+                data-tree-obstacle={hist ? undefined : 'day-region'}
                 cx={cx}
                 cy={cy}
                 rx={rx}
@@ -494,7 +512,7 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
         })}
         {/* 日期小牌最后画，不被相邻的叶区盖住 */}
         {regions.map((r) => (
-          <RegionLabel key={`label-${r.key}`} region={r} />
+          <RegionLabel key={`label-${r.key}`} region={r} onOpen={onRegion ? () => onRegion(r) : undefined} />
         ))}
       </g>
 
@@ -503,8 +521,9 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
         className="tg-item"
         role="button"
         tabIndex={0}
-        aria-label={`先不做，${parked} 件`}
+        aria-label={`${binTitle}，${parked} 件`}
         transform="translate(28 488)"
+        data-tree-obstacle
         onClick={onParked}
         onKeyDown={(e: KeyboardEvent<SVGGElement>) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -521,7 +540,7 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
           <rect x="1" y="13" width="110" height="9" rx="4" fill="#d3eedc" stroke="#43776b" strokeWidth="2.5" />
           <rect x="18" y="26" width="76" height="28" rx="8" fill="#fff0df" />
           <text x="56" y="47" textAnchor="middle" fontSize="20" fontWeight="700" fill="#99345a">
-            先不做
+            {binTitle}
           </text>
           {parked > 0 && (
             <g>

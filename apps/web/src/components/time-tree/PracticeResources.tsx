@@ -136,10 +136,10 @@ export default function PracticeResources({ row }: { row: PracticeEntryRow }) {
   const [narrationRef, setNarrationRef] = useState<RefObject<HTMLVideoElement | null> | undefined>(undefined)
   const isNarration = active?.id === `audio:${passage?.key}:narration`
   return <Flex direction="column" gap="3">
-    {row.values.contentType === 'chinese-course' && row.values.requiresRecite === 'true' && <Flex><Badge color="orange">需背诵</Badge></Flex>}
+    {row.values.requiresRecite === 'true' && <Flex><Badge color="orange">需背诵</Badge></Flex>}
     {row.values.contentType === 'chinese-course' && row.values.requiresRecite === 'unknown' && <Text size="1" color="gray">背诵要求待补充</Text>}
     {passage && <PassageView passage={passage} lessonWords={[]} masteryMap={{}} mode="focus" narrationRef={isNarration ? narrationRef : undefined} />}
-    {(passage ? [] : row.content ?? []).map((block, index) => <StickerCard key={index} size="sm" tone="paper">
+    {(passage ? [] : row.content ?? []).filter((block) => block.text.trim() || block.translation?.trim()).map((block, index) => <StickerCard key={index} size="sm" tone="paper">
       <Flex direction="column" gap="2">
         {block.title && <Text size="3" weight="bold">{block.title}</Text>}
         {row.values.contentType === 'chinese-course' && ['会认字', '会写字', '词语', '读一读，记一记'].includes(block.title) ?

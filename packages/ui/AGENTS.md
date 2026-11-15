@@ -26,6 +26,10 @@ stars HUD) + npm. Never a subject module.
 server components like `app/layout.tsx`). Barrel: `import { CandyButton } from '@rosie/ui'`
 (named exports — default-exported components are re-exported as named).
 
+`PocketMenuButton` is the child-facing 🌼 小口袋 menu trigger: it reuses StickerCard's paper
+tone, warm border, rounded corners and spring motion, forwards the native button ref and
+Radix trigger attributes, and includes keyboard focus and reduced-motion feedback.
+
 ## 受控组件入口清单
 
 `StickerCard variant="soft"` is the approved borderless content surface: retain the selected

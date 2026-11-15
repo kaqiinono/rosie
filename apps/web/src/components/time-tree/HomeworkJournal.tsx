@@ -1,5 +1,6 @@
 'use client'
 
+import RegenerateHomework from './RegenerateHomework'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { StickerCard } from '@rosie/ui'
@@ -127,7 +128,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             ? '◷ 进行中'
             : s.planned
               ? s.minutes + ' 分钟'
-              : '先不做'}
+              : '未排期'}
       </Button>
     )
   }
@@ -138,6 +139,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
           <Text as="div" size="5" weight="bold">
             {calendar ? '作业日历' : '今天的作业'}
           </Text>
+          <RegenerateHomework api={api} />
           <Button asChild size="1" variant="soft">
             <Link href="/time-tree">🌳 去生命树</Link>
           </Button>
@@ -239,7 +241,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
         )}
         {parked.length > 0 && (
           <>
-            <Badge color="gray">当天先不做</Badge>
+            <Badge color="gray">当天未排期</Badge>
             <Flex gap="2" wrap="wrap">{parked.map(row)}</Flex>
           </>
         )}

@@ -324,11 +324,17 @@ current contracts, content gaps and the manual acceptance sequence.
 
 ### Practice entry management
 
+Homework course selection supports calendar-based progression stored in the existing binding JSON:
+enabled by default on saving the new settings, daily or weekly on a chosen weekday, with weekday-only
+daily work skipping weekends. New occurrences freeze their course at generation; completion and
+makeup never advance these snapshots. Legacy unsaved bindings retain their completion cursor.
+See `packages/tasks/AGENTS.md` and `docs/task-practice-entries.md`.
+
 `/setting/task-entries` manages owner-scoped named links and full ordered parameter lists. Homework
 selects only an entry and start row; immutable bindings and per-occurrence snapshots protect ongoing
 work from catalog edits. Garden revision commits advance each whole homework occurrence once.
-Web owns subject catalog adapters and first-visit preset creation (including English reading and grammar).
-See `docs/task-practice-entries.md`; migration `20261113160000_task_practice_entries.sql` is required.
+Web owns subject catalog adapters. Opening `/setting/task-entries` loads the saved list only. Preset creation and refresh, including English reading and grammar, run when the user clicks 内容预设.
+See `docs/task-practice-entries.md`; migrations `20261113160000_task_practice_entries.sql` and `20261115104405_apply_task_practice_presets.sql` are required.
 
 ### Lucky wheel
 
@@ -343,6 +349,20 @@ Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database
 `packages/rewards/AGENTS.md` and `docs/draw-wheel.md` for contracts and manual acceptance.
 
 ### Life tree
+
+Daily homework supports an owner-saved `include_weekends` option, defaulting off for new definitions
+and remaining on for existing definitions. Migration `20261115104319_task_homework_include_weekends.sql`
+is applied to the hosted database (2026-11-15). Garden sync excludes untouched current/future
+weekend occurrences into a reversible holding list; history and work already started are preserved.
+See `packages/tasks/AGENTS.md` for the persistence and manual acceptance contract.
+
+Date labels on `/time-tree` open task lists with progress and status, including grouped historical
+dates. Past tasks support makeup work and future scheduled tasks support early execution without
+changing their planned date. Only manually started future tasks enter the bubble queue. The shared
+StepPanel and server engine apply this behavior to homework views as well; practice binding keeps
+its existing active-occurrence guard. Lists show saved learning content, task instructions and
+occurrence notes. Unbound pending tasks use read-only previews from the homework session cache
+and garden cursor; browsing does not bind or advance practice. See `tree.md`.
 
 The life tree header can minimize the page to a draggable launcher above the AI assistant.
 Minimizing returns home, and the launcher stays available during navigation until the tree

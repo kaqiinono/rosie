@@ -190,14 +190,18 @@ export default function AiMessageRenderer({
   renderTodayTasks,
 }: AiMessageRendererProps) {
   const isUser = role === 'user'
+  // 短句不撑开气泡。单词卡、生字卡、题目这些块是 w-full，父级若按文字收缩，卡片会窄成一条。
+  const wide = !isUser && blocks.some((block) => block.type !== 'text')
 
   return (
-    <div className={`flex items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex w-full items-end gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}>
       {!isUser ? (
         <RosieAssistantAvatar className="shadow-sticker-sm size-8 rounded-xl ring-1 ring-rose-100" />
       ) : null}
       <div
-        className={`max-w-[88%] px-4 py-3 sm:max-w-[82%] ${
+        className={`${
+          wide ? 'min-w-0 flex-1 px-2.5 py-3' : 'max-w-[88%] px-4 py-3 sm:max-w-[82%]'
+        } ${
           isUser
             ? 'shadow-sticker-sm rounded-[20px_20px_6px_20px] bg-violet-600 text-white'
             : 'shadow-sticker-sm ring-kid-line rounded-[20px_20px_20px_6px] bg-white text-slate-800 ring-1'

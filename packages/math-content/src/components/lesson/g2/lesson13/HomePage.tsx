@@ -33,14 +33,16 @@ export default function HomePage({ problems, practiceCount, correctCount }: Prop
           summaryInContent
           lessonKey="2-13"
           className="text-2xl font-extrabold text-amber-900"
+          description={
+            <p className="text-[13px] leading-relaxed text-amber-800">
+              二年级目标班 · 第13讲
+              <br />
+              {LESSON_TIP}
+            </p>
+          }
         >
           抽屉原理初步与植树问题 🌳
         </LessonHomeTitle>
-        <p className="text-[13px] leading-relaxed text-amber-800">
-          二年级目标班 · 第13讲
-          <br />
-          {LESSON_TIP}
-        </p>
       </div>
       <StickerCard as="section" elevation="sm" radius="md" className="mb-4">
         <h2 className="mb-3 text-[15px] font-bold text-amber-900">本讲总结 · 分类与间隔</h2>

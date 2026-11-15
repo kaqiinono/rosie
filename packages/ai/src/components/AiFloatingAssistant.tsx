@@ -20,6 +20,7 @@ import { FloatingLauncherCloseButton } from '@rosie/ui'
 export function shouldShowAiAssistant(pathname: string, isImmersive: boolean): boolean {
   if (isImmersive) return false
   return !(
+    pathname === '/time-tree' ||
     pathname === '/calc/session' ||
     pathname === '/english/words/practice/print' ||
     pathname === '/ai' ||

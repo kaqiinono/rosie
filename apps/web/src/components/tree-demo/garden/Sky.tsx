@@ -26,7 +26,7 @@ export default function Sky({ daypart }: { daypart: Daypart }) {
         <div className="tg-aurora" />
         {night ? (
           <>
-            <div className="tg-moon" />
+            <div className="tg-moon" data-tree-obstacle />
             <div className="tg-stars" />
           </>
         ) : (

@@ -1,4 +1,4 @@
-// 粒子画布，来自 bubble-wish-tree 演示：泡泡破裂、星光、水滴、花瓣、彩纸、飞行小球、萤火虫。
+// 粒子画布，来自 bubble-wish-tree 演示：泡泡破裂、星光、水滴、花瓣、彩纸、飞行小球、萤火虫、摘苹果。
 // 所有对外坐标都是浏览器视口坐标（clientX / clientY），内部换算成画布坐标。
 
 import { gardenAudio } from './audio'
@@ -30,11 +30,36 @@ type Particle =
       done: boolean
       onDone?: () => void
     }
+  | { kind: 'juice'; x: number; y: number; vx: number; vy: number; age: number; life: number; r: number; color: string }
+  | {
+      kind: 'pluck'
+      x0: number
+      y0: number
+      cx: number
+      cy: number
+      x1: number
+      y1: number
+      x: number
+      y: number
+      t: number
+      dur: number
+      rot: number
+      color: string
+      deep: string
+      rainbow: boolean
+      trail: { x: number; y: number }[]
+      age: number
+      life: number
+      morphed: boolean
+      done: boolean
+      onDone?: () => void
+    }
   | { kind: 'firefly'; x: number; y: number; ph: number; age: number; life: number }
 
 const rand = (a: number, b: number): number => a + Math.random() * (b - a)
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 const TAU = Math.PI * 2
+const RAINBOW = ['#ff6b6b', '#ff922b', '#ffe066', '#69db7c', '#4dabf7', '#b197fc']
 
 export type SeedFlight = { id: string; x: number; y: number }
 
@@ -188,6 +213,10 @@ export class GardenFx {
 
   confetti(cx: number, cy: number): void {
     const { x, y } = this.local(cx, cy)
+    this.burstConfetti(x, y)
+  }
+
+  private burstConfetti(x: number, y: number): void {
     const colors = ['#ff6b9d', '#4dabf7', '#ffd54a', '#51cf66', '#9775fa', '#ff922b']
     for (let i = 0; i < 70; i += 1) {
       this.add({
@@ -205,6 +234,201 @@ export class GardenFx {
         h: rand(8, 13),
       })
     }
+  }
+
+  /**
+   * 摘苹果：果汁和叶子炸开，苹果翻滚飞向石堆，中途变成宝石砸进去。
+   * 减少动效时只留一小团星光，并立刻回调。
+   */
+  pluck(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    color: string,
+    deep: string,
+    rainbow = false,
+    onArrive?: () => void,
+  ): void {
+    const from = this.local(fromX, fromY)
+    const to = this.local(toX, toY)
+    if (this.prefersReducedMotion()) {
+      this.sparkleLocal(from.x, from.y, 8, color)
+      onArrive?.()
+      return
+    }
+    this.add({ kind: 'ring', x: from.x, y: from.y, age: 0, life: 0.42, r0: 6, r1: 96, color: rainbow ? '#ffd43b' : color })
+    this.add({ kind: 'ring', x: from.x, y: from.y, age: 0, life: 0.28, r0: 4, r1: 46, color: '#ffffff' })
+    const juice = rainbow ? RAINBOW : [color, color, '#ffffff']
+    for (let i = 0; i < 24; i += 1) {
+      const angle = (i / 24) * TAU + rand(-0.18, 0.18)
+      const speed = rand(180, 520)
+      this.add({
+        kind: 'juice',
+        x: from.x,
+        y: from.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 90,
+        age: 0,
+        life: rand(0.42, 0.72),
+        r: rand(3.2, 6.4),
+        color: pick(juice),
+      })
+    }
+    for (let i = 0; i < 8; i += 1) {
+      this.add({
+        kind: 'petal',
+        x: from.x + rand(-8, 8),
+        y: from.y + rand(-8, 8),
+        vx: rand(-170, 170),
+        vy: rand(-120, 80),
+        age: 0,
+        life: rand(1.1, 1.7),
+        rot: rand(0, 6.3),
+        vr: rand(-6, 6),
+        ph: rand(0, 6),
+        color: pick(['#8fe07a', '#b6f0a0', '#3f9d45', '#e4f7c8']),
+      })
+    }
+    this.sparkleLocal(from.x, from.y, 12, '#fff3c4')
+    const dur = rainbow ? 1.05 : 0.92
+    this.add({
+      kind: 'pluck',
+      x0: from.x,
+      y0: from.y,
+      cx: (from.x + to.x) / 2 + rand(-36, 36),
+      cy: Math.min(from.y, to.y) - rand(168, 252),
+      x1: to.x,
+      y1: to.y,
+      x: from.x,
+      y: from.y,
+      t: 0,
+      dur,
+      rot: rand(-0.6, 0.6),
+      color,
+      deep,
+      rainbow,
+      trail: [],
+      age: 0,
+      life: dur + 0.22,
+      morphed: false,
+      done: false,
+      onDone: onArrive,
+    })
+  }
+
+  private traceApple(radius: number): void {
+    const c = this.ctx
+    if (!c) return
+    c.beginPath()
+    c.moveTo(0, -radius * 0.72)
+    c.bezierCurveTo(-radius * 1.05, -radius * 1.2, -radius * 1.28, -radius * 0.02, -radius * 0.92, radius * 0.46)
+    c.bezierCurveTo(-radius * 0.6, radius * 1.08, -radius * 0.18, radius * 1.08, 0, radius * 0.9)
+    c.bezierCurveTo(radius * 0.18, radius * 1.08, radius * 0.6, radius * 1.08, radius * 0.92, radius * 0.46)
+    c.bezierCurveTo(radius * 1.28, -radius * 0.02, radius * 1.05, -radius * 1.2, 0, -radius * 0.72)
+    c.closePath()
+  }
+
+  private paintApple(x: number, y: number, radius: number, rot: number, color: string, deep: string, rainbow: boolean, launch: number): void {
+    const c = this.ctx
+    if (!c) return
+    const alpha = c.globalAlpha
+    c.save()
+    c.translate(x, y)
+    c.rotate(rot)
+    c.scale(1 - launch * 0.14, 1 + launch * 0.42)
+    c.globalAlpha = alpha * 0.28
+    c.fillStyle = rainbow ? '#ffd43b' : color
+    c.beginPath()
+    c.arc(0, 0, radius * 1.42, 0, TAU)
+    c.fill()
+    c.globalAlpha = alpha
+    this.traceApple(radius)
+    if (rainbow) {
+      c.save()
+      c.clip()
+      const top = -radius * 1.35
+      const band = (radius * 2.7) / RAINBOW.length
+      for (let i = 0; i < RAINBOW.length; i += 1) {
+        c.fillStyle = RAINBOW[i]
+        c.fillRect(-radius * 1.6, top + i * band, radius * 3.2, band + 1)
+      }
+      c.restore()
+      this.traceApple(radius)
+      c.strokeStyle = '#9c36b5'
+    } else {
+      c.fillStyle = color
+      c.fill()
+      c.strokeStyle = deep
+    }
+    c.lineWidth = Math.max(2, radius * 0.12)
+    c.lineJoin = 'round'
+    c.stroke()
+    c.fillStyle = '#ffffff'
+    c.globalAlpha = alpha * 0.72
+    c.beginPath()
+    c.ellipse(-radius * 0.32, -radius * 0.08, radius * 0.16, radius * 0.32, -0.45, 0, TAU)
+    c.fill()
+    c.globalAlpha = alpha
+    c.strokeStyle = '#7a4a2e'
+    c.lineWidth = Math.max(2, radius * 0.14)
+    c.lineCap = 'round'
+    c.beginPath()
+    c.moveTo(0, -radius * 0.68)
+    c.quadraticCurveTo(radius * 0.08, -radius * 1.18, radius * 0.32, -radius * 1.32)
+    c.stroke()
+    c.fillStyle = '#3f9d45'
+    c.strokeStyle = '#2f7a3a'
+    c.lineWidth = Math.max(1.4, radius * 0.08)
+    c.beginPath()
+    c.ellipse(radius * 0.46, -radius * 1.02, radius * 0.4, radius * 0.18, -0.7, 0, TAU)
+    c.fill()
+    c.stroke()
+    c.restore()
+  }
+
+  private paintGem(x: number, y: number, radius: number, rot: number, color: string, deep: string): void {
+    const c = this.ctx
+    if (!c) return
+    const alpha = c.globalAlpha
+    c.save()
+    c.translate(x, y)
+    c.rotate(rot)
+    c.globalAlpha = alpha * 0.3
+    c.fillStyle = color
+    c.beginPath()
+    c.arc(0, 0, radius * 1.55, 0, TAU)
+    c.fill()
+    c.globalAlpha = alpha
+    c.fillStyle = color
+    c.strokeStyle = deep
+    c.lineWidth = Math.max(2, radius * 0.16)
+    c.lineJoin = 'round'
+    c.beginPath()
+    c.moveTo(0, -radius)
+    c.lineTo(radius * 0.88, -radius * 0.16)
+    c.lineTo(radius * 0.5, radius * 0.96)
+    c.lineTo(-radius * 0.5, radius * 0.96)
+    c.lineTo(-radius * 0.88, -radius * 0.16)
+    c.closePath()
+    c.fill()
+    c.stroke()
+    c.globalAlpha = alpha * 0.55
+    c.beginPath()
+    c.moveTo(-radius * 0.88, -radius * 0.16)
+    c.lineTo(radius * 0.88, -radius * 0.16)
+    c.moveTo(0, -radius)
+    c.lineTo(-radius * 0.24, -radius * 0.16)
+    c.lineTo(0, radius * 0.96)
+    c.lineTo(radius * 0.24, -radius * 0.16)
+    c.closePath()
+    c.stroke()
+    c.globalAlpha = alpha * 0.9
+    c.fillStyle = '#ffffff'
+    c.beginPath()
+    c.ellipse(-radius * 0.28, -radius * 0.46, radius * 0.16, radius * 0.09, -0.5, 0, TAU)
+    c.fill()
+    c.restore()
   }
 
   prefersReducedMotion(): boolean {
@@ -308,6 +532,65 @@ export class GardenFx {
           p.y += p.vy * dt
           p.rot += p.vr * dt
           break
+        case 'juice':
+          p.vy += 980 * dt
+          p.vx *= 0.99
+          p.x += p.vx * dt
+          p.y += p.vy * dt
+          break
+        case 'pluck': {
+          p.t = Math.min(1, p.t + dt / p.dur)
+          const u = 1 - p.t
+          p.x = u * u * p.x0 + 2 * u * p.t * p.cx + p.t * p.t * p.x1
+          p.y = u * u * p.y0 + 2 * u * p.t * p.cy + p.t * p.t * p.y1
+          if (p.morphed) p.rot *= Math.max(0, 1 - dt * 7)
+          else p.rot += dt * 9
+          p.trail.push({ x: p.x, y: p.y })
+          if (p.trail.length > 9) p.trail.shift()
+          if (p.t >= 0.58 && !p.morphed) {
+            p.morphed = true
+            this.add({ kind: 'ring', x: p.x, y: p.y, age: 0, life: 0.32, r0: 4, r1: 58, color: p.rainbow ? '#ffd43b' : p.color })
+            this.sparkleLocal(p.x, p.y, 10, '#ffffff')
+          }
+          if (!p.done && Math.random() < 0.3) {
+            this.add({
+              kind: 'spark',
+              x: p.x + rand(-4, 4),
+              y: p.y + rand(-4, 4),
+              vx: rand(-14, 14),
+              vy: rand(-20, 8),
+              age: 0,
+              life: 0.38,
+              r: rand(2, 4.5),
+              color: p.morphed ? p.color : '#fff3c4',
+              ph: rand(0, 6),
+            })
+          }
+          if (p.t >= 1 && !p.done) {
+            p.done = true
+            p.t = 1
+            this.add({ kind: 'ring', x: p.x, y: p.y, age: 0, life: 0.42, r0: 6, r1: 82, color: p.color })
+            this.sparkleLocal(p.x, p.y, 16, '#fff3c4')
+            for (let i = 0; i < 10; i += 1) {
+              const angle = rand(-Math.PI, 0)
+              const speed = rand(90, 240)
+              this.add({
+                kind: 'juice',
+                x: p.x,
+                y: p.y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                age: 0,
+                life: rand(0.32, 0.5),
+                r: rand(2.4, 4.4),
+                color: i % 3 ? p.color : '#ffffff',
+              })
+            }
+            if (p.rainbow) this.burstConfetti(p.x, p.y)
+            p.onDone?.()
+          }
+          break
+        }
         case 'orb': {
           p.t = Math.min(1, p.t + dt / p.dur)
           const u = 1 - p.t
@@ -397,6 +680,36 @@ export class GardenFx {
           c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
           c.restore()
           break
+        case 'juice': {
+          const speed = Math.hypot(p.vx, p.vy)
+          c.globalAlpha = k
+          c.fillStyle = p.color
+          c.save()
+          c.translate(p.x, p.y)
+          c.rotate(Math.atan2(p.vy, p.vx))
+          c.beginPath()
+          c.ellipse(0, 0, p.r * (1.15 + speed / 520), p.r * 0.62, 0, 0, TAU)
+          c.fill()
+          c.restore()
+          break
+        }
+        case 'pluck': {
+          const fade = Math.min(1, (p.life - p.age) / 0.2)
+          for (let i = 0; i < p.trail.length; i += 1) {
+            const tr = p.trail[i]
+            c.globalAlpha = (i / p.trail.length) * 0.4 * fade
+            c.fillStyle = p.morphed ? p.color : p.rainbow ? RAINBOW[i % RAINBOW.length] : p.color
+            c.beginPath()
+            c.arc(tr.x, tr.y, 5.5 * (i / p.trail.length), 0, TAU)
+            c.fill()
+          }
+          c.globalAlpha = fade
+          const launch = p.morphed ? 0 : Math.sin(Math.min(1, p.t / 0.16) * Math.PI)
+          const radius = (p.morphed ? 14 : 18) * (1 - p.t * 0.16) * (p.morphed ? 1 : 1 + launch * 0.35)
+          if (p.morphed) this.paintGem(p.x, p.y, radius, p.rot, p.color, p.deep)
+          else this.paintApple(p.x, p.y, radius, p.rot, p.color, p.deep, p.rainbow, launch)
+          break
+        }
         case 'orb': {
           for (let i = 0; i < p.trail.length; i += 1) {
             const tr = p.trail[i]

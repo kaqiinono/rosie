@@ -110,7 +110,7 @@ function itemsOfDates(state: GardenState, keys: string[]): RegionItem[] {
     ...state.apples.filter((a) => set.has(a.dateKey)).map((a): RegionItem => ({ kind: 'apple', id: a.id })),
     ...state.flowers.filter((f) => set.has(f.dateKey)).map((f): RegionItem => ({ kind: 'flower', id: f.id })),
     ...state.buds
-      .filter((b) => b.dateKey !== null && set.has(b.dateKey))
+      .filter((b) => b.dateKey !== null && set.has(b.dateKey) && !state.bubbles.includes(b.id))
       .map((b): RegionItem => ({ kind: 'bud', id: b.id })),
   ]
 }

@@ -61,7 +61,7 @@ Question labels use `utils/problem-display-id.ts`: prefer legacy-only Problem.di
 favorite, and optional expansion. Expanded cards suppress the nested detail footer via
 `ExternalProblemActions`. List draft actions receive a per-card `ProblemScratchProvider`
 with the correct problem index and source section. `ProblemVideoReplay` is the shared
-Baidu video entry. Visibility and stream requests use the real `problem.id` throughout lessons and practice.
+Baidu video entry. Lesson home replay buttons show the published filename without its video extension, and fall back to 本讲回放 when a binding has no name. Visibility and stream requests use the real `problem.id` throughout lessons and practice.
 `useProblemVideoCatalog` shares one per-user/lesson session store. Only available published
 bindings show replay. Saving a lesson replaces the local catalog; refresh to read another
 administrator's changes. The app owns directory snapshots, publication and media resolution.

@@ -1,11 +1,52 @@
 import type { Homework } from '@rosie/tasks'
-import { capacityOf, flowersForMinutes } from '@/components/tree-demo/garden/model'
+import { flowersForMinutes } from '@/components/tree-demo/garden/model'
 import { dayOf, shift, type TreeData, type WorkStep } from './types'
+import { bindPractice, calendarPractice } from './practice'
 
 const diff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000)
 const weekday = (day: string) => new Date(day + 'T12:00Z').getUTCDay()
+const isWeekend = (day: string) => weekday(day) === 0 || weekday(day) === 6
+
+/** Content follows template edits until completion; execution and placement stay intact. */
+function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
+  const byId = new Map(templates.map(template => [template.id, template]))
+  const groups = new Map<string, WorkStep[]>()
+  for (const step of [...tree.steps, ...(tree.weekendExcludedSteps ?? [])]) {
+    const peers = groups.get(step.occurrence) ?? []
+    peers.push(step)
+    groups.set(step.occurrence, peers)
+  }
+  for (const [occurrence, peers] of groups) {
+    const template = byId.get(occurrence.split('/')[0])
+    if (!template) continue
+    const binding = template.practice_binding
+    const day = peers.map(step => step.scheduled).sort()[0]
+    const pending = peers.filter(step => !step.end && !step.skipped && !step.settled)
+    for (const step of pending) {
+      const index = Number(step.id.split('/').at(-1))
+      step.name = peers.length === 1 ? template.name : `${template.name}（${index + 1}/${peers.length}）`
+      step.notes = template.notes
+      step.subject = template.subject
+      step.priority = template.priority
+      step.practiceEntryName = binding?.name
+      // A stable binding keeps its authored date snapshot, including after manual moves.
+      if (binding && step.practice?.key === binding.key) continue
+      const previous = step.practice && tree.practiceProgress?.[step.practice.key]
+      if (previous?.activeOccurrence === occurrence) previous.activeOccurrence = null
+      if (!binding) step.practice = null
+      else if (binding.progression) step.practice = calendarPractice(binding, day)
+      else delete step.practice
+    }
+    // A running legacy task must keep a valid reservation for completion. Pending
+    // legacy work continues to bind lazily, rather than reserving every future day.
+    for (const step of pending) {
+      if (step.start && step.practice === undefined) bindPractice(tree, step, template)
+    }
+  }
+}
 
 function period(t: Homework, day: string) {
+  if (t.cycle === 'daily' && t.include_weekends === false && isWeekend(day)) return null
   let start = day
   let span = 1
   let count = 1
@@ -28,9 +69,61 @@ function period(t: Homework, day: string) {
   return { start, end: shift(start, span - 1), count: Math.min(count, span), span }
 }
 
+/** Reconcile only untouched, current/future daily weekend occurrences, as whole split groups. */
+function syncWeekendTasks(tree: TreeData, templates: Homework[]) {
+  const byId = new Map(templates.map((template) => [template.id, template]))
+  const archived = tree.weekendExcludedSteps ?? []
+  const retained: WorkStep[] = []
+  const ids = new Set(tree.steps.map((step) => step.id))
+  for (const step of archived) {
+    const template = byId.get(step.occurrence.split('/')[0])
+    if (template?.enabled && template.cycle === 'daily' && template.include_weekends !== false && step.scheduled >= tree.today) {
+      if (!ids.has(step.id)) { tree.steps.push(step); ids.add(step.id) }
+    } else retained.push(step)
+  }
+  const groups = new Map<string, WorkStep[]>()
+  for (const step of tree.steps) {
+    const group = groups.get(step.occurrence) ?? []
+    group.push(step)
+    groups.set(step.occurrence, group)
+  }
+  const excluded = new Set<string>()
+  for (const [occurrence, steps] of groups) {
+    const [templateId, cycle, originalDay] = occurrence.split('/')
+    const template = byId.get(templateId)
+    if (!template?.enabled || template.cycle !== 'daily' || template.include_weekends !== false ||
+      cycle !== 'daily' || !originalDay || originalDay < tree.today || !isWeekend(originalDay)) continue
+    if (steps.some((step) => step.start || step.end || step.skipped || step.audit.length ||
+      step.scheduled < tree.today || !step.planned || step.planned < tree.today || !isWeekend(step.planned))) continue
+    excluded.add(occurrence)
+    for (const step of steps) {
+      step.slot = null
+      // Release legacy preview reservations without consumption. Calendar snapshots
+      // are already authored for this occurrence and survive disabling weekends.
+      if (!step.practice?.calendarBased) delete step.practice
+      retained.push(step)
+    }
+    for (const progress of Object.values(tree.practiceProgress ?? {})) {
+      if (progress.activeOccurrence === occurrence) progress.activeOccurrence = null
+    }
+  }
+  if (excluded.size) tree.steps = tree.steps.filter((step) => !excluded.has(step.occurrence))
+  if (retained.length || tree.weekendExcludedSteps) tree.weekendExcludedSteps = retained
+}
+
 /** Spread occurrences across their window. Keys survive revisiting overlapping seven-day views. */
-export function schedule(tree: TreeData, templates: Homework[], from: string, through: string) {
-  const existing = new Set(tree.steps.map((s) => s.occurrence))
+export function schedule(tree: TreeData, templates: Homework[], from: string, through: string, fillCurrentWindow = false) {
+  if (!fillCurrentWindow) {
+    syncWeekendTasks(tree, templates)
+    syncHomeworkContent(tree, templates)
+  }
+  for (const step of tree.steps) {
+    if (!fillCurrentWindow && !step.skipped && !step.end && !step.start && !step.planned && step.scheduled) step.planned = step.scheduled
+  }
+  const existing = new Set([
+    ...tree.steps,
+    ...(fillCurrentWindow ? tree.weekendExcludedSteps ?? [] : []),
+  ].map((s) => s.occurrence))
   const load = new Map<string, number>()
   for (const s of tree.steps)
     if (!s.skipped && s.planned) load.set(s.planned, (load.get(s.planned) ?? 0) + s.stages.length)
@@ -40,10 +133,6 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   for (const t of active.sort(
     (a, b) => Number(b.cycle === 'daily') - Number(a.cycle === 'daily'),
   )) {
-    for (const step of tree.steps) {
-      if (step.occurrence.startsWith(t.id + '/') && step.practice === undefined && !step.start && !step.end)
-        step.practiceEntryName = t.practice_binding?.name
-    }
     const first = dayOf(t.created_at) > tree.firstDay ? dayOf(t.created_at) : tree.firstDay
     for (let day = from; day <= through; day = shift(day, 1)) {
       if (day < first) continue
@@ -52,11 +141,12 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       const offset = diff(day, p.start)
       const ordinal = Math.ceil(((offset + 1) * p.count) / p.span) - 1
       const windowStart = shift(p.start, Math.floor((ordinal * p.span) / p.count))
-      if (day !== windowStart && day !== first) continue
+      if (day !== windowStart && day !== first && !(fillCurrentWindow && day === from)) continue
       const windowEnd = shift(p.start, Math.floor(((ordinal + 1) * p.span) / p.count) - 1)
       const occurrence = [t.id, t.cycle, p.start, ordinal].join('/')
       if (existing.has(occurrence)) continue
       existing.add(occurrence)
+      const practice = t.practice_binding?.progression ? calendarPractice(t.practice_binding, day) : undefined
       const parts =
         t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
       parts.forEach((minutes, index) => {
@@ -68,13 +158,14 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
         let lowestLoad = Infinity
         for (let d = day; d <= windowEnd && d <= through; d = shift(d, 1)) {
           const used = load.get(d) ?? 0
-          if (used < lowestLoad && used + flowers <= capacityOf(d)) {
+          if (used < lowestLoad) {
             planned = d
             lowestLoad = used
           }
         }
         if (planned) load.set(planned, (load.get(planned) ?? 0) + flowers)
         const step: WorkStep = {
+          ...(practice ? { practice: structuredClone(practice) } : {}),
           id: occurrence + '/' + index,
           occurrence,
           practiceEntryName: t.practice_binding?.name,

@@ -273,8 +273,8 @@ export default function GardenDemo() {
     const cy = rect.top + rect.height / 2
     const res = store.pickApple(id)
     if (!res) return
-    gardenAudio.pick()
     if (res.apple.kind === 'rainbow') {
+      gardenAudio.pick()
       fx.burst(cx, cy, '#a855f7')
       fx.confetti(cx, cy)
       setRainbow({ step: 'assign' })
@@ -282,9 +282,21 @@ export default function GardenDemo() {
     }
     const kind = res.apple.kind
     const meta = SUBJECTS[kind]
-    flyTo(pileEls.current[kind], cx, cy, meta.color, 9)
-    fx.sparkle(cx, cy, 8, '#ffe082')
-    addFloat(cx, cy - 30, `+1 ${meta.stone}`)
+    const pile = pileEls.current[kind]
+    const box = pile?.getBoundingClientRect()
+    const toX = box ? box.left + box.width / 2 : cx
+    const toY = box ? box.top + box.height / 2 : cy + 180
+    if (fx.prefersReducedMotion()) {
+      if (pile) bump(pile)
+      gardenAudio.reward()
+    } else {
+      gardenAudio.pluck()
+      fx.pluck(cx, cy, toX, toY, meta.color, meta.deep, false, () => {
+        if (pile) bump(pile)
+        gardenAudio.reward()
+      })
+    }
+    addFloat(cx, cy - 36, `+1 ${meta.stone}`)
   }
 
   function handleItem(kind: ItemKind, id: string, rect: DOMRect): void {

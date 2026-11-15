@@ -32,7 +32,8 @@ Agent rule: `.cursor/rules/session-store-data-fetch.mdc`. Design:
 
 `refreshSessionStore(storeKey, userId)` refreshes an already-loaded derived store by its
 registered key, preserving its data during the request. It does nothing for unregistered
-or not-yet-loaded stores. Use after a related successful mutation when a local patch
+or idle stores; an initial load already in progress is awaited before a fresh request, and
+an errored store can retry. Use after a related successful mutation when a local patch
 cannot honestly derive a report; never invent aggregates to update a cached report.
 
 Barrel: `import { … } from '@rosie/core'`. Internal cross-file imports are relative.

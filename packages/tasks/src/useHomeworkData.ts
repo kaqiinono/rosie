@@ -1,6 +1,6 @@
 'use client'
 
-import { createUserSessionStore, supabase, useAuth } from '@rosie/core'
+import { createUserSessionStore, refreshSessionStore, supabase, useAuth } from '@rosie/core'
 import type { Homework, HomeworkInput } from './homework'
 
 async function loadHomework(userId: string): Promise<Homework[]> {
@@ -29,6 +29,12 @@ function payload(input: HomeworkInput): HomeworkInput {
   return { ...input, name: input.name.trim(), notes: input.notes.trim() }
 }
 
+async function syncExecution(userId: string) {
+  // Refresh the registered cache even when its page is unmounted. Failures stay
+  // on that store; the successful template write must not be retried as an insert.
+  await refreshSessionStore('time_tree', userId).catch(() => undefined)
+}
+
 export function useHomeworkData() {
   const { user } = useAuth()
   const { data, isLoading, error } = store.useSessionData(user)
@@ -53,7 +59,7 @@ export function useHomeworkData() {
     if (writeError) throw new Error(writeError.message)
     const created = row as Homework
     store.patchSessionData(userId, (prev) => [created, ...prev])
-    window.dispatchEvent(new Event('rosie:homework-changed'))
+    await syncExecution(userId)
     return created
   }
 
@@ -69,7 +75,7 @@ export function useHomeworkData() {
     if (writeError) throw new Error(writeError.message)
     const updated = row as Homework
     store.patchSessionData(userId, (prev) => prev.map((item) => (item.id === id ? updated : item)))
-    window.dispatchEvent(new Event('rosie:homework-changed'))
+    await syncExecution(userId)
     return updated
   }
 
@@ -85,7 +91,7 @@ export function useHomeworkData() {
     if (writeError) throw new Error(writeError.message)
     const updated = row as Homework
     store.patchSessionData(userId, (prev) => prev.map((item) => (item.id === id ? updated : item)))
-    window.dispatchEvent(new Event('rosie:homework-changed'))
+    await syncExecution(userId)
   }
 
   async function remove(id: string): Promise<void> {
@@ -97,7 +103,7 @@ export function useHomeworkData() {
       .eq('id', id)
     if (writeError) throw new Error(writeError.message)
     store.patchSessionData(userId, (prev) => prev.filter((item) => item.id !== id))
-    window.dispatchEvent(new Event('rosie:homework-changed'))
+    await syncExecution(userId)
   }
 
   return { user, data, isLoading, error, refresh, create, update, setEnabled, remove }

@@ -71,6 +71,16 @@ export interface PracticeBinding {
   path: string
   rows: PracticeEntryRow[]
   startId: string | null
+  progression?: PracticeProgression
+}
+export interface PracticeProgression {
+  enabled: boolean
+  mode: 'daily' | 'weekly'
+  /** Consecutive entries included per assignment/period; legacy rules default to one. */
+  amount?: number
+  weekday: number
+  anchorDate: string
+  skipWeekends: boolean
 }
 export function entryVariables(path: string): string[] {
   return [...new Set([...path.matchAll(/\{([a-zA-Z][a-zA-Z0-9_]*)\}/g)].map((m) => m[1]))]

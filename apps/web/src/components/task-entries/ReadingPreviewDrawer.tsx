@@ -6,7 +6,7 @@ import { WordsProvider, findPassageByKey } from '@rosie/english'
 import { AppDialog, DarkScope, LoadingOverlay } from '@rosie/ui'
 
 const ReadingPassageDetail = dynamic(() => import('../reading/ReadingPassageDetail'), {
-  loading: () => <LoadingOverlay placement="content" />,
+  loading: () => <LoadingOverlay visible placement="content" />,
 })
 
 export default function ReadingPreviewDrawer({ passageKey, open, onClose }: {
