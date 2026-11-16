@@ -12,7 +12,7 @@ import StonePanel from '@/components/tree-demo/garden/StonePanel'
 import { buildRegions, todayCenter } from '@/components/tree-demo/garden/layout'
 import { CORE_SUBJECTS, SUBJECTS, type Apple, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
-import { isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { SUN_MAGIC_COST, canGrowWithSun, isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
 import { isEarly } from '@/lib/time-tree/rewards'
 import { sceneState } from './sceneState'
@@ -200,6 +200,7 @@ export default function LiveTree() {
   }, [])
 
   const api = useTimeTree()
+  const [casting, setCasting] = useState(false)
   const { tree, busy, run } = api
   const [stepId, setStep] = useState<string | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -618,6 +619,13 @@ export default function LiveTree() {
     setItem(id)
     show(kind)
   }
+  const hasFlowers = tree.steps.some(canGrowWithSun)
+  let magicLabel = `☀️ 让花长一级 · ${SUN_MAGIC_COST} 阳光`
+  if (casting) magicLabel = '施法中…'
+  else if (busy) magicLabel = '正在保存…'
+  else if (!hasFlowers) magicLabel = '暂无可催开的花'
+  else if (tree.sun < SUN_MAGIC_COST) magicLabel = `还差 ${SUN_MAGIC_COST - tree.sun} 个阳光`
+
   return (
     <div
       ref={scene}
@@ -730,12 +738,17 @@ export default function LiveTree() {
         <StickerCard size="sm" tone="paper" elevation="sm" className="tg-rail-tools flex flex-col items-stretch justify-center gap-2">
           <Button
             color="amber"
-            disabled={busy || tree.sun < 8 || tree.magicDay === tree.today}
+            disabled={busy || casting || !hasFlowers || tree.sun < SUN_MAGIC_COST}
             onClick={async () => {
-              await run({ kind: 'magic' })
+              setCasting(true)
+              try {
+                await run({ kind: 'magic' })
+              } finally {
+                setCasting(false)
+              }
             }}
           >
-            ☀️ 阳光魔法 · 8
+            {magicLabel}
           </Button>
           <Button asChild variant="soft">
             <Link href="/tasks/homework">作业管理</Link>

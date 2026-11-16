@@ -1,6 +1,8 @@
 import { completionReward, isEarly } from './rewards'
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
 import {
+  SUN_MAGIC_COST,
+  canGrowWithSun,
   dayOf,
   defaultRules,
   isMustDo,
@@ -34,7 +36,6 @@ export function newTree(day: string): TreeData {
     lastDoneDay: null,
     goalAwardedOn: null,
     diary: [],
-    magicDay: null,
     exchanges: [],
     boxReady: false,
     lastBox: null,
@@ -247,15 +248,10 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
     return
   }
   if (kind === 'magic') {
-    const flowers = tree.steps.filter(
-      (s) => s.end && s.popped && !s.settled && s.stages.some((stage) => stage < 3),
-    )
-    requireState(
-      tree.magicDay !== day && tree.sun >= 8 && flowers.length,
-      '今天暂时无法施展阳光魔法。',
-    )
-    tree.magicDay = day
-    tree.sun -= 8
+    const flowers = tree.steps.filter(canGrowWithSun)
+    requireState(flowers.length, '暂无可催开的花')
+    requireState(tree.sun >= SUN_MAGIC_COST, `还差 ${SUN_MAGIC_COST - tree.sun} 个阳光`)
+    tree.sun -= SUN_MAGIC_COST
     flowers.forEach((s) => {
       s.stages = s.stages.map((stage) => Math.min(3, stage + 1))
     })

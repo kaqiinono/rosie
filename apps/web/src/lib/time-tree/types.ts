@@ -73,7 +73,6 @@ export interface TreeData {
   /** 今日目标奖励已发放的日期 */
   goalAwardedOn?: string | null
   diary?: DiaryNote[]
-  magicDay: string | null
   exchanges: string[]
   boxReady: boolean
   lastBox: string | null
@@ -150,4 +149,10 @@ export function timing(step: WorkStep) {
   if (!step.start) return '已完成 · 未计时'
   const delta = elapsed(step.start, step.end) - step.minutes
   return delta === 0 ? '按时完成' : delta < 0 ? `提前 ${-delta} 分钟` : `超时 ${delta} 分钟`
+}
+
+export const SUN_MAGIC_COST = 8
+
+export function canGrowWithSun(step: WorkStep) {
+  return !!step.end && step.popped && !step.settled && step.stages.some(stage => stage < 3)
 }
