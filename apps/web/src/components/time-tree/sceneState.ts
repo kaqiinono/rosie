@@ -9,12 +9,13 @@ export function sceneBud(s: TreeData['steps'][number], today: string): Bud {
     subject: s.subject,
     minutes: s.minutes,
     dateKey: s.planned,
+    makeupDate: s.subject !== 'life' && s.scheduled < today ? s.scheduled : undefined,
     overdue: !!s.planned && s.planned < today,
   }
 }
 
 export function sceneState(tree: TreeData): GardenState {
-  const buds = tree.steps.filter((s) => !s.skipped && (!s.end || !s.popped)).map((s) => sceneBud(s, tree.today))
+  const buds = tree.steps.filter((s) => !s.skipped && (s.subject !== 'life' || s.scheduled === tree.today) && (!s.end || !s.popped)).map((s) => sceneBud(s, tree.today))
   const flowers: Flower[] = tree.steps.flatMap((s) =>
     s.end && !s.settled && s.popped
       ? s.stages.map((stage, i) => ({

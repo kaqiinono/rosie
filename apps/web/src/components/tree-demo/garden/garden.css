@@ -642,6 +642,83 @@
     translate: -5px -4px;
   }
 }
+.tg-bubble-saving-ring {
+  position: absolute;
+  inset: -9px;
+  width: calc(100% + 18px);
+  height: calc(100% + 18px);
+  pointer-events: none;
+  animation: tg-spin 1.8s linear infinite;
+}
+.tg-scene .tg-bubble[data-saving='true'] .tg-bubble-in {
+  animation: tg-saving-pulse 1.2s ease-in-out infinite;
+  animation-play-state: running;
+}
+.tg-bubble[data-saving='true'] {
+  cursor: wait;
+}
+@keyframes tg-saving-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.92); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tg-bubble-saving-ring,
+  .tg-scene .tg-bubble[data-saving='true'] .tg-bubble-in {
+    animation: none !important;
+  }
+}
+.tg-makeup-bow {
+  position: absolute;
+  top: -5%;
+  right: -2%;
+  width: clamp(28px, calc(var(--tg-size) * 0.32), 40px);
+  color: var(--amber-11);
+  transform: rotate(16deg);
+  z-index: 3;
+  pointer-events: none;
+}
+.tg-makeup-candy {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  isolation: isolate;
+  z-index: 3;
+  pointer-events: none;
+}
+.tg-makeup-candy::before,
+.tg-makeup-candy::after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 17px;
+  background: var(--amber-5);
+  border: 2px solid var(--amber-11);
+  border-radius: 4px;
+  z-index: -1;
+}
+.tg-makeup-candy::before {
+  left: -8px;
+  transform: rotate(-18deg);
+}
+.tg-makeup-candy::after {
+  right: -8px;
+  transform: rotate(18deg);
+}
+.tg-makeup-candy .tg-makeup-date {
+  padding: 1px 7px;
+  background: var(--amber-3);
+  color: var(--amber-12);
+  border: 2px solid var(--amber-11);
+  box-shadow: 0 2px 0 var(--amber-11);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 .tg-bubble-in {
   position: relative;
   z-index: 2;

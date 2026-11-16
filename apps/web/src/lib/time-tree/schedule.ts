@@ -113,6 +113,24 @@ function syncWeekendTasks(tree: TreeData, templates: Homework[]) {
 
 /** Spread occurrences across their window. Keys survive revisiting overlapping seven-day views. */
 export function schedule(tree: TreeData, templates: Homework[], from: string, through: string, fillCurrentWindow = false) {
+  const enabledLife = new Set(templates.filter(t => t.enabled && t.subject === 'life').map(t => t.id))
+  const removed = new Set<string>()
+  const retain = (step: WorkStep) => {
+    if (step.subject !== 'life' || step.end) return true
+    const keep = enabledLife.has(step.occurrence.split('/')[0]) && step.scheduled === tree.today &&
+      step.occurrence.split('/')[1] === 'daily' && step.id.endsWith('/0')
+    if (!keep) removed.add(step.occurrence)
+    else { step.start = null; step.stages = [0] }
+    return keep
+  }
+  tree.steps = tree.steps.filter(retain)
+  tree.weekendExcludedSteps = tree.weekendExcludedSteps?.filter(retain)
+  for (const progress of Object.values(tree.practiceProgress ?? {})) {
+    if (progress.activeOccurrence && removed.has(progress.activeOccurrence)) progress.activeOccurrence = null
+  }
+  templates = templates.map(t => t.subject === 'life'
+    ? { ...t, cycle: 'daily', include_weekends: true, practice_binding: null }
+    : t)
   if (!fillCurrentWindow) {
     syncWeekendTasks(tree, templates)
     syncHomeworkContent(tree, templates)
@@ -135,6 +153,8 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   )) {
     const first = dayOf(t.created_at) > tree.firstDay ? dayOf(t.created_at) : tree.firstDay
     for (let day = from; day <= through; day = shift(day, 1)) {
+      if (t.subject === 'life' && (day !== tree.today || tree.steps.some(s =>
+        s.occurrence.startsWith(t.id + '/') && s.scheduled === day && s.end))) continue
       if (day < first) continue
       const p = period(t, day)
       if (!p || day > p.end) continue
@@ -148,7 +168,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       existing.add(occurrence)
       const practice = t.practice_binding?.progression ? calendarPractice(t.practice_binding, day) : undefined
       const parts =
-        t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
+        t.subject !== 'life' && t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
       parts.forEach((minutes, index) => {
         const flowers =
           t.subject === 'life' && index < parts.length - 1

@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
+import { findPassageByKey } from '@rosie/english/utils/reading-data'
 import { entryHref, type PracticeEntryRow } from '@rosie/tasks'
 import { LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Button, Flex, Heading, Text } from '@rosie/ui/themes'
@@ -28,7 +29,8 @@ function PracticeItemContent({ row, href, disabled }: Pick<Props, 'row' | 'href'
   const calc = Boolean(href && /^\/calc(?:[/?#]|$)/.test(href))
   const adaptive = Boolean(href && /^\/english\/words\/adaptive\/[^/?#]+\/practice\/?(?:[?#]|$)/.test(href))
   const math = Boolean(row?.values.problemId && (row.values.contentType === 'math-question' || href?.startsWith('/math/')))
-  const detailButton = href && !calc ? <Button variant="soft" disabled={disabled} onClick={() => router.push(entryHref(href, {}))}>进入详情页</Button> : null
+  const reading = Boolean(row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
+  const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => router.push(entryHref(href, {}))}>进入详情页</Button> : null
   return <Flex direction="column" gap="3">
     {row?.label && <Text size="2" weight="bold">{row.label}</Text>}
     {calc ? <EmbeddedCalcStartPanel /> : row && (math ? <MathPracticeContent row={row} actions={detailButton} /> : <PracticeResources row={row} />)}

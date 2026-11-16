@@ -105,6 +105,17 @@ function fill(tree: TreeData) {
 }
 
 export function roll(tree: TreeData, today: string) {
+  const expired = new Set<string>()
+  const retain = (step: WorkStep) => {
+    if (step.subject !== 'life' || step.end || step.scheduled === today) return true
+    expired.add(step.occurrence)
+    return false
+  }
+  tree.steps = tree.steps.filter(retain)
+  tree.weekendExcludedSteps = tree.weekendExcludedSteps?.filter(retain)
+  for (const progress of Object.values(tree.practiceProgress ?? {})) {
+    if (progress.activeOccurrence && expired.has(progress.activeOccurrence)) progress.activeOccurrence = null
+  }
   if (tree.upcoming && tree.upcoming.day <= today) {
     tree.ruleHistory.push(tree.upcoming)
     tree.rules = tree.upcoming.rules
@@ -255,6 +266,23 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   requireState(s, '找不到这项作业，请刷新。')
   if (s.skipped && kind === 'skip') return
   requireState(!s.skipped, '本次作业不用做。')
+  if (s.subject === 'life' && !s.end) {
+    requireState(s.scheduled === day, '生活泡泡只在当天有效。')
+    requireState(!['start', 'finish', 'record', 'move', 'nextDay', 'return', 'preparePractice'].includes(kind), '生活泡泡点击即可完成，无需计时或改期。')
+    if (kind === 'pop' || kind === 'completeUntimed') {
+      s.start = null
+      s.end = day
+      s.stages = [0]
+      s.popped = true
+      s.slot = null
+      Object.assign(s, completionReward(tree, s, day, false))
+      tree.sun += s.sun
+      tree.water += s.water
+      onCompleted(tree, s, now)
+      fill(tree)
+      return
+    }
+  }
   switch (kind) {
     case 'skip': {
       requireState(!s.start && !s.end, '只有未开始的作业可以标记为「不用做」。')

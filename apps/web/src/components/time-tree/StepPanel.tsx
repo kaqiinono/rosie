@@ -106,7 +106,7 @@ export function StepPanel({
     return () => clearInterval(t)
   }, [step.start, step.end])
   useEffect(() => {
-    if (!step.practiceEntryName || step.practice !== undefined || step.end || step.skipped || !step.planned || api.busy) return
+    if (step.subject === 'life' || !step.practiceEntryName || step.practice !== undefined || step.end || step.skipped || !step.planned || api.busy) return
     const requestKey = `${step.id}:${prepareAttempt}`
     if (prepareKey.current === requestKey) return
     prepareKey.current = requestKey
@@ -120,7 +120,7 @@ export function StepPanel({
       setPreparing(false)
       if (!result) setPrepareError('暂时无法读取本次内容，请重试。')
     })
-  }, [step.id, step.practiceEntryName, step.practice, step.end, step.skipped, step.planned, tree.today, prepareAttempt, api])
+  }, [step.id, step.subject, step.practiceEntryName, step.practice, step.end, step.skipped, step.planned, tree.today, prepareAttempt, api])
   async function finishNow() {
     if (api.busy || finishingRef.current) return
     finishingRef.current = true
@@ -142,7 +142,7 @@ export function StepPanel({
     }
     const result = await api.run({ ...action, id: step.id })
     if (!result) return
-    close()
+    if (action.kind !== 'start') close()
   }
   if (editingNote) {
     return <HomeworkNotesDialog step={step} api={api} close={() => setEditingNote(false)} />
@@ -163,6 +163,50 @@ export function StepPanel({
   const noteButton = (
     <Button variant="soft" disabled={api.busy} onClick={() => setEditingNote(true)}>备注</Button>
   )
+  const showCompletionFooter = step.subject !== 'life' && !step.skipped &&
+    ((!step.end && !!step.start) || finishing) && !manual
+  const completionFooter = showCompletionFooter ? (
+    <Flex direction="column" gap="2" px="4" pb="4" pt="3"
+      className="border-t-2 border-kid-line bg-kid-paper"
+      style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+      <Text size="2" weight="bold" align="center" className="tabular-nums">
+        {finishing ? '正在开花…' : kidTime(step, now)}
+      </Text>
+      <Flex gap="2" wrap="wrap" justify="center">
+        <Button size="3" color="green" loading={api.busy || finishing} onClick={() => void finishNow()}>
+          {step.slot !== null ? '🫧 做完啦，戳破它！' : '🌸 做完啦！'}
+        </Button>
+        <Button size="3" variant="soft" color="gray" disabled={api.busy || finishing} onClick={close}>
+          收起，继续计时
+        </Button>
+      </Flex>
+      {api.message && <Text color="red" align="center" size="2" role="alert">{api.message}</Text>}
+    </Flex>
+  ) : undefined
+  if (step.subject === 'life') {
+    return (
+      <AppDialog open title={step.name} icon="🌱" onOpenChange={open => { if (!open) close() }} closeDisabled={api.busy}>
+        <Flex direction="column" gap="3">
+          {step.notes && <Text>{step.notes}</Text>}
+          {step.planNote && <Text>本次备注：{step.planNote}</Text>}
+          {step.end ? (
+            <>
+              <Text>已戳破 · {dayOf(step.end)}</Text>
+              <Text>🌸 {step.stages.length}　☀️ +{step.sun}　💧 +{step.water}</Text>
+              <Button onClick={close}>知道了</Button>
+            </>
+          ) : step.skipped ? <Text>今天不用做</Text> : (
+            <>
+              <Text>今天有效，点一下就完成。明天会有新的泡泡。</Text>
+              <Button loading={api.busy} onClick={() => void submit({ kind: 'pop' })}>🌼 戳破泡泡</Button>
+              {noteButton}
+            </>
+          )}
+          {api.message && <Text color="red" role="alert">{api.message}</Text>}
+        </Flex>
+      </AppDialog>
+    )
+  }
   if (!homework) {
     const subject = SUBJECTS[step.subject]
     const note = kidNote(step)
@@ -179,6 +223,7 @@ export function StepPanel({
           if (!v) close()
         }}
         closeDisabled={busy}
+        footer={completionFooter}
       >
         <Flex direction="column" gap="3" p="4">
           <Flex align="start" gap="3">
@@ -193,10 +238,10 @@ export function StepPanel({
                 </Badge>
               )}
               <Heading as="h2" size="5" className="break-words max-w-full">{step.name}</Heading>
-              <Text size="2" color="gray">{kidTime(step, now)}</Text>
+              {!showCompletionFooter && <Text size="2" color="gray">{kidTime(step, now)}</Text>}
               {step.planned && <Text size="2" color="gray">计划日期 {step.planned}</Text>}
             </Flex>
-            <IconButton variant="soft" color="gray" aria-label="关闭" disabled={busy} onClick={close}>
+            <IconButton variant="soft" color="gray" aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={busy} onClick={close}>
               <span aria-hidden="true">×</span>
             </IconButton>
           </Flex>
@@ -220,16 +265,7 @@ export function StepPanel({
               <Button size="3" color="pink" onClick={close}>
                 {step.skipped ? '👋 下次再来' : '🎉 太好啦'}
               </Button>
-            ) : step.start || finishing ? (
-              <Flex direction="column" gap="2" width="100%">
-                <Button size="3" color="green" loading={busy} onClick={() => void finishNow()}>
-                  {step.slot !== null ? '🫧 做完啦，戳破它！' : '🌸 做完啦！'}
-                </Button>
-                <Button size="3" variant="ghost" color="gray" mx="auto" disabled={finishing} onClick={close}>
-                  ⏳ 再做一会儿
-                </Button>
-              </Flex>
-            ) : other ? (
+            ) : step.start || finishing ? null : other ? (
               <Button size="3" color="amber" onClick={() => select(other.id)}>
                 👉 先回去做完那个
               </Button>
@@ -250,14 +286,14 @@ export function StepPanel({
                   variant="soft"
                   color="violet"
                   disabled={api.busy}
-                  onClick={() => void submit({ kind: 'nextDay' })}
+                  onClick={() => void submit(overdue ? { kind: 'move', day: tree.today } : { kind: 'nextDay' })}
                 >
-                  🌙 挪到下一天
+                  {overdue ? '☀️ 挪到今天' : '🌙 挪到下一天'}
                 </Button>
               </Flex>
             )}
           </Flex>
-          {api.message && (
+          {api.message && !showCompletionFooter && (
             <Text color="red" align="center" role="alert">
               {api.message}
             </Text>
@@ -276,6 +312,7 @@ export function StepPanel({
       }}
       description={SUBJECTS[step.subject].label + ' · 预计 ' + step.minutes + ' 分钟'}
       closeDisabled={api.busy || finishing}
+      footer={completionFooter}
     >
       <Flex direction="column" gap="3">
         {step.notes && <Text>{step.notes}</Text>}
@@ -352,24 +389,7 @@ export function StepPanel({
               保存实际时间
             </Button>
           </>
-        ) : step.start || finishing ? (
-          <>
-            <Text>
-              已经做了{' '}
-              {step.start ? Math.max(0, Math.floor((now - Date.parse(step.start)) / 60000)) : 0} 分钟
-            </Text>
-            <Button
-              color="green"
-              loading={api.busy || finishing}
-              onClick={() => void finishNow()}
-            >
-              完成了
-            </Button>
-            <Button variant="soft" disabled={finishing} onClick={close}>
-              继续做
-            </Button>
-          </>
-        ) : (
+        ) : step.start || finishing ? null : (
           <>
             {running ? (
               <Button onClick={() => select(running.id)}>返回正在做的作业</Button>
@@ -402,8 +422,8 @@ export function StepPanel({
               <Button variant="soft" disabled={api.busy} onClick={() => setMove(!move)}>
                 改日期
               </Button>
-              <Button variant="soft" disabled={api.busy} onClick={() => void submit({ kind: 'nextDay' })}>
-                挪到下一天
+              <Button variant="soft" disabled={api.busy} onClick={() => void submit(overdue ? { kind: 'move', day: tree.today } : { kind: 'nextDay' })}>
+                {overdue ? '挪到今天' : '挪到下一天'}
               </Button>
               {noteButton}
             </Grid>
@@ -429,7 +449,7 @@ export function StepPanel({
             家长补录
           </Button>
         )}
-        {api.message && (
+        {api.message && !showCompletionFooter && (
           <Text color="red" role="alert">
             {api.message}
           </Text>

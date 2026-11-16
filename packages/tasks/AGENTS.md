@@ -17,6 +17,13 @@ are left to the user: verify new vs existing defaults, weekends off/on, preserve
 split tasks and an already-started weekend task.
 
 The production life tree at /time-tree generates owner-scoped occurrences from these templates.
+Life templates are daily persistent switches: while enabled, generate one current-day bubble,
+including weekends, irrespective of the template's academic recurrence window or duration.
+They never split, start a timer or bind practice. A pop atomically completes and grants ordinary
+sun/water rewards, leaves a flower and settles a life fruit through the existing daily roll.
+Unpopped life instances expire at Shanghai midnight without rewards or diary entries; they
+never enter wilted work or historical buds. Disable/delete removes their unfinished instances
+on sync. Completed records and their flowers/fruits/rewards remain. Academic rules are unchanged.
 The homework tab and /today/calendar share the execution records via /api/time-tree.
 Saving a homework template patches its list and awaits an owner-scoped refresh of the registered
 `time_tree` session store, including when its view is unmounted or initially loading. A failed

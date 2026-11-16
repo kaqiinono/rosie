@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { ListeningClipText } from '@rosie/english'
 import type { PracticeEntryRow } from '@rosie/tasks'
-import { Button, Flex, Text } from '@rosie/ui/themes'
-import { ResourcePlayer } from '../time-tree/PracticeResources'
+import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
+import { ResourcePlayer } from '../time-tree/ResourcePlayer'
 import ReadingPreviewDrawer from './ReadingPreviewDrawer'
 
 export default function SentenceRowPreview({ row }: { row: PracticeEntryRow }) {
@@ -13,16 +13,18 @@ export default function SentenceRowPreview({ row }: { row: PracticeEntryRow }) {
   const [loop, setLoop] = useState(false)
   const [readingOpen, setReadingOpen] = useState(false)
   const resources = (row.resources ?? []).filter((resource) => resource.type === 'audio')
-  const resource = resources.find((item) => item.label === '句子听记') ?? resources[0]
+  const resource = resources.find((item) => item.label === '句子听记') ?? resources.find((item) => item.label === '原文单句') ?? resources[0]
   const active = resource?.id === activeId ? resource : undefined
   const blocks = (row.content ?? []).filter((block) => block.text)
 
   return <Flex direction="column" gap="3" aria-label="单句听记预览">
+    {row.values.requiresRecite === 'true' && <Flex><Badge color="orange">需背诵</Badge></Flex>}
     {blocks.map((block, index) => <div key={index} className="min-w-0 py-3">
       <ListeningClipText english={block.text} chinese={block.translation} />
     </div>)}
     {!blocks.length && <Text size="2" color="gray">这项没有可预览的正文。</Text>}
-    {resource && <Flex gap="2" align="center" wrap="wrap">
+    <Flex gap="2" align="center" wrap="wrap">
+      {resource && <>
       <Button color="orange"
         variant={activeId === resource.id ? 'solid' : 'soft'}
         aria-pressed={activeId === resource.id}
@@ -33,9 +35,10 @@ export default function SentenceRowPreview({ row }: { row: PracticeEntryRow }) {
         onClick={() => setLoop((value) => !value)}>
         单曲循环{loop ? '：开' : '：关'}
       </Button>
-    </Flex>}
+      </>}
+      {row.values.key && <Button variant="soft" onClick={() => { setActiveId(null); setReadingOpen(true) }}>查看全文</Button>}
+    </Flex>
     {row.values.key && <>
-      <Flex><Button variant="soft" onClick={() => { setActiveId(null); setReadingOpen(true) }}>查看全文</Button></Flex>
       <ReadingPreviewDrawer passageKey={row.values.key} open={readingOpen} onClose={() => setReadingOpen(false)} />
     </>}
     {!resources.length && <Text size="2" color="gray">此句尚未绑定单句音频，可在绑定后刷新资源。</Text>}

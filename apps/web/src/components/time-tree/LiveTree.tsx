@@ -111,10 +111,12 @@ function GroupedSteps({
   steps,
   empty,
   onSelect,
+  descending = false,
 }: {
   steps: WorkStep[]
   empty: string
   onSelect: (id: string) => void
+  descending?: boolean
 }) {
   const groups = new Map<string, WorkStep[]>()
   for (const step of steps) {
@@ -127,7 +129,7 @@ function GroupedSteps({
 
   return (
     <Flex direction="column" gap="4">
-      {Array.from(groups.keys()).sort().map((day) => {
+      {Array.from(groups.keys()).sort((a, b) => descending ? b.localeCompare(a) : a.localeCompare(b)).map((day) => {
         const date = new Date(day + 'T00:00:00Z')
         const label = `${date.getUTCMonth() + 1} 月 ${date.getUTCDate()} 日 · 周${'日一二三四五六'[date.getUTCDay()]}`
         return (
@@ -210,6 +212,9 @@ export default function LiveTree() {
   const [pin, setPin] = useState('')
   const [notice, notify] = useState('')
   const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
+  const [savingBubble, setSavingBubble] = useState<string | null>(null)
+  const completingBubble = useRef(false)
+  const bloomTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [hour, setHour] = useState(() => new Date().getHours())
   const [fresh, setFresh] = useState<Record<string, 'born'>>({})
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
@@ -264,6 +269,7 @@ export default function LiveTree() {
       obs.disconnect()
       effects.detach()
       fx.current = null
+      if (bloomTimer.current) clearTimeout(bloomTimer.current)
     }
   }, [ready])
   useEffect(() => {
@@ -306,7 +312,7 @@ export default function LiveTree() {
   const air = tree.steps.filter((s) => s.slot !== null)
   const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority))
   const mustDone = must.filter((s) => s.end).length
-  const wilted = tree.steps.filter((s) => !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
+  const wilted = tree.steps.filter((s) => s.subject !== 'life' && !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
   const horizon = shift(tree.today, 6)
   const laterSteps = tree.steps.filter((s) => !s.skipped && !s.end && !!s.planned && s.planned > horizon)
   const states: Record<string, BubbleState> = Object.fromEntries(
@@ -391,6 +397,7 @@ export default function LiveTree() {
     treeData: TreeData,
     rewards: boolean,
     origin: { x: number; y: number } | null = null,
+    onBloomed?: () => void,
   ) {
     const from = bubbleCenter(step.id) ?? origin
     const ids = step.stages.map((_, index) => `${step.id}#${index}`)
@@ -399,6 +406,7 @@ export default function LiveTree() {
       if (ids.length) {
         for (const id of ids) showFlower(id)
       }
+      onBloomed?.()
       return
     }
     const reduced = effects.prefersReducedMotion()
@@ -426,11 +434,33 @@ export default function LiveTree() {
       const at = treeRef.current?.toClient(center.x, center.y)
       return { id, x: at?.x ?? from.x, y: at?.y ?? from.y - 160 }
     })
-    effects.flySeeds(from.x, from.y, seeds, (seed) => showFlower(seed.id))
+    let remaining = seeds.length
+    if (!remaining) onBloomed?.()
+    effects.flySeeds(from.x, from.y, seeds, (seed) => {
+      showFlower(seed.id)
+      remaining -= 1
+      if (remaining || !onBloomed) return
+      if (effects.prefersReducedMotion()) onBloomed()
+      // tg-born lasts 750ms; wait for the last flower to finish opening.
+      else bloomTimer.current = setTimeout(onBloomed, 750)
+    })
   }
   async function clickBubble(id: string) {
-    if (busy) return
+    if (busy || completingBubble.current) return
     const s = air.find((x) => x.id === id)
+    if (s?.subject !== 'life' && s?.end) {
+      await completeRunning(id)
+      return
+    }
+    if (s?.subject === 'life' && !s.end) {
+      const origin = bubbleCenter(id)
+      const result = await run({ kind: 'pop', id })
+      const done = result?.steps.find(item => item.id === id)
+      if (!result || !done?.end) return
+      sow(done, result, false, origin)
+      notify(doneNotice(done))
+      return
+    }
     if (!s?.end) {
       setStep(id)
       return
@@ -442,15 +472,38 @@ export default function LiveTree() {
     notify('🌸 ' + s.name + '完成啦！')
   }
   async function completeRunning(id: string) {
-    if (busy) return
+    if (busy || completingBubble.current) return
     const step = air.find((item) => item.id === id)
-    if (!step?.start || step.end) return
+    if (!step || (!step.start && !step.end)) return
+    completingBubble.current = true
+    setSavingBubble(id)
     const origin = bubbleCenter(id)
-    const outcome = await finishAndPop(run, step)
-    if (!outcome.ok) return
-    if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin)
-    notify(doneNotice(outcome.step))
-    setRewardStep(outcome.step)
+    const release = () => {
+      completingBubble.current = false
+      setSavingBubble(null)
+    }
+    try {
+      // A previous finish may have succeeded while pop failed: retry only pop.
+      const popped = step.end ? await run({ kind: 'pop', id }) : null
+      const outcome = step.end
+        ? popped ? { ok: true as const, step: popped.steps.find(item => item.id === id) ?? step, tree: popped, bloom: true } : { ok: false as const, finished: true }
+        : await finishAndPop(run, step)
+      if (!outcome.ok) {
+        notify(outcome.finished ? '完成已保存，开花没成功，请再点一次泡泡。' : '没保存成功，请再点一次泡泡。')
+        release()
+        return
+      }
+      const showReward = () => {
+        release()
+        notify(doneNotice(outcome.step))
+        setRewardStep(outcome.step)
+      }
+      if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin, showReward)
+      else showReward()
+    } catch {
+      release()
+      notify('操作未完成，请查看泡泡状态后重试。')
+    }
   }
   function scenePoint(clientX: number, clientY: number): { x: number; y: number } {
     const rect = scene.current?.getBoundingClientRect()
@@ -603,7 +656,8 @@ export default function LiveTree() {
           )}
           onOpen={(id) => void clickBubble(id)}
           onHoldFinish={(id) => void completeRunning(id)}
-          holdLocked={busy}
+          savingId={savingBubble}
+          holdLocked={busy || !!savingBubble}
         />
       <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
         <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
@@ -760,9 +814,12 @@ export default function LiveTree() {
           onFinished={(finished, next, bloom) => {
             const saved = bloomOrigin.current?.id === finished.id ? bloomOrigin.current.at : null
             bloomOrigin.current = null
-            if (bloom) sow(finished, next, true, saved)
-            notify(doneNotice(finished))
-            setRewardStep(finished)
+            const showReward = () => {
+              notify(doneNotice(finished))
+              setRewardStep(finished)
+            }
+            if (bloom) sow(finished, next, true, saved, showReward)
+            else showReward()
           }}
         />
       )}
@@ -815,6 +872,7 @@ export default function LiveTree() {
               <Text size="2" color="gray">这些日子过去了还没做完。点进去就能补做。</Text>
               <GroupedSteps
                 steps={wilted}
+                descending
                 empty="现在没有枯萎的作业。"
                 onSelect={(id) => {
                   close()

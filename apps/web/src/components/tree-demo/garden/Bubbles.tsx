@@ -45,6 +45,7 @@ export type BubblesProps = {
   clockOffsetMs?: number
   startedAt?: Record<string, string>
   onOpen: (budId: string) => void
+  savingId?: string | null
   /** 进行中泡泡按住转满后松开。没传则仍是点一下打开。 */
   onHoldFinish?: (budId: string) => void
   /** 正在记账时不要开始新的按住完成。 */
@@ -147,7 +148,7 @@ function HoldRing({ progress, color }: { progress: number; color: string }) {
 }
 
 /** 飘在树上的作业泡泡。生命树会一次放出当天全部，原型仍用四个固定位置。 */
-export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
+export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, savingId, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
   const timing = bubbles.some((bud) => states?.[bud.id] === 'running' && startedAt?.[bud.id])
   const [localNow, setNow] = useState(() => Date.now())
   const now = localNow + clockOffsetMs
@@ -357,6 +358,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
         const meta = SUBJECTS[bud.subject]
         const slot = slots[bud.id] ?? 0
         const status = states?.[bud.id]
+        const saving = savingId === bud.id
         const start = status === 'running' ? startedAt?.[bud.id] : undefined
         const startedMs = start ? Date.parse(start) : NaN
         const countdown = Number.isFinite(startedMs) && bud.minutes > 0
@@ -365,7 +367,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
         const stateLabel = countdown ? `${countdown.caption} ${countdown.time}` : status ? bubbleStates[status].label : ''
         const label = status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
         const holdable = status === 'running' && !!onHoldFinish
-        const hint = holdable ? '，按住开花，点一下查看' : ''
+        const hint = saving ? '，正在开花，请稍候' : holdable ? '，按住开花，点一下查看' : status === 'running' ? '，点击查看详情' : ''
         const style: BubbleStyle = {
           '--tg-size': sizes?.[bud.id] ? `${sizes[bud.id]}px` : compact ? '4.35rem' : `clamp(${72 + n * 4}px, ${12 + n}vw, ${104 + n * 10}px)`,
           '--tg-tint': SUBJECT_TINT[bud.subject],
@@ -381,14 +383,17 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               role="button"
               tabIndex={0}
               data-state={status}
+              data-saving={saving || undefined}
+              aria-busy={saving}
+              aria-disabled={holdLocked}
               data-bubble-id={bud.id}
               data-holding={holdingId === bud.id ? 'true' : undefined}
               aria-label={`${meta.label}：${bud.name}，${n} 朵花 ${label}${
                 Number.isFinite(startedMs) ? `，预计 ${bud.minutes} 分钟` : ''
-              }${hint}`}
+              }${bud.makeupDate ? `，补做，原任务日期 ${bud.makeupDate}` : ''}${hint}`}
               className="tg-bubble"
               style={style}
-              onClick={holdable ? undefined : () => onOpen(bud.id)}
+              onClick={holdable ? undefined : () => { if (!holdLocked) onOpen(bud.id) }}
               onPointerDown={holdable ? (event) => startHold(event, bud.id) : undefined}
               onPointerMove={holdable ? moveHold : undefined}
               onPointerUp={holdable ? endHold : undefined}
@@ -397,20 +402,47 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
-                  onOpen(bud.id)
+                  if (!holdLocked) onOpen(bud.id)
                 }
               }}
             >
+              {saving && (
+                <svg className="tg-bubble-saving-ring" viewBox="0 0 100 100" aria-hidden="true">
+                  <g fill="var(--amber-5)" stroke="var(--amber-11)" strokeWidth="1.5">
+                    <circle cx="50" cy="4" r="4" />
+                    <circle cx="90" cy="73" r="3" />
+                    <circle cx="10" cy="73" r="3" />
+                  </g>
+                </svg>
+              )}
               {start && (
                 <RunningTimer minutes={bud.minutes} startedAt={start} now={now} color={meta.color} />
               )}
               {holdRing?.id === bud.id && <HoldRing progress={holdRing.progress} color={meta.color} />}
+              {bud.makeupDate && (
+                <>
+                  <svg className="tg-makeup-bow" viewBox="0 0 48 36" aria-hidden="true">
+                    <g stroke="currentColor" strokeWidth="2" strokeLinejoin="round">
+                      <path fill="var(--amber-5)" d="m20 19-7 14-3-5-6 1 10-14m14 4 7 14 3-5 6 1-10-14" />
+                      <path fill="var(--amber-4)" d="M21 13C9 1 2 3 3 13S9 25 21 19m6-6C39 1 46 3 45 13s-6 12-18 6" />
+                      <rect x="19" y="11" width="10" height="11" rx="4" fill="var(--amber-7)" />
+                    </g>
+                  </svg>
+                  <span className="tg-makeup-candy" aria-hidden="true">
+                    <Badge className="tg-makeup-date" color="amber" variant="solid" radius="full" size="1">
+                      {bud.makeupDate.slice(5).replace('-', '/')}
+                    </Badge>
+                  </span>
+                </>
+              )}
               <span className="tg-bubble-in">
                 <span className="block text-[calc(var(--tg-size)*0.26)] leading-none">{meta.emoji}</span>
                 <span className="mt-0.5 line-clamp-2 block text-[calc(var(--tg-size)*0.13)] font-extrabold leading-tight text-[#4a3728]">
                   {countdown && bud.overdue ? '补做 · ' : ''}{bud.name}
                 </span>
-                {countdown ? (
+                {saving ? (
+                  <Badge color="amber" radius="full" mt="1" role="status">正在开花…</Badge>
+                ) : countdown ? (
                   <Badge
                     size={{ initial: '1', sm: '2' }}
                     variant="solid"

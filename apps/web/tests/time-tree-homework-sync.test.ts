@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { PracticeBinding } from '@rosie/tasks'
 import { EMPTY_HOMEWORK, type Homework } from '../../../packages/tasks/src/homework'
-import { newTree } from '@/lib/time-tree/engine'
+import { act, newTree, roll } from '@/lib/time-tree/engine'
 import { schedule } from '@/lib/time-tree/schedule'
 
 function template(): Homework {
@@ -17,6 +17,44 @@ function template(): Homework {
 }
 
 describe('homework content synchronization', () => {
+  it('pops life tasks once without timing, grants rewards and settles their fruit', () => {
+    const tree = newTree('2026-11-16')
+    const life: Homework = { ...template(), subject: 'life', estimated_minutes: 90 }
+    schedule(tree, [life], tree.today, '2026-11-22')
+    expect(tree.steps).toHaveLength(1)
+    const step = tree.steps[0]
+    act(tree, { kind: 'pop', id: step.id }, '2026-11-16T04:00:00Z')
+    expect(step).toMatchObject({ start: null, end: '2026-11-16', popped: true, slot: null, sun: 1, water: 1 })
+    const before = structuredClone(tree)
+    act(tree, { kind: 'pop', id: step.id }, '2026-11-16T04:00:01Z')
+    expect(tree.sun).toBe(before.sun)
+    expect(tree.water).toBe(before.water)
+    expect(tree.diary).toEqual(before.diary)
+    roll(tree, '2026-11-17')
+    expect(tree.apples).toHaveLength(1)
+    expect(tree.apples[0].kind).toBe('life')
+    schedule(tree, [life], tree.today, '2026-11-23')
+    expect(tree.steps.filter(s => !s.end)).toHaveLength(1)
+    expect(tree.steps.find(s => !s.end)?.scheduled).toBe('2026-11-17')
+  })
+
+  it('expires unpopped life tasks without reward and renews daily until disabled', () => {
+    const tree = newTree('2026-11-20')
+    const life: Homework = { ...template(), subject: 'life', cycle: 'weekly', start_weekday: 1, end_weekday: 5, times_per_week: 1 }
+    schedule(tree, [life], tree.today, '2026-11-26')
+    expect(tree.steps).toHaveLength(1)
+    roll(tree, '2026-11-21')
+    expect(tree.steps).toHaveLength(0)
+    expect(tree.sun).toBe(0)
+    expect(tree.water).toBe(0)
+    expect(tree.diary).toEqual([])
+    schedule(tree, [life], tree.today, '2026-11-27')
+    expect(tree.steps).toHaveLength(1)
+    expect(tree.steps[0].scheduled).toBe('2026-11-21')
+    expect(() => act(tree, { kind: 'start', id: tree.steps[0].id }, '2026-11-21T04:00:00Z')).toThrow()
+    schedule(tree, [], tree.today, '2026-11-27')
+    expect(tree.steps).toHaveLength(0)
+  })
   it('updates unfinished and running content without changing completed work or execution records', () => {
     const tree = newTree('2026-11-16')
     const homework = template()

@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         else schedule(tree, templates, previousDay, shift(today, 6))
       }
       const step = tree.steps.find((s) => s.id === input.id)
-      if (step && !step.end && ['preparePractice', 'start', 'completeUntimed', 'record'].includes(input.kind)) {
+      if (step && step.subject !== 'life' && !step.end && ['preparePractice', 'start', 'completeUntimed', 'record'].includes(input.kind)) {
         const templateId = step.occurrence.split('/')[0]
         const template = await db.from('task_homework').select('*').eq('user_id', user.id).eq('id', templateId).maybeSingle()
         if (template.error) throw template.error

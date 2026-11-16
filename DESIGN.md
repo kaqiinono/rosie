@@ -1,5 +1,31 @@
 # Rosie design context
 
+## Running bubble completion (approved 2026-11-16)
+
+Starting a task keeps its content panel mounted and open, with the timer and completion
+controls available beside the learning content. 收起，继续计时 hides the panel without ending
+the task. Clicking a running bubble reopens its details; completion is available in the
+panel, with the existing hold-until-full-and-release gesture retained as a shortcut. While saving,
+its content gently pulses, amber dots orbit it and 正在开花… remains visible; no fabricated
+percentage is shown. Repeated bubble activation is locked through saving and blooming.
+Successful persistence leads to burst, seed flight and flower opening, then the actual
+reward dialog. A failed finish retains the task; a failed pop after finish retries only pop.
+Reduced motion uses static saving feedback and skips the animation wait.
+
+Running task details use AppDialog's fixed footer for elapsed/remaining time, completion,
+collapse and save-error feedback. The learning content scrolls independently above it;
+the footer reserves its own space and respects the device bottom safe area. Both life-tree
+details and homework details share these controls; parent time-entry forms stay in the body.
+
+## Makeup bubbles (approved 2026-11-16)
+
+Academic bubbles whose original scheduled date precedes today retain their subject color
+and display a small amber bow at the upper right and an amber candy-shaped date badge below
+(`MM/DD`, without 原定). Moving an old task to today preserves this marker. Today's original
+tasks and life bubbles have no marker. Decorations do not intercept bubble interactions;
+the accessible name includes the original date. Shared garden Bubbles and garden.css own
+the rendering; the production scene adapter supplies the original scheduled date.
+
 ## Life-tree menu (approved 2026-11-15)
 
 The minimize icon stays outside the status panel, beside the mobile menu trigger.
@@ -9,6 +35,13 @@ Its trigger is the shared 🌼 小口袋 button: cream paper, warm outline, roun
 shape and a pressed bottom edge. A slight flower tilt signals the open state; no chevron.
 
 ## Task-entry reading drawers (approved 2026-11-15)
+
+Life-tree bubble details, date-task lists and the homework-content preview share the same
+sentence playback and reading drawer as content management. Single-sentence resources use
+one playback/replay control plus loop, preferring 句子听记 then 原文单句; recitation labels remain.
+Whole-passage and sentence 查看全文 opens the existing bottom drawer and stops inline audio.
+Reading content has no duplicate route-navigation detail button. ResourcePlayer owns the
+shared playback implementation separately from the row renderer to avoid circular imports.
 
 Reading previews open the shared original reader in an AppDialog drawer. Sentence previews
 use the same bottom drawer (92dvh, rounded top corners), with a light paper reading background.

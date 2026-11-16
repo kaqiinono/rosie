@@ -52,6 +52,8 @@ export interface Settings {
 // ---------- 数据结构 ----------
 export interface Bud {
   id: string
+  /** 补做标识使用原任务日期，改期后仍保留。 */
+  makeupDate?: string
   name: string
   subject: SubjectKey
   minutes: number
