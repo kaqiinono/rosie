@@ -1,11 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useHomeworkData } from '@rosie/tasks'
+import { describeSchedule, useHomeworkData } from '@rosie/tasks'
 import { previewPractice } from '@/lib/time-tree/practicePreview'
-import { AppDialog, LearningIcon, LoadingOverlay, StickerCard, StatTile, type StatTileTone } from '@rosie/ui'
+import { AppDialog, LearningIcon, LoadingOverlay, Moon, StickerCard, StatTile, Timer, X, type StatTileTone } from '@rosie/ui'
 import { Avatar, Badge, Button, Flex, Grid, Heading, IconButton, Text, TextField } from '@rosie/ui/themes'
+import { flowerQuestionProgress, MINUTES_PER_FLOWER, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import {
   clock,
   dayOf,
@@ -37,6 +39,8 @@ const SUBJECT_BADGE: Record<SubjectKey, 'red' | 'amber' | 'blue' | 'green'> = {
   english: 'blue',
   life: 'green',
 }
+
+const MONTH_DAY = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', month: 'long', day: 'numeric' })
 
 export function TreeWait({ api }: { api: TreeController }) {
   if (api.isLoading) return <LoadingOverlay visible placement="content" />
@@ -178,10 +182,14 @@ export function StepPanel({
       if (mounted.current) setFinishing(false)
     }
   }
-  if (receipt) return <AppDialog open title={receipt.dailyRainbow ? '全部完成，收获彩虹果！' : receipt.flowers?.complete ? '整份做完啦' : '本次已收工'}
+  const weekStart = weeklyHomeworkStart(step)
+  if (receipt) return <AppDialog open title={receipt.dailyRainbow ? '全部完成，收获彩虹果！' : receipt.flowers?.complete ? weekStart ? '本周作业做完啦' : '整份做完啦' : '本次已收工'}
     onOpenChange={open => { if (!open) close() }}>
     <Flex direction="column" gap="3" align="center" role="status">
       {receipt.dailyRainbow && <DailyRainbowReward />}
+      {weekStart && receipt.flowers && (
+        <Text>本周已完成 {Math.min(receipt.flowers.collected * MINUTES_PER_FLOWER, receipt.minutes)} / {receipt.minutes} 分钟</Text>
+      )}
       <Text size="6" weight="bold" className="motion-safe:animate-star-pop">+{receipt.stages.length} 花朵</Text>
       <Text>☀️ +{receipt.sun}　💧 +{receipt.water}</Text>
       <Button onClick={close}>知道了</Button>
@@ -210,6 +218,7 @@ export function StepPanel({
     ? !manual && <EmbeddedCalcStartPanel taskId={step.id} disabled={calcDisabled} beforeStart={startCalc} />
     : step.practice || (step.practice === undefined && step.practiceEntryName && !step.end && !step.skipped)
       ? <PracticePreviewPanel api={api} tree={tree} step={step} homework={homeworkData} template={template} content={content}
+          compact={!!step.flowers && !homework}
           onCorrect={step.flowers && step.start && !step.end
             ? async problemId => { await api.run({ kind: 'answerHomeworkQuestion', id: step.id, problemId }) } : undefined} />
       : null
@@ -219,12 +228,18 @@ export function StepPanel({
   const showCompletionFooter = step.subject !== 'life' && !step.skipped &&
     ((!step.end && !!step.start) || finishing) && !manual
   const flowerReadOnly = !!step.end || !!step.skipped || waitingForTomorrow
-  const completionFooter = step.flowers && !manual ? <Flex direction="column" p="3" gap="2">
-    {step.start && !step.end && <Text size="2" align="center">{kidTime(step, now)}</Text>}
-    <FlowerCollection tree={tree} step={step} now={now} busy={api.busy || finishing} readOnly={flowerReadOnly} save={collect} />
-    {waitingForTomorrow && <Text size="2" align="center">今天已收工，明天继续</Text>}
-    {api.message && <Text color="red" role="alert">{api.message}</Text>}
-  </Flex> : showCompletionFooter ? (
+  const completionFooter = step.flowers && !manual ? (
+    <div className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
+      <Flex direction="column" gap="2" pt="3" className="border-t-2 border-kid-line">
+        {step.start && !step.end && <Text size="2" color="gray">{kidTime(step, now)}</Text>}
+        <FlowerCollection step={step} now={now}
+          busy={api.busy || finishing} readOnly={flowerReadOnly || awaitingPractice}
+          questions={flowerQuestionProgress(step, content)} save={collect} />
+        {waitingForTomorrow && <Text size="2" align="center">今天已收工，明天继续</Text>}
+        {api.message && <Text color="red" role="alert">{api.message}</Text>}
+      </Flex>
+    </div>
+  ) : showCompletionFooter ? (
     <Flex direction="column" gap="2" px="4" pb="4" pt="3"
       className="border-t-2 border-kid-line bg-kid-paper"
       style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
@@ -266,6 +281,11 @@ export function StepPanel({
       </AppDialog>
     )
   }
+  const scheduleSummary = weekStart
+    ? `${MONTH_DAY.format(new Date(weekStart))} – ${MONTH_DAY.format(new Date(step.deadline))} · 周目标 ${step.minutes} 分钟`
+    : template
+      ? `${step.end || step.skipped ? '当前安排 · ' : ''}${describeSchedule(template, { compact: true, weeklyGroups: template.cycle === 'weekly' })} · ${template.cycle === 'weekly' ? '周目标' : '每次'} ${template.estimated_minutes} 分钟`
+      : null
   if (!homework) {
     const subject = SUBJECTS[step.subject]
     const note = kidNote(step)
@@ -293,7 +313,10 @@ export function StepPanel({
         timeUnit = undefined
       }
     } else if (step.start) {
-      if (left >= 0) {
+      if (weekStart) {
+        timeLabel = '已做'
+        timeValue = spent
+      } else if (left >= 0) {
         timeLabel = '还剩'
         timeValue = left
         timeTone = 'accent'
@@ -305,10 +328,12 @@ export function StepPanel({
     } else if (overdue) {
       timeTone = 'warning'
     }
+    const showStepTime = timeLabel !== '预计' || !weekStart && template?.estimated_minutes !== step.minutes
     return (
       <AppDialog
         open
         title={step.name}
+        size={step.flowers ? 'form' : 'standard'}
         chrome="none"
         presentation="bottom-drawer"
         compactBottomDrawer={!weeklyPlan}
@@ -318,7 +343,35 @@ export function StepPanel({
         closeDisabled={finishing}
         footer={completionFooter}
       >
-        <Flex direction="column" gap="3" p="4">
+        <Flex direction="column" gap={step.flowers ? { initial: '3', xs: '4' } : '3'}
+          className={step.flowers ? 'p-4 sm:px-6 sm:pt-6' : 'p-4'}>
+          {step.flowers ? (
+            <Flex align="center" gap={{ initial: '2', sm: '3' }}>
+              <Image src="/time-tree/workbook-sticker.png" width={128} height={128} alt=""
+                unoptimized draggable={false} className="size-12 shrink-0 sm:size-[4.5rem]" />
+              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
+                <Flex align="center" gap="2" wrap="wrap" minWidth="0">
+                  <Heading as="h2" size={{ initial: '4', xs: '5' }} className="max-w-full break-words">{step.name}</Heading>
+                  <Badge variant="soft" radius="full" aria-label={`优先级 ${step.priority}`} color={isMustDo(step.priority) ? 'pink' : 'gray'}>
+                    {step.priority}
+                  </Badge>
+                </Flex>
+                {(step.planned || showStepTime) && (
+                  <Text as="p" size={{ initial: '2', xs: '3' }} weight="bold"
+                    className="w-full text-text-secondary tabular-nums min-[520px]:w-auto sm:border-l-2 sm:border-kid-line sm:pl-4">
+                    {step.planned && MONTH_DAY.format(new Date(step.planned))}
+                    {step.planned && showStepTime && ' · '}
+                    {showStepTime && <>{timeLabel !== '预计' && `${timeLabel} `}{timeValue}{timeUnit && ` ${timeUnit}`}</>}
+                  </Text>
+                )}
+                {scheduleSummary && <Text as="p" size="2" color="gray" className="w-full">{scheduleSummary}</Text>}
+              </div>
+              <IconButton variant="soft" color="gray" className="shrink-0"
+                aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing} onClick={close}>
+                <X size={18} aria-hidden="true" />
+              </IconButton>
+            </Flex>
+          ) : (
           <Flex align="center" justify="between" gap="3">
             <Flex align="center" gap="3" minWidth="0">
               <Avatar size="5" radius="large" color={SUBJECT_BADGE[step.subject]} fallback={subject.emoji} aria-hidden="true" />
@@ -329,6 +382,7 @@ export function StepPanel({
                     {step.priority}
                   </Badge>
                 </Flex>
+                {scheduleSummary && <Text size="2" color="gray">{scheduleSummary}</Text>}
                 {reward && (
                   <Flex align="center" gap="1" wrap="wrap">
                     <Badge size="3" variant="soft" radius="full" color="pink" className="tabular-nums"
@@ -362,6 +416,7 @@ export function StepPanel({
               </IconButton>
             </Flex>
           </Flex>
+          )}
           {note && (
             <StickerCard tone="paper" size="sm" elevation="flat" radius="md" className="w-full">
               <Text className="whitespace-pre-wrap break-words" size="3">
@@ -384,11 +439,14 @@ export function StepPanel({
                 {!dailyCalc && !awaitingPractice && step.planned && !waitingForTomorrow && (
                   <Button
                     size="3"
-                    color="pink"
+                    variant={step.flowers ? 'soft' : 'solid'}
+                    color={step.flowers ? 'violet' : 'pink'}
                     loading={api.busy}
                     onClick={() => void submit({ kind: 'start' })}
                   >
-                    {overdue ? '🌟 开始补做' : later ? '🌟 提前做' : '🌟 开始吧！'}
+                    {step.flowers ? (
+                      <><Timer size={18} aria-hidden="true" />{overdue ? '开始补做' : later ? '提前做' : '开始计时'}</>
+                    ) : overdue ? '🌟 开始补做' : later ? '🌟 提前做' : '🌟 开始吧！'}
                   </Button>
                 )}
                 <Button
@@ -398,12 +456,14 @@ export function StepPanel({
                   disabled={api.busy}
                   onClick={() => void submit(overdue ? { kind: 'move', day: tree.today } : { kind: 'nextDay' })}
                 >
-                  {overdue ? '☀️ 挪到今天' : '🌙 挪到下一天'}
+                  {step.flowers && !overdue
+                    ? <><Moon size={18} aria-hidden="true" className="fill-amber-400 text-amber-600" />挪到下一天</>
+                    : overdue ? '☀️ 挪到今天' : '🌙 挪到下一天'}
                 </Button>
               </Flex>
             )}
           </Flex>
-          {api.message && !showCompletionFooter && (
+          {api.message && !completionFooter && (
             <Text color="red" align="center" role="alert">
               {api.message}
             </Text>
@@ -421,11 +481,13 @@ export function StepPanel({
       onOpenChange={(v) => {
         if (!v) close()
       }}
-      description={SUBJECTS[step.subject].label + ' · 预计 ' + step.minutes + ' 分钟'}
+      description={`${SUBJECTS[step.subject].label} · ${(weekStart || template?.estimated_minutes === step.minutes) && scheduleSummary
+        ? scheduleSummary : `预计 ${step.minutes} 分钟`}`}
       closeDisabled={finishing}
       footer={completionFooter}
     >
       <Flex direction="column" gap="3">
+        {scheduleSummary && !weekStart && template?.estimated_minutes !== step.minutes && <Text size="2" color="gray">{scheduleSummary}</Text>}
         {step.notes && <Text>{step.notes}</Text>}
         {step.planNote && (
           <Text className="whitespace-pre-wrap break-words"><strong>本次备注</strong>　{step.planNote}</Text>
@@ -560,7 +622,7 @@ export function StepPanel({
             家长补录
           </Button>
         )}
-        {api.message && !showCompletionFooter && (
+        {api.message && !completionFooter && (
           <Text color="red" role="alert">
             {api.message}
           </Text>
@@ -570,13 +632,14 @@ export function StepPanel({
   )
 }
 
-function PracticePreviewPanel({ api, tree, step, homework, template, content, onCorrect }: {
+function PracticePreviewPanel({ api, tree, step, homework, template, content, compact, onCorrect }: {
   api: TreeController
   tree: TreeData
   step: WorkStep
   homework: ReturnType<typeof useHomeworkData>
   template: ReturnType<typeof useHomeworkData>['data'][number] | undefined
   content: WorkStep['practice'] | ReturnType<typeof previewPractice>
+  compact: boolean
   onCorrect?: (problemId: string) => Promise<void>
 }) {
   if (!content && !homework.isLoading && !homework.error) return null
@@ -590,6 +653,7 @@ function PracticePreviewPanel({ api, tree, step, homework, template, content, on
   const used = new Set([...rows.map(row => row.id), ...(binding ? tree.mathQuestionProgress?.[binding.key]?.completed ?? [] : [])])
   const canAppend = editable && first >= 0 && binding?.rows.slice(first).some(row => row.values.problemId && !used.has(row.id))
   return <HomeworkContentPanel
+    compact={compact}
     disabled={api.busy}
     completedRows={mathBatch && recorded ? rows.filter(row => recorded.includes(row.values.problemId)).map(row => row.id) : completed}
     addedRows={step.practice?.questions?.added}

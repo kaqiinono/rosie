@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🍅 小番茄乐园 · 可爱儿童专注钟</title>
+  <script>
+    if (new URLSearchParams(location.search).get("view") === "demo") {
+      document.documentElement.dataset.layout = "demo";
+    }
+  </script>
   <style>
     :root {
       /* Dynamic Theme Tokens (Default: Focus Mode) */
@@ -1366,6 +1371,59 @@
 
     .text-sub { color: var(--text-sub); font-size: 13px; font-weight: 700; }
     .divider { height: 1px; background: var(--border-soft); margin: 14px 0; }
+
+    /* Standalone focus timer preview */
+    html[data-layout="demo"] :is(body, .zen-overlay) {
+      background: var(--surface);
+    }
+    html[data-layout="demo"] [data-full-timer-control],
+    html[data-layout="demo"] :is(.sky-decor, .dot-pattern, .top-header, .side-stack, .mode-switcher, .presets-strip, .active-task-pill) {
+      display: none;
+    }
+    html[data-layout="demo"] .app-shell {
+      max-width: 668px;
+      padding: 0 16px 22px;
+    }
+    html[data-layout="demo"] .timer-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    html[data-layout="demo"] .timer-card {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
+    }
+    html[data-layout="demo"] .hero-stage {
+      width: min(280px, 84vw);
+      height: auto;
+      aspect-ratio: 1;
+      margin: -2px 0 5px;
+    }
+    html[data-layout="demo"] :is(.mascot-wrap, .mascot-wrap .mascot-svg) {
+      width: auto;
+      height: auto;
+      aspect-ratio: 1;
+    }
+    html[data-layout="demo"] .mascot-wrap {
+      width: 73%;
+    }
+    html[data-layout="demo"] .mascot-wrap .mascot-svg {
+      width: 90%;
+    }
+    html[data-layout="demo"] .countdown-text {
+      font-size: clamp(48px, 8vw, 55px);
+    }
+    html[data-layout="demo"] .growth-fill {
+      background: var(--accent);
+    }
+    html[data-layout="demo"] .timer-card .btn-toy {
+      min-height: 46px;
+      white-space: nowrap;
+    }
+    html[data-layout="demo"] .timer-card .btn-main-start {
+      min-height: 56px;
+    }
   </style>
 </head>
 <body data-theme="focus">
@@ -1456,9 +1514,9 @@
           <!-- Main Controls -->
           <div class="controls-row">
             <button class="btn-toy btn-primary btn-main-start" id="btn-start-pause">▶️ 开始专注</button>
-            <button class="btn-toy" id="btn-reset" title="重新开始 (R)">🔄 重置</button>
-            <button class="btn-toy" id="btn-plus-5" title="加 5 分钟">➕ 5分</button>
-            <button class="btn-toy" id="btn-skip" title="跳到下一阶段 (S)">⏭️ 跳过</button>
+            <button class="btn-toy" id="btn-reset" data-full-timer-control title="重新开始 (R)">🔄 重置</button>
+            <button class="btn-toy" id="btn-plus-5" data-full-timer-control title="加 5 分钟">➕ 5分</button>
+            <button class="btn-toy" id="btn-skip" data-full-timer-control title="跳到下一阶段 (S)">⏭️ 跳过</button>
             <button class="btn-toy" id="btn-zen" title="进入沉浸全屏模式 (F)">🖥️ 全屏</button>
           </div>
 
@@ -1621,7 +1679,7 @@
     <div class="mascot-speech" id="zen-speech" style="margin-bottom:20px;">安静专注中，小番茄正在努力长大~</div>
     <div class="controls-row">
       <button class="btn-toy btn-primary btn-main-start" id="btn-zen-start-pause">⏸️ 暂停一下</button>
-      <button class="btn-toy" id="btn-zen-reset">🔄 重置</button>
+      <button class="btn-toy" id="btn-zen-reset" data-full-timer-control>🔄 重置</button>
     </div>
   </div>
 
@@ -1799,6 +1857,7 @@
       "use strict";
       if (event.source !== parent || event.origin !== new URL(document.URL).origin || event.data?.type !== "tomato:init") return;
       window.removeEventListener("message", startTimerPage);
+      const isDemo = document.documentElement.dataset.layout === "demo";
 
       /* ==========================================================================
          1. CATALOG & CONSTANTS
@@ -1887,10 +1946,11 @@
       }
 
       function createDefaultState() {
+        const focusMinutes = isDemo ? 10 : 25;
         return {
           version: 1,
           settings: {
-            focusMinutes: 25,
+            focusMinutes,
             shortBreakMinutes: 5,
             longBreakMinutes: 15,
             longBreakInterval: 4,
@@ -1907,16 +1967,16 @@
             mode: "focus",          // focus | shortBreak | longBreak
             status: "idle",         // idle | running | paused
             roundIndex: 1,
-            totalMs: 25 * 60 * 1000,
-            remainingMs: 25 * 60 * 1000,
+            totalMs: focusMinutes * 60 * 1000,
+            remainingMs: focusMinutes * 60 * 1000,
             endTimestamp: null,
             activeTaskId: null,
-            activePresetId: "classic"
+            activePresetId: isDemo ? null : "classic"
           },
           stars: 12,                // Welcome starter stars so kids can try the shop!
           totalTasksDone: 0,
           unlockedBadges: [],
-          tasks: [
+          tasks: isDemo ? [] : [
             { id: "t_demo_1", title: "专心写完第一页作业", icon: "📚", est: 2, doneTomatoes: 0, completed: false },
             { id: "t_demo_2", title: "读 15 分钟趣味绘本", icon: "📖", est: 1, doneTomatoes: 0, completed: false }
           ],
@@ -1956,6 +2016,7 @@
       }
 
       function saveState() {
+        if (isDemo) return;
         try {
           parent.postMessage({ type: "tomato:save", state }, event.origin);
         } catch {
@@ -2595,6 +2656,16 @@
         AUDIO.playChime();
         launchConfetti(completedMode === "focus" ? 90 : 45);
 
+        if (isDemo) {
+          if (completedMode === "focus") {
+            showToast("🍅", "小番茄熟透啦！休息一下吧。");
+          } else {
+            showToast("🌱", "休息结束，准备开始新一轮专注吧。");
+          }
+          advanceNextMode();
+          return;
+        }
+
         const activeTask = state.tasks.find((t) => t.id === state.timer.activeTaskId);
         const taskLabel = activeTask ? activeTask.title : "自由专注";
 
@@ -2716,7 +2787,7 @@
           });
         } else {
           growthBar.style.display = "none";
-          wellnessBox.style.display = "flex";
+          wellnessBox.style.display = isDemo ? "none" : "flex";
         }
 
         // Mascot SVG (re-render only when expression actually changed!)
@@ -3132,18 +3203,19 @@
       document.getElementById("btn-start-pause").addEventListener("click", togglePlayPause);
       document.getElementById("btn-zen-start-pause").addEventListener("click", togglePlayPause);
 
-      document.getElementById("btn-reset").addEventListener("click", () => {
-        runWithGuardIfNeeded("确定要重置当前专注时间吗？小番茄就得重新种啦~", resetTimer);
-      });
-      document.getElementById("btn-zen-reset").addEventListener("click", () => {
-        runWithGuardIfNeeded("确定要重置当前专注时间吗？", resetTimer);
-      });
-
-      document.getElementById("btn-plus-5").addEventListener("click", addFiveMinutes);
-      document.getElementById("btn-skip").addEventListener("click", () => {
-        AUDIO.playPop(460);
-        runWithGuardIfNeeded("跳过这一轮不会收获番茄哦，确定要跳到下一阶段吗？", () => advanceNextMode(false));
-      });
+      if (!isDemo) {
+        document.getElementById("btn-reset").addEventListener("click", () => {
+          runWithGuardIfNeeded("确定要重置当前专注时间吗？小番茄就得重新种啦~", resetTimer);
+        });
+        document.getElementById("btn-zen-reset").addEventListener("click", () => {
+          runWithGuardIfNeeded("确定要重置当前专注时间吗？", resetTimer);
+        });
+        document.getElementById("btn-plus-5").addEventListener("click", addFiveMinutes);
+        document.getElementById("btn-skip").addEventListener("click", () => {
+          AUDIO.playPop(460);
+          runWithGuardIfNeeded("跳过这一轮不会收获番茄哦，确定要跳到下一阶段吗？", () => advanceNextMode(false));
+        });
+      }
 
       // Mascot Click Easter Egg
       document.getElementById("mascot-stage").addEventListener("click", () => {
@@ -3582,9 +3654,9 @@
         if (e.code === "Space") {
           e.preventDefault();
           togglePlayPause();
-        } else if (e.key === "r" || e.key === "R") {
+        } else if (!isDemo && e.key.toLowerCase() === "r") {
           runWithGuardIfNeeded("确定要重置当前专注时间吗？", resetTimer);
-        } else if (e.key === "s" || e.key === "S") {
+        } else if (!isDemo && e.key.toLowerCase() === "s") {
           runWithGuardIfNeeded("跳过这一轮不会收获番茄哦，确定跳过吗？", () => advanceNextMode(false));
         } else if (e.key === "f" || e.key === "F") {
           if (document.getElementById("zen-overlay").classList.contains("open")) closeZen();

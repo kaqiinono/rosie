@@ -244,7 +244,8 @@ export default function HomeworkManager({
                       {HOMEWORK_CYCLES[item.cycle]}
                     </Badge>
                     <Badge variant="soft" radius="full" color="gray">
-                      {item.subject === 'life' ? '不计时' : `约 ${item.estimated_minutes} 分钟`}
+                      {item.subject === 'life' ? '不计时' : item.cycle === 'weekly'
+                        ? `周目标 ${item.estimated_minutes} 分钟` : `约 ${item.estimated_minutes} 分钟`}
                     </Badge>
                     {!item.enabled && (
                       <Badge variant="soft" radius="full" color="gray">
@@ -253,7 +254,7 @@ export default function HomeworkManager({
                     )}
                   </Flex>
                   <Text as="p" size="2" color="gray">
-                    {describeSchedule(item)}
+                    {describeSchedule(item, { weeklyGroups: item.cycle === 'weekly' && item.subject !== 'life' })}
                   </Text>
                   {item.notes && (
                     <Text as="p" size="2" color="gray" className="break-words whitespace-pre-wrap">

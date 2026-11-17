@@ -17,6 +17,7 @@ export function regenerationTargets(tree: TreeData, from: string, through: strin
       const date = step.planned ?? step.scheduled
       return date >= tree.today && date >= from && date <= through && step.scheduled >= tree.today &&
         !step.start && !step.end && !step.skipped && !step.settled && !step.audit.length &&
+        !step.flowers?.availableFrom &&
         !step.practice?.questions && !step.returned && !step.stages.some(stage => stage > 0)
     })) continue
     occurrences.add(key)

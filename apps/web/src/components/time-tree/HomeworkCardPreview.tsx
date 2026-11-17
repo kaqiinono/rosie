@@ -1,9 +1,10 @@
 'use client'
 
-import type { Homework } from '@rosie/tasks'
+import { homeworkPeriod, type Homework } from '@rosie/tasks'
 import { AppDialog } from '@rosie/ui'
 import { Button, Flex, Text } from '@rosie/ui/themes'
 import { previewHomeworkPractice, previewPractice } from '@/lib/time-tree/practicePreview'
+import { usesWeeklyHomework, weeklyOccurrence } from '@/lib/time-tree/weeklyHomework'
 import HomeworkContentPanel from './HomeworkContentPanel'
 import { useTimeTree } from './useTimeTree'
 import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
@@ -17,10 +18,11 @@ export default function HomeworkCardPreview({ homework, onClose }: {
   const step = tree?.steps
     .filter(item => item.occurrence.split('/')[0] === homework.id && !item.end && !item.skipped)
     .sort((a, b) => a.scheduled.localeCompare(b.scheduled) || a.id.localeCompare(b.id))[0]
+  const week = tree && usesWeeklyHomework(homework) ? homeworkPeriod(homework, tree.today) : null
   const content = homework.subject !== 'life' && tree
     ? step
       ? previewPractice(tree, step, homework)
-      : previewHomeworkPractice(tree, homework.practice_binding, tree.today)
+      : previewHomeworkPractice(tree, homework.practice_binding, tree.today, week ? weeklyOccurrence(homework.id, week.start) : undefined)
     : null
   const hasPractice = homework.subject !== 'life' && !!homework.practice_binding
   const notes = step?.notes || homework.notes

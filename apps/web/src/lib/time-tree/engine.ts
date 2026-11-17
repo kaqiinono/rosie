@@ -1,4 +1,4 @@
-import { flowerBudget, flowerQuestionProgress, nextFlowerSession } from './flowers'
+import { flowerBudget, flowerQuestionProgress, nextFlowerSession, weeklyHomeworkStart } from './flowers'
 import { completionReward, isEarly } from './rewards'
 import { awardDailyRainbow, harvestSteps } from './harvest'
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
@@ -60,7 +60,7 @@ function markDoneToday(tree: TreeData): void {
 
 function awardGoal(tree: TreeData, at: string): void {
   if (tree.goalAwardedOn === tree.today) return
-  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority))
+  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority) && !weeklyHomeworkStart(s))
   if (!must.length || must.some((s) => !s.end)) return
   tree.water += GOAL_WATER
   tree.goalAwardedOn = tree.today
@@ -169,7 +169,10 @@ function collectFlowers(tree: TreeData, step: WorkStep, action: TreeAction, end:
   step.water = added ? completionReward(tree, step, dayOf(end), false).water : 0
   tree.sun += step.sun
   tree.water += step.water
-  if (!complete) tree.steps.push(nextFlowerSession(step))
+  if (!complete) {
+    const sequence = weeklyHomeworkStart(step) ? tree.steps.filter(item => item.occurrence === step.occurrence).length : 0
+    tree.steps.push(nextFlowerSession(step, tree.today, sequence))
+  }
   onCompleted(tree, step, now)
   fill(tree)
 }
@@ -384,7 +387,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         '这段时间已记录其他作业。',
       )
       if (s.flowers?.availableFrom) requireState(dayOf(new Date(start)) >= s.flowers.availableFrom,
-        '补录时间须在上次收工的次日或以后。')
+        '补录时间须在这段作业可开始的日期或以后。')
       s.audit.push({ at: now, previousStart: s.start, previousEnd: s.end })
       s.start = new Date(start).toISOString()
       if (s.flowers) collectFlowers(tree, s, action, new Date(end).toISOString(), now)

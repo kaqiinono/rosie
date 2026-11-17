@@ -2,7 +2,7 @@
 
 import RegenerateHomework from './RegenerateHomework'
 import Link from 'next/link'
-import { flowerQuestionProgress } from '@/lib/time-tree/flowers'
+import { dayPlanMinutes, flowerQuestionProgress, isWeeklyPartialReceipt, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import { useMemo, useState } from 'react'
 import { LearningIcon, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
@@ -25,7 +25,7 @@ function emptyTotals(): DayTotals {
 }
 
 function estimatedMinutes(steps: WorkStep[]) {
-  return steps.reduce((total, step) => total + step.minutes, 0)
+  return steps.reduce((total, step) => total + dayPlanMinutes(step), 0)
 }
 
 function journalDays(steps: WorkStep[]) {
@@ -57,7 +57,13 @@ function journalDays(steps: WorkStep[]) {
   for (const parts of groups.values()) {
     const flowers = parts.find(part => part.flowers)?.flowers
     const finished = flowers ? parts.some(part => part.flowers?.complete) : parts.every(part => part.end)
-    if (flowers) {
+    if (weeklyHomeworkStart(parts[0])) {
+      const current = parts.find(part => !isWeeklyPartialReceipt(part))
+      if (current?.planned) {
+        entry(current.planned).plan++
+        if (finished) entry(current.planned).done++
+      }
+    } else if (flowers) {
       for (const part of parts) {
         if (!part.planned) continue
         entry(part.planned).plan++
@@ -115,7 +121,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
       for (const key of Object.keys(summary) as (keyof DayTotals)[]) summary[key] += counts[key]
   }
   const step = tree.steps.find((s) => s.id === id)
-  const planned = tree.steps.filter((s) => !s.skipped && s.planned === date)
+  const planned = tree.steps.filter((s) => !s.skipped && s.planned === date && !isWeeklyPartialReceipt(s))
   const finished = tree.steps.filter((s) => s.end && dayOf(s.end) === date)
   const overdue = tree.steps.filter((s) => !s.skipped && !s.end && s.planned !== null && s.planned < date)
   const parked = calendar
@@ -139,7 +145,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
           : s.start
             ? '◷ 进行中'
             : s.planned
-              ? s.minutes + ' 分钟'
+              ? `${weeklyHomeworkStart(s) ? '周目标 ' : ''}${s.minutes} 分钟`
               : '未排期'}
         {s.flowers && ` · 🌸 ${s.flowers.collected}`}
         {questions && ` · ${questions.done}/${questions.total}`}

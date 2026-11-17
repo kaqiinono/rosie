@@ -1,5 +1,7 @@
 import type { Homework } from './homework'
 
+export const WEEKLY_HOMEWORK_ORDINAL = 'week'
+
 /** The recurrence fields frozen with an occurrence-based course rule. */
 export type HomeworkSchedule = Pick<Homework,
   'cycle' | 'include_weekends' | 'times_per_week' | 'times_per_cycle' |

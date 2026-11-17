@@ -1,6 +1,6 @@
 import type { PracticeBinding, PracticeProgression } from './practiceEntries'
 import { EMPTY_HOMEWORK, HOMEWORK_CYCLES, validateHomework } from './homework'
-import { homeworkPeriod, shiftHomeworkDate, type HomeworkSchedule } from './homeworkSchedule'
+import { homeworkPeriod, shiftHomeworkDate, WEEKLY_HOMEWORK_ORDINAL, type HomeworkSchedule } from './homeworkSchedule'
 
 const DAY = 86400000
 const dateNumber = (day: string) => Date.parse(`${day}T00:00:00Z`)
@@ -75,8 +75,23 @@ export function scheduledPracticeRow(binding: PracticeBinding, day: string, occu
   if (!Number.isFinite(days)) throw new Error('课程日期无效。')
   const weekday = new Date(anchor).getUTCDay()
   let offset = 0
+  let batches = 1
   if (rule.enabled && rule.mode === 'homework') {
-    offset = homeworkOffset(rule.schedule!, rule.anchorDate, day, occurrence)
+    const schedule = rule.schedule!
+    const [id, cycle, periodStart, ordinal] = occurrence?.split('/') ?? []
+    const week = schedule.cycle === 'weekly' && cycle === 'weekly' && ordinal === WEEKLY_HOMEWORK_ORDINAL &&
+      /^\d{4}-\d{2}-\d{2}$/.test(periodStart ?? '') ? homeworkPeriod(schedule, periodStart) : null
+    if (week && week.start === periodStart) {
+      // Keep the same consecutive groups that the former per-week subdivisions assigned.
+      const first = Array.from({ length: week.count }, (_, index) => index).find(index =>
+        shiftHomeworkDate(week.start, Math.floor((index + 1) * week.span / week.count) - 1) >= rule.anchorDate)
+      if (first !== undefined) {
+        offset = homeworkOffset(schedule, rule.anchorDate, day, [id, cycle, periodStart, first].join('/'))
+        batches = week.count - first
+      }
+    } else {
+      offset = homeworkOffset(schedule, rule.anchorDate, day, occurrence)
+    }
   } else if (rule.enabled && rule.mode === 'weekly') {
     const firstAdvance = ((rule.weekday - weekday + 6) % 7) + 1
     offset = days < firstAdvance ? 0 : 1 + Math.floor((days - firstAdvance) / 7)
@@ -94,6 +109,6 @@ export function scheduledPracticeRow(binding: PracticeBinding, day: string, occu
   if (start < 0) throw new Error('课程开始项不存在，请重新选择。')
   const amount = rule.amount ?? 1
   const first = start + offset * amount
-  const rows = binding.rows.slice(first, first + amount)
+  const rows = binding.rows.slice(first, first + amount * batches)
   return { row: rows[0] ?? null, rows, exhausted: rows.length === 0 }
 }

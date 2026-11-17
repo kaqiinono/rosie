@@ -10,12 +10,13 @@ import type { BubbleState } from '@/components/tree-demo/garden/Bubbles'
 import ScatteredBubbles from './ScatteredBubbles'
 import StonePanel from '@/components/tree-demo/garden/StonePanel'
 import { buildRegions, todayCenter, type Region } from '@/components/tree-demo/garden/layout'
-import { bubbleSubject, CORE_SUBJECTS, SUBJECTS, type Apple, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
+import { bubbleSubject, CORE_SUBJECTS, CROWN_BUBBLE_BURST_COLOR, SUBJECTS, type Apple, type Bud, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
 import { SUN_MAGIC_COST, canGrowWithSun, dayOf, isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
 import { isEarly } from '@/lib/time-tree/rewards'
-import { sceneState } from './sceneState'
+import { dayPlanMinutes, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
+import { sceneBud, sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
 import DailyRainbowReward from './DailyRainbowReward'
@@ -32,6 +33,8 @@ function bump(el: HTMLElement | null): void {
 }
 
 const PILE_COLOR = { chinese: 'red', math: 'amber', english: 'blue' } as const
+
+type SavingLifeBubble = { bud: Bud; slot: number; ownerId: string | undefined }
 
 function isCoreSubject(color: SubjectKey): color is CoreSubject {
   return color === 'chinese' || color === 'math' || color === 'english'
@@ -141,15 +144,16 @@ function GroupedSteps({
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {groups.get(day)?.map((step) => {
                 const subject = bubbleSubject(step)
+                const durationLabel = `${weeklyHomeworkStart(step) ? '周目标' : '预计'} ${step.minutes} 分钟`
                 return (
                   <StickerCard key={step.id} asChild interactive tone="paper" size="sm" elevation="sm" radius="md">
                     {/* native-ok: 多行作业卡通过 StickerCard 提供外观，按钮提供整卡键盘操作。 */}
-                    <button type="button" onClick={() => onSelect(step.id)} aria-label={`${label}，${step.name}，${subject.label}，预计 ${step.minutes} 分钟`}>
+                    <button type="button" onClick={() => onSelect(step.id)} aria-label={`${label}，${step.name}，${subject.label}，${durationLabel}`}>
                       <span className="flex items-center gap-3 text-left">
                         <span aria-hidden="true" className="text-2xl">{step.crown ? <LearningIcon name="crown" size={24} /> : subject.emoji}</span>
                         <span className="min-w-0">
                           <Text as="span" size="3" weight="bold" className="block break-words">{step.name}</Text>
-                          <Text as="span" size="2" color="gray">{subject.label} · 预计 {step.minutes} 分钟</Text>
+                          <Text as="span" size="2" color="gray">{subject.label} · {durationLabel}</Text>
                         </span>
                       </span>
                     </button>
@@ -181,6 +185,7 @@ export default function LiveTree() {
   const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
   const [showRainbowDetails, setShowRainbowDetails] = useState(false)
   const [savingBubble, setSavingBubble] = useState<string | null>(null)
+  const [savingLifeBubbles, setSavingLifeBubbles] = useState<ReadonlyMap<string, SavingLifeBubble>>(() => new Map())
   const completingBubble = useRef(false)
   const bloomTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [skyNow, setSkyNow] = useState(Date.now)
@@ -210,8 +215,9 @@ export default function LiveTree() {
     for (const step of tree.steps) {
       if (!step.planned || step.skipped) continue
       const minutes = byDay.get(step.planned) ?? { completed: 0, total: 0 }
-      minutes.total += step.minutes
-      if (step.end) minutes.completed += step.minutes
+      const estimated = dayPlanMinutes(step)
+      minutes.total += estimated
+      if (step.end) minutes.completed += estimated
       byDay.set(step.planned, minutes)
     }
     return buildRegions(state, true, previousRegions.current).map((region) => {
@@ -311,7 +317,7 @@ export default function LiveTree() {
       </main>
     )
   const air = tree.steps.filter((s) => s.slot !== null)
-  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority))
+  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority) && !weeklyHomeworkStart(s))
   const mustDone = must.filter((s) => s.end).length
   const wilted = tree.steps.filter((s) => s.subject !== 'life' && !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
   const horizon = shift(tree.today, 6)
@@ -328,6 +334,21 @@ export default function LiveTree() {
             : 'ready',
     ]),
   )
+  const bubbles = state.buds.filter(bud => states[bud.id])
+  const bubbleSlots = { ...state.bubbleSlots }
+  const savingIds = new Set(savingBubble ? [savingBubble] : [])
+  const hiddenTreeItems = new Set(hidden)
+  for (const { bud, slot, ownerId } of savingLifeBubbles.values()) {
+    if (ownerId !== api.user?.id || bud.dateKey !== tree.today) continue
+    savingIds.add(bud.id)
+    hiddenTreeItems.add(`${bud.id}#0`)
+    // Keep the saving bubble drawable until its own burst, even after the commit removes its slot.
+    if (!states[bud.id]) {
+      bubbles.push(bud)
+      bubbleSlots[bud.id] = slot
+      states[bud.id] = 'ready'
+    }
+  }
   const step = tree.steps.find((s) => s.id === stepId)
   const flower = tree.steps.find((s) => s.id === itemId.split('#')[0])
   const lastWish = tree.exchanges.at(-1)
@@ -399,7 +420,6 @@ export default function LiveTree() {
     rewards: boolean,
     origin: { x: number; y: number } | null = null,
     onBloomed?: () => void,
-    burst = true,
   ) {
     const from = bubbleCenter(step.id) ?? origin
     const ids = step.settled ? [] : step.stages.map((_, index) => `${step.id}#${index}`)
@@ -413,7 +433,7 @@ export default function LiveTree() {
     }
     const reduced = effects.prefersReducedMotion()
     if (!reduced) {
-      if (burst) effects.burst(from.x, from.y, bubbleSubject(step).color)
+      effects.burst(from.x, from.y, step.crown ? CROWN_BUBBLE_BURST_COLOR : SUBJECTS[step.subject].color)
       if (rewards && step.sun > 0) flyCount(from, sunRef.current, '#ffd54a', 0)
       if (rewards && step.water > 0) flyCount(from, waterRef.current, '#74c0fc', 12)
       if (ids.length) {
@@ -463,25 +483,27 @@ export default function LiveTree() {
       if (popping.current.has(id)) return
       popping.current.add(id)
       const origin = bubbleCenter(id)
-      setHidden(previous => new Set(previous).add(id))
-      if (origin && fx.current && !fx.current.prefersReducedMotion()) {
-        fx.current.burst(origin.x, origin.y, bubbleSubject(s).color)
-      }
+      const failureNotice = '暂时无法确认这颗泡泡已开花，请查看后再试。'
+      const snapshot = { bud: sceneBud(s, state.today), slot: s.slot ?? 0, ownerId: api.user?.id }
+      setSavingLifeBubbles(previous => new Map(previous).set(id, snapshot))
       try {
         const result = await run({ kind: 'pop', id })
         const done = result?.steps.find(item => item.id === id)
-        if (!result || !done?.end) {
-          releaseItem(id)
-          notify('这颗泡泡未保存成功，请再点一次。')
+        if (!result || !done?.end || !done.popped) {
+          notify(failureNotice)
           return
         }
-        sow(done, result, false, origin, undefined, false)
+        sow(done, result, false, origin)
         notify(doneNotice(done))
       } catch {
-        releaseItem(id)
-        notify('这颗泡泡未保存成功，请再点一次。')
+        notify(failureNotice)
       } finally {
         popping.current.delete(id)
+        setSavingLifeBubbles(previous => {
+          const next = new Map(previous)
+          next.delete(id)
+          return next
+        })
       }
       return
     }
@@ -672,7 +694,7 @@ export default function LiveTree() {
           state={state}
           regions={regions}
           fresh={fresh}
-          hidden={hidden}
+          hidden={hiddenTreeItems}
           onItem={openItem}
           onParked={() => show('wilt')}
           bin={{ title: '枯萎箱', count: wilted.length }}
@@ -680,8 +702,8 @@ export default function LiveTree() {
         />
       </div>
         <ScatteredBubbles
-          bubbles={state.buds.filter((b) => states[b.id])}
-          slots={state.bubbleSlots}
+          bubbles={bubbles}
+          slots={bubbleSlots}
           states={states}
           clockOffsetMs={api.clockOffsetMs}
           startedAt={Object.fromEntries(
@@ -689,7 +711,7 @@ export default function LiveTree() {
           )}
           onOpen={(id) => void clickBubble(id)}
           onHoldFinish={busy || savingBubble ? undefined : (id) => void completeRunning(id)}
-          savingId={savingBubble}
+          savingIds={savingIds}
           hiddenIds={hidden}
         />
       <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">

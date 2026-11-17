@@ -41,6 +41,10 @@ cooldown rules remain. No migration or historical backfill; see `tree.md` for ma
 Saving a homework template patches its list and awaits an owner-scoped refresh of the registered
 `time_tree` session store, including when its view is unmounted or initially loading. A failed
 derived refresh does not repeat the successful insert; its error remains on the tree store.
+Background sync returns `204` with server time when the cached garden revision, homework template
+revision and Shanghai date still match. A full sync returns the template revision sampled before
+reading templates. Hosted migration `20261117190930_time_tree_sync_revisions` bumps that revision on
+template insert, update and delete, with a service-only RPC for the metadata check.
 Normal sync updates unfinished (including running and overdue) steps' name, subject, priority,
 instructions and changed practice binding. Completed/skipped/settled steps stay unchanged.
 Timing, estimated minutes, stages, placement, deadlines and occurrence notes stay intact
@@ -103,7 +107,10 @@ entry management loads the saved list and does not read the setup receipt. Click
 creates the current presets when no receipt exists; later clicks update same-subject, same-name
 preset rows and insert presets that are missing. Homework bindings are not auto-synchronized.
 
-每周、每两周或每三周的学科作业均使用分次收花，自动推进独立负责选择新份次的课程。
+每周学科作业在设定的周窗口内只有一份；预计耗时是整周目标，每 10 分钟一朵，向上取整。
+随作业推进时，每周计划组数决定同一周卡的连续课程组数；收工次数由用户决定。
+首次同步合并当前／未来周的未完成任务，保留已有收工和奖励记录。
+每两周或每三周的学科作业继续按各份分次收花，自动推进独立选择新份次的课程。
 新份次从自己的周期窗口起点出现。普通同步将尚未开始、未完成、未编辑题目或手动改期的
 当前/未来旧份次补为分次收花；同份旧拆分步骤合并，保留总计划时长、已有课程快照和各步备注。
 当前周期的旧排期提前到今天，未来周期使用窗口起点；已有收花、计时、奖励或历史记录的份次保留。

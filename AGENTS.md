@@ -361,7 +361,7 @@ Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database
 
 ### Life tree
 
-Weekly, biweekly and three-weekly academic assignments use daily flower collection independently of automatic course progression, starting at each occurrence's window opening. Normal sync upgrades untouched current/future legacy occurrences, preserving frozen content and notes. A versioned garden commit stores each session and its rewards; the practice occurrence spans sessions until the whole assignment is complete. See `tree.md` and `packages/tasks/AGENTS.md`.
+Weekly academic assignments use one occurrence per configured week. Estimated minutes are the total weekly goal, and homework-based course progression groups the configured batches in that occurrence. Users choose when and how often to save progress. Normal sync consolidates open current/future weekly work and carries forward flowers already earned. Biweekly and three-weekly academic assignments still use per-occurrence flower collection. A versioned garden commit stores each session and its rewards. See `tree.md` and `packages/tasks/AGENTS.md`.
 
 Daily homework supports an owner-saved `include_weekends` option, defaulting off for new definitions
 and remaining on for existing definitions. Migration `20261115104319_task_homework_include_weekends.sql`

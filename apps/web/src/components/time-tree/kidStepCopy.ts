@@ -1,4 +1,5 @@
 import { completionReward } from '@/lib/time-tree/rewards'
+import { weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import { elapsed, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 
 /** 孩子卡片上的说明：这次备注优先，否则用作业说明。 */
@@ -9,9 +10,10 @@ export function kidNote(step: WorkStep): string {
 export function kidTime(step: WorkStep, now: number): string {
   if (step.skipped) return '这次先休息，不用做啦'
   if (step.flowers) {
-    if (step.end) return step.flowers.complete ? '整份做完啦' : '本次已收工'
+    const weekly = weeklyHomeworkStart(step)
+    if (step.end) return step.flowers.complete ? weekly ? '本周作业做完啦' : '整份做完啦' : '本次已收工'
     if (step.start) return `本次已做 ${Math.max(0, Math.floor((now - Date.parse(step.start)) / 60000))} 分钟`
-    return `整份预计 ${step.minutes} 分钟`
+    return `${weekly ? '周目标' : '整份预计'} ${step.minutes} 分钟`
   }
   if (step.end) {
     if (!step.start) return '做完啦，这次没计时'

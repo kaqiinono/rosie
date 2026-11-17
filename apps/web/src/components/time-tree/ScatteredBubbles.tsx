@@ -5,10 +5,11 @@ import Bubbles, { type BubblesProps } from '@/components/tree-demo/garden/Bubble
 
 type Box = { left: number; top: number; right: number; bottom: number; ellipse?: boolean }
 type BubbleSpec = { id: string; minutes: number }
-type Placement = { id: string; x: number; y: number; size: number }
+type Placement = { id: string; x: number; y: number; size: number; clearance: number }
 type BubbleLayout = { placements: Placement[]; sizes: Record<string, number> }
 const DURATION_TIERS = [5, 10, 15, 20, 25, 30, 40, 60, 90, 120]
 const CLEARANCE = 26 // Floating motion and the outer hold-to-finish ring.
+const SWAY_TOLERANCE = 6 // A small obstacle movement should not relocate an existing bubble.
 
 function bubbleDiameter(minutes: number, viewport: number) {
   const duration = Number.isFinite(minutes) ? Math.max(minutes, DURATION_TIERS[0]) : DURATION_TIERS[0]
@@ -25,9 +26,47 @@ function bubbleDiameter(minutes: number, viewport: number) {
   return phone + (desktop - phone) * screenRatio
 }
 
-function placeBubbles(width: number, height: number, viewport: number, obstacles: Box[], specs: BubbleSpec[]): BubbleLayout {
+function clearanceAt(x: number, y: number, width: number, height: number, obstacles: Box[]) {
+  let clearance = Math.min(x, width - x, y, height - y)
+  let leafDistance = Infinity
+  for (const box of obstacles) {
+    const dx = x - Math.max(box.left, Math.min(x, box.right))
+    const dy = y - Math.max(box.top, Math.min(y, box.bottom))
+    let distance = Math.hypot(dx, dy)
+    if (box.ellipse) {
+      const rx = (box.right - box.left) / 2
+      const ry = (box.bottom - box.top) / 2
+      const normalized = Math.hypot((x - box.left - rx) / rx, (y - box.top - ry) / ry)
+      distance = Math.max(0, normalized - 1) * Math.min(rx, ry)
+      leafDistance = Math.min(leafDistance, distance)
+    }
+    clearance = Math.min(clearance, distance)
+  }
+  return { clearance, leafDistance }
+}
+
+function placeBubbles(width: number, height: number, viewport: number, obstacles: Box[], specs: BubbleSpec[], previous: BubbleLayout | null): BubbleLayout {
   const placements: Placement[] = []
   const sizes: Record<string, number> = {}
+  const prior = new Map(previous?.placements.map(placement => [placement.id, placement] as const))
+  const unplaced: { id: string; size: number; prior?: Placement }[] = []
+  for (const { id, minutes } of specs) {
+    const size = bubbleDiameter(minutes, viewport)
+    sizes[id] = size
+    const anchor = prior.get(id)
+    if (anchor) {
+      const { x, y } = anchor
+      const { clearance } = clearanceAt(x, y, width, height, obstacles)
+      const minimum = Math.min(size / 2, anchor.clearance) - SWAY_TOLERANCE
+      if (clearance > 0 && clearance >= minimum) {
+        placements.push({ ...anchor, size })
+        continue
+      }
+    }
+    unplaced.push({ id, size, prior: anchor })
+  }
+  if (!unplaced.length) return { placements, sizes }
+
   const leaves = obstacles.filter(box => box.ellipse)
   const centerX = leaves.length
     ? (Math.min(...leaves.map(box => box.left)) + Math.max(...leaves.map(box => box.right))) / 2
@@ -35,29 +74,13 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
   const candidates: { x: number; y: number; clearance: number; leafDistance: number }[] = []
   for (let y = CLEARANCE; y <= height - CLEARANCE; y += 6) {
     for (let x = CLEARANCE; x <= width - CLEARANCE; x += 6) {
-      let clearance = Math.min(x, width - x, y, height - y)
-      let leafDistance = Infinity
-      for (const box of obstacles) {
-        const dx = x - Math.max(box.left, Math.min(x, box.right))
-        const dy = y - Math.max(box.top, Math.min(y, box.bottom))
-        let distance = Math.hypot(dx, dy)
-        if (box.ellipse) {
-          const rx = (box.right - box.left) / 2
-          const ry = (box.bottom - box.top) / 2
-          const normalized = Math.hypot((x - box.left - rx) / rx, (y - box.top - ry) / ry)
-          distance = Math.max(0, normalized - 1) * Math.min(rx, ry)
-          leafDistance = Math.min(leafDistance, distance)
-        }
-        clearance = Math.min(clearance, distance)
-      }
+      const { clearance, leafDistance } = clearanceAt(x, y, width, height, obstacles)
       if (clearance > CLEARANCE) candidates.push({ x, y, clearance, leafDistance })
     }
   }
-  for (const spec of specs) {
-    const size = bubbleDiameter(spec.minutes, viewport)
-    sizes[spec.id] = size
+  for (const { id, size, prior: anchor } of unplaced) {
     const radius = size / 2 + CLEARANCE
-    const seed = Array.from(spec.id).reduce((value, char) => (value * 31 + char.charCodeAt(0)) | 0, 0)
+    const seed = Array.from(id).reduce((value, char) => (value * 31 + char.charCodeAt(0)) | 0, 0)
     // Stable per-task variation: timers/re-renders must not reshuffle the scene.
     const randomHeight = Math.sin(seed * 0.73) * 43758.5453
     const preferredY = radius + (randomHeight - Math.floor(randomHeight)) * size * 0.75
@@ -80,18 +103,21 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
       }, 0)
       const noise = (Math.sin(seed + point.x * 0.047 + point.y * 0.063) + 1) * 16
       const edgeGap = Number.isFinite(point.leafDistance) ? Math.abs(point.leafDistance - radius) : 0
+      const movement = anchor ? Math.hypot(point.x - anchor.x, point.y - anchor.y) : 0
       // Fill the upper contour first, then descend around the day-leaf perimeter.
       // No grid anchors and no change to the tree's geometry or available space.
       const value = point.y * 0.25 + Math.abs(point.y - preferredY) * 0.9 +
         Math.abs(point.x - centerX) * 0.45 +
-        edgeGap * 0.15 + overlap * 0.65 + alignment * 1.2 + noise +
+        edgeGap * 0.15 + overlap * 0.65 + alignment * 1.2 + movement * 0.45 + noise +
         Math.max(0, radius - point.clearance) * 1000
       if (value < score) {
-        best = { id: spec.id, x: point.x, y: point.y, size }
+        best = { id, x: point.x, y: point.y, size, clearance: point.clearance }
         score = value
       }
     }
-    placements.push(best ?? { id: spec.id, x: width / 2, y: radius, size })
+    const x = width / 2
+    const y = Math.min(radius, height / 2)
+    placements.push(best ?? { id, x, y, size, clearance: clearanceAt(x, y, width, height, obstacles).clearance })
   }
   return { placements, sizes }
 }
@@ -122,7 +148,8 @@ export default function ScatteredBubbles(props: BubblesProps) {
           return [{ left: rect.left - bounds.left - 12, right: rect.right - bounds.left + 12,
             top: rect.top - bounds.top - 12, bottom: rect.bottom - bounds.top + 12, ellipse: node.getAttribute('data-tree-obstacle') === 'day-region' }]
         })
-        setLayout(placeBubbles(bounds.width, bounds.height, window.innerWidth, obstacles, specs))
+        const viewport = window.innerWidth
+        setLayout(previous => placeBubbles(bounds.width, bounds.height, viewport, obstacles, specs, previous))
       })
     }
     const observer = new ResizeObserver(measure)

@@ -29,6 +29,40 @@ const SUBJECT_TINT = {
   life: '#7fe39a',
 } as const
 
+const SUBJECT_STICKERS = {
+  chinese: (
+    <g stroke="#a84053">
+      <path fill="#f9868b" d="M3 8.5c4.8-1.2 8.6-.4 13 2.4 4.4-2.8 8.2-3.6 13-2.4V25c-4.7-.9-8.5-.3-13 2.4C11.5 24.7 7.7 24.1 3 25z" />
+      <path fill="#fff0e4" d="M5 5.5c4.3-.8 7.8.1 11 2.8 3.2-2.7 6.7-3.6 11-2.8v16.8c-4.3-.8-7.8.1-11 2.8-3.2-2.7-6.7-3.6-11-2.8z" />
+      <path d="M16 8.3v16.8" />
+      <path stroke="#d9707c" d="M8.5 12c1.7.1 3.1.5 4.3 1.3m-4.3 3c1.7.1 3.1.5 4.3 1.3m6.4-4.3c1.2-.8 2.6-1.2 4.3-1.3m-4.3 5.6c1.2-.8 2.6-1.2 4.3-1.3" />
+    </g>
+  ),
+  math: (
+    <g stroke="#945c19">
+      <rect x="5" y="3" width="22" height="26" rx="5" fill="#ffce68" />
+      <rect x="9" y="7" width="14" height="7" rx="2" fill="#fff4c9" />
+      <path d="M17 10.5h3" />
+      <path strokeWidth="2.8" d="M10.5 19h.5m4.8 0h.5m4.8 0h.5m-11.1 5h.5m4.8 0h.5m4.8 0h.5" />
+    </g>
+  ),
+  english: (
+    <g stroke="#2965a0">
+      <rect x="7" y="3.5" width="20" height="23" rx="4" transform="rotate(13 17 15)" fill="#8ac1fb" />
+      <rect x="3" y="7" width="25" height="20" rx="4" fill="#c5e7ff" />
+      <path strokeWidth="1.45" d="m6.5 20 2.2-6 2.2 6m-3.7-1.9h3M14 20v-6h2c1.9 0 1.9 3 0 3h-2m2 0c2 0 2 3 0 3h-2m11-5.3c-.4-.5-1-.7-1.6-.7-1.5 0-2.4 1.3-2.4 3s.9 3 2.4 3c.6 0 1.2-.2 1.6-.7" />
+    </g>
+  ),
+  life: (
+    <g stroke="#367556">
+      <path fill="#a9eec5" d="M16 19c-7.3.1-12.2-4.3-12.4-11.1 7.1-.9 12.5 2.9 12.4 11.1z" />
+      <path fill="#6ed7a1" d="M16 19c-.3-8.3 4.6-13.6 12.3-13.7.4 7.7-4.3 13.7-12.3 13.7z" />
+      <path d="M16 26v-7m0 0c1.4-3.4 3.6-6 6.6-8m-6.6 8c-1.2-2.3-3-4.3-5.5-5.8" />
+      <path stroke="#5c9a75" d="M11.5 26.5h9" />
+    </g>
+  ),
+} as const
+
 /** 短按上限。超过才进入按住开花，轻点不会画出快圈。 */
 const ARM_MS = 180
 /** 快圈转满的时间，从进入按住开始算，不用分钟进度圈。 */
@@ -46,7 +80,7 @@ export type BubblesProps = {
   clockOffsetMs?: number
   startedAt?: Record<string, string>
   onOpen: (budId: string) => void
-  savingId?: string | null
+  savingIds?: ReadonlySet<string>
   hiddenIds?: ReadonlySet<string>
   /** 进行中泡泡按住转满后松开。没传则仍是点一下打开。 */
   onHoldFinish?: (budId: string) => void
@@ -79,6 +113,23 @@ type HoldGesture = {
 }
 
 const OVERTIME = '#d97706'
+
+function LifeBubbleWings() {
+  const wing = (
+    <>
+      <path fill="#fff9ef" d="M25 18.5C19 16.5 14.5 11.5 10 5.5C6.5 0.8 2.5 1.6 2 6C1.4 10.2 4.2 14.2 7.4 17C3.4 16.1 1.4 19.1 3.4 22.6C5 25 8 26.3 11 26.3C9.9 28.4 11.4 30.4 14.3 30C17.2 29.7 19.2 28.7 20.8 27.2C23.6 29.7 28.2 28.9 29.3 25.4C30.3 22.3 28.1 19.6 25 18.5Z" />
+      <path d="M20.8 27.2C18.7 25.1 19.2 22 21.7 21.5" />
+    </>
+  )
+
+  return (
+    <svg className="tg-bubble-wings" viewBox="0 0 144 32" fill="none" stroke="#809487"
+      strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      {wing}
+      <g transform="translate(144 0) scale(-1 1)">{wing}</g>
+    </svg>
+  )
+}
 
 function pointInside(el: HTMLElement, x: number, y: number): boolean {
   const rect = el.getBoundingClientRect()
@@ -150,7 +201,7 @@ function HoldRing({ progress, color }: { progress: number; color: string }) {
 }
 
 /** 飘在树上的作业泡泡。生命树会一次放出当天全部，原型仍用四个固定位置。 */
-export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, savingId, hiddenIds, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
+export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, savingIds, hiddenIds, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
   const timing = bubbles.some((bud) => states?.[bud.id] === 'running' && startedAt?.[bud.id])
   const [localNow, setNow] = useState(() => Date.now())
   const now = localNow + clockOffsetMs
@@ -361,7 +412,8 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
         const meta = bubbleSubject(bud)
         const slot = slots[bud.id] ?? 0
         const status = states?.[bud.id]
-        const saving = savingId === bud.id
+        const saving = savingIds?.has(bud.id) ?? false
+        const disabled = saving || holdLocked
         const start = status === 'running' ? startedAt?.[bud.id] : undefined
         const startedMs = start ? Date.parse(start) : NaN
         const countdown = Number.isFinite(startedMs) && bud.minutes > 0
@@ -369,7 +421,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
           : null
         const stateLabel = countdown ? `${countdown.caption} ${countdown.time}` : status ? bubbleStates[status].label : ''
         const label = bud.crown ? '点一下完成' : status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
-        const holdable = status === 'running' && !!onHoldFinish
+        const holdable = !disabled && status === 'running' && !!onHoldFinish
         const hint = saving ? '，正在开花，请稍候' : holdable ? '，按住开花，点一下查看' : status === 'running' ? '，点击查看详情' : ''
         const style: BubbleStyle = {
           '--tg-size': sizes?.[bud.id] ? `${sizes[bud.id]}px` : compact ? '4.35rem' : `clamp(${72 + n * 4}px, ${12 + n}vw, ${104 + n * 10}px)`,
@@ -388,7 +440,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               data-state={status}
               data-saving={saving || undefined}
               aria-busy={saving}
-              aria-disabled={holdLocked}
+              aria-disabled={disabled}
               data-bubble-id={bud.id}
               data-holding={holdingId === bud.id ? 'true' : undefined}
               aria-label={`${meta.label}：${bud.name}，${n} 朵花 ${label}${
@@ -396,7 +448,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               }${bud.makeupDate ? `，补做，原任务日期 ${bud.makeupDate}` : ''}${hint}`}
               className="tg-bubble"
               style={style}
-              onClick={holdable ? undefined : () => { if (!holdLocked) onOpen(bud.id) }}
+              onClick={disabled || holdable ? undefined : () => onOpen(bud.id)}
               onPointerDown={holdable ? (event) => startHold(event, bud.id) : undefined}
               onPointerMove={holdable ? moveHold : undefined}
               onPointerUp={holdable ? endHold : undefined}
@@ -405,10 +457,16 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
-                  if (!holdLocked) onOpen(bud.id)
+                  if (!disabled) onOpen(bud.id)
                 }
               }}
             >
+              {bud.subject === 'life' && !bud.crown && <LifeBubbleWings />}
+              {bud.crown && (
+                <span className="tg-bubble-crown" aria-hidden="true">
+                  <LearningIcon name="crown" size={28} />
+                </span>
+              )}
               {saving && (
                 <svg className="tg-bubble-saving-ring" viewBox="0 0 100 100" aria-hidden="true">
                   <g fill="var(--amber-5)" stroke="var(--amber-11)" strokeWidth="1.5">
@@ -439,7 +497,12 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
                 </>
               )}
               <span className="tg-bubble-in">
-                <span className="block text-[calc(var(--tg-size)*0.26)] leading-none">{bud.crown ? <LearningIcon name="crown" size={26} /> : meta.emoji}</span>
+                {!bud.crown && (
+                  <svg className="tg-bubble-subject-icon" viewBox="0 0 32 32" fill="none" strokeWidth="1.6"
+                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+                    {SUBJECT_STICKERS[bud.subject]}
+                  </svg>
+                )}
                 <span className="mt-0.5 line-clamp-2 block text-[calc(var(--tg-size)*0.13)] font-extrabold leading-tight text-[#4a3728]">
                   {countdown && bud.overdue ? '补做 · ' : ''}{bud.name}
                 </span>

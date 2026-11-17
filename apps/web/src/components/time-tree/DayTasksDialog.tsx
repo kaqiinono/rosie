@@ -1,6 +1,6 @@
 'use client'
 
-import { flowerQuestionProgress } from '@/lib/time-tree/flowers'
+import { dayPlanMinutes, flowerQuestionProgress, isWeeklyPartialReceipt, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import { useMemo, useRef, useState } from 'react'
 import { useHomeworkData } from '@rosie/tasks'
 import { AppDialog, ChevronDown, LearningIcon, StatTile, StickerCard, type LearningIconName } from '@rosie/ui'
@@ -111,11 +111,11 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
     >
       <Flex direction="column" gap="4">
         {dates.map((day) => {
-          const steps = tree.steps.filter((step) => (step.planned ?? step.scheduled) === day)
+          const steps = tree.steps.filter((step) => (step.planned ?? step.scheduled) === day && !isWeeklyPartialReceipt(step))
           const required = steps.filter((step) => !step.skipped)
           const completed = required.filter((step) => step.end)
-          const doneMinutes = completed.reduce((sum, step) => sum + (step.subject === 'life' ? 0 : step.minutes), 0)
-          const totalMinutes = required.reduce((sum, step) => sum + (step.subject === 'life' ? 0 : step.minutes), 0)
+          const doneMinutes = completed.reduce((sum, step) => sum + dayPlanMinutes(step), 0)
+          const totalMinutes = required.reduce((sum, step) => sum + dayPlanMinutes(step), 0)
           const finished = required.length > 0 && completed.length === required.length
           const mood = dates.length > 1 ? dayMood(day, tree.today) : null
           return (
@@ -202,7 +202,9 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                           {step.crown ? <LearningIcon name="crown" /> : <LearningIcon name={SUBJECT_ICON[step.subject]} />}
                         </span>
                         <span className="min-w-0 flex-1 break-words font-bold">{step.name}</span>
-                        <Text size="2" color="gray" className="shrink-0">{step.subject === 'life' ? '不计时' : `${step.minutes} 分钟`}</Text>
+                        <Text size="2" color="gray" className="shrink-0">
+                          {step.subject === 'life' ? '不计时' : `${weeklyHomeworkStart(step) ? '周目标 ' : ''}${step.minutes} 分钟`}
+                        </Text>
                         <Badge variant="soft" radius="full" color={badge.color} className="shrink-0">{badge.label}</Badge>
                         <ChevronDown aria-hidden="true" size={16} className={`shrink-0 ${expanded ? 'rotate-180' : ''}`} />
                       </Button>

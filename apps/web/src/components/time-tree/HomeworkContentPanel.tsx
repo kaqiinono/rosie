@@ -28,12 +28,13 @@ type Props = {
   completedRows?: string[]
   addedRows?: string[]
   canAppend?: boolean
+  compact?: boolean
   onEdit?: (edit: NonNullable<TreeAction['questionEdit']>, rowId?: string) => Promise<void>
   onRetry?: () => void
 }
 
 /** Render each frozen item with its own content and destination. */
-function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect'> & {
+function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls, compact, name }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect' | 'compact' | 'name'> & {
   title: string
   controls?: ReactNode
   expanded: boolean
@@ -51,11 +52,14 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
   const reading = Boolean(lessonPassage || row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
   if (calc) return <EmbeddedCalcStartPanel disabled={disabled} />
   const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => router.push(entryHref(href, {}))}>进入详情页</Button> : null
-  return <StickerCard size="none" tone="white" elevation="flat" radius="md" className="min-w-0">
+  return <StickerCard size="none" tone={compact ? 'paper' : 'white'} elevation="flat" radius="md" className="min-w-0">
     <Button type="button" variant="ghost" color="gray" aria-expanded={expanded} aria-controls={detailId}
       style={{ boxSizing: 'border-box', width: '100%', height: 'auto', minHeight: 44, margin: 0, padding: 12, borderRadius: 'inherit', outlineOffset: -2, justifyContent: 'space-between', whiteSpace: 'normal', textAlign: 'left' }}
       onClick={() => { setOpened(true); toggle() }}>
-      <Text size="2" weight="bold" className="min-w-0 break-words">{title}</Text>
+      <span className="block min-w-0 break-words">
+        {name && <Text size="4" weight="bold" className="block">{name}</Text>}
+        <Text size={compact ? '3' : '2'} color={name ? 'gray' : undefined} weight="bold">{title}</Text>
+      </span>
       <span aria-hidden="true" className="shrink-0">
         <ArrowIcon size={18} className={expanded ? '-rotate-90' : 'rotate-90'} />
       </span>
@@ -74,24 +78,27 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
 }
 
 /** Preview callers omit the editing callbacks. */
-export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, onEdit, onCorrect, onRetry }: Props) {
+export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, compact = false, onEdit, onCorrect, onRetry }: Props) {
   const entries = items?.length ? items : [{ row, href }]
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const weeklyPlan = hasWeeklyPlanPractice({ items: entries })
+  const compactItem = compact && !loading && !error && !exhausted && !weeklyPlan && !completedRows &&
+    entries.length === 1 && !!(entries[0].row || entries[0].href)
   return <section aria-label="作业内容" className="w-full min-w-0">
-    <StickerCard tone="paper" size="sm" elevation="flat" radius="md" className="w-full">
+    <StickerCard tone="paper" variant={compactItem ? 'soft' : 'outlined'} size={compactItem ? 'none' : 'sm'}
+      elevation="flat" radius="md" className="w-full">
       <Flex direction="column" gap="3">
-        <Flex align="center" justify="between" gap="2" wrap="wrap">
+        {!compactItem && <Flex align="center" justify="between" gap="2" wrap="wrap">
           <Heading as="h3" size="3">作业内容</Heading>
           {completedRows && <Text size="2" weight="bold" color="green">
             已完成 {entries.filter(item => item.row && completedRows.includes(item.row.id)).length} / {entries.filter(item => item.row?.values.problemId).length} 题
           </Text>}
-        </Flex>
+        </Flex>}
         {loading ? <Flex position="relative" minHeight="160px"><LoadingOverlay visible placement="content" /></Flex> : error ? <Flex direction="column" gap="2">
           <Text role="alert" color="red">{error}</Text>
           {onRetry && <Button variant="soft" disabled={disabled} onClick={onRetry}>重试读取内容</Button>}
         </Flex> : <>
-          {name && <Text size="2">{name}{!completedRows && entries.length > 1 ? ` · 共 ${entries.length} 项` : ''}</Text>}
+          {name && !compactItem && <Text size="2">{name}{!completedRows && entries.length > 1 ? ` · 共 ${entries.length} 项` : ''}</Text>}
           {!exhausted && weeklyPlan && <HomeworkWeeklyPlanPractice items={entries} disabled={disabled} />}
           {exhausted ? <Text size="2">全部练习内容已完成，可以继续线下完成作业，或在作业设置中选择新的开始项。</Text> : entries.map((item, index) => {
             if (weeklyPlanPracticeTarget(item)) return null
@@ -113,6 +120,7 @@ export default function HomeworkContentPanel({ name, row, href, items, exhausted
             )
             return <PracticeItemCard controls={controls}
               onCorrect={onEdit && rowId ? async () => { if (!done) await onEdit('complete', rowId) } : onCorrect} key={key} {...item} disabled={disabled}
+              compact={compactItem} name={compactItem && name !== label ? name : undefined}
               title={`${done ? '✓ ' : ''}${ordinal}${label}`}
               expanded={expandedKey === key}
               toggle={() => setExpandedKey(current => current === key ? null : key)} />

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { Homework } from '@rosie/tasks'
-import { createAdminSupabase, lookupUserFromRequest } from '@/lib/api-auth'
+import { createAdminSupabase, lookupUserFromClaims, lookupUserFromRequest } from '@/lib/api-auth'
 import { isValidParentPin, verifyParentPin } from '@/lib/parent-pin'
 import { act, newTree, placeTodayBubbles, roll, TreeConflict } from '@/lib/time-tree/engine'
 import { bindPractice, settlePractice } from '@/lib/time-tree/practice'
@@ -10,20 +10,53 @@ import { regenerateHomework, regenerationTargets } from '@/lib/time-tree/regener
 import { dayOf, shift, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
 export const dynamic = 'force-dynamic'
+const authOptions = { attempts: 2, timeoutMs: 5_000 }
+const authUnavailable = '暂时无法验证登录，请稍后重试。'
+
 function failure(message: string, status: number) {
   return NextResponse.json({ error: message }, { status })
 }
 
 export async function POST(req: Request) {
-  const { user, unreachable } = await lookupUserFromRequest(req)
-  if (unreachable) return failure('暂时无法验证登录，请稍后重试。', 503)
-  if (!user) return failure('请先登录。', 401)
   const input = (await req.json().catch(() => null)) as
-    | (TreeAction & { revision?: number; knownRevision?: number })
+    | (TreeAction & {
+      revision?: number
+      background?: boolean
+      knownRevision?: number
+      knownHomeworkRevision?: string
+      knownDay?: string
+    })
     | null
+  const claims = input?.kind === 'sync' && input.background === true ? await lookupUserFromClaims(req, authOptions) : null
+  const { user, unreachable, reason } = claims ?? await lookupUserFromRequest(req, authOptions)
+  if (unreachable) {
+    console.warn('[time-tree-auth]', { action: input?.kind, stage: 'identity', reason })
+    return failure(authUnavailable, 503)
+  }
+  if (!user) return failure('请先登录。', 401)
   if (!input || typeof input.kind !== 'string') return failure('无效的操作。', 400)
+  let needsOnlineCheck = claims?.user?.verifiedOnline === false
   try {
     const db = createAdminSupabase()
+    let homeworkRevision: string | undefined
+    if (input.kind === 'sync') {
+      // Sample the template version before reading any templates. A concurrent edit
+      // leaves this snapshot with the earlier version and forces a fresh sync later.
+      const state = await db.rpc('get_time_tree_sync_state', { p_user: user.id })
+        .abortSignal(AbortSignal.timeout(1_500))
+      if (!state.error && typeof state.data?.homeworkRevision === 'string') {
+        homeworkRevision = state.data.homeworkRevision
+        const now = new Date()
+        if (input.background === true && Number.isSafeInteger(input.knownRevision) &&
+          state.data.revision === String(input.knownRevision) && input.knownHomeworkRevision === homeworkRevision &&
+          input.knownDay === dayOf(now)) {
+          return new NextResponse(null, {
+            status: 204,
+            headers: { 'X-Tree-Time': now.toISOString(), 'Cache-Control': 'private, no-store' },
+          })
+        }
+      }
+    }
     if (['settings', 'record', 'exchange'].includes(input.kind)) {
       if (!isValidParentPin(input.pin)) return failure('请输入六位家长密码。', 403)
       const { data, error } = await db
@@ -110,7 +143,20 @@ export async function POST(req: Request) {
         } else settlePractice(tree, step)
       }
       if (saved.data && original === JSON.stringify(tree) && input.kind !== 'openBox')
-        return NextResponse.json({ revision, tree }, { headers: { 'X-Tree-Time': new Date().toISOString() } })
+        return NextResponse.json({ revision, tree, homeworkRevision }, { headers: { 'X-Tree-Time': new Date().toISOString() } })
+      // Sync can also persist newly scheduled work or a day rollover.
+      if (needsOnlineCheck) {
+        const online = await lookupUserFromRequest(req, authOptions)
+        if (online.unreachable) {
+          console.warn('[time-tree-auth]', { action: input.kind, stage: 'commit', reason: online.reason })
+          if (!saved.data) return failure(authUnavailable, 503)
+          return NextResponse.json({ revision, tree: JSON.parse(original) as TreeData, syncDeferred: true }, {
+            headers: { 'X-Tree-Time': new Date().toISOString(), 'Cache-Control': 'private, no-store' },
+          })
+        }
+        if (online.user?.id !== user.id) return failure('请先登录。', 401)
+        needsOnlineCheck = false
+      }
       const { data, error } = await db.rpc('commit_time_tree', {
         p_user: user.id,
         p_revision: revision,
@@ -118,7 +164,10 @@ export async function POST(req: Request) {
         p_action: input.kind,
         p_ticket: input.kind === 'acceptBox' ? input.id : null,
       })
-      if (!error) return NextResponse.json(data, { headers: { 'X-Tree-Time': new Date().toISOString() } })
+      if (!error) {
+        const snapshot = homeworkRevision === undefined ? data : { ...data, homeworkRevision }
+        return NextResponse.json(snapshot, { headers: { 'X-Tree-Time': new Date().toISOString() } })
+      }
       if (error.message !== 'tree_changed') throw error
     }
     return failure('进度已变化，请重试。', 409)

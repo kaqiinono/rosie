@@ -423,8 +423,13 @@
   inset: var(--tg-stage-top) var(--tg-stage-right) var(--tg-tree-bottom, 4rem) 0;
   pointer-events: none;
 }
-.tg-bubble-area--scattered .tg-bslot:has(.tg-bubble:is(:hover, :focus-visible, :active, [data-holding='true'])) {
+.tg-bubble-area--scattered .tg-bslot:has(.tg-bubble:is(:hover, :focus-visible, :active, [data-holding='true'], [data-saving='true'])) {
   z-index: 5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tg-bubble-area--scattered .tg-bslot {
+    transition: left 220ms ease-out, top 220ms ease-out;
+  }
 }
 .tg-bubble-area--scattered .tg-bubble {
   animation-name: tg-drift;
@@ -598,6 +603,24 @@
   transition: filter 0.18s;
   outline: none;
 }
+.tg-bubble-wings {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 144%;
+  height: 32%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.tg-bubble-crown {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 3;
+  line-height: 0;
+  transform: translate(-50%, -75%);
+  pointer-events: none;
+}
 .tg-bubble::after {
   content: '';
   position: absolute;
@@ -726,6 +749,13 @@
   pointer-events: none;
   padding: 8px;
   animation: tg-wobble 3.6s ease-in-out infinite;
+}
+.tg-bubble-subject-icon {
+  --tg-icon-size: clamp(24px, calc(var(--tg-size) * 0.29), 28px);
+  display: block;
+  width: var(--tg-icon-size);
+  height: var(--tg-icon-size);
+  margin-inline: auto;
 }
 /* 圆弧显示已用时间占比，光点沿轨道绕行表示仍在计时。 */
 .tg-bubble-timer {

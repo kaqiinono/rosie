@@ -3,13 +3,15 @@ import { flowersForMinutes } from '@/components/tree-demo/garden/model'
 import { dayOf, shift, type TreeData, type WorkStep } from './types'
 import { planMathQuestions } from './mathQuestions'
 import { bindPractice, calendarPractice } from './practice'
+import { weeklyHomeworkStart } from './flowers'
+import { createWeeklyHomework, syncWeeklyHomework, usesWeeklyHomework, weeklyOccurrence } from './weeklyHomework'
 
 const diff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000)
 const weekday = (day: string) => new Date(day + 'T12:00Z').getUTCDay()
 const isWeekend = (day: string) => weekday(day) === 0 || weekday(day) === 6
 
 function usesFlowerSessions(template: Homework): boolean {
-  return template.subject !== 'life' && ['weekly', 'biweekly', 'three_weekly'].includes(template.cycle)
+  return template.subject !== 'life' && ['biweekly', 'three_weekly'].includes(template.cycle)
 }
 
 /** Content follows template edits until completion; execution and placement stay intact. */
@@ -36,6 +38,7 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
       step.subject = template.subject
       step.priority = template.priority
       step.practiceEntryName = binding?.name
+      if (weeklyHomeworkStart(step) && usesWeeklyHomework(template)) step.minutes = template.estimated_minutes
       // A stable binding keeps its authored date snapshot, including after manual moves.
       if (binding && step.practice?.key === binding.key) continue
       const previous = step.practice && tree.practiceProgress?.[step.practice.key]
@@ -162,6 +165,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     : t)
   if (!fillCurrentWindow) {
     syncWeekendTasks(tree, templates)
+    syncWeeklyHomework(tree, templates)
     syncFlowerSessions(tree, templates)
     syncHomeworkContent(tree, templates)
   }
@@ -172,6 +176,11 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     ...tree.steps,
     ...(fillCurrentWindow ? tree.weekendExcludedSteps ?? [] : []),
   ].map((s) => s.occurrence))
+  // Legacy receipts continue to occupy their week even when there is no remaining task to consolidate.
+  for (const occurrence of [...existing]) {
+    const [id, cycle, start] = occurrence.split('/')
+    if (cycle === 'weekly' && start) existing.add(weeklyOccurrence(id, start))
+  }
   const load = new Map<string, number>()
   for (const s of tree.steps)
     if (!s.skipped && s.planned) load.set(s.planned, (load.get(s.planned) ?? 0) + s.stages.length)
@@ -188,6 +197,13 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       if (day < first) continue
       const p = period(t, day)
       if (!p || day > p.end) continue
+      if (usesWeeklyHomework(t)) {
+        const occurrence = weeklyOccurrence(t.id, p.start)
+        if (existing.has(occurrence) || day !== [p.start, first, from].sort().at(-1)) continue
+        existing.add(occurrence)
+        tree.steps.push(createWeeklyHomework(t, p.start, p.end, day))
+        continue
+      }
       const offset = diff(day, p.start)
       const ordinal = Math.ceil(((offset + 1) * p.count) / p.span) - 1
       const windowStart = shift(p.start, Math.floor((ordinal * p.span) / p.count))

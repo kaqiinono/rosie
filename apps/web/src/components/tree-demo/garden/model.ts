@@ -50,7 +50,8 @@ export interface Settings {
 }
 
 // ---------- 数据结构 ----------
-const CROWN_SUBJECT = { ...SUBJECTS.life, label: '自定义', color: '#db2777', deep: '#9d174d', tint: '#f9a8d4' }
+const CROWN_SUBJECT = { ...SUBJECTS.life, label: '自定义', color: '#db2777', deep: '#9d174d', tint: '#c5a8fa' }
+export const CROWN_BUBBLE_BURST_COLOR = '#9333ea'
 
 export function bubbleSubject(task: { subject: SubjectKey; crown?: true }) {
   return task.crown ? CROWN_SUBJECT : SUBJECTS[task.subject]

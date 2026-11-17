@@ -80,6 +80,9 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
   )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const weekly = draft.cycle === 'weekly'
+  const frequencyLabel = weekly ? '每周计划组数' : '每周次数'
+  const minutesLabel = weekly ? '整周预计耗时' : '预计耗时'
   const nextDates = describeNextHomeworkDates(draft)
   const input: HomeworkInput = {
     ...draft,
@@ -252,17 +255,18 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
             {(draft.cycle === 'weekly' || draft.cycle === 'custom') && (
               <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
                 <Text size="2" weight="bold">
-                  每周次数
+                  {frequencyLabel}
+                  {weekly && <Text size="1" color="gray" weight="regular"> 随作业推进时使用</Text>}
                 </Text>
                 <Select.Root
                   value={String(draft.times_per_week ?? 1)}
                   onValueChange={(value) => patch({ times_per_week: Number(value) })}
                 >
-                  <Select.Trigger aria-label="每周次数" />
+                  <Select.Trigger aria-label={frequencyLabel} />
                   <Select.Content>
                     {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                       <Select.Item key={n} value={String(n)}>
-                        {n} 次
+                        {n} {weekly ? '组' : '次'}
                       </Select.Item>
                     ))}
                   </Select.Content>
@@ -352,14 +356,14 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
             {draft.subject !== 'life' && (
               <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
                 <Text size="2" weight="bold">
-                  预计耗时
+                  {minutesLabel}
                   <Text size="1" color="gray" weight="regular">
                     {' '}
                     分钟，最多 {MAX_HOMEWORK_MINUTES}
                   </Text>
                 </Text>
                 <TextField.Root
-                  aria-label="预计耗时（分钟）"
+                  aria-label={`${minutesLabel}（分钟）`}
                   type="number"
                   inputMode="numeric"
                   min={1}

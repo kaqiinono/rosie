@@ -164,7 +164,14 @@ export function describeSchedule(
     Homework,
     'cycle' | 'include_weekends' | 'times_per_week' | 'times_per_cycle' | 'start_weekday' | 'end_weekday' | 'start_date' | 'end_date'
   >,
+  { compact = false, weeklyGroups = false }: { compact?: boolean; weeklyGroups?: boolean } = {},
 ): string {
+  const weeklyCount = `每周 ${item.times_per_week ?? 1} ${weeklyGroups ? '组' : '次'}`
+  if (compact) {
+    if (item.cycle === 'daily') return item.include_weekends === false ? '工作日每天 1 次' : '每天 1 次'
+    if (usesCycleCount(item.cycle)) return `${HOMEWORK_CYCLES[item.cycle]} ${item.times_per_cycle} 次`
+    return item.cycle === 'custom' ? `自定义 · ${weeklyCount}` : weeklyCount
+  }
   if (item.cycle === 'daily') return item.include_weekends === false ? '每天 · 仅周一至周五' : '每天 · 包含周末'
   if (item.cycle === 'monthly') return `每个自然月完成 ${item.times_per_cycle} 次`
   if (needsCycleStart(item.cycle)) {
@@ -172,13 +179,12 @@ export function describeSchedule(
     const nextDates = describeNextHomeworkDates(item)
     return nextDates ? `${rule}。${nextDates}` : rule
   }
-  const times = `每周 ${item.times_per_week ?? 1} 次`
   if (item.cycle === 'weekly' && item.start_weekday != null && item.end_weekday != null) {
     const range =
       item.start_weekday === item.end_weekday
         ? HOMEWORK_WEEKDAYS[item.start_weekday]
         : `${HOMEWORK_WEEKDAYS[item.start_weekday]}至${HOMEWORK_WEEKDAYS[item.end_weekday]}`
-    return `每周 · ${range} · ${times}`
+    return weeklyGroups ? `${range} · ${weeklyCount}` : `每周 · ${range} · ${weeklyCount}`
   }
-  return `自定义 · ${item.start_date ?? ''} 至 ${item.end_date ?? ''} · ${times}`
+  return `自定义 · ${item.start_date ?? ''} 至 ${item.end_date ?? ''} · ${weeklyCount}`
 }

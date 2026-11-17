@@ -3,15 +3,52 @@
 import { useEffect, useRef, useState } from 'react'
 import { createUserSessionStore, invalidateSessionStore, supabase, useAuth } from '@rosie/core'
 import { placeTodayBubbles } from '@/lib/time-tree/engine'
-import { shift, type Snapshot, type TreeAction, type TreeData } from '@/lib/time-tree/types'
+import { shift, WEEKLY_SCHEDULE_VERSION, type Snapshot, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
-class TimeTreeRequestError extends Error {}
+const POLL_INTERVAL_MS = 45_000
+const MAX_RETRY_DELAY_MS = 180_000
 
-async function request(
+class TimeTreeRequestError extends Error {
+  constructor(message: string, readonly status?: number) {
+    super(message)
+  }
+}
+
+type PollingState = {
+  subscribers: number
+  pendingRequests: number
+  nextPollAt: number
+  retryDelay: number
+  schedule?: () => void
+  stop?: () => void
+}
+
+const pollingByUser = new Map<string, PollingState>()
+
+function getPollingState(userId: string): PollingState {
+  const current = pollingByUser.get(userId)
+  if (current) return current
+  const state: PollingState = {
+    subscribers: 0,
+    pendingRequests: 0,
+    nextPollAt: Date.now() + POLL_INTERVAL_MS,
+    retryDelay: POLL_INTERVAL_MS,
+  }
+  pollingByUser.set(userId, state)
+  return state
+}
+
+function deferPolling(polling: PollingState) {
+  polling.retryDelay = Math.min(polling.retryDelay * 2, MAX_RETRY_DELAY_MS)
+  polling.nextPollAt = Date.now() + polling.retryDelay
+}
+
+type RequestOptions = { revision?: number; cached?: Snapshot; background?: boolean }
+
+async function fetchSnapshot(
   userId: string,
   action: TreeAction,
-  revision?: number,
-  cached?: Snapshot,
+  { revision, cached, background }: RequestOptions,
 ): Promise<Snapshot> {
   const { data } = await supabase.auth.getSession()
   if (!data.session || data.session.user.id !== userId) throw new TimeTreeRequestError('请重新登录。')
@@ -22,28 +59,98 @@ async function request(
       Authorization: 'Bearer ' + data.session.access_token,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ...action, revision, knownRevision: cached?.revision }),
+    body: JSON.stringify({
+      ...action,
+      revision,
+      background,
+      knownRevision: cached?.revision,
+      knownHomeworkRevision: cached?.homeworkRevision,
+      knownDay: cached?.tree.today,
+    }),
   })
   const serverTime = Date.parse(response.headers.get('X-Tree-Time') ?? '')
   const clockOffsetMs = Number.isFinite(serverTime) ? serverTime - Date.now() : 0
   if (response.status === 204 && cached) return { ...cached, clockOffsetMs }
-  const result = await response.json()
-  if (!response.ok) throw new TimeTreeRequestError(result.error || '读取失败，请重试。')
-  return { ...(result as Snapshot), clockOffsetMs }
+  if (!response.ok) {
+    const result = await response.json().catch(() => null)
+    throw new TimeTreeRequestError(result?.error || '读取失败，请重试。', response.status)
+  }
+  const result: Snapshot = await response.json()
+  return { ...result, clockOffsetMs }
 }
+
+async function request(userId: string, action: TreeAction, options: RequestOptions = {}): Promise<Snapshot> {
+  const polling = getPollingState(userId)
+  polling.pendingRequests += 1
+  try {
+    const snapshot = await fetchSnapshot(userId, action, options)
+    if (snapshot.syncDeferred) {
+      deferPolling(polling)
+    } else if (action.kind === 'sync') {
+      polling.retryDelay = POLL_INTERVAL_MS
+      polling.nextPollAt = Date.now() + POLL_INTERVAL_MS
+    }
+    return snapshot
+  } catch (error) {
+    if (error instanceof TimeTreeRequestError && error.status === 503) {
+      deferPolling(polling)
+    } else if (action.kind === 'sync') {
+      polling.nextPollAt = Date.now() + polling.retryDelay
+    }
+    throw error
+  } finally {
+    polling.pendingRequests -= 1
+    polling.schedule?.()
+  }
+}
+
 const store = createUserSessionStore<Snapshot | null>('time_tree', {
   empty: null,
   async fetch(id): Promise<Snapshot> {
-    const cached = store.getSessionData(id)
-    const incoming = await request(id, { kind: 'sync' }, undefined, cached ?? undefined)
+    const cached = store.getSessionData(id) ?? undefined
+    const currentSchedule = cached?.tree.weeklyScheduleVersion === WEEKLY_SCHEDULE_VERSION
+    const incoming = await request(id, { kind: 'sync' }, { cached: currentSchedule ? cached : undefined, background: true })
     const current = store.getSessionData(id)
     return current && current.revision > incoming.revision ? current : incoming
   },
 })
 
+function subscribeToPolling(userId: string) {
+  const polling = getPollingState(userId)
+  polling.subscribers += 1
+  if (polling.subscribers === 1) {
+    let timer: number | undefined
+    const schedule = () => {
+      window.clearTimeout(timer)
+      if (document.hidden || polling.pendingRequests) return
+      timer = window.setTimeout(() => {
+        if (!document.hidden && !polling.pendingRequests) void store.refreshInBackground(userId).catch(() => {})
+      }, Math.max(0, polling.nextPollAt - Date.now()))
+    }
+    polling.schedule = schedule
+    window.addEventListener('focus', schedule)
+    document.addEventListener('visibilitychange', schedule)
+    polling.stop = () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('focus', schedule)
+      document.removeEventListener('visibilitychange', schedule)
+    }
+    schedule()
+  }
+  return () => {
+    polling.subscribers -= 1
+    if (polling.subscribers === 0) {
+      polling.stop?.()
+      polling.stop = undefined
+      polling.schedule = undefined
+    }
+  }
+}
+
 export function useTimeTree() {
   const { user, loading } = useAuth()
-  const { data, error, isLoading } = store.useSessionData(user)
+  const { data, error: loadError, isLoading } = store.useSessionData(user)
+  const error = data && loadError instanceof TimeTreeRequestError && loadError.status === 503 ? null : loadError
   const id = user?.id
   const lock = useRef(false)
   const queue = useRef<Promise<void>>(Promise.resolve())
@@ -52,16 +159,7 @@ export function useTimeTree() {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   useEffect(() => {
-    if (!id) return
-    const refresh = () => {
-      if (!document.hidden && !lock.current) void store.refreshInBackground(id).catch(() => {})
-    }
-    const interval = window.setInterval(refresh, 15000)
-    window.addEventListener('focus', refresh)
-    return () => {
-      clearInterval(interval)
-      window.removeEventListener('focus', refresh)
-    }
+    if (id) return subscribeToPolling(id)
   }, [id])
   function run(action: TreeAction, expectedRevision?: number): Promise<TreeData | null> {
     if (!id || (lock.current && action.kind !== 'pick' && action.kind !== 'pop')) {
@@ -104,7 +202,7 @@ export function useTimeTree() {
           setPending({ owner: id, revision: saved.revision, tree })
         }
       }
-      const next = await request(id, action, revision)
+      const next = await request(id, action, { revision })
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
       if (action.kind === 'acceptBox') invalidateSessionStore('draw_pool_entries')
@@ -116,7 +214,8 @@ export function useTimeTree() {
     } catch (e) {
       setMessage(e instanceof Error ? e.message : '保存失败，请重试。')
       setPending(null)
-      await store.refreshInBackground(id).catch(() => {})
+      if (!(e instanceof TimeTreeRequestError && e.status === 503))
+        await store.refreshInBackground(id).catch(() => {})
       return null
     } finally {
       setPending(null)
@@ -129,7 +228,8 @@ export function useTimeTree() {
     user,
     busy,
     run,
-    message: message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : ''),
+    message: message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : '') ||
+      (data?.syncDeferred ? '已显示上次保存的生命树，稍后自动同步。' : ''),
     error,
     isLoading: loading || isLoading,
   }

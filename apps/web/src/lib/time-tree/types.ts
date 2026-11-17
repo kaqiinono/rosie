@@ -1,6 +1,8 @@
 import type { PracticeProgress, StepPractice } from './practice'
 import type { Apple, CoreSubject, SubjectKey } from '@/components/tree-demo/garden/model'
 
+export const WEEKLY_SCHEDULE_VERSION = 1
+
 /** Cumulative snapshot at the end of the previous or current daily session. */
 export interface FlowerProgress {
   availableFrom?: string
@@ -63,6 +65,7 @@ export interface Rules {
 export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4 }
 
 export interface TreeData {
+  weeklyScheduleVersion?: number
   mathQuestionProgress?: Record<string, { firstId: string; throughDay: string; completed: string[] }>
   practiceProgress?: Record<string, PracticeProgress>
   today: string
@@ -142,6 +145,9 @@ export interface TreeAction {
 export interface Snapshot {
   clockOffsetMs?: number
   revision: number
+  /** Template revision sampled by the full sync that produced this snapshot. */
+  homeworkRevision?: string
+  syncDeferred?: boolean
   tree: TreeData
 }
 

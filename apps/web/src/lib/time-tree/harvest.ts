@@ -1,4 +1,5 @@
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
+import { weeklyHomeworkStart } from './flowers'
 import { dayOf, defaultRules, type TreeData, type WorkStep } from './types'
 
 /** Settle each flower receipt exactly once, both at midnight and on a perfect day. */
@@ -33,7 +34,8 @@ export function awardDailyRainbow(tree: TreeData, step: WorkStep): boolean {
   const today = tree.today
   if (tree.dailyRainbowDay === today || step.subject === 'life' || step.planned !== today ||
     !step.end || dayOf(step.end) !== today || (step.flowers && !step.flowers.complete)) return false
-  const academic = tree.steps.filter(item => item.subject !== 'life' && !item.skipped && item.planned === today)
+  const academic = tree.steps.filter(item => item.subject !== 'life' && !item.skipped && item.planned === today &&
+    (!weeklyHomeworkStart(item) || item.flowers?.complete))
   if (!academic.length || academic.some(item => !item.end || (item.flowers && !item.flowers.complete))) return false
 
   // Settle today's flowers now so the reward can be seen and picked immediately.
