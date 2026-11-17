@@ -7,6 +7,7 @@ import { bindPractice, settlePractice } from '@/lib/time-tree/practice'
 import { editMathQuestion, hasMathQuestions, settleMathQuestions } from '@/lib/time-tree/mathQuestions'
 import { schedule } from '@/lib/time-tree/schedule'
 import { regenerateHomework, regenerationTargets } from '@/lib/time-tree/regenerate'
+import { tomatoPrices } from '@/lib/time-tree/rewards'
 import { dayOf, shift, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
 export const dynamic = 'force-dynamic'
@@ -142,7 +143,7 @@ export async function POST(req: Request) {
           settleMathQuestions(tree, step, template)
         } else settlePractice(tree, step)
       }
-      if (saved.data && original === JSON.stringify(tree) && input.kind !== 'openBox')
+      if (saved.data && original === JSON.stringify(tree) && input.kind !== 'openBox' && input.kind !== 'openTomatoBox')
         return NextResponse.json({ revision, tree, homeworkRevision }, { headers: { 'X-Tree-Time': new Date().toISOString() } })
       // Sync can also persist newly scheduled work or a day rollover.
       if (needsOnlineCheck) {
@@ -168,6 +169,7 @@ export async function POST(req: Request) {
         const snapshot = homeworkRevision === undefined ? data : { ...data, homeworkRevision }
         return NextResponse.json(snapshot, { headers: { 'X-Tree-Time': new Date().toISOString() } })
       }
+      if (error.message === 'tomatoes_short') return failure(`可用番茄不足 ${tomatoPrices(tree.rules).box} 颗。`, 409)
       if (error.message !== 'tree_changed') throw error
     }
     return failure('进度已变化，请重试。', 409)

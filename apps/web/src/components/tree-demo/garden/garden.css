@@ -798,6 +798,16 @@
   fill: none;
   stroke-width: 4.2;
 }
+.tg-bubble[data-holdable='true'] {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.tg-bubble[data-holdable='true'] .tg-bubble-in {
+  -webkit-user-select: none;
+  user-select: none;
+}
 .tg-bubble[data-holding='true'],
 .tg-bubble[data-holding='true'] .tg-bubble-in {
   animation-play-state: paused;

@@ -1,7 +1,10 @@
 'use client'
 
-import { AppDialog, FormSelect } from '@rosie/ui'
-import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
+import { useId, useMemo, useState } from 'react'
+import { AppDialog, FormSelect, Info, StickerCard } from '@rosie/ui'
+import { Badge, Button, Flex, Heading, IconButton, Popover, SegmentedControl, Text, Tooltip } from '@rosie/ui/themes'
+import { growthDiary } from '@/lib/time-tree/growthDiary'
+import { clock, dayOf, type TreeData } from '@/lib/time-tree/types'
 import {
   CORE_SUBJECTS,
   K_RANGE,
@@ -15,7 +18,6 @@ import {
   weekdayLabel,
   type Bud,
   type CoreSubject,
-  type DiaryEntry,
   type GardenState,
   type Settings,
   type SubjectKey,
@@ -240,53 +242,211 @@ export function ParkedDialog({ open, state, onClose, onMove }: ParkedDialogProps
 }
 
 // ---------- 成长日记 ----------
-function fmtTime(t: number): string {
-  const d = new Date(t)
-  const pad = (n: number): string => String(n).padStart(2, '0')
-  return `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
+const DIARY_TRENDS = {
+  minutes: {
+    title: '近 7 天作业用时',
+    unit: '分钟',
+    help: '柱条上方是当天已记录的作业用时，单位是分钟。七天共用同一刻度，用时越长，柱条越高。日期下方的 🍅 数字是当天收获的番茄数。',
+    minScale: 30,
+    color: 'tomato',
+    track: 'h-24 bg-[var(--tomato-3)]',
+    fill: 'bg-[var(--tomato-7)]',
+    today: 'bg-[var(--tomato-9)]',
+  },
+  completed: {
+    title: '近 7 天完成作业数',
+    unit: '份',
+    help: '点击柱条查看当天完成的学科作业。补做和直接完成按实际完成日期计入。拆分或分次收花的作业，整份完成时计一份。',
+    minScale: 1,
+    color: 'green',
+    track: 'h-20 bg-[var(--green-3)]',
+    fill: 'bg-[var(--green-7)]',
+    today: 'bg-[var(--green-9)]',
+  },
+} as const
 
-type DiaryDialogProps = {
-  open: boolean
-  entries: DiaryEntry[]
-  totalPops: number
-  rings: number
-  exchanges: number
-  onClose: () => void
-}
-
-export function DiaryDialog({ open, entries, totalPops, rings, exchanges, onClose }: DiaryDialogProps) {
+function DiaryTrend({ trend, metric }: { trend: ReturnType<typeof growthDiary>['trend']; metric: keyof typeof DIARY_TRENDS }) {
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [tooltipOpen, setTooltipOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const detailsId = useId()
+  const selectedDay = trend.find(day => day.date === selectedDate)
+  const chart = DIARY_TRENDS[metric]
+  const scale = Math.max(chart.minScale, ...trend.map(day => day[metric]))
   return (
-    <AppDialog
-      open={open}
-      onOpenChange={(o) => {
-        if (!o) onClose()
-      }}
-      title="成长日记"
-      icon="📔"
-      description={`戳过 ${totalPops} 个泡泡 · 树干 ${rings} 圈年轮 · 兑换 ${exchanges} 次`}
-    >
-      {entries.length === 0 ? (
-        <Text size="2" color="gray">
-          还没有记录，去戳第一个泡泡吧。
-        </Text>
-      ) : (
-        <Flex direction="column" gap="2">
-          {entries.map((e) => (
-            <Flex key={e.id} align="start" gap="3">
-              <span className="text-xl leading-none" aria-hidden="true">
-                {e.icon}
-              </span>
-              <Text size="2" className="min-w-0 flex-1">
-                {e.text}
-              </Text>
-              <Text size="1" color="gray" className="whitespace-nowrap">
-                {fmtTime(e.t)}
-              </Text>
-            </Flex>
-          ))}
+    <StickerCard as="section" size="sm" elevation="sm">
+      <Flex justify="between" align="baseline" wrap="wrap" gap="1">
+        <Flex align="center" gap="1">
+          <Heading as="h3" size="3">📈 {chart.title}</Heading>
+          <Popover.Root open={helpOpen} onOpenChange={open => {
+            setHelpOpen(open)
+            if (open) setTooltipOpen(false)
+          }}>
+            <Tooltip content={chart.help} open={tooltipOpen && !helpOpen} onOpenChange={setTooltipOpen}>
+              <Popover.Trigger>
+                <IconButton type="button" size="1" variant="soft" color="gray" data-soft-outline="none" aria-label={`${chart.title}说明`}
+                  className="[@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:min-w-11">
+                  <Info size={14} aria-hidden="true" />
+                </IconButton>
+              </Popover.Trigger>
+            </Tooltip>
+            <Popover.Content size="1" width="16rem" maxWidth="calc(100vw - 24px)" aria-label={`${chart.title}说明`}>
+              <Text as="p" size="2">{chart.help}</Text>
+            </Popover.Content>
+          </Popover.Root>
         </Flex>
+        <Text size="1" color="gray">{chart.unit}</Text>
+      </Flex>
+      <ul aria-label={chart.title} className="mt-4 grid grid-cols-7 gap-1 text-center">
+        {trend.map((day, index) => {
+          const { date, tomatoes } = day
+          const value = day[metric]
+          const today = index === trend.length - 1
+          const expanded = selectedDate === date
+          const bar = (
+            <>
+              <Text size="1" weight="bold" className="tabular-nums" aria-label={`${value} ${chart.unit}`}>{value}</Text>
+              <span className={`flex w-3/4 max-w-8 items-end overflow-hidden rounded-full ${chart.track}`} aria-hidden="true">
+                {value > 0 && (
+                  <span className={`min-h-1.5 w-full rounded-t-full ${today ? chart.today : chart.fill}`}
+                    style={{ height: `${value / scale * 100}%` }} />
+                )}
+              </span>
+              <Text size="1" weight={today ? 'bold' : 'medium'} color={today ? chart.color : 'gray'}>
+                {today ? '今天' : `${Number(date.slice(5, 7))}/${Number(date.slice(8))}`}
+              </Text>
+            </>
+          )
+          return (
+            <li key={date} className="min-w-0">
+              {metric === 'completed' ? (
+                <Button type="button" size="1" color="green" variant={expanded ? 'soft' : 'ghost'}
+                  aria-expanded={expanded} aria-controls={detailsId}
+                  aria-label={`${date}完成 ${value} 份学科作业，${expanded ? '收起明细' : '查看明细'}`}
+                  onClick={() => setSelectedDate(expanded ? null : date)}
+                  className="min-h-11 min-w-0 flex-col gap-1"
+                  style={{ width: '100%', height: 'auto', margin: 0, padding: 'var(--space-1) 0' }}>
+                  {bar}
+                </Button>
+              ) : (
+                <div className="flex flex-col items-center gap-1">
+                  {bar}
+                  <Text size="1" color="tomato" aria-label={`收获 ${tomatoes} 颗番茄`} className="whitespace-nowrap">
+                    🍅 {tomatoes}
+                  </Text>
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+      {metric === 'completed' && (
+        <div id={detailsId} hidden={!selectedDay}>
+          {selectedDay && (
+            <StickerCard as="section" tone="paper" size="sm" radius="md" elevation="flat" className="mt-3">
+              <Heading as="h4" size="2">
+                {selectedDay.date} · 完成 {selectedDay.completed} 份
+              </Heading>
+              {selectedDay.homework.length > 0 ? (
+                <ul className="mt-2 flex flex-col gap-2">
+                  {selectedDay.homework.map(homework => (
+                    <li key={homework.occurrence} className="flex items-start gap-2">
+                      <Badge color={SUBJECT_BADGE[homework.subject]} className="shrink-0">{SUBJECTS[homework.subject].label}</Badge>
+                      <Text size="2" className="min-w-0 break-words">{homework.name}</Text>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Text as="p" color="gray" size="2" className="mt-2">这天没有完成的学科作业。</Text>
+              )}
+            </StickerCard>
+          )}
+        </div>
       )}
+    </StickerCard>
+  )
+}
+
+export function DiaryDialog({ tree, rings, onClose }: { tree: TreeData; rings: number; onClose: () => void }) {
+  const [tomatoOnly, setTomatoOnly] = useState(false)
+  const { trend, today, streak, earned, entries } = useMemo(() => growthDiary(tree), [tree])
+  const totalPops = (tree.diary ?? []).filter(entry => entry.icon === '🌸' || entry.icon === '🍂').length
+  const groups = new Map<string, typeof entries>()
+  for (const entry of entries) {
+    if (tomatoOnly && entry.tomatoChange === undefined) continue
+    const date = dayOf(entry.t)
+    const group = groups.get(date) ?? []
+    group.push(entry)
+    groups.set(date, group)
+  }
+  const metrics = [
+    { label: '今日收获', value: `${today.tomatoes} 颗`, icon: '🍅', tile: 'bg-[var(--tomato-4)]' },
+    { label: '今日作业用时', value: `${today.minutes} 分`, icon: '⏱️', tile: 'bg-[var(--mint-4)]' },
+    { label: '连续学习', value: `${streak} 天`, icon: '🔥', tile: 'bg-[var(--amber-4)]' },
+    { label: '累计番茄', value: `${earned} 颗`, icon: '🌟', tile: 'bg-[var(--violet-4)]' },
+  ]
+
+  return (
+    <AppDialog open onOpenChange={open => { if (!open) onClose() }} title="成长日记" icon="📔" size="preview"
+      description={`戳过 ${totalPops} 个泡泡 · 树干 ${rings} 圈年轮 · 兑换心愿 ${tree.exchanges.length} 次`}>
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
+        {metrics.map(({ label, value, icon, tile }) => (
+          <StickerCard key={label} size="sm" elevation="sm" radius="md" className="flex min-w-0 items-center gap-2">
+            <span aria-hidden="true" className={`grid size-8 shrink-0 place-items-center rounded-xl text-lg sm:size-11 sm:text-2xl ${tile}`}>{icon}</span>
+            <div className="min-w-0">
+              <Text weight="bold" className="block text-lg leading-tight tabular-nums sm:text-2xl">{value}</Text>
+              <Text size="1" color="gray">{label}</Text>
+            </div>
+          </StickerCard>
+        ))}
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-3">
+          <DiaryTrend trend={trend} metric="minutes" />
+          <DiaryTrend trend={trend} metric="completed" />
+        </div>
+        <StickerCard as="section" size="sm" elevation="sm" className="min-w-0 md:flex md:flex-col md:[contain:size]">
+          <Flex align="center" justify="between" gap="2" wrap="wrap" className="shrink-0">
+            <Heading as="h3" size="3">📖 成长足迹</Heading>
+            <SegmentedControl.Root size="1" defaultValue="all" aria-label="日记筛选"
+              onValueChange={value => setTomatoOnly(value === 'tomato')}>
+              <SegmentedControl.Item value="all">全部</SegmentedControl.Item>
+              <SegmentedControl.Item value="tomato">番茄</SegmentedControl.Item>
+            </SegmentedControl.Root>
+          </Flex>
+          <div className="mt-3 flex flex-col gap-3 md:min-h-0 md:flex-1 md:overflow-y-auto md:pr-1">
+            {groups.size === 0 && (
+              <Text size="2" color="gray">{tomatoOnly ? '做完计时作业，就会在这里记下收获。' : '完成作业后，这里会记录成长足迹。'}</Text>
+            )}
+            {[...groups.entries()].map(([date, records]) => (
+              <section key={date} className="flex flex-col gap-2">
+                <Heading as="h4" size="2" color="gray">{date === tree.today ? `今天 · ${date}` : date}</Heading>
+                <ul className="flex flex-col gap-2">
+                  {records.map(entry => (
+                    <StickerCard key={entry.id} as="li" tone="paper" size="sm" radius="md" elevation="flat"
+                      className="flex items-start gap-2">
+                      <span aria-hidden="true" className="shrink-0 text-xl leading-none">{entry.icon}</span>
+                      <div className="min-w-0 flex-1">
+                        <Text size="2" weight="bold" className="block break-words">{entry.text}</Text>
+                        <Flex align="center" gap="1" wrap="wrap">
+                          <Text asChild size="1" color="gray"><time dateTime={entry.t}>{clock(entry.t)}</time></Text>
+                          {entry.detail && <Text size="1" color="gray">· {entry.detail}</Text>}
+                          {entry.doubled && <Badge size="1" color="amber">提前翻倍</Badge>}
+                        </Flex>
+                      </div>
+                      {entry.tomatoChange !== undefined && (
+                        <Badge color={entry.tomatoChange > 0 ? 'tomato' : 'amber'} className="shrink-0 tabular-nums">
+                          {entry.tomatoChange > 0 ? '+' : ''}{entry.tomatoChange} 🍅
+                        </Badge>
+                      )}
+                    </StickerCard>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </StickerCard>
+      </div>
     </AppDialog>
   )
 }

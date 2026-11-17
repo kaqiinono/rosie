@@ -127,3 +127,17 @@ Read-back confirmed the non-null boolean/default and authenticated-only preset e
 Progression mode, quantity and grouped snapshots use existing JSON fields and need no further migration.
 The unrelated historical `20261018040000_fold_calc_report_into_settlement.sql` remains pending.
 No application build or tests were run.
+
+## Life-tree tomato wallet and diary
+
+Applied in order via the connected migration API to `yvukypevtqblhjdhkatb` on
+2026-11-18 (Asia/Shanghai). Local filenames match the remote history:
+
+- `20261117204418_time_tree_tomato_wallet.sql` charges a tomato blind-box draw in the prize-reservation transaction.
+- `20261117204428_time_tree_tomato_diary.sql` records the draw in the tomato diary in that transaction.
+
+Read-back confirmed both versions and that the updated `commit_time_tree` retains service-role-only execution.
+
+`20261117210030_time_tree_tomato_prices.sql` is also applied. The draw reads the active
+blind-box price from the garden rules in the same transaction. Read-back confirmed the
+price lookup, spending record and service-role-only execution.

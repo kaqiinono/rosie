@@ -461,6 +461,36 @@ a.rt-Button[aria-current='page'] {
   }
 }
 
+.rt-DialogContent[data-bottom-drawer-companion] {
+  --drawer-companion-content-left: 0;
+  --drawer-companion-content-bottom: calc(env(safe-area-inset-bottom) + 8rem);
+  --drawer-companion-content-width: 100%;
+  --drawer-companion-content-height: min(92dvh, calc(100dvh - env(safe-area-inset-top) - var(--drawer-companion-content-bottom)));
+  --drawer-companion-content-margin: auto;
+}
+
+.rosie-bottom-drawer-companion {
+  position: fixed;
+  inset: auto 0.75rem calc(env(safe-area-inset-bottom) + 0.75rem);
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .rt-DialogContent[data-bottom-drawer-companion] {
+    --drawer-companion-content-left: auto;
+    --drawer-companion-content-bottom: 0;
+    --drawer-companion-content-width: calc(100vw - min(34vw, 20rem) - clamp(1rem, 4vw, 4rem) - 1rem);
+    --drawer-companion-content-height: 92dvh;
+    --drawer-companion-content-margin: 0;
+  }
+
+  .rosie-bottom-drawer-companion {
+    right: auto;
+    left: clamp(1rem, 4vw, 4rem);
+    width: min(34vw, 20rem);
+  }
+}
+
 /* Public flow choice layout: intrinsic width, wrap on phones, no stretched last row. */
 .rosie-flow-choice-cards.rt-Grid {
   display: flex;

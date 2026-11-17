@@ -40,6 +40,7 @@ export interface WorkStep {
   returned: string | null
   sun: number
   water: number
+  tomatoes?: number
   stages: number[]
   audit: { at: string; previousStart: string | null; previousEnd: string | null }[]
 }
@@ -56,11 +57,20 @@ export interface DiaryNote {
   text: string
 }
 
+export type TomatoSpend = { id: string; t: string; amount: number } &
+  ({ kind: 'gem'; color: CoreSubject } | { kind: 'box'; prize: string })
+
+export interface TomatoPrices {
+  gems: Record<CoreSubject, number>
+  box: number
+}
+
 export interface Rules {
   chinese: number
   math: number
   english: number
   wish: number
+  tomatoPrices?: TomatoPrices
 }
 export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4 }
 
@@ -83,6 +93,8 @@ export interface TreeData {
   upcoming: { day: string; rules: Rules } | null
   sun: number
   water: number
+  tomatoWallet?: { earned: number; spent: number }
+  tomatoSpends?: TomatoSpend[]
   /** 连续有完成记录的天数 */
   streak?: number
   /** 最近一次真正做完作业的日期 */
@@ -95,7 +107,7 @@ export interface TreeData {
   exchanges: string[]
   boxReady: boolean
   lastBox: string | null
-  prize: { name: string; ticket: string } | null
+  prize: { name: string; ticket: string; source?: 'tomato' } | null
 }
 
 export type ActionKind =
@@ -121,13 +133,16 @@ export type ActionKind =
   | 'magic'
   | 'pick'
   | 'exchange'
+  | 'exchangeTomatoes'
   | 'settings'
   | 'openBox'
+  | 'openTomatoBox'
   | 'acceptBox'
 export interface TreeAction {
   kind: ActionKind
+  tomatoPrice?: number
   name?: string
-  flowerSelection?: { position: number; complete: boolean }
+  flowerSelection?: { complete: boolean }
   questionEdit?: 'complete' | 'undo' | 'append' | 'remove'
   rowId?: string
   problemId?: string

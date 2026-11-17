@@ -1,22 +1,23 @@
 'use client'
 
 import { useState, type ReactNode, type RefObject } from 'react'
-import { useRouter } from 'next/navigation'
 import PassageView from '@rosie/english/components/reading/PassageView'
 import { findPassageByKey, type ReadingPassage } from '@rosie/english/utils/reading-data'
 import { AppDialog, LearningIcon, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
 import { ResourcePlayer } from './ResourcePlayer'
+import { useHomeworkPracticeNavigation } from './TimeTreeLauncher'
 import SentenceRowPreview from '../task-entries/SentenceRowPreview'
 import ReadingPreviewDrawer from '../task-entries/ReadingPreviewDrawer'
 import { resourceHref, type PracticeEntryRow, type PracticeResource } from '@rosie/tasks'
 
-export default function PracticeResources({ row, detailPassage, actions }: {
+export default function PracticeResources({ row, detailPassage, actions, activeHomeworkId }: {
   row: PracticeEntryRow
   detailPassage?: ReadingPassage
   actions?: ReactNode
+  activeHomeworkId?: string
 }) {
-  const router = useRouter()
+  const openPractice = useHomeworkPracticeNavigation(activeHomeworkId)
   const [readingOpen, setReadingOpen] = useState(false)
   const [active, setActive] = useState<PracticeResource | null>(null)
   const [error, setError] = useState('')
@@ -44,7 +45,7 @@ export default function PracticeResources({ row, detailPassage, actions }: {
         setError('')
         try {
           const href = resourceHref(resource.url)
-          if (resource.type === 'link') { setActive(null); router.push(href) }
+          if (resource.type === 'link') { setActive(null); openPractice(href) }
           else setActive((current) => current?.id === resource.id ? null : resource)
         } catch { setError('资源链接无效，请在作业内容管理中修改。') }
       }}>{resource.type === 'audio' ? <LearningIcon name="readAloud" /> : <span aria-hidden>{resource.type === 'video' ? '🎬' : '🔗'}</span>}{resource.label}</Button>)}

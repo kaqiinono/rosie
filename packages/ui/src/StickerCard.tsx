@@ -24,8 +24,8 @@ export type StickerCardProps = Omit<HTMLAttributes<HTMLElement>, 'color'> & {
   as?: 'div' | 'section' | 'article' | 'aside' | 'nav' | 'li' | 'header' | 'footer'
   /** 底色：white 通用；paper 奶油色（嵌套在白卡里的次级块）；accent 强调；其余为状态色。 */
   tone?: StickerCardTone
-  /** Soft surfaces separate content by color, with no outline or shadow. Quote is a content-width strip: gray fill and a left bar only. */
-  variant?: 'outlined' | 'soft' | 'quote'
+  /** Dashed uses a dashed outline. Soft has no outline or shadow. Quote is a gray strip with a left bar. */
+  variant?: 'outlined' | 'dashed' | 'soft' | 'quote'
   /** 内边距：none=0，sm=12px，md=16px（≥sm 屏 20px），lg=24px。 */
   size?: StickerCardSize
   /** 底边厚度：flat 无，sm 2px（列表项），md 4px（默认），lg 6px（主面板）。 */
@@ -90,10 +90,10 @@ export function StickerCard({
   const Tag: ElementType = as
   const classes = clsx(
     variant === 'quote' ? 'border-y-0 border-r-0 border-l-4 border-l-[var(--gray-8)] bg-[var(--gray-a3)]'
-      : variant === 'soft' ? 'border-0' : 'border-2',
+      : variant === 'soft' ? 'border-0' : variant === 'dashed' ? 'border-2 border-dashed' : 'border-2',
     variant !== 'quote' && TONE[tone],
     SIZE[size],
-    variant === 'outlined' && ELEVATION[elevation],
+    (variant === 'outlined' || variant === 'dashed') && ELEVATION[elevation],
     RADIUS[radius],
     interactive && INTERACTIVE,
     className,

@@ -1,13 +1,29 @@
 'use client'
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { STORAGE_KEYS, useFloatingLauncherPosition } from '@rosie/core'
+import { STORAGE_KEYS, useAuth, useFloatingLauncherPosition } from '@rosie/core'
 import { IconButton } from '@rosie/ui/themes'
 import { FloatingLauncherCloseButton } from '@rosie/ui'
 
 const MinimizeTimeTree = createContext<() => void>(() => {})
+const HomeworkPracticeNavigation = createContext<(stepId: string, href: string) => void>(() => {})
+const HomeworkWakeLock = dynamic(() => import('./HomeworkWakeLock'), { ssr: false })
+
+function practicePathname(pathname: string) {
+  return pathname.replace(/\/+$/, '') || '/'
+}
+
+export function useHomeworkPracticeNavigation(activeHomeworkId?: string) {
+  const router = useRouter()
+  const trackPractice = useContext(HomeworkPracticeNavigation)
+  return (href: string) => {
+    if (activeHomeworkId) trackPractice(activeHomeworkId, href)
+    router.push(href)
+  }
+}
 
 function positionAboveAssistant(button: HTMLButtonElement) {
   const assistant = document.querySelector<HTMLElement>('[data-ai-floating-launcher]')
@@ -46,8 +62,12 @@ export function MinimizeTimeTreeButton({ disabled }: { disabled: boolean }) {
 export default function TimeTreeLauncher({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const { user } = useAuth()
   const [minimized, setMinimized] = useState(false)
+  const [practice, setPractice] = useState<{ ownerId: string; stepId: string; pathname: string } | null>(null)
   const onTreePage = pathname === '/time-tree'
+  const practiceStepId = practice && practice.ownerId === user?.id && practice.pathname === practicePathname(pathname)
+    ? practice.stepId : undefined
   const previousTreePage = useRef(onTreePage)
   const visible = minimized && !onTreePage && !pathname.endsWith('/print')
   const { launcherRef, launcherStyle, dragging, handlers, consumeDragClick } =
@@ -65,6 +85,22 @@ export default function TimeTreeLauncher({ children }: { children: ReactNode }) 
     return () => cancelAnimationFrame(frame)
   }, [onTreePage])
 
+  useEffect(() => {
+    if (!practice || (practice.ownerId === user?.id && (onTreePage || practiceStepId))) return
+    const frame = requestAnimationFrame(() => {
+      setPractice(current => current === practice ? null : current)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [onTreePage, practice, practiceStepId, user?.id])
+
+  function trackPractice(stepId: string, href: string) {
+    if (!onTreePage || !user) return
+    const url = new URL(href, window.location.origin)
+    if (url.origin === window.location.origin) {
+      setPractice({ ownerId: user.id, stepId, pathname: practicePathname(url.pathname) })
+    }
+  }
+
   function minimize() {
     setMinimized(true)
     router.push('/')
@@ -72,7 +108,10 @@ export default function TimeTreeLauncher({ children }: { children: ReactNode }) 
 
   return (
     <MinimizeTimeTree.Provider value={minimize}>
-      {children}
+      <HomeworkPracticeNavigation.Provider value={trackPractice}>
+        {(onTreePage || practiceStepId) && <HomeworkWakeLock stepId={onTreePage ? undefined : practiceStepId} />}
+        {children}
+      </HomeworkPracticeNavigation.Provider>
       {visible && (
         <div
           style={launcherStyle}

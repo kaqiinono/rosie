@@ -8,6 +8,7 @@ import { previewPractice } from '@/lib/time-tree/practicePreview'
 import { AppDialog, LearningIcon, LoadingOverlay, Moon, StickerCard, StatTile, Timer, X, type StatTileTone } from '@rosie/ui'
 import { Avatar, Badge, Button, Flex, Grid, Heading, IconButton, Text, TextField } from '@rosie/ui/themes'
 import { flowerQuestionProgress, MINUTES_PER_FLOWER, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
+import { homeworkTomatoProgress } from '@/lib/time-tree/rewards'
 import {
   clock,
   dayOf,
@@ -25,6 +26,7 @@ import { HomeworkNotesDialog } from './HomeworkNotesDialog'
 import FlowerCollection from './FlowerCollection'
 import DailyRainbowReward from './DailyRainbowReward'
 import HomeworkContentPanel from './HomeworkContentPanel'
+import HomeworkTomatoTimer from './HomeworkTomatoTimer'
 import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
 import { finishAndPop } from './finishStep'
 import type { TreeController } from './useTimeTree'
@@ -192,6 +194,7 @@ export function StepPanel({
       )}
       <Text size="6" weight="bold" className="motion-safe:animate-star-pop">+{receipt.stages.length} 花朵</Text>
       <Text>☀️ +{receipt.sun}　💧 +{receipt.water}</Text>
+      {receipt.tomatoes && <Text weight="bold">🍅 收获 {receipt.tomatoes} 颗番茄</Text>}
       <Button onClick={close}>知道了</Button>
     </Flex>
   </AppDialog>
@@ -329,14 +332,17 @@ export function StepPanel({
       timeTone = 'warning'
     }
     const showStepTime = timeLabel !== '预计' || !weekStart && template?.estimated_minutes !== step.minutes
+    const tomato = !step.end && !step.skipped && step.minutes > 0 ? homeworkTomatoProgress(step, now) : null
     return (
       <AppDialog
         open
         title={step.name}
+        description={tomato ? `番茄钟共 ${tomato.rounds} 轮，随作业计时。` : undefined}
         size={step.flowers ? 'form' : 'standard'}
         chrome="none"
         presentation="bottom-drawer"
         compactBottomDrawer={!weeklyPlan}
+        bottomDrawerCompanion={tomato ? <HomeworkTomatoTimer progress={tomato} /> : undefined}
         onOpenChange={(v) => {
           if (!v) close()
         }}
@@ -345,6 +351,9 @@ export function StepPanel({
       >
         <Flex direction="column" gap={step.flowers ? { initial: '3', xs: '4' } : '3'}
           className={step.flowers ? 'p-4 sm:px-6 sm:pt-6' : 'p-4'}>
+          {tomato && <span className="sr-only" role="status">
+            {tomato.justRipened ? '种熟 1 颗' : tomato.completed === tomato.rounds ? '番茄都熟啦' : `第 ${tomato.round} / ${tomato.rounds} 轮`}
+          </span>}
           {step.flowers ? (
             <Flex align="center" gap={{ initial: '2', sm: '3' }}>
               <Image src="/time-tree/workbook-sticker.png" width={128} height={128} alt=""
@@ -514,6 +523,7 @@ export function StepPanel({
               🌸 {step.stages.length}　☀️ +{step.sun}　💧 +{step.water}
               {step.audit.length > 0 && ' · 家长补录'}
             </Text>
+            {step.tomatoes && <Text weight="bold">🍅 收获 {step.tomatoes} 颗番茄</Text>}
             {dayOf(step.end) > step.deadline && <Text>晚于作业截止日完成</Text>}
             <Button onClick={close}>知道了</Button>
           </>
@@ -654,6 +664,7 @@ function PracticePreviewPanel({ api, tree, step, homework, template, content, co
   const canAppend = editable && first >= 0 && binding?.rows.slice(first).some(row => row.values.problemId && !used.has(row.id))
   return <HomeworkContentPanel
     compact={compact}
+    activeHomeworkId={step.start && !step.end ? step.id : undefined}
     disabled={api.busy}
     completedRows={mathBatch && recorded ? rows.filter(row => recorded.includes(row.values.problemId)).map(row => row.id) : completed}
     addedRows={step.practice?.questions?.added}

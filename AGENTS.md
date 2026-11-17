@@ -380,14 +380,24 @@ and garden cursor; browsing does not bind or advance practice. See `tree.md`.
 The life tree header can minimize the page to a draggable launcher above the AI assistant.
 Minimizing returns home, and the launcher stays available during navigation until the tree
 reopens. Both launchers share the core drag hook and save their positions independently.
+The life-tree launcher retains the screen wake lock during the active homework's same-site practice
+navigation and releases it at completion, countdown expiry or outside the tree and that practice route.
 
 `/time-tree`, the execution list at `/tasks/homework` and the homework view of `/today/calendar`
 share the account's versioned Supabase garden via `POST /api/time-tree`. The route derives the
 owner and timestamps on the server, snapshots homework occurrences, and atomically commits
 timing, rewards and blind-box reservations. Completion always grants uncapped base sunlight and water;
 early timed completion doubles both, with a reward dialog highlighting the bonus. API responses
-provide server time for client countdown calibration. Parent PIN gates time entry, wish redemption and
-next-day settings at `/setting/time-tree`. See `tree.md` for the live rules.
+provide server time for client countdown calibration. The life tree places a separate tomato card
+beside the homework drawer. Homework starts five-minute rounds. Timed completion records one tomato
+per planned round and doubles the total for early completion. Flexible flower assignments record
+tomatoes only when the entire assignment is complete. The tomato wallet initializes from saved
+homework receipts and defaults to 10 tomatoes per gem and 100 per blind-box draw. Each gem and
+the blind box have separate PIN-protected prices that take effect the next Beijing calendar day.
+The existing garden commit charges the draw only when it reserves a prize. The growth diary reads
+tomato earnings from homework receipts and writes gem or blind-box spending alongside the debit.
+Parent PIN gates time entry, wish redemption and next-day settings at `/setting/time-tree`.
+See `tree.md` for the live rules.
 
 ### Dev previews
 

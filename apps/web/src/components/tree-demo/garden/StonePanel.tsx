@@ -30,7 +30,7 @@ const PROGRESS_COLOR: Record<CoreSubject, 'red' | 'amber' | 'blue'> = {
   english: 'blue',
 }
 
-function Gem({ color, deep, glow }: { color: string; deep: string; glow: boolean }) {
+export function Gem({ color, deep, glow }: { color: string; deep: string; glow: boolean }) {
   return (
     <svg
       viewBox="0 0 32 32"

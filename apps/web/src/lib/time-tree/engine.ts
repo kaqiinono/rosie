@@ -1,5 +1,12 @@
 import { flowerBudget, flowerQuestionProgress, nextFlowerSession, weeklyHomeworkStart } from './flowers'
-import { completionReward, isEarly } from './rewards'
+import {
+  completionReward,
+  defaultTomatoPrices,
+  homeworkTomatoReward,
+  isEarly,
+  tomatoPrices,
+  tomatoWallet,
+} from './rewards'
 import { awardDailyRainbow, harvestSteps } from './harvest'
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
 import {
@@ -19,6 +26,13 @@ function requireState(ok: unknown, message: string): asserts ok {
   if (!ok) throw new TreeConflict(message)
 }
 
+function walletForTomatoPurchase(tree: TreeData, expectedPrice: number, price: number) {
+  requireState(expectedPrice === price, '番茄兑换价格已更新，请查看后重试。')
+  const wallet = tree.tomatoWallet ??= tomatoWallet(tree)
+  requireState(wallet.earned - wallet.spent >= price, `可用番茄不足 ${price} 颗。`)
+  return wallet
+}
+
 export function newTree(day: string): TreeData {
   return {
     today: day,
@@ -34,6 +48,7 @@ export function newTree(day: string): TreeData {
     upcoming: null,
     sun: 0,
     water: 0,
+    tomatoWallet: { earned: 0, spent: 0 },
     streak: 0,
     lastDoneDay: null,
     goalAwardedOn: null,
@@ -111,6 +126,7 @@ function fill(tree: TreeData) {
 }
 
 export function roll(tree: TreeData, today: string) {
+  tree.tomatoWallet ??= tomatoWallet(tree)
   const expired = new Set<string>()
   const retain = (step: WorkStep) => {
     if (step.subject !== 'life' || step.end || step.scheduled === today) return true
@@ -136,12 +152,21 @@ export function roll(tree: TreeData, today: string) {
   harvestSteps(tree, due)
 }
 
+function awardTomatoes(tree: TreeData, step: WorkStep, early: boolean) {
+  const wallet = tree.tomatoWallet ??= tomatoWallet(tree)
+  const earned = homeworkTomatoReward(step.minutes, early)
+  step.tomatoes = earned
+  wallet.earned += earned
+}
+
 function finish(tree: TreeData, s: WorkStep, end: string) {
   if (s.end) return
   requireState(s.start, '请先开始做。')
   s.end = end
   s.popped = s.slot === null
-  Object.assign(s, completionReward(tree, s, dayOf(end), isEarly(s)))
+  const early = isEarly(s)
+  Object.assign(s, completionReward(tree, s, dayOf(end), early))
+  if (!s.audit.length && s.minutes > 0) awardTomatoes(tree, s, early)
   tree.sun += s.sun
   tree.water += s.water
   onCompleted(tree, s, end)
@@ -150,15 +175,11 @@ function finish(tree: TreeData, s: WorkStep, end: string) {
 function collectFlowers(tree: TreeData, step: WorkStep, action: TreeAction, end: string, now: string) {
   const progress = step.flowers!
   const { elapsedMs, slots, suggested } = flowerBudget(step, Date.parse(end))
-  const selection = action.flowerSelection ?? (action.kind === 'record' ? {
-    position: Math.max(progress.collected, suggested), complete: false,
-  } : null)
-  requireState(selection && Number.isSafeInteger(selection.position) &&
-    selection.position >= progress.collected && selection.position <= slots &&
-    typeof selection.complete === 'boolean', '请选择本次点亮的花朵。')
+  const requestedCompletion = action.kind === 'record' ? false : action.flowerSelection?.complete
+  requireState(typeof requestedCompletion === 'boolean', '请选择保存进度或完成作业。')
   const questions = flowerQuestionProgress(step)
-  const complete = questions ? questions.done === questions.total : selection.complete
-  const position = complete ? slots : selection.position
+  const complete = questions ? questions.done === questions.total : requestedCompletion
+  const position = Math.max(progress.collected, complete ? slots : suggested)
   const added = position - progress.collected
   Object.assign(progress, { complete, elapsedMs, collected: position })
   step.end = step.start ? end : dayOf(end)
@@ -167,6 +188,9 @@ function collectFlowers(tree: TreeData, step: WorkStep, action: TreeAction, end:
   step.slot = null
   step.sun = added
   step.water = added ? completionReward(tree, step, dayOf(end), false).water : 0
+  if (complete && step.start && step.minutes > 0 && action.kind === 'collectFlowers') {
+    awardTomatoes(tree, step, elapsedMs < step.minutes * 60_000)
+  }
   tree.sun += step.sun
   tree.water += step.water
   if (!complete) {
@@ -229,7 +253,13 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         ),
       '阈值须为 1–20 的整数。',
     )
-    tree.upcoming = { day: shift(day, 1), rules: r }
+    const prices = r.tomatoPrices === undefined ? tomatoPrices(tree.upcoming?.rules ?? tree.rules) : r.tomatoPrices
+    requireState(
+      prices && prices.gems && [prices.box, ...CORE_SUBJECTS.map(color => prices.gems[color])]
+        .every(price => Number.isSafeInteger(price) && price > 0),
+      '番茄兑换价格须为大于 0 的整数。',
+    )
+    tree.upcoming = { day: shift(day, 1), rules: { ...r, tomatoPrices: prices } }
     return
   }
   if (kind === 'exchange') {
@@ -245,14 +275,34 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
     tree.exchanges.push(day)
     return
   }
-  if (kind === 'openBox' || kind === 'acceptBox') {
+  if (kind === 'exchangeTomatoes') {
+    const color = action.color
+    requireState(color && CORE_SUBJECTS.includes(color), '请选择一颗宝石。')
+    const price = tomatoPrices(tree.rules).gems[color]
+    const wallet = walletForTomatoPurchase(tree, action.tomatoPrice ?? defaultTomatoPrices.gems[color], price)
+    wallet.spent += price
+    tree.stones[color]++
+    const spends = tree.tomatoSpends ??= []
+    spends.unshift({ id: crypto.randomUUID(), t: now, kind: 'gem', color, amount: price })
+    return
+  }
+  if (kind === 'openTomatoBox') {
+    requireState(!tree.prize, '请先收下上一次抽中的奖励。')
+    walletForTomatoPurchase(tree, action.tomatoPrice ?? defaultTomatoPrices.box, tomatoPrices(tree.rules).box)
+    return
+  }
+  if (kind === 'openBox') {
     requireState(tree.boxReady, '还没有待开启的盲盒。')
-    if (kind === 'acceptBox') {
-      requireState(tree.prize && id === tree.prize.ticket, '请重新打开当前盲盒。')
+    return
+  }
+  if (kind === 'acceptBox') {
+    requireState(tree.prize && id === tree.prize.ticket, '请重新打开当前盲盒。')
+    if (tree.prize.source !== 'tomato') {
+      requireState(tree.boxReady, '还没有待开启的盲盒。')
       tree.boxReady = false
       tree.lastBox = day
-      tree.prize = null
     }
+    tree.prize = null
     return
   }
   if (kind === 'pick') {

@@ -210,6 +210,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
   const holdRef = useRef<HoldGesture | null>(null)
   const retractRef = useRef(0)
   const settledPointer = useRef<number | null>(null)
+  const handledPointerClick = useRef(false)
   const leaveRef = useRef<() => void>(() => {})
   useEffect(() => {
     if (!timing) return
@@ -250,6 +251,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
   function leaveHold(): void {
     const gesture = holdRef.current
     if (!gesture) return
+    handledPointerClick.current = true
     const armed = gesture.armed
     const progress = gesture.progress
     const id = gesture.id
@@ -373,11 +375,12 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
     if (!gesture || event.pointerId !== gesture.pointerId) return
     const inside = pointInside(gesture.el, event.clientX, event.clientY)
     const armed = gesture.armed
-    const progress = armed ? Math.max(0, Math.min(1, (event.timeStamp - gesture.armedAt) / FILL_MS)) : 0
+    const progress = armed ? Math.max(0, Math.min(1, (performance.now() - gesture.armedAt) / FILL_MS)) : 0
     const filled = progress >= 1
-    const tap = !armed && gesture.dist <= TAP_SLOP && inside
+    const tap = inside && Math.max(gesture.dist, Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y)) <= TAP_SLOP
     const id = gesture.id
     settledPointer.current = event.pointerId
+    handledPointerClick.current = true
     clearGesture()
     setHoldingId(null)
     if (armed && filled && inside) {
@@ -385,11 +388,8 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
       onHoldFinish?.(id)
       return
     }
-    if (armed) {
-      retractRing(id, progress)
-      return
-    }
-    setHoldRing((ring) => (ring?.id === id ? null : ring))
+    if (armed) retractRing(id, progress)
+    else setHoldRing((ring) => (ring?.id === id ? null : ring))
     if (tap) onOpen(id)
   }
 
@@ -442,14 +442,22 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               aria-busy={saving}
               aria-disabled={disabled}
               data-bubble-id={bud.id}
+              data-holdable={holdable || undefined}
               data-holding={holdingId === bud.id ? 'true' : undefined}
               aria-label={`${meta.label}：${bud.name}，${n} 朵花 ${label}${
                 Number.isFinite(startedMs) ? `，预计 ${bud.minutes} 分钟` : ''
               }${bud.makeupDate ? `，补做，原任务日期 ${bud.makeupDate}` : ''}${hint}`}
               className="tg-bubble"
               style={style}
-              onClick={disabled || holdable ? undefined : () => onOpen(bud.id)}
-              onPointerDown={holdable ? (event) => startHold(event, bud.id) : undefined}
+              onClick={disabled ? undefined : event => {
+                if (event.detail === 0 || !handledPointerClick.current) onOpen(bud.id)
+              }}
+              onPointerDown={disabled ? undefined : event => {
+                if (event.button !== 0 || holdRef.current) return
+                handledPointerClick.current = false
+                if (holdable) startHold(event, bud.id)
+              }}
+              onContextMenu={holdable ? event => event.preventDefault() : undefined}
               onPointerMove={holdable ? moveHold : undefined}
               onPointerUp={holdable ? endHold : undefined}
               onPointerCancel={holdable ? leaveHold : undefined}

@@ -2,13 +2,13 @@
 
 import dynamic from 'next/dynamic'
 import { useId, useState, type ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
 import { findPassage, findPassageByKey } from '@rosie/english/utils/reading-data'
 import { entryHref, type PracticeEntryRow } from '@rosie/tasks'
 import { ArrowIcon, LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Button, Flex, Heading, Text } from '@rosie/ui/themes'
 import type { TreeAction } from '@/lib/time-tree/types'
 import PracticeResources from './PracticeResources'
+import { useHomeworkPracticeNavigation } from './TimeTreeLauncher'
 import { hasWeeklyPlanPractice, weeklyPlanPracticeTarget } from './weeklyPlanPractice'
 
 const MathPracticeContent = dynamic(() => import('./MathPracticeContent'), { loading: () => <Flex direction="column" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
@@ -29,18 +29,19 @@ type Props = {
   addedRows?: string[]
   canAppend?: boolean
   compact?: boolean
+  activeHomeworkId?: string
   onEdit?: (edit: NonNullable<TreeAction['questionEdit']>, rowId?: string) => Promise<void>
   onRetry?: () => void
 }
 
 /** Render each frozen item with its own content and destination. */
-function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls, compact, name }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect' | 'compact' | 'name'> & {
+function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls, compact, name, activeHomeworkId }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect' | 'compact' | 'name' | 'activeHomeworkId'> & {
   title: string
   controls?: ReactNode
   expanded: boolean
   toggle: () => void
 }) {
-  const router = useRouter()
+  const openPractice = useHomeworkPracticeNavigation(activeHomeworkId)
   const detailId = useId()
   const [opened, setOpened] = useState(false)
   const calc = Boolean(href && /^\/calc(?:[/?#]|$)/.test(href))
@@ -51,7 +52,7 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
     : undefined
   const reading = Boolean(lessonPassage || row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
   if (calc) return <EmbeddedCalcStartPanel disabled={disabled} />
-  const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => router.push(entryHref(href, {}))}>进入详情页</Button> : null
+  const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => openPractice(entryHref(href, {}))}>进入详情页</Button> : null
   return <StickerCard size="none" tone={compact ? 'paper' : 'white'} elevation="flat" radius="md" className="min-w-0">
     <Button type="button" variant="ghost" color="gray" aria-expanded={expanded} aria-controls={detailId}
       style={{ boxSizing: 'border-box', width: '100%', height: 'auto', minHeight: 44, margin: 0, padding: 12, borderRadius: 'inherit', outlineOffset: -2, justifyContent: 'space-between', whiteSpace: 'normal', textAlign: 'left' }}
@@ -67,7 +68,7 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
     <div id={detailId} hidden={!expanded} inert={disabled || undefined} className="px-3 pb-3">
       {math && row && opened ? <MathPracticeContent onCorrect={onCorrect} row={row} actions={detailButton} expanded={expanded} /> : expanded && (
         <Flex direction="column" gap="3">
-          {row && <PracticeResources row={row} detailPassage={lessonPassage} actions={detailButton} />}
+          {row && <PracticeResources row={row} detailPassage={lessonPassage} actions={detailButton} activeHomeworkId={activeHomeworkId} />}
           {adaptive && <Text size="2">打开后直接进入这次自适应练习。</Text>}
           {!row && detailButton && <Flex gap="2" wrap="wrap" align="center">{detailButton}</Flex>}
         </Flex>
@@ -78,7 +79,7 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
 }
 
 /** Preview callers omit the editing callbacks. */
-export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, compact = false, onEdit, onCorrect, onRetry }: Props) {
+export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, compact = false, activeHomeworkId, onEdit, onCorrect, onRetry }: Props) {
   const entries = items?.length ? items : [{ row, href }]
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const weeklyPlan = hasWeeklyPlanPractice({ items: entries })
@@ -120,7 +121,7 @@ export default function HomeworkContentPanel({ name, row, href, items, exhausted
             )
             return <PracticeItemCard controls={controls}
               onCorrect={onEdit && rowId ? async () => { if (!done) await onEdit('complete', rowId) } : onCorrect} key={key} {...item} disabled={disabled}
-              compact={compactItem} name={compactItem && name !== label ? name : undefined}
+              compact={compactItem} name={compactItem && name !== label ? name : undefined} activeHomeworkId={activeHomeworkId}
               title={`${done ? '✓ ' : ''}${ordinal}${label}`}
               expanded={expandedKey === key}
               toggle={() => setExpandedKey(current => current === key ? null : key)} />

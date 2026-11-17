@@ -1,20 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from 'react'
 import { AppDialog, LearningIcon, PocketMenuButton, StickerCard, Sun } from '@rosie/ui'
-import { Badge, Button, Flex, Popover, Text, TextField } from '@rosie/ui/themes'
+import { Badge, Button, Flex, Popover, Text, TextField, Theme } from '@rosie/ui/themes'
 import TreeScene, { type ItemKind, type TreeSceneHandle } from '@/components/tree-demo/garden/TreeScene'
 import Sky, { daypartOf } from '@/components/tree-demo/garden/Sky'
 import type { BubbleState } from '@/components/tree-demo/garden/Bubbles'
 import ScatteredBubbles from './ScatteredBubbles'
-import StonePanel from '@/components/tree-demo/garden/StonePanel'
+import StonePanel, { Gem } from '@/components/tree-demo/garden/StonePanel'
 import { buildRegions, todayCenter, type Region } from '@/components/tree-demo/garden/layout'
 import { bubbleSubject, CORE_SUBJECTS, CROWN_BUBBLE_BURST_COLOR, SUBJECTS, type Apple, type Bud, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
 import { SUN_MAGIC_COST, canGrowWithSun, dayOf, isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
-import { isEarly } from '@/lib/time-tree/rewards'
+import { isEarly, tomatoPrices, tomatoWallet } from '@/lib/time-tree/rewards'
 import { dayPlanMinutes, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import { sceneBud, sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
@@ -40,9 +40,27 @@ function isCoreSubject(color: SubjectKey): color is CoreSubject {
   return color === 'chinese' || color === 'math' || color === 'english'
 }
 
-function doneNotice(step: Pick<WorkStep, 'name' | 'sun' | 'water'>): string {
+function doneNotice(step: Pick<WorkStep, 'name' | 'sun' | 'water' | 'tomatoes'>): string {
   const reward = step.sun || step.water ? ` · ☀️ +${step.sun} · 💧 +${step.water}` : ''
-  return `🌸 ${step.name}完成啦！${reward}`
+  return `🌸 ${step.name}完成啦！${reward}${step.tomatoes ? ` · 🍅 +${step.tomatoes}` : ''}`
+}
+
+function TomatoExchangeRow({ icon, title, cost, children }: {
+  icon: ReactNode
+  title: string
+  cost: number
+  children: ReactNode
+}) {
+  return (
+    <StickerCard as="li" tone="accent" variant="dashed" elevation="flat" className="flex items-center gap-3">
+      <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center text-2xl">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <Text as="p" size="3" weight="bold" className="break-words">{title}</Text>
+        <Text as="p" size="2" color="gray">需要 🍅 {cost} 颗番茄</Text>
+      </div>
+      {children}
+    </StickerCard>
+  )
 }
 
 const statusQuery = '(min-width: 48rem)'
@@ -64,6 +82,7 @@ interface StatusContentProps {
   vertical: boolean
   sunRef: RefObject<HTMLSpanElement | null>
   waterRef: RefObject<HTMLSpanElement | null>
+  tomatoControl?: ReactNode
   onDiary: () => void
   onLater: () => void
 }
@@ -79,6 +98,7 @@ function TreeStatusContent({
   vertical,
   sunRef,
   waterRef,
+  tomatoControl,
   onDiary,
   onLater,
 }: StatusContentProps) {
@@ -96,6 +116,7 @@ function TreeStatusContent({
       <Badge ref={waterRef} color="sky">
         💧 {water}
       </Badge>
+      {tomatoControl}
       <Button size="1" variant="soft" onClick={onDiary}>
         📔 日记
       </Button>
@@ -176,7 +197,7 @@ export default function LiveTree() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const desktop = useSyncExternalStore(subscribeStatusLayout, inlineStatus, serverStatus)
   const [taskDays, setTaskDays] = useState<string[] | null>(null)
-  const [dialog, show] = useState<'' | 'wilt' | 'later' | 'diary' | 'box' | 'wish' | 'flower' | 'fruitList'>('')
+  const [dialog, show] = useState<'' | 'wilt' | 'later' | 'diary' | 'box' | 'wish' | 'flower' | 'fruitList' | 'tomato'>('')
   const [rainbowAt, setRainbowAt] = useState<{ id: string; x: number; y: number } | null>(null)
   const [floats, setFloats] = useState<{ id: number; x: number; y: number; text: string; color: string }[]>([])
   const [itemId, setItem] = useState('')
@@ -317,6 +338,7 @@ export default function LiveTree() {
       </main>
     )
   const air = tree.steps.filter((s) => s.slot !== null)
+  const today = tree.today
   const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority) && !weeklyHomeworkStart(s))
   const mustDone = must.filter((s) => s.end).length
   const wilted = tree.steps.filter((s) => s.subject !== 'life' && !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
@@ -361,6 +383,19 @@ export default function LiveTree() {
     setPin('')
   }
   const closeMenu = () => setMobileMenuOpen(false)
+  const wallet = tomatoWallet(tree)
+  const tomatoBalance = wallet.earned - wallet.spent
+  const prices = tomatoPrices(tree.rules)
+  const tomatoControl = (
+    <Button size="1" color="tomato" variant="soft" aria-label={`番茄兑换，可用 ${tomatoBalance} 颗`}
+      onClick={() => {
+        closeMenu()
+        notify('')
+        show('tomato')
+      }}>
+      🍅 {tomatoBalance}
+    </Button>
+  )
   const status = (
     <TreeStatusContent
       mustCount={must.length}
@@ -372,6 +407,7 @@ export default function LiveTree() {
       vertical={!desktop}
       sunRef={sunRef}
       waterRef={waterRef}
+      tomatoControl={desktop ? tomatoControl : undefined}
       onDiary={() => {
         closeMenu()
         show('diary')
@@ -484,7 +520,7 @@ export default function LiveTree() {
       popping.current.add(id)
       const origin = bubbleCenter(id)
       const failureNotice = '暂时无法确认这颗泡泡已开花，请查看后再试。'
-      const snapshot = { bud: sceneBud(s, state.today), slot: s.slot ?? 0, ownerId: api.user?.id }
+      const snapshot = { bud: sceneBud(s, today), slot: s.slot ?? 0, ownerId: api.user?.id }
       setSavingLifeBubbles(previous => new Map(previous).set(id, snapshot))
       try {
         const result = await run({ kind: 'pop', id })
@@ -722,6 +758,7 @@ export default function LiveTree() {
           <span className="tg-logo">🌳 生命树</span>
         </Flex>
         <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
+        {!desktop && tomatoControl}
         {desktop ? (
           <StickerCard data-tree-obstacle className="pointer-events-auto" size="sm" tone="paper">
             {status}
@@ -892,7 +929,9 @@ export default function LiveTree() {
               setTaskDays(null)
               setShowRainbowDetails(false)
               setRewardStep(finished)
-              notify('🌈 今天的学习任务全部完成，彩虹果已经长在树上啦！')
+            notify(finished.tomatoes
+              ? `🌈 今日作业全部完成，彩虹果已长成！🍅 收获 ${finished.tomatoes} 颗番茄`
+              : '🌈 今天的学习任务全部完成，彩虹果已经长在树上啦！')
               return
             }
             if (finished.flowers) {
@@ -910,6 +949,7 @@ export default function LiveTree() {
             {rewardStep.dailyRainbow && <DailyRainbowReward />}
             <Text size="4" weight="bold">{rewardStep.name}</Text>
             <Text size="6" weight="bold">🌸 +{rewardStep.stages.length}　☀️ +{rewardStep.sun}　💧 +{rewardStep.water}</Text>
+            {rewardStep.tomatoes && <Text size="5" weight="bold" color="tomato">🍅 收获 {rewardStep.tomatoes} 颗番茄</Text>}
             {isEarly(rewardStep) && (
               <Flex direction="column" gap="2" align="center">
                 <Badge color="amber" size="3">提前完成额外奖励</Badge>
@@ -921,14 +961,7 @@ export default function LiveTree() {
           </Flex>
         )}
       </AppDialog>
-      <DiaryDialog
-        open={dialog === 'diary'}
-        entries={(tree.diary ?? []).map((entry) => ({ ...entry, t: Date.parse(entry.t) }))}
-        totalPops={(tree.diary ?? []).filter((entry) => entry.icon === '🌸' || entry.icon === '🍂').length}
-        rings={state.rings}
-        exchanges={tree.exchanges.length}
-        onClose={close}
-      />
+      {dialog === 'diary' && <DiaryDialog tree={tree} rings={state.rings} onClose={close} />}
       <AppDialog
         open={!!dialog && dialog !== 'diary'}
         closeDisabled={busy && dialog !== 'wilt' && dialog !== 'later' && dialog !== 'diary'}
@@ -942,6 +975,7 @@ export default function LiveTree() {
             later: '更后面的作业',
             diary: '成长日记',
             box: '🎁 我的盲盒',
+            tomato: '🍅 番茄兑换',
             wish: '兑换心愿',
             flower: flower?.name,
             fruitList: '待摘的苹果',
@@ -1038,6 +1072,54 @@ export default function LiveTree() {
                 {a.dateKey} · {a.kind === 'rainbow' ? '🌈 彩虹果' : SUBJECTS[a.kind].label + '苹果'}
               </Button>
             ))}
+          {dialog === 'tomato' && (
+            <>
+              <Flex align="center" gap="2" wrap="wrap">
+                <Badge color="tomato" size="3">可用 {tomatoBalance} 颗</Badge>
+                <Text size="2" color="gray">累计获得 {wallet.earned} 颗</Text>
+              </Flex>
+              <Theme accentColor="tomato" hasBackground={false}>
+                <ul className="flex flex-col gap-3">
+                  {CORE_SUBJECTS.map(color => {
+                    const price = prices.gems[color]
+                    return (
+                      <TomatoExchangeRow key={color} title={SUBJECTS[color].stone} cost={price}
+                        icon={<Gem color={SUBJECTS[color].color} deep={SUBJECTS[color].deep} glow={false} />}>
+                        <Button type="button" color="amber" variant="solid" size="3" className="min-h-11 min-w-18 shrink-0"
+                          aria-label={`用 ${price} 颗番茄兑换 ${SUBJECTS[color].stone}`}
+                          disabled={busy || tomatoBalance < price}
+                          onClick={async () => {
+                            notify('')
+                            if (await run({ kind: 'exchangeTomatoes', color, tomatoPrice: price })) {
+                              notify(`兑换成功，获得 1 颗${SUBJECTS[color].stone}`)
+                            }
+                          }}>
+                          兑换
+                        </Button>
+                      </TomatoExchangeRow>
+                    )
+                  })}
+                  <TomatoExchangeRow icon="🎁" title="番茄盲盒" cost={prices.box}>
+                    {tree.prize ? (
+                      <Button type="button" color="amber" size="3" className="min-h-11 min-w-18 shrink-0"
+                        aria-label="查看待领取奖品" disabled={busy} onClick={() => show('box')}>领奖</Button>
+                    ) : (
+                      <Button type="button" color="amber" variant="solid" size="3" className="min-h-11 min-w-18 shrink-0"
+                        loading={busy} disabled={tomatoBalance < prices.box} onClick={async () => {
+                          notify('')
+                          const next = await run({ kind: 'openTomatoBox', tomatoPrice: prices.box })
+                          if (next?.prize) show('box')
+                          else if (next) notify('奖池暂时没有可抽奖品，番茄余额未变。')
+                        }}>
+                        抽一次
+                      </Button>
+                    )}
+                  </TomatoExchangeRow>
+                </ul>
+              </Theme>
+              {notice && <Text size="2" role="status">{notice}</Text>}
+            </>
+          )}
           {dialog === 'box' &&
             (tree.prize ? (
               <>

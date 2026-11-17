@@ -2,7 +2,8 @@
 
 import { Dialog, Flex, IconButton } from '@radix-ui/themes'
 import { X } from 'lucide-react'
-import type { ReactElement, ReactNode, RefObject } from 'react'
+import { useCallback, useState, type ReactElement, type ReactNode, type RefObject } from 'react'
+import { createPortal } from 'react-dom'
 
 type AppDialogProps = {
   title: string
@@ -22,6 +23,8 @@ type AppDialogProps = {
   presentation?: 'dialog' | 'drawer' | 'bottom-drawer' | 'fullscreen'
   /** Full viewport on phones; retain the standard dialog on wider screens. */
   compactBottomDrawer?: boolean
+  /** A read-only card next to the bottom drawer, sharing its backdrop. */
+  bottomDrawerCompanion?: ReactNode
   mobileFullscreen?: boolean
   /** Remains visible outside the scrolling content, e.g. media transport. */
   footer?: ReactNode
@@ -46,6 +49,7 @@ export function AppDialog({
   presentation = 'dialog',
   mobileFullscreen = false,
   compactBottomDrawer = false,
+  bottomDrawerCompanion,
   footer,
   contentLayout = 'scroll',
   returnFocusRef,
@@ -55,12 +59,20 @@ export function AppDialog({
   children,
 }: AppDialogProps) {
   const bare = chrome === 'none'
+  const hasCompanion = presentation === 'bottom-drawer' && bottomDrawerCompanion != null
+  const [companionHost, setCompanionHost] = useState<HTMLElement | null>(null)
+  const attachCompanionHost = useCallback((content: HTMLDivElement | null) => {
+    setCompanionHost(content?.parentElement ?? null)
+  }, [])
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger && <Dialog.Trigger>{trigger}</Dialog.Trigger>}
       <Dialog.Content
+        ref={hasCompanion ? attachCompanionHost : undefined}
         data-presentation={presentation}
         data-mobile-fullscreen={mobileFullscreen || undefined}
+        data-bottom-drawer-companion={hasCompanion || undefined}
         {...(description ? {} : { 'aria-describedby': undefined })}
         maxWidth={presentation === 'fullscreen' || presentation === 'bottom-drawer' ? '100vw' : presentation === 'drawer' ? 'min(64rem, 100vw)' : MAX_WIDTH[size]}
         maxHeight={presentation !== 'dialog' ? '100dvh' : '88dvh'}
@@ -76,6 +88,13 @@ export function AppDialog({
           ...(presentation === 'bottom-drawer' ? {
             top: 'auto', left: 0, height: '92dvh', borderRadius: '28px 28px 0 0',
             ...(compactBottomDrawer ? { maxWidth: MAX_WIDTH[size], marginInline: 'auto', height: 'auto', maxHeight: '92dvh' } : null),
+            ...(hasCompanion ? {
+              left: 'var(--drawer-companion-content-left)',
+              bottom: 'var(--drawer-companion-content-bottom)',
+              width: 'var(--drawer-companion-content-width)',
+              maxHeight: 'var(--drawer-companion-content-height)',
+              marginInline: 'var(--drawer-companion-content-margin)',
+            } : null),
           } : null),
         }}
         onEscapeKeyDown={(event) => {
@@ -145,6 +164,10 @@ export function AppDialog({
         </div>
         {footer && <Flex direction="column" flexShrink="0" pt="3">{footer}</Flex>}
       </Dialog.Content>
+      {hasCompanion && companionHost && createPortal(
+        <div className="rosie-bottom-drawer-companion" aria-hidden="true">{bottomDrawerCompanion}</div>,
+        companionHost,
+      )}
     </Dialog.Root>
   )
 }

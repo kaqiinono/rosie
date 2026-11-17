@@ -32,15 +32,13 @@
 }
 
 .tile {
+  display: grid;
+  place-items: center;
   flex: 0 0 44px;
   width: 44px;
   height: 44px;
   margin: 0;
   padding: 0;
-}
-
-.tile:is(:hover, :active) {
-  background-color: transparent;
 }
 
 .sticker {
@@ -85,20 +83,9 @@
   color: white;
 }
 
-.tile:focus-visible {
+.flowers:focus-visible {
   outline: 2px solid var(--pink-11);
   outline-offset: -2px;
-}
-
-@media (hover: hover) {
-  .tile[data-state='empty']:not(:disabled):hover .sticker {
-    border-color: var(--crimson-8);
-    background-color: var(--crimson-3);
-  }
-
-  .tile[data-state='empty']:not(:disabled):hover .flower {
-    opacity: 0.64;
-  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

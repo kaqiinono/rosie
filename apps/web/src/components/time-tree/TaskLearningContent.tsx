@@ -46,7 +46,7 @@ export default function TaskLearningContent({ step, content, loading, error }: P
                 ) : (
                   rows.map((row, index) => <Flex key={`${row.id}:${index}`} direction="column" gap="2">
                     {rows.length > 1 && <Text size="2" weight="bold">第 {index + 1} 项 / 共 {rows.length} 项</Text>}
-                    <LearningRow row={row} />
+                    <LearningRow row={row} activeHomeworkId={step.start && !step.end ? step.id : undefined} />
                   </Flex>)
                 )}
               </>
@@ -74,11 +74,11 @@ export default function TaskLearningContent({ step, content, loading, error }: P
   )
 }
 
-function LearningRow({ row }: { row: PracticeEntryRow }) {
+function LearningRow({ row, activeHomeworkId }: { row: PracticeEntryRow; activeHomeworkId?: string }) {
   const path = practiceSelectionPath(row).map((part) => part.label.trim()).filter(Boolean).join(' / ')
   return <Flex direction="column" gap="2">
     {path && <Text size="2" color="gray" className="break-words">{path}</Text>}
     {row.label.trim() && <Text size="3" weight="bold" className="break-words">{row.label}</Text>}
-    {row.values.problemId ? <MathPracticeContent row={row} /> : <PracticeResources row={row} />}
+    {row.values.problemId ? <MathPracticeContent row={row} /> : <PracticeResources row={row} activeHomeworkId={activeHomeworkId} />}
   </Flex>
 }

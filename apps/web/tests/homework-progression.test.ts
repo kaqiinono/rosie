@@ -33,19 +33,21 @@ describe('homework occurrence progression', () => {
     expect(rowOn(task, '2026-11-30')).toBe('6')
   })
 
-  it('advances twice per week and freezes each multi-day occurrence', () => {
+  it('groups two course batches into each weekly occurrence and preserves them after rescheduling', () => {
     const task = homework({ cycle: 'weekly', start_weekday: 1, end_weekday: 5, times_per_week: 2 })
     const tree = newTree('2026-11-16')
     schedule(tree, [task], tree.today, '2026-11-27')
-    expect(tree.steps.map(step => [step.scheduled, step.practice?.row?.id])).toEqual([
-      ['2026-11-16', '1'], ['2026-11-18', '2'], ['2026-11-23', '3'], ['2026-11-25', '4'],
+    expect(tree.steps.map(step => [step.scheduled, step.practice?.items?.map(item => item.row.id)])).toEqual([
+      ['2026-11-16', ['1', '2']], ['2026-11-23', ['3', '4']],
     ])
     const second = tree.steps[1]
+    const savedPractice = structuredClone(second.practice)
     second.scheduled = second.planned = '2026-12-03'
     delete second.practice
-    expect(previewPractice(tree, second, task)?.row?.id).toBe('2')
+    expect(previewPractice(tree, second, task)?.rows?.map(row => row.id)).toEqual(['3', '4'])
     schedule(tree, [task], tree.today, '2026-11-27')
-    expect(second).toMatchObject({ practice: { row: { id: '2' } } })
+    expect(tree.steps).toHaveLength(2)
+    expect(second.practice).toEqual(savedPractice)
   })
 
   it('starts at the active window when saved midway through a period', () => {

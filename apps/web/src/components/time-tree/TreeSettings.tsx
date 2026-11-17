@@ -3,12 +3,36 @@
 import { useState } from 'react'
 import { PageShell, StickerCard } from '@rosie/ui'
 import { Button, Flex, Text, TextField } from '@rosie/ui/themes'
+import { CORE_SUBJECTS, SUBJECTS } from '@/components/tree-demo/garden/model'
+import { tomatoPrices } from '@/lib/time-tree/rewards'
 import { defaultRules, type Rules } from '@/lib/time-tree/types'
 import { TreeWait } from './StepPanel'
 import { useTimeTree, type TreeController } from './useTimeTree'
 
+function TomatoPriceField({ label, current, value, onChange }: {
+  label: string
+  current: number
+  value: number
+  onChange: (value: number) => void
+}) {
+  return (
+    <label>
+      {label} · 当前 {current} 颗番茄
+      <TextField.Root
+        type="number"
+        inputMode="numeric"
+        min={1}
+        max={Number.MAX_SAFE_INTEGER}
+        step={1}
+        value={value || ''}
+        onChange={event => onChange(Number(event.target.value))}
+      />
+    </label>
+  )
+}
+
 function Form({ api, initial }: { api: TreeController; initial: Rules }) {
-  const [rules, setRules] = useState(initial)
+  const [rules, setRules] = useState(() => ({ ...initial, tomatoPrices: tomatoPrices(initial) }))
   const [pin, setPin] = useState('')
   const [notice, setNotice] = useState('')
   const labels = {
@@ -17,11 +41,12 @@ function Form({ api, initial }: { api: TreeController; initial: Rules }) {
     english: '英语每果花数',
     wish: '兑换所需每色石头',
   }
+  const currentPrices = tomatoPrices(api.tree!.rules)
   return (
     <StickerCard>
       <Flex direction="column" gap="3">
         <Text>修改从明天起生效，已结的果实与余花保留。</Text>
-        {(Object.keys(defaultRules) as (keyof Rules)[]).map((k) => (
+        {(Object.keys(defaultRules) as (keyof typeof labels)[]).map((k) => (
           <label key={k}>
             {labels[k]} · 当前 {api.tree!.rules[k]}
             <TextField.Root
@@ -33,6 +58,27 @@ function Form({ api, initial }: { api: TreeController; initial: Rules }) {
             />
           </label>
         ))}
+        <fieldset>
+          <Text asChild size="3" weight="bold"><legend>番茄兑换</legend></Text>
+          <Flex direction="column" gap="2" mt="2">
+            {CORE_SUBJECTS.map(color => (
+              <TomatoPriceField key={color} label={`兑换 1 颗${SUBJECTS[color].stone}`}
+                current={currentPrices.gems[color]} value={rules.tomatoPrices.gems[color]}
+                onChange={value => setRules(previous => ({
+                  ...previous,
+                  tomatoPrices: {
+                    ...previous.tomatoPrices,
+                    gems: { ...previous.tomatoPrices.gems, [color]: value },
+                  },
+                }))} />
+            ))}
+            <TomatoPriceField label="抽 1 次盲盒" current={currentPrices.box} value={rules.tomatoPrices.box}
+              onChange={value => setRules(previous => ({
+                ...previous,
+                tomatoPrices: { ...previous.tomatoPrices, box: value },
+              }))} />
+          </Flex>
+        </fieldset>
         <label>
           家长密码
           <TextField.Root

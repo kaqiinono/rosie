@@ -206,7 +206,7 @@ export function useTimeTree() {
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
       if (action.kind === 'acceptBox') invalidateSessionStore('draw_pool_entries')
-      if (action.kind === 'openBox' || action.kind === 'acceptBox') {
+      if (action.kind === 'openBox' || action.kind === 'openTomatoBox' || action.kind === 'acceptBox') {
         invalidateSessionStore('draw_wheel_entries')
         invalidateSessionStore('draw_workshop')
       }
