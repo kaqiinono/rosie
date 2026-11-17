@@ -2,11 +2,12 @@
 
 import RegenerateHomework from './RegenerateHomework'
 import Link from 'next/link'
+import { flowerQuestionProgress } from '@/lib/time-tree/flowers'
 import { useMemo, useState } from 'react'
-import { StickerCard } from '@rosie/ui'
+import { LearningIcon, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
 import { clock, dayOf, elapsed, shift, timing, type WorkStep } from '@/lib/time-tree/types'
-import { SUBJECTS } from '@/components/tree-demo/garden/model'
+import { bubbleSubject } from '@/components/tree-demo/garden/model'
 import { useTimeTree } from './useTimeTree'
 import { StepPanel, TreeWait } from './StepPanel'
 
@@ -54,13 +55,21 @@ function journalDays(steps: WorkStep[]) {
     }
   }
   for (const parts of groups.values()) {
-    const finished = parts.every((s) => s.end)
+    const flowers = parts.find(part => part.flowers)?.flowers
+    const finished = flowers ? parts.some(part => part.flowers?.complete) : parts.every(part => part.end)
+    if (flowers) {
+      for (const part of parts) {
+        if (!part.planned) continue
+        entry(part.planned).plan++
+        if (part.end) entry(part.planned).done++
+      }
+    }
     const planned = parts
       .map((s) => s.planned)
       .filter((d): d is string => !!d)
       .sort()
       .at(-1)
-    if (planned) {
+    if (planned && !flowers) {
       entry(planned).plan++
       if (finished) entry(planned).done++
     }
@@ -69,7 +78,9 @@ function journalDays(steps: WorkStep[]) {
     const actual = entry(completionDays.sort().at(-1)!)
     actual.completed++
     if (parts.some((s) => !s.start)) continue
-    const margins = parts.map((s) => elapsed(s.start!, s.end!) - s.minutes)
+    const margins = flowers
+      ? [Math.ceil(Math.max(...parts.map(part => part.flowers?.elapsedMs ?? 0)) / 60000) - parts[0].minutes]
+      : parts.map((s) => elapsed(s.start!, s.end!) - s.minutes)
     if (margins.some((m) => m > 0)) actual.late++
     else if (margins.some((m) => m < 0)) actual.early++
     else actual.onTime++
@@ -114,6 +125,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
     ? tree.steps.filter((s) => s.skipped && (s.planned ?? s.scheduled) === date)
     : []
   function row(s: WorkStep) {
+    const questions = flowerQuestionProgress(s)
     return (
       <Button
         key={s.id}
@@ -121,7 +133,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
         color={s.skipped ? 'gray' : s.end ? 'green' : s.start ? 'amber' : 'sky'}
         onClick={() => setId(s.id)}
       >
-        {SUBJECTS[s.subject].emoji} {s.name} ·{' '}
+        {s.crown ? <LearningIcon name="crown" size={18} /> : bubbleSubject(s).emoji} {s.name} ·{' '}
         {s.skipped ? '不用做' : s.end
           ? (s.start ? clock(s.end) + ' ' : '') + timing(s)
           : s.start
@@ -129,6 +141,8 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             : s.planned
               ? s.minutes + ' 分钟'
               : '未排期'}
+        {s.flowers && ` · 🌸 ${s.flowers.collected}`}
+        {questions && ` · ${questions.done}/${questions.total}`}
       </Button>
     )
   }
@@ -227,7 +241,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
         </Flex>
         {calendar && (
           <>
-            <Text weight="bold">当天实际完成</Text>
+            <Text weight="bold">当天完成与收工记录</Text>
             <Flex gap="2" wrap="wrap">
               {finished.length ? finished.map(row) : <Text size="2">还没有完成记录。</Text>}
             </Flex>

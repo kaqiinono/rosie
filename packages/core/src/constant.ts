@@ -28,6 +28,7 @@ export const CONGRATS_MESSAGES = [
 ]
 
 export const STORAGE_KEYS = {
+  STORY_WORD_SOURCES: 'story_word_sources',
   /** 当前浏览器标签页中的 AI 对话，仅用于恢复会话上下文。 */
   AI_CONVERSATION_ID: 'ai-conversation-id-v1',
   /** 当前浏览器标签页中的显式教学会话，不保存孩子的作答内容。 */

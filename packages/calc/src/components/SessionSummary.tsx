@@ -34,6 +34,7 @@ interface Props {
   newWeak?: string[]
   /** Source labels the next session will focus on, weakest-first. */
   nextFocus?: string[]
+  onReturnToTask?: () => void
   onAgain: () => void
   /** When set, history mode: backdrop/关闭 dismiss; keep 再来一组 via onAgain. */
   onClose?: () => void
@@ -76,6 +77,7 @@ export default function SessionSummary({
   bySource,
   newWeak,
   nextFocus,
+  onReturnToTask,
   onAgain,
   onClose,
 }: Props) {
@@ -580,7 +582,12 @@ export default function SessionSummary({
             </div>
           )}
 
-          {history ? (
+          {onReturnToTask ? (
+            <button type="button" onClick={onReturnToTask}
+              className="mt-6 min-h-11 w-full rounded-xl bg-violet-700 px-4 font-bold text-white">
+              返回任务
+            </button>
+          ) : history ? (
             <button
               type="button"
               onClick={onClose}

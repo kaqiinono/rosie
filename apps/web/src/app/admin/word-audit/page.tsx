@@ -9,6 +9,7 @@ import {
   SAMPLE_WORDS_4B,
   SAMPLE_WORDS_5A,
   SAMPLE_WORDS_5B,
+  PS_G2_WORDS,
   SYLLABLE_MAP,
   KW_MAP,
   CHINESE_DEF_MAP,
@@ -18,7 +19,7 @@ import { Button } from '@rosie/ui/themes'
 
 /** Offline backup files used for file↔DB audit (DB remains canonical at runtime). */
 function fileBackupWords(): WordEntry[] {
-  return [...SAMPLE_WORDS, ...SAMPLE_WORDS_4B, ...SAMPLE_WORDS_5A, ...SAMPLE_WORDS_5B]
+  return [...SAMPLE_WORDS, ...SAMPLE_WORDS_4B, ...SAMPLE_WORDS_5A, ...SAMPLE_WORDS_5B, ...PS_G2_WORDS]
 }
 
 type DbRow = {

@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { AppDialog, LoadingOverlay, StickerCard } from '@rosie/ui'
+import dynamic from 'next/dynamic'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useHomeworkData } from '@rosie/tasks'
+import { previewPractice } from '@/lib/time-tree/practicePreview'
+import { AppDialog, LearningIcon, LoadingOverlay, StickerCard, StatTile, type StatTileTone } from '@rosie/ui'
 import { Avatar, Badge, Button, Flex, Grid, Heading, IconButton, Text, TextField } from '@rosie/ui/themes'
 import {
   clock,
@@ -17,9 +20,14 @@ import {
 import { SUBJECTS, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { kidNote, kidReward, kidTime } from './kidStepCopy'
 import { HomeworkNotesDialog } from './HomeworkNotesDialog'
+import FlowerCollection from './FlowerCollection'
 import HomeworkContentPanel from './HomeworkContentPanel'
 import { finishAndPop } from './finishStep'
 import type { TreeController } from './useTimeTree'
+
+const EmbeddedCalcStartPanel = dynamic(() => import('@rosie/calc/components/EmbeddedCalcStartPanel'), {
+  loading: () => <Flex position="relative" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex>,
+})
 
 const SUBJECT_BADGE: Record<SubjectKey, 'red' | 'amber' | 'blue' | 'green'> = {
   chinese: 'red',
@@ -64,7 +72,7 @@ export function StepPanel({
   close,
   select,
   onFinished,
-  onBeforeFinish,
+  onFinishBubble,
   homework = false,
 }: {
   api: TreeController
@@ -72,26 +80,25 @@ export function StepPanel({
   close: () => void
   select: (id: string) => void
   onFinished?: (step: WorkStep, tree: TreeData, bloom: boolean) => void
-  /** 记账前记下泡泡中心。记账之后泡泡会从树上消失。 */
-  onBeforeFinish?: (step: WorkStep) => void
+  onFinishBubble?: (step: WorkStep) => void
   homework?: boolean
 }) {
   const tree = api.tree!
+  const homeworkData = useHomeworkData()
+  const template = homeworkData.data.find(item => item.id === step.occurrence.split('/')[0])
+  const content = useMemo(() => step.practice ?? previewPractice(tree, step, template), [tree, step, template])
   const [localNow, setNow] = useState(Date.now)
   const now = localNow + api.clockOffsetMs
   const [editingNote, setEditingNote] = useState(false)
   const [move, setMove] = useState(false)
   const [manual, setManual] = useState(false)
   const [pin, setPin] = useState('')
+  const [receipt, setReceipt] = useState<WorkStep | null>(null)
   const [finishing, setFinishing] = useState(false)
   const [start, setStart] = useState(step.start ? dayOf(step.start) + 'T' + clock(step.start) : '')
   const [end, setEnd] = useState('')
   const mounted = useRef(true)
   const finishingRef = useRef(false)
-  const prepareKey = useRef('')
-  const [prepareAttempt, setPrepareAttempt] = useState(0)
-  const [preparing, setPreparing] = useState(false)
-  const [prepareError, setPrepareError] = useState('')
   const running = tree.steps.find((s) => s.start && !s.end)
   const overdue = !!step.planned && step.planned < tree.today
   useEffect(() => {
@@ -105,26 +112,13 @@ export function StepPanel({
     const t = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(t)
   }, [step.start, step.end])
-  useEffect(() => {
-    if (step.subject === 'life' || !step.practiceEntryName || step.practice !== undefined || step.end || step.skipped || !step.planned || api.busy) return
-    const requestKey = `${step.id}:${prepareAttempt}`
-    if (prepareKey.current === requestKey) return
-    prepareKey.current = requestKey
-    queueMicrotask(() => {
-      if (prepareKey.current !== requestKey) return
-      setPreparing(true)
-      setPrepareError('')
-    })
-    void api.run({ kind: 'preparePractice', id: step.id }).then((result) => {
-      if (!mounted.current || prepareKey.current !== requestKey) return
-      setPreparing(false)
-      if (!result) setPrepareError('暂时无法读取本次内容，请重试。')
-    })
-  }, [step.id, step.subject, step.practiceEntryName, step.practice, step.end, step.skipped, step.planned, tree.today, prepareAttempt, api])
   async function finishNow() {
     if (api.busy || finishingRef.current) return
+    if (onFinishBubble && step.slot !== null) {
+      onFinishBubble(step)
+      return
+    }
     finishingRef.current = true
-    onBeforeFinish?.(step)
     setFinishing(true)
     const outcome = await finishAndPop(api.run, step)
     finishingRef.current = false
@@ -140,43 +134,89 @@ export function StepPanel({
       await finishNow()
       return
     }
+    if (api.busy) return
+    if (action.kind === 'move' || action.kind === 'nextDay') {
+      void api.run({ ...action, id: step.id })
+      close()
+      return
+    }
     const result = await api.run({ ...action, id: step.id })
     if (!result) return
-    if (action.kind !== 'start') close()
+    if (mounted.current && action.kind !== 'start') close()
   }
+  async function collect(selection: NonNullable<TreeAction['flowerSelection']>) {
+    if (api.busy || finishingRef.current) return
+    finishingRef.current = true
+    setFinishing(true)
+    try {
+      const result = await api.run({ kind: 'collectFlowers', id: step.id, flowerSelection: selection })
+      const saved = result?.steps.find(item => item.id === step.id)
+      if (result && saved?.end && mounted.current) {
+        setReceipt(saved)
+        onFinished?.(saved, result, step.slot !== null)
+      }
+    } finally {
+      finishingRef.current = false
+      if (mounted.current) setFinishing(false)
+    }
+  }
+  if (receipt) return <AppDialog open title={receipt.flowers?.complete ? '整份做完啦' : '本次已收工'}
+    onOpenChange={open => { if (!open) close() }}>
+    <Flex direction="column" gap="3" align="center" role="status">
+      <Text size="6" weight="bold" className="motion-safe:animate-star-pop">+{receipt.stages.length} 花朵</Text>
+      <Text>☀️ +{receipt.sun}　💧 +{receipt.water}</Text>
+      <Button onClick={close}>知道了</Button>
+    </Flex>
+  </AppDialog>
   if (editingNote) {
     return <HomeworkNotesDialog step={step} api={api} close={() => setEditingNote(false)} />
   }
-  const homeworkContent = step.practice || preparing || prepareError ? (
-    <HomeworkContentPanel
-      name={step.practice?.name}
-      row={step.practice?.row}
-      items={step.practice?.items}
-      href={step.practice?.href}
-      exhausted={step.practice?.exhausted}
-      loading={!step.practice && preparing}
-      error={!step.practice && prepareError ? api.message || prepareError : undefined}
-      disabled={api.busy}
-      onRetry={() => setPrepareAttempt((n) => n + 1)}
-    />
-  ) : null
+  const waitingForTomorrow = !!step.flowers?.availableFrom && step.flowers.availableFrom > tree.today
+  const awaitingPractice = step.practice === undefined && !!step.practiceEntryName && !content && homeworkData.isLoading
+  const href = content?.href
+  const calcLink = href === '/calc' || (!!href && href.split('?')[0] === '/calc/session' &&
+    new URLSearchParams(href.split('?')[1]).get('mode') === 'daily')
+  // Older daily calc tasks may have only the homework name and no practice binding.
+  const namedCalc = step.name.trim() === '每日口算' && !content && !step.practiceEntryName && !template?.practice_binding
+  const dailyCalc = step.subject === 'math' && !step.end && !step.skipped && (calcLink || namedCalc)
+  const calcDisabled = !step.planned || waitingForTomorrow || api.busy || finishing || !!(running && running.id !== step.id)
+  async function startCalc() {
+    if (calcDisabled) return false
+    if (step.start) return true
+    const result = await api.run({ kind: 'start', id: step.id })
+    const saved = result?.steps.find(item => item.id === step.id)
+    return mounted.current && !!saved?.start && !saved.end && !saved.skipped
+  }
+  const homeworkContent = dailyCalc
+    ? !manual && <EmbeddedCalcStartPanel taskId={step.id} disabled={calcDisabled} beforeStart={startCalc} />
+    : step.practice || (step.practice === undefined && step.practiceEntryName && !step.end && !step.skipped)
+      ? <PracticePreviewPanel api={api} tree={tree} step={step} homework={homeworkData} template={template} content={content}
+          onCorrect={step.flowers && step.start && !step.end
+            ? async problemId => { await api.run({ kind: 'answerHomeworkQuestion', id: step.id, problemId }) } : undefined} />
+      : null
   const noteButton = (
     <Button variant="soft" disabled={api.busy} onClick={() => setEditingNote(true)}>备注</Button>
   )
   const showCompletionFooter = step.subject !== 'life' && !step.skipped &&
     ((!step.end && !!step.start) || finishing) && !manual
-  const completionFooter = showCompletionFooter ? (
+  const flowerReadOnly = !!step.end || !!step.skipped || waitingForTomorrow
+  const completionFooter = step.flowers && !manual ? <Flex direction="column" p="3" gap="2">
+    {step.start && !step.end && <Text size="2" align="center">{kidTime(step, now)}</Text>}
+    <FlowerCollection tree={tree} step={step} now={now} busy={api.busy || finishing} readOnly={flowerReadOnly} save={collect} />
+    {waitingForTomorrow && <Text size="2" align="center">今天已收工，明天继续</Text>}
+    {api.message && <Text color="red" role="alert">{api.message}</Text>}
+  </Flex> : showCompletionFooter ? (
     <Flex direction="column" gap="2" px="4" pb="4" pt="3"
       className="border-t-2 border-kid-line bg-kid-paper"
       style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-      <Text size="2" weight="bold" align="center" className="tabular-nums">
+      <Text size="3" weight="bold" align="center" className="tabular-nums">
         {finishing ? '正在开花…' : kidTime(step, now)}
       </Text>
       <Flex gap="2" wrap="wrap" justify="center">
-        <Button size="3" color="green" loading={api.busy || finishing} onClick={() => void finishNow()}>
+        <Button size="3" color="green" disabled={api.busy} loading={finishing} onClick={() => void finishNow()}>
           {step.slot !== null ? '🫧 做完啦，戳破它！' : '🌸 做完啦！'}
         </Button>
-        <Button size="3" variant="soft" color="gray" disabled={api.busy || finishing} onClick={close}>
+        <Button size="3" variant="soft" color="gray" disabled={finishing} onClick={close}>
           收起，继续计时
         </Button>
       </Flex>
@@ -185,7 +225,7 @@ export function StepPanel({
   ) : undefined
   if (step.subject === 'life') {
     return (
-      <AppDialog open title={step.name} icon="🌱" onOpenChange={open => { if (!open) close() }} closeDisabled={api.busy}>
+      <AppDialog open title={step.name} icon={step.crown ? <LearningIcon name="crown" size={24} /> : '🌱'} onOpenChange={open => { if (!open) close() }}>
         <Flex direction="column" gap="3">
           {step.notes && <Text>{step.notes}</Text>}
           {step.planNote && <Text>本次备注：{step.planNote}</Text>}
@@ -197,7 +237,7 @@ export function StepPanel({
             </>
           ) : step.skipped ? <Text>今天不用做</Text> : (
             <>
-              <Text>今天有效，点一下就完成。明天会有新的泡泡。</Text>
+              <Text>{step.crown ? '自定义 · 0 分钟 · 今天有效，点一下就完成。' : '今天有效，点一下就完成。明天会有新的泡泡。'}</Text>
               <Button loading={api.busy} onClick={() => void submit({ kind: 'pop' })}>🌼 戳破泡泡</Button>
               {noteButton}
             </>
@@ -210,52 +250,103 @@ export function StepPanel({
   if (!homework) {
     const subject = SUBJECTS[step.subject]
     const note = kidNote(step)
-    const reward = kidReward(tree, step, now)
+    const reward = step.flowers ? null : kidReward(tree, step, now)
     const later = !!step.planned && step.planned > tree.today
     const other = running && running.id !== step.id ? running : null
-    const busy = api.busy || finishing
+    const spent = step.start ? Math.max(0, Math.floor((now - Date.parse(step.start)) / 60000)) : 0
+    const left = step.minutes - spent
+    let timeLabel = '预计'
+    let timeValue: string | number = step.minutes
+    let timeUnit: string | undefined = '分钟'
+    let timeTone: StatTileTone = 'white'
+    if (step.skipped) {
+      timeLabel = '本次'
+      timeValue = '休息'
+      timeUnit = undefined
+    } else if (step.end) {
+      timeTone = 'success'
+      if (step.start) {
+        timeLabel = '实际'
+        timeValue = elapsed(step.start, step.end)
+      } else {
+        timeLabel = '完成'
+        timeValue = '✓'
+        timeUnit = undefined
+      }
+    } else if (step.start) {
+      if (left >= 0) {
+        timeLabel = '还剩'
+        timeValue = left
+        timeTone = 'accent'
+      } else {
+        timeLabel = '超时'
+        timeValue = -left
+        timeTone = 'warning'
+      }
+    } else if (overdue) {
+      timeTone = 'warning'
+    }
     return (
       <AppDialog
         open
         title={step.name}
         chrome="none"
+        presentation="bottom-drawer"
+        compactBottomDrawer
         onOpenChange={(v) => {
           if (!v) close()
         }}
-        closeDisabled={busy}
+        closeDisabled={finishing}
         footer={completionFooter}
       >
         <Flex direction="column" gap="3" p="4">
-          <Flex align="start" gap="3">
-            <Avatar size="5" radius="large" color={SUBJECT_BADGE[step.subject]} fallback={subject.emoji} aria-hidden="true" />
-            <Flex direction="column" align="start" gap="1" minWidth="0" flexGrow="1">
-              <Badge variant="soft" radius="full" color={SUBJECT_BADGE[step.subject]}>
-                {subject.label}
-              </Badge>
-              {step.planned === tree.today && (
-                <Badge variant="soft" radius="full" color={isMustDo(step.priority) ? 'pink' : 'gray'}>
-                  {isMustDo(step.priority) ? '今天要做' : '可以明天做'}
-                </Badge>
-              )}
-              <Heading as="h2" size="5" className="break-words max-w-full">{step.name}</Heading>
-              {!showCompletionFooter && <Text size="2" color="gray">{kidTime(step, now)}</Text>}
-              {step.planned && <Text size="2" color="gray">计划日期 {step.planned}</Text>}
+          <Flex align="center" justify="between" gap="3">
+            <Flex align="center" gap="3" minWidth="0">
+              <Avatar size="5" radius="large" color={SUBJECT_BADGE[step.subject]} fallback={subject.emoji} aria-hidden="true" />
+              <Flex direction="column" gap="1" minWidth="0">
+                <Flex align="center" gap="2" wrap="wrap" minWidth="0">
+                  <Heading as="h2" size="5" className="break-words max-w-full">{step.name}</Heading>
+                  <Badge variant="soft" radius="full" aria-label={`优先级 ${step.priority}`} color={isMustDo(step.priority) ? 'pink' : 'gray'}>
+                    {step.priority}
+                  </Badge>
+                </Flex>
+                {reward && (
+                  <Flex align="center" gap="1" wrap="wrap">
+                    <Badge size="3" variant="soft" radius="full" color="pink" className="tabular-nums"
+                      aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.flowers} 朵花`}>
+                      <span aria-hidden="true">🌸</span> {reward.flowers}
+                    </Badge>
+                    <Badge size="3" variant="soft" radius="full" color="amber" className="tabular-nums"
+                      aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.sun} 阳光`}>
+                      <span aria-hidden="true">☀️</span> {reward.sun}
+                    </Badge>
+                    <Badge size="3" variant="soft" radius="full" color="blue" className="tabular-nums"
+                      aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.water} 水滴`}>
+                      <span aria-hidden="true">💧</span> {reward.water}
+                    </Badge>
+                  </Flex>
+                )}
+                {step.end && <Text size="2" color="gray">{kidTime(step, now)}</Text>}
+              </Flex>
             </Flex>
-            <IconButton variant="soft" color="gray" aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={busy} onClick={close}>
-              <span aria-hidden="true">×</span>
-            </IconButton>
+            <Flex align="center" gap="2" flexShrink="0">
+              <StatTile
+                size="sm"
+                tone={timeTone}
+                label={timeLabel === '预计' ? null : timeLabel}
+                value={timeValue}
+                unit={timeUnit}
+                hint={step.planned ? <span className="tabular-nums">📅 {step.planned}</span> : undefined}
+              />
+              <IconButton variant="soft" color="gray" aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing} onClick={close}>
+                <span aria-hidden="true">×</span>
+              </IconButton>
+            </Flex>
           </Flex>
           {note && (
             <StickerCard tone="paper" size="sm" elevation="flat" radius="md" className="w-full">
               <Text className="whitespace-pre-wrap break-words" size="3">
                 {note}
-              </Text>
-            </StickerCard>
-          )}
-          {reward && (
-            <StickerCard tone="accent" size="sm" elevation="sm" radius="md" className="w-full">
-              <Text size="3" weight="bold">
-                {reward}
               </Text>
             </StickerCard>
           )}
@@ -271,7 +362,7 @@ export function StepPanel({
               </Button>
             ) : (
               <Flex gap="2" wrap="wrap" justify="center">
-                {step.planned && (
+                {!dailyCalc && !awaitingPractice && step.planned && !waitingForTomorrow && (
                   <Button
                     size="3"
                     color="pink"
@@ -311,7 +402,7 @@ export function StepPanel({
         if (!v) close()
       }}
       description={SUBJECTS[step.subject].label + ' · 预计 ' + step.minutes + ' 分钟'}
-      closeDisabled={api.busy || finishing}
+      closeDisabled={finishing}
       footer={completionFooter}
     >
       <Flex direction="column" gap="3">
@@ -393,9 +484,9 @@ export function StepPanel({
           <>
             {running ? (
               <Button onClick={() => select(running.id)}>返回正在做的作业</Button>
-            ) : (
+            ) : dailyCalc || awaitingPractice ? null : (
               <Button
-                disabled={!step.planned}
+                disabled={!step.planned || waitingForTomorrow}
                 loading={api.busy}
                 onClick={() => void submit({ kind: 'start' })}
               >
@@ -403,14 +494,14 @@ export function StepPanel({
               </Button>
             )}
             <Grid columns="2" gap="2">
-              <Button
+              {!step.flowers && <Button
                 variant="soft"
                 color="green"
                 disabled={api.busy}
                 onClick={() => void submit({ kind: 'completeUntimed' })}
               >
                 直接完成
-              </Button>
+              </Button>}
               <Button
                 variant="soft"
                 color="gray"
@@ -457,4 +548,43 @@ export function StepPanel({
       </Flex>
     </AppDialog>
   )
+}
+
+function PracticePreviewPanel({ api, tree, step, homework, template, content, onCorrect }: {
+  api: TreeController
+  tree: TreeData
+  step: WorkStep
+  homework: ReturnType<typeof useHomeworkData>
+  template: ReturnType<typeof useHomeworkData>['data'][number] | undefined
+  content: WorkStep['practice'] | ReturnType<typeof previewPractice>
+  onCorrect?: (problemId: string) => Promise<void>
+}) {
+  if (!content && !homework.isLoading && !homework.error) return null
+  const rows = content?.items?.map(item => item.row) ?? (content?.row ? [content.row] : [])
+  const mathBatch = step.subject === 'math' && rows.length > 0 && rows.every(row => row.values.problemId)
+  const editable = mathBatch && !step.flowers && !step.end && !step.skipped && !!step.planned
+  const binding = template?.practice_binding
+  const completed = step.practice?.questions?.completed ?? (editable ? [] : undefined)
+  const recorded = step.flowers ? step.flowers.answered ?? [] : undefined
+  const first = binding?.rows.findIndex(row => row.id === rows[0]?.id) ?? -1
+  const used = new Set([...rows.map(row => row.id), ...(binding ? tree.mathQuestionProgress?.[binding.key]?.completed ?? [] : [])])
+  const canAppend = editable && first >= 0 && binding?.rows.slice(first).some(row => row.values.problemId && !used.has(row.id))
+  return <HomeworkContentPanel
+    disabled={api.busy}
+    completedRows={mathBatch && recorded ? rows.filter(row => recorded.includes(row.values.problemId)).map(row => row.id) : completed}
+    addedRows={step.practice?.questions?.added}
+    canAppend={canAppend}
+    onEdit={editable ? async (questionEdit, rowId) => {
+      await api.run({ kind: 'editMathQuestion', id: step.id, questionEdit, rowId })
+    } : undefined}
+    onCorrect={onCorrect}
+    name={content?.name}
+    row={content?.row}
+    items={content?.items}
+    href={content?.href}
+    exhausted={content?.exhausted}
+    loading={!content && homework.isLoading}
+    error={!content && homework.error ? '暂时无法读取本次内容。' : undefined}
+    onRetry={() => void homework.refresh().catch(() => {})}
+  />
 }

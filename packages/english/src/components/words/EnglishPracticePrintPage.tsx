@@ -117,6 +117,9 @@ function SavePracticePdf({ title, sections }: {
   useEffect(() => {
     setBusy(false)
     setError(false)
+    // request is an invalidation counter, not a DOM ref: bumping it in cleanup
+    // cancels in-flight saves when sections change or the page unmounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => { request.current++ }
   }, [sections])
   useEffect(() => {

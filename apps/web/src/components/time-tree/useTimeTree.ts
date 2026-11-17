@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createUserSessionStore, invalidateSessionStore, supabase, useAuth } from '@rosie/core'
-import type { Snapshot, TreeAction } from '@/lib/time-tree/types'
+import { placeTodayBubbles } from '@/lib/time-tree/engine'
+import { shift, type Snapshot, type TreeAction, type TreeData } from '@/lib/time-tree/types'
+
+class TimeTreeRequestError extends Error {}
 
 async function request(
   userId: string,
@@ -11,7 +14,7 @@ async function request(
   cached?: Snapshot,
 ): Promise<Snapshot> {
   const { data } = await supabase.auth.getSession()
-  if (!data.session || data.session.user.id !== userId) throw new Error('请重新登录。')
+  if (!data.session || data.session.user.id !== userId) throw new TimeTreeRequestError('请重新登录。')
   const response = await fetch('/api/time-tree', {
     method: 'POST',
     cache: 'no-store',
@@ -25,7 +28,7 @@ async function request(
   const clockOffsetMs = Number.isFinite(serverTime) ? serverTime - Date.now() : 0
   if (response.status === 204 && cached) return { ...cached, clockOffsetMs }
   const result = await response.json()
-  if (!response.ok) throw new Error(result.error || '读取失败，请重试。')
+  if (!response.ok) throw new TimeTreeRequestError(result.error || '读取失败，请重试。')
   return { ...(result as Snapshot), clockOffsetMs }
 }
 const store = createUserSessionStore<Snapshot | null>('time_tree', {
@@ -43,6 +46,7 @@ export function useTimeTree() {
   const { data, error, isLoading } = store.useSessionData(user)
   const id = user?.id
   const lock = useRef(false)
+  const [pending, setPending] = useState<{ owner: string; revision: number; tree: TreeData } | null>(null)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   useEffect(() => {
@@ -65,6 +69,23 @@ export function useTimeTree() {
     try {
       // finish 后再 pop 时，组件还没重渲染，闭包里的 revision 已过期。
       const revision = expectedRevision ?? store.getSessionData(id)?.revision ?? data?.revision
+      const saved = store.getSessionData(id)
+      if (saved && (action.kind === 'start' || action.kind === 'move' || action.kind === 'nextDay')) {
+        const tree = { ...saved.tree, steps: saved.tree.steps.map(step => ({ ...step })) }
+        const step = tree.steps.find(item => item.id === action.id)
+        if (step && !step.start && !step.end) {
+          if (action.kind === 'start') {
+            step.start = new Date(Date.now() + (saved.clockOffsetMs ?? 0)).toISOString()
+          } else {
+            const base = step.planned && step.planned > tree.today ? step.planned : tree.today
+            step.planned = action.kind === 'nextDay' ? shift(base, 1) : action.day ?? step.planned
+            step.slot = null
+          }
+          step.returned = null
+          placeTodayBubbles(tree)
+          setPending({ owner: id, revision: saved.revision, tree })
+        }
+      }
       const next = await request(id, action, revision)
       if ((store.getSessionData(id)?.revision ?? 0) <= next.revision)
         store.replaceSessionData(id, next)
@@ -76,21 +97,23 @@ export function useTimeTree() {
       return next.tree
     } catch (e) {
       setMessage(e instanceof Error ? e.message : '保存失败，请重试。')
+      setPending(null)
       await store.refreshInBackground(id).catch(() => {})
       return null
     } finally {
+      setPending(null)
       lock.current = false
       setBusy(false)
     }
   }
   return {
-    tree: data?.tree ?? null,
+    tree: pending && pending.owner === id && pending.revision === data?.revision ? pending.tree : data?.tree ?? null,
     revision: data?.revision,
     clockOffsetMs: data?.clockOffsetMs ?? 0,
     user,
     busy,
     run,
-    message: message || (error ? '作业同步失败，请刷新重试。' : ''),
+    message: message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : ''),
     error,
     isLoading: loading || isLoading,
   }

@@ -1,7 +1,18 @@
 import type { PracticeProgress, StepPractice } from './practice'
 import type { Apple, CoreSubject, SubjectKey } from '@/components/tree-demo/garden/model'
 
+/** Cumulative snapshot at the end of the previous or current daily session. */
+export interface FlowerProgress {
+  availableFrom?: string
+  collected: number
+  elapsedMs: number
+  complete: boolean
+  answered?: string[]
+}
+
 export interface WorkStep {
+  crown?: true
+  flowers?: FlowerProgress
   practice?: StepPractice | null
   practiceEntryName?: string
   id: string
@@ -50,6 +61,7 @@ export interface Rules {
 export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4 }
 
 export interface TreeData {
+  mathQuestionProgress?: Record<string, { firstId: string; throughDay: string; completed: string[] }>
   practiceProgress?: Record<string, PracticeProgress>
   today: string
   firstDay: string
@@ -82,9 +94,13 @@ export interface TreeData {
 export type ActionKind =
   | 'sync'
   | 'regenerate'
+  | 'addCrown'
   | 'preparePractice'
   | 'school'
   | 'start'
+  | 'collectFlowers'
+  | 'editMathQuestion'
+  | 'answerHomeworkQuestion'
   | 'finish'
   | 'completeUntimed'
   | 'skip'
@@ -103,6 +119,12 @@ export type ActionKind =
   | 'acceptBox'
 export interface TreeAction {
   kind: ActionKind
+  name?: string
+  flowerSelection?: { position: number; complete: boolean }
+  questionEdit?: 'complete' | 'undo' | 'append' | 'remove'
+  rowId?: string
+  problemId?: string
+  popOnFinish?: boolean
   regenerate?: { from: string; through: string; expectedCount: number }
   notes?: { id: string; previous: string; value: string }[]
   id?: string
@@ -146,6 +168,7 @@ export function clock(value: string) {
 }
 export function timing(step: WorkStep) {
   if (!step.end) return ''
+  if (step.flowers) return step.flowers.complete ? '整份做完' : '本次已收工'
   if (!step.start) return '已完成 · 未计时'
   const delta = elapsed(step.start, step.end) - step.minutes
   return delta === 0 ? '按时完成' : delta < 0 ? `提前 ${-delta} 分钟` : `超时 ${delta} 分钟`

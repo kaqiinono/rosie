@@ -5,6 +5,7 @@ import type { TreeData, WorkStep } from './types'
 export function regenerationTargets(tree: TreeData, from: string, through: string) {
   const groups = new Map<string, WorkStep[]>()
   for (const step of [...tree.steps, ...(tree.weekendExcludedSteps ?? [])]) {
+    if (step.crown) continue
     const group = groups.get(step.occurrence) ?? []
     group.push(step)
     groups.set(step.occurrence, group)
@@ -16,7 +17,7 @@ export function regenerationTargets(tree: TreeData, from: string, through: strin
       const date = step.planned ?? step.scheduled
       return date >= tree.today && date >= from && date <= through && step.scheduled >= tree.today &&
         !step.start && !step.end && !step.skipped && !step.settled && !step.audit.length &&
-        !step.returned && !step.stages.some(stage => stage > 0)
+        !step.practice?.questions && !step.returned && !step.stages.some(stage => stage > 0)
     })) continue
     occurrences.add(key)
     count += steps.length

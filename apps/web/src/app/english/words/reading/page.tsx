@@ -20,7 +20,6 @@ import { READING_AUDIO_BUCKET, readingPassageAudioPath } from '@rosie/english'
 import { wordKey } from '@rosie/english'
 import { getWordMasteryLevel } from '@rosie/core'
 import { type PlayerTrack } from '@rosie/player'
-import { StoryShelf } from '@rosie/english'
 import { Button, IconButton, SegmentedControl } from '@rosie/ui/themes'
 
 export default function ReadingIndexPage() {
@@ -42,7 +41,6 @@ export default function ReadingIndexPage() {
   )
   const player = usePlaylistPlayer()
   const playbackError = useBaiduMediaError(player.audioRef)
-  const collection = searchParams.get('collection') === 'story' ? 'story' : 'houhai'
   const houhaiStages = useMemo(
     () =>
       [...new Set(readingPassages.map((passage) => passage.stage))]
@@ -55,10 +53,10 @@ export default function ReadingIndexPage() {
     houhaiStages.find((stage) => stage === requestedVolume) ?? houhaiStages[0]
 
   useEffect(() => {
-    if (collection === 'houhai' && selectedVolume && selectedVolume !== selStage) {
+    if (selectedVolume && selectedVolume !== selStage) {
       setSelStage(selectedVolume)
     }
-  }, [collection, selStage, selectedVolume, setSelStage])
+  }, [selStage, selectedVolume, setSelStage])
 
   // 选中集（用于"播放选中"）。切教材后 audiobookKeys 会变，下面 selectedKeys 自动丢掉跨册项。
   const [queueKeys, setQueueKeys] = useState<string[]>([])
@@ -176,7 +174,6 @@ export default function ReadingIndexPage() {
 
   const current = player.current
 
-  if (collection === 'story') return <StoryShelf />
 
   return (
     <main
@@ -381,7 +378,7 @@ export default function ReadingIndexPage() {
         </ul>
       )}
 
-      {collection === 'houhai' && (playbackError || baiduError) && (
+      {(playbackError || baiduError) && (
         <p role="alert" className="mb-24 text-sm text-red-700">
           {playbackError || baiduError}
         </p>

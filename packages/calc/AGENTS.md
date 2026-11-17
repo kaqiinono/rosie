@@ -215,4 +215,4 @@ Plain-language guide (how selection / lagging / mastery / mistakes work):
 - Repo: [`FAQ.md`](./FAQ.md)
 - In-app: `/calc/faq`（口算首页「口算说明」入口）
 
-`CalcStartPanel` is the controlled start form shared by `/calc` and `EmbeddedCalcStartPanel` in homework content. The embedded adapter reads the active strategy, keeps session overrides in memory and navigates to the original session route only on Start.
+`CalcStartPanel` is the controlled start form shared by `/calc` and `EmbeddedCalcStartPanel` in homework content. The adapter reads the active strategy and keeps session overrides in memory. In the life tree, Start saves the task timer, then opens the shared session in a second full-width bottom drawer over the task card. Pending practice is scoped by owner and task. Stashing and returning from settlement dismiss only the practice drawer.

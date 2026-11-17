@@ -22,7 +22,9 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
   const asset = req.nextUrl.searchParams.get('asset')
   if (
     asset !== null &&
-    (!/^[a-z0-9]+-u\d+l\d+$/.test(key) || !asset || asset.length > 512 || clip !== null)
+    (!asset || asset.length > 512 || clip !== null ||
+      !(/^[a-z0-9]+-u\d+l\d+$/.test(key) ||
+        (/^story:[a-z0-9-]+:[a-z0-9-]+$/.test(key) && /^(?:narration|chapter:[a-z0-9-]+)$/.test(asset))))
   )
     return failure('not_found', 404)
   if (asset === null && !baiduReadingPath(key, clip)) return failure('not_found', 404)

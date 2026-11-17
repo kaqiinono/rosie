@@ -1,6 +1,7 @@
 import type { Homework } from '@rosie/tasks'
 import { flowersForMinutes } from '@/components/tree-demo/garden/model'
 import { dayOf, shift, type TreeData, type WorkStep } from './types'
+import { planMathQuestions } from './mathQuestions'
 import { bindPractice, calendarPractice } from './practice'
 
 const diff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000)
@@ -23,6 +24,8 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
     const day = peers.map(step => step.scheduled).sort()[0]
     const pending = peers.filter(step => !step.end && !step.skipped && !step.settled)
     for (const step of pending) {
+      // The next session inherits the exact same work, even after template edits.
+      if (step.flowers && (step.start || step.flowers.availableFrom || template.subject === 'life')) continue
       const index = Number(step.id.split('/').at(-1))
       step.name = peers.length === 1 ? template.name : `${template.name}（${index + 1}/${peers.length}）`
       step.notes = template.notes
@@ -93,7 +96,7 @@ function syncWeekendTasks(tree: TreeData, templates: Homework[]) {
     const template = byId.get(templateId)
     if (!template?.enabled || template.cycle !== 'daily' || template.include_weekends !== false ||
       cycle !== 'daily' || !originalDay || originalDay < tree.today || !isWeekend(originalDay)) continue
-    if (steps.some((step) => step.start || step.end || step.skipped || step.audit.length ||
+    if (steps.some((step) => step.start || step.end || step.skipped || step.practice?.questions || step.audit.length ||
       step.scheduled < tree.today || !step.planned || step.planned < tree.today || !isWeekend(step.planned))) continue
     excluded.add(occurrence)
     for (const step of steps) {
@@ -117,6 +120,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   const removed = new Set<string>()
   const retain = (step: WorkStep) => {
     if (step.subject !== 'life' || step.end) return true
+    if (step.crown) return step.scheduled === tree.today
     const keep = enabledLife.has(step.occurrence.split('/')[0]) && step.scheduled === tree.today &&
       step.occurrence.split('/')[1] === 'daily' && step.id.endsWith('/0')
     if (!keep) removed.add(step.occurrence)
@@ -167,8 +171,10 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       if (existing.has(occurrence)) continue
       existing.add(occurrence)
       const practice = t.practice_binding?.progression ? calendarPractice(t.practice_binding, day) : undefined
+      const segmented = t.subject !== 'life' && ['weekly', 'biweekly', 'three_weekly'].includes(t.cycle) &&
+        !t.practice_binding?.progression?.enabled
       const parts =
-        t.subject !== 'life' && t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
+        !segmented && t.subject !== 'life' && t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
       parts.forEach((minutes, index) => {
         const flowers =
           t.subject === 'life' && index < parts.length - 1
@@ -183,8 +189,10 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
             lowestLoad = used
           }
         }
+        if (segmented) planned = day
         if (planned) load.set(planned, (load.get(planned) ?? 0) + flowers)
         const step: WorkStep = {
+          ...(segmented ? { flowers: { collected: 0, elapsedMs: 0, complete: false } } : {}),
           ...(practice ? { practice: structuredClone(practice) } : {}),
           id: occurrence + '/' + index,
           occurrence,
@@ -205,11 +213,19 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
           returned: null,
           sun: 0,
           water: 0,
-          stages: Array.from({ length: flowers }, () => 0),
+          stages: Array.from({ length: segmented ? 0 : flowers }, () => 0),
           audit: [],
         }
         tree.steps.push(step)
       })
     }
+  }
+  for (const template of templates) planMathQuestions(tree, template)
+  // A missed daily session stays a single pending bubble until the deadline.
+  for (const step of tree.steps) {
+    if (!step.flowers || step.start || step.end || step.skipped || !step.planned) continue
+    if (step.planned < tree.today && tree.today <= step.deadline) step.planned = tree.today
+    if (step.flowers.availableFrom && step.flowers.availableFrom > step.deadline &&
+        step.planned === step.flowers.availableFrom && tree.today >= step.planned) step.planned = step.deadline
   }
 }

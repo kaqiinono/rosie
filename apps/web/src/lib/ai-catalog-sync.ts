@@ -93,8 +93,51 @@ async function ingestOne(
 
 type CatalogProgressCallback = (completed: number, total: number) => Promise<void>
 
+function chaptersForLanguage(language: 'en' | 'zh') {
+  return storySeries.filter((series) => series.language === language).flatMap((series) =>
+    series.volumes.flatMap((volume) => volume.chapters.map((chapter) => ({ series, volume, chapter }))),
+  )
+}
+
+async function ingestStoryChapters(
+  language: 'en' | 'zh',
+  stats: { documents: number; chunks: number; skipped: number },
+  manifest: LinkManifestEntry[],
+  total: number,
+  onProgress?: CatalogProgressCallback,
+) {
+  const subject = language === 'zh' ? 'chinese' : 'english'
+  for (const { series, volume, chapter } of chaptersForLanguage(language)) {
+    const sourceRef = `${subject}:story:${series.slug}:${volume.slug}:${chapter.key}`
+    const href = `/stories/${series.slug}/${volume.slug}/${chapter.key}`
+    const title = `${volume.title} — Chapter ${chapter.number}: ${chapter.title}`
+    await ingestOne(
+      {
+        subject,
+        sourceType: 'catalog_sync',
+        sourceRef,
+        title,
+        content: [`系列: ${series.title}`, `第 ${volume.number} 辑: ${volume.title}`, `Chapter ${chapter.number}: ${chapter.title}`, ...chapter.paragraphs].join('\n\n'),
+        metadata: {
+          sourceRef,
+          title,
+          seriesSlug: series.slug,
+          volumeSlug: volume.slug,
+          volumeNumber: volume.number,
+          chapterKey: chapter.key,
+          chapterNumber: chapter.number,
+          href,
+        },
+      },
+      stats,
+    )
+    await onProgress?.(stats.documents, total)
+    manifest.push({ sourceRef, href, title, subject })
+  }
+}
+
 function chineseCatalogTotal(): number {
-  let total = 0
+  let total = chaptersForLanguage('zh').length
   for (const bookSlug of BOOK_SLUGS) {
     total += getBookLessonPassages(bookSlug).length
     total += getBookPoems(bookSlug).length
@@ -346,6 +389,8 @@ export async function syncChineseCatalog(onProgress?: CatalogProgressCallback): 
     }
   }
 
+  await ingestStoryChapters('zh', stats, manifest, total, onProgress)
+
   return {
     result: {
       subject: 'chinese',
@@ -363,6 +408,7 @@ export async function syncEnglishCatalog(onProgress?: CatalogProgressCallback): 
   const stats = { documents: 0, chunks: 0, skipped: 0 }
   const manifest: LinkManifestEntry[] = []
 
+  const total = readingPassages.length + chaptersForLanguage('en').length
   for (const passage of readingPassages) {
     const sourceRef = `english:reading:${passage.stage}:${passage.unit}:${passage.lesson}`
     const href = `/english/words/reading/${passage.key}`
@@ -387,7 +433,7 @@ export async function syncEnglishCatalog(onProgress?: CatalogProgressCallback): 
       },
       stats,
     )
-    await onProgress?.(stats.documents, readingPassages.length)
+    await onProgress?.(stats.documents, total)
 
     manifest.push({
       sourceRef,
@@ -397,38 +443,7 @@ export async function syncEnglishCatalog(onProgress?: CatalogProgressCallback): 
     })
   }
 
-  const storyChapters = storySeries.flatMap((series) =>
-    series.volumes.flatMap((volume) =>
-      volume.chapters.map((chapter) => ({ series, volume, chapter })),
-    ),
-  )
-  for (const { series, volume, chapter } of storyChapters) {
-    const sourceRef = `english:story:${series.slug}:${volume.slug}:${chapter.key}`
-    const href = `/english/words/reading/story/${series.slug}/${volume.slug}/${chapter.key}`
-    const title = `${volume.title} — Chapter ${chapter.number}: ${chapter.title}`
-    await ingestOne(
-      {
-        subject: 'english',
-        sourceType: 'catalog_sync',
-        sourceRef,
-        title,
-        content: [`系列: ${series.title}`, `第 ${volume.number} 辑: ${volume.title}`, `Chapter ${chapter.number}: ${chapter.title}`, ...chapter.paragraphs].join('\n\n'),
-        metadata: {
-          sourceRef,
-          title,
-          seriesSlug: series.slug,
-          volumeSlug: volume.slug,
-          volumeNumber: volume.number,
-          chapterKey: chapter.key,
-          chapterNumber: chapter.number,
-          href,
-        },
-      },
-      stats,
-    )
-    await onProgress?.(stats.documents, readingPassages.length + storyChapters.length)
-    manifest.push({ sourceRef, href, title, subject: 'english' })
-  }
+  await ingestStoryChapters('en', stats, manifest, total, onProgress)
 
   return {
     result: {
@@ -614,7 +629,7 @@ export async function runCatalogSync(
           metadata: { subject, sourceType: 'catalog_sync' },
         })
       } else if (subject === 'english') {
-        const total = readingPassages.length
+        const total = readingPassages.length + chaptersForLanguage('en').length
         await updateKnowledgeSyncState({
           sourceKey,
           status: 'running',

@@ -344,7 +344,7 @@ export default function PassageView({
 
   return (
     <div ref={containerRef} className="font-nunito">
-      {sourceStages.length > 1 && (
+      {!sentenceGroups && sourceStages.length > 1 && (
         <div className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600">
           <span className="font-bold text-slate-500">词库来源</span>
           {sourceStages.map((stage) => (
@@ -378,6 +378,7 @@ export default function PassageView({
                     <span
                       key={sentence.id}
                       id={sentence.id}
+                      data-chapter-key={passage.lesson}
                       data-story-sentence
                       data-sentence-index={sentence.index}
                       data-sentence-text={sentence.text}

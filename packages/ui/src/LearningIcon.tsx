@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { Headphones } from 'lucide-react'
+import { Crown, Headphones } from 'lucide-react'
 
 const assets = {
   calculator: 'calculator-1-flat',
@@ -11,10 +11,14 @@ const assets = {
   print: 'printer-flat',
 } as const
 
-export type LearningIconName = keyof typeof assets | 'listen' | 'pause'
+export type LearningIconName = keyof typeof assets | 'crown' | 'listen' | 'pause'
 
 /** Decorative icon for a labeled action. The enclosing control owns the accessible name. */
 export function LearningIcon({ name, size = 20 }: { name: LearningIconName; size?: number }) {
+  if (name === 'crown') {
+    return <Crown aria-hidden size={size} className="inline-block shrink-0 align-middle" fill="#fde68a" color="#a16207" />
+  }
+
   if (name === 'listen') return <Headphones aria-hidden size={size} />
 
   if (name === 'pause') {

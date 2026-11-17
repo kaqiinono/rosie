@@ -9,6 +9,6 @@ export function directoryPrefix(path: string) {
 export type LessonAudioEditor = {
   revision: string | null
   mainDirectory: LessonAudioDirectory | null
-  slots: { slot: string; label: string; unbindOnly?: boolean }[]
+  slots: { slot: string; label: string; chapter?: { number: number; title: string }; unbindOnly?: boolean }[]
   picks: Record<string, LessonAudioPick>
 }

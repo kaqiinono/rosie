@@ -1,9 +1,9 @@
 ---
 name: add-story
-description: Add English story books to Rosie `/english/words/reading` as the `story` shelf, preserving Series → Volume → Chapter structure and integrating chapter-local vocabulary, glossary, bookmarks, and personal recordings. Use when the user asks to 添加英文故事、录入 Story、从 PDF 导入故事书、从扫描件或文本添加故事、添加 series/volume/chapters，或 invokes `/add-story`.
+description: Add Chinese and English story collections to the top-level Rosie 故事会 shelf at `/stories`, preserving Series → Volume → Chapter structure and integrating chapter-local vocabulary, glossary, bookmarks, and personal recordings. Use when the user asks to 添加中英文故事、录入 Story、从 PDF 导入故事书、从扫描件或文本添加故事、添加 series/volume/chapters，或 invokes `/add-story`.
 ---
 
-# 添加英文 Story
+# 添加中英文故事集
 
 把故事书作为纯阅读内容接入现有 Story 架构。不得伪造成教材 Unit/Lesson，也不得生成教材词汇表、练习、语法、前测、段落回想或周计划。
 
@@ -25,7 +25,7 @@ description: Add English story books to Rosie `/english/words/reading` as the `s
 
 按 [架构与数据约束](references/architecture.md) 实现或复用现有能力：
 
-- 正文运行时匹配完整 `word_entries`；每个 `PassageView` 仅接收该章实际出现的去重词条。词卡同时显示词库来源 `(stage, unit, lesson)` 与故事来源 `(volume, chapter)`。
+- 按系列声明 language（en 或 zh），正文仅匹配用户点击加载的词库；每个 `PassageView` 仅接收该章实际出现的去重词条。词卡同时显示词库来源 `(stage, unit, lesson)` 与故事来源 `(volume, chapter)`。
 - 仅把未命中词库且确有助读价值的超纲词、专名、地名和生物名放入该章 `glossary`；正文点击可打开难点词卡。
 - sticky「本章难点词」必须识别当前章并打开 fixed/modal 卡片浏览器，支持上一张、下一张、发音和中英文释义；不可把列表插回文档流。
 - 连续阅读不制造分页。仅在用户主动操作时保存当前视口首尾完整句；稳定句子 ID 必须可恢复，把首句滚到 sticky header 下方，并正确处理整辑视图跨章节的视口。

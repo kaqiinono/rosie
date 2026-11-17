@@ -70,32 +70,30 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['english', 'words', 'practice'], label: '单词练习' },
   { pattern: ['english', 'words', 'practice', 'pet'], label: 'PET 日常与专项' },
   { pattern: ['english', 'words', 'reading'], label: '阅读' },
-  { pattern: ['english', 'words', 'reading', 'story'], label: 'Story' },
+  { pattern: ['stories'], label: '故事会' },
   {
-    pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]'],
+    pattern: ['stories', '[seriesSlug]'],
     label: '{seriesSlug}',
-    labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House' } },
+    labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House', 'roald-dahl': 'Roald Dahl 故事集' } },
   },
   {
-    pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]'],
+    pattern: ['stories', '[seriesSlug]', '[volumeSlug]'],
     label: '{volumeSlug}',
     labelMap: {
       volumeSlug: {
+        'charlie-and-the-chocolate-factory': 'Charlie and the Chocolate Factory',
         'dinosaurs-before-dark': 'Dinosaurs Before Dark',
         'the-knight-at-dawn': 'The Knight at Dawn',
       },
     },
   },
   {
-    pattern: ['english', 'words', 'reading', 'story', '[seriesSlug]', '[volumeSlug]', 'full'],
+    pattern: ['stories', '[seriesSlug]', '[volumeSlug]', 'full'],
     label: '整辑阅读',
   },
   {
     pattern: [
-      'english',
-      'words',
-      'reading',
-      'story',
+      'stories',
       '[seriesSlug]',
       '[volumeSlug]',
       '[chapterKey]',

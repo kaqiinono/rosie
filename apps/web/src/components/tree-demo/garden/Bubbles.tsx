@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
+import { LearningIcon } from '@rosie/ui'
 import { Badge } from '@rosie/ui/themes'
-import { SUBJECTS, flowersOfBud, type Bud } from './model'
+import { bubbleSubject, flowersOfBud, type Bud } from './model'
 
 /** 泡泡底色按科目区分（语文红 / 数学黄 / 英语蓝 / 生活绿）；状态由文案和边框表达，见 garden.css */
 export const bubbleStates = {
@@ -355,7 +356,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
     <>
       {bubbles.map((bud) => {
         const n = flowersOfBud(bud)
-        const meta = SUBJECTS[bud.subject]
+        const meta = bubbleSubject(bud)
         const slot = slots[bud.id] ?? 0
         const status = states?.[bud.id]
         const saving = savingId === bud.id
@@ -365,12 +366,12 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
           ? countdownDisplay(Math.max(0, now - startedMs), bud.minutes)
           : null
         const stateLabel = countdown ? `${countdown.caption} ${countdown.time}` : status ? bubbleStates[status].label : ''
-        const label = status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
+        const label = bud.crown ? '点一下完成' : status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
         const holdable = status === 'running' && !!onHoldFinish
         const hint = saving ? '，正在开花，请稍候' : holdable ? '，按住开花，点一下查看' : status === 'running' ? '，点击查看详情' : ''
         const style: BubbleStyle = {
           '--tg-size': sizes?.[bud.id] ? `${sizes[bud.id]}px` : compact ? '4.35rem' : `clamp(${72 + n * 4}px, ${12 + n}vw, ${104 + n * 10}px)`,
-          '--tg-tint': SUBJECT_TINT[bud.subject],
+          '--tg-tint': bud.crown ? meta.tint : SUBJECT_TINT[bud.subject],
           '--tg-dur': `${positions ? 6.4 + (slot % 7) * 0.73 : 3.8 + (slot % 3) * 0.7}s`,
           '--tg-delay': `${-slot * 1.37}s`,
           '--tg-drift-x': `${(slot % 2 ? -1 : 1) * (5 + slot % 4)}px`,
@@ -436,7 +437,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
                 </>
               )}
               <span className="tg-bubble-in">
-                <span className="block text-[calc(var(--tg-size)*0.26)] leading-none">{meta.emoji}</span>
+                <span className="block text-[calc(var(--tg-size)*0.26)] leading-none">{bud.crown ? <LearningIcon name="crown" size={26} /> : meta.emoji}</span>
                 <span className="mt-0.5 line-clamp-2 block text-[calc(var(--tg-size)*0.13)] font-extrabold leading-tight text-[#4a3728]">
                   {countdown && bud.overdue ? '补做 · ' : ''}{bud.name}
                 </span>

@@ -8,6 +8,7 @@ export interface PracticeProgress {
   activeOccurrence: string | null
 }
 export interface StepPractice {
+  questions?: { completed: string[]; added: string[] }
   calendarBased?: boolean
   key: string
   name: string
@@ -70,7 +71,7 @@ export function bindPractice(tree: TreeData, step: WorkStep, homework?: Homework
 
 /** All split steps complete = one advance. Skipping releases the reservation without consuming a row. */
 export function settlePractice(tree: TreeData, step: WorkStep): void {
-  if (!step.practice || step.practice.calendarBased) return
+  if (!step.practice || step.practice.calendarBased || step.practice.questions) return
   const cursor = tree.practiceProgress?.[step.practice.key]
   if (!cursor || cursor.activeOccurrence !== step.occurrence) return
   const peers = tree.steps.filter((s) => s.occurrence === step.occurrence)

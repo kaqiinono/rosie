@@ -1,3 +1,4 @@
+import { flowerBudget, flowerQuestionProgress, nextFlowerSession } from './flowers'
 import { completionReward, isEarly } from './rewards'
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
 import {
@@ -67,7 +68,7 @@ function awardGoal(tree: TreeData, at: string): void {
 
 function onCompleted(tree: TreeData, step: WorkStep, at: string): void {
   const makeup = !!step.planned && step.planned < tree.today
-  remember(tree, makeup ? '🍂' : '🌸', `${makeup ? '补做完成' : '做完了'}「${step.name}」`, at)
+  remember(tree, makeup ? '🍂' : '🌸', `${step.flowers && !step.flowers.complete ? '本次收工' : makeup ? '补做完成' : '做完了'}「${step.name}」`, at)
   markDoneToday(tree)
   awardGoal(tree, at)
 }
@@ -170,10 +171,53 @@ function finish(tree: TreeData, s: WorkStep, end: string) {
   onCompleted(tree, s, end)
 }
 
+function collectFlowers(tree: TreeData, step: WorkStep, action: TreeAction, end: string, now: string) {
+  const progress = step.flowers!
+  const { elapsedMs, slots, suggested } = flowerBudget(step, Date.parse(end))
+  const selection = action.flowerSelection ?? (action.kind === 'record' ? {
+    position: Math.max(progress.collected, suggested), complete: false,
+  } : null)
+  requireState(selection && Number.isSafeInteger(selection.position) &&
+    selection.position >= progress.collected && selection.position <= slots &&
+    typeof selection.complete === 'boolean', '请选择本次点亮的花朵。')
+  const questions = flowerQuestionProgress(step)
+  const complete = questions ? questions.done === questions.total : selection.complete
+  const position = complete ? slots : selection.position
+  const added = position - progress.collected
+  Object.assign(progress, { complete, elapsedMs, collected: position })
+  step.end = step.start ? end : dayOf(end)
+  step.stages = Array.from({ length: added }, () => 0)
+  step.popped = true
+  step.slot = null
+  step.sun = added
+  step.water = added ? completionReward(tree, step, dayOf(end), false).water : 0
+  tree.sun += step.sun
+  tree.water += step.water
+  if (!complete) tree.steps.push(nextFlowerSession(step))
+  onCompleted(tree, step, now)
+  fill(tree)
+}
+
 export function act(tree: TreeData, action: TreeAction, now: string) {
   const { kind, id } = action
   const day = tree.today
   if (kind === 'sync') return
+  if (kind === 'addCrown') {
+    requireState(action.day === day, '只能给今天添加皇冠泡泡。')
+    const name = typeof action.name === 'string' ? action.name.trim() : ''
+    requireState(name && name.length <= 120, '请输入 1 到 120 个字的小目标。')
+    requireState(typeof id === 'string' && /^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/i.test(id), '无效的泡泡编号。')
+    const occurrence = `crown/${day}/${id}`
+    if (tree.steps.some(step => step.occurrence === occurrence)) return
+    tree.steps.push({
+      id: occurrence + '/0', occurrence, crown: true, name, notes: '', practice: null,
+      subject: 'life', priority: 'P2', minutes: 0, scheduled: day, planned: day, deadline: day,
+      start: null, end: null, settled: false, popped: false, slot: null,
+      returned: null, sun: 0, water: 0, stages: [0], audit: [],
+    })
+    fill(tree)
+    return
+  }
   if (kind === 'saveNotes') {
     requireState(Array.isArray(action.notes), '无效的作业备注。')
     const steps = new Map(tree.steps.map((step) => [step.id, step]))
@@ -262,6 +306,25 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   requireState(s, '找不到这项作业，请刷新。')
   if (s.skipped && kind === 'skip') return
   requireState(!s.skipped, '本次作业不用做。')
+  if (s.flowers) {
+    requireState(!['completeUntimed', 'finish'].includes(kind), '请在花朵旁完成本次作业。')
+    if (!s.end && s.flowers.availableFrom && s.flowers.availableFrom > day)
+      requireState(!['start', 'collectFlowers', 'record', 'answerHomeworkQuestion'].includes(kind), '今天已收工，明天继续。')
+    if (kind === 'answerHomeworkQuestion') {
+      requireState(!s.end && s.start, '请先开始本次作业。')
+      const problem = action.problemId
+      requireState(problem && flowerQuestionProgress(s)?.ids.has(problem), '题目不属于这份作业。')
+      const answered = s.flowers.answered ??= []
+      if (!answered.includes(problem)) answered.push(problem)
+      return
+    }
+  }
+  if (kind === 'collectFlowers') {
+    requireState(s.flowers, '本作业未启用分次收花。')
+    if (s.end) return
+    collectFlowers(tree, s, action, now, now)
+    return
+  }
   if (s.subject === 'life' && !s.end) {
     requireState(s.scheduled === day, '生活泡泡只在当天有效。')
     requireState(!['start', 'finish', 'record', 'move', 'nextDay', 'return', 'preparePractice'].includes(kind), '生活泡泡点击即可完成，无需计时或改期。')
@@ -317,6 +380,11 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
     }
     case 'finish':
       finish(tree, s, now)
+      if (action.popOnFinish === true) {
+        s.popped = true
+        s.slot = null
+        fill(tree)
+      }
       break
     case 'record': {
       if (s.end) throw new TreeConflict('这项作业已结算。')
@@ -339,9 +407,12 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         ),
         '这段时间已记录其他作业。',
       )
+      if (s.flowers?.availableFrom) requireState(dayOf(new Date(start)) >= s.flowers.availableFrom,
+        '补录时间须在上次收工的次日或以后。')
       s.audit.push({ at: now, previousStart: s.start, previousEnd: s.end })
       s.start = new Date(start).toISOString()
-      finish(tree, s, new Date(end).toISOString())
+      if (s.flowers) collectFlowers(tree, s, action, new Date(end).toISOString(), now)
+      else finish(tree, s, new Date(end).toISOString())
       roll(tree, day)
       break
     }

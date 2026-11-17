@@ -30,7 +30,7 @@ export default function StoryVolumeView({
   return (
     <main className="font-nunito relative z-[1] mx-auto max-w-5xl px-4 py-8 pb-24">
       <Link
-        href={`/english/words/reading/story/${series.slug}`}
+        href={`/stories/${series.slug}`}
         className="text-sm font-bold text-amber-700"
       >
         ← 返回 {series.title}
@@ -43,14 +43,14 @@ export default function StoryVolumeView({
         <p className="mt-3 text-slate-600">{volume.description}</p>
         <div className="mt-5 flex flex-wrap gap-2">
           <Link
-            href={`/english/words/reading/story/${series.slug}/${volume.slug}/full`}
+            href={`/stories/${series.slug}/${volume.slug}/full`}
             className="rounded-full bg-amber-600 px-4 py-2 text-sm font-bold text-white no-underline"
           >
             阅读整辑
           </Link>
           {resumeChapter && (
             <Link
-              href={`/english/words/reading/story/${series.slug}/${volume.slug}/${resumeChapter.key}`}
+              href={`/stories/${series.slug}/${volume.slug}/${resumeChapter.key}`}
               className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white no-underline"
             >
               继续阅读 · 第 {resumeChapter.number} 章
@@ -77,7 +77,7 @@ export default function StoryVolumeView({
           return (
             <li key={chapter.key} className="h-full">
               <Link
-                href={`/english/words/reading/story/${series.slug}/${volume.slug}/${chapter.key}`}
+                href={`/stories/${series.slug}/${volume.slug}/${chapter.key}`}
                 aria-current={isReading ? 'true' : undefined}
                 className={clsx(
                   'hover:shadow-sticker-sm flex h-full items-center gap-3 rounded-2xl p-4 no-underline ring-1 transition',

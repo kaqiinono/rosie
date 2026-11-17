@@ -1,4 +1,4 @@
-export async function transcribeAudio(file: File): Promise<{ text: string; language: string }> {
+export async function transcribeAudio(file: File, language = 'zh'): Promise<{ text: string; language: string }> {
   const apiKey = process.env.AI_STT_API_KEY ?? process.env.AI_EMBED_API_KEY
   const baseUrl = (
     process.env.AI_STT_BASE_URL ??
@@ -27,7 +27,7 @@ export async function transcribeAudio(file: File): Promise<{ text: string; langu
           },
         ],
         stream: false,
-        asr_options: { language: 'zh', enable_itn: true },
+        asr_options: { language, enable_itn: true },
       }),
     })
 
@@ -42,13 +42,13 @@ export async function transcribeAudio(file: File): Promise<{ text: string; langu
     const text = (json.choices?.[0]?.message?.content ?? '').trim()
     if (!text) throw new Error('stt_empty')
 
-    return { text, language: 'zh' }
+    return { text, language }
   }
 
   const form = new FormData()
   form.append('file', file)
   form.append('model', model)
-  form.append('language', 'zh')
+  form.append('language', language)
 
   const res = await fetch(`${baseUrl}/audio/transcriptions`, {
     method: 'POST',
@@ -65,5 +65,5 @@ export async function transcribeAudio(file: File): Promise<{ text: string; langu
   const text = (json.text ?? '').trim()
   if (!text) throw new Error('stt_empty')
 
-  return { text, language: 'zh' }
+  return { text, language }
 }

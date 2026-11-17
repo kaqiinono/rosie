@@ -17,6 +17,7 @@ export interface StoryVolume {
 }
 
 export interface StorySeries {
+  language: 'en' | 'zh'
   slug: string
   title: string
   author: string
@@ -45,7 +46,7 @@ export function findStoryChapter(volume: StoryVolume, key: string): StoryChapter
 export function splitStorySentences(chapter: StoryChapter): StorySentence[][] {
   let sentenceIndex = 0
   return chapter.paragraphs.map((paragraph) => {
-    const segments = paragraph.match(/[^.!?]+(?:[.!?]+[”’"']?|$)/g) ?? [paragraph]
+    const segments = paragraph.match(/[^.!?。！？]+(?:[.!?。！？]+[”’」』"']?|$)/g) ?? [paragraph]
     return segments
       .map((segment) => segment.trim())
       .filter(Boolean)

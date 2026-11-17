@@ -9,7 +9,7 @@ import {
   type PlacedItem,
   type Region,
 } from './layout'
-import { SUBJECTS, type Apple, type Bud, type Flower, type GardenState, type SubjectKey } from './model'
+import { bubbleSubject, SUBJECTS, type Apple, type Bud, type Flower, type GardenState, type SubjectKey } from './model'
 
 export type ItemKind = 'apple' | 'flower' | 'bud'
 export type FreshKind = 'born' | 'wiggle'
@@ -82,6 +82,11 @@ function Defs() {
       <radialGradient id="tg-glow-gold">
         <stop offset="0" stopColor="#ffe28a" stopOpacity="0.85" />
         <stop offset="1" stopColor="#ffe28a" stopOpacity="0" />
+      </radialGradient>
+      <radialGradient id="tg-fruit-leaf-glow">
+        <stop offset="0.7" stopColor="#fff2a5" stopOpacity="0.95" />
+        <stop offset="0.83" stopColor="#ffd45c" stopOpacity="0.75" />
+        <stop offset="1" stopColor="#ffce46" stopOpacity="0" />
       </radialGradient>
       <radialGradient id="tg-glow-white">
         <stop offset="0" stopColor="#ffffff" stopOpacity="0.9" />
@@ -181,12 +186,11 @@ function FlowerShape({ flower }: { flower: Flower }) {
   )
 }
 
-function BudShape({ bud, inBubble }: { bud: Bud; inBubble: boolean }) {
-  const meta = SUBJECTS[bud.subject]
+function BudShape({ bud }: { bud: Bud }) {
+  const meta = bubbleSubject(bud)
   const gray = bud.overdue
   return (
     <g>
-      {inBubble && <circle r="18" fill="url(#tg-glow-white)" stroke="#74c0fc" strokeWidth="2" strokeDasharray="4 3" />}
       <path
         d="M0 -12 C8 -5 9 3 0 10 C-9 3 -8 -5 0 -12Z"
         fill={gray ? 'url(#tg-bud-gray)' : 'url(#tg-bud)'}
@@ -224,7 +228,8 @@ function RegionLabel({ region, onOpen }: { region: Region; onOpen?: () => void }
   const size = (today ? 14 : 12) - (minutes ? 2 : 0)
   const w = Math.max(...lines.map((l) => textWidth(l, size))) + 18
   const h = lines.length * (size + 4) + 8
-  const y = cy + ry * (today ? 1.0 : 0.98)
+  const fruitLeaf = region.tone === 'history' && region.placed.some(({ item }) => item.kind === 'apple')
+  const y = fruitLeaf ? cy + ry + h / 2 : cy + ry * (today ? 1.0 : 0.98)
   return (
     <g
       data-tree-obstacle
@@ -335,7 +340,7 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
       if (f) body = <FlowerShape flower={f} />
     } else {
       const b = state.buds.find((v) => v.id === item.id)
-      if (b) body = <BudShape bud={b} inBubble={state.bubbles.includes(b.id)} />
+      if (b) body = <BudShape bud={b} />
     }
     if (!body) return null
     return (
@@ -452,11 +457,13 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
           const { cx, cy, rx, ry } = r.geom
           const hist = r.tone === 'history'
           const today = r.tone === 'today'
+          const hasFruit = r.placed.some(({ item }) => item.kind === 'apple')
           return (
             <g key={r.key} className="tg-region" opacity={hist ? 0.95 : 1}>
               {today && <ellipse cx={cx} cy={cy} rx={rx + 34} ry={ry + 30} fill="url(#tg-glow-gold)" opacity="0.8" />}
+              {hasFruit && <ellipse cx={cx} cy={cy} rx={rx * 1.26} ry={ry * 1.26} fill="url(#tg-fruit-leaf-glow)" pointerEvents="none" />}
               <ellipse
-                data-tree-obstacle={hist ? undefined : 'day-region'}
+                data-tree-obstacle={!hist || hasFruit ? 'day-region' : undefined}
                 cx={cx}
                 cy={cy}
                 rx={rx}
@@ -471,9 +478,9 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
                 rx={rx}
                 ry={ry}
                 fill="none"
-                stroke={r.stroke}
+                stroke={hasFruit ? '#ffe491' : r.stroke}
                 strokeWidth={today ? 4 : 3}
-                strokeOpacity={hist ? 0.55 : 0.9}
+                strokeOpacity={hist && !hasFruit ? 0.55 : 0.9}
               />
               <ellipse
                 cx={cx - rx * 0.28}
@@ -498,11 +505,11 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
                   strokeLinecap="round"
                 />
               )}
-              {r.placed.map((p) => renderItem(r, p))}
+              {r.placed.filter(p => p.item.kind !== 'apple').map(p => renderItem(r, p))}
               {r.overflow > 0 && (
-                <g pointerEvents="none">
-                  <circle cx={cx + rx * 0.72} cy={cy - ry * 0.55} r="11" fill="#fff8ec" stroke={r.stroke} strokeWidth="2" />
-                  <text x={cx + rx * 0.72} y={cy - ry * 0.55 + 4} textAnchor="middle" fontSize="11" fontWeight="800" fill="#4a3728">
+                <g pointerEvents="none" transform={`translate(${cx + rx * (hist && hasFruit ? 0.9 : 0.72)} ${cy - ry * 0.55})`}>
+                  <circle r="11" fill="#fff8ec" stroke={r.stroke} strokeWidth="2" />
+                  <text y="4" textAnchor="middle" fontSize="11" fontWeight="800" fill="#4a3728">
                     +{r.overflow}
                   </text>
                 </g>
@@ -510,6 +517,10 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
             </g>
           )
         })}
+        {/* 果实可跨过相邻叶片的边缘，保持可见、可摘。 */}
+        {regions.map(r => <g key={`fruit-${r.key}`}>
+          {r.placed.filter(p => p.item.kind === 'apple').map(p => renderItem(r, p))}
+        </g>)}
         {/* 日期小牌最后画，不被相邻的叶区盖住 */}
         {regions.map((r) => (
           <RegionLabel key={`label-${r.key}`} region={r} onOpen={onRegion ? () => onRegion(r) : undefined} />

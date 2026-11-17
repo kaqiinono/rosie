@@ -68,6 +68,9 @@ Supabase migration history. Earlier files are archived in
 is retired. Use `scripts/supabase-migrations.mjs` for remote migration
 list/dry-run/push through the session pooler. See `supabase/README.md`.
 
+**UI icons:** Prefer the project's Streamline Plump icons (`LearningIcon`) for colorful illustrations
+and Lucide for line icons. Use other icon sources only when the project libraries cannot serve the task.
+
 **Visual guidelines:** the app follows the 「软糖贴纸」 visual language for a 7-year-old user — solid colors,
 2px warm borders, flat bottom-edge shadows (`shadow-sticker*`), large radii, spring motion. Gradients, soft
 blurred shadows (`shadow-sm/md/lg/xl`), glass blur and highlight layers are forbidden. Read
@@ -244,7 +247,7 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 Global admin sub-pages include:
 
 - `/admin/sync` — shared Baidu authorization, account-scoped directory bookmarks and read-only file browsing,
-  on-demand 路径 / 数学 / 英语 panels, per-lesson math replay and English lesson audio bindings. Directory APIs require an administrator.
+  on-demand 路径 / 数学 / 英语 panels, per-lesson math replay and English lesson audio bindings. Under 英语 → Story, admins select an English series and book to bind one full-book recording and one recording per chapter. Directory APIs require an administrator.
   Shared callbacks return here. Legacy personal callbacks still return to `/setting`, which no longer displays a Netdisk card.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
@@ -260,6 +263,8 @@ enabled; that enabled row is the default used by normal口算 and direct entry f
 - `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
 - `/admin/word-audit` — read-only data audit
 - `/admin/plans` — plan hub (math, English, Chinese roadmap plans)
+
+The home 故事会 card opens `/stories`, the shared Chinese and English story shelf. Legacy English reading story links redirect there.
 
 ### Subject modules — read the package AGENTS.md, not here
 
@@ -336,6 +341,10 @@ work from catalog edits. Garden revision commits advance each whole homework occ
 Web owns subject catalog adapters. Opening `/setting/task-entries` loads the saved list only. Preset creation and refresh, including English reading and grammar, run when the user clicks 内容预设.
 See `docs/task-practice-entries.md`; migrations `20261113160000_task_practice_entries.sql` and `20261115104405_apply_task_practice_presets.sql` are required.
 
+### Tomato timer
+
+`/tomato` hosts the sandboxed tomato-timer demo with the garden and closet removed. The authenticated host saves timer, task and reward snapshots in owner-scoped `tomato_timer_sessions` with revision checks.
+
 ### Lucky wheel
 
 `/draw` reproduces the supplied lucky-wheel demo in an isolated same-origin renderer
@@ -350,6 +359,8 @@ Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database
 
 ### Life tree
 
+New weekly, biweekly and three-weekly academic assignments use daily flower collection when automatic progression is off or unconfigured. A versioned garden commit stores each session and its rewards; the practice occurrence spans sessions until the whole assignment is complete. See `tree.md` and `packages/tasks/AGENTS.md`.
+
 Daily homework supports an owner-saved `include_weekends` option, defaulting off for new definitions
 and remaining on for existing definitions. Migration `20261115104319_task_homework_include_weekends.sql`
 is applied to the hosted database (2026-11-15). Garden sync excludes untouched current/future
@@ -360,7 +371,7 @@ Date labels on `/time-tree` open task lists with progress and status, including 
 dates. Past tasks support makeup work and future scheduled tasks support early execution without
 changing their planned date. Only manually started future tasks enter the bubble queue. The shared
 StepPanel and server engine apply this behavior to homework views as well; practice binding keeps
-its existing active-occurrence guard. Lists show saved learning content, task instructions and
+its existing active-occurrence guard. Date-list cards start collapsed. Today’s list accepts one-off custom crown bubbles with zero duration and same-day life-bubble completion and expiry. Lists show saved learning content, task instructions and
 occurrence notes. Unbound pending tasks use read-only previews from the homework session cache
 and garden cursor; browsing does not bind or advance practice. See `tree.md`.
 
@@ -433,8 +444,8 @@ Both math and English share a weekly plan system with the same Thursday-start we
 
 - `WeeklyPlan` / `MathWeeklyPlan` — stored in Supabase (`weekly_plans` / `math_weekly_plans` tables); each plan includes `weekStartDay` and `newWordsPerDay`/`problemsPerDay` as dedicated integer columns
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
-- The home menu links to `/today` without fetching daily plans. Opening `/today` loads the four
-  subject progress cards (口算、英语、数学、语文), practice links and progress backup. The separate
+- The home page asynchronously loads the four daily progress cards (口算、英语、数学、语文)
+  above the menu, with direct practice links. 「查看全部」 opens `/today` for details and progress backup. The separate
   home learning overview loads only when expanded.
 
 ### PWA

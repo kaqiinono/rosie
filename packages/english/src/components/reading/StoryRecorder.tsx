@@ -11,6 +11,7 @@ type Props = {
   scope: StoryRecordingScope
   title: string
   downloadName: string
+  onBusyChange: (busy: boolean) => void
   heading?: ReactNode
 }
 
@@ -35,11 +36,12 @@ function recordingExtension(mimeType: string): string {
   return 'webm'
 }
 
-export default function StoryRecorder({ contentKey, scope, title, downloadName, heading }: Props) {
+export default function StoryRecorder({ contentKey, scope, title, downloadName, heading, onBusyChange }: Props) {
   const { user } = useAuth()
   const { recordingsFor, saveRecording, deleteRecording, getSignedUrl } = useStoryRecordings(user)
   const recordings = recordingsFor(contentKey, scope)
   const [phase, setPhase] = useState<Phase>('idle')
+  useEffect(() => { onBusyChange(phase !== 'idle') }, [phase, onBusyChange])
   const [elapsedMs, setElapsedMs] = useState(0)
   const [blob, setBlob] = useState<Blob | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -201,7 +203,9 @@ export default function StoryRecorder({ contentKey, scope, title, downloadName, 
               type="button"
               disabled={phase === 'starting'}
               onClick={() => void start()}
-              variant="solid"
+              variant="soft"
+              highContrast
+              className="font-bold"
               color="amber"
               size="3"
             >
@@ -289,7 +293,7 @@ export default function StoryRecorder({ contentKey, scope, title, downloadName, 
             <Button
               type="button"
               disabled={phase === 'saving'}
-              onClick={resetPreview}
+              onClick={() => { resetPreview(); setPhase('idle') }}
               variant="outline"
               color="gray"
               size="2"

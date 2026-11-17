@@ -864,95 +864,113 @@ function Panel4() {
 }
 
 // ─────────────────────────── Panel 5 ──────────────────────────────────────
+type Panel5State = {
+  cells: { day: number | null; variant: CellVariant }[]
+  legend: React.ReactNode
+  result: React.ReactNode | null
+  targetDow: number | null
+}
+
+function computePanel5(totalDays: number, startDay: number, targetDay: number): Partial<Panel5State> {
+  if (targetDay > totalDays) {
+    return {
+      result: (
+        <span className="text-yellow-600">
+          ⚠️ 这个月只有{totalDays}天，没有第{targetDay}日哦！
+        </span>
+      ),
+      targetDow: null,
+    }
+  }
+  const offset = startDay === 0 ? 6 : startDay - 1
+  const rem = totalDays % 7
+  const fiveDow: number[] = []
+  for (let i = 0; i < rem; i++) fiveDow.push((startDay + i) % 7)
+  const targetDow = (startDay + targetDay - 1) % 7
+  const colorVariants: CellVariant[] = ['hi1', 'hi2', 'hi3']
+
+  const newCells: { day: number | null; variant: CellVariant }[] = [
+    ...Array(offset).fill({ day: null, variant: 'empty' as CellVariant }),
+    ...Array(totalDays)
+      .fill(null)
+      .map((_, i) => {
+        const d = i + 1
+        const dow = (startDay + i) % 7
+        let variant: CellVariant = 'normal'
+        if (d === targetDay) variant = 'target'
+        else {
+          const fi = fiveDow.indexOf(dow)
+          if (fi >= 0 && colorVariants[fi]) variant = colorVariants[fi]
+        }
+        return { day: d, variant }
+      }),
+  ]
+
+  const tagColors: Record<CellVariant, string> = {
+    hi1: '#48DBFB',
+    hi2: '#1DD1A1',
+    hi3: '#A29BFE',
+    target: '#FF6B6B',
+    empty: '',
+    normal: '',
+    'sum-hi': '',
+  }
+  const legend = (
+    <div className="my-2 flex flex-wrap gap-2">
+      {fiveDow.map(
+        (dow, i) =>
+          colorVariants[i] && (
+            <span
+              key={i}
+              className="rounded-lg px-3 py-1 text-xs font-bold text-white"
+              style={{ background: tagColors[colorVariants[i]] }}
+            >
+              {DAYS[dow]}（5次）
+            </span>
+          ),
+      )}
+      <span
+        className="rounded-lg px-3 py-1 text-xs font-bold text-white"
+        style={{ background: '#FF6B6B' }}
+      >
+        第{targetDay}日（目标）
+      </span>
+    </div>
+  )
+
+  const stepRem = (targetDay - 1) % 7
+  const result = (
+    <>
+      {totalDays} ÷ 7 = {Math.floor(totalDays / 7)}周 余 <strong>{rem}</strong> 天，所以{' '}
+      <strong>{rem}</strong> 个星期各出现5次
+      <br />
+      1号是{DAYS[startDay]}，第{targetDay}日：({targetDay}-1) ÷ 7 余 <strong>{stepRem}</strong>
+      <WeekdayFormula known={startDay} rem={stepRem} target={targetDow} />
+    </>
+  )
+  return { cells: newCells, legend, result, targetDow }
+}
+
 function Panel5({ onResult }: { onResult: (d: number) => void }) {
   const [totalDays, setTotalDays] = useState(31)
   const [startDay, setStartDay] = useState(3)
   const [targetDay, setTargetDay] = useState(31)
-  const [cells, setCells] = useState<{ day: number | null; variant: CellVariant }[]>([])
-  const [legend, setLegend] = useState<React.ReactNode>(null)
-  const [result, setResult] = useState<React.ReactNode | null>(null)
+  const [built, setBuilt] = useState<Panel5State>(() => ({
+    cells: [],
+    legend: null,
+    result: null,
+    targetDow: null,
+    ...computePanel5(totalDays, startDay, targetDay),
+  }))
 
   const build = useCallback(() => {
-    if (targetDay > totalDays) {
-      setResult(
-        <span className="text-yellow-600">
-          ⚠️ 这个月只有{totalDays}天，没有第{targetDay}日哦！
-        </span>,
-      )
-      return
-    }
-    const offset = startDay === 0 ? 6 : startDay - 1
-    const rem = totalDays % 7
-    const fiveDow: number[] = []
-    for (let i = 0; i < rem; i++) fiveDow.push((startDay + i) % 7)
-    const targetDow = (startDay + targetDay - 1) % 7
-    const colorVariants: CellVariant[] = ['hi1', 'hi2', 'hi3']
-
-    const newCells: { day: number | null; variant: CellVariant }[] = [
-      ...Array(offset).fill({ day: null, variant: 'empty' as CellVariant }),
-      ...Array(totalDays)
-        .fill(null)
-        .map((_, i) => {
-          const d = i + 1
-          const dow = (startDay + i) % 7
-          let variant: CellVariant = 'normal'
-          if (d === targetDay) variant = 'target'
-          else {
-            const fi = fiveDow.indexOf(dow)
-            if (fi >= 0 && colorVariants[fi]) variant = colorVariants[fi]
-          }
-          return { day: d, variant }
-        }),
-    ]
-    setCells(newCells)
-
-    const tagColors: Record<CellVariant, string> = {
-      hi1: '#48DBFB',
-      hi2: '#1DD1A1',
-      hi3: '#A29BFE',
-      target: '#FF6B6B',
-      empty: '',
-      normal: '',
-      'sum-hi': '',
-    }
-    setLegend(
-      <div className="my-2 flex flex-wrap gap-2">
-        {fiveDow.map(
-          (dow, i) =>
-            colorVariants[i] && (
-              <span
-                key={i}
-                className="rounded-lg px-3 py-1 text-xs font-bold text-white"
-                style={{ background: tagColors[colorVariants[i]] }}
-              >
-                {DAYS[dow]}（5次）
-              </span>
-            ),
-        )}
-        <span
-          className="rounded-lg px-3 py-1 text-xs font-bold text-white"
-          style={{ background: '#FF6B6B' }}
-        >
-          第{targetDay}日（目标）
-        </span>
-      </div>,
-    )
-
-    const stepRem = (targetDay - 1) % 7
-    setResult(
-      <>
-        {totalDays} ÷ 7 = {Math.floor(totalDays / 7)}周 余 <strong>{rem}</strong> 天，所以{' '}
-        <strong>{rem}</strong> 个星期各出现5次
-        <br />
-        1号是{DAYS[startDay]}，第{targetDay}日：({targetDay}-1) ÷ 7 余 <strong>{stepRem}</strong>
-        <WeekdayFormula known={startDay} rem={stepRem} target={targetDow} />
-      </>,
-    )
-    onResult(targetDow)
+    const next = computePanel5(totalDays, startDay, targetDay)
+    setBuilt((prev) => ({ ...prev, ...next }))
+    if (next.targetDow != null) onResult(next.targetDow)
   }, [totalDays, startDay, targetDay, onResult])
 
   useEffect(() => {
-    build()
+    if (built.targetDow !== null) onResult(built.targetDow)
   }, []) // eslint-disable-line
 
   return (
@@ -1030,10 +1048,10 @@ function Panel5({ onResult }: { onResult: (d: number) => void }) {
           <Label>日是星期几</Label>
         </ControlRow>
         <RunBtn onClick={build}>✨ 画出来！</RunBtn>
-        {cells.length > 0 && <MonthGrid cells={cells} />}
-        {legend}
+        {built.cells.length > 0 && <MonthGrid cells={built.cells} />}
+        {built.legend}
         <ResultBubble>
-          {result ?? <span className="text-gray-400">点上面的按钮开始！</span>}
+          {built.result ?? <span className="text-gray-400">点上面的按钮开始！</span>}
         </ResultBubble>
       </DemoArea>
     </div>

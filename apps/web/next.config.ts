@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
   transpilePackages: getRosiePackages(),
 
   redirects: async () => [
+    { source: '/english/words/reading/story/:path*', destination: '/stories/:path*', permanent: true },
+    { source: '/english/words/reading', has: [{ type: 'query', key: 'collection', value: 'story' }], destination: '/stories', permanent: true },
     { source: '/tasks/:retired(schedule|pool|templates|materials)', destination: '/tasks/timetable', permanent: true },
     { source: '/admin/calc', destination: '/setting/calc', permanent: false },
     { source: '/admin/awards', destination: '/setting/awards', permanent: false },

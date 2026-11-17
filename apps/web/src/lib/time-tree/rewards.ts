@@ -1,7 +1,7 @@
 import { dayOf, type TreeData, type WorkStep } from './types'
 
 export function isEarly(step: WorkStep): boolean {
-  return !!step.start && !!step.end &&
+  return !step.flowers && !!step.start && !!step.end &&
     Date.parse(step.end) - Date.parse(step.start) < step.minutes * 60000
 }
 

@@ -66,7 +66,7 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   its card is highlighted and the volume list rotates ascending Unit/Lesson order from that lesson,
   wrapping to the first lesson at the end. Playback-all follows the displayed order. Passage highlighting
   matches vocabulary across all 厚海 volumes (currently 4A + 5A), while recall exercises remain
-  scoped to the passage's own lesson. Story highlighting continues to match the full word library.
+  scoped to the passage's own lesson. Story highlighting uses the explicitly loaded sources.
   When a passage contains matches from multiple word libraries, `PassageView` includes a source
   legend and keeps the current lesson visually identifiable without underlining; `WordPopup` shows
   the exact stage / unit / lesson source. The passage-level 专注 switch controls whether text
@@ -81,9 +81,10 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   to the canonical Cambridge unit through `grammarRefs`. Each grammar section also supplies a
   data-driven `summary` (cards, contrasts, decision guide, reminders); `ReadingGrammarSummary`
   must stay lesson-agnostic rather than hard-code one lesson's tense rules.
-  The final named stage `story` is a series shelf rather than a textbook lesson list. Story data
-  lives in `utils/story-data.ts` as series → volume → chapter; chapter pages match against the full
-  `word_entries` library, but each `PassageView` receives only words actually found in that chapter
+  The top-level bilingual 故事会 shelf at /stories groups series by language (en/zh).
+  Register collections in utils/story-data.ts as series → volume → chapter. Readers remember
+  source selections per account on this device (initially empty). Only the load button fetches
+  selected stages; each PassageView receives words actually found in that chapter
   so card navigation stays chapter-local. Word cards show both word-library and story-chapter source;
   reviewed out-of-library aids remain chapter-local glossary entries.
   Reading word matching is centralized in `utils/word-forms.ts`: safe regular forms are generated
@@ -339,3 +340,19 @@ The drawer retains the original layout, navigation, floating listening/player co
 weekly reading behavior, supplying only the passage key and scroll-container ref. Reading rows open the drawer directly;
 sentence previews offer 查看全文 and stop their local audio before opening it. Closing the drawer
 unmounts the reader and stops its audio without discarding the entry editor.
+
+### Story narration
+
+English story chapter/full readers use the bound Baidu chapter or narration asset and native
+WebVTT metadata tracks. From the repo root, run
+`python3 scripts/align-story-audio.py` to process Charlie's numbered recordings from
+`~/rosie/Charlie and the Chocolate Factory` in chapter order. The leading number maps to
+the catalog chapter number; unnumbered files are ignored. Override the folder with
+`--audio-dir "/path/to/numbered/audio"` or limit the run with `--chapter 1`.
+Use `--full "/path/to/book.mp3"` for a separately recorded
+whole book. Other English books use `--series SLUG --book SLUG`. Requires workspace Node/jiti,
+Python 3, ffmpeg, whisper-cli and a local English ggml model (override with `--model PATH`).
+Use the same recording as the Baidu binding. Deploy the generated
+`apps/web/public/story-timings/<series>/<book>/*.vtt` with the site. Transcripts and uncertain
+sentence reports stay under `output/story-alignment`. Gaps remain unhighlighted.
+Regenerate after changing the recording or text; unchanged completed tracks are skipped.

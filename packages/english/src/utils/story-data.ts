@@ -1,3 +1,4 @@
+import { roaldDahl } from './story-roald-dahl'
 import { magicTreeHouse } from './story-magic-tree-house'
 import type { GlossaryWord } from './reading-data'
 import type { StorySeries } from './story-types'
@@ -286,6 +287,7 @@ export const storySeries: StorySeries[] = [
       })),
     })),
   },
+  roaldDahl,
 ]
 
 export const STORY_STAGE = 'story'

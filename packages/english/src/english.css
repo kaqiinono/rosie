@@ -265,3 +265,11 @@ html.en-printing .en-no-print {
   display: none !important;
   visibility: hidden !important;
 }
+
+[data-story-sentence][data-story-speaking] {
+  background-color: #fde68a;
+  color: #422006;
+  border-radius: 0.25rem;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

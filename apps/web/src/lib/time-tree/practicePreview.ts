@@ -1,10 +1,12 @@
-import { scheduledPracticeRow, type Homework, type PracticeEntryRow } from '@rosie/tasks'
+import { entryHref, scheduledPracticeRow, type Homework, type PracticeEntryRow } from '@rosie/tasks'
 import type { TreeData, WorkStep } from './types'
 
 export type PracticePreview = {
   name: string
   row: PracticeEntryRow | null
   rows?: PracticeEntryRow[]
+  href?: string | null
+  items?: { row: PracticeEntryRow; href: string }[]
   exhausted: boolean
   provisional: boolean
 }
@@ -25,15 +27,25 @@ export function previewPractice(tree: TreeData, step: WorkStep, homework?: Homew
   if (binding.progression) {
     // Invalid configuration remains unavailable until corrected; never invent a row.
     try {
-      return { name: binding.name, ...scheduledPracticeRow(binding, step.scheduled), provisional: true }
+      const selection = scheduledPracticeRow(binding, step.scheduled)
+      return {
+        name: binding.name, ...selection, provisional: true,
+        href: selection.exhausted ? null : entryHref(binding.path, selection.row?.values ?? {}),
+        items: selection.rows.map(row => ({ row, href: entryHref(binding.path, row.values) })),
+      }
     } catch { return null }
   }
   const cursor = tree.practiceProgress?.[binding.key]
   const source = cursor?.binding ?? binding
   const nextId = cursor ? cursor.nextId : binding.startId
+  const row = source.rows.find(item => item.id === nextId) ?? null
+  let href: string | null = null
+  if (!cursor?.exhausted) {
+    try { href = entryHref(source.path, row?.values ?? {}) }
+    catch { /* Incomplete templates can still show their saved content. */ }
+  }
   return {
-    name: source.name,
-    row: source.rows.find((row) => row.id === nextId) ?? null,
+    name: source.name, row, href,
     exhausted: cursor?.exhausted ?? false,
     provisional: true,
   }

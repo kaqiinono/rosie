@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import {
@@ -178,6 +178,15 @@ function SessionLoadingPanel({
 
 export default function CalcSessionPage() {
   const params = useSearchParams()
+  return <CalcSession params={params} />
+}
+
+export function CalcSession({ params, taskScope, onReturnToTask, exitRef }: {
+  params: Pick<URLSearchParams, 'get' | 'has' | 'toString'>
+  taskScope?: string
+  onReturnToTask?: () => void
+  exitRef?: Ref<() => void>
+}) {
   const router = useRouter()
   const { user } = useAuth()
   const {
@@ -227,8 +236,8 @@ export default function CalcSessionPage() {
     return Number.isFinite(parsed) ? clampBonusSec(parsed) : null
   }, [params])
   const drillKey = useMemo(
-    () => calcSessionDrillKey(mode, params.get('drill'), params.get('blockId')),
-    [mode, params],
+    () => taskScope ?? calcSessionDrillKey(mode, params.get('drill'), params.get('blockId')),
+    [taskScope, mode, params],
   )
 
   const drillParams = useMemo<DrillParams | null>(() => {
@@ -556,6 +565,7 @@ export default function CalcSessionPage() {
     clockBoundIdxRef.current = forIdx
     setQuestionStartWall(Date.now())
   }, [])
+  const [settlementSaved, setSettlementSaved] = useState(false)
   const [done, setDone] = useState(false)
   const [finishError, setFinishError] = useState<string | null>(null)
   const [finalStats, setFinalStats] = useState<{
@@ -588,9 +598,8 @@ export default function CalcSessionPage() {
 
   const buildCurrentSnapshot = useCallback((): CalcSessionSnapshot | null => {
     if (done || !questions || questions.length === 0 || !startedAtIso) return null
-    // Nothing answered yet is not a resumable session — snapshotting it would skip
-    // the prep screen and replay this frozen question list for the rest of the day.
-    if (idx === 0 && !questionLogRef.current.some((entry) => entry.finallyOk !== undefined)) {
+    // Keep standalone prep available until the first answer. A task owns its frozen list.
+    if (!taskScope && idx === 0 && !questionLogRef.current.some((entry) => entry.finallyOk !== undefined)) {
       return null
     }
     return {
@@ -625,6 +634,7 @@ export default function CalcSessionPage() {
     startedAtIso,
     startedTsMs,
     drillTargetSignatures,
+    taskScope,
   ])
 
   const pendingScopeKey = calcPendingScopeKey(mode, drillKey)
@@ -643,15 +653,22 @@ export default function CalcSessionPage() {
     getEnvelope,
   })
 
+  const leaveSession = useCallback(() => {
+    if (onReturnToTask) onReturnToTask()
+    else router.push('/calc')
+  }, [onReturnToTask, router])
+
   const handleSessionExit = useCallback(() => {
-    void flushCloudNow().then(() => router.push('/calc'))
-  }, [flushCloudNow, router])
+    if (onReturnToTask && done && !settlementSaved) return
+    void flushCloudNow().then(leaveSession)
+  }, [done, flushCloudNow, leaveSession, onReturnToTask, settlementSaved])
+  useImperativeHandle(exitRef, () => handleSessionExit, [handleSessionExit])
 
   const handleStash = useCallback(async () => {
     const synced = await flushCloudNow()
     setStashToast(synced ? '已暂存到云端' : '已暂存在本机，云端备份失败')
-    router.push('/calc')
-  }, [flushCloudNow, router])
+    leaveSession()
+  }, [flushCloudNow, leaveSession])
 
   useEffect(() => {
     if (!stashToast) return
@@ -943,12 +960,12 @@ export default function CalcSessionPage() {
   // which tears down the initialization effect and can leave the page waiting
   // forever until a manual retry.
   useEffect(() => {
-    if (!questions || !params.has('start')) return
+    if (taskScope || !questions || !params.has('start')) return
     const next = new URLSearchParams(params.toString())
     next.delete('start')
     const qs = next.toString()
     router.replace(`/calc/session${qs ? `?${qs}` : ''}`, { scroll: false })
-  }, [params, questions, router])
+  }, [params, questions, router, taskScope])
 
   // Persist in-progress session so mid-exit / refresh can resume.
   useEffect(() => {
@@ -1159,7 +1176,11 @@ export default function CalcSessionPage() {
     }
     // Only now — clearing before the row is persisted would leave a failed insert
     // with neither a session row nor a resumable snapshot.
-    void clearCalcPendingEverywhere(user?.id, mode, drillKey)
+    const clearingPending = clearCalcPendingEverywhere(user?.id, mode, drillKey)
+    if (taskScope) {
+      await clearingPending
+      setSettlementSaved(true)
+    }
     // Sync the global StarHud balance so the top-left chip updates immediately.
     void refreshStarHud()
 
@@ -1191,6 +1212,7 @@ export default function CalcSessionPage() {
     startedAtIso,
     user,
     drillKey,
+    taskScope,
   ])
 
   // ── Submit answer ────────────────────────────────────────────────
@@ -1555,7 +1577,7 @@ export default function CalcSessionPage() {
   if (waitingForInitialLoad || visibleLoadError) {
     return (
       <>
-        <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
+        <CalcAppHeader title="练习中" backHref="/calc" onBack={onReturnToTask} backLabel={onReturnToTask ? '返回任务' : '返回'} />
         <SessionLoadingPanel
           progress={visibleLoadProgress}
           error={visibleLoadError}
@@ -1569,7 +1591,7 @@ export default function CalcSessionPage() {
   if (needsPrep && !prepConfirmed) {
     return (
       <>
-        <CalcAppHeader title="准备练习" backHref="/calc" backLabel="返回" />
+        <CalcAppHeader title="准备练习" backHref="/calc" onBack={onReturnToTask} backLabel={onReturnToTask ? '返回任务' : '返回'} />
         <SessionPrepScreen
           plannedEstimate={plannedEstimate}
           questionCount={sessionQuestionCount}
@@ -1580,7 +1602,7 @@ export default function CalcSessionPage() {
           onChangeCount={(count) => setPrepCountOverride(clampSessionQuestionCount(count))}
           onChangeBonus={setPrepBonusOverride}
           onStart={handlePrepStart}
-          onBack={() => router.push('/calc')}
+          onBack={leaveSession}
         />
       </>
     )
@@ -1589,7 +1611,7 @@ export default function CalcSessionPage() {
   if (!questions || questions.length === 0) {
     return (
       <>
-        <CalcAppHeader title="练习中" backHref="/calc" backLabel="返回" />
+        <CalcAppHeader title="练习中" backHref="/calc" onBack={onReturnToTask} backLabel={onReturnToTask ? '返回任务' : '返回'} />
         <SessionLoadingPanel
           progress={visibleLoadProgress}
           error={visibleLoadError}
@@ -1632,7 +1654,7 @@ export default function CalcSessionPage() {
     <>
       <CalcAppHeader
         title="练习中"
-        backLabel="退出"
+        backLabel={onReturnToTask ? '收起练习' : '退出'}
         onBack={handleSessionExit}
         rightExtra={
           !done ? (
@@ -1747,6 +1769,8 @@ export default function CalcSessionPage() {
               </button>
             </div>
           </div>
+        ) : onReturnToTask && !settlementSaved ? (
+          <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-slate-950 text-white">正在保存口算结果…</div>
         ) : drillParams ? (
           <DrillSummary
             {...(drillParams.type === 'weak-formulas'
@@ -1809,6 +1833,7 @@ export default function CalcSessionPage() {
           />
         ) : (
           <SessionSummary
+            onReturnToTask={onReturnToTask}
             correctCount={finalStats.correct}
             retryCount={finalStats.retry}
             wrongCount={finalStats.wrong}

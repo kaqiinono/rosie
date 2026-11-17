@@ -55,8 +55,8 @@ export default function ListeningDrawer({
   const [loop, setLoop] = useState(false)
   const [translate, setTranslate] = useState(true)
   const [attempt, setAttempt] = useState(0)
-  const [failedKey, setFailedKey] = useState('')
-  const [finishedKey, setFinishedKey] = useState('')
+  const [failedToken, setFailedToken] = useState('')
+  const [finishedToken, setFinishedToken] = useState('')
   const audio = useRef<HTMLAudioElement>(null)
   const requestedButton = useRef<PlaybackButton>('play')
   const [loadingButton, setLoadingButton] = useState<PlaybackButton | null>(null)
@@ -68,6 +68,9 @@ export default function ListeningDrawer({
   const clip = clips[index]
   const [startedClip, setStartedClip] = useState('')
   const currentKey = clip.sourceUrl ?? passageKey + '-' + index
+  // Finished/failed markers are tokens of the playback inputs: any input change
+  // invalidates them, replacing the reset-on-effect-change pattern.
+  const playToken = `${currentKey}|${index}|${attempt}|${paused}|${replayRequest}`
   const mediaError = useBaiduMediaError(audio, currentKey)
   const multiple = selected.length > 1
   const position = selected.indexOf(index)
@@ -77,14 +80,12 @@ export default function ListeningDrawer({
     : index - 1
 
   useEffect(() => {
-    if (paused || !multiple || finishedKey !== currentKey) return
+    if (paused || !multiple || finishedToken !== playToken) return
     const timer = window.setTimeout(() => select(nextIndex), CLIP_GAP_MS)
     return () => window.clearTimeout(timer)
-  }, [paused, multiple, finishedKey, currentKey, nextIndex, select])
+  }, [paused, multiple, finishedToken, playToken, nextIndex, select])
 
   useEffect(() => {
-    setFinishedKey('')
-    setFailedKey('')
     const el = audio.current
     if (!el) return
     const previous = previousPlayback.current
@@ -103,7 +104,7 @@ export default function ListeningDrawer({
       },
       () => {
         if (!current) return
-        setFailedKey(currentKey)
+        setFailedToken(playToken)
         reportLoading(null)
       },
     )
@@ -112,7 +113,7 @@ export default function ListeningDrawer({
       reportLoading(null)
       el.pause()
     }
-  }, [currentKey, index, attempt, paused, replayRequest, reportLoading])
+  }, [currentKey, index, attempt, paused, replayRequest, reportLoading, playToken])
 
   function navigateClip(button: 'previous' | 'next') {
     if (!paused) requestedButton.current = button
@@ -125,16 +126,16 @@ export default function ListeningDrawer({
       : [...selected, i].sort((a, b) => a - b)
     setSelected(next)
     if (next.length && !next.includes(index)) select(next[0])
-    if (!next.length || (finishedKey === currentKey && next.length < 2)) setPaused(true)
+    if (!next.length || (finishedToken === playToken && next.length < 2)) setPaused(true)
   }
 
   function finishClip() {
     if (paused) return
-    if (multiple) setFinishedKey(currentKey)
+    if (multiple) setFinishedToken(playToken)
     else setPaused(true)
   }
 
-  const failed = failedKey === currentKey
+  const failed = failedToken === playToken
   const errorMessage = mediaError || '这段音频暂时无法播放，请重试。'
   function togglePlayback() {
     if (paused || failed) {
@@ -406,7 +407,7 @@ export default function ListeningDrawer({
               }
               onEnded={active ? finishClip : undefined}
               onError={active && !paused ? () => {
-                setFailedKey(currentKey)
+                setFailedToken(playToken)
                 reportLoading(null)
               } : undefined}
             />

@@ -43,6 +43,23 @@ const HISTORY_GEOMS: Geom[] = [
   { cx: 494, cy: 436, rx: 44, ry: 32 },
 ]
 
+/** 结果的历史叶片向树冠外展开，给果实和日期牌留出间距。 */
+const FRUIT_GEOMS: Geom[] = [
+  { cx: 224, cy: 401, rx: 96, ry: 69 },
+  { cx: 416, cy: 401, rx: 96, ry: 69 },
+  { cx: 102, cy: 364, rx: 85, ry: 63 },
+  { cx: 538, cy: 364, rx: 85, ry: 63 },
+  { cx: 148, cy: 493, rx: 87, ry: 65 },
+  { cx: 492, cy: 493, rx: 87, ry: 65 },
+]
+
+// 错开相邻果实的高度，预留手指点选空间。坐标相对于叶片半径。
+const FRUIT_SLOTS: [number, number][] = [
+  [-0.48, -0.52], [0.03, -0.65], [0.53, -0.42],
+  [-0.74, 0.05], [-0.23, -0.01], [0.24, 0.08], [0.73, 0.17],
+  [-0.42, 0.58], [0.12, 0.64],
+]
+
 /** 星期颜色：下标是 Date.getDay()，避开苹果用的红、黄、蓝、绿 */
 const WEEKDAY_FILL = ['#e7d9b8', '#c4b5fd', '#fbcfe8', '#99f6e4', '#fed7aa', '#f5d0fe', '#bae6fd']
 const WEEKDAY_STROKE = ['#a8925f', '#7c5fd6', '#d9609a', '#2f9e8f', '#d98a3d', '#b45fcf', '#4a9bd0']
@@ -71,6 +88,7 @@ export interface PlacedItem {
   item: RegionItem
   x: number
   y: number
+  fruitSlot?: number
 }
 
 export interface Region {
@@ -104,18 +122,43 @@ function placeItems(items: RegionItem[], geom: Geom): { placed: PlacedItem[]; ov
   return { placed, overflow: Math.max(0, items.length - visible.length) }
 }
 
-function itemsOfDates(state: GardenState, keys: string[]): RegionItem[] {
+function placeFruitLeaf(items: RegionItem[], geom: Geom, previous?: Region) {
+  const visible = items.slice(0, FRUIT_SLOTS.length)
+  const available = new Set(FRUIT_SLOTS.keys())
+  const retained = new Map<string, number>()
+  for (const { item, fruitSlot } of previous?.placed ?? []) {
+    if (fruitSlot !== undefined && visible.some(next => next.id === item.id)) {
+      retained.set(item.id, fruitSlot)
+      available.delete(fruitSlot)
+    }
+  }
+  const placed = visible.map(item => {
+    let seed = 2166136261
+    for (const char of item.id) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0
+    const free = [...available]
+    const slot = retained.get(item.id) ?? free[seed % free.length]!
+    available.delete(slot)
+    const [ux, uy] = FRUIT_SLOTS[slot]!
+    const x = geom.cx + ux * geom.rx + ((seed >>> 8) % 7 - 3)
+    const y = geom.cy + uy * geom.ry + ((seed >>> 16) % 7 - 3)
+    return { item, x, y, fruitSlot: slot }
+  })
+  return { placed, overflow: items.length - placed.length }
+}
+
+function itemsOfDates(state: GardenState, keys: string[], keepBubbleBuds = false): RegionItem[] {
   const set = new Set(keys)
   return [
     ...state.apples.filter((a) => set.has(a.dateKey)).map((a): RegionItem => ({ kind: 'apple', id: a.id })),
     ...state.flowers.filter((f) => set.has(f.dateKey)).map((f): RegionItem => ({ kind: 'flower', id: f.id })),
     ...state.buds
-      .filter((b) => b.dateKey !== null && set.has(b.dateKey) && !state.bubbles.includes(b.id))
+      .filter((b) => b.dateKey !== null && set.has(b.dateKey))
+      .filter((b) => !state.bubbles.includes(b.id) || (keepBubbleBuds && b.subject !== 'life'))
       .map((b): RegionItem => ({ kind: 'bud', id: b.id })),
   ]
 }
 
-export function buildRegions(state: GardenState): Region[] {
+export function buildRegions(state: GardenState, keepTodayBubbleBuds = false, previous: Region[] = []): Region[] {
   const regions: Region[] = []
 
   // 历史叶区：还有苹果或花苞的日期，最近的在前
@@ -125,11 +168,15 @@ export function buildRegions(state: GardenState): Region[] {
       ? pastKeys.map((k) => [k])
       : [...pastKeys.slice(0, MAX_HISTORY_REGIONS - 1).map((k) => [k]), pastKeys.slice(MAX_HISTORY_REGIONS - 1)]
   groups.forEach((keys, i) => {
-    const geom = HISTORY_GEOMS[i]
+    const items = itemsOfDates(state, keys)
+    const hasFruit = items.some(item => item.kind === 'apple')
+    const geom = hasFruit ? FRUIT_GEOMS[i] : HISTORY_GEOMS[i]
     if (!geom) return
     const merged = keys.length > 1
     const first = keys[0]
-    const { placed, overflow } = placeItems(itemsOfDates(state, keys), geom)
+    const { placed, overflow } = hasFruit
+      ? placeFruitLeaf(items, geom, previous.find(region => region.dateKey === first || region.mergedKeys.includes(first)))
+      : placeItems(items, geom)
     regions.push({
       key: `h${i}`,
       tone: 'history',
@@ -145,7 +192,7 @@ export function buildRegions(state: GardenState): Region[] {
       overflow,
       load: 0,
       capacity: 0,
-      scale: 0.72,
+      scale: hasFruit ? 1.2 : 0.72,
     })
   })
 
@@ -153,7 +200,15 @@ export function buildRegions(state: GardenState): Region[] {
   FUTURE_GEOMS.forEach((geom, offset) => {
     const key = addDaysKey(state.today, offset)
     const w = weekdayOf(key)
-    const { placed, overflow } = placeItems(itemsOfDates(state, [key]), geom)
+    const keepBuds = offset === 0 && keepTodayBubbleBuds
+    const items = itemsOfDates(state, [key], keepBuds)
+    const dense = keepBuds && items.length > MAX_ITEMS_PER_REGION
+    // Spread a busy day's items across the ellipse instead of hiding buds behind +N.
+    const placed = dense ? items.map((item, i) => {
+      const radius = 0.83 * Math.sqrt((i + 0.5) / items.length)
+      const angle = i * Math.PI * (3 - Math.sqrt(5))
+      return { item, x: geom.cx + geom.rx * radius * Math.cos(angle), y: geom.cy + geom.ry * radius * Math.sin(angle) }
+    }) : placeItems(items, geom).placed
     regions.push({
       key: `d${offset}`,
       tone: offset === 0 ? 'today' : 'future',
@@ -166,10 +221,10 @@ export function buildRegions(state: GardenState): Region[] {
       stroke: WEEKDAY_STROKE[w],
       geom,
       placed,
-      overflow,
+      overflow: items.length - placed.length,
       load: dayLoad(state, key),
       capacity: capacityOf(key),
-      scale: offset === 0 ? 1 : 0.86,
+      scale: dense ? Math.sqrt(MAX_ITEMS_PER_REGION / items.length) : offset === 0 ? 1 : 0.86,
     })
   })
 

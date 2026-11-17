@@ -17,6 +17,8 @@ function directoryUrl(id: string, path: string, generation: string, start: numbe
 type FileListProps = {
   main: LessonAudioDirectory
   inventory: ReturnType<typeof useEnglishFileInventory>
+  onlyUnmatched: boolean
+  boundFiles: Set<string>
   disabled: boolean
   choose: (pick: LessonAudioPick) => void
 }
@@ -73,15 +75,20 @@ export function useEnglishFileInventory(userId: string, generation: string, main
   return { files: result.files, ready: result.ready, error: result.error, refresh: () => setAttempt(n => n + 1) }
 }
 
-export function EnglishFileList({ inventory, main, disabled, choose }: FileListProps) {
+export function EnglishFileList({ inventory, main, onlyUnmatched, boundFiles, disabled, choose }: FileListProps) {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(0)
   const { directory_id: id, path } = main
   const { files, ready, error } = inventory
   const loading = !ready && !error
   const query = search.trim().toLowerCase()
-  const matches = query ? files.filter(file => (directoryPrefix(file.directory) + file.name).toLowerCase().includes(query)) : files
+  const matches = files.filter(file => {
+    if (onlyUnmatched && (!file.fileId || boundFiles.has(file.fileId) || !lessonAudioMime(file.name))) return false
+    return !query || (directoryPrefix(file.directory) + file.name).toLowerCase().includes(query)
+  })
   const pageSize = 50
+  const lastPage = Math.max(0, Math.ceil(matches.length / pageSize) - 1)
+  const visiblePage = Math.min(page, lastPage)
   return <Flex direction="column" gap="2">
     <TextField.Root placeholder="搜索文件名或路径" aria-label="搜索文件名或路径" value={search}
       onChange={event => { setSearch(event.target.value); setPage(0) }} />
@@ -93,9 +100,9 @@ export function EnglishFileList({ inventory, main, disabled, choose }: FileListP
     </Flex>
     {loading && <SyncPending>正在读取主目录及子目录…</SyncPending>}
     {error && <Text size="2" color="red" role="alert">文件列表读取中断。{error}</Text>}
-    {!loading && !error && !matches.length && <Text size="2" color="gray">{query ? '没有匹配的文件。' : '目录中暂无文件。'}</Text>}
-    <Box maxHeight="48vh" overflowY="auto">
-      {matches.slice(page * pageSize, (page + 1) * pageSize).map(file => {
+    {!loading && !error && !matches.length && <Text size="2" color="gray">{query ? '没有匹配的文件。' : onlyUnmatched ? '没有待匹配的音频文件。' : '目录中暂无文件。'}</Text>}
+    <Box maxHeight="48vh" overflowY="auto" pr="4" style={{ scrollbarGutter: 'stable' }}>
+      {matches.slice(visiblePage * pageSize, (visiblePage + 1) * pageSize).map(file => {
         const full = directoryPrefix(file.directory) + file.name
         const relative = file.directory.slice(directoryPrefix(path).length)
         const audio = Boolean(lessonAudioMime(file.name))
@@ -115,9 +122,9 @@ export function EnglishFileList({ inventory, main, disabled, choose }: FileListP
       })}
     </Box>
     {matches.length > pageSize && <Flex gap="2" align="center" justify="end">
-      <Button size="1" variant="soft" disabled={!page} onClick={() => setPage(n => n - 1)}>上一页</Button>
-      <Text size="1" color="gray">{page + 1} / {Math.ceil(matches.length / pageSize)}</Text>
-      <Button size="1" variant="soft" disabled={(page + 1) * pageSize >= matches.length} onClick={() => setPage(n => n + 1)}>下一页</Button>
+      <Button size="1" variant="soft" disabled={!visiblePage} onClick={() => setPage(visiblePage - 1)}>上一页</Button>
+      <Text size="1" color="gray">{visiblePage + 1} / {Math.ceil(matches.length / pageSize)}</Text>
+      <Button size="1" variant="soft" disabled={visiblePage === lastPage} onClick={() => setPage(visiblePage + 1)}>下一页</Button>
     </Flex>}
   </Flex>
 }

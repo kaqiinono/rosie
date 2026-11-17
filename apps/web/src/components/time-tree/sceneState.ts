@@ -5,6 +5,7 @@ import type { GardenState, Bud, Flower } from '@/components/tree-demo/garden/mod
 export function sceneBud(s: TreeData['steps'][number], today: string): Bud {
   return {
     id: s.id,
+    crown: s.crown,
     name: s.name,
     subject: s.subject,
     minutes: s.minutes,

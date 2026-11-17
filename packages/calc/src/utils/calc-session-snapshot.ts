@@ -44,7 +44,7 @@ export type CalcSessionSnapshot = {
   version: number
   date: string
   mode: CalcMode
-  /** Stable key for drill / mistakes sessions; null for normal daily. */
+  /** Stable key for drill / mistakes sessions; task scope for embedded homework; null for standalone daily. */
   drillKey: string | null
   questions: CalcQuestion[]
   idx: number
@@ -140,9 +140,8 @@ function isValidCalcSnap(snap: unknown): snap is CalcSessionSnapshot {
     typeof s.idx === 'number' &&
     s.idx >= 0 &&
     s.idx < s.questions.length &&
-    // Zero-progress snapshots are not resumable; ignore any already written by
-    // an older build so they can't keep hijacking the prep screen.
-    (s.idx > 0 ||
+    // A task can resume at its first question without bypassing standalone prep.
+    ((typeof s.drillKey === 'string' && s.drillKey.startsWith('task:')) || s.idx > 0 ||
       s.questionLog.some((entry) => entry.finallyOk !== undefined) ||
       (Array.isArray(s.attemptsLog) && s.attemptsLog.length > 0))
   )

@@ -80,6 +80,7 @@ const generated =
   `import type { StorySeries } from './story-types'\n\n` +
   `export const magicTreeHouse: StorySeries = ${JSON.stringify(
     {
+      language: 'en',
       slug: seriesSlug,
       title: seriesTitle,
       author,

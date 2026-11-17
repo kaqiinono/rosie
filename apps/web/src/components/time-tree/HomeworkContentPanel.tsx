@@ -1,11 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useId, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { findPassageByKey } from '@rosie/english/utils/reading-data'
 import { entryHref, type PracticeEntryRow } from '@rosie/tasks'
-import { LoadingOverlay, StickerCard } from '@rosie/ui'
+import { ArrowIcon, LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Button, Flex, Heading, Text } from '@rosie/ui/themes'
+import type { TreeAction } from '@/lib/time-tree/types'
 import PracticeResources from './PracticeResources'
 
 const MathPracticeContent = dynamic(() => import('./MathPracticeContent'), { loading: () => <Flex direction="column" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
@@ -20,43 +22,93 @@ type Props = {
   loading?: boolean
   error?: string
   disabled?: boolean
+  onCorrect?: (problemId: string) => Promise<void>
+  completedRows?: string[]
+  addedRows?: string[]
+  canAppend?: boolean
+  onEdit?: (edit: NonNullable<TreeAction['questionEdit']>, rowId?: string) => Promise<void>
   onRetry?: () => void
 }
 
 /** Render each frozen item with its own content and destination. */
-function PracticeItemContent({ row, href, disabled }: Pick<Props, 'row' | 'href' | 'disabled'>) {
+function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect'> & {
+  title: string
+  controls?: ReactNode
+  expanded: boolean
+  toggle: () => void
+}) {
   const router = useRouter()
+  const detailId = useId()
+  const [opened, setOpened] = useState(false)
   const calc = Boolean(href && /^\/calc(?:[/?#]|$)/.test(href))
   const adaptive = Boolean(href && /^\/english\/words\/adaptive\/[^/?#]+\/practice\/?(?:[?#]|$)/.test(href))
   const math = Boolean(row?.values.problemId && (row.values.contentType === 'math-question' || href?.startsWith('/math/')))
   const reading = Boolean(row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
   const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => router.push(entryHref(href, {}))}>进入详情页</Button> : null
-  return <Flex direction="column" gap="3">
-    {row?.label && <Text size="2" weight="bold">{row.label}</Text>}
-    {calc ? <EmbeddedCalcStartPanel /> : row && (math ? <MathPracticeContent row={row} actions={detailButton} /> : <PracticeResources row={row} />)}
-    {adaptive && <Text size="2">打开后直接进入这次自适应练习。</Text>}
-    {!math && detailButton && <Flex gap="2" wrap="wrap" align="center">{detailButton}</Flex>}
-  </Flex>
+  return <StickerCard size="none" tone="white" elevation="flat" radius="md" className="min-w-0">
+    <Button type="button" variant="ghost" color="gray" aria-expanded={expanded} aria-controls={detailId}
+      style={{ boxSizing: 'border-box', width: '100%', height: 'auto', minHeight: 44, margin: 0, padding: 12, borderRadius: 'inherit', outlineOffset: -2, justifyContent: 'space-between', whiteSpace: 'normal', textAlign: 'left' }}
+      onClick={() => { setOpened(true); toggle() }}>
+      <Text size="2" weight="bold" className="min-w-0 break-words">{title}</Text>
+      <span aria-hidden="true" className="shrink-0">
+        <ArrowIcon size={18} className={expanded ? '-rotate-90' : 'rotate-90'} />
+      </span>
+    </Button>
+    <div id={detailId} hidden={!expanded} inert={disabled || undefined} className="px-3 pb-3">
+      {math && row && opened ? <MathPracticeContent onCorrect={onCorrect} row={row} actions={detailButton} expanded={expanded} /> : expanded && (
+        <Flex direction="column" gap="3">
+          {calc ? <EmbeddedCalcStartPanel /> : row && <PracticeResources row={row} />}
+          {adaptive && <Text size="2">打开后直接进入这次自适应练习。</Text>}
+          {detailButton && <Flex gap="2" wrap="wrap" align="center">{detailButton}</Flex>}
+        </Flex>
+      )}
+      {controls}
+    </div>
+  </StickerCard>
 }
 
-/** Shared by real bubble details and the real-content preview. No progress mutations. */
-export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, onRetry }: Props) {
+/** Preview callers omit the editing callbacks. */
+export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, onEdit, onCorrect, onRetry }: Props) {
   const entries = items?.length ? items : [{ row, href }]
+  const [expandedKey, setExpandedKey] = useState<string | null>(null)
   return <section aria-label="作业内容">
     <StickerCard tone="paper" size="sm" elevation="flat" radius="md" className="w-full">
       <Flex direction="column" gap="3">
-        <Heading as="h3" size="3">作业内容</Heading>
+        <Flex align="center" justify="between" gap="2" wrap="wrap">
+          <Heading as="h3" size="3">作业内容</Heading>
+          {completedRows && <Text size="2" weight="bold" color="green">
+            已完成 {entries.filter(item => item.row && completedRows.includes(item.row.id)).length} / {entries.filter(item => item.row?.values.problemId).length} 题
+          </Text>}
+        </Flex>
         {loading ? <Flex position="relative" minHeight="160px"><LoadingOverlay visible placement="content" /></Flex> : error ? <Flex direction="column" gap="2">
           <Text role="alert" color="red">{error}</Text>
           {onRetry && <Button variant="soft" disabled={disabled} onClick={onRetry}>重试读取内容</Button>}
         </Flex> : <>
-          {name && <Text size="2">{name}{entries.length > 1 ? ` · 共 ${entries.length} 项` : ''}</Text>}
-          {exhausted ? <Text size="2">全部练习内容已完成，可以继续线下完成作业，或在作业设置中选择新的开始项。</Text> : entries.map((item, index) => (
-            <Flex key={`${item.row?.id ?? 'entry'}:${index}`} direction="column" gap="2">
-              {entries.length > 1 && <Text size="2" weight="bold">第 {index + 1} 项</Text>}
-              <PracticeItemContent row={item.row} href={item.href} disabled={disabled} />
-            </Flex>
-          ))}
+          {name && <Text size="2">{name}{!completedRows && entries.length > 1 ? ` · 共 ${entries.length} 项` : ''}</Text>}
+          {exhausted ? <Text size="2">全部练习内容已完成，可以继续线下完成作业，或在作业设置中选择新的开始项。</Text> : entries.map((item, index) => {
+            if (!item.row && !item.href) return null
+            const key = item.row?.id ?? item.href!
+            const label = item.row?.label || name || '练习内容'
+            const rowId = item.row?.id
+            const done = !!rowId && completedRows?.includes(rowId)
+            const ordinal = entries.length > 1 ? `第 ${index + 1} 项 · ` : ''
+            const controls = onEdit && rowId && item.row?.values.problemId && (
+              <Flex gap="2" wrap="wrap" mt="3">
+                <Button variant="soft" color="green" aria-pressed={!!done} disabled={disabled}
+                  onClick={() => void onEdit(done ? 'undo' : 'complete', rowId)}>
+                  {done ? '已完成，撤销标记' : '纸上已完成'}
+                </Button>
+                {!done && addedRows?.includes(rowId) && <Button variant="soft" color="red" disabled={disabled}
+                  onClick={() => void onEdit('remove', rowId)}>删除加题</Button>}
+              </Flex>
+            )
+            return <PracticeItemCard controls={controls}
+              onCorrect={onEdit && rowId ? async () => { if (!done) await onEdit('complete', rowId) } : onCorrect} key={key} {...item} disabled={disabled}
+              title={`${done ? '✓ ' : ''}${ordinal}${label}`}
+              expanded={expandedKey === key}
+              toggle={() => setExpandedKey(current => current === key ? null : key)} />
+          })}
+          {onEdit && canAppend && <Button variant="soft" disabled={disabled} onClick={() => void onEdit('append')}>再来一题</Button>}
         </>}
       </Flex>
     </StickerCard>

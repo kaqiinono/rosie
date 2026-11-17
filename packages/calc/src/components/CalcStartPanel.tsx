@@ -1,7 +1,8 @@
 'use client'
 
+import type { Ref } from 'react'
 import type { CalcTimingMode } from '@rosie/core'
-import { StickerCard } from '@rosie/ui'
+import { DarkScope, StickerCard } from '@rosie/ui'
 import { Button, Flex, Heading, Text } from '@rosie/ui/themes'
 import CustomCountInput, { COUNT_OPTIONS } from './CustomCountInput'
 import SessionTimingControls from './SessionTimingControls'
@@ -16,11 +17,13 @@ type Props = {
   setSessionCount: (value: number) => void
   setSessionTimingMode: (value: CalcTimingMode) => void
   setSessionBonusSec: (value: number) => void
+  startButtonRef?: Ref<HTMLButtonElement>
+  startDisabled?: boolean
   handleStart: () => void
 }
 
-export default function CalcStartPanel({ totalQuestions, currentSessionCount, expandedSessionCount, currentTimingMode, currentBonusSec, setSessionCount, setSessionTimingMode, setSessionBonusSec, handleStart }: Props) {
-  return <StickerCard size="md" elevation="flat">
+export default function CalcStartPanel({ totalQuestions, currentSessionCount, expandedSessionCount, currentTimingMode, currentBonusSec, setSessionCount, setSessionTimingMode, setSessionBonusSec, startButtonRef, startDisabled, handleStart }: Props) {
+  return <DarkScope appearance="light"><StickerCard size="md" elevation="flat">
     <Flex direction="column" gap="4">
       <Flex justify="between" align="start" gap="3">
         <Flex direction="column" gap="1">
@@ -31,10 +34,10 @@ export default function CalcStartPanel({ totalQuestions, currentSessionCount, ex
       </Flex>
       <Flex gap="2" wrap="wrap" aria-label="选择本次练习题量">
         {COUNT_OPTIONS.map(count => <Button key={count} size="3" color="violet" variant={currentSessionCount === count ? 'solid' : 'soft'} aria-pressed={currentSessionCount === count} onClick={() => setSessionCount(count)}>{count}</Button>)}
-        <CustomCountInput count={currentSessionCount} onChange={count => setSessionCount(clampSessionQuestionCount(count))} max={MAX_SESSION_QUESTION_COUNT} size="md" />
+        <CustomCountInput appearance="light" count={currentSessionCount} onChange={count => setSessionCount(clampSessionQuestionCount(count))} max={MAX_SESSION_QUESTION_COUNT} size="md" />
       </Flex>
       <SessionTimingControls timingMode={currentTimingMode} bonusSec={currentBonusSec} onChangeMode={setSessionTimingMode} onChangeBonus={setSessionBonusSec} />
-      <Button size="4" color="violet" onClick={handleStart}>🚀 开始口算 · 预计 {expandedSessionCount} 题 →</Button>
+      <Button ref={startButtonRef} size="4" color="violet" disabled={startDisabled} onClick={handleStart}>🚀 开始口算 · 预计 {expandedSessionCount} 题 →</Button>
     </Flex>
-  </StickerCard>
+  </StickerCard></DarkScope>
 }

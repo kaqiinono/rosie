@@ -125,7 +125,13 @@ export default function HomeworkContentRenderer({ example, active, mediaEpoch }:
     case 'word': case 'word-choice': case 'spelling': return <WordSample kind={kind} />
     case 'grammar-lesson': return <LessonView data={GRAMMAR} isAdmin={false} pageImages={[]} onPreviewFigure={() => {}} />
     case 'grammar-exercise': return <ExerciseView groups={GRAMMAR_EXERCISES} isAdmin={false} pageImages={[]} onGroupResult={() => {}} onPreviewFigure={() => {}} />
-    case 'grammar-page': return <Flex direction="column" gap="3"><Text size="2" color="gray">自拟语法页图，不冒充原书扫描。</Text>{/* eslint-disable-next-line @next/next/no-img-element -- local fixture */}<img src="/dev-preview/homework-content/grammar.svg" alt="自拟语法页：am、is、are 的例句和表格" className="mx-auto h-auto w-full max-w-lg" /></Flex>
+    case 'grammar-page': return (
+      <Flex direction="column" gap="3">
+        <Text size="2" color="gray">自拟语法页图，不冒充原书扫描。</Text>
+        {/* eslint-disable-next-line @next/next/no-img-element -- local fixture */}
+        <img src="/dev-preview/homework-content/grammar.svg" alt="自拟语法页：am、is、are 的例句和表格" className="mx-auto h-auto w-full max-w-lg" />
+      </Flex>
+    )
     case 'pdf': return <PdfSample active={active} epoch={mediaEpoch} />
     case 'audio': return media('audio')
     case 'video': return media('video')

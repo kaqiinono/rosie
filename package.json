@@ -24,6 +24,7 @@
     "ai:sync-all": "node scripts/ai-sync-all.mjs",
     "grammar:extract": "node scripts/extract-grammar-unit.mjs",
     "grammar:render-pdf": "node scripts/extract-grammar-pdf.mjs",
+    "audio:transcribe": "node --env-file-if-exists=apps/web/.env.proxy.local --env-file-if-exists=apps/web/.env.local --use-env-proxy scripts/transcribe-audio.mjs",
     "story:import": "node scripts/import-story-pdf.mjs",
     "word-pos:backfill": "node --env-file-if-exists=apps/web/.env.local scripts/backfill-word-part-of-speech.mjs",
     "pet:import": "node --env-file-if-exists=apps/web/.env.local scripts/import-pet-vocabulary.mjs",

@@ -1,22 +1,33 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { NavigationLink, OrbBackground } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useGreeting } from '@/hooks/useGreeting'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
 
+const TodayPlanSummary = dynamic(() => import('@/components/today/TodayPlanSummary'), {
+  ssr: false,
+  loading: () => (
+    <p role="status" className="text-text-muted min-h-48 text-sm sm:min-h-24">
+      正在加载今日计划…
+    </p>
+  ),
+})
+
 const modules = [
   { href: '/time-tree', title: '生命树', icon: '🌳', tint: 'bg-emerald-100' },
-  { href: '/today', title: '今日计划', icon: '🎯', tint: 'bg-amber-100' },
   { href: '/tasks/timetable', title: '课程表', icon: '🗓️', tint: 'bg-sky-100' },
   { href: '/calc', title: '口算天地', icon: '🧮', tint: 'bg-violet-100' },
   { href: '/math', title: '数学乐园', icon: '🔢', tint: 'bg-indigo-100' },
   { href: '/english', title: '英语天地', icon: '📖', tint: 'bg-emerald-100' },
   { href: '/chinese', title: '语文园地', icon: '📜', tint: 'bg-orange-100' },
+  { href: '/stories', title: '故事会', icon: '📚', tint: 'bg-amber-100' },
   { href: '/exams/ket', title: '考一考', icon: '📝', tint: 'bg-amber-100' },
   { href: '/ai', title: 'AI 助手', icon: '✨', tint: 'bg-cyan-100' },
   { href: '/mistakes', title: '错题本', icon: '📕', tint: 'bg-rose-100' },
   { href: '/vouchers', title: '我的奖券', icon: '⭐', tint: 'bg-yellow-100' },
+  { href: '/tomato', title: '番茄计时', icon: '🍅', tint: 'bg-rose-100' },
   { href: '/draw', title: '抽一抽', icon: '🎡', tint: 'bg-amber-100' },
 ]
 
@@ -55,6 +66,18 @@ export default function HomePage() {
           <h1 className="mt-1.5 text-[clamp(28px,5vw,38px)] leading-tight font-black text-[var(--accent-11)]">
             {username ?? 'Rosie'} 的炸弹乐园
           </h1>
+        </section>
+
+        <section aria-labelledby="home-today-title" className="w-full max-w-[1040px]">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 id="home-today-title" className="text-text-primary text-lg font-bold">
+              今日计划
+            </h2>
+            <NavigationLink href="/today" className="text-sm font-bold text-[var(--accent-11)]">
+              查看全部
+            </NavigationLink>
+          </div>
+          {user && <TodayPlanSummary />}
         </section>
 
         <nav

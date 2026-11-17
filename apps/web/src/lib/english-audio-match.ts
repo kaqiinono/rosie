@@ -11,6 +11,21 @@ const vocabulary = /单词|词汇|\b(?:words|vocab|vocabulary)\b/
 const recitation = /背诵|\b(?:recite|recitation)\b/
 const narration = /课文|原文|朗读|\b(?:narration|passage|reading|text)\b/
 
+function storyTargets(stem: string, book: string, slots: LessonAudioEditor['slots']) {
+  const name = normalize(stem)
+  if (name === book) return ['narration']
+  const part = name.startsWith(book + ' ') ? name.slice(book.length + 1) : name
+  if (/^(?:full(?: book| audiobook)?|complete(?: audiobook)?|整本(?:朗读|音频)?|全本|完整版|整本完整音频)$/.test(part))
+    return ['narration']
+
+  const numbered = /^(?:(?:chapter|ch|track)\s*|第\s*)?(\d+)(?=\s|[章节辑]|$)/.exec(part)
+  return slots.filter(({ chapter }) => {
+    if (!chapter) return false
+    if (numbered) return Number(numbered[1]) === chapter.number
+    return part === normalize(chapter.title)
+  }).map(row => row.slot)
+}
+
 export function matchEnglishAudio(
   lessonKey: string, slots: LessonAudioEditor['slots'], picks: LessonAudioEditor['picks'],
   main: LessonAudioDirectory, files: LessonInventoryFile[],
@@ -18,6 +33,7 @@ export function matchEnglishAudio(
   const active = slots.filter(row => !row.unbindOnly)
   const clips = active.filter(row => row.slot.startsWith('clip:'))
   const words = active.filter(row => row.slot.startsWith('word:')).map(row => ({ slot: row.slot, word: normalize(row.label) }))
+  const storyBook = lessonKey.startsWith('story:') ? normalize(lessonKey.split(':')[2] ?? '') : ''
   const lesson = courseCode.exec(lessonKey)
   const occupied = new Set(Object.values(picks).map(pick => pick.file_id))
   const candidates = new Map<string, LessonAudioPick[]>()
@@ -27,13 +43,21 @@ export function matchEnglishAudio(
   for (const file of files) {
     if (!file.fileId || occupied.has(file.fileId) || !lessonAudioMime(file.name)) continue
     const stem = file.name.normalize('NFKC').replace(/\.[^.]+$/, '')
+    const pick = { directory_id: main.directory_id, file_id: file.fileId, path: directoryPrefix(file.directory) + file.name }
+    if (storyBook) {
+      for (const slot of storyTargets(stem, storyBook, active)) {
+        const group = candidates.get(slot) ?? []
+        group.push(pick)
+        candidates.set(slot, group)
+      }
+      continue
+    }
     const folders = file.directory.slice(directoryPrefix(main.path).length).split('/')
     const codes = [...folders, stem].map(part => courseCode.exec(part)).filter(code => code !== null)
     if (codes.some(code => !lesson || code[2] !== lesson[2] || code[3] !== lesson[3] ||
       (code[1] && code[1].toLowerCase() !== lesson[1]?.toLowerCase()))) continue
 
     remaining++
-    const pick = { directory_id: main.directory_id, file_id: file.fileId, path: directoryPrefix(file.directory) + file.name }
     const name = normalize(stem.replace(courseCode, ' '))
     const folder = normalize(folders.join(' '))
     const word = name.replace(/^\d+\s+/, '')

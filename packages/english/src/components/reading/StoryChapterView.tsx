@@ -14,7 +14,7 @@ export default function StoryChapterView({
   const index = volume.chapters.findIndex((entry) => entry.key === chapter.key)
   const previous = volume.chapters[index - 1]
   const next = volume.chapters[index + 1]
-  const base = `/english/words/reading/story/${series.slug}/${volume.slug}`
+  const base = `/stories/${series.slug}/${volume.slug}`
   return (
     <main className="font-nunito relative z-[1] mx-auto max-w-4xl px-4 py-6 pb-24">
       <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-bold">
@@ -28,7 +28,7 @@ export default function StoryChapterView({
           阅读整辑
         </Link>
       </nav>
-      <StoryReader volume={volume} chapters={[chapter]} viewMode="chapter" />
+      <StoryReader seriesSlug={series.slug} volume={volume} chapters={[chapter]} viewMode="chapter" />
       <nav className="mt-8 flex justify-between gap-3">
         {previous ? (
           <Link

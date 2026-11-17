@@ -4,6 +4,7 @@ import type { StorySeries } from './story-types'
 import { knightAtDawn } from './story-knight-at-dawn'
 
 export const magicTreeHouse: StorySeries = {
+  language: 'en',
   slug: 'magic-tree-house',
   title: 'Magic Tree House',
   author: 'Mary Pope Osborne',

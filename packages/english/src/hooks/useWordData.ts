@@ -260,7 +260,6 @@ export function useStageIndex(user: User | null): StageIndex & { isLoading: bool
 
   useEffect(() => {
     if (!userId) return
-    setStatus({ userId, loading: true, error: null })
     purgeLegacyFullCache()
     let cancelled = false
     void fetchStageIndex()

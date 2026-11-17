@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button, Flex, Grid, Heading, Text, TextField } from '@rosie/ui/themes'
 import type { CalcTimingMode } from '@rosie/core'
 import { clampBonusSec, sessionStarMultiplier } from '../utils/calc-session-policy'
 
@@ -35,94 +36,45 @@ export default function SessionTimingControls({
   const [customOpen, setCustomOpen] = useState(!BONUS_PRESETS.includes(bonusSec))
 
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <h3 className="text-[13px] font-extrabold text-violet-100">本次计时模式</h3>
-        <span className="text-[11px] font-bold text-amber-300">
-          {starBonusLine(timingMode, bonusSec)}
-        </span>
-      </div>
-      <div className="grid grid-cols-3 gap-2">
-        {(Object.keys(MODE_META) as CalcTimingMode[]).map((mode) => {
-          const selected = timingMode === mode
-          return (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => onChangeMode(mode)}
-              aria-pressed={selected}
-              className="min-h-14 rounded-xl px-2 py-2 text-left transition-all active:scale-[0.98]"
-              style={{
-                background: selected ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.04)',
-                border: `1.5px solid ${selected ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
-              }}
-            >
-              <span
-                className={`block text-[13px] font-extrabold ${selected ? 'text-violet-200' : 'text-slate-300'}`}
-              >
-                {MODE_META[mode].label}
-              </span>
-              <span className="mt-0.5 block text-[10px] leading-3 text-slate-500">
-                {MODE_META[mode].description}
-              </span>
-            </button>
-          )
-        })}
-      </div>
-
+    <Flex direction="column" gap="2">
+      <Flex justify="between" align="center" gap="2" wrap="wrap">
+        <Heading as="h3" size="3">本次计时模式</Heading>
+        <Text size="2" weight="bold" color="amber" highContrast>{starBonusLine(timingMode, bonusSec)}</Text>
+      </Flex>
+      <Grid columns={{ initial: '1', xs: '3' }} gap="2">
+        {(Object.keys(MODE_META) as CalcTimingMode[]).map(mode => (
+          <Button key={mode} type="button" size="3" color="violet" radius="large"
+            variant={timingMode === mode ? 'solid' : 'soft'} aria-pressed={timingMode === mode}
+            style={{ height: 'auto', minHeight: 48, padding: 8, whiteSpace: 'normal' }}
+            onClick={() => onChangeMode(mode)}>
+            <Flex direction="column" align="center">
+              <Text weight="bold">{MODE_META[mode].label}</Text>
+              <Text size="2">{MODE_META[mode].description}</Text>
+            </Flex>
+          </Button>
+        ))}
+      </Grid>
       {timingMode === 'bonus' && (
-        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-400/[0.06] p-2.5">
-          <span className="text-[10px] font-extrabold text-violet-200/50">加成秒数</span>
-          {BONUS_PRESETS.map((seconds) => {
-            const selected = !customOpen && bonusSec === seconds
-            return (
-              <button
-                key={seconds}
-                type="button"
-                onClick={() => {
-                  setCustomOpen(false)
-                  onChangeBonus(seconds)
-                }}
-                aria-pressed={selected}
-                className={`min-h-10 rounded-lg border px-3 text-[12px] font-extrabold ${
-                  selected
-                    ? 'border-violet-400/60 bg-violet-400/20 text-violet-200'
-                    : 'border-white/10 bg-white/[0.04] text-violet-200/50'
-                }`}
-              >
-                +{seconds}秒
-              </button>
-            )
-          })}
-          <button
-            type="button"
-            onClick={() => setCustomOpen(true)}
-            aria-pressed={customOpen}
-            className={`min-h-10 rounded-lg border px-3 text-[12px] font-extrabold ${
-              customOpen
-                ? 'border-violet-400/60 bg-violet-400/20 text-violet-200'
-                : 'border-white/10 bg-white/[0.04] text-violet-200/50'
-            }`}
-          >
-            自定义
-          </button>
+        <Flex gap="2" wrap="wrap" align="center">
+          <Text size="2" weight="bold">加成秒数</Text>
+          {BONUS_PRESETS.map(seconds => (
+            <Button key={seconds} type="button" size="3" color="violet"
+              variant={!customOpen && bonusSec === seconds ? 'solid' : 'soft'}
+              aria-pressed={!customOpen && bonusSec === seconds}
+              onClick={() => { setCustomOpen(false); onChangeBonus(seconds) }}>+{seconds}秒</Button>
+          ))}
+          <Button type="button" size="3" color="violet" variant={customOpen ? 'solid' : 'soft'}
+            aria-pressed={customOpen} onClick={() => setCustomOpen(true)}>自定义</Button>
           {customOpen && (
-            <label className="inline-flex min-h-10 items-center gap-1">
-              <span className="sr-only">自定义加成秒数</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min={0}
-                max={15}
-                value={bonusSec}
-                onChange={(event) => onChangeBonus(clampBonusSec(Number(event.target.value)))}
-                className="h-10 w-16 rounded-lg border border-violet-400/40 bg-slate-950 px-2 text-right text-[13px] font-extrabold text-violet-200 outline-none focus:ring-2 focus:ring-violet-400/25"
-              />
-              <span className="text-[10px] text-slate-500">秒</span>
-            </label>
+            <Flex align="center" gap="1">
+              <TextField.Root type="number" size="3" aria-label="自定义加成秒数" className="w-20"
+                inputMode="numeric" min={0} max={15} value={bonusSec}
+                onChange={event => onChangeBonus(clampBonusSec(Number(event.target.value)))} />
+              <Text size="2">秒</Text>
+            </Flex>
           )}
-        </div>
+        </Flex>
       )}
-    </div>
+    </Flex>
   )
 }

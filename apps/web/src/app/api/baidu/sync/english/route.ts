@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { lessonAudioMime } from '@rosie/english/utils/reading-audio-types'
+import { storySeries } from '@rosie/english/utils/story-data'
 import { readingPassages } from '@rosie/english/utils/reading-data'
 import { listeningClipsFor } from '@rosie/english/utils/listening-clips'
 import { BAIDU_AUTH_MESSAGES, baiduAuthErrorCode } from '@rosie/core'
@@ -8,6 +9,18 @@ import { getBaiduAccountContext } from '@/lib/baidu-token'
 import { readBaiduDirectoryPage } from '@/lib/baidu-directory-page'
 import { exactBaiduId } from '@/lib/baidu-identity'
 import { directoryPrefix, type LessonAudioDirectory, type LessonAudioEditor, type LessonAudioPick } from '@/lib/english-audio-types'
+
+const storyBooks = storySeries.filter(series => series.language === 'en').flatMap(series =>
+  series.volumes.map(volume => ({
+    key: `story:${series.slug}:${volume.slug}`,
+    stage: 'Story',
+    unit: series.slug,
+    unitTitle: series.title,
+    lesson: String(volume.number),
+    title: volume.title,
+    chapters: volume.chapters,
+  })),
+)
 
 type PublishedFile = LessonAudioPick & { slot: string }
 type PublishedLesson = { revision: string; directory_id: string | null; main_path: string | null; english_audio_bindings: PublishedFile[] }
@@ -28,29 +41,36 @@ async function manage(request: Request) {
     const query = new URL(request.url).searchParams
     const key = query.get('lesson')
     if (!key && request.method === 'GET') {
-      return respond(readingPassages.map(({ key, stage, unit, lesson, title }) => ({ key, stage, unit, lesson, title })))
+      return respond([
+        ...readingPassages.map(({ key, stage, unit, lesson, title }) => ({ key, stage, unit, lesson, title })),
+        ...storyBooks.map(({ key, stage, unit, unitTitle, lesson, title }) => ({ key, stage, unit, unitTitle, lesson, title })),
+      ])
     }
     const passage = readingPassages.find(p => p.key === key)
-    if (!passage) return fail('课程不存在。', 404)
+    const book = storyBooks.find(row => row.key === key)
+    if (!passage && !book) return fail('课程不存在。', 404)
     const account = await getBaiduAccountContext()
     if (account.generation !== query.get('generation')) return fail('网盘账号已变更，请重新进入英语标签。', 409)
     const db = createAdminSupabase()
     const [words, lesson] = await Promise.all([
-      db.from('word_entries').select('word').eq('stage', passage.stage).eq('unit', passage.unit).eq('lesson', passage.lesson).order('word').returns<{ word: string }[]>(),
+      passage ? db.from('word_entries').select('word').eq('stage', passage.stage).eq('unit', passage.unit).eq('lesson', passage.lesson).order('word').returns<{ word: string }[]>() : { data: [], error: null },
       db.from('english_audio_lessons').select('revision,directory_id,main_path,english_audio_bindings(slot,directory_id,path,file_id)')
-        .eq('account_id', account.accountId).eq('lesson_key', passage.key).returns<PublishedLesson[]>().maybeSingle(),
+        .eq('account_id', account.accountId).eq('lesson_key', key ?? '').returns<PublishedLesson[]>().maybeSingle(),
     ])
     if (words.error || lesson.error) return fail('读取本课资源失败，请检查数据库迁移及连接。', 503)
-    const slots: LessonAudioEditor['slots'] = [
+    const slots: LessonAudioEditor['slots'] = book ? [
+      { slot: 'narration', label: '整本完整音频' },
+      ...book.chapters.map(chapter => ({ slot: 'chapter:' + chapter.key, chapter: { number: chapter.number, title: chapter.title }, label: `第 ${chapter.number} 辑 · ${chapter.title}` })),
+    ] : [
       { slot: 'words', label: '全部单词音频' }, { slot: 'narration', label: '课文完整音频' }, { slot: 'recitation', label: '背诵音频' },
       ...words.data.map(({ word }) => ({ slot: 'word:' + word.trim().toLowerCase(), label: word })),
-      ...listeningClipsFor(passage).map(clip => ({ slot: 'clip:' + clip.target, label: clip.english })),
+      ...(passage ? listeningClipsFor(passage) : []).map(clip => ({ slot: 'clip:' + clip.target, label: clip.english })),
     ]
     const previous = lesson.data?.english_audio_bindings ?? []
     const knownSlots = new Set(slots.map(s => s.slot))
     for (const row of previous) {
       if (!knownSlots.has(row.slot)) slots.push({
-        slot: row.slot, label: '已移除的条目 · ' + row.slot, unbindOnly: row.slot.startsWith('clip:'),
+        slot: row.slot, label: '已移除的条目 · ' + row.slot, unbindOnly: !!book || row.slot.startsWith('clip:'),
       })
     }
     const revision = lesson.data?.revision ?? null

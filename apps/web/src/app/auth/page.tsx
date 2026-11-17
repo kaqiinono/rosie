@@ -274,7 +274,7 @@ function Field({
       <label className="text-[0.8rem] font-medium text-white/50">{label}</label>
       <TextField.Root
         type={type}
-        size="2"
+        size="3"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -310,7 +310,7 @@ function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
       disabled={loading}
       variant="solid"
       color="blue"
-      size="2"
+      size="3"
       className="mt-1 w-full"
     >
       {loading ? '请稍候…' : label}

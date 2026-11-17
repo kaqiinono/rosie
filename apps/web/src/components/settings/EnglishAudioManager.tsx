@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Badge, Box, Button, Card, Flex, Grid, Heading, Separator, Text } from '@rosie/ui/themes'
+import { Badge, Box, Button, Card, Flex, Grid, Heading, Separator, Switch, Text } from '@rosie/ui/themes'
 import { SyncSelect, useSyncConfirmation } from './SyncControls'
 import { invalidateSessionStore } from '@rosie/core'
 import { CourseMainDirectory } from './SyncDirectoryChooser'
@@ -11,7 +11,7 @@ import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
 import { directoryPrefix, type LessonAudioEditor, type LessonAudioPick } from '@/lib/english-audio-types'
 import { matchEnglishAudio } from '@/lib/english-audio-match'
 
-type Lesson = { stage: string; unit: string; lesson: string; title: string; key: string }
+type Lesson = { stage: string; unit: string; unitTitle?: string; lesson: string; title: string; key: string }
 type Props = { userId: string; paths: SyncDirectoryList }
 
 function samePick(left?: LessonAudioPick, right?: LessonAudioPick) {
@@ -23,8 +23,11 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
   const [saved, setSaved] = useState(initial)
   const [picks, setPicks] = useState(initial.picks)
   const [main, setMain] = useState(initial.mainDirectory)
+  const isStory = lessonKey.startsWith('story:')
   const inventory = useEnglishFileInventory(userId, paths.generation, main)
   const [matchMessage, setMatchMessage] = useState('')
+  const [onlyUnmatched, setOnlyUnmatched] = useState(false)
+  const boundFiles = new Set(Object.values(picks).map(pick => pick.file_id))
   const [choosing, setChoosing] = useState(!initial.mainDirectory)
   const [target, setTarget] = useState(() => initial.slots.find(row => !row.unbindOnly && !initial.picks[row.slot])?.slot
     ?? initial.slots.find(row => !row.unbindOnly)?.slot ?? '')
@@ -71,7 +74,7 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
       if (controller.signal.aborted) return
       setSaved({ ...saved, slots: saved.slots.filter(row => !row.unbindOnly || picks[row.slot]), mainDirectory: main, picks, revision: next.revision })
       invalidateSessionStore('baidu_reading_audio_keys')
-      setMessage('本课绑定已保存。')
+      setMessage('音频绑定已保存。')
     } catch (e) {
       if (!controller.signal.aborted) setMessage(e instanceof Error ? e.message : '保存失败。')
     } finally { pending.current = null; if (!controller.signal.aborted) setSaving(false) }
@@ -94,24 +97,37 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
     <Grid gap="3" columns={{ initial: '1', sm: '2' }} align="start">
       <Card>
         <Flex align="center" justify="between" gap="2" mb="3">
-          <Heading as="h3" size="3">课程音频</Heading>
+          <Heading as="h3" size="3">{isStory ? '故事音频' : '课程音频'}</Heading>
           <Flex align="center" gap="2" wrap="wrap">
             <Text size="1" color="gray">{Object.keys(picks).length} / {saved.slots.length} 已绑定</Text>
+            <Text as="label" size="2">
+              <Flex align="center" gap="2">
+                <Switch checked={onlyUnmatched} onCheckedChange={checked => {
+                  setOnlyUnmatched(checked)
+                  if (checked && picks[target]) setTarget(saved.slots.find(row => !row.unbindOnly && !picks[row.slot])?.slot ?? '')
+                }} />
+                只看未匹配
+              </Flex>
+            </Text>
             <Button size="1" variant="soft" disabled={!main || !inventory.ready || saving || !saved.slots.some(row => !row.unbindOnly && !picks[row.slot])}
               onClick={autoMatch}>自动匹配</Button>
           </Flex>
         </Flex>
         {matchMessage && <Text as="p" size="2" mb="2" role="status">{matchMessage}</Text>}
-        <Box maxHeight="55vh" overflowY="auto">
-          {['课级音频', '单个单词音频', '逐句听记音频', '听记清单外的旧绑定'].map((groupLabel, group) => {
+        {onlyUnmatched && !saved.slots.some(row => !row.unbindOnly && !picks[row.slot]) && (
+          <Text size="2" color="gray">全部条目均已匹配。</Text>
+        )}
+        <Box maxHeight="55vh" overflowY="auto" pr="4" style={{ scrollbarGutter: 'stable' }}>
+          {[isStory ? '整本音频' : '课级音频', isStory ? '分辑音频' : '单个单词音频', '逐句听记音频', '已移除条目的旧绑定'].map((groupLabel, group) => {
             const rows = saved.slots.filter(s => {
+              if (onlyUnmatched && (s.unbindOnly || picks[s.slot])) return false
               if (s.unbindOnly) return group === 3
               if (s.slot.startsWith('clip:')) return group === 2
-              if (s.slot.startsWith('word:')) return group === 1
+              if (s.slot.startsWith('chapter:') || s.slot.startsWith('word:')) return group === 1
               return group === 0
             })
             if (!rows.length) return null
-            return <Box key={groupLabel} mb="3" pr="4">
+            return <Box key={groupLabel} mb="3">
               <Text as="p" size="1" weight="bold" color="gray" mb="1">{groupLabel}</Text>
               {rows.map(({ slot, label, unbindOnly }) => {
                 const pick = picks[slot]
@@ -142,7 +158,7 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
           {main ? <>
             {targetLabel ? <Box role="status"><Badge>正在匹配 · {targetLabel}</Badge></Box> : <Text size="2" color="gray">选择课程音频条目后即可绑定文件。</Text>}
             <EnglishFileList key={JSON.stringify([paths.generation, main.directory_id, main.path])}
-              inventory={inventory} main={main} disabled={saving || !target}
+              inventory={inventory} onlyUnmatched={onlyUnmatched} boundFiles={boundFiles} main={main} disabled={saving || !target}
               choose={bind} />
           </> : <Text size="2" color="gray">选定主目录后，这里会列出其中及子目录内的文件。</Text>}
         </Flex>
@@ -150,7 +166,7 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
     </Grid>
     {invalidPick && <Text role="alert" size="2" color="red">有新绑定的文件位于当前主目录外，请重新匹配或解绑后保存。</Text>}
     <Flex gap="2" wrap="wrap">
-      <Button loading={saving} disabled={saving || !dirty || invalidPick} onClick={() => void save()}>保存本课绑定</Button>
+      <Button loading={saving} disabled={saving || !dirty || invalidPick} onClick={() => void save()}>{isStory ? '保存本书绑定' : '保存本课绑定'}</Button>
       <Button variant="soft" disabled={saving} onClick={() => { if (dirty) confirm('放弃修改并重新读取？', reload); else reload() }}>重新读取</Button>
     </Flex>
     {message && <Text size="2" role="status">{message}</Text>}
@@ -169,11 +185,11 @@ export default function EnglishAudioManager({ userId, paths }: Props) {
   const editor = useQuery<LessonAudioEditor>(userId, url)
   const rows = catalog.data ?? []
   const stages = [...new Set(rows.map(row => row.stage).filter(Boolean))]
-    .sort((a, b) => b.localeCompare(a, 'en', { numeric: true }))
+    .sort((a, b) => Number(a === 'Story') - Number(b === 'Story') || b.localeCompare(a, 'en', { numeric: true }))
   const stage = stages.includes(selectedStage) ? selectedStage : stages[0] ?? ''
   function changeSelection(proceed: () => void) {
     if (section.current?.querySelector('[data-sync-saving="true"]')) return
-    if (section.current?.querySelector('[data-sync-dirty="true"]')) confirm('放弃本课尚未保存的修改？', proceed)
+    if (section.current?.querySelector('[data-sync-dirty="true"]')) confirm('放弃尚未保存的音频绑定修改？', proceed)
     else proceed()
   }
   return <Flex ref={section} direction="column" gap="3" role="region" aria-label="英语资源同步">
@@ -183,11 +199,11 @@ export default function EnglishAudioManager({ userId, paths }: Props) {
       <SyncSelect label="册别" value={stage} disabled={!stages.length} empty={stages.length ? undefined : '暂无册别'}
         options={stages.map(v => ({ value: v, label: v }))}
         onValueChange={v => changeSelection(() => { setSelectedStage(v); setUnit(''); setLesson('') })} />
-      <SyncSelect label="单元" empty="选择单元" value={unit} disabled={!stage}
-        options={[...new Set(rows.filter(p => p.stage === stage).map(p => p.unit))].map(v => ({ value: v, label: v }))}
+      <SyncSelect label={stage === 'Story' ? '故事集' : '单元'} empty={stage === 'Story' ? '选择故事集' : '选择单元'} value={unit} disabled={!stage}
+        options={[...new Map(rows.filter(row => row.stage === stage).map(row => [row.unit, row.unitTitle ?? row.unit] as const))].map(([value, label]) => ({ value, label }))}
         onValueChange={v => changeSelection(() => { setUnit(v); setLesson('') })} />
-      <SyncSelect label="Lesson" empty="选择 Lesson" value={lesson} disabled={!unit}
-        options={rows.filter(p => p.stage === stage && p.unit === unit).map(p => ({ value: p.key, label: p.lesson + ' · ' + p.title }))}
+      <SyncSelect label={stage === 'Story' ? '书名' : 'Lesson'} empty={stage === 'Story' ? '选择书名' : '选择 Lesson'} value={lesson} disabled={!unit}
+        options={rows.filter(p => p.stage === stage && p.unit === unit).map(p => ({ value: p.key, label: stage === 'Story' ? p.title : p.lesson + ' · ' + p.title }))}
         onValueChange={v => changeSelection(() => setLesson(v))} />
     </Grid>}
     <LoadStatus {...editor} />

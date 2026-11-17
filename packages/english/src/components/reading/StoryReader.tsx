@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
 import { useAuth } from '@rosie/core'
-import { useWordData } from '../../hooks/useWordData'
+import { useStoryWordSources } from '../../hooks/useStoryWordSources'
+import { useStageIndex } from '../../hooks/useWordData'
 import { useStoryReadingProgress } from '../../hooks/useStoryReadingProgress'
 import type { ReadingPassage } from '../../utils/reading-data'
 import { buildEntryMatchRegex, resolveMatchedWord } from '../../utils/reading-data'
@@ -11,11 +12,13 @@ import type { StoryChapter, StoryVolume } from '../../utils/story-types'
 import { splitStorySentences, storyContentKey } from '../../utils/story-types'
 import PassageView from './PassageView'
 import GlossaryPanel from './GlossaryPanel'
+import StoryNarration from './StoryNarration'
 import StoryRecorder from './StoryRecorder'
-import { Button } from '@rosie/ui/themes'
+import { Button, Checkbox, Popover, SegmentedControl } from '@rosie/ui/themes'
 import { StickerCard } from '@rosie/ui'
 
 type Props = {
+  seriesSlug: string
   volume: StoryVolume
   chapters: StoryChapter[]
   viewMode: 'chapter' | 'volume'
@@ -24,7 +27,7 @@ type Props = {
 type VisibleSentence = { chapterKey: string; index: number; text: string; id: string }
 
 function visibleSentences(): VisibleSentence[] {
-  const topOffset = 88
+  const topOffset = document.querySelector('[data-story-toolbar]')?.getBoundingClientRect().bottom ?? 88
   const height = window.innerHeight
   const all = [...document.querySelectorAll<HTMLElement>('[data-story-sentence]')]
   const fullyVisible = all.filter((element) => {
@@ -49,9 +52,8 @@ function visibleSentences(): VisibleSentence[] {
 function storyPassage(
   volume: StoryVolume,
   chapter: StoryChapter,
-  vocab: WordEntry[],
+  vocabRegex: RegExp | null,
 ): ReadingPassage {
-  const vocabRegex = buildEntryMatchRegex(vocab)
   const glossary = chapter.glossary.filter((entry) => {
     if (!vocabRegex) return true
     return !new RegExp(vocabRegex.source, vocabRegex.flags).test(entry.word)
@@ -67,13 +69,12 @@ function storyPassage(
   }
 }
 
-function wordsInChapter(chapter: StoryChapter, vocab: WordEntry[]): WordEntry[] {
-  const regex = buildEntryMatchRegex(vocab)
+function wordsInChapter(chapter: StoryChapter, vocab: WordEntry[], regex: RegExp | null): WordEntry[] {
   if (!regex) return []
   const text = chapter.paragraphs.join('\n')
   const matches = text.match(regex) ?? []
   const found = new Map<string, WordEntry>()
-  for (const match of matches) {
+  for (const match of new Set(matches.map((text) => text.toLowerCase()))) {
     const entry = resolveMatchedWord(match, vocab)
     if (!entry) continue
     const sourceKey = [entry.stage ?? '', entry.unit, entry.lesson, entry.word.toLowerCase()].join(
@@ -84,35 +85,34 @@ function wordsInChapter(chapter: StoryChapter, vocab: WordEntry[]): WordEntry[] 
   return [...found.values()]
 }
 
-export default function StoryReader({ volume, chapters, viewMode }: Props) {
+export default function StoryReader(props: Props) {
   const { user } = useAuth()
-  const { vocab, isLoading: vocabLoading } = useWordData(user)
+  return <AccountStoryReader key={user?.id ?? 'guest'} {...props} />
+}
+
+function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
+  const { user } = useAuth()
+  const { stages, error: stageError, isLoading: loadingStages } = useStageIndex(user)
+  const { selected, words: vocab, toggle, load, status } = useStoryWordSources(user?.id)
   const { progress, saveProgress } = useStoryReadingProgress(user, volume.slug)
   const [glossary, setGlossary] = useState<ReadingPassage['glossary']>([])
+  const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
+  const [recordChapter, setRecordChapter] = useState<StoryChapter | null>(null)
+  const [recordBusy, setRecordBusy] = useState(false)
   const [bookmarkState, setBookmarkState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const restoredRef = useRef(false)
 
+  const matcher = useMemo(() => buildEntryMatchRegex(vocab), [vocab])
   const prepared = useMemo(
     () =>
       chapters.map((chapter) => ({
         chapter,
-        passage: storyPassage(volume, chapter, vocab),
+        passage: storyPassage(volume, chapter, matcher),
         sentences: splitStorySentences(chapter),
-        chapterWords: wordsInChapter(chapter, vocab),
+        chapterWords: wordsInChapter(chapter, vocab, matcher),
       })),
-    [chapters, volume, vocab],
+    [chapters, volume, vocab, matcher],
   )
-
-  useEffect(() => {
-    for (const element of document.querySelectorAll<HTMLElement>('[data-story-sentence]')) {
-      const chapter = prepared.find((entry) =>
-        entry.sentences.some((paragraph) =>
-          paragraph.some((sentence) => sentence.id === element.id),
-        ),
-      )
-      if (chapter) element.dataset.chapterKey = chapter.chapter.key
-    }
-  }, [prepared])
 
   useEffect(() => {
     if (!progress || restoredRef.current) return
@@ -165,7 +165,7 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
       })
   }, [prepared])
 
-  const openCurrentChapterGlossary = useCallback(() => {
+  const currentChapter = useCallback(() => {
     const visibleChapterKey = visibleSentences()[0]?.chapterKey
     const viewportMiddle = window.innerHeight / 2
     const nearestChapter = [...prepared]
@@ -175,11 +175,11 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
           (document.getElementById(entry.chapter.key)?.getBoundingClientRect().top ?? Infinity) <=
           viewportMiddle,
       )
-    const current =
+    return (
       prepared.find((entry) => entry.chapter.key === visibleChapterKey) ??
       nearestChapter ??
       prepared[0]
-    setGlossary(current?.passage.glossary ?? [])
+    )
   }, [prepared])
 
   return (
@@ -188,34 +188,98 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
         size="sm"
         elevation="sm"
         radius="md"
-        className="sticky top-[112px] z-30 flex flex-wrap items-center gap-2 md:top-[60px]"
+        data-story-toolbar
+        className="sticky top-0 z-30 flex flex-wrap items-center gap-2"
       >
-        <Button
-          type="button"
-          onClick={() => void markPosition()}
-          disabled={bookmarkState === 'saving'}
-          variant="solid"
-          color="amber"
+        <SegmentedControl.Root
+          aria-label="阅读模式"
+          value={readingMode}
+          onValueChange={value => {
+            if (value === 'focus' || value === 'learn') setReadingMode(value)
+          }}
           size="2"
+          radius="full"
         >
-          {bookmarkState === 'saving'
-            ? '保存中…'
-            : bookmarkState === 'saved'
-              ? '✓ 已标记'
-              : '🔖 标记从这里离开'}
-        </Button>
-        {combinedGlossary.length > 0 && (
+          <SegmentedControl.Item value="learn">学习</SegmentedControl.Item>
+          <SegmentedControl.Item value="focus">专注</SegmentedControl.Item>
+        </SegmentedControl.Root>
+        <div className="flex flex-wrap items-center gap-2">
+          <StoryNarration key={`${seriesSlug}/${volume.slug}/${viewMode}/${chapters[0]?.key}`}
+            series={seriesSlug} volume={volume.slug} chapters={chapters} full={viewMode === 'volume'} />
+          <Button variant="soft" highContrast color="amber" disabled={recordBusy}
+            aria-expanded={!!recordChapter}
+            onClick={() => setRecordChapter(recordChapter ? null : currentChapter()?.chapter ?? null)}>
+            🎙 录制
+          </Button>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
+          <Popover.Root>
+            <Popover.Trigger>
+              <Button variant="soft" highContrast color="gray">词库 ▾</Button>
+            </Popover.Trigger>
+            <Popover.Content align="end" sideOffset={8} aria-label="词库来源"
+              style={{ width: 'min(20rem, calc(100vw - 2rem))' }}>
+              <fieldset className="grid grid-cols-2 gap-3">
+                <legend className="mb-2 font-bold">词库来源</legend>
+                {stages.map((stage) => (
+                  <label key={stage} className="flex cursor-pointer items-center gap-1.5">
+                    <Checkbox checked={selected.includes(stage)} onCheckedChange={() => toggle(stage)} />
+                    {stage}
+                  </label>
+                ))}
+                <Button className="col-span-2" variant="soft" highContrast disabled={status === 'loading' || !stages.some((stage) => selected.includes(stage))}
+                  onClick={() => void load(stages)}>
+                  {status === 'loading' ? '加载中…' : '加载所选词库'}
+                </Button>
+                <span role="status" className="col-span-2 empty:hidden text-sm">
+                  {stageError ? '获取词库列表失败' : loadingStages ? '正在获取词库列表…'
+                    : status === 'error' ? '加载失败，请重试' : status === 'loaded' ? '词库已加载' : ''}
+                </span>
+              </fieldset>
+            </Popover.Content>
+          </Popover.Root>
+          {combinedGlossary.length > 0 && (
+            <Button
+              type="button"
+              onClick={() => setGlossary(currentChapter()?.passage.glossary ?? [])}
+              variant="soft"
+              color="gray"
+              size="2"
+            >
+              📒 本章难点词
+            </Button>
+          )}
           <Button
             type="button"
-            onClick={openCurrentChapterGlossary}
+            title="标记从这里离开"
+            onClick={() => void markPosition()}
+            disabled={bookmarkState === 'saving'}
             variant="soft"
-            color="gray"
+            highContrast
+            className="font-bold"
+            color="amber"
             size="2"
           >
-            📒 本章难点词
+            {bookmarkState === 'saving'
+              ? '保存中…'
+              : bookmarkState === 'saved'
+                ? '✓ 已标记'
+                : '🔖 书签'}
           </Button>
+        </div>
+        {recordChapter && (
+          <div className="max-h-[45dvh] w-full overflow-y-auto border-t border-kid-line pt-2">
+            <StoryRecorder
+              key={recordChapter.key}
+              contentKey={storyContentKey(volume, recordChapter)}
+              scope="chapter"
+              title={`${volume.title} — ${recordChapter.title}`}
+              downloadName={`${volume.title.replace(/\s+/g, '-')}-${String(recordChapter.number).padStart(2, '0')}-${recordChapter.title.replace(/\s+/g, '-')}.mp3`}
+              heading={<strong>第 {recordChapter.number} 章 · {recordChapter.title}</strong>}
+              onBusyChange={setRecordBusy}
+            />
+          </div>
         )}
-        {vocabLoading && <span className="text-xs text-slate-500">正在匹配全部词库…</span>}
         {bookmarkState === 'error' && (
           <span role="alert" className="text-xs font-bold text-rose-600">
             当前位置标记失败，请稍后重试
@@ -240,22 +304,8 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
           id={chapter.key}
         >
           <header className="bg-orange-50 p-5 sm:px-7">
-            <StoryRecorder
-              contentKey={storyContentKey(volume, chapter)}
-              scope="chapter"
-              title={`${volume.title} — ${chapter.title}`}
-              downloadName={`Magic-Tree-House-${volume.title.replace(/\s+/g, '-')}-${String(chapter.number).padStart(2, '0')}-${chapter.title.replace(/\s+/g, '-')}.mp3`}
-              heading={
-                <div className="min-w-0">
-                  <p className="text-xs font-extrabold tracking-wider text-amber-700 uppercase">
-                    Chapter {chapter.number}
-                  </p>
-                  <h1 className="font-fredoka mt-1 text-2xl font-black text-slate-900">
-                    {chapter.title}
-                  </h1>
-                </div>
-              }
-            />
+            <p className="text-xs font-extrabold tracking-wider text-amber-700">第 {chapter.number} 章</p>
+            <h1 className="font-fredoka mt-1 text-2xl font-black text-slate-900">{chapter.title}</h1>
           </header>
           <div className="border-t border-amber-100 p-5 sm:p-7">
             <PassageView
@@ -263,7 +313,7 @@ export default function StoryReader({ volume, chapters, viewMode }: Props) {
               lessonWords={chapterWords}
               masteryMap={{}}
               sentenceGroups={sentences}
-              mode="focus"
+              mode={readingMode}
             />
           </div>
         </StickerCard>

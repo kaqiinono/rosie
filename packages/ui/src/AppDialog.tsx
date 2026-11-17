@@ -21,6 +21,7 @@ type AppDialogProps = {
   /** Drawer uses the same focus/escape contract, with a full-height trailing panel. */
   presentation?: 'dialog' | 'drawer' | 'bottom-drawer' | 'fullscreen'
   /** Full viewport on phones; retain the standard dialog on wider screens. */
+  compactBottomDrawer?: boolean
   mobileFullscreen?: boolean
   /** Remains visible outside the scrolling content, e.g. media transport. */
   footer?: ReactNode
@@ -44,6 +45,7 @@ export function AppDialog({
   chrome = 'standard',
   presentation = 'dialog',
   mobileFullscreen = false,
+  compactBottomDrawer = false,
   footer,
   contentLayout = 'scroll',
   returnFocusRef,
@@ -73,6 +75,7 @@ export function AppDialog({
           } : null),
           ...(presentation === 'bottom-drawer' ? {
             top: 'auto', left: 0, height: '92dvh', borderRadius: '28px 28px 0 0',
+            ...(compactBottomDrawer ? { maxWidth: MAX_WIDTH[size], marginInline: 'auto', height: 'auto', maxHeight: '92dvh' } : null),
           } : null),
         }}
         onEscapeKeyDown={(event) => {

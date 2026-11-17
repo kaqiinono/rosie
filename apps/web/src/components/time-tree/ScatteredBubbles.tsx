@@ -4,17 +4,26 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import Bubbles, { type BubblesProps } from '@/components/tree-demo/garden/Bubbles'
 
 type Box = { left: number; top: number; right: number; bottom: number; ellipse?: boolean }
-type BubbleSpec = { id: string; priority: string }
+type BubbleSpec = { id: string; minutes: number }
 type Placement = { id: string; x: number; y: number; size: number }
 type BubbleLayout = { placements: Placement[]; sizes: Record<string, number> }
-type Props = BubblesProps & { priorities: Record<string, string> }
-
-// Five compact priority tiers; P0 remains largest without dominating a P0-heavy day.
-const SIZES: Record<string, readonly [number, number, number]> = {
-  P0: [100, 16, 132], P1: [88, 14, 116], P2: [76, 12, 100],
-  P3: [64, 10, 84], P4: [56, 8.5, 72],
-}
+const DURATION_TIERS = [5, 10, 15, 20, 25, 30, 40, 60, 90, 120]
 const CLEARANCE = 26 // Floating motion and the outer hold-to-finish ring.
+
+function bubbleDiameter(minutes: number, viewport: number) {
+  const duration = Number.isFinite(minutes) ? Math.max(minutes, DURATION_TIERS[0]) : DURATION_TIERS[0]
+  const upper = DURATION_TIERS.findIndex(limit => duration <= limit)
+  let tier = DURATION_TIERS.length - 1
+  if (upper === 0) tier = 0
+  if (upper > 0) {
+    const lowerMinutes = DURATION_TIERS[upper - 1]
+    tier = upper - 1 + (duration - lowerMinutes) / (DURATION_TIERS[upper] - lowerMinutes)
+  }
+  const phone = 81 + 5 * tier
+  const desktop = 86 + 6 * tier
+  const screenRatio = Math.max(0, Math.min(1, (viewport - 640) / (1024 - 640)))
+  return phone + (desktop - phone) * screenRatio
+}
 
 function placeBubbles(width: number, height: number, viewport: number, obstacles: Box[], specs: BubbleSpec[]): BubbleLayout {
   const placements: Placement[] = []
@@ -45,8 +54,7 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
     }
   }
   for (const spec of specs) {
-    const [min, vw, max] = SIZES[spec.priority] ?? SIZES.P2
-    const size = Math.max(min, Math.min(max, viewport * vw / 100))
+    const size = bubbleDiameter(spec.minutes, viewport)
     sizes[spec.id] = size
     const radius = size / 2 + CLEARANCE
     const seed = Array.from(spec.id).reduce((value, char) => (value * 31 + char.charCodeAt(0)) | 0, 0)
@@ -88,13 +96,13 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
   return { placements, sizes }
 }
 
-export default function ScatteredBubbles({ priorities, ...props }: Props) {
+export default function ScatteredBubbles(props: BubblesProps) {
   const area = useRef<HTMLDivElement>(null)
   const [layout, setLayout] = useState<BubbleLayout | null>(null)
   // Only layout inputs trigger measurement; timer updates do not move bubbles.
   const signature = JSON.stringify([...props.bubbles]
     .sort((a, b) => (props.slots[a.id] ?? 0) - (props.slots[b.id] ?? 0))
-    .map((bubble) => ({ id: bubble.id, priority: priorities[bubble.id] ?? 'P2' })))
+    .map(({ id, minutes }) => ({ id, minutes })))
   useLayoutEffect(() => {
     const element = area.current
     const scene = element?.closest<HTMLElement>('.tg-scene')
@@ -146,8 +154,7 @@ export default function ScatteredBubbles({ priorities, ...props }: Props) {
   const positions = Object.fromEntries((layout?.placements ?? []).map((item) => [item.id, { x: item.x, y: item.y }]))
   return (
     <div ref={area} className="tg-bubble-area tg-bubble-area--scattered">
-      <Bubbles {...props} bubbles={props.bubbles} positions={positions} sizes={layout?.sizes} />
-
+      <Bubbles {...props} bubbles={props.bubbles.filter(bubble => positions[bubble.id])} positions={positions} sizes={layout?.sizes} />
     </div>
   )
 }

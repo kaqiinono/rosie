@@ -55,6 +55,7 @@ for a failed request or generate performance timestamps from estimated minutes.
 按周从锚点之后第一次指定星期起递进；关闭自动推进固定起始项。耗尽不循环。
 新规则在生成 occurrence 时保存 `calendarBased` 内容快照，拆分步骤共用同一项，
 补做、改期、完成不会改变课程或再次推进，也不受旧 occurrence 占用限制。
+普通数学题作业在结算后，按已做的参数行 ID 跳过已完成题目，为未开始且未编辑的后续作业重新分配剩余题目。分次收花和关闭自动推进的配置沿用各自规则。详见 `tree.md`。
 已完成快照保留；编辑保存后未完成步骤同步新 binding，旧 binding 未改时仍按原完成游标运行。
 周末暂存保留日期课程快照，只有旧游标的预览占用会释放。只读列表和生成/开始共用日期解析。
 手动验收：周五到周一不跳课、周末新建的首个工作日、指定星期切换、未完成仍按日期推进、
@@ -82,3 +83,9 @@ retains existing row objects and their manual relative order, appending new orde
 entry management loads the saved list and does not read the setup receipt. Clicking 内容预设
 creates the current presets when no receipt exists; later clicks update same-subject, same-name
 preset rows and insert presets that are missing. Homework bindings are not auto-synchronized.
+
+学科作业的周期为每周、每两周或每三周，且未设置或未开启自动推进时，新份次自动使用分次收花。
+花位按预计耗时每 10 分钟一朵向上取整。题目进度从本份练习中的具体题目 ID 和答对记录派生；
+有具体题目时显示完成数/总数，无具体题目时隐藏。
+每次收工保留相同 occurrence、练习快照和独立的每日记录；完成整份才推进练习游标。
+作业内嵌数学题按实际答对的 problemId 对本份去重。

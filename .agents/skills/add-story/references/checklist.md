@@ -13,7 +13,7 @@
 - [ ] 只包含故事正文；没有教材 Unit/Lesson、教材词表、练习、语法、写作、周计划、前测或段落回想。
 - [ ] slug、volume number、chapter key/number 均唯一稳定，段落边界自然。
 - [ ] 已报告每章段落数、英文词数和全书合计；章节数与来源一致。
-- [ ] 已用完整运行时 `word_entries` 语义审计匹配；每章仅传实际命中的去重词条。
+- [ ] 已用用户主动加载的 `word_entries` 语义审计匹配；每章仅传实际命中的去重词条。
 - [ ] 已报告每章/全书词库命中词条数，抽检词形与多词短语匹配。
 - [ ] 已输出未命中候选审计；只将确需解释的词加入对应章节 glossary，并记录排除普通词的取舍。
 - [ ] 词库卡显示 `(stage, unit, lesson)` 与 `(volume, chapter)`；glossary 点击卡可用。
@@ -38,7 +38,7 @@
 
 ## 集成与验证
 
-- [ ] Story 数据已注册并从 English barrel 可达；reading 首页 story shelf 能进入 Series → Volume → Chapter/full。
+- [ ] Story 数据已注册并从 English barrel 可达；首页 /stories 故事会 能进入 Series → Volume → Chapter/full。
 - [ ] 新路由 breadcrumb 已补齐；AI catalog 按当前架构包含每章且 href/sourceRef 唯一。
 - [ ] 架构/流程变化已更新 `packages/english/AGENTS.md`；纯数据新增未制造无关文档变更。
 - [ ] 新增分辑的专项 Vitest 覆盖层级、章节数量/顺序/标题、正文排除、稳定锚点及必要录音键规则。

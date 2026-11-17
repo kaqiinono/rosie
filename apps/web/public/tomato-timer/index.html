@@ -1,0 +1,3623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🍅 小番茄乐园 · 可爱儿童专注钟</title>
+  <style>
+    :root {
+      /* Dynamic Theme Tokens (Default: Focus Mode) */
+      --bg-top: #fff6eb;
+      --bg-bottom: #ffe6dc;
+      --surface: #ffffff;
+      --surface-soft: #fff9f4;
+      --surface-tint: #fff0e8;
+      --text-main: #4a3531;
+      --text-sub: #8a6c66;
+      --text-muted: #b0958f;
+      --accent: #ff6b5b;
+      --accent-hover: #ff5644;
+      --accent-dark: #d94333;
+      --accent-soft: #ffe4df;
+      --accent-ring: #ff7f6e;
+      --secondary: #43b97f;
+      --secondary-dark: #2c9661;
+      --secondary-soft: #e4f8ed;
+      --star-color: #ffb703;
+      --star-dark: #d98d00;
+      --star-soft: #fff5d6;
+      --border-soft: #f5ddd4;
+      --shadow-card: 0 14px 34px rgba(150, 78, 58, 0.1);
+      --radius-xl: 32px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --font-sans: "Nunito", "PingFang SC", "Hiragino Maru Gothic ProN", "YouYuan", "Microsoft YaHei UI", "Rounded Mplus 1c", system-ui, -apple-system, sans-serif;
+    }
+
+    body[data-theme="shortBreak"] {
+      --bg-top: #eafcf6;
+      --bg-bottom: #daf2ff;
+      --surface-soft: #f4fdfb;
+      --surface-tint: #e3f9f3;
+      --text-main: #274743;
+      --text-sub: #58817c;
+      --text-muted: #88aba6;
+      --accent: #2bb598;
+      --accent-hover: #22a388;
+      --accent-dark: #197f6a;
+      --accent-soft: #d7f5ee;
+      --accent-ring: #38c9aa;
+      --border-soft: #cdeee6;
+      --shadow-card: 0 14px 34px rgba(34, 130, 114, 0.11);
+    }
+
+    body[data-theme="longBreak"] {
+      --bg-top: #f4eeff;
+      --bg-bottom: #ffeef7;
+      --surface-soft: #faf7ff;
+      --surface-tint: #f0e8ff;
+      --text-main: #3b2e58;
+      --text-sub: #746494;
+      --text-muted: #a193bd;
+      --accent: #8b5cf6;
+      --accent-hover: #7c49f0;
+      --accent-dark: #6334cc;
+      --accent-soft: #ebe2ff;
+      --accent-ring: #9d75f8;
+      --border-soft: #e2d5fa;
+      --shadow-card: 0 14px 34px rgba(105, 67, 178, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      background: linear-gradient(160deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      background-attachment: fixed;
+      transition: background 0.6s ease, color 0.3s ease;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Decorative Floating Clouds & Sparkles */
+    .sky-decor {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.68);
+      border-radius: 999px;
+      filter: blur(0.4px);
+      animation: floatCloud linear infinite;
+    }
+    .cloud::before, .cloud::after {
+      content: "";
+      position: absolute;
+      background: inherit;
+      border-radius: 50%;
+    }
+    .cloud-1 {
+      width: 150px;
+      height: 48px;
+      top: 8%;
+      left: -180px;
+      animation-duration: 52s;
+    }
+    .cloud-1::before { width: 64px; height: 64px; top: -28px; left: 24px; }
+    .cloud-1::after { width: 48px; height: 48px; top: -18px; right: 24px; }
+
+    .cloud-2 {
+      width: 190px;
+      height: 58px;
+      top: 22%;
+      left: -240px;
+      opacity: 0.55;
+      animation-duration: 68s;
+      animation-delay: -26s;
+    }
+    .cloud-2::before { width: 80px; height: 80px; top: -36px; left: 34px; }
+    .cloud-2::after { width: 58px; height: 58px; top: -24px; right: 28px; }
+
+    .cloud-3 {
+      width: 130px;
+      height: 42px;
+      bottom: 14%;
+      left: -160px;
+      opacity: 0.5;
+      animation-duration: 58s;
+      animation-delay: -40s;
+    }
+    .cloud-3::before { width: 56px; height: 56px; top: -24px; left: 22px; }
+    .cloud-3::after { width: 42px; height: 42px; top: -16px; right: 20px; }
+
+    @keyframes floatCloud {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(100vw + 300px)); }
+    }
+
+    .dot-pattern {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.28;
+      background-image: radial-gradient(var(--accent) 1.2px, transparent 1.2px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(circle at 50% 45%, transparent 25%, black 100%);
+    }
+
+    /* Layout Container */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px 20px 44px;
+    }
+
+    /* Tactile 3D Button System */
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      color: inherit;
+      background: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-toy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 18px;
+      font-weight: 800;
+      font-size: 15px;
+      background: var(--surface);
+      color: var(--text-main);
+      border: 2px solid var(--border-soft);
+      box-shadow: 0 5px 0 var(--border-soft);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-toy:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 var(--border-soft);
+    }
+    .btn-toy:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 var(--border-soft);
+    }
+    .btn-toy:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-dark);
+      box-shadow: 0 6px 0 var(--accent-dark), 0 12px 24px rgba(255, 107, 91, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: 0 8px 0 var(--accent-dark), 0 14px 26px rgba(255, 107, 91, 0.3);
+    }
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 var(--accent-dark);
+    }
+
+    .btn-green {
+      background: var(--secondary);
+      color: #fff;
+      border-color: var(--secondary-dark);
+      box-shadow: 0 5px 0 var(--secondary-dark);
+    }
+    .btn-green:hover:not(:disabled) {
+      box-shadow: 0 7px 0 var(--secondary-dark);
+    }
+    .btn-green:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 var(--secondary-dark);
+    }
+
+    .btn-star {
+      background: var(--star-color);
+      color: #5b3b00;
+      border-color: var(--star-dark);
+      box-shadow: 0 5px 0 var(--star-dark);
+    }
+    .btn-star:hover:not(:disabled) {
+      box-shadow: 0 7px 0 var(--star-dark);
+    }
+    .btn-star:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 var(--star-dark);
+    }
+
+    .btn-sm {
+      padding: 7px 13px;
+      font-size: 13px;
+      border-radius: 14px;
+      box-shadow: 0 3px 0 var(--border-soft);
+    }
+    .btn-sm:hover:not(:disabled) {
+      box-shadow: 0 4px 0 var(--border-soft);
+    }
+    .btn-sm:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--border-soft);
+    }
+
+    /* Card Shell */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      border: 3px solid var(--border-soft);
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    /* Top Header */
+    .top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 12px 18px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(12px);
+      border-radius: 26px;
+      border: 2.5px solid var(--border-soft);
+      box-shadow: 0 10px 26px rgba(120, 65, 52, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .brand-badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      background: var(--accent-soft);
+      border: 2px solid var(--border-soft);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      animation: gentleBob 3s ease-in-out infinite;
+    }
+    .brand-title {
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: 0.3px;
+      line-height: 1.15;
+    }
+    .brand-sub {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .nav-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-tint);
+      padding: 5px;
+      border-radius: 20px;
+      border: 2px solid var(--border-soft);
+      flex-wrap: wrap;
+    }
+    .nav-pill {
+      padding: 8px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-sub);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .nav-pill:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.65);
+    }
+    .nav-pill.active {
+      background: var(--surface);
+      color: var(--accent-dark);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+      border: 2px solid var(--border-soft);
+      background: var(--surface-soft);
+    }
+    .stat-pill.stars {
+      background: var(--star-soft);
+      border-color: #f6d57a;
+      color: #8a5b00;
+    }
+    .stat-pill.tomatoes {
+      background: var(--accent-soft);
+      border-color: #ffc5bc;
+      color: #a83327;
+    }
+    .stat-pill.pop {
+      animation: popBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.22); }
+      100% { transform: scale(1); }
+    }
+
+    /* Views */
+    .view-panel {
+      display: none;
+      animation: fadeUp 0.28s ease;
+    }
+    .view-panel.active {
+      display: block;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Main Timer Workspace Grid */
+    .timer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .timer-grid {
+        grid-template-columns: 1fr;
+      }
+      .top-header {
+        justify-content: center;
+      }
+    }
+
+    /* Left: Timer Stage Card */
+    .timer-card {
+      padding: 24px 26px 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mode-switcher {
+      display: inline-flex;
+      background: var(--surface-tint);
+      padding: 5px;
+      border-radius: 20px;
+      border: 2px solid var(--border-soft);
+      gap: 5px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .mode-btn {
+      padding: 8px 16px;
+      border-radius: 15px;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--text-sub);
+      transition: all 0.2s ease;
+    }
+    .mode-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Kid Presets Strip */
+    .presets-strip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .preset-chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 800;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      color: var(--text-sub);
+      transition: all 0.18s ease;
+    }
+    .preset-chip:hover {
+      border-color: var(--accent);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+    .preset-chip.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+    }
+
+    /* Active Task Banner */
+    .active-task-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      border: 2px dashed var(--border-soft);
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+      max-width: 100%;
+    }
+    .active-task-pill.has-task {
+      border-style: solid;
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+    .active-task-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 300px;
+    }
+
+    /* Hero Ring + Mascot */
+    .hero-stage {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      display: grid;
+      place-items: center;
+      margin: 4px 0 6px;
+    }
+    .ring-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      overflow: visible;
+    }
+    .ring-track {
+      fill: none;
+      stroke: var(--surface-tint);
+      stroke-width: 16;
+    }
+    .ring-progress {
+      fill: none;
+      stroke: var(--accent-ring);
+      stroke-width: 16;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.35s linear, stroke 0.5s ease;
+      filter: drop-shadow(0 4px 10px rgba(255, 107, 91, 0.25));
+    }
+
+    .mascot-wrap {
+      width: 204px;
+      height: 204px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 42%, #ffffff 0%, var(--surface-soft) 100%);
+      box-shadow: inset 0 -6px 14px rgba(0, 0, 0, 0.04);
+      position: relative;
+      cursor: pointer;
+    }
+    .mascot-svg {
+      width: 184px;
+      height: 184px;
+      overflow: visible;
+    }
+
+    /* Mascot Animations */
+    @keyframes gentleBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    @keyframes focusPulse {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.025) translateY(-3px); }
+    }
+    @keyframes jumpHappy {
+      0%, 100% { transform: translateY(0) scale(1); }
+      35% { transform: translateY(-14px) scale(1.05); }
+      70% { transform: translateY(0) scale(0.97); }
+    }
+    @keyframes eyeBlink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.08); }
+    }
+    @keyframes floatBubble {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; }
+      50% { transform: translateY(-8px) scale(1.1); opacity: 1; }
+    }
+
+    .anim-bob { animation: gentleBob 2.8s ease-in-out infinite; }
+    .anim-focus { animation: focusPulse 2.2s ease-in-out infinite; }
+    .anim-celebrate { animation: jumpHappy 0.85s ease-in-out infinite; }
+    .eye-blink-group {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: eyeBlink 4.2s infinite;
+    }
+    .float-spark { animation: floatBubble 2.2s ease-in-out infinite; }
+
+    /* Speech Bubble */
+    .mascot-speech {
+      position: relative;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 7px 16px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      text-align: center;
+      max-width: 92%;
+    }
+
+    /* Countdown Display */
+    .countdown-text {
+      font-size: clamp(48px, 6.5vw, 66px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.05;
+      color: var(--text-main);
+      text-shadow: 0 3px 0 var(--surface-tint);
+      margin: 4px 0 10px;
+    }
+
+    /* 5-Stage Tomato Sprout Growth Bar */
+    .growth-bar {
+      width: 100%;
+      max-width: 440px;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .growth-stages {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 7px;
+    }
+    .growth-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      transition: transform 0.25s ease, color 0.25s ease;
+    }
+    .growth-step .emoji {
+      font-size: 19px;
+      filter: grayscale(0.75) opacity(0.55);
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+    .growth-step.reached {
+      color: var(--text-main);
+    }
+    .growth-step.reached .emoji {
+      filter: none;
+    }
+    .growth-step.current .emoji {
+      transform: scale(1.26);
+    }
+    .growth-track {
+      height: 10px;
+      border-radius: 999px;
+      background: var(--surface-tint);
+      overflow: hidden;
+    }
+    .growth-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #68d391 0%, #f6ad55 55%, #ff6b5b 100%);
+      transition: width 0.35s linear;
+    }
+
+    /* Round Cycle Dots */
+    .cycle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-sub);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cycle-dots {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .cycle-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      background: var(--surface-tint);
+      border: 2px solid var(--border-soft);
+      transition: transform 0.2s ease;
+    }
+    .cycle-dot.done {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+    .cycle-dot.current {
+      border-color: var(--accent);
+      transform: scale(1.14);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    /* Main Timer Controls */
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .btn-main-start {
+      min-width: 184px;
+      padding: 14px 28px;
+      font-size: 18px;
+      border-radius: 22px;
+    }
+
+    /* Break Wellness Banner */
+    .wellness-box {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px 16px;
+      border-radius: 20px;
+      background: var(--secondary-soft);
+      border: 2px solid #b2ead0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .wellness-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #1f5c43;
+    }
+    .breath-orb {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #6ee7b7, #34d399);
+      flex-shrink: 0;
+      animation: breatheOrb 6s ease-in-out infinite;
+    }
+    @keyframes breatheOrb {
+      0%, 100% { transform: scale(0.82); opacity: 0.85; }
+      50% { transform: scale(1.18); opacity: 1; }
+    }
+
+    /* Right Column: Tasks + Quick Ambient Mixer */
+    .side-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-card {
+      padding: 20px 22px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .panel-title {
+      font-size: 17px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Task Add Form */
+    .task-form {
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .task-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .input-cute {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 2px solid var(--border-soft);
+      background: var(--surface);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .input-cute::placeholder {
+      color: var(--text-muted);
+    }
+
+    .task-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .sticker-picker {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .sticker-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      display: grid;
+      place-items: center;
+      border: 2px solid transparent;
+      background: var(--surface);
+      transition: transform 0.15s ease;
+    }
+    .sticker-btn:hover { transform: scale(1.1); }
+    .sticker-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .est-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+    .est-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 12px;
+      background: var(--surface);
+      border: 2px solid var(--border-soft);
+    }
+    .est-btn.selected {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent-dark);
+    }
+
+    /* Task List */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+    .task-item:hover {
+      border-color: var(--accent);
+    }
+    .task-item.active-task {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(255, 107, 91, 0.12);
+    }
+    .task-item.completed {
+      opacity: 0.68;
+      background: #f6f6f6;
+    }
+    .task-item.completed .task-name {
+      text-decoration: line-through;
+    }
+
+    .task-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      border: 2.5px solid var(--accent);
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+    }
+    .task-item.completed .task-check {
+      background: var(--secondary);
+      border-color: var(--secondary-dark);
+    }
+
+    .task-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .task-body {
+      flex: 1;
+      min-width: 0;
+    }
+    .task-name {
+      font-size: 14.5px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+    .task-tomato-slots {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 3px;
+      font-size: 12px;
+      color: var(--text-sub);
+      font-weight: 700;
+    }
+    .task-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .icon-mini-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      background: var(--surface);
+      border: 1.5px solid var(--border-soft);
+      color: var(--text-sub);
+    }
+    .icon-mini-btn:hover {
+      background: #fff;
+      color: var(--accent-dark);
+      border-color: var(--accent);
+    }
+
+    .empty-box {
+      text-align: center;
+      padding: 22px 14px;
+      border-radius: 18px;
+      border: 2px dashed var(--border-soft);
+      color: var(--text-sub);
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    /* Ambient Quick Grid */
+    .ambient-quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .ambient-chip {
+      padding: 10px 8px;
+      border-radius: 16px;
+      border: 2px solid var(--border-soft);
+      background: var(--surface-soft);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-sub);
+      transition: all 0.18s ease;
+    }
+    .ambient-chip .amb-emoji { font-size: 20px; }
+    .ambient-chip.playing {
+      background: var(--secondary-soft);
+      border-color: var(--secondary);
+      color: #165e41;
+      box-shadow: 0 4px 12px rgba(67, 185, 127, 0.18);
+    }
+
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+    input[type="range"] {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .section-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+    @media (max-width: 860px) {
+      .section-grid-2 { grid-template-columns: 1fr; }
+    }
+
+
+    /* Rewards & Coupons */
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 12px;
+    }
+    .badge-card {
+      padding: 14px;
+      border-radius: 20px;
+      border: 2px solid var(--border-soft);
+      background: var(--surface-soft);
+      display: flex;
+      gap: 11px;
+      align-items: center;
+      opacity: 0.62;
+      filter: grayscale(0.5);
+      transition: all 0.2s ease;
+    }
+    .badge-card.unlocked {
+      opacity: 1;
+      filter: none;
+      background: linear-gradient(135deg, #fffdf5 0%, #fff4d8 100%);
+      border-color: #f6cd61;
+    }
+    .badge-icon-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: #fff;
+      border: 2px solid var(--border-soft);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .badge-card.unlocked .badge-icon-wrap {
+      border-color: #f6cd61;
+      box-shadow: 0 4px 10px rgba(255, 183, 3, 0.2);
+    }
+    .badge-progress {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.08);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .badge-progress > div {
+      height: 100%;
+      background: var(--star-color);
+      border-radius: 999px;
+    }
+
+    .coupon-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .coupon-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      background: var(--surface-soft);
+      border: 2px dashed var(--border-soft);
+      flex-wrap: wrap;
+    }
+    .coupon-card.redeemed-ticket {
+      background: #fffbeb;
+      border-color: #f5c352;
+      border-style: solid;
+    }
+
+    /* Stats / Growth Diary */
+    .metrics-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 760px) {
+      .metrics-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .metric-box {
+      padding: 16px;
+      border-radius: 22px;
+      background: var(--surface);
+      border: 2.5px solid var(--border-soft);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .metric-emoji {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: var(--accent-soft);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .metric-val {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+    .metric-lbl {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text-sub);
+    }
+
+    .chart-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 310px;
+      overflow-y: auto;
+    }
+    .history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 15px;
+      background: var(--surface-soft);
+      border: 1.5px solid var(--border-soft);
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+
+    /* Modals & Overlays */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(54, 34, 30, 0.45);
+      backdrop-filter: blur(5px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-card {
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-radius: 30px;
+      border: 3px solid var(--border-soft);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      padding: 24px;
+      position: relative;
+      animation: popModal 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popModal {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-size: 20px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1.5px solid var(--surface-tint);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .setting-row:last-child { border-bottom: none; }
+
+    .stepper {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-soft);
+      padding: 4px 8px;
+      border-radius: 14px;
+    }
+    .stepper button {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1.5px solid var(--border-soft);
+      font-weight: 900;
+      font-size: 16px;
+    }
+    .stepper span {
+      min-width: 44px;
+      text-align: center;
+      font-weight: 900;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      border-radius: 999px;
+      background: #ded6d3;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px;
+      left: 3px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    }
+    .switch.on {
+      background: var(--secondary);
+    }
+    .switch.on::after {
+      transform: translateX(22px);
+    }
+
+    /* Zen Fullscreen Overlay */
+    .zen-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: linear-gradient(160deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .zen-overlay.open {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+    .zen-exit-btn {
+      position: absolute;
+      top: 22px;
+      right: 24px;
+    }
+    .zen-countdown {
+      font-size: clamp(64px, 11vw, 110px);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 3px;
+      margin: 12px 0;
+    }
+
+    /* Toast Stack */
+    .toast-stack {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .toast-item {
+      pointer-events: auto;
+      background: var(--surface);
+      border: 2.5px solid var(--accent);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+      border-radius: 18px;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: slideToast 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 340px;
+    }
+    @keyframes slideToast {
+      from { transform: translateX(40px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-soft); border-radius: 999px; }
+
+    .text-sub { color: var(--text-sub); font-size: 13px; font-weight: 700; }
+    .divider { height: 1px; background: var(--border-soft); margin: 14px 0; }
+  </style>
+</head>
+<body data-theme="focus">
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Soft Background Atmosphere -->
+  <div class="sky-decor" aria-hidden="true">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+  </div>
+  <div class="dot-pattern" aria-hidden="true"></div>
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="brand">
+        <div class="brand-badge" id="brand-icon">🍅</div>
+        <div>
+          <div class="brand-title">小番茄乐园</div>
+          <div class="brand-sub">专心成长 · 快乐收获每一天</div>
+        </div>
+      </div>
+
+      <nav class="nav-pills" aria-label="主功能切换">
+        <button class="nav-pill active" data-tab="timer">⏱️ 专注计时</button>
+        <button class="nav-pill" data-tab="rewards">🎁 奖励屋</button>
+        <button class="nav-pill" data-tab="stats">📊 成长日记</button>
+      </nav>
+
+      <div class="header-actions">
+        <div class="stat-pill stars" id="header-stars" title="我的专注星星">⭐ <span id="star-count">0</span></div>
+        <div class="stat-pill tomatoes" id="header-today-tomatoes" title="今日收获番茄">🍅 <span id="today-tomato-count">0</span></div>
+        <button class="btn-toy btn-sm" id="btn-open-sound" title="白噪音工坊">🎵 音效</button>
+        <button class="btn-toy btn-sm" id="btn-open-settings" title="番茄钟设置">⚙️ 设置</button>
+      </div>
+    </header>
+
+    <!-- TAB 1: FOCUS TIMER & TASKS -->
+    <main id="view-timer" class="view-panel active">
+      <div class="timer-grid">
+        <!-- Left: Primary Timer Stage -->
+        <section class="card timer-card">
+          <div class="mode-switcher" role="tablist" aria-label="计时模式">
+            <button class="mode-btn active" data-mode="focus">🍅 专注学习</button>
+            <button class="mode-btn" data-mode="shortBreak">🌱 短暂休息</button>
+            <button class="mode-btn" data-mode="longBreak">🌈 大大休息</button>
+          </div>
+
+          <div class="presets-strip" id="presets-strip"></div>
+
+          <div class="active-task-pill" id="active-task-banner">
+            <span>📌</span>
+            <span class="active-task-text" id="active-task-label">点击右侧选一个小任务，或直接开始专注吧~</span>
+          </div>
+
+          <!-- Circular Ring + Animated SVG Buddy -->
+          <div class="hero-stage">
+            <svg class="ring-svg" viewBox="0 0 280 280" aria-hidden="true">
+              <circle class="ring-track" cx="140" cy="140" r="122" />
+              <circle class="ring-progress" id="ring-progress" cx="140" cy="140" r="122" />
+            </svg>
+            <div class="mascot-wrap" id="mascot-stage" title="点点我会有惊喜哦！"></div>
+          </div>
+
+          <div class="mascot-speech" id="mascot-speech">咕噜小番茄准备好陪你出发啦！</div>
+          <div class="countdown-text" id="countdown-display">25:00</div>
+
+          <!-- 5-Stage Tomato Sprout Growth Indicator -->
+          <div class="growth-bar" id="growth-bar">
+            <div class="growth-stages">
+              <div class="growth-step" data-stage="0"><span class="emoji">🌱</span><span>小种子</span></div>
+              <div class="growth-step" data-stage="1"><span class="emoji">🌿</span><span>冒新芽</span></div>
+              <div class="growth-step" data-stage="2"><span class="emoji">🌼</span><span>开小花</span></div>
+              <div class="growth-step" data-stage="3"><span class="emoji">🍏</span><span>青番茄</span></div>
+              <div class="growth-step" data-stage="4"><span class="emoji">🍅</span><span>熟透啦</span></div>
+            </div>
+            <div class="growth-track"><div class="growth-fill" id="growth-fill"></div></div>
+          </div>
+
+          <!-- Cycle Round Dots -->
+          <div class="cycle-row">
+            <span id="cycle-label">第 1 / 4 轮</span>
+            <div class="cycle-dots" id="cycle-dots"></div>
+          </div>
+
+          <!-- Main Controls -->
+          <div class="controls-row">
+            <button class="btn-toy btn-primary btn-main-start" id="btn-start-pause">▶️ 开始专注</button>
+            <button class="btn-toy" id="btn-reset" title="重新开始 (R)">🔄 重置</button>
+            <button class="btn-toy" id="btn-plus-5" title="加 5 分钟">➕ 5分</button>
+            <button class="btn-toy" id="btn-skip" title="跳到下一阶段 (S)">⏭️ 跳过</button>
+            <button class="btn-toy" id="btn-zen" title="进入沉浸全屏模式 (F)">🖥️ 全屏</button>
+          </div>
+
+          <!-- Break Wellness Tip (shown during breaks) -->
+          <div class="wellness-box" id="wellness-box" style="display:none;">
+            <div class="wellness-left">
+              <div class="breath-orb" aria-hidden="true"></div>
+              <div>
+                <div style="font-size:12px; opacity:0.85;">🧘 课间护眼与伸展小贴士</div>
+                <div id="wellness-tip-text">看看窗外远处的树叶 20 秒，让小眼睛休息一下~</div>
+              </div>
+            </div>
+            <button class="btn-toy btn-sm" id="btn-next-tip">换一条 ✨</button>
+          </div>
+        </section>
+
+        <!-- Right: Tasks + Ambient Sound Shortcut -->
+        <div class="side-stack">
+          <section class="card panel-card">
+            <div class="panel-header">
+              <div class="panel-title">📝 今日小任务清单</div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn-toy btn-sm" id="btn-load-sample-tasks">✨ 推荐计划</button>
+                <button class="btn-toy btn-sm" id="btn-clear-done-tasks">🧹 清理已完成</button>
+              </div>
+            </div>
+
+            <form class="task-form" id="task-form">
+              <div class="task-input-row">
+                <input class="input-cute" id="task-input" type="text" maxlength="40" placeholder="写下想完成的小目标（如：写数学作业）" />
+                <button type="submit" class="btn-toy btn-primary btn-sm" style="white-space:nowrap;">添加</button>
+              </div>
+              <div class="task-meta-row">
+                <div class="sticker-picker" id="sticker-picker" aria-label="选择任务图标"></div>
+                <div class="est-picker">
+                  <span>预计：</span>
+                  <button type="button" class="est-btn selected" data-est="1">1🍅</button>
+                  <button type="button" class="est-btn" data-est="2">2🍅</button>
+                  <button type="button" class="est-btn" data-est="3">3🍅</button>
+                  <button type="button" class="est-btn" data-est="4">4🍅</button>
+                </div>
+              </div>
+            </form>
+
+            <div class="task-list" id="task-list"></div>
+          </section>
+
+          <!-- Cozy Ambient Sound Quick Bar -->
+          <section class="card panel-card">
+            <div class="panel-header">
+              <div class="panel-title">🎧 专注白噪音伴侣</div>
+              <button class="btn-toy btn-sm" id="btn-mute-all-ambient">🔇 全部静音</button>
+            </div>
+            <div class="ambient-quick-grid" id="ambient-quick-grid"></div>
+            <div class="volume-row">
+              <span>🔊 音量</span>
+              <input type="range" id="ambient-master-vol" min="0" max="100" value="45" style="flex:1;" />
+              <span id="ambient-vol-val">45%</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- TAB 3: REWARDS & COUPONS -->
+    <section id="view-rewards" class="view-panel">
+      <div class="section-grid-2">
+        <!-- Left: Achievement Badges -->
+        <div class="card panel-card">
+          <div class="panel-header">
+            <div class="panel-title">🏅 成长荣誉小勋章</div>
+            <span class="text-sub" id="badge-unlocked-count">已解锁 0 / 8</span>
+          </div>
+          <div class="badge-grid" id="badge-grid"></div>
+        </div>
+
+        <!-- Right: Parent-Kid Wish Coupons -->
+        <div class="card panel-card">
+          <div class="panel-header">
+            <div class="panel-title">🎟️ 亲子心愿兑换屋</div>
+            <button class="btn-toy btn-sm" id="btn-add-coupon">➕ 添加心愿 (家长)</button>
+          </div>
+          <p class="text-sub" style="margin-bottom:12px;">每完成 1 次专注可获得 5⭐，完成小任务额外 +2⭐！攒够星星就可以向爸爸妈妈兑换心愿券啦~</p>
+
+          <div class="coupon-list" id="coupon-shop-list"></div>
+
+          <div class="divider"></div>
+          <div class="panel-header" style="margin-bottom:8px;">
+            <div class="panel-title" style="font-size:15.5px;">✨ 已兑换的心愿券</div>
+            <span class="text-sub">给爸爸妈妈看即可兑现</span>
+          </div>
+          <div class="coupon-list" id="redeemed-coupon-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: GROWTH DIARY / STATS -->
+    <section id="view-stats" class="view-panel">
+      <div class="metrics-4">
+        <div class="metric-box">
+          <div class="metric-emoji">🍅</div>
+          <div>
+            <div class="metric-val" id="stat-today-tomatoes">0</div>
+            <div class="metric-lbl">今日收获番茄</div>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-emoji" style="background:var(--secondary-soft);">⏱️</div>
+          <div>
+            <div class="metric-val" id="stat-today-minutes">0 分</div>
+            <div class="metric-lbl">今日专注时长</div>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-emoji" style="background:var(--star-soft);">🔥</div>
+          <div>
+            <div class="metric-val" id="stat-streak">0 天</div>
+            <div class="metric-lbl">连续打卡天数</div>
+          </div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-emoji" style="background:#ede9fe;">🌟</div>
+          <div>
+            <div class="metric-val" id="stat-total-tomatoes">0</div>
+            <div class="metric-lbl">累计总番茄数</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-grid-2">
+        <div class="card panel-card">
+          <div class="panel-header">
+            <div class="panel-title">📈 最近 7 天专注曲线</div>
+            <span class="text-sub">单位：专注分钟数</span>
+          </div>
+          <div class="chart-wrap" id="weekly-chart"></div>
+        </div>
+
+        <div class="card panel-card">
+          <div class="panel-header">
+            <div class="panel-title">📖 专注足迹记录</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn-toy btn-sm" id="btn-export-data">💾 导出备份</button>
+              <button class="btn-toy btn-sm" id="btn-import-data">📥 导入备份</button>
+              <input type="file" id="import-file-input" accept=".json" style="display:none;" />
+            </div>
+          </div>
+          <div class="history-list" id="history-list"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ZEN FULLSCREEN OVERLAY -->
+  <div class="zen-overlay" id="zen-overlay" role="dialog" aria-modal="true" aria-label="沉浸专注大屏">
+    <button class="btn-toy zen-exit-btn" id="btn-exit-zen">✖️ 退出大屏</button>
+    <div class="active-task-pill has-task" id="zen-task-pill" style="margin-bottom:18px;">🍅 正在专注</div>
+    <div id="zen-mascot-slot" style="width:210px; height:210px; display:grid; place-items:center;"></div>
+    <div class="zen-countdown" id="zen-countdown">25:00</div>
+    <div class="mascot-speech" id="zen-speech" style="margin-bottom:20px;">安静专注中，小番茄正在努力长大~</div>
+    <div class="controls-row">
+      <button class="btn-toy btn-primary btn-main-start" id="btn-zen-start-pause">⏸️ 暂停一下</button>
+      <button class="btn-toy" id="btn-zen-reset">🔄 重置</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="番茄钟设置">
+      <div class="modal-header">
+        <div class="modal-title">⚙️ 小番茄设置中心</div>
+        <button class="btn-toy btn-sm" data-close-modal="modal-settings">关闭</button>
+      </div>
+
+      <div class="setting-row">
+        <span>🍅 专注时长（分钟）</span>
+        <div class="stepper">
+          <button type="button" data-step="focusMinutes" data-delta="-1">−</button>
+          <span id="set-focusMinutes">25</span>
+          <button type="button" data-step="focusMinutes" data-delta="1">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span>🌱 短暂休息（分钟）</span>
+        <div class="stepper">
+          <button type="button" data-step="shortBreakMinutes" data-delta="-1">−</button>
+          <span id="set-shortBreakMinutes">5</span>
+          <button type="button" data-step="shortBreakMinutes" data-delta="1">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span>🌈 大大休息（分钟）</span>
+        <div class="stepper">
+          <button type="button" data-step="longBreakMinutes" data-delta="-1">−</button>
+          <span id="set-longBreakMinutes">15</span>
+          <button type="button" data-step="longBreakMinutes" data-delta="1">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span>🔁 几轮后开启大大休息</span>
+        <div class="stepper">
+          <button type="button" data-step="longBreakInterval" data-delta="-1">−</button>
+          <span id="set-longBreakInterval">4</span>
+          <button type="button" data-step="longBreakInterval" data-delta="1">+</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span>🔔 完成提示铃声</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <select id="set-chime-style" class="input-cute" style="padding:6px 10px; width:auto;">
+            <option value="marimba">🎵 木琴叮咚</option>
+            <option value="musicbox">🎼 梦幻八音盒</option>
+            <option value="twinkle">⭐ 小星星旋律</option>
+            <option value="bell">🔔 温柔风铃</option>
+          </select>
+          <button class="btn-toy btn-sm" id="btn-test-chime">试听</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span>🗣️ 可爱语音加油播报</span>
+        <button class="switch" id="toggle-voice" role="switch" aria-checked="true"></button>
+      </div>
+      <div class="setting-row">
+        <span>🔊 按键啵啵音效</span>
+        <button class="switch" id="toggle-ui-sound" role="switch" aria-checked="true"></button>
+      </div>
+      <div class="setting-row">
+        <span>🎧 休息时自动暂停白噪音</span>
+        <button class="switch" id="toggle-ambient-focus-only" role="switch" aria-checked="true"></button>
+      </div>
+      <div class="setting-row">
+        <span>⏭️ 专注结束自动进入休息</span>
+        <button class="switch" id="toggle-auto-break" role="switch" aria-checked="false"></button>
+      </div>
+      <div class="setting-row">
+        <span>🛡️ 守护模式（提前停止需确认）</span>
+        <button class="switch" id="toggle-strict-guard" role="switch" aria-checked="true"></button>
+      </div>
+      <div class="setting-row">
+        <span>🔒 家长数学小锁（添加奖励/重置时验证）</span>
+        <button class="switch" id="toggle-parent-lock" role="switch" aria-checked="true"></button>
+      </div>
+      <div class="setting-row">
+        <span>📣 桌面系统提醒权限</span>
+        <button class="btn-toy btn-sm" id="btn-request-notif">开启提醒</button>
+      </div>
+      <div class="setting-row">
+        <span style="color:#c53030;">🗑️ 清空全部本地数据</span>
+        <button class="btn-toy btn-sm" id="btn-reset-all-data" style="color:#c53030;">重置数据</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOUND STUDIO MODAL -->
+  <div class="modal-backdrop" id="modal-sound">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="白噪音调音台">
+      <div class="modal-header">
+        <div class="modal-title">🎵 专注白噪音小工坊</div>
+        <button class="btn-toy btn-sm" data-close-modal="modal-sound">关闭</button>
+      </div>
+      <p class="text-sub" style="margin-bottom:14px;">可以同时混搭多种大自然声音哦！比如「窗边小雨 + 暖暖壁炉」超级助眠又专注~</p>
+      <div id="sound-studio-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- CELEBRATION MODAL -->
+  <div class="modal-backdrop" id="modal-celebration">
+    <div class="modal-card" style="text-align:center;" role="dialog" aria-modal="true" aria-label="完成庆祝">
+      <div id="celeb-mascot" style="width:150px; height:150px; margin:0 auto;"></div>
+      <h2 id="celeb-title" style="font-size:24px; font-weight:900; margin:6px 0;">太棒啦！收获小番茄！</h2>
+      <p id="celeb-subtitle" class="text-sub" style="font-size:15px; margin-bottom:14px;"></p>
+      <div id="celeb-rewards-box" style="background:var(--surface-soft); border:2px solid var(--border-soft); border-radius:20px; padding:14px; margin-bottom:16px;"></div>
+      <div class="controls-row">
+        <button class="btn-toy btn-green btn-main-start" id="btn-celeb-next">🌱 开始休息吧</button>
+        <button class="btn-toy" data-close-modal="modal-celebration">留在这里</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EARLY STOP GUARD MODAL -->
+  <div class="modal-backdrop" id="modal-guard">
+    <div class="modal-card" style="max-width:420px; text-align:center;" role="dialog" aria-modal="true" aria-label="确认提前结束">
+      <div style="font-size:48px; margin-bottom:6px;">🍅💦</div>
+      <h3 style="font-size:20px; font-weight:900; margin-bottom:8px;">小番茄还在努力长大呢！</h3>
+      <p class="text-sub" id="guard-msg" style="margin-bottom:18px;">现在重置或跳过的话，这颗正在生长的小番茄就不会计入收获哦~ 确定要继续吗？</p>
+      <div class="controls-row">
+        <button class="btn-toy btn-primary" data-close-modal="modal-guard">继续专注 💪</button>
+        <button class="btn-toy" id="btn-guard-confirm">确定放弃</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARENT MATH GATE & ADD COUPON MODAL -->
+  <div class="modal-backdrop" id="modal-parent-gate">
+    <div class="modal-card" style="max-width:420px;" role="dialog" aria-modal="true" aria-label="家长验证">
+      <div class="modal-header">
+        <div class="modal-title">🔒 家长小验证</div>
+        <button class="btn-toy btn-sm" data-close-modal="modal-parent-gate">取消</button>
+      </div>
+      <p class="text-sub" style="margin-bottom:12px;">请爸爸妈妈算出下面这道题，就能进入管理啦：</p>
+      <div style="font-size:26px; font-weight:900; text-align:center; padding:14px; background:var(--surface-soft); border-radius:18px; margin-bottom:12px;" id="parent-math-question">8 × 7 = ?</div>
+      <div style="display:flex; gap:8px;">
+        <input type="number" class="input-cute" id="parent-math-answer" placeholder="输入答案" />
+        <button class="btn-toy btn-primary" id="btn-parent-verify">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD COUPON MODAL -->
+  <div class="modal-backdrop" id="modal-add-coupon">
+    <div class="modal-card" style="max-width:440px;" role="dialog" aria-modal="true" aria-label="新增亲子心愿">
+      <div class="modal-header">
+        <div class="modal-title">🎁 添加亲子心愿券</div>
+        <button class="btn-toy btn-sm" data-close-modal="modal-add-coupon">关闭</button>
+      </div>
+      <form id="coupon-form" style="display:flex; flex-direction:column; gap:12px;">
+        <div>
+          <label class="text-sub" style="display:block; margin-bottom:5px;">选择可爱图标</label>
+          <div class="sticker-picker" id="coupon-icon-picker"></div>
+        </div>
+        <div>
+          <label class="text-sub" style="display:block; margin-bottom:5px;">心愿内容</label>
+          <input type="text" class="input-cute" id="coupon-title-input" maxlength="32" placeholder="例如：周末去动物园玩！" required />
+        </div>
+        <div>
+          <label class="text-sub" style="display:block; margin-bottom:5px;">需要星星数量（⭐）</label>
+          <input type="number" class="input-cute" id="coupon-cost-input" min="5" max="200" value="20" required />
+        </div>
+        <button type="submit" class="btn-toy btn-star">✨ 创建心愿券</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function startTimerPage(event) {
+      "use strict";
+      if (event.source !== parent || event.origin !== new URL(document.URL).origin || event.data?.type !== "tomato:init") return;
+      window.removeEventListener("message", startTimerPage);
+
+      /* ==========================================================================
+         1. CATALOG & CONSTANTS
+      ========================================================================== */
+
+      const PRESETS = [
+        { id: "chick", label: "🐣 小鸡起步 10分", focus: 10, shortBreak: 3, longBreak: 10 },
+        { id: "bunny", label: "🐰 小兔冲刺 15分", focus: 15, shortBreak: 5, longBreak: 12 },
+        { id: "classic", label: "🍅 经典番茄 25分", focus: 25, shortBreak: 5, longBreak: 15 },
+        { id: "scholar", label: "🚀 学霸挑战 40分", focus: 40, shortBreak: 10, longBreak: 20 }
+      ];
+
+      const TASK_STICKERS = ["📚", "📖", "🎹", "🎨", "🧮", "🧩", "✍️", "🧹"];
+      const COUPON_ICONS = ["🍦", "📺", "🏞️", "🎲", "🍕", "🛍️", "🎡", "🎨"];
+
+      const AMBIENT_CHANNELS = [
+        { id: "rain", name: "窗边小雨", emoji: "🌧️", desc: "沙沙绵密雨声" },
+        { id: "forest", name: "森林微风", emoji: "🌲", desc: "树叶沙沙与鸟鸣" },
+        { id: "fire", name: "暖暖壁炉", emoji: "🔥", desc: "噼啪木柴暖意" },
+        { id: "ocean", name: "海边小浪", emoji: "🌊", desc: "轻柔舒缓海浪声" },
+        { id: "chimes", name: "梦幻风铃", emoji: "🎵", desc: "清脆五音阶风铃" },
+        { id: "tick", name: "木头轻滴答", emoji: "🕰️", desc: "专注时柔和报时" }
+      ];
+
+      const WELLNESS_TIPS = [
+        "👀 看看窗外远处的绿色树叶 20 秒，让小眼睛放松一下~",
+        "🙆 举起双手向天空伸个大懒腰，再轻轻放下吧！",
+        "💧 去喝一小口温开水，给大脑加加油！",
+        "🌬️ 跟着上面的绿色呼吸球，慢慢深呼吸 3 次~",
+        "🦒 轻轻向左向右转一转小脖子，肩膀不要耸起来哦！",
+        "🤸 站起来原地小跳 10 下，让身体充满活力！"
+      ];
+
+      const BADGES = [
+        { id: "first_tomato", icon: "🌱", name: "初次发芽", desc: "完成第 1 个小番茄", target: 1, metric: "totalTomatoes" },
+        { id: "five_tomatoes", icon: "🍅", name: "小小种植园主", desc: "累计收获 5 颗番茄", target: 5, metric: "totalTomatoes" },
+        { id: "twenty_tomatoes", icon: "🧺", name: "大丰收篮子", desc: "累计收获 20 颗番茄", target: 20, metric: "totalTomatoes" },
+        { id: "first_task", icon: "✅", name: "计划小达人", desc: "完成第 1 个小任务", target: 1, metric: "totalTasksDone" },
+        { id: "ten_tasks", icon: "📚", name: "作业清零王", desc: "累计完成 10 个小任务", target: 10, metric: "totalTasksDone" },
+        { id: "sixty_mins", icon: "⏱️", name: "专注小超人", desc: "累计专注满 60 分钟", target: 60, metric: "totalMinutes" },
+        { id: "three_hundred_mins", icon: "🚀", name: "时间旅行家", desc: "累计专注满 300 分钟", target: 300, metric: "totalMinutes" },
+        { id: "streak_3", icon: "🔥", name: "三日好习惯", desc: "连续 3 天完成专注", target: 3, metric: "bestStreak" },
+      ];
+
+      const SAMPLE_TASKS = [
+        { title: "完成今天的数学练习", icon: "🧮", est: 2 },
+        { title: "大声朗读语文课文或绘本", icon: "📖", est: 1 },
+        { title: "整理书包和小书桌", icon: "🧹", est: 1 }
+      ];
+
+      const DEFAULT_COUPONS = [
+        { id: "c1", icon: "📺", title: "看 20 分钟喜欢的动画片", cost: 15 },
+        { id: "c2", icon: "🍦", title: "吃一个美味小冰淇淋", cost: 20 },
+        { id: "c3", icon: "🎲", title: "和爸爸妈妈玩一次桌游", cost: 25 },
+        { id: "c4", icon: "🏞️", title: "周末去公园野餐或放风筝", cost: 40 }
+      ];
+
+      /* ==========================================================================
+         2. UTILITIES & STORAGE
+      ========================================================================== */
+      function todayKey(date = new Date()) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      function formatClock(totalSeconds) {
+        const s = Math.max(0, Math.ceil(totalSeconds));
+        const mins = Math.floor(s / 60);
+        const secs = s % 60;
+        return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function uid(prefix = "id") {
+        return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+      }
+
+      function createDefaultState() {
+        return {
+          version: 1,
+          settings: {
+            focusMinutes: 25,
+            shortBreakMinutes: 5,
+            longBreakMinutes: 15,
+            longBreakInterval: 4,
+            chimeStyle: "marimba",
+            voiceEnabled: true,
+            uiSoundEnabled: true,
+            ambientFocusOnly: true,
+            autoStartBreak: false,
+            strictGuard: true,
+            parentLock: true,
+            ambientMasterVol: 45
+          },
+          timer: {
+            mode: "focus",          // focus | shortBreak | longBreak
+            status: "idle",         // idle | running | paused
+            roundIndex: 1,
+            totalMs: 25 * 60 * 1000,
+            remainingMs: 25 * 60 * 1000,
+            endTimestamp: null,
+            activeTaskId: null,
+            activePresetId: "classic"
+          },
+          stars: 12,                // Welcome starter stars so kids can try the shop!
+          totalTasksDone: 0,
+          unlockedBadges: [],
+          tasks: [
+            { id: "t_demo_1", title: "专心写完第一页作业", icon: "📚", est: 2, doneTomatoes: 0, completed: false },
+            { id: "t_demo_2", title: "读 15 分钟趣味绘本", icon: "📖", est: 1, doneTomatoes: 0, completed: false }
+          ],
+          history: [],              // { id, mode, minutes, taskTitle, starsEarned, dateKey, timeLabel }
+          dailyStats: {},           // { [dateKey]: { tomatoes, minutes } }
+          coupons: DEFAULT_COUPONS.map((c) => ({ ...c })),
+          redeemedCoupons: [],      // { id, icon, title, cost, redeemedAt, fulfilled }
+          ambientActive: {}         // { rain: false, ... }
+        };
+      }
+
+      function loadState(parsed) {
+        const def = createDefaultState();
+        try {
+          return {
+            ...def,
+            ...Object.fromEntries(Object.keys(def).filter(key => key in parsed).map(key => [key, parsed[key]])),
+            settings: { ...def.settings, ...(parsed.settings || {}) },
+            timer: { ...def.timer, ...(parsed.timer || {}) },
+            unlockedBadges: Array.isArray(parsed.unlockedBadges) ? parsed.unlockedBadges.filter(id => BADGES.some(b => b.id === id)) : [],
+            tasks: Array.isArray(parsed.tasks) ? parsed.tasks : def.tasks,
+            history: Array.isArray(parsed.history) ? parsed.history : [],
+            dailyStats: parsed.dailyStats || {},
+            coupons: Array.isArray(parsed.coupons) ? parsed.coupons : def.coupons,
+            redeemedCoupons: Array.isArray(parsed.redeemedCoupons) ? parsed.redeemedCoupons : [],
+            ambientActive: parsed.ambientActive || {}
+          };
+        } catch {
+          return def;
+        }
+      }
+
+      let state = loadState(event.data.state || {});
+      if (!state.timer.activeTaskId && state.tasks.length > 0) {
+        const firstIncomplete = state.tasks.find((t) => !t.completed);
+        if (firstIncomplete) state.timer.activeTaskId = firstIncomplete.id;
+      }
+
+      function saveState() {
+        try {
+          parent.postMessage({ type: "tomato:save", state }, event.origin);
+        } catch {
+          // Ignore storage quota issues safely
+        }
+      }
+
+      /* ==========================================================================
+         3. WEB AUDIO SYNTHESIZER & SPEECH ENGINE (100% Zero External Assets)
+      ========================================================================== */
+      const AUDIO = (() => {
+        let ctx = null;
+        let noiseBuffer = null;
+        let brownBuffer = null;
+        const activeNodes = {};
+
+        function ensureCtx() {
+          if (!ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            ctx = new AudioCtx();
+          }
+          if (ctx.state === "suspended") {
+            ctx.resume().catch(() => {});
+          }
+          if (!noiseBuffer && ctx) {
+            // 3-second pink-ish filtered buffer
+            const len = ctx.sampleRate * 3;
+            noiseBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+            const data = noiseBuffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            for (let i = 0; i < len; i++) {
+              const white = Math.random() * 2 - 1;
+              b0 = 0.99886 * b0 + white * 0.0555179;
+              b1 = 0.99332 * b1 + white * 0.0750759;
+              b2 = 0.96900 * b2 + white * 0.1538520;
+              b3 = 0.86650 * b3 + white * 0.3104856;
+              b4 = 0.55000 * b4 + white * 0.5329522;
+              b5 = -0.7616 * b5 - white * 0.0168980;
+              data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.045;
+              b6 = white * 0.115926;
+            }
+          }
+          if (!brownBuffer && ctx) {
+            const len = ctx.sampleRate * 3;
+            brownBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+            const data = brownBuffer.getChannelData(0);
+            let lastOut = 0;
+            for (let i = 0; i < len; i++) {
+              const white = Math.random() * 2 - 1;
+              lastOut = (lastOut + 0.02 * white) / 1.02;
+              data[i] = lastOut * 0.8;
+            }
+          }
+          return ctx;
+        }
+
+        function playTone(freq, startOffset, duration, type = "sine", peakGain = 0.14) {
+          const ac = ensureCtx();
+          if (!ac) return;
+          const now = ac.currentTime + startOffset;
+          const osc = ac.createOscillator();
+          const gain = ac.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(peakGain, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(ac.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.03);
+        }
+
+        function playPop(pitch = 560) {
+          if (!state.settings.uiSoundEnabled) return;
+          const ac = ensureCtx();
+          if (!ac) return;
+          const now = ac.currentTime;
+          const osc = ac.createOscillator();
+          const gain = ac.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(pitch, now);
+          osc.frequency.exponentialRampToValueAtTime(pitch * 1.45, now + 0.065);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.09, now + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+          osc.connect(gain);
+          gain.connect(ac.destination);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        }
+
+        function playStartSound() {
+          playTone(523.25, 0, 0.18, "triangle", 0.13);
+          playTone(659.25, 0.09, 0.22, "triangle", 0.14);
+          playTone(783.99, 0.18, 0.3, "sine", 0.15);
+        }
+
+        function playChime(style = state.settings.chimeStyle) {
+          if (style === "musicbox") {
+            const notes = [659.25, 783.99, 1046.5, 987.77, 1046.5, 1318.5];
+            notes.forEach((n, i) => playTone(n, i * 0.15, 0.55, "sine", 0.13));
+          } else if (style === "twinkle") {
+            const notes = [523.25, 523.25, 783.99, 783.99, 880, 880, 783.99];
+            notes.forEach((n, i) => playTone(n, i * 0.18, 0.38, "triangle", 0.13));
+          } else if (style === "bell") {
+            [587.33, 880, 1174.66].forEach((n, i) => playTone(n, i * 0.22, 0.85, "sine", 0.14));
+          } else {
+            // marimba default
+            const notes = [523.25, 659.25, 783.99, 1046.5];
+            notes.forEach((n, i) => playTone(n, i * 0.11, 0.42, "triangle", 0.16));
+          }
+        }
+
+        function speak(text) {
+          if (!state.settings.voiceEnabled) return;
+          if (!("speechSynthesis" in window)) return;
+          try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = "zh-CN";
+            utter.rate = 1.03;
+            utter.pitch = 1.18;
+            utter.volume = 0.85;
+            window.speechSynthesis.speak(utter);
+          } catch {
+            // Ignore speech errors silently
+          }
+        }
+
+        function shouldAmbientPlay() {
+          if (!state.settings.ambientFocusOnly) return true;
+          return state.timer.mode === "focus" && state.timer.status === "running";
+        }
+
+        function stopChannel(id) {
+          const entry = activeNodes[id];
+          if (!entry) return;
+          if (entry.timer) clearInterval(entry.timer);
+          try { entry.src && entry.src.stop(); } catch {}
+          try { entry.lfo && entry.lfo.stop(); } catch {}
+          try { entry.gain && entry.gain.disconnect(); } catch {}
+          delete activeNodes[id];
+        }
+
+        function startChannel(id) {
+          if (activeNodes[id]) return;
+          const ac = ensureCtx();
+          if (!ac) return;
+          const masterVol = (state.settings.ambientMasterVol / 100) * 0.55;
+          const gain = ac.createGain();
+          gain.gain.value = masterVol;
+          gain.connect(ac.destination);
+
+          if (id === "rain") {
+            const src = ac.createBufferSource();
+            src.buffer = noiseBuffer;
+            src.loop = true;
+            const filter = ac.createBiquadFilter();
+            filter.type = "bandpass";
+            filter.frequency.value = 950;
+            filter.Q.value = 0.55;
+            src.connect(filter);
+            filter.connect(gain);
+            src.start();
+            activeNodes[id] = { src, gain, baseScale: 1.0 };
+          } else if (id === "forest") {
+            const src = ac.createBufferSource();
+            src.buffer = noiseBuffer;
+            src.loop = true;
+            const filter = ac.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.value = 520;
+            const lfo = ac.createOscillator();
+            const lfoGain = ac.createGain();
+            lfo.frequency.value = 0.14;
+            lfoGain.gain.value = 180;
+            lfo.connect(lfoGain);
+            lfoGain.connect(filter.frequency);
+            src.connect(filter);
+            filter.connect(gain);
+            src.start();
+            lfo.start();
+            const timer = setInterval(() => {
+              if (Math.random() < 0.45 && state.ambientActive.forest && shouldAmbientPlay()) {
+                const base = 1900 + Math.random() * 700;
+                playTone(base, 0, 0.08, "sine", 0.025 * (state.settings.ambientMasterVol / 50));
+                playTone(base * 1.25, 0.09, 0.1, "sine", 0.022 * (state.settings.ambientMasterVol / 50));
+              }
+            }, 3200);
+            activeNodes[id] = { src, lfo, gain, timer, baseScale: 0.9 };
+          } else if (id === "fire") {
+            const src = ac.createBufferSource();
+            src.buffer = brownBuffer;
+            src.loop = true;
+            const filter = ac.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.value = 280;
+            src.connect(filter);
+            filter.connect(gain);
+            src.start();
+            const timer = setInterval(() => {
+              if (Math.random() < 0.55 && state.ambientActive.fire && shouldAmbientPlay()) {
+                playTone(120 + Math.random() * 240, 0, 0.04, "triangle", 0.03 * (state.settings.ambientMasterVol / 50));
+              }
+            }, 520);
+            activeNodes[id] = { src, gain, timer, baseScale: 1.1 };
+          } else if (id === "ocean") {
+            const src = ac.createBufferSource();
+            src.buffer = noiseBuffer;
+            src.loop = true;
+            const filter = ac.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.value = 600;
+            const lfo = ac.createOscillator();
+            const lfoGain = ac.createGain();
+            lfo.frequency.value = 0.12;
+            lfoGain.gain.value = 340;
+            lfo.connect(lfoGain);
+            lfoGain.connect(filter.frequency);
+            src.connect(filter);
+            filter.connect(gain);
+            src.start();
+            lfo.start();
+            activeNodes[id] = { src, lfo, gain, baseScale: 1.05 };
+          } else if (id === "chimes") {
+            const scale = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+            const timer = setInterval(() => {
+              if (state.ambientActive.chimes && shouldAmbientPlay()) {
+                const f = scale[Math.floor(Math.random() * scale.length)];
+                playTone(f, 0, 1.3, "sine", 0.05 * (state.settings.ambientMasterVol / 50));
+              }
+            }, 2400);
+            activeNodes[id] = { gain, timer, baseScale: 1.0 };
+          } else if (id === "tick") {
+            const timer = setInterval(() => {
+              if (state.ambientActive.tick && state.timer.status === "running") {
+                playTone(860, 0, 0.025, "triangle", 0.04 * (state.settings.ambientMasterVol / 50));
+              }
+            }, 1000);
+            activeNodes[id] = { gain, timer, baseScale: 1.0 };
+          }
+        }
+
+        function syncAmbient() {
+          const canPlay = shouldAmbientPlay();
+          AMBIENT_CHANNELS.forEach((ch) => {
+            const want = Boolean(state.ambientActive[ch.id]);
+            if (want && canPlay) {
+              startChannel(ch.id);
+              if (activeNodes[ch.id] && activeNodes[ch.id].gain && ctx) {
+                const vol = (state.settings.ambientMasterVol / 100) * 0.55 * (activeNodes[ch.id].baseScale || 1);
+                activeNodes[ch.id].gain.gain.setTargetAtTime(vol, ctx.currentTime, 0.08);
+              }
+            } else {
+              stopChannel(ch.id);
+            }
+          });
+        }
+
+        return { playPop, playStartSound, playChime, speak, syncAmbient };
+      })();
+
+      /* ==========================================================================
+         4. BESPOKE KAWAII SVG MASCOT RENDERER
+      ========================================================================== */
+      function renderMascotSvg(expr = "idle", size = 184) {
+        const isFocus = expr === "focus";
+        const isBreak = expr === "break";
+        const isCelebrate = expr === "celebrate";
+        const isPaused = expr === "paused";
+        const wrapClass = isCelebrate ? "anim-celebrate" : isFocus ? "anim-focus" : "anim-bob";
+
+        // Expressive Eyes & Mouth centered around (110, 122)
+        let eyesSvg = "";
+        let mouthSvg = "";
+        if (isBreak) {
+          eyesSvg = `
+            <path d="M80 122 Q88 112 96 122" fill="none" stroke="#422B27" stroke-width="4.2" stroke-linecap="round"/>
+            <path d="M124 122 Q132 112 140 122" fill="none" stroke="#422B27" stroke-width="4.2" stroke-linecap="round"/>
+          `;
+          mouthSvg = `<path d="M100 137 Q110 147 120 137" fill="none" stroke="#422B27" stroke-width="3.8" stroke-linecap="round"/>`;
+        } else if (isCelebrate) {
+          eyesSvg = `
+            <text x="88" y="128" text-anchor="middle" font-size="22" fill="#FFB703" stroke="#422B27" stroke-width="0.8">★</text>
+            <text x="132" y="128" text-anchor="middle" font-size="22" fill="#FFB703" stroke="#422B27" stroke-width="0.8">★</text>
+          `;
+          mouthSvg = `<path d="M98 136 Q110 153 122 136 Z" fill="#FF6B78" stroke="#422B27" stroke-width="3.4" stroke-linejoin="round"/>`;
+        } else if (isPaused) {
+          eyesSvg = `
+            <path d="M80 121 L96 121" stroke="#422B27" stroke-width="4.2" stroke-linecap="round"/>
+            <path d="M124 121 L140 121" stroke="#422B27" stroke-width="4.2" stroke-linecap="round"/>
+            <text x="166" y="88" font-size="22" font-weight="900" fill="#8B5CF6" class="float-spark">💤</text>
+          `;
+          mouthSvg = `<circle cx="110" cy="139" r="4.5" fill="#FF8C94" stroke="#422B27" stroke-width="2.8"/>`;
+        } else {
+          eyesSvg = `
+            <g class="eye-blink-group">
+              <circle cx="88" cy="120" r="7.8" fill="#3B2521"/>
+              <circle cx="85" cy="117" r="2.8" fill="#FFFFFF"/>
+              <circle cx="91" cy="123" r="1.4" fill="#FFFFFF"/>
+              <circle cx="132" cy="120" r="7.8" fill="#3B2521"/>
+              <circle cx="129" cy="117" r="2.8" fill="#FFFFFF"/>
+              <circle cx="135" cy="123" r="1.4" fill="#FFFFFF"/>
+            </g>
+          `;
+          mouthSvg = isFocus
+            ? `<path d="M102 137 Q110 144 118 137" fill="none" stroke="#422B27" stroke-width="3.6" stroke-linecap="round"/>`
+            : `<path d="M99 136 Q110 147 121 136" fill="none" stroke="#422B27" stroke-width="3.8" stroke-linecap="round"/>`;
+        }
+
+        // Focus Study Glasses or Held Prop
+        const focusProps = isFocus
+          ? `
+            <g opacity="0.95">
+              <circle cx="88" cy="120" r="13.5" fill="rgba(255,255,255,0.22)" stroke="#6B4C43" stroke-width="3"/>
+              <circle cx="132" cy="120" r="13.5" fill="rgba(255,255,255,0.22)" stroke="#6B4C43" stroke-width="3"/>
+              <path d="M101.5 120 L118.5 120" stroke="#6B4C43" stroke-width="3"/>
+              <g transform="translate(152,138) rotate(12)">
+                <rect x="0" y="0" width="26" height="20" rx="4" fill="#FFFDF5" stroke="#5E433B" stroke-width="2.5"/>
+                <line x1="13" y1="2" x2="13" y2="18" stroke="#D1C1B8" stroke-width="2"/>
+                <line x1="4" y1="7" x2="10" y2="7" stroke="#FF8A7A" stroke-width="2" stroke-linecap="round"/>
+                <line x1="16" y1="7" x2="22" y2="7" stroke="#68D391" stroke-width="2" stroke-linecap="round"/>
+              </g>
+            </g>
+          `
+          : "";
+
+        const breakProps = isBreak
+          ? `
+            <g class="float-spark">
+              <circle cx="44" cy="96" r="7" fill="rgba(120,230,210,0.45)" stroke="#38B2AC" stroke-width="1.8"/>
+              <circle cx="176" cy="86" r="9" fill="rgba(120,230,210,0.45)" stroke="#38B2AC" stroke-width="1.8"/>
+              <circle cx="184" cy="108" r="5" fill="rgba(255,255,255,0.75)" stroke="#38B2AC" stroke-width="1.5"/>
+            </g>
+          `
+          : "";
+
+        // Character Base Geometry
+        const bodySvg = `
+            <defs>
+              <linearGradient id="tomatoGrad" x1="0" y1="0" x2="0.2" y2="1">
+                <stop offset="0%" stop-color="#FF8978"/>
+                <stop offset="55%" stop-color="#FF5F52"/>
+                <stop offset="100%" stop-color="#E64133"/>
+              </linearGradient>
+            </defs>
+            <!-- Cute Little Arms -->
+            <path d="M51 138 Q34 128 38 146 Q43 156 55 148" fill="#FF6B5B" stroke="#522B26" stroke-width="3.8" stroke-linecap="round"/>
+            <path d="M169 138 Q186 128 182 146 Q177 156 165 148" fill="#FF6B5B" stroke="#522B26" stroke-width="3.8" stroke-linecap="round"/>
+            <!-- Plump Tomato Body -->
+            <ellipse cx="110" cy="130" rx="62" ry="54" fill="url(#tomatoGrad)" stroke="#522B26" stroke-width="4.2"/>
+            <!-- Glossy Specular Highlight -->
+            <ellipse cx="78" cy="100" rx="16" ry="8" transform="rotate(-26 78 100)" fill="#FFFFFF" opacity="0.45"/>
+            <circle cx="96" cy="91" r="3.8" fill="#FFFFFF" opacity="0.55"/>
+            <!-- Green Leafy Crown -->
+            <path d="M110 74 C96 58, 70 68, 74 82 C88 80, 97 82, 106 86 C100 94, 118 94, 114 86 C123 82, 132 80, 146 82 C150 68, 124 58, 110 74 Z" fill="#52C97A" stroke="#2D6A43" stroke-width="3.4" stroke-linejoin="round"/>
+            <path d="M110 74 Q112 52 126 50" fill="none" stroke="#2D6A43" stroke-width="4" stroke-linecap="round"/>
+            <!-- Rosy Cheeks -->
+            <ellipse cx="72" cy="134" rx="10" ry="6" fill="#FFAFB0" opacity="0.72"/>
+            <ellipse cx="148" cy="134" rx="10" ry="6" fill="#FFAFB0" opacity="0.72"/>
+          `;
+        return `
+          <svg class="mascot-svg ${wrapClass}" style="width:${size}px;height:${size}px;" viewBox="0 0 220 220" aria-hidden="true">
+            <ellipse cx="110" cy="193" rx="52" ry="10" fill="rgba(80,45,35,0.12)"/>
+            ${bodySvg}
+            ${eyesSvg}
+            ${mouthSvg}
+            ${focusProps}
+            ${breakProps}
+          </svg>
+        `;
+      }
+
+      /* ==========================================================================
+         5. REWARDS, BADGES & STATS COMPUTATION
+      ========================================================================== */
+      function computeStreakMetrics() {
+        const days = state.dailyStats;
+        const activeDates = Object.keys(days)
+          .filter((k) => (days[k].tomatoes || 0) > 0)
+          .sort();
+        if (activeDates.length === 0) return { current: 0, best: 0 };
+
+        // Current streak ending today or yesterday
+        let current = 0;
+        const cursor = new Date();
+        const tk = todayKey(cursor);
+        if (!days[tk] || !days[tk].tomatoes) {
+          cursor.setDate(cursor.getDate() - 1);
+        }
+        while (true) {
+          const key = todayKey(cursor);
+          if (days[key] && days[key].tomatoes > 0) {
+            current += 1;
+            cursor.setDate(cursor.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+
+        // Best streak
+        let best = 0;
+        let run = 0;
+        let prevTime = null;
+        for (const k of activeDates) {
+          const [y, m, d] = k.split("-").map(Number);
+          const t = new Date(y, m - 1, d).getTime();
+          if (prevTime !== null && Math.round((t - prevTime) / 86400000) === 1) {
+            run += 1;
+          } else {
+            run = 1;
+          }
+          if (run > best) best = run;
+          prevTime = t;
+        }
+        return { current, best };
+      }
+
+      function getBadgeMetrics() {
+        const totalTomatoes = Object.values(state.dailyStats).reduce((sum, day) => sum + (day.tomatoes || 0), 0);
+        const totalMinutes = Object.values(state.dailyStats).reduce((s, d) => s + (d.minutes || 0), 0);
+        const { current, best } = computeStreakMetrics();
+        return {
+          totalTomatoes,
+          totalMinutes,
+          totalTasksDone: state.totalTasksDone,
+          currentStreak: current,
+          bestStreak: Math.max(best, current),
+        };
+      }
+
+      function evaluateBadges() {
+        const metrics = getBadgeMetrics();
+        const newlyUnlocked = [];
+        BADGES.forEach((b) => {
+          const val = metrics[b.metric] || 0;
+          if (val >= b.target && !state.unlockedBadges.includes(b.id)) {
+            state.unlockedBadges.push(b.id);
+            newlyUnlocked.push(b);
+          }
+        });
+        return newlyUnlocked;
+      }
+
+      /* ==========================================================================
+         6. CONFETTI & TOAST HELPERS
+      ========================================================================== */
+      function showToast(icon, message) {
+        const stack = document.getElementById("toast-stack");
+        const el = document.createElement("div");
+        el.className = "toast-item";
+        el.innerHTML = `<span style="font-size:20px;">${icon}</span><span>${escapeHtml(message)}</span>`;
+        stack.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          el.style.transform = "translateX(20px)";
+          el.style.transition = "all 0.25s ease";
+          setTimeout(() => el.remove(), 260);
+        }, 3200);
+      }
+
+      function launchConfetti(count = 75) {
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const colors = ["#FF6B5B", "#FFB703", "#43B97F", "#8B5CF6", "#FF85A1", "#38BDF8"];
+        const particles = Array.from({ length: count }, () => ({
+          x: canvas.width * (0.2 + Math.random() * 0.6),
+          y: canvas.height * 0.35,
+          vx: (Math.random() - 0.5) * 12,
+          vy: -Math.random() * 11 - 4,
+          size: 6 + Math.random() * 6,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI * 2,
+          vrot: (Math.random() - 0.5) * 0.25
+        }));
+
+        let frames = 0;
+        function draw() {
+          frames++;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          let alive = false;
+          for (const p of particles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.36;
+            p.vx *= 0.99;
+            p.rot += p.vrot;
+            if (p.y < canvas.height + 30) alive = true;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.65);
+            ctx.restore();
+          }
+          if (alive && frames < 160) {
+            requestAnimationFrame(draw);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+
+      /* ==========================================================================
+         7. TIMER ENGINE (Drift-Free Timestamp Sync)
+      ========================================================================== */
+      let timerInterval = null;
+      let completionHandledForEndTs = null;
+      let lastExprRendered = null;
+      let currentWellnessIdx = 0;
+      let pendingGuardAction = null;
+      let pendingParentCallback = null;
+      let currentMathExpected = 0;
+
+      function getModeDurationMs(mode) {
+        if (mode === "shortBreak") return state.settings.shortBreakMinutes * 60 * 1000;
+        if (mode === "longBreak") return state.settings.longBreakMinutes * 60 * 1000;
+        return state.settings.focusMinutes * 60 * 1000;
+      }
+
+      function computeCurrentRemainingMs() {
+        if (state.timer.status === "running" && state.timer.endTimestamp) {
+          return Math.max(0, state.timer.endTimestamp - Date.now());
+        }
+        return Math.max(0, state.timer.remainingMs);
+      }
+
+      function getMascotExpression() {
+        if (state.timer.status === "running") {
+          return state.timer.mode === "focus" ? "focus" : "break";
+        }
+        if (state.timer.status === "paused") return "paused";
+        return state.timer.mode === "focus" ? "idle" : "break";
+      }
+
+      function startTimer() {
+        const rem = Math.max(1000, computeCurrentRemainingMs());
+        state.timer.status = "running";
+        state.timer.endTimestamp = Date.now() + rem;
+        completionHandledForEndTs = null;
+        AUDIO.playStartSound();
+        AUDIO.syncAmbient();
+        if (state.timer.mode === "focus") {
+          AUDIO.speak("开始专注啦，小番茄和你一起加油！");
+        }
+        saveState();
+        updateTimerUI(true);
+      }
+
+      function pauseTimer() {
+        if (state.timer.status !== "running") return;
+        state.timer.remainingMs = computeCurrentRemainingMs();
+        state.timer.status = "paused";
+        state.timer.endTimestamp = null;
+        AUDIO.playPop(420);
+        AUDIO.syncAmbient();
+        saveState();
+        updateTimerUI(true);
+      }
+
+      function resetTimer() {
+        const full = getModeDurationMs(state.timer.mode);
+        state.timer.status = "idle";
+        state.timer.totalMs = full;
+        state.timer.remainingMs = full;
+        state.timer.endTimestamp = null;
+        AUDIO.playPop(380);
+        AUDIO.syncAmbient();
+        saveState();
+        updateTimerUI(true);
+      }
+
+      function switchMode(newMode) {
+        const full = getModeDurationMs(newMode);
+        state.timer.mode = newMode;
+        state.timer.status = "idle";
+        state.timer.totalMs = full;
+        state.timer.remainingMs = full;
+        state.timer.endTimestamp = null;
+        document.body.setAttribute("data-theme", newMode);
+        AUDIO.syncAmbient();
+        saveState();
+        updateTimerUI(true);
+      }
+
+      function addFiveMinutes() {
+        const extra = 5 * 60 * 1000;
+        const maxMs = 95 * 60 * 1000;
+        const currentRem = computeCurrentRemainingMs();
+        const nextRem = Math.min(maxMs, currentRem + extra);
+        const added = nextRem - currentRem;
+        state.timer.totalMs += added;
+        state.timer.remainingMs = nextRem;
+        if (state.timer.status === "running") {
+          state.timer.endTimestamp = Date.now() + nextRem;
+        }
+        AUDIO.playPop(640);
+        showToast("➕", "已延长 5 分钟，继续加油哦！");
+        saveState();
+        updateTimerUI(true);
+      }
+
+      function advanceNextMode(autoStart = false) {
+        if (state.timer.mode === "focus") {
+          const isLong = state.timer.roundIndex >= state.settings.longBreakInterval;
+          const nextMode = isLong ? "longBreak" : "shortBreak";
+          if (isLong) state.timer.roundIndex = 1;
+          else state.timer.roundIndex += 1;
+          switchMode(nextMode);
+        } else {
+          switchMode("focus");
+        }
+        if (autoStart) startTimer();
+      }
+
+      function sendDesktopNotification(title, body) {
+        parent.postMessage({ type: "tomato:notify", title, body }, event.origin);
+      }
+
+      function handleSessionComplete() {
+        const finishedEndTs = state.timer.endTimestamp || Date.now();
+        if (completionHandledForEndTs === finishedEndTs) return;
+        completionHandledForEndTs = finishedEndTs;
+
+        const completedMode = state.timer.mode;
+        const durationMins = Math.max(1, Math.round(state.timer.totalMs / 60000));
+        state.timer.status = "idle";
+        state.timer.remainingMs = 0;
+        state.timer.endTimestamp = null;
+
+        AUDIO.syncAmbient();
+        AUDIO.playChime();
+        launchConfetti(completedMode === "focus" ? 90 : 45);
+
+        const activeTask = state.tasks.find((t) => t.id === state.timer.activeTaskId);
+        const taskLabel = activeTask ? activeTask.title : "自由专注";
+
+        if (completedMode === "focus") {
+          const earnedStars = 5;
+          const dk = todayKey();
+          const nowTime = new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+
+          state.stars += earnedStars;
+          if (!state.dailyStats[dk]) state.dailyStats[dk] = { tomatoes: 0, minutes: 0 };
+          state.dailyStats[dk].tomatoes += 1;
+          state.dailyStats[dk].minutes += durationMins;
+
+          state.history.unshift({
+            id: uid("hist"),
+            mode: "focus",
+            minutes: durationMins,
+            taskTitle: taskLabel,
+            starsEarned: earnedStars,
+            dateKey: dk,
+            timeLabel: `${dk.slice(5)} ${nowTime}`
+          });
+          if (state.history.length > 80) state.history.length = 80;
+
+          if (activeTask && !activeTask.completed) {
+            activeTask.doneTomatoes += 1;
+          }
+
+          const newBadges = evaluateBadges();
+          saveState();
+          refreshAllViews();
+
+          AUDIO.speak(`太棒啦！你收获了一颗小番茄，获得 ${earnedStars} 颗小星星！`);
+          sendDesktopNotification("🍅 小番茄成熟啦！", `完成 ${durationMins} 分钟【${taskLabel}】，收获小番茄 +${earnedStars}⭐`);
+
+          // Populate Celebration Modal
+          document.getElementById("celeb-mascot").innerHTML = renderMascotSvg("celebrate", 148);
+          document.getElementById("celeb-title").textContent = "🎉 太棒啦！小番茄熟透啦！";
+          document.getElementById("celeb-subtitle").textContent = `你专心完成了 ${durationMins} 分钟的「${taskLabel}」`;
+          const badgeHtml = newBadges.length
+            ? `<div style="margin-top:10px; padding-top:10px; border-top:1.5px dashed var(--border-soft); font-weight:900; color:#b7791f;">🏅 解锁新勋章：${newBadges.map((b) => `${b.icon} ${b.name}`).join("、")}</div>`
+            : "";
+          document.getElementById("celeb-rewards-box").innerHTML = `
+            <div style="font-size:17px; font-weight:900; margin-bottom:4px;">🍅 收获一颗小番茄</div>
+            <div style="font-size:16px; font-weight:900; color:#b7791f;">⭐ 获得奖励 +${earnedStars} 颗小星星</div>
+            ${badgeHtml}
+          `;
+          const isLongNext = state.timer.roundIndex >= state.settings.longBreakInterval;
+          const nextBtn = document.getElementById("btn-celeb-next");
+          nextBtn.textContent = isLongNext ? "🌈 开启大大休息" : "🌱 开启短暂休息";
+          openModal("modal-celebration");
+
+          if (state.settings.autoStartBreak) {
+            setTimeout(() => {
+              closeModal("modal-celebration");
+              advanceNextMode(true);
+            }, 2200);
+          }
+        } else {
+          AUDIO.speak("休息时间结束啦，准备好开始新一轮专注了吗？");
+          sendDesktopNotification("🌱 休息结束", "精神满满，回来继续种植小番茄吧！");
+          document.getElementById("celeb-mascot").innerHTML = renderMascotSvg("idle", 148);
+          document.getElementById("celeb-title").textContent = "🌱 休息充能完成！";
+          document.getElementById("celeb-subtitle").textContent = "身体和眼睛都好好休息过啦~";
+          document.getElementById("celeb-rewards-box").innerHTML = `<div style="font-size:15px; font-weight:800;">准备好了就点击下方按钮，继续挑战下一颗小番茄吧！</div>`;
+          document.getElementById("btn-celeb-next").textContent = "🍅 开始专注学习";
+          openModal("modal-celebration");
+        }
+      }
+
+      function tickLoop() {
+        if (state.timer.status === "running") {
+          const rem = computeCurrentRemainingMs();
+          state.timer.remainingMs = rem;
+          if (rem <= 0) {
+            handleSessionComplete();
+            return;
+          }
+          updateTimerUI(false);
+        }
+      }
+
+      /* ==========================================================================
+         8. UI RENDERING (Incremental Timer Updates + Clean Tab Views)
+      ========================================================================== */
+      const RING_CIRCUMFERENCE = 2 * Math.PI * 122;
+
+      function updateTimerUI(forceMascot = false) {
+        const remMs = computeCurrentRemainingMs();
+        const totalMs = Math.max(1000, state.timer.totalMs);
+        const progress = Math.min(1, Math.max(0, 1 - remMs / totalMs));
+        const clockStr = formatClock(remMs / 1000);
+
+        document.body.setAttribute("data-theme", state.timer.mode);
+
+        // Ring offset
+        const ringEl = document.getElementById("ring-progress");
+        ringEl.style.strokeDasharray = `${RING_CIRCUMFERENCE}`;
+        ringEl.style.strokeDashoffset = `${RING_CIRCUMFERENCE * (1 - progress)}`;
+
+        // Clock texts + Document Title
+        document.getElementById("countdown-display").textContent = clockStr;
+        document.getElementById("zen-countdown").textContent = clockStr;
+        const modeIcon = state.timer.mode === "focus" ? "🍅" : state.timer.mode === "shortBreak" ? "🌱" : "🌈";
+        const modeTitle = state.timer.mode === "focus" ? "专注中" : state.timer.mode === "shortBreak" ? "短休息" : "大休息";
+        document.title = state.timer.status === "running" ? `${modeIcon} ${clockStr} · ${modeTitle} - 小番茄乐园` : `🍅 小番茄乐园 · 可爱儿童专注钟`;
+
+        // Growth bar (shown for Focus mode; during breaks shows relax meter)
+        const growthBar = document.getElementById("growth-bar");
+        const wellnessBox = document.getElementById("wellness-box");
+        if (state.timer.mode === "focus") {
+          growthBar.style.display = "block";
+          wellnessBox.style.display = "none";
+          document.getElementById("growth-fill").style.width = `${(progress * 100).toFixed(1)}%`;
+          const stageIdx = progress >= 0.95 ? 4 : progress >= 0.7 ? 3 : progress >= 0.45 ? 2 : progress >= 0.2 ? 1 : 0;
+          document.querySelectorAll(".growth-step").forEach((el, idx) => {
+            el.classList.toggle("reached", idx <= stageIdx);
+            el.classList.toggle("current", idx === stageIdx && state.timer.status === "running");
+          });
+        } else {
+          growthBar.style.display = "none";
+          wellnessBox.style.display = "flex";
+        }
+
+        // Mascot SVG (re-render only when expression actually changed!)
+        const expr = getMascotExpression();
+        const mascotKey = expr;
+        if (forceMascot || lastExprRendered !== mascotKey) {
+          lastExprRendered = mascotKey;
+          document.getElementById("mascot-stage").innerHTML = renderMascotSvg(expr, 184);
+          document.getElementById("zen-mascot-slot").innerHTML = renderMascotSvg(expr, 204);
+        }
+
+        // Speech Bubble
+        let speech = `元气小番茄准备好陪你一起成长啦！`;
+        if (state.timer.mode === "focus") {
+          if (state.timer.status === "running") {
+            speech = progress > 0.75 ? "快要成熟啦！最后几分钟坚持住~" : "专心致志的时候，小番茄在慢慢变红哦~";
+          } else if (state.timer.status === "paused") {
+            speech = "先歇一口气，准备好再点继续吧~";
+          }
+        } else if (state.timer.mode === "shortBreak") {
+          speech = "课间休息时间！看看远处，伸伸懒腰吧~";
+        } else {
+          speech = "哇！完成一整轮啦，快去好好大放松一下！";
+        }
+        document.getElementById("mascot-speech").textContent = speech;
+        document.getElementById("zen-speech").textContent = speech;
+
+        // Buttons
+        const mainBtn = document.getElementById("btn-start-pause");
+        const zenBtn = document.getElementById("btn-zen-start-pause");
+        if (state.timer.status === "running") {
+          mainBtn.textContent = "⏸️ 暂停一下";
+          zenBtn.textContent = "⏸️ 暂停一下";
+        } else if (state.timer.status === "paused") {
+          mainBtn.textContent = "▶️ 继续加油";
+          zenBtn.textContent = "▶️ 继续加油";
+        } else {
+          mainBtn.textContent = state.timer.mode === "focus" ? "▶️ 开始专注" : "▶️ 开始休息";
+          zenBtn.textContent = state.timer.mode === "focus" ? "▶️ 开始专注" : "▶️ 开始休息";
+        }
+
+        // Mode Tabs & Presets
+        document.querySelectorAll(".mode-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.mode === state.timer.mode);
+        });
+        renderPresetsStrip();
+        renderCycleDots();
+        renderActiveTaskBanner();
+      }
+
+      function renderPresetsStrip() {
+        const container = document.getElementById("presets-strip");
+        container.innerHTML = PRESETS.map((p) => {
+          const active = state.settings.focusMinutes === p.focus && state.settings.shortBreakMinutes === p.shortBreak;
+          return `<button class="preset-chip ${active ? "active" : ""}" data-preset-id="${p.id}">${p.label}</button>`;
+        }).join("") + `<button class="preset-chip" id="btn-preset-custom">🎨 自定义(${state.settings.focusMinutes}分)</button>`;
+      }
+
+      function renderCycleDots() {
+        const total = state.settings.longBreakInterval;
+        document.getElementById("cycle-label").textContent = `第 ${state.timer.roundIndex} / ${total} 轮`;
+        const dots = [];
+        for (let i = 1; i <= total; i++) {
+          const isDone = i < state.timer.roundIndex;
+          const isCurr = i === state.timer.roundIndex;
+          dots.push(`<span class="cycle-dot ${isDone ? "done" : ""} ${isCurr ? "current" : ""}">${isDone ? "🍅" : isCurr ? "🌱" : "○"}</span>`);
+        }
+        document.getElementById("cycle-dots").innerHTML = dots.join("");
+      }
+
+      function renderActiveTaskBanner() {
+        const banner = document.getElementById("active-task-banner");
+        const label = document.getElementById("active-task-label");
+        const zenPill = document.getElementById("zen-task-pill");
+        const active = state.tasks.find((t) => t.id === state.timer.activeTaskId && !t.completed);
+        if (active) {
+          banner.classList.add("has-task");
+          label.textContent = `正在做：${active.icon} ${active.title} (${active.doneTomatoes}/${active.est} 🍅)`;
+          zenPill.textContent = `正在挑战：${active.icon} ${active.title}`;
+        } else {
+          banner.classList.remove("has-task");
+          label.textContent = "点击右侧选一个小任务，或直接开始专注吧~";
+          zenPill.textContent = state.timer.mode === "focus" ? "🍅 沉浸专注中" : "🌱 快乐休息中";
+        }
+      }
+
+      function renderHeaderStats(pop = false) {
+        document.getElementById("star-count").textContent = state.stars;
+        const dk = todayKey();
+        const todayT = (state.dailyStats[dk] && state.dailyStats[dk].tomatoes) || 0;
+        document.getElementById("today-tomato-count").textContent = todayT;
+        if (pop) {
+          const pill = document.getElementById("header-stars");
+          pill.classList.remove("pop");
+          void pill.offsetWidth;
+          pill.classList.add("pop");
+        }
+      }
+
+      function renderTasks() {
+        const list = document.getElementById("task-list");
+        if (state.tasks.length === 0) {
+          list.innerHTML = `<div class="empty-box">还没有小任务哦！<br/>在上面添加一个，或点「✨ 推荐计划」快速开始吧~</div>`;
+          return;
+        }
+        list.innerHTML = state.tasks.map((t) => {
+          const isActive = state.timer.activeTaskId === t.id && !t.completed;
+          const totalSlots = Math.max(t.est, t.doneTomatoes);
+          let slots = "";
+          for (let i = 0; i < totalSlots; i++) {
+            slots += i < t.doneTomatoes ? "🍅" : "⚪";
+          }
+          return `
+            <div class="task-item ${isActive ? "active-task" : ""} ${t.completed ? "completed" : ""}" data-task-id="${t.id}">
+              <button type="button" class="task-check" data-task-toggle="${t.id}" title="标记完成">${t.completed ? "✓" : ""}</button>
+              <span class="task-icon">${escapeHtml(t.icon)}</span>
+              <div class="task-body">
+                <div class="task-name">${escapeHtml(t.title)}</div>
+                <div class="task-tomato-slots">${slots} <span>(${t.doneTomatoes}/${t.est})</span> ${isActive ? "<strong style='color:var(--accent-dark);margin-left:4px;'>· 专注中</strong>" : ""}</div>
+              </div>
+              <div class="task-actions">
+                <button type="button" class="icon-mini-btn" data-task-del="${t.id}" title="删除任务">🗑️</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderAmbientUI() {
+        const quickGrid = document.getElementById("ambient-quick-grid");
+        quickGrid.innerHTML = AMBIENT_CHANNELS.map((c) => {
+          const on = Boolean(state.ambientActive[c.id]);
+          return `
+            <button class="ambient-chip ${on ? "playing" : ""}" data-ambient-toggle="${c.id}">
+              <span class="amb-emoji">${c.emoji}</span>
+              <span>${c.name}</span>
+            </button>
+          `;
+        }).join("");
+
+        const studio = document.getElementById("sound-studio-list");
+        studio.innerHTML = AMBIENT_CHANNELS.map((c) => {
+          const on = Boolean(state.ambientActive[c.id]);
+          return `
+            <div class="coupon-card" style="${on ? "border-style:solid; border-color:var(--secondary); background:var(--secondary-soft);" : ""}">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:26px;">${c.emoji}</span>
+                <div>
+                  <div style="font-weight:900;">${c.name}</div>
+                  <div class="text-sub" style="font-size:12px;">${c.desc}</div>
+                </div>
+              </div>
+              <button class="btn-toy btn-sm ${on ? "btn-green" : ""}" data-ambient-toggle="${c.id}">${on ? "🔊 播放中" : "开启"}</button>
+            </div>
+          `;
+        }).join("");
+
+        document.getElementById("ambient-master-vol").value = state.settings.ambientMasterVol;
+        document.getElementById("ambient-vol-val").textContent = `${state.settings.ambientMasterVol}%`;
+      }
+
+      function renderRewardsView() {
+        const metrics = getBadgeMetrics();
+        document.getElementById("badge-unlocked-count").textContent = `已解锁 ${state.unlockedBadges.length} / ${BADGES.length}`;
+        document.getElementById("badge-grid").innerHTML = BADGES.map((b) => {
+          const unlocked = state.unlockedBadges.includes(b.id);
+          const cur = Math.min(b.target, metrics[b.metric] || 0);
+          const pct = Math.round((cur / b.target) * 100);
+          return `
+            <div class="badge-card ${unlocked ? "unlocked" : ""}">
+              <div class="badge-icon-wrap">${b.icon}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:14.5px; font-weight:900;">${b.name} ${unlocked ? "✅" : ""}</div>
+                <div class="text-sub" style="font-size:11.5px;">${b.desc}</div>
+                <div class="badge-progress"><div style="width:${pct}%"></div></div>
+                <div style="font-size:11px; font-weight:800; color:var(--text-sub); margin-top:3px;">${cur} / ${b.target}</div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const shopList = document.getElementById("coupon-shop-list");
+        shopList.innerHTML = state.coupons.length === 0
+          ? `<div class="empty-box">暂无心愿券，点右上角「添加心愿」创建一个吧~</div>`
+          : state.coupons.map((c) => `
+              <div class="coupon-card">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:28px;">${escapeHtml(c.icon)}</span>
+                  <div>
+                    <div style="font-weight:900; font-size:14.5px;">${escapeHtml(c.title)}</div>
+                    <div class="text-sub" style="font-size:12px;">需要 ⭐ ${c.cost} 颗星星</div>
+                  </div>
+                </div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <button class="btn-toy btn-sm btn-star" data-redeem-coupon="${c.id}">兑换 ✨</button>
+                  <button class="icon-mini-btn" data-del-coupon="${c.id}" title="删除">🗑️</button>
+                </div>
+              </div>
+            `).join("");
+
+        const redeemedList = document.getElementById("redeemed-coupon-list");
+        redeemedList.innerHTML = state.redeemedCoupons.length === 0
+          ? `<div class="empty-box">还没有兑换过心愿券哦，加油攒星星吧！⭐</div>`
+          : state.redeemedCoupons.map((rc) => `
+              <div class="coupon-card redeemed-ticket" style="${rc.fulfilled ? "opacity:0.65;" : ""}">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="font-size:26px;">${escapeHtml(rc.icon)}</span>
+                  <div>
+                    <div style="font-weight:900; font-size:14px;">${escapeHtml(rc.title)} ${rc.fulfilled ? "✅ 已兑现" : "🎫 待兑现"}</div>
+                    <div class="text-sub" style="font-size:11.5px;">兑换时间：${escapeHtml(rc.redeemedAt)} · 花费 ${rc.cost}⭐</div>
+                  </div>
+                </div>
+                ${rc.fulfilled ? "" : `<button class="btn-toy btn-sm btn-green" data-fulfill-coupon="${rc.id}">家长确认已兑现</button>`}
+              </div>
+            `).join("");
+      }
+
+      function renderStatsView() {
+        const dk = todayKey();
+        const todayData = state.dailyStats[dk] || { tomatoes: 0, minutes: 0 };
+        const { current } = computeStreakMetrics();
+        document.getElementById("stat-today-tomatoes").textContent = todayData.tomatoes || 0;
+        document.getElementById("stat-today-minutes").textContent = `${todayData.minutes || 0} 分`;
+        document.getElementById("stat-streak").textContent = `${current} 天`;
+        document.getElementById("stat-total-tomatoes").textContent = getBadgeMetrics().totalTomatoes;
+
+        // 7-day SVG Bar Chart
+        const days = [];
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const k = todayKey(d);
+          const val = (state.dailyStats[k] && state.dailyStats[k].minutes) || 0;
+          const tom = (state.dailyStats[k] && state.dailyStats[k].tomatoes) || 0;
+          days.push({
+            label: i === 0 ? "今天" : `${d.getMonth() + 1}/${d.getDate()}`,
+            minutes: val,
+            tomatoes: tom
+          });
+        }
+        const maxMin = Math.max(30, ...days.map((d) => d.minutes));
+        const W = 500, H = 210, padB = 34, padT = 26, chartH = H - padB - padT;
+        const barW = 36;
+        const step = W / 7;
+
+        const barsSvg = days.map((d, idx) => {
+          const h = Math.max(6, Math.round((d.minutes / maxMin) * chartH));
+          const x = idx * step + (step - barW) / 2;
+          const y = H - padB - h;
+          const isToday = idx === 6;
+          return `
+            <g>
+              <rect x="${x}" y="${padT}" width="${barW}" height="${chartH}" rx="12" fill="var(--surface-tint)" />
+              <rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="12" fill="${isToday ? "var(--accent)" : "#FF9F89"}" />
+              <text x="${x + barW / 2}" y="${y - 7}" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--text-main)">${d.minutes > 0 ? d.minutes + "m" : ""}</text>
+              <text x="${x + barW / 2}" y="${H - 12}" text-anchor="middle" font-size="12" font-weight="800" fill="${isToday ? "var(--accent-dark)" : "var(--text-sub)"}">${d.label}</text>
+            </g>
+          `;
+        }).join("");
+
+        document.getElementById("weekly-chart").innerHTML = `
+          <svg viewBox="0 0 ${W} ${H}" style="width:100%; max-width:540px; height:auto; display:block; margin:0 auto;">
+            ${barsSvg}
+          </svg>
+        `;
+
+        // History list
+        const histEl = document.getElementById("history-list");
+        if (state.history.length === 0) {
+          histEl.innerHTML = `<div class="empty-box">还没有完成的专注记录哦，快去完成第 1 颗小番茄吧！🍅</div>`;
+        } else {
+          histEl.innerHTML = state.history.map((h) => `
+            <div class="history-row">
+              <div style="display:flex; align-items:center; gap:9px;">
+                <span style="font-size:20px;">${h.varietyEmoji || "🍅"}</span>
+                <div>
+                  <div style="font-weight:900;">${escapeHtml(h.taskTitle)}</div>
+                  <div class="text-sub" style="font-size:11.5px;">${escapeHtml(h.timeLabel)} · 专注 ${h.minutes} 分钟</div>
+                </div>
+              </div>
+              <span style="color:#b7791f; font-weight:900;">+${h.starsEarned} ⭐</span>
+            </div>
+          `).join("");
+        }
+      }
+
+      function renderSettingsModal() {
+        const s = state.settings;
+        document.getElementById("set-focusMinutes").textContent = s.focusMinutes;
+        document.getElementById("set-shortBreakMinutes").textContent = s.shortBreakMinutes;
+        document.getElementById("set-longBreakMinutes").textContent = s.longBreakMinutes;
+        document.getElementById("set-longBreakInterval").textContent = s.longBreakInterval;
+        document.getElementById("set-chime-style").value = s.chimeStyle;
+
+        const map = {
+          "toggle-voice": s.voiceEnabled,
+          "toggle-ui-sound": s.uiSoundEnabled,
+          "toggle-ambient-focus-only": s.ambientFocusOnly,
+          "toggle-auto-break": s.autoStartBreak,
+          "toggle-strict-guard": s.strictGuard,
+          "toggle-parent-lock": s.parentLock
+        };
+        Object.entries(map).forEach(([id, val]) => {
+          const btn = document.getElementById(id);
+          btn.classList.toggle("on", Boolean(val));
+          btn.setAttribute("aria-checked", String(Boolean(val)));
+        });
+      }
+
+      function refreshAllViews(popStars = false) {
+        renderHeaderStats(popStars);
+        updateTimerUI(true);
+        renderTasks();
+        renderAmbientUI();
+        renderRewardsView();
+        renderStatsView();
+        renderSettingsModal();
+      }
+
+      /* ==========================================================================
+         9. MODALS, GUARD & PARENT MATH GATE
+      ========================================================================== */
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+
+      function runWithGuardIfNeeded(message, action) {
+        const runningFocus = state.timer.mode === "focus" && state.timer.status === "running";
+        if (state.settings.strictGuard && runningFocus) {
+          pendingGuardAction = action;
+          document.getElementById("guard-msg").textContent = message;
+          openModal("modal-guard");
+        } else {
+          action();
+        }
+      }
+
+      function runWithParentGate(callback) {
+        if (!state.settings.parentLock) {
+          callback();
+          return;
+        }
+        const a = 4 + Math.floor(Math.random() * 6);
+        const b = 3 + Math.floor(Math.random() * 7);
+        currentMathExpected = a * b;
+        pendingParentCallback = callback;
+        document.getElementById("parent-math-question").textContent = `${a} × ${b} = ?`;
+        document.getElementById("parent-math-answer").value = "";
+        openModal("modal-parent-gate");
+        setTimeout(() => document.getElementById("parent-math-answer").focus(), 60);
+      }
+
+      /* ==========================================================================
+         10. EVENT BINDINGS
+      ========================================================================== */
+      // Tab Navigation
+      document.querySelectorAll(".nav-pill").forEach((pill) => {
+        pill.addEventListener("click", () => {
+          AUDIO.playPop(540);
+          document.querySelectorAll(".nav-pill").forEach((p) => p.classList.remove("active"));
+          pill.classList.add("active");
+          const tab = pill.dataset.tab;
+          document.querySelectorAll(".view-panel").forEach((v) => v.classList.remove("active"));
+          document.getElementById(`view-${tab}`).classList.add("active");
+          if (tab === "rewards") renderRewardsView();
+          if (tab === "stats") renderStatsView();
+        });
+      });
+
+      // Mode Switcher
+      document.querySelectorAll(".mode-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const nextMode = btn.dataset.mode;
+          if (nextMode === state.timer.mode) return;
+          AUDIO.playPop(500);
+          runWithGuardIfNeeded("现在切换模式会重置当前正在生长的小番茄哦，确定要切换吗？", () => {
+            switchMode(nextMode);
+          });
+        });
+      });
+
+      // Presets Delegation
+      document.getElementById("presets-strip").addEventListener("click", (e) => {
+        const chip = e.target.closest("[data-preset-id]");
+        if (chip) {
+          const p = PRESETS.find((x) => x.id === chip.dataset.presetId);
+          if (!p) return;
+          AUDIO.playPop(600);
+          runWithGuardIfNeeded("切换时长预设会重新开始当前倒计时，确定要切换吗？", () => {
+            state.settings.focusMinutes = p.focus;
+            state.settings.shortBreakMinutes = p.shortBreak;
+            state.settings.longBreakMinutes = p.longBreak;
+            state.timer.activePresetId = p.id;
+            switchMode(state.timer.mode);
+            showToast("⏱️", `已切换为「${p.label}」`);
+          });
+          return;
+        }
+        if (e.target.closest("#btn-preset-custom")) {
+          AUDIO.playPop(560);
+          openModal("modal-settings");
+        }
+      });
+
+      // Primary Timer Controls
+      function togglePlayPause() {
+        if (state.timer.status === "running") pauseTimer();
+        else startTimer();
+      }
+      document.getElementById("btn-start-pause").addEventListener("click", togglePlayPause);
+      document.getElementById("btn-zen-start-pause").addEventListener("click", togglePlayPause);
+
+      document.getElementById("btn-reset").addEventListener("click", () => {
+        runWithGuardIfNeeded("确定要重置当前专注时间吗？小番茄就得重新种啦~", resetTimer);
+      });
+      document.getElementById("btn-zen-reset").addEventListener("click", () => {
+        runWithGuardIfNeeded("确定要重置当前专注时间吗？", resetTimer);
+      });
+
+      document.getElementById("btn-plus-5").addEventListener("click", addFiveMinutes);
+      document.getElementById("btn-skip").addEventListener("click", () => {
+        AUDIO.playPop(460);
+        runWithGuardIfNeeded("跳过这一轮不会收获番茄哦，确定要跳到下一阶段吗？", () => advanceNextMode(false));
+      });
+
+      // Mascot Click Easter Egg
+      document.getElementById("mascot-stage").addEventListener("click", () => {
+        AUDIO.playPop(720);
+        const lines = [
+          "嘻嘻，痒痒的！一起加油吧~",
+          "你认真的样子超级闪耀！✨",
+          "再坚持一下下，小番茄就快熟啦！",
+          "累了的话记得休息时多眨眨眼睛哦~"
+        ];
+        document.getElementById("mascot-speech").textContent = lines[Math.floor(Math.random() * lines.length)];
+      });
+
+      // Wellness Tips
+      document.getElementById("btn-next-tip").addEventListener("click", () => {
+        AUDIO.playPop(580);
+        currentWellnessIdx = (currentWellnessIdx + 1) % WELLNESS_TIPS.length;
+        document.getElementById("wellness-tip-text").textContent = WELLNESS_TIPS[currentWellnessIdx];
+      });
+
+      // Zen Fullscreen Mode
+      function openZen() {
+        AUDIO.playPop(620);
+        document.getElementById("zen-overlay").classList.add("open");
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      }
+      function closeZen() {
+        AUDIO.playPop(460);
+        document.getElementById("zen-overlay").classList.remove("open");
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+      document.getElementById("btn-zen").addEventListener("click", openZen);
+      document.getElementById("btn-exit-zen").addEventListener("click", closeZen);
+
+      // Task Form & Pickers
+      let selectedSticker = TASK_STICKERS[0];
+      let selectedEst = 1;
+      document.getElementById("sticker-picker").innerHTML = TASK_STICKERS.map((s, i) =>
+        `<button type="button" class="sticker-btn ${i === 0 ? "selected" : ""}" data-sticker="${s}">${s}</button>`
+      ).join("");
+      document.getElementById("sticker-picker").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-sticker]");
+        if (!b) return;
+        AUDIO.playPop(600);
+        selectedSticker = b.dataset.sticker;
+        document.querySelectorAll("#sticker-picker .sticker-btn").forEach((x) => x.classList.toggle("selected", x === b));
+      });
+      document.querySelectorAll(".est-btn").forEach((b) => {
+        b.addEventListener("click", () => {
+          AUDIO.playPop(580);
+          selectedEst = Number(b.dataset.est);
+          document.querySelectorAll(".est-btn").forEach((x) => x.classList.toggle("selected", x === b));
+        });
+      });
+
+      document.getElementById("task-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = document.getElementById("task-input");
+        const title = input.value.trim();
+        if (!title) {
+          showToast("💡", "先写上小任务的名字再添加哦~");
+          input.focus();
+          return;
+        }
+        const task = { id: uid("task"), title, icon: selectedSticker, est: selectedEst, doneTomatoes: 0, completed: false };
+        state.tasks.unshift(task);
+        state.timer.activeTaskId = task.id;
+        input.value = "";
+        AUDIO.playPop(680);
+        saveState();
+        renderTasks();
+        renderActiveTaskBanner();
+      });
+
+      document.getElementById("task-list").addEventListener("click", (e) => {
+        const toggleBtn = e.target.closest("[data-task-toggle]");
+        if (toggleBtn) {
+          const id = toggleBtn.dataset.taskToggle;
+          const t = state.tasks.find((x) => x.id === id);
+          if (!t) return;
+          t.completed = !t.completed;
+          if (t.completed) {
+            state.totalTasksDone += 1;
+            state.stars += 2;
+            launchConfetti(32);
+            AUDIO.playChime("marimba");
+            showToast("🎉", `完成「${t.title}」！奖励 +2 ⭐`);
+            const newBadges = evaluateBadges();
+            newBadges.forEach((b) => showToast(b.icon, `解锁新勋章：${b.name}！`));
+            if (state.timer.activeTaskId === id) {
+              const nextTask = state.tasks.find((x) => !x.completed);
+              state.timer.activeTaskId = nextTask ? nextTask.id : null;
+            }
+          } else {
+            AUDIO.playPop(420);
+          }
+          saveState();
+          refreshAllViews(t.completed);
+          return;
+        }
+
+        const delBtn = e.target.closest("[data-task-del]");
+        if (delBtn) {
+          const id = delBtn.dataset.taskDel;
+          state.tasks = state.tasks.filter((x) => x.id !== id);
+          if (state.timer.activeTaskId === id) {
+            const nextTask = state.tasks.find((x) => !x.completed);
+            state.timer.activeTaskId = nextTask ? nextTask.id : null;
+          }
+          AUDIO.playPop(360);
+          saveState();
+          renderTasks();
+          renderActiveTaskBanner();
+          return;
+        }
+
+        const row = e.target.closest(".task-item");
+        if (row) {
+          const t = state.tasks.find((x) => x.id === row.dataset.taskId);
+          if (t && !t.completed) {
+            state.timer.activeTaskId = t.id;
+            AUDIO.playPop(620);
+            saveState();
+            renderTasks();
+            renderActiveTaskBanner();
+          }
+        }
+      });
+
+      document.getElementById("btn-load-sample-tasks").addEventListener("click", () => {
+        AUDIO.playPop(640);
+        SAMPLE_TASKS.forEach((s) => {
+          if (!state.tasks.some((t) => t.title === s.title)) {
+            state.tasks.push({ id: uid("task"), title: s.title, icon: s.icon, est: s.est, doneTomatoes: 0, completed: false });
+          }
+        });
+        if (!state.timer.activeTaskId) {
+          const first = state.tasks.find((t) => !t.completed);
+          if (first) state.timer.activeTaskId = first.id;
+        }
+        saveState();
+        renderTasks();
+        renderActiveTaskBanner();
+        showToast("✨", "已添加放学后推荐学习小计划！");
+      });
+
+      document.getElementById("btn-clear-done-tasks").addEventListener("click", () => {
+        AUDIO.playPop(420);
+        state.tasks = state.tasks.filter((t) => !t.completed);
+        saveState();
+        renderTasks();
+      });
+
+      // Ambient Sound Toggles
+      function handleAmbientToggleClick(e) {
+        const btn = e.target.closest("[data-ambient-toggle]");
+        if (!btn) return;
+        const id = btn.dataset.ambientToggle;
+        state.ambientActive[id] = !state.ambientActive[id];
+        AUDIO.playPop(580);
+        AUDIO.syncAmbient();
+        if (state.ambientActive[id] && state.settings.ambientFocusOnly && state.timer.status !== "running") {
+          showToast("🎧", "已选中白噪音！开始专注计时就会轻轻响起哦~");
+        }
+        saveState();
+        renderAmbientUI();
+      }
+      document.getElementById("ambient-quick-grid").addEventListener("click", handleAmbientToggleClick);
+      document.getElementById("sound-studio-list").addEventListener("click", handleAmbientToggleClick);
+
+      document.getElementById("btn-mute-all-ambient").addEventListener("click", () => {
+        AUDIO.playPop(380);
+        state.ambientActive = {};
+        AUDIO.syncAmbient();
+        saveState();
+        renderAmbientUI();
+      });
+
+      document.getElementById("ambient-master-vol").addEventListener("input", (e) => {
+        state.settings.ambientMasterVol = Number(e.target.value);
+        document.getElementById("ambient-vol-val").textContent = `${state.settings.ambientMasterVol}%`;
+        AUDIO.syncAmbient();
+        saveState();
+      });
+
+      // Coupons & Parent Gate
+      let selectedCouponIcon = COUPON_ICONS[0];
+      document.getElementById("coupon-icon-picker").innerHTML = COUPON_ICONS.map((ic, i) =>
+        `<button type="button" class="sticker-btn ${i === 0 ? "selected" : ""}" data-cicon="${ic}">${ic}</button>`
+      ).join("");
+      document.getElementById("coupon-icon-picker").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-cicon]");
+        if (!b) return;
+        selectedCouponIcon = b.dataset.cicon;
+        document.querySelectorAll("#coupon-icon-picker .sticker-btn").forEach((x) => x.classList.toggle("selected", x === b));
+      });
+
+      document.getElementById("btn-add-coupon").addEventListener("click", () => {
+        AUDIO.playPop(560);
+        runWithParentGate(() => openModal("modal-add-coupon"));
+      });
+
+      document.getElementById("coupon-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const title = document.getElementById("coupon-title-input").value.trim();
+        const cost = Math.max(5, Math.min(200, Number(document.getElementById("coupon-cost-input").value) || 20));
+        if (!title) return;
+        state.coupons.unshift({ id: uid("cp"), icon: selectedCouponIcon, title, cost });
+        document.getElementById("coupon-title-input").value = "";
+        closeModal("modal-add-coupon");
+        AUDIO.playPop(680);
+        saveState();
+        renderRewardsView();
+        showToast("🎟️", `已创建新心愿券「${title}」`);
+      });
+
+      document.getElementById("view-rewards").addEventListener("click", (e) => {
+        const redeem = e.target.closest("[data-redeem-coupon]");
+        if (redeem) {
+          const c = state.coupons.find((x) => x.id === redeem.dataset.redeemCoupon);
+          if (!c) return;
+          if (state.stars < c.cost) {
+            AUDIO.playPop(300);
+            showToast("⭐", `还需要 ${c.cost - state.stars} 颗星星才能兑换「${c.title}」哦~`);
+            return;
+          }
+          state.stars -= c.cost;
+          state.redeemedCoupons.unshift({
+            id: uid("rc"),
+            icon: c.icon,
+            title: c.title,
+            cost: c.cost,
+            redeemedAt: new Date().toLocaleDateString("zh-CN"),
+            fulfilled: false
+          });
+          AUDIO.playChime("twinkle");
+          launchConfetti(55);
+          showToast(c.icon, `成功兑换心愿券：${c.title}！快给爸爸妈妈看吧~`);
+          saveState();
+          refreshAllViews(true);
+          return;
+        }
+
+        const delCoupon = e.target.closest("[data-del-coupon]");
+        if (delCoupon) {
+          const id = delCoupon.dataset.delCoupon;
+          runWithParentGate(() => {
+            state.coupons = state.coupons.filter((x) => x.id !== id);
+            saveState();
+            renderRewardsView();
+          });
+          return;
+        }
+
+        const fulfill = e.target.closest("[data-fulfill-coupon]");
+        if (fulfill) {
+          const id = fulfill.dataset.fulfillCoupon;
+          runWithParentGate(() => {
+            const item = state.redeemedCoupons.find((x) => x.id === id);
+            if (item) item.fulfilled = true;
+            AUDIO.playPop(680);
+            saveState();
+            renderRewardsView();
+            showToast("💖", "爸爸妈妈已兑现心愿啦！");
+          });
+        }
+      });
+
+      // Parent Math Verification
+      document.getElementById("btn-parent-verify").addEventListener("click", () => {
+        const val = Number(document.getElementById("parent-math-answer").value.trim());
+        if (val === currentMathExpected) {
+          AUDIO.playPop(700);
+          closeModal("modal-parent-gate");
+          if (pendingParentCallback) {
+            const cb = pendingParentCallback;
+            pendingParentCallback = null;
+            cb();
+          }
+        } else {
+          AUDIO.playPop(260);
+          showToast("🤔", "答案好像不对哦，请爸爸妈妈再算一下~");
+        }
+      });
+
+      // Settings Modal Handlers
+      document.getElementById("btn-open-settings").addEventListener("click", () => {
+        AUDIO.playPop(560);
+        renderSettingsModal();
+        openModal("modal-settings");
+      });
+      document.getElementById("btn-open-sound").addEventListener("click", () => {
+        AUDIO.playPop(560);
+        renderAmbientUI();
+        openModal("modal-sound");
+      });
+
+      document.getElementById("modal-settings").addEventListener("click", (e) => {
+        const stepBtn = e.target.closest("[data-step]");
+        if (stepBtn) {
+          const key = stepBtn.dataset.step;
+          const delta = Number(stepBtn.dataset.delta);
+          const limits = {
+            focusMinutes: [1, 90],
+            shortBreakMinutes: [1, 30],
+            longBreakMinutes: [5, 45],
+            longBreakInterval: [2, 6]
+          };
+          const [min, max] = limits[key];
+          state.settings[key] = Math.max(min, Math.min(max, state.settings[key] + delta));
+          AUDIO.playPop(delta > 0 ? 620 : 480);
+          if (state.timer.status === "idle") {
+            const full = getModeDurationMs(state.timer.mode);
+            state.timer.totalMs = full;
+            state.timer.remainingMs = full;
+          }
+          saveState();
+          refreshAllViews();
+        }
+      });
+
+      document.getElementById("set-chime-style").addEventListener("change", (e) => {
+        state.settings.chimeStyle = e.target.value;
+        saveState();
+      });
+      document.getElementById("btn-test-chime").addEventListener("click", () => AUDIO.playChime());
+
+      const switchBindings = [
+        ["toggle-voice", "voiceEnabled"],
+        ["toggle-ui-sound", "uiSoundEnabled"],
+        ["toggle-ambient-focus-only", "ambientFocusOnly"],
+        ["toggle-auto-break", "autoStartBreak"],
+        ["toggle-strict-guard", "strictGuard"],
+        ["toggle-parent-lock", "parentLock"]
+      ];
+      switchBindings.forEach(([id, prop]) => {
+        document.getElementById(id).addEventListener("click", () => {
+          state.settings[prop] = !state.settings[prop];
+          AUDIO.playPop(state.settings[prop] ? 640 : 440);
+          AUDIO.syncAmbient();
+          saveState();
+          renderSettingsModal();
+        });
+      });
+
+      document.getElementById("btn-request-notif").addEventListener("click", () => {
+        parent.postMessage({ type: "tomato:permission" }, event.origin);
+      });
+      window.addEventListener("message", (reply) => {
+        if (reply.source === parent && reply.origin === event.origin && reply.data?.type === "tomato:permission-result") {
+          showToast("📣", reply.data.enabled ? "系统提醒已开启！" : "未授予系统通知权限");
+        }
+      });
+
+      document.getElementById("btn-reset-all-data").addEventListener("click", () => {
+        runWithParentGate(() => {
+          state = createDefaultState();
+          saveState();
+          AUDIO.syncAmbient();
+          closeModal("modal-settings");
+          refreshAllViews();
+          showToast("🧹", "已恢复初始设置与数据！");
+        });
+      });
+
+      // Celebration & Guard Modal Actions
+      document.getElementById("btn-celeb-next").addEventListener("click", () => {
+        closeModal("modal-celebration");
+        advanceNextMode(true);
+      });
+      document.getElementById("btn-guard-confirm").addEventListener("click", () => {
+        closeModal("modal-guard");
+        if (pendingGuardAction) {
+          const act = pendingGuardAction;
+          pendingGuardAction = null;
+          act();
+        }
+      });
+
+      // Generic Close Modal Handlers
+      document.querySelectorAll("[data-close-modal]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          AUDIO.playPop(440);
+          closeModal(btn.dataset.closeModal);
+        });
+      });
+      document.querySelectorAll(".modal-backdrop").forEach((bd) => {
+        bd.addEventListener("click", (e) => {
+          if (e.target === bd) bd.classList.remove("open");
+        });
+      });
+
+      // Export & Import JSON Backup
+      document.getElementById("btn-export-data").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `小番茄乐园备份_${todayKey()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("💾", "成长日记备份已导出！");
+      });
+
+      document.getElementById("btn-import-data").addEventListener("click", () => {
+        document.getElementById("import-file-input").click();
+      });
+      document.getElementById("import-file-input").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const imported = JSON.parse(reader.result);
+            if (!imported || !imported.settings || !imported.timer) throw new Error("invalid");
+            state = loadState(imported);
+            saveState();
+            refreshAllViews();
+            showToast("📥", "成长记录已成功恢复！");
+          } catch {
+            showToast("⚠️", "备份文件格式不正确哦~");
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      });
+
+      // Keyboard Shortcuts (ignored when typing in inputs)
+      window.addEventListener("keydown", (e) => {
+        const tag = (e.target.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || tag === "select") return;
+        if (e.code === "Space") {
+          e.preventDefault();
+          togglePlayPause();
+        } else if (e.key === "r" || e.key === "R") {
+          runWithGuardIfNeeded("确定要重置当前专注时间吗？", resetTimer);
+        } else if (e.key === "s" || e.key === "S") {
+          runWithGuardIfNeeded("跳过这一轮不会收获番茄哦，确定跳过吗？", () => advanceNextMode(false));
+        } else if (e.key === "f" || e.key === "F") {
+          if (document.getElementById("zen-overlay").classList.contains("open")) closeZen();
+          else openZen();
+        } else if (e.key === "Escape") {
+          if (document.getElementById("zen-overlay").classList.contains("open")) closeZen();
+          document.querySelectorAll(".modal-backdrop.open").forEach((m) => m.classList.remove("open"));
+        }
+      });
+
+      // Tab Visibility Sync (handles browser timer throttling cleanly)
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && state.timer.status === "running") {
+          tickLoop();
+        }
+      });
+
+      /* ==========================================================================
+         11. BOOTSTRAP
+      ========================================================================== */
+      // Recover running timer if page was refreshed mid-countdown
+      if (state.timer.status === "running" && state.timer.endTimestamp) {
+        if (Date.now() >= state.timer.endTimestamp) {
+          // Completed while tab was closed: gracefully trigger completion
+          setTimeout(handleSessionComplete, 180);
+        }
+      }
+
+      evaluateBadges();
+      refreshAllViews(false);
+      timerInterval = setInterval(tickLoop, 200);
+    }
+    window.addEventListener("message", startTimerPage);
+  </script>
+</body>
+</html>

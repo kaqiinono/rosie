@@ -4,8 +4,8 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@rosie/core'
 import { useWordsContext } from '../../WordsContext'
-import { FormSelect, LearningIcon } from '@rosie/ui'
-import { Badge, Button } from '@rosie/ui/themes'
+import { LearningIcon } from '@rosie/ui'
+import { Button, DropdownMenu } from '@rosie/ui/themes'
 
 const BASE = '/english/words'
 
@@ -26,10 +26,28 @@ export default function AppHeader() {
   const username = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : undefined
   const isReading = pathname.includes('/reading')
   const isPet = pathname.startsWith(`${BASE}/practice/pet`)
-  const readingCollection =
-    pathname.includes('/reading/story') || searchParams.get('collection') === 'story'
-      ? 'story'
-      : 'houhai'
+  const houhai = ['4A', '4B', '5A', '5B'].filter((stage) => availableStages.includes(stage))
+  const grades = ['G2', 'G3', 'G4']
+  const psStage = (grade: string) =>
+    availableStages.find((stage) => stage === `PS-${grade}-BJ-DICT`) ??
+    availableStages.find((stage) => stage === grade || stage === `PS-${grade}`)
+  const psGrades = grades.flatMap((label) => {
+    const stage = psStage(label)
+    return stage ? [{ label, stage }] : []
+  })
+  const grade = psGrades.find((item) => item.stage === selStage)?.label
+  const activeLabel = isPet ? 'PET'
+    : houhai.includes(selStage) ? `厚海 / ${selStage}`
+    : grade ? `PS / ${grade}` : selStage || '选择教材'
+
+  function selectStage(stage: string) {
+    setSelStage(stage)
+    if (isReading && (stage === '4A' || stage === '5A')) {
+      router.push(`${BASE}/reading?collection=houhai&volume=${stage}`)
+    } else if (isReading || isPet || searchParams.has('stage')) {
+      router.push(`${BASE}/cards`)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--wm-border)] bg-[var(--wm-bg)]/95 px-3 py-2.5 md:px-4">
@@ -40,89 +58,39 @@ export default function AppHeader() {
           </div>
         </Link>
 
-        {isReading && (
-          <div
-            className="flex items-center gap-2 justify-self-end rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1.5 sm:gap-3"
-            role="group"
-            aria-label="切换阅读分类"
-          >
-            <span className="hidden items-center gap-1.5 pl-1 text-xs font-extrabold text-[var(--wm-text-dim)] sm:inline-flex">
-              <LearningIcon name="focus" size={18} />
-              分类
-            </span>
-            {(
-              [
-                { id: 'houhai', label: '厚海', href: `${BASE}/reading?collection=houhai` },
-                { id: 'story', label: 'Story', href: `${BASE}/reading?collection=story` },
-              ] as const
-            ).map((collection) => {
-              const active = collection.id === readingCollection
-              return (
-                <Button
-                  key={collection.id}
-                  type="button"
-                  onClick={() => router.push(collection.href)}
-                  aria-pressed={active}
-                  variant={active ? 'solid' : 'soft'}
-                  color={active ? 'indigo' : 'gray'}
-                  size="2"
-                >
-                  {collection.label}
-                </Button>
-              )
-            })}
-          </div>
-        )}
-
-        {isPet && <Badge color="green" size="2">PET</Badge>}
-        {!isReading && !isPet && availableStages.length > 0 && (
-          <>
-            <div className="flex items-center justify-self-end md:hidden">
-              <FormSelect
-                size="2"
-                value={selStage}
-                onValueChange={setSelStage}
-                ariaLabel="切换教材"
-                className="max-w-[7.5rem]"
-                options={availableStages.map((stage) => ({
-                  value: stage,
-                  label: `教材 ${stage}`,
-                }))}
-              />
-            </div>
-
-            <div
-              className="hidden items-center gap-2 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1 md:flex"
-              role="group"
-              aria-label="切换教材"
-            >
-              <span className="px-1.5 text-sm font-extrabold whitespace-nowrap text-[var(--wm-text-dim)]">
-                📗 教材
-              </span>
-              {availableStages.map((stage) => {
-                const active = stage === selStage
-                return (
-                  <Button
-                    key={stage}
-                    type="button"
-                    onClick={() => {
-                      if (!active) setSelStage(stage)
-                    }}
-                    aria-pressed={active}
-                    title={`切换到 ${stage}`}
-                    variant={active ? 'solid' : 'soft'}
-                    color={active ? 'indigo' : 'gray'}
-                    size="2"
-                    className="shrink-0 whitespace-nowrap"
-                  >
-                    {stage}
-                    {active && isVocabLoading && <span aria-hidden>·</span>}
-                  </Button>
-                )
-              })}
-            </div>
-          </>
-        )}
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button variant="soft" className="justify-self-end" aria-label={`切换教材，当前：${activeLabel}`}>
+              {activeLabel}{isVocabLoading && ' ·'} <DropdownMenu.TriggerIcon />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            {[
+              { label: '厚海', entries: houhai.map((stage) => ({ label: stage, stage })) },
+              { label: 'PS', entries: psGrades },
+            ].filter((group) => group.entries.length > 0).map((group) => (
+              <DropdownMenu.Sub key={group.label}>
+                <DropdownMenu.SubTrigger>{group.label}</DropdownMenu.SubTrigger>
+                <DropdownMenu.SubContent>
+                  {group.entries.map(({ label, stage }) => (
+                    <DropdownMenu.Item key={stage} onSelect={() => selectStage(stage)}>
+                      {label}
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.SubContent>
+              </DropdownMenu.Sub>
+            ))}
+            {['KET', 'PET'].map((stage) => (
+              <DropdownMenu.Item key={stage} disabled={!availableStages.includes(stage)} onSelect={() => selectStage(stage)}>
+                {stage}
+              </DropdownMenu.Item>
+            ))}
+            {availableStages.filter((stage) => !houhai.includes(stage) && !grades.some((g) => psStage(g) === stage)
+              && !['KET', 'PET', 'STORY'].includes(stage.toUpperCase())).map((stage) => (
+              <DropdownMenu.Item key={stage} onSelect={() => selectStage(stage)}>{stage}</DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
 
         <nav className="col-span-2 grid w-full grid-cols-4 gap-1 rounded-xl border border-[var(--wm-border)] bg-[var(--wm-surface)] p-1 md:flex md:w-auto">
           {TABS.map((t) => {

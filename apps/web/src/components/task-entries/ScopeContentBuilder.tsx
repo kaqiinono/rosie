@@ -102,7 +102,6 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
   const [pendingIds, setPendingIds] = useState<string[]>([])
   const [summary, setSummary] = useState('')
   const [notice, setNotice] = useState('')
-  const [restoredScope, setRestoredScope] = useState('')
   const initialRows = useRef(rows)
   const restored = useRef(false)
   const heading = useRef<HTMLHeadingElement>(null)
@@ -122,6 +121,9 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
     void loadScopeCatalog(subject, mode).then(value => { if (!cancelled) setCatalog(value) })
       .catch(cause => { if (!cancelled) setError(cause instanceof Error ? cause.message : '课程目录读取失败') })
       .finally(() => { if (!cancelled) { setLoading(false); latest.current.onBusyChange(false) } })
+    // generation is an invalidation counter, not a DOM ref: bumping it in
+    // cleanup cancels in-flight writes when the catalog scope changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => { cancelled = true; generation.current++; latest.current.onBusyChange(false) }
   }, [subject, source, mode, attempt])
   useEffect(() => { heading.current?.focus() }, [depth, phase])
@@ -141,7 +143,6 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
     const restoredChoices: string[] = []
     let current = roots
     let step = 0
-    let partial = matched.length !== saved.length
     while (current.length) {
       const selectedNodes = current.filter(hasSaved)
       if (!selectedNodes.length) break
@@ -149,7 +150,6 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
         setLessonChoices(selectedNodes.map(node => node.id))
         const values = mergeChildren(selectedNodes)
         setLeaves(values.filter(complete).map(node => node.id))
-        partial ||= values.some(node => hasSaved(node) && !complete(node))
         step++
         break
       }
@@ -157,22 +157,19 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
         setUnitChoices(selectedNodes.map(node => node.id))
         const lessons = mergeChildren(selectedNodes)
         setLeaves(lessons.filter(complete).map(node => node.id))
-        partial ||= lessons.some(node => hasSaved(node) && !complete(node))
         break
       }
       if (current.every(node => !node.children.length)) {
         setLeaves(selectedNodes.filter(complete).map(node => node.id))
-        partial ||= selectedNodes.some(node => !complete(node))
         break
       }
-      if (selectedNodes.length !== 1) { partial = true; break }
+      if (selectedNodes.length !== 1) break
       restoredChoices.push(selectedNodes[0].id)
       current = selectedNodes[0].children
       step++
     }
     setChoices(restoredChoices)
     setDepth(0)
-    setRestoredScope(partial ? `已保留 ${saved.length} 项原内容，并回显可匹配范围。跨范围或部分删减的内容不会自动扩选；仅在写入时更新清单。` : '已恢复上次保存的课程范围，可直接修改或保存。')
   }, [catalog, roots, subject])
 
   let nodes = roots
@@ -248,7 +245,7 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
     }
   }
   function restart() {
-    setRestoredScope(''); setPlanDraft(null); setPhase('choose'); setDepth(0); setChoices([]); setLessonChoices([]); setUnitChoices([]); setLeaves([]); setPendingIds([]); setError('')
+    setPlanDraft(null); setPhase('choose'); setDepth(0); setChoices([]); setLessonChoices([]); setUnitChoices([]); setLeaves([]); setPendingIds([]); setError('')
   }
   function commitPlan(next: { path: string; rows: PracticeEntryRow[]; name: string }) {
     const previous = latest.current.rows
