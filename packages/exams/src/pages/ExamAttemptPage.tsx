@@ -67,6 +67,11 @@ function Attempt({ id, userId, renderSpeaking }: { id: string; userId: string; r
   const handwritingPending = Object.values(handwritingEditors).some(Boolean)
   const [showLateAnswers, setShowLateAnswers] = useState(false)
   const section = view?.state.currentSectionId ? view.state.sections[view.state.currentSectionId] : null
+  const [syncedSection, setSyncedSection] = useState(view?.state.currentSectionId)
+  if (view?.state.currentSectionId !== syncedSection) {
+    setSyncedSection(view?.state.currentSectionId)
+    setExpiredLocally(false)
+  }
   const groups = view?.groups.filter(group => group.sectionId === view.state.currentSectionId) ?? []
   const group = groups.find(item => item.id === view?.state.currentGroupId) ?? groups[0]
   const currentIndex = group ? groups.findIndex(item => item.id === group.id) : -1
@@ -75,12 +80,21 @@ function Attempt({ id, userId, renderSpeaking }: { id: string; userId: string; r
   const lateGroups = view?.groups.filter(item => view.state.sections[item.sectionId]?.timedOut
     && item.questions.some(question => answers[question.id] && JSON.stringify(answers[question.id]) !== JSON.stringify(view.state.answers[question.id]))) ?? []
 
-  useEffect(() => { setExpiredLocally(false) }, [view?.state.currentSectionId])
-  useEffect(() => {
-    if (!audioFailed || busy || data.pending || section?.status !== 'active') return
+  const [interruptSent, setInterruptSent] = useState(false)
+  const [prevAudioFailed, setPrevAudioFailed] = useState(false)
+  if (audioFailed !== prevAudioFailed) {
+    setPrevAudioFailed(audioFailed)
+    if (audioFailed) setInterruptSent(false)
+  }
+  if (audioFailed && !interruptSent && !busy && !data.pending && section?.status === 'active') {
+    setInterruptSent(true)
     setAudioFailed(false)
-    void data.send('interrupt')
-  }, [audioFailed, busy, data.pending, data.send, section?.status])
+  }
+  useEffect(() => {
+    if (interruptSent) void data.send('interrupt')
+    // One-shot per audio-failure episode; interruptSent resets when a new failure arrives.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [interruptSent])
   useEffect(() => {
     if (!data.dirty && !data.pending && !recordingPending && !handwritingPending) return
     const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }

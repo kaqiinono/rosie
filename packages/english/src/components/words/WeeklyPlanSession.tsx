@@ -49,7 +49,8 @@ import { useStarHud } from '@rosie/rewards'
 import { StarProgressBar } from '@rosie/rewards'
 import { supabase } from '@rosie/core'
 import { todayStr } from '@rosie/core'
-import { Button } from '@rosie/ui/themes'
+import { Button, Flex, Text } from '@rosie/ui/themes'
+import { englishWeeklyPlansStore } from '../../hooks/useWeeklyPlan'
 
 interface WeeklyPlanSessionProps {
   initialPlan: WeeklyPlan
@@ -59,6 +60,8 @@ interface WeeklyPlanSessionProps {
   autoStart?: boolean
   /** Homework opens one planned day. Absent keeps today's session. */
   startDate?: string | null
+  /** Homework renders one bound date inside its own full-width drawer. */
+  embedded?: boolean
 }
 
 type Phase = 'week-view' | 'study' | 'quiz' | 'done'
@@ -132,6 +135,7 @@ async function saveProgressToCloud(
   pendingSession?: WeeklyPlanSessionStash | null,
 ): Promise<boolean> {
   if (!plan.id) return false
+  const savedSession = pendingSession === undefined ? plan.pendingSession : pendingSession
   try {
     const { error } = await supabase
       .from('weekly_plans')
@@ -139,7 +143,7 @@ async function saveProgressToCloud(
         progress_data: encodeWeeklyPlanProgress(
           plan.progress,
           plan.weekCompletion,
-          pendingSession ?? plan.pendingSession ?? null,
+          savedSession ?? null,
         ),
         updated_at: new Date().toISOString(),
       })
@@ -149,6 +153,9 @@ async function saveProgressToCloud(
       console.error('[weekly-plan] progress save failed', error)
       return false
     }
+    englishWeeklyPlansStore.patchSessionData(userId, plans => plans.map(item => item.id === plan.id
+      ? { ...item, progress: plan.progress, weekCompletion: plan.weekCompletion, pendingSession: savedSession ?? undefined }
+      : item))
     return true
   } catch (err) {
     console.error('[weekly-plan] progress save threw', err)
@@ -162,6 +169,7 @@ export default function WeeklyPlanSession({
   onBack,
   autoStart = false,
   startDate = null,
+  embedded = false,
 }: WeeklyPlanSessionProps) {
   const { user } = useAuth()
   const { masteryMap, recordBatch, practiceButtonStyle, setPracticeButtonStyle } = useWordsContext()
@@ -176,9 +184,12 @@ export default function WeeklyPlanSession({
   }, [plan])
 
   // Read localStorage exactly once via a lazy-init state (immutable after mount, not a ref)
-  const [snap0] = useState(() =>
+  const [initialSnapshot] = useState(() =>
     pickBestPendingSnapshot(initialPlan.id, initialPlan.pendingSession),
   )
+  const otherDatePending = embedded && startDate && initialSnapshot && initialSnapshot.selectedDate !== startDate
+    ? initialSnapshot : null
+  const snap0 = otherDatePending ? null : initialSnapshot
   const hydrationDone = useRef(false)
   const [isStashing, setIsStashing] = useState(false)
   const [stashToast, setStashToast] = useState<string | null>(null)
@@ -198,7 +209,7 @@ export default function WeeklyPlanSession({
       const todayDay = plan.days.find((d) => d.date === today)
       const firstUnfinished = plan.days.find((d) => !plan.progress[d.date]?.quizDone)
       setSelectedDate(
-        todayDay?.date ?? firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null,
+        (embedded ? startDate : null) ?? todayDay?.date ?? firstUnfinished?.date ?? plan.days[plan.days.length - 1]?.date ?? null,
       )
     }
   }
@@ -500,18 +511,18 @@ export default function WeeklyPlanSession({
   // Homepage today-plan card: jump straight into today's study (unless a pending session is restoring).
   const autoStartDoneRef = useRef(false)
   useEffect(() => {
-    if (!autoStart || autoStartDoneRef.current || snap0) return
+    if (!autoStart || autoStartDoneRef.current || snap0 || otherDatePending) return
     if (phase !== 'week-view') return
     const target = startDate ?? todayStr()
     if (!plan.days.some((d) => d.date === target)) return
     if (buildSessionWords(target).length === 0) return
     autoStartDoneRef.current = true
     startStudy(target)
-  }, [autoStart, startDate, snap0, phase, plan.days, buildSessionWords, startStudy])
+  }, [autoStart, startDate, snap0, otherDatePending, phase, plan.days, buildSessionWords, startStudy])
 
   const resumePendingSession = useCallback(() => {
     const snap = pickBestPendingSnapshot(plan.id, plan.pendingSession)
-    if (!snap) return
+    if (!snap || (embedded && startDate && snap.selectedDate !== startDate)) return
     applySnapshotToState(snap, vocab, {
       setSelectedDate,
       setCurrentSubTask,
@@ -524,7 +535,7 @@ export default function WeeklyPlanSession({
       quizResultBuffer,
     })
     setIsImmersive(true)
-  }, [plan.id, plan.pendingSession, vocab, setIsImmersive])
+  }, [plan.id, plan.pendingSession, vocab, setIsImmersive, embedded, startDate])
 
   const startQuiz = useCallback(() => {
     const seed = Date.now()
@@ -745,6 +756,20 @@ export default function WeeklyPlanSession({
 
   // ── WEEK VIEW ────────────────────────────────────────────────────────────
   if (phase === 'week-view') {
+    if (embedded && startDate) {
+      const pending = pickBestPendingSnapshot(plan.id, plan.pendingSession)
+      const resume = pending?.selectedDate === startDate
+      const available = buildSessionWords(startDate).length > 0
+      return <Flex direction="column" gap="3" p="4" width="100%">
+        <Text size="4" weight="bold">{formatPlanLessonLabel(plan.unit, plan.lesson)} · {fmtDate(startDate)}</Text>
+        {stashToast && <Text role="status">{stashToast}</Text>}
+        {pending && !resume && <Text>该计划还有 {fmtDate(pending.selectedDate)} 的未完成练习。开始本次练习会替换那次暂存进度。</Text>}
+        {!available && <Text>这一天暂无可练习的单词，请检查计划及词库。</Text>}
+        <Flex><Button disabled={!available} onClick={() => resume ? resumePendingSession() : startStudy(startDate)}>
+          {resume ? '继续本次练习' : '开始本次练习'}
+        </Button></Flex>
+      </Flex>
+    }
     const today = todayStr()
     const kindMap = classifyPlanWords(plan, vocab)
 
@@ -1268,6 +1293,8 @@ export default function WeeklyPlanSession({
     const total = words.length
     return (
       <StudyPhase
+        embedded={embedded}
+        compactImmersiveControls={embedded}
         entry={w.entry}
         currentIdx={studyIdx}
         totalCount={total}
@@ -1308,7 +1335,7 @@ export default function WeeklyPlanSession({
       0,
     )
     return (
-      <div className="mx-auto max-w-[1280px] px-4 py-5">
+      <div className={`px-4 py-5 ${embedded ? 'w-full min-w-0' : 'mx-auto max-w-[1280px]'}`}>
         <div className="mb-2 flex items-center gap-3 py-3">
           <Button
             onClick={() => {
@@ -1376,6 +1403,7 @@ export default function WeeklyPlanSession({
           />
         ) : (
           <QuizQuestionBody
+            fullWidth={embedded}
             question={currentQuestion}
             options={quizOptions}
             score={score}
@@ -1428,6 +1456,7 @@ export default function WeeklyPlanSession({
     return (
       <>
         <DoneSummary
+          fullWidth={embedded}
           score={score}
           total={total}
           scoreColorClass="text-[#d97706]"
@@ -1461,7 +1490,7 @@ export default function WeeklyPlanSession({
                 color="gray"
                 size="2"
               >
-                返回多日计划
+                {embedded ? '返回本次练习' : '返回多日计划'}
               </Button>
               {isSubTask && hasOtherWords && !otherAlreadyDone && selectedDate && (
                 <Button

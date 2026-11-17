@@ -32,8 +32,10 @@ type Editor = { homework?: Homework }
 export default function HomeworkManager({
   api,
   notify,
+  onPreview,
 }: {
   api: Api
+  onPreview?: (homework: Homework) => void
   notify: (message: string) => void
 }) {
   const { data } = api
@@ -58,7 +60,7 @@ export default function HomeworkManager({
     .sort((a, b) => a.priority.localeCompare(b.priority))
   const enabledCount = data.filter((item) => item.enabled).length
   const totalMinutes = data
-    .filter((item) => item.enabled)
+    .filter((item) => item.enabled && item.subject !== 'life')
     .reduce((sum, item) => sum + item.estimated_minutes, 0)
   const filtering = subject !== 'all' || status !== 'all' || !!keyword
 
@@ -242,7 +244,7 @@ export default function HomeworkManager({
                       {HOMEWORK_CYCLES[item.cycle]}
                     </Badge>
                     <Badge variant="soft" radius="full" color="gray">
-                      约 {item.estimated_minutes} 分钟
+                      {item.subject === 'life' ? '不计时' : `约 ${item.estimated_minutes} 分钟`}
                     </Badge>
                     {!item.enabled && (
                       <Badge variant="soft" radius="full" color="gray">
@@ -258,7 +260,12 @@ export default function HomeworkManager({
                       {item.notes}
                     </Text>
                   )}
-                  <Grid columns="2" gap="2" mt="auto" pt="1">
+                  <Grid columns={onPreview && item.subject !== 'life' ? '3' : '2'} gap="2" mt="auto" pt="1">
+                    {onPreview && item.subject !== 'life' && (
+                      <Button variant="soft" color="blue" onClick={() => onPreview(item)} aria-label={`预览${item.name}`}>
+                        预览
+                      </Button>
+                    )}
                     <Button
                       variant="soft"
                       aria-label={`编辑${item.name}`}

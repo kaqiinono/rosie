@@ -1,4 +1,4 @@
-import { entryHref, scheduledPracticeRow, type Homework, type PracticeEntryRow } from '@rosie/tasks'
+import { entryHref, scheduledPracticeRow, type Homework, type PracticeBinding, type PracticeEntryRow } from '@rosie/tasks'
 import type { TreeData, WorkStep } from './types'
 
 export type PracticePreview = {
@@ -13,6 +13,7 @@ export type PracticePreview = {
 
 /** A list preview never reserves an occurrence, advances a cursor or changes a snapshot. */
 export function previewPractice(tree: TreeData, step: WorkStep, homework?: Homework): PracticePreview | null {
+  if (step.subject === 'life') return null
   const saved = step.practice !== undefined
     ? step
     : tree.steps.find((peer) => peer.occurrence === step.occurrence && peer.practice !== undefined &&
@@ -22,12 +23,20 @@ export function previewPractice(tree: TreeData, step: WorkStep, homework?: Homew
   } : null
   // Never replace a historical task's missing snapshot with today's curriculum.
   if (step.end || step.skipped) return null
-  const binding = homework?.practice_binding
+  return previewHomeworkPractice(tree, homework?.practice_binding, step.scheduled, step.occurrence)
+}
+
+export function previewHomeworkPractice(
+  tree: Pick<TreeData, 'practiceProgress'>,
+  binding: PracticeBinding | null | undefined,
+  day: string,
+  occurrence?: string,
+): PracticePreview | null {
   if (!binding) return null
   if (binding.progression) {
     // Invalid configuration remains unavailable until corrected; never invent a row.
     try {
-      const selection = scheduledPracticeRow(binding, step.scheduled)
+      const selection = scheduledPracticeRow(binding, day, occurrence)
       return {
         name: binding.name, ...selection, provisional: true,
         href: selection.exhausted ? null : entryHref(binding.path, selection.row?.values ?? {}),

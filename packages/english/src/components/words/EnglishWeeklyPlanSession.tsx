@@ -41,7 +41,6 @@ type PlanCardKind = 'weekly' | 'adaptive'
 type UnifiedPlanCard = {
   key: string
   kind: PlanCardKind
-  incomplete: boolean
   sortDate: string
   weekly?: WeeklyPlan
   adaptive?: AdaptiveWordPlan
@@ -226,7 +225,6 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
       cards.push({
         key: `weekly:${plan.id ?? plan.weekStart}`,
         kind: 'weekly',
-        incomplete: isWeeklyIncomplete(plan),
         sortDate: plan.weekStart,
         weekly: plan,
       })
@@ -236,22 +234,15 @@ export default function EnglishWeeklyPlanSession({ vocab, stage }: Props) {
       cards.push({
         key: `adaptive:${plan.id}`,
         kind: 'adaptive',
-        incomplete: plan.status === 'active',
-        sortDate: plan.updatedAt.slice(0, 10),
+        sortDate: plan.createdAt.slice(0, 10),
         adaptive: plan,
       })
     }
 
-    cards.sort((a, b) => {
-      const aCurrent = a.key === currentActiveKey ? 0 : 1
-      const bCurrent = b.key === currentActiveKey ? 0 : 1
-      if (aCurrent !== bCurrent) return aCurrent - bCurrent
-      if (a.incomplete !== b.incomplete) return a.incomplete ? -1 : 1
-      return b.sortDate.localeCompare(a.sortDate)
-    })
+    cards.sort((a, b) => b.sortDate.localeCompare(a.sortDate))
 
     return cards
-  }, [visibleWeeklyPlans, visibleAdaptivePlans, currentActiveKey])
+  }, [visibleWeeklyPlans, visibleAdaptivePlans])
 
   const currentAndNextWeekPlans = useMemo(() => {
     const today = todayStr()

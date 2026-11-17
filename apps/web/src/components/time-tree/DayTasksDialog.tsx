@@ -114,8 +114,8 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
           const steps = tree.steps.filter((step) => (step.planned ?? step.scheduled) === day)
           const required = steps.filter((step) => !step.skipped)
           const completed = required.filter((step) => step.end)
-          const doneMinutes = completed.reduce((sum, step) => sum + step.minutes, 0)
-          const totalMinutes = required.reduce((sum, step) => sum + step.minutes, 0)
+          const doneMinutes = completed.reduce((sum, step) => sum + (step.subject === 'life' ? 0 : step.minutes), 0)
+          const totalMinutes = required.reduce((sum, step) => sum + (step.subject === 'life' ? 0 : step.minutes), 0)
           const finished = required.length > 0 && completed.length === required.length
           const mood = dates.length > 1 ? dayMood(day, tree.today) : null
           return (
@@ -160,10 +160,10 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                       <StatTile
                         size="sm"
                         tone="info"
-                        label="⏱️ 大约"
-                        value={finished ? doneMinutes : totalMinutes}
+                        label="计划用时"
+                        value={`${doneMinutes}/${totalMinutes}`}
                         unit="分钟"
-                        hint={finished ? '已经花掉的时间' : '全部做完大概这么久'}
+                        hint="已完成任务 / 全部任务"
                       />
                     </div>
                     <Text size="2">{cheer(completed.length, required.length)}</Text>
@@ -202,7 +202,7 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                           {step.crown ? <LearningIcon name="crown" /> : <LearningIcon name={SUBJECT_ICON[step.subject]} />}
                         </span>
                         <span className="min-w-0 flex-1 break-words font-bold">{step.name}</span>
-                        <Text size="2" color="gray" className="shrink-0">{step.minutes} 分钟</Text>
+                        <Text size="2" color="gray" className="shrink-0">{step.subject === 'life' ? '不计时' : `${step.minutes} 分钟`}</Text>
                         <Badge variant="soft" radius="full" color={badge.color} className="shrink-0">{badge.label}</Badge>
                         <ChevronDown aria-hidden="true" size={16} className={`shrink-0 ${expanded ? 'rotate-180' : ''}`} />
                       </Button>

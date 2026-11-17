@@ -27,7 +27,7 @@ export default function OrganicTimeTreeDemo() {
       title="时间成长树 · 有机材质"
       icon="🌳"
       subtitle="Perlin 木纹 · 玉石 SSS · 泡泡形变 · 0 点年轮 · 抛物线落果"
-      backHref="/dev-preview/time-tree"
+      backHref="/time-tree"
       width="wide"
     >
       <div className="flex flex-col gap-4">

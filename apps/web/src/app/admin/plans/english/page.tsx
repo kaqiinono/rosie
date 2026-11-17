@@ -20,7 +20,7 @@ function EnglishPlanManageBody() {
   return (
     <div className="mx-auto max-w-[800px] px-4 py-6">
       <div
-        className="mb-6 inline-flex rounded-xl border border-[var(--wm-border)] bg-white/[.03] p-1"
+        className="mx-auto mb-6 flex w-fit items-center justify-center gap-3 rounded-xl border border-[var(--wm-border)] bg-white/[.03] p-3"
         role="tablist"
         aria-label="英语计划类型"
       >
@@ -29,7 +29,7 @@ function EnglishPlanManageBody() {
           role="tab"
           aria-selected={tab === 'multi'}
           onClick={() => setTab('multi')}
-          variant={tab === 'multi' ? 'soft' : 'ghost'}
+          variant="soft"
           color={tab === 'multi' ? 'amber' : 'gray'}
           size="2"
         >
@@ -40,7 +40,7 @@ function EnglishPlanManageBody() {
           role="tab"
           aria-selected={tab === 'adaptive'}
           onClick={() => setTab('adaptive')}
-          variant={tab === 'adaptive' ? 'soft' : 'ghost'}
+          variant="soft"
           color={tab === 'adaptive' ? 'violet' : 'gray'}
           size="2"
         >

@@ -1,5 +1,6 @@
 import { flowerBudget, flowerQuestionProgress, nextFlowerSession } from './flowers'
 import { completionReward, isEarly } from './rewards'
+import { awardDailyRainbow, harvestSteps } from './harvest'
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
 import {
   SUN_MAGIC_COST,
@@ -71,6 +72,9 @@ function onCompleted(tree: TreeData, step: WorkStep, at: string): void {
   remember(tree, makeup ? '🍂' : '🌸', `${step.flowers && !step.flowers.complete ? '本次收工' : makeup ? '补做完成' : '做完了'}「${step.name}」`, at)
   markDoneToday(tree)
   awardGoal(tree, at)
+  if (awardDailyRainbow(tree, step)) {
+    remember(tree, '🌈', '今天的学习任务全部完成！最后一颗苹果变成彩虹果，自选一种学科宝石。', at)
+  }
 }
 
 /** 今天还没做完的，以及正在做的，全部飞成泡泡。过期还没开始的留在枯萎箱。 */
@@ -129,35 +133,7 @@ export function roll(tree: TreeData, today: string) {
     tree.today = today
   }
   const due = tree.steps.filter((s) => s.end && !s.settled && dayOf(s.end) < today)
-  due.sort(
-    (a, b) =>
-      dayOf(a.end!).localeCompare(dayOf(b.end!)) ||
-      CORE_SUBJECTS.findIndex((k) => k === a.subject) -
-        CORE_SUBJECTS.findIndex((k) => k === b.subject) ||
-      a.id.localeCompare(b.id),
-  )
-  for (const s of due) {
-    const dateKey = dayOf(s.end!)
-    s.settled = s.popped = true
-    s.slot = null
-    if (s.subject === 'life') {
-      if (s.stages.length) tree.apples.push({ id: crypto.randomUUID(), kind: 'life', dateKey })
-      continue
-    }
-    const rules =
-      [...tree.ruleHistory].reverse().find((r) => r.day <= dateKey)?.rules ?? defaultRules
-    tree.remainder[s.subject] += s.stages.length
-    while (tree.remainder[s.subject] >= rules[s.subject]) {
-      tree.remainder[s.subject] -= rules[s.subject]
-      tree.appleCount++
-      tree.apples.push({
-        id: crypto.randomUUID(),
-        kind: tree.appleCount % 12 === 0 ? 'rainbow' : s.subject,
-        from: s.subject,
-        dateKey,
-      })
-    }
-  }
+  harvestSteps(tree, due)
 }
 
 function finish(tree: TreeData, s: WorkStep, end: string) {

@@ -319,6 +319,9 @@ export function QuotaPicker({ value, onChange }: { value: number; onChange: (n: 
           onClick={() => onChange(n)}
           variant={value === n ? 'solid' : 'outline'}
           color={value === n ? 'amber' : 'gray'}
+          highContrast={value === n}
+          aria-pressed={value === n}
+          style={value === n ? { color: '#4A2C00' } : undefined}
           size="1"
           className="w-7"
         >

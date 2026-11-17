@@ -127,6 +127,7 @@ export function MatchingBoard({ items, options, value, onValueChange, allowReuse
       >
         {illustration ? <div ref={illustrationViewport} className="min-w-0 overflow-x-auto pb-2" aria-label={illustration.fit === 'responsive' ? '题图' : '题图，小屏可左右滑动'}>
           <div className={illustration.fit === 'responsive' ? 'relative w-full' : illustration.displayWidth === undefined ? 'relative min-w-[520px]' : 'relative max-w-full'} style={{ ...(illustration.fit === 'responsive' ? { maxWidth: illustration.displayWidth } : { width: illustration.displayWidth }), aspectRatio: `${illustration.width} / ${illustration.height}` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- authenticated exam media URL */}
             <img src={illustration.src} alt={illustration.alt} width={illustration.width} height={illustration.height} className="block h-auto w-full" onLoad={updateLine} />
             {items.map(item => item.position && <div key={item.id} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${item.position.x}%`, top: `${item.position.y}%` }}>{numberButton(item)}</div>)}
           </div>

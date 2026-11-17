@@ -55,11 +55,15 @@ function MaterialBrowser({ lessonKey, file, setFile }: BrowserProps) {
   const base = '/api/baidu/video/materials?' + params.toString()
   const src = file ? base + '&' + new URLSearchParams({ id: file.id, name: file.name }) : ''
   const mime = file ? materialType(file.name) : ''
+  const listKey = `${base}|${offset}|${retry}`
+  const [syncedListKey, setSyncedListKey] = useState(listKey)
+  if (listKey !== syncedListKey) { setSyncedListKey(listKey); setListing(null); setError('') }
+  const fileKey = `${src}|${fileAttempt}`
+  const [syncedFileKey, setSyncedFileKey] = useState(fileKey)
+  if (fileKey !== syncedFileKey) { setSyncedFileKey(fileKey); if (src) setFileCheck(null) }
   useEffect(() => {
     const controller = new AbortController()
     const signal = controller.signal
-    setListing(null)
-    setError('')
     void (async () => {
       const { data } = await supabase.auth.getSession()
       if (!data.session) throw Error('请重新登录后查看资料。')
@@ -88,7 +92,6 @@ function MaterialBrowser({ lessonKey, file, setFile }: BrowserProps) {
   useEffect(() => {
     if (!src) return
     const controller = new AbortController()
-    setFileCheck(null)
     void probeBaiduMedia(src, controller.signal)
       .then((message) => {
         if (!controller.signal.aborted) setFileCheck({ src, error: message ?? '' })
@@ -180,12 +183,15 @@ function MaterialBrowser({ lessonKey, file, setFile }: BrowserProps) {
           ) : (
             <>
               {mime.startsWith('image/') && (
+                <>
+                {/* eslint-disable-next-line @next/next/no-img-element -- authenticated Baidu media URL */}
                 <img
                   src={src}
                   alt={file.name}
                   onError={previewFailed}
                   className="mx-auto max-h-[58dvh] max-w-full object-contain"
                 />
+                </>
               )}
               {mime.startsWith('video/') && (
                 <video

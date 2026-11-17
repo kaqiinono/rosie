@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { FormSelect } from '@rosie/ui'
 import { Flex, Switch, Text, TextField } from '@rosie/ui/themes'
-import { practiceSelectionPath, type PracticeBinding, type PracticeEntryRow } from '../../practiceEntries'
+import { practiceSelectionPath, type PracticeBinding, type PracticeEntryRow, type PracticeProgression } from '../../practiceEntries'
 import { defaultPracticeProgression } from '../../practiceProgression'
 import { localDate } from '../../time'
 import { HOMEWORK_WEEKDAYS, HOMEWORK_WEEKDAY_ORDER } from '../../homework'
@@ -72,8 +72,8 @@ export default function PracticeStartPicker({ value, onChange, purpose = 'start'
         <Flex direction="column" gap="1" flexGrow="1" minWidth="0">
           <Text size="2">推进方式</Text>
           <FormSelect ariaLabel="课程推进方式" value={progression.mode}
-            options={[{ value: 'daily', label: '按日推进' }, { value: 'weekly', label: '按周推进' }]}
-            onValueChange={(mode) => onChange({ ...value, progression: { ...progression, mode: mode as 'daily' | 'weekly' } })} />
+            options={[{ value: 'daily', label: '按日推进' }, { value: 'weekly', label: '按周推进' }, { value: 'homework', label: '随作业推进' }]}
+            onValueChange={(mode) => onChange({ ...value, progression: { ...progression, mode: mode as PracticeProgression['mode'] } })} />
         </Flex>
         <Flex direction="column" gap="1" width="6rem" flexShrink="0">
           <Text as="label" size="2" htmlFor="practice-advance-amount">推进数量</Text>
@@ -96,8 +96,10 @@ export default function PracticeStartPicker({ value, onChange, purpose = 'start'
     {!value.startId && <Text size="2" color="gray">{purpose === 'content' ? '选择具体内容后，下方直接展示。' : '请选择到具体开始项后保存。'}</Text>}
     {purpose === 'start' && <Text size="1" color="gray">{!progression.enabled
       ? '关闭自动推进后，新生成的作业固定使用从所选起点开始的同一组内容。'
+      : progression.mode === 'homework'
+        ? `每份作业包含连续 ${progression.amount || 1} 项，每新增一份作业切换到下一组；推进日期和星期跟随作业排期，分次完成、补做或改期不重复推进。`
       : progression.mode === 'daily'
         ? `每次作业包含连续 ${progression.amount || 1} 项，每天切换到下一组；不含周末时，周六、周日不推进。`
-        : `每次作业包含连续 ${progression.amount || 1} 项，每到${HOMEWORK_WEEKDAYS[progression.weekday]}切换到下一组，其余日期使用同一组。`} 已生成的作业保留原内容；新设置保存后生效。</Text>}
+        : `每次作业包含连续 ${progression.amount || 1} 项，每到${HOMEWORK_WEEKDAYS[progression.weekday]}切换到下一组，其余日期使用同一组。`} 新设置保存后生效；已完成作业保留原内容。</Text>}
   </Flex>
 }

@@ -19,8 +19,8 @@ export interface StepPractice {
   exhausted: boolean
 }
 
-export function calendarPractice(binding: PracticeBinding, day: string): StepPractice {
-  const { row, rows, exhausted } = scheduledPracticeRow(binding, day)
+export function calendarPractice(binding: PracticeBinding, day: string, occurrence?: string): StepPractice {
+  const { row, rows, exhausted } = scheduledPracticeRow(binding, day, occurrence)
   return {
     key: binding.key, name: binding.name, row: row ? structuredClone(row) : null,
     items: rows.map((item) => ({ row: structuredClone(item), href: entryHref(binding.path, item.values) })),
@@ -42,7 +42,7 @@ export function bindPractice(tree: TreeData, step: WorkStep, homework?: Homework
   if (!/^[0-9a-f-]{36}$/i.test(binding.key)) throw new Error('练习配置无效，请重新选择入口')
   validateEntry({ ...binding, subject: homework!.subject })
   if (binding.progression) {
-    const snapshot = calendarPractice(binding, step.scheduled)
+    const snapshot = calendarPractice(binding, step.scheduled, step.occurrence)
     for (const peer of peers) if (peer.practice === undefined) peer.practice = structuredClone(snapshot)
     return
   }

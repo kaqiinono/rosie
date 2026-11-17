@@ -27,7 +27,12 @@ export function InlineHandwritingPad({ label, strokes, onChange, readOnly, word 
   useEffect(() => {
     callback.current = onDrawingChange
   }, [onDrawingChange])
-  useEffect(() => { if (pointer.current === null) { ink.current = strokes; setDraft(strokes) } }, [strokes])
+  const [syncedStrokes, setSyncedStrokes] = useState(strokes)
+  if (strokes !== syncedStrokes) {
+    setSyncedStrokes(strokes)
+    if (!drawing) setDraft(strokes)
+  }
+  useEffect(() => { if (pointer.current === null) ink.current = strokes }, [strokes])
   useEffect(() => () => callback.current(false), [])
   const point = (event: PointerEvent<SVGSVGElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()

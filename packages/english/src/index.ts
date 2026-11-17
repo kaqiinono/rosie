@@ -18,7 +18,7 @@ export { default as EnglishQuickLinkCard } from './components/EnglishQuickLinkCa
 export { useWordData, wordEntriesStore } from './hooks/useWordData'
 export { useWordMastery } from './hooks/useWordMastery'
 export { useEnglishWrong } from './hooks/useEnglishWrong'
-export { useWeeklyPlan } from './hooks/useWeeklyPlan'
+export { useWeeklyPlan, englishWeeklyPlansStore } from './hooks/useWeeklyPlan'
 export { useAdaptiveWordPlan } from './hooks/useAdaptiveWordPlan'
 export { useAdaptiveTodayProgress } from './hooks/useAdaptiveTodayProgress'
 export type { AdaptiveTodayProgressSummary } from './hooks/useAdaptiveTodayProgress'

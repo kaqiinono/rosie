@@ -40,6 +40,7 @@ interface QuizQuestionBodyProps {
   spellButtonStyle?: SpellButtonStyle
   /** When a monster-eat overlay is taking over advancing (WeeklyPlanSession only), suppress the inline 下一题 button. Optional; defaults false so other callers are unaffected. */
   eatenSceneActive?: boolean
+  fullWidth?: boolean
 }
 
 export default function QuizQuestionBody(props: QuizQuestionBodyProps) {
@@ -63,6 +64,7 @@ function QuestionBody({
   onMagicReveal,
   spellButtonStyle,
   eatenSceneActive = false,
+  fullWidth = false,
 }: QuizQuestionBodyProps) {
   const isA = question.type === 'A'
   const isB = question.type === 'B'
@@ -193,7 +195,7 @@ function QuestionBody({
     <>
       <div
         ref={container}
-        className="@container relative flex w-full max-w-[1000px] flex-col gap-4 rounded-[20px] border border-white/[.08] bg-white/[.04] p-[clamp(1rem,3.5cqi,1.75rem)]"
+        className={`@container relative flex w-full flex-col gap-4 rounded-[20px] border border-white/[.08] bg-white/[.04] p-[clamp(1rem,3.5cqi,1.75rem)] ${fullWidth ? 'min-w-0' : 'max-w-[1000px]'}`}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">

@@ -6,7 +6,8 @@ import { Flex, Text, TextField } from '@rosie/ui/themes'
 export function SourcePageViewer({ title, initialPage = 1 }: { title: string; initialPage?: number }) {
   const [url, setUrl] = useState<string | null>(null)
   const [page, setPage] = useState(String(initialPage))
-  useEffect(() => setPage(String(initialPage)), [initialPage])
+  const [syncedPage, setSyncedPage] = useState(initialPage)
+  if (initialPage !== syncedPage) { setSyncedPage(initialPage); setPage(String(initialPage)) }
   useEffect(() => () => { if (url) URL.revokeObjectURL(url) }, [url])
   return <Flex direction="column" gap="3">
     <Text as="p">对照来源：{title}。选择本机原书 PDF，核对版本和页码；文件只在当前浏览器打开。</Text>

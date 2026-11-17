@@ -25,6 +25,7 @@ import {
 import PracticeEntryPicker from './PracticeEntryPicker'
 import { localDate } from '../../time'
 import { defaultPracticeProgression, validatePracticeProgression } from '../../practiceProgression'
+import { homeworkScheduleSnapshot } from '../../homeworkSchedule'
 
 type Props = {
   /** 传入表示编辑；缺省为新增。 */
@@ -82,7 +83,11 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
   const nextDates = describeNextHomeworkDates(draft)
   const input: HomeworkInput = {
     ...draft,
-    estimated_minutes: minutes.trim() === '' ? 0 : Number(minutes),
+    // The legacy table requires 1–120; life execution ignores this stored field.
+    estimated_minutes: draft.subject === 'life'
+      ? homework?.estimated_minutes ?? EMPTY_HOMEWORK.estimated_minutes
+      : minutes.trim() === '' ? 0 : Number(minutes),
+    practice_binding: draft.subject === 'life' ? null : draft.practice_binding,
   }
   const patch = (next: Partial<HomeworkInput>) => {
     setDraft((prev) => ({ ...prev, ...next }))
@@ -109,11 +114,14 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
           ...(practice_binding.progression ?? defaultPracticeProgression(localDate())),
           skipWeekends: input.cycle === 'daily' && input.include_weekends === false,
         }
+        progression.schedule = progression.mode === 'homework' ? homeworkScheduleSnapshot(input) : undefined
         const previous = homework?.practice_binding
         const changed = !previous || previous.key !== practice_binding.key || !previous.progression ||
           progression.enabled !== previous.progression.enabled || progression.mode !== previous.progression.mode ||
           (progression.amount ?? 1) !== (previous.progression.amount ?? 1) ||
-          progression.weekday !== previous.progression.weekday || progression.skipWeekends !== previous.progression.skipWeekends
+          progression.weekday !== previous.progression.weekday || progression.skipWeekends !== previous.progression.skipWeekends ||
+          JSON.stringify(progression.schedule) !== JSON.stringify(previous.progression.schedule
+            ? homeworkScheduleSnapshot(previous.progression.schedule) : undefined)
         if (changed) progression.anchorDate = localDate()
         validatePracticeProgression(progression)
         practice_binding = { ...practice_binding, key: changed ? crypto.randomUUID() : practice_binding.key, progression }
@@ -341,31 +349,33 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
                 />
               </Flex>
             )}
-            <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
-              <Text size="2" weight="bold">
-                预计耗时
-                <Text size="1" color="gray" weight="regular">
-                  {' '}
-                  分钟，最多 {MAX_HOMEWORK_MINUTES}
+            {draft.subject !== 'life' && (
+              <Flex direction="column" gap="1" flexGrow="1" flexBasis="10rem" minWidth="0">
+                <Text size="2" weight="bold">
+                  预计耗时
+                  <Text size="1" color="gray" weight="regular">
+                    {' '}
+                    分钟，最多 {MAX_HOMEWORK_MINUTES}
+                  </Text>
                 </Text>
-              </Text>
-              <TextField.Root
-                aria-label="预计耗时（分钟）"
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={MAX_HOMEWORK_MINUTES}
-                step={1}
-                required
-                value={minutes}
-                onChange={(e) => {
-                  setMinutes(e.target.value)
-                  setError('')
-                }}
-              >
-                <TextField.Slot side="right">分钟</TextField.Slot>
-              </TextField.Root>
-            </Flex>
+                <TextField.Root
+                  aria-label="预计耗时（分钟）"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={MAX_HOMEWORK_MINUTES}
+                  step={1}
+                  required
+                  value={minutes}
+                  onChange={(e) => {
+                    setMinutes(e.target.value)
+                    setError('')
+                  }}
+                >
+                  <TextField.Slot side="right">分钟</TextField.Slot>
+                </TextField.Root>
+              </Flex>
+            )}
           </Flex>
 
           {draft.cycle === 'custom' && (
@@ -383,7 +393,7 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
 
           {nextDates && <Text as="p" size="2" aria-live="polite">{nextDates}</Text>}
 
-          <PracticeEntryPicker key={draft.subject} subject={draft.subject} value={draft.practice_binding ?? null} onChange={(practice_binding) => patch({ practice_binding })} />
+          {draft.subject !== 'life' && <PracticeEntryPicker key={draft.subject} subject={draft.subject} value={draft.practice_binding ?? null} onChange={(practice_binding) => patch({ practice_binding })} />}
 
           <Row label="备注" hint="可选">
             <TextArea

@@ -47,6 +47,7 @@ export type BubblesProps = {
   startedAt?: Record<string, string>
   onOpen: (budId: string) => void
   savingId?: string | null
+  hiddenIds?: ReadonlySet<string>
   /** 进行中泡泡按住转满后松开。没传则仍是点一下打开。 */
   onHoldFinish?: (budId: string) => void
   /** 正在记账时不要开始新的按住完成。 */
@@ -149,7 +150,7 @@ function HoldRing({ progress, color }: { progress: number; color: string }) {
 }
 
 /** 飘在树上的作业泡泡。生命树会一次放出当天全部，原型仍用四个固定位置。 */
-export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, savingId, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
+export default function Bubbles({ bubbles, slots, states, startedAt, clockOffsetMs = 0, onOpen, savingId, hiddenIds, onHoldFinish, holdLocked = false, compact = false, positions, sizes }: BubblesProps) {
   const timing = bubbles.some((bud) => states?.[bud.id] === 'running' && startedAt?.[bud.id])
   const [localNow, setNow] = useState(() => Date.now())
   const now = localNow + clockOffsetMs
@@ -355,6 +356,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
   return (
     <>
       {bubbles.map((bud) => {
+        if (hiddenIds?.has(bud.id)) return null
         const n = flowersOfBud(bud)
         const meta = bubbleSubject(bud)
         const slot = slots[bud.id] ?? 0

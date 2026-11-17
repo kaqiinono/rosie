@@ -11,6 +11,8 @@ export interface FlowerProgress {
 }
 
 export interface WorkStep {
+  /** This completion earned the day's all-academic-work rainbow. */
+  dailyRainbow?: true
   crown?: true
   flowers?: FlowerProgress
   practice?: StepPractice | null
@@ -84,6 +86,8 @@ export interface TreeData {
   lastDoneDay?: string | null
   /** 今日目标奖励已发放的日期 */
   goalAwardedOn?: string | null
+  /** Server-issued once per day; persists after the rainbow is picked. */
+  dailyRainbowDay?: string
   diary?: DiaryNote[]
   exchanges: string[]
   boxReady: boolean

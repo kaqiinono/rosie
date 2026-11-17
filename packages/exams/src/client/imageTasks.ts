@@ -67,7 +67,6 @@ export function useExamImageBlob(userId: string, url: string | null, revision = 
   useEffect(() => {
     const controller = new AbortController()
     let objectUrl: string | null = null
-    setState({ request: key, url: null, error: null })
     if (url) void imageRequest(userId, url, { signal: controller.signal }).then(response => response.blob()).then(blob => {
       if (controller.signal.aborted) return
       objectUrl = URL.createObjectURL(blob)

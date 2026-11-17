@@ -22,6 +22,8 @@ interface StudyPhaseProps {
   onExitImmersive: () => void
   /** Adaptive immersive mode uses a single-row icon toolbar without an exit button. */
   compactImmersiveControls?: boolean
+  /** Fit the homework drawer instead of the standalone viewport. */
+  embedded?: boolean
 
   // Full Tailwind class strings — must appear as literals in callers
   // so the JIT scanner generates them.
@@ -51,6 +53,7 @@ export default function StudyPhase({
   isImmersive,
   onExitImmersive,
   compactImmersiveControls = false,
+  embedded = false,
   progressColorClass,
   nextButtonColor,
   wordBadge,
@@ -82,8 +85,8 @@ export default function StudyPhase({
 
   return (
     <div
-      className="mx-auto flex max-w-[1280px] flex-col overflow-hidden px-4 max-sm:px-3"
-      style={{ height: isImmersive ? '100dvh' : 'calc(100dvh - 56px)' }}
+      className={`flex flex-col overflow-hidden px-4 max-sm:px-3 ${embedded ? 'w-full min-w-0' : 'mx-auto max-w-[1280px]'}`}
+      style={{ height: embedded ? 'max(480px, 65dvh)' : isImmersive ? '100dvh' : 'calc(100dvh - 56px)' }}
     >
       {useCompactControls ? (
         <div className="flex shrink-0 items-center gap-2 py-2.5">

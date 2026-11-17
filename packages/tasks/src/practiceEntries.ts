@@ -1,4 +1,5 @@
 import type { HomeworkSubject } from './homework'
+import type { HomeworkSchedule } from './homeworkSchedule'
 
 export interface PracticeResource {
   id: string
@@ -75,12 +76,14 @@ export interface PracticeBinding {
 }
 export interface PracticeProgression {
   enabled: boolean
-  mode: 'daily' | 'weekly'
+  mode: 'daily' | 'weekly' | 'homework'
   /** Consecutive entries included per assignment/period; legacy rules default to one. */
   amount?: number
   weekday: number
   anchorDate: string
   skipWeekends: boolean
+  /** Saved with homework mode so previews resolve the same occurrence windows. */
+  schedule?: HomeworkSchedule
 }
 export function entryVariables(path: string): string[] {
   return [...new Set([...path.matchAll(/\{([a-zA-Z][a-zA-Z0-9_]*)\}/g)].map((m) => m[1]))]

@@ -59,10 +59,12 @@ export function ExamImageDialog({ userId, revisionId, slotId, initialEditing = f
                 void submit({ blob, command: { requestId: crypto.randomUUID(), revisionId, slotId: task.slot.id,
                   expectedVersion: data.version, expectedBindingRevisionId: data.bindingRevisionId, sourceSha256: task.sourceSha256, region } })
               }} />}
+            {/* eslint-disable-next-line @next/next/no-img-element -- admin-only authenticated source blob */}
             {source.url && task.binding && !editing && <img src={source.url} alt={`原书 PDF 第 ${task.source?.pdfPage} 页`} className="h-auto w-full" />}
           </Flex></StickerCard>
           <StickerCard size="sm"><Flex direction="column" gap="3"><Text weight="bold">当前电子插图</Text>
             {current.loading && <Text>正在读取成品…</Text>}
+            {/* eslint-disable-next-line @next/next/no-img-element -- authenticated finished-image blob */}
             {current.url ? <img src={current.url} alt={task.label} className="h-auto max-w-full" /> : <Text>尚无已保存的图片</Text>}
             {task.binding && !editing && <Button variant="soft" disabled={!source.url || busy} onClick={() => setEditing(true)}>图片有误，重新裁切</Button>}
           </Flex></StickerCard>

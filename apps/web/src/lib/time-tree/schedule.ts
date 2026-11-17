@@ -1,4 +1,4 @@
-import type { Homework } from '@rosie/tasks'
+import { homeworkPeriod as period, type Homework } from '@rosie/tasks'
 import { flowersForMinutes } from '@/components/tree-demo/garden/model'
 import { dayOf, shift, type TreeData, type WorkStep } from './types'
 import { planMathQuestions } from './mathQuestions'
@@ -7,6 +7,10 @@ import { bindPractice, calendarPractice } from './practice'
 const diff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000)
 const weekday = (day: string) => new Date(day + 'T12:00Z').getUTCDay()
 const isWeekend = (day: string) => weekday(day) === 0 || weekday(day) === 6
+
+function usesFlowerSessions(template: Homework): boolean {
+  return template.subject !== 'life' && ['weekly', 'biweekly', 'three_weekly'].includes(template.cycle)
+}
 
 /** Content follows template edits until completion; execution and placement stay intact. */
 function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
@@ -37,7 +41,7 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
       const previous = step.practice && tree.practiceProgress?.[step.practice.key]
       if (previous?.activeOccurrence === occurrence) previous.activeOccurrence = null
       if (!binding) step.practice = null
-      else if (binding.progression) step.practice = calendarPractice(binding, day)
+      else if (binding.progression) step.practice = calendarPractice(binding, day, occurrence)
       else delete step.practice
     }
     // A running legacy task must keep a valid reservation for completion. Pending
@@ -48,28 +52,45 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
   }
 }
 
-function period(t: Homework, day: string) {
-  if (t.cycle === 'daily' && t.include_weekends === false && isWeekend(day)) return null
-  let start = day
-  let span = 1
-  let count = 1
-  if (t.cycle === 'weekly') {
-    start = shift(day, -((weekday(day) - t.start_weekday! + 7) % 7))
-    span = ((t.end_weekday! - t.start_weekday! + 7) % 7) + 1
-    count = t.times_per_week!
-  } else if (t.cycle === 'monthly') {
-    start = day.slice(0, 7) + '-01'
-    span = new Date(Date.UTC(Number(day.slice(0, 4)), Number(day.slice(5, 7)), 0)).getUTCDate()
-    count = t.times_per_cycle!
-  } else if (t.cycle !== 'daily') {
-    const anchor = t.start_date!
-    if (day < anchor || (t.end_date && day > t.end_date)) return null
-    span = t.cycle === 'custom' ? 7 : t.cycle === 'biweekly' ? 14 : 21
-    start = shift(anchor, Math.floor(diff(day, anchor) / span) * span)
-    if (t.end_date) span = Math.min(span, diff(t.end_date, start) + 1)
-    count = t.times_per_cycle ?? t.times_per_week!
+/** Upgrade untouched occurrences once, preserving their frozen course and notes. */
+function syncFlowerSessions(tree: TreeData, templates: Homework[]) {
+  const byId = new Map(templates.filter(template => template.enabled && usesFlowerSessions(template))
+    .map(template => [template.id, template]))
+  const groups = new Map<string, WorkStep[]>()
+  for (const step of tree.steps) {
+    const peers = groups.get(step.occurrence) ?? []
+    peers.push(step)
+    groups.set(step.occurrence, peers)
   }
-  return { start, end: shift(start, span - 1), count: Math.min(count, span), span }
+  const mergedIds = new Set<string>()
+  for (const [occurrence, peers] of groups) {
+    const [templateId, cycle, cycleStart, ordinalText] = occurrence.split('/')
+    const template = byId.get(templateId)
+    if (!template || cycle !== template.cycle || !cycleStart) continue
+    if (peers.some(step => step.flowers || step.start || step.end || step.skipped || step.settled ||
+      step.audit.length || step.returned || step.practice?.questions || step.stages.some(stage => stage > 0) ||
+      step.scheduled < tree.today || step.planned !== step.scheduled)) continue
+    const window = period(template, cycleStart)
+    const ordinal = Number(ordinalText)
+    if (!window || window.start !== cycleStart || !Number.isInteger(ordinal) || ordinal < 0 ||
+      ordinal >= window.count || peers.some(step => step.deadline !== window.end)) continue
+    peers.sort((a, b) => a.id.localeCompare(b.id))
+    const first = peers[0]
+    if (peers.some(step => step.practice?.key !== first.practice?.key)) continue
+    const windowStart = shift(window.start, Math.floor((ordinal * window.span) / window.count))
+    const start = [windowStart, tree.firstDay, dayOf(template.created_at), tree.today].sort().at(-1)!
+    if (start > first.deadline) continue
+    first.minutes = peers.reduce((sum, step) => sum + step.minutes, 0)
+    first.planNote = [...new Set(peers.map(step => step.planNote).filter(Boolean))].join('\n') || undefined
+    first.name = template.name
+    first.scheduled = start
+    first.planned = start
+    first.slot = null
+    first.stages = []
+    first.flowers = { collected: 0, elapsedMs: 0, complete: false }
+    for (const peer of peers.slice(1)) mergedIds.add(peer.id)
+  }
+  if (mergedIds.size) tree.steps = tree.steps.filter(step => !mergedIds.has(step.id))
 }
 
 /** Reconcile only untouched, current/future daily weekend occurrences, as whole split groups. */
@@ -124,7 +145,11 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     const keep = enabledLife.has(step.occurrence.split('/')[0]) && step.scheduled === tree.today &&
       step.occurrence.split('/')[1] === 'daily' && step.id.endsWith('/0')
     if (!keep) removed.add(step.occurrence)
-    else { step.start = null; step.stages = [0] }
+    else {
+      step.start = null
+      step.stages = [0]
+      step.minutes = 0
+    }
     return keep
   }
   tree.steps = tree.steps.filter(retain)
@@ -133,10 +158,11 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     if (progress.activeOccurrence && removed.has(progress.activeOccurrence)) progress.activeOccurrence = null
   }
   templates = templates.map(t => t.subject === 'life'
-    ? { ...t, cycle: 'daily', include_weekends: true, practice_binding: null }
+    ? { ...t, cycle: 'daily', include_weekends: true, estimated_minutes: 0, practice_binding: null }
     : t)
   if (!fillCurrentWindow) {
     syncWeekendTasks(tree, templates)
+    syncFlowerSessions(tree, templates)
     syncHomeworkContent(tree, templates)
   }
   for (const step of tree.steps) {
@@ -170,9 +196,8 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       const occurrence = [t.id, t.cycle, p.start, ordinal].join('/')
       if (existing.has(occurrence)) continue
       existing.add(occurrence)
-      const practice = t.practice_binding?.progression ? calendarPractice(t.practice_binding, day) : undefined
-      const segmented = t.subject !== 'life' && ['weekly', 'biweekly', 'three_weekly'].includes(t.cycle) &&
-        !t.practice_binding?.progression?.enabled
+      const practice = t.practice_binding?.progression ? calendarPractice(t.practice_binding, day, occurrence) : undefined
+      const segmented = usesFlowerSessions(t)
       const parts =
         !segmented && t.subject !== 'life' && t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
       parts.forEach((minutes, index) => {

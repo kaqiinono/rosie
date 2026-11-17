@@ -20,6 +20,7 @@ export function ExamSourcePage({ userId, revisionId, title, page, showTitle = tr
     {showTitle && <Text weight="bold">原书 PDF 第 {page} 页</Text>}
     {source.loading && <Text>正在读取原书页…</Text>}
     {source.error != null && <Text color="red">原书页暂不可用，请重新打开或使用本机 PDF 对照。</Text>}
+    {/* eslint-disable-next-line @next/next/no-img-element -- admin-only authenticated source blob */}
     {source.url && <img src={source.url} alt={`原书 PDF 第 ${page} 页`} className="h-auto w-full" />}
     {source.error != null && <SourcePageViewer title={title} initialPage={page} />}
   </Flex>

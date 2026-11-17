@@ -21,7 +21,9 @@ import { SUBJECTS, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { kidNote, kidReward, kidTime } from './kidStepCopy'
 import { HomeworkNotesDialog } from './HomeworkNotesDialog'
 import FlowerCollection from './FlowerCollection'
+import DailyRainbowReward from './DailyRainbowReward'
 import HomeworkContentPanel from './HomeworkContentPanel'
+import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
 import { finishAndPop } from './finishStep'
 import type { TreeController } from './useTimeTree'
 
@@ -87,6 +89,7 @@ export function StepPanel({
   const homeworkData = useHomeworkData()
   const template = homeworkData.data.find(item => item.id === step.occurrence.split('/')[0])
   const content = useMemo(() => step.practice ?? previewPractice(tree, step, template), [tree, step, template])
+  const weeklyPlan = hasWeeklyPlanPractice(content)
   const [localNow, setNow] = useState(Date.now)
   const now = localNow + api.clockOffsetMs
   const [editingNote, setEditingNote] = useState(false)
@@ -127,6 +130,11 @@ export function StepPanel({
       return
     }
     onFinished?.(outcome.step, outcome.tree, outcome.bloom)
+    if (mounted.current && outcome.step.dailyRainbow && !onFinished) {
+      setReceipt(outcome.step)
+      setFinishing(false)
+      return
+    }
     if (mounted.current) close()
   }
   async function submit(action: TreeAction) {
@@ -142,6 +150,16 @@ export function StepPanel({
     }
     const result = await api.run({ ...action, id: step.id })
     if (!result) return
+    if (action.kind === 'completeUntimed' || action.kind === 'record') {
+      const saved = result.steps.find(item => item.id === step.id)
+      if (saved?.end) {
+        onFinished?.(saved, result, false)
+        if (mounted.current && saved.dailyRainbow && !onFinished) {
+          setReceipt(saved)
+          return
+        }
+      }
+    }
     if (mounted.current && action.kind !== 'start') close()
   }
   async function collect(selection: NonNullable<TreeAction['flowerSelection']>) {
@@ -152,7 +170,7 @@ export function StepPanel({
       const result = await api.run({ kind: 'collectFlowers', id: step.id, flowerSelection: selection })
       const saved = result?.steps.find(item => item.id === step.id)
       if (result && saved?.end && mounted.current) {
-        setReceipt(saved)
+        if (!saved.dailyRainbow || !onFinished) setReceipt(saved)
         onFinished?.(saved, result, step.slot !== null)
       }
     } finally {
@@ -160,9 +178,10 @@ export function StepPanel({
       if (mounted.current) setFinishing(false)
     }
   }
-  if (receipt) return <AppDialog open title={receipt.flowers?.complete ? '整份做完啦' : '本次已收工'}
+  if (receipt) return <AppDialog open title={receipt.dailyRainbow ? '全部完成，收获彩虹果！' : receipt.flowers?.complete ? '整份做完啦' : '本次已收工'}
     onOpenChange={open => { if (!open) close() }}>
     <Flex direction="column" gap="3" align="center" role="status">
+      {receipt.dailyRainbow && <DailyRainbowReward />}
       <Text size="6" weight="bold" className="motion-safe:animate-star-pop">+{receipt.stages.length} 花朵</Text>
       <Text>☀️ +{receipt.sun}　💧 +{receipt.water}</Text>
       <Button onClick={close}>知道了</Button>
@@ -292,7 +311,7 @@ export function StepPanel({
         title={step.name}
         chrome="none"
         presentation="bottom-drawer"
-        compactBottomDrawer
+        compactBottomDrawer={!weeklyPlan}
         onOpenChange={(v) => {
           if (!v) close()
         }}
@@ -398,6 +417,7 @@ export function StepPanel({
       open
       title={step.name}
       icon={SUBJECTS[step.subject].emoji}
+      presentation={weeklyPlan ? 'bottom-drawer' : 'dialog'}
       onOpenChange={(v) => {
         if (!v) close()
       }}

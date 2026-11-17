@@ -86,6 +86,7 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
   const [source, setSource] = useState<'reading' | 'listening' | 'plan'>(() => rows.some(row => row.values.contentType === 'english-plan') ? 'plan' : rows.some(row => row.values.sentenceId) ? 'listening' : 'reading')
   const mode: LearningMode = source === 'listening' ? 'listening' : 'reading'
   const [planDraft, setPlanDraft] = useState<{ path: string; rows: PracticeEntryRow[]; name: string } | null>(null)
+  const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>(() => [...new Set(rows.filter(row => row.values.contentType === 'english-plan').map(row => row.values.planId).filter(Boolean))])
   const [catalog, setCatalog] = useState<Catalog | null>(null)
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
@@ -206,7 +207,7 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
   const selected = nodes.find(node => node.id === choices[depth])
   const selectedLeaves = nodes.filter(node => leaves.includes(node.id))
   const level = options[0]?.level ?? '课程'
-  const question = source === 'plan' && phase === 'choose' ? '选择哪个英语计划？' : level === '年级' ? '你学几年级？' : level === '教材' ? '选择哪一本书？' : level === '题目类型' ? '这次学什么？' : unitMulti ? '选择哪些单元？（可多选）' : level === '单元' ? '选择哪个单元？' : subject === 'english' && terminal ? '选择哪些课？（可多选）' : lessonMulti ? '选择要学的课程（可多选）' : '选择哪一课？'
+  const question = source === 'plan' && phase === 'choose' ? '选择英语计划（多日计划可多选）' : level === '年级' ? '你学几年级？' : level === '教材' ? '选择哪一本书？' : level === '题目类型' ? '这次学什么？' : unitMulti ? '选择哪些单元？（可多选）' : level === '单元' ? '选择哪个单元？' : subject === 'english' && terminal ? '选择哪些课？（可多选）' : lessonMulti ? '选择要学的课程（可多选）' : '选择哪一课？'
   const allRows = catalog?.groups.flatMap(group => group.rows) ?? []
   const selectedUnitIds = new Set(mergeChildren(unitMulti ? nodes.filter(node => unitChoices.includes(node.id)) : []).flatMap(node => node.rowIds))
   const selectedUnitRows = allRows.filter(row => selectedUnitIds.has(row.id))
@@ -245,6 +246,7 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
     }
   }
   function restart() {
+    setSelectedPlanIds([...new Set(latest.current.rows.filter(row => row.values.contentType === 'english-plan').map(row => row.values.planId).filter(Boolean))])
     setPlanDraft(null); setPhase('choose'); setDepth(0); setChoices([]); setLessonChoices([]); setUnitChoices([]); setLeaves([]); setPendingIds([]); setError('')
   }
   function commitPlan(next: { path: string; rows: PracticeEntryRow[]; name: string }) {
@@ -371,8 +373,8 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
   }
   const selectionUnchanged = pending.length === rows.length && pending.every(row => rows.some(item => item.id === row.id)) && !incompatible
   const planChoosing = source === 'plan' && phase === 'choose'
-  const actions = <fieldset disabled={disabled} className="contents"><Flex gap="2" align="stretch" wrap="wrap" width="100%" flexGrow="1" minWidth="0">
-    {planChoosing ? null : phase === 'choose' ? <>
+  const actions = planChoosing ? null : <fieldset disabled={disabled} className="contents"><Flex gap="2" align="stretch" wrap="wrap" width="100%" flexGrow="1" minWidth="0">
+    {phase === 'choose' ? <>
       {depth > 0 && <Button size="3" variant="soft" disabled={loading || generating} onClick={() => setDepth(depth - 1)}>上一步</Button>}
       <Flex flexGrow="1" minWidth="0"><Button size="3" className="w-full" disabled={loading || generating || (multi ? !checked.length : !selected)} loading={generating} onClick={next}>{terminal ? (isNew ? '生成清单' : '重新生成清单') : '下一步'}</Button></Flex>
     </> : phase === 'review' ? <>
@@ -413,7 +415,7 @@ export default function ScopeContentBuilder({ subject, path, rows, name, footerH
       </Flex>
     </Flex>
     {phase === 'choose' ? <StickerCard as="section" tone="paper" variant="soft" size="sm" radius="md" elevation="flat" aria-label="选项列表" className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-      {source === 'plan' ? <EnglishPlanPicker disabled={disabled} onCommit={commitPlan} /> : loading ? <Flex direction="column" minHeight="240px"><LoadingOverlay visible placement="content" /></Flex> : <>
+      {source === 'plan' ? <EnglishPlanPicker disabled={disabled} selectedPlanIds={selectedPlanIds} onSelectionChange={setSelectedPlanIds} footerHost={footerHost} isNew={isNew} onCommit={commitPlan} /> : loading ? <Flex direction="column" minHeight="240px"><LoadingOverlay visible placement="content" /></Flex> : <>
       {!options.length && !error && <Text>暂时没有可选课程。</Text>}
       {multi ? <FlowCheckboxCards layout={spread ? 'equal' : 'flow'} aria-label={question} value={checked} onValueChange={setChecked}>
         {choiceNodes.map(node => {

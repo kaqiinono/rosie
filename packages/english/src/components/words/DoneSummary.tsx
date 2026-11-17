@@ -13,6 +13,7 @@ interface DoneSummaryProps {
   masteredCount: number
   wordsCount: number
   actions: ReactNode
+  fullWidth?: boolean
 }
 
 export default function DoneSummary({
@@ -24,13 +25,14 @@ export default function DoneSummary({
   masteredCount,
   wordsCount,
   actions,
+  fullWidth = false,
 }: DoneSummaryProps) {
   const pct = total ? Math.round((score / total) * 100) : 0
   const emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🎉' : pct >= 50 ? '👍' : '💪'
   const msg = pct >= 90 ? '完美！' : pct >= 70 ? '太棒了！' : pct >= 50 ? '不错哦！' : '继续加油！'
 
   return (
-    <div className="mx-auto max-w-[500px] px-5 py-10 text-center">
+    <div className={`px-5 py-10 text-center ${fullWidth ? 'w-full min-w-0' : 'mx-auto max-w-[500px]'}`}>
       <div className="mb-3.5 text-[3.5rem]">{emoji}</div>
       <div className={`font-fredoka mb-1.5 text-[3rem] ${scoreColorClass}`}>
         {score} / {total}

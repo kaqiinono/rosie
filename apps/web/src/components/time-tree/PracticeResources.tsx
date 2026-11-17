@@ -1,23 +1,28 @@
 'use client'
 
-import { useState, type RefObject } from 'react'
+import { useState, type ReactNode, type RefObject } from 'react'
 import { useRouter } from 'next/navigation'
 import PassageView from '@rosie/english/components/reading/PassageView'
-import { findPassageByKey } from '@rosie/english/utils/reading-data'
-import { AppDialog, StickerCard } from '@rosie/ui'
+import { findPassageByKey, type ReadingPassage } from '@rosie/english/utils/reading-data'
+import { AppDialog, LearningIcon, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
 import { ResourcePlayer } from './ResourcePlayer'
 import SentenceRowPreview from '../task-entries/SentenceRowPreview'
 import ReadingPreviewDrawer from '../task-entries/ReadingPreviewDrawer'
 import { resourceHref, type PracticeEntryRow, type PracticeResource } from '@rosie/tasks'
 
-export default function PracticeResources({ row }: { row: PracticeEntryRow }) {
+export default function PracticeResources({ row, detailPassage, actions }: {
+  row: PracticeEntryRow
+  detailPassage?: ReadingPassage
+  actions?: ReactNode
+}) {
   const router = useRouter()
   const [readingOpen, setReadingOpen] = useState(false)
   const [active, setActive] = useState<PracticeResource | null>(null)
   const [error, setError] = useState('')
   const resources = row.resources ?? []
   const passage = !row.values.sentenceId && row.values.key ? findPassageByKey(row.values.key) : undefined
+  const fullPassage = passage ?? detailPassage
   const [narrationRef, setNarrationRef] = useState<RefObject<HTMLVideoElement | null> | undefined>(undefined)
   const isNarration = active?.id === `audio:${passage?.key}:narration`
   if (row.values.sentenceId) return <SentenceRowPreview key={row.id} row={row} />
@@ -42,14 +47,15 @@ export default function PracticeResources({ row }: { row: PracticeEntryRow }) {
           if (resource.type === 'link') { setActive(null); router.push(href) }
           else setActive((current) => current?.id === resource.id ? null : resource)
         } catch { setError('资源链接无效，请在作业内容管理中修改。') }
-      }}><span aria-hidden>{resource.type === 'audio' ? '🔊' : resource.type === 'video' ? '🎬' : '🔗'}</span>{resource.label}</Button>)}
+      }}>{resource.type === 'audio' ? <LearningIcon name="readAloud" /> : <span aria-hidden>{resource.type === 'video' ? '🎬' : '🔗'}</span>}{resource.label}</Button>)}
+      {fullPassage && <Button variant="soft" onClick={() => { setActive(null); setReadingOpen(true) }}>
+        {detailPassage ? '进入详情页' : '查看全文'}
+      </Button>}
+      {actions}
     </Flex>
     {row.resourceStatus === 'error' && <Text size="2" color="gray">{row.resourceError || '部分资源尚未读取成功，可在作业内容管理中刷新关联资源。'}</Text>}
     {error && <Text role="alert" color="red">{error}</Text>}
-    {passage && <>
-      <Flex><Button variant="soft" onClick={() => { setActive(null); setReadingOpen(true) }}>查看全文</Button></Flex>
-      <ReadingPreviewDrawer passageKey={passage.key} open={readingOpen} onClose={() => setReadingOpen(false)} />
-    </>}
+    {fullPassage && <ReadingPreviewDrawer passageKey={fullPassage.key} open={readingOpen} onClose={() => setReadingOpen(false)} />}
     {active?.type === 'audio' && <ResourcePlayer key={active.id} resource={active} close={() => setActive(null)} onMediaReady={setNarrationRef} />}
     <AppDialog open={active?.type === 'video'} title={active?.label ?? '视频回放'} size="preview" onOpenChange={(open) => { if (!open) setActive(null) }}>
       {active?.type === 'video' && <ResourcePlayer key={active.id} resource={active} close={() => setActive(null)} onMediaReady={setNarrationRef} />}

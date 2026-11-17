@@ -46,6 +46,8 @@ export function useTimeTree() {
   const { data, error, isLoading } = store.useSessionData(user)
   const id = user?.id
   const lock = useRef(false)
+  const queue = useRef<Promise<void>>(Promise.resolve())
+  const queuedCount = useRef(0)
   const [pending, setPending] = useState<{ owner: string; revision: number; tree: TreeData } | null>(null)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
@@ -61,10 +63,26 @@ export function useTimeTree() {
       window.removeEventListener('focus', refresh)
     }
   }, [id])
-  async function run(action: TreeAction, expectedRevision?: number) {
-    if (!id || lock.current) return null
+  function run(action: TreeAction, expectedRevision?: number): Promise<TreeData | null> {
+    if (!id || (lock.current && action.kind !== 'pick' && action.kind !== 'pop')) {
+      return Promise.resolve(null)
+    }
+    queuedCount.current += 1
     lock.current = true
     setBusy(true)
+    // Each queued interaction reads the latest committed revision when it starts.
+    const result = queue.current.then(() => execute(action, expectedRevision))
+    queue.current = result.then(() => undefined, () => undefined)
+    return result.finally(() => {
+      queuedCount.current -= 1
+      if (queuedCount.current === 0) {
+        lock.current = false
+        setBusy(false)
+      }
+    })
+  }
+  async function execute(action: TreeAction, expectedRevision?: number) {
+    if (!id) return null
     setMessage('')
     try {
       // finish 后再 pop 时，组件还没重渲染，闭包里的 revision 已过期。
@@ -102,8 +120,6 @@ export function useTimeTree() {
       return null
     } finally {
       setPending(null)
-      lock.current = false
-      setBusy(false)
     }
   }
   return {

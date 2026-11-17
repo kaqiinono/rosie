@@ -48,6 +48,11 @@ export function weeklyPlanRows(plan: WeeklyPlan, vocab: Array<Pick<WordEntry, 'u
     })
 }
 
+/** Merge plan days chronologically; overlapping plans keep their separate practice rows. */
+export function sortEnglishPlanRows(rows: PracticeEntryRow[]): PracticeEntryRow[] {
+  return [...rows].sort((a, b) => (a.values.date ?? '').localeCompare(b.values.date ?? '') || a.id.localeCompare(b.id))
+}
+
 function planFromRow(row: {
   id: string
   week_start: string
@@ -74,22 +79,23 @@ function planFromRow(row: {
   }
 }
 
-/** Re-read one saved multi-day plan and rebuild its date list. Missing plans stay unchanged. */
+/** Re-read every saved multi-day plan and rebuild the date list. Missing plans stay unchanged. */
 export async function refreshEnglishPlanRows(rows: PracticeEntryRow[]): Promise<PracticeEntryRow[]> {
-  const planId = rows.find((row) => row.values.contentType === 'english-plan')?.values.planId
-  if (!planId) return rows
+  const planIds = [...new Set(rows.filter((row) => row.values.contentType === 'english-plan').map((row) => row.values.planId).filter(Boolean))]
+  if (!planIds.length) return rows
   const { data, error } = await supabase
     .from('weekly_plans')
     .select('id, week_start, unit, lesson, week_start_day, new_words_per_day, plan_data')
-    .eq('id', planId)
-    .maybeSingle()
+    .in('id', planIds)
   if (error) throw error
-  if (!data) return rows
+  if (!data?.length) return rows
   const words = await readAll<Pick<WordEntry, 'unit' | 'lesson' | 'word'>>('word_entries', 'unit,lesson,word', 'id')
-  const built = weeklyPlanRows(planFromRow(data), words)
+  const refreshedIds = new Set(data.map((plan) => plan.id))
+  const retained = rows.filter((row) => row.values.contentType !== 'english-plan' || !refreshedIds.has(row.values.planId))
+  const built = data.flatMap((plan) => weeklyPlanRows(planFromRow(plan), words))
   const previous = new Map(rows.map((row) => [row.id, row]))
-  return built.map((row) => {
+  return sortEnglishPlanRows([...retained, ...built.map((row) => {
     const saved = previous.get(row.id)
     return saved ? { ...row, resources: saved.resources, hiddenResourceIds: saved.hiddenResourceIds } : row
-  })
+  })])
 }

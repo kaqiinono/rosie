@@ -10,6 +10,13 @@ audio, flipbook).
 
 ## What's inside
 
+The multi-day English plan editor always previews the daily assignment before saving.
+「自定义每日词数」off automatically spreads all selected words evenly across the date range;
+on uses per-lesson quotas. The parameter summary and preview use the same assignment.
+Existing batched layouts are reused while their parameters and date range match.
+Legacy full-daily plans are redistributed when edited and explicitly saved.
+Both modes persist per-day assignments with `batchMode: true`.
+
 Grammar `FigureCropModal` now wraps the shared `@rosie/ui` `ImageCropper` in `AppDialog`.
 Its existing `onConfirm(blob)` upload/save contract is unchanged; exams uses the same crop
 primitive with a normalized initial region and inline preview. No direct exams/English dependency.
@@ -327,6 +334,16 @@ full recording only. Clip-local `singleRead` times exclude the surrounding silen
 the drawer also loops single-reading files when they end before the three-second wait.
 
 Named homework entries can open cards/practice with `stage`, comma-separated `units`, and comma-separated `lessons` (`unit::lesson`). `usePracticeEntryScope` waits for the requested stage data, applies the URL scope once and clears stale word/mastery filters. Explicit invalid scopes display an error. Reading entries use `/english/words/reading/{key}`; grammar entries use `/english/grammar/{book}/{unitId}`. Catalog generation is owned by the web task-entry adapter.
+
+Homework multi-day plan entries embed `WeeklyPlanSession` with `embedded` and the frozen
+row's `planId`/`date` inside the full-width bottom drawer. Web supplies `WordsProvider`
+with the full vocabulary and an isolated `ImmersiveProvider`; plan reads reuse
+`englishWeeklyPlansStore`. Only one bound item is mounted at a time. Embedded study,
+quiz and results fill the available width, and returning stays on the bound date.
+Same-date pending practice resumes; another date's pending practice prevents automatic
+start and requires an explicit start before replacing that stash. Successful progress
+writes patch the plan session cache, including clearing the saved pending session.
+Standalone practice keeps its existing layout. Build, type and runtime checks remain manual.
 
 Task-entry sentence rows use the existing `readingSegments` and listening target conventions (`paragraph-sentence`). The app stores English text/available translation and discovers explicit clip slots, verified legacy clip files and narration cue segments; unavailable translations or timestamps are never synthesized. `readingSegments` is exported for this adapter.
 

@@ -10,6 +10,7 @@ import {
   type Region,
 } from './layout'
 import { bubbleSubject, SUBJECTS, type Apple, type Bud, type Flower, type GardenState, type SubjectKey } from './model'
+import RainbowAppleArt from './RainbowAppleArt'
 
 export type ItemKind = 'apple' | 'flower' | 'bud'
 export type FreshKind = 'born' | 'wiggle'
@@ -138,17 +139,14 @@ function Defs() {
 }
 
 function AppleShape({ apple }: { apple: Apple }) {
-  const rainbow = apple.kind === 'rainbow'
+  if (apple.kind === 'rainbow') return <g transform="scale(1.3)"><RainbowAppleArt /></g>
   return (
     <g className="tg-apple-bob">
-      <circle className="tg-glow" r="26" fill="url(#tg-glow-gold)" opacity={rainbow ? 1 : 0.7} />
-      {rainbow && (
-        <circle className="tg-rainbow-ring" r="22" fill="none" stroke="#ffd43b" strokeWidth="2.4" strokeDasharray="4 4" />
-      )}
+      <circle className="tg-glow" r="26" fill="url(#tg-glow-gold)" opacity={0.7} />
       <path
         d={APPLE_PATH}
-        fill={rainbow ? 'url(#tg-rainbow)' : `url(#tg-apple-${apple.kind})`}
-        stroke={apple.kind === 'rainbow' ? '#9c36b5' : SUBJECTS[apple.kind].deep}
+        fill={`url(#tg-apple-${apple.kind})`}
+        stroke={SUBJECTS[apple.kind].deep}
         strokeWidth="1.8"
         strokeLinejoin="round"
       />
@@ -369,6 +367,7 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
   }
 
   const ringCount = Math.min(state.rings, 9)
+  const rainbowIds = new Set(state.apples.filter(apple => apple.kind === 'rainbow').map(apple => apple.id))
 
   return (
     <svg
@@ -518,9 +517,13 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
           )
         })}
         {/* 果实可跨过相邻叶片的边缘，保持可见、可摘。 */}
-        {regions.map(r => <g key={`fruit-${r.key}`}>
-          {r.placed.filter(p => p.item.kind === 'apple').map(p => renderItem(r, p))}
-        </g>)}
+        {[false, true].map(rainbow => (
+          <g key={rainbow ? 'rainbow-fruit' : 'ordinary-fruit'}>
+            {regions.map(r => <g key={`fruit-${r.key}`}>
+              {r.placed.filter(p => p.item.kind === 'apple' && rainbowIds.has(p.item.id) === rainbow).map(p => renderItem(r, p))}
+            </g>)}
+          </g>
+        ))}
         {/* 日期小牌最后画，不被相邻的叶区盖住 */}
         {regions.map((r) => (
           <RegionLabel key={`label-${r.key}`} region={r} onOpen={onRegion ? () => onRegion(r) : undefined} />

@@ -3,15 +3,17 @@
 import dynamic from 'next/dynamic'
 import { useId, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { findPassageByKey } from '@rosie/english/utils/reading-data'
+import { findPassage, findPassageByKey } from '@rosie/english/utils/reading-data'
 import { entryHref, type PracticeEntryRow } from '@rosie/tasks'
 import { ArrowIcon, LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Button, Flex, Heading, Text } from '@rosie/ui/themes'
 import type { TreeAction } from '@/lib/time-tree/types'
 import PracticeResources from './PracticeResources'
+import { hasWeeklyPlanPractice, weeklyPlanPracticeTarget } from './weeklyPlanPractice'
 
 const MathPracticeContent = dynamic(() => import('./MathPracticeContent'), { loading: () => <Flex direction="column" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
 const EmbeddedCalcStartPanel = dynamic(() => import('@rosie/calc/components/EmbeddedCalcStartPanel'), { loading: () => <Flex direction="column" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
+const HomeworkWeeklyPlanPractice = dynamic(() => import('./HomeworkWeeklyPlanPractice'), { loading: () => <Flex position="relative" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
 
 type Props = {
   name?: string
@@ -43,7 +45,11 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
   const calc = Boolean(href && /^\/calc(?:[/?#]|$)/.test(href))
   const adaptive = Boolean(href && /^\/english\/words\/adaptive\/[^/?#]+\/practice\/?(?:[?#]|$)/.test(href))
   const math = Boolean(row?.values.problemId && (row.values.contentType === 'math-question' || href?.startsWith('/math/')))
-  const reading = Boolean(row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
+  const lessonPassage = row && !row.values.key && row.values.stage && row.values.unit && row.values.lesson
+    ? findPassage(row.values.stage, row.values.unit, row.values.lesson)
+    : undefined
+  const reading = Boolean(lessonPassage || row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
+  if (calc) return <EmbeddedCalcStartPanel disabled={disabled} />
   const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => router.push(entryHref(href, {}))}>进入详情页</Button> : null
   return <StickerCard size="none" tone="white" elevation="flat" radius="md" className="min-w-0">
     <Button type="button" variant="ghost" color="gray" aria-expanded={expanded} aria-controls={detailId}
@@ -57,9 +63,9 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
     <div id={detailId} hidden={!expanded} inert={disabled || undefined} className="px-3 pb-3">
       {math && row && opened ? <MathPracticeContent onCorrect={onCorrect} row={row} actions={detailButton} expanded={expanded} /> : expanded && (
         <Flex direction="column" gap="3">
-          {calc ? <EmbeddedCalcStartPanel /> : row && <PracticeResources row={row} />}
+          {row && <PracticeResources row={row} detailPassage={lessonPassage} actions={detailButton} />}
           {adaptive && <Text size="2">打开后直接进入这次自适应练习。</Text>}
-          {detailButton && <Flex gap="2" wrap="wrap" align="center">{detailButton}</Flex>}
+          {!row && detailButton && <Flex gap="2" wrap="wrap" align="center">{detailButton}</Flex>}
         </Flex>
       )}
       {controls}
@@ -71,7 +77,8 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
 export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, onEdit, onCorrect, onRetry }: Props) {
   const entries = items?.length ? items : [{ row, href }]
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
-  return <section aria-label="作业内容">
+  const weeklyPlan = hasWeeklyPlanPractice({ items: entries })
+  return <section aria-label="作业内容" className="w-full min-w-0">
     <StickerCard tone="paper" size="sm" elevation="flat" radius="md" className="w-full">
       <Flex direction="column" gap="3">
         <Flex align="center" justify="between" gap="2" wrap="wrap">
@@ -85,7 +92,9 @@ export default function HomeworkContentPanel({ name, row, href, items, exhausted
           {onRetry && <Button variant="soft" disabled={disabled} onClick={onRetry}>重试读取内容</Button>}
         </Flex> : <>
           {name && <Text size="2">{name}{!completedRows && entries.length > 1 ? ` · 共 ${entries.length} 项` : ''}</Text>}
+          {!exhausted && weeklyPlan && <HomeworkWeeklyPlanPractice items={entries} disabled={disabled} />}
           {exhausted ? <Text size="2">全部练习内容已完成，可以继续线下完成作业，或在作业设置中选择新的开始项。</Text> : entries.map((item, index) => {
+            if (weeklyPlanPracticeTarget(item)) return null
             if (!item.row && !item.href) return null
             const key = item.row?.id ?? item.href!
             const label = item.row?.label || name || '练习内容'

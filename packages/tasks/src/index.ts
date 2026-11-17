@@ -4,6 +4,7 @@ export type { Homework } from './homework'
 
 export * from './practiceEntries'
 export * from './practiceProgression'
+export * from './homeworkSchedule'
 export { usePracticeEntries } from './usePracticeEntries'
 export { useHomeworkData } from './useHomeworkData'
 

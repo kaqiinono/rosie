@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { WordEntry, WeeklyPlan, WeeklyPlanDay } from '@rosie/core'
 import {
   buildAutoAssignedPlan,
-  buildDailyFullWordPlan,
+  QUOTA_ALL,
   classifyPlanWords,
   getOrderedLessons,
   getAllStages,
@@ -50,7 +50,7 @@ import {
   toggleUnitSelection,
   useVocabRangeFilter,
 } from './vocab-range-filter/useVocabRangeFilter'
-import { Button, IconButton } from '@rosie/ui/themes'
+import { Button, IconButton, Switch } from '@rosie/ui/themes'
 
 interface Props {
   vocab: WordEntry[]
@@ -87,7 +87,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
   const [planStartDate, setPlanStartDate] = useState<string>(todayStr())
   const [planEndDateStr, setPlanEndDateStr] = useState(() => addPlanDays(todayStr(), 6))
   const [editingPlanStart, setEditingPlanStart] = useState<string | null>(null)
-  /** When false, every day includes all selected words — skip manual arrange. */
+  /** Manual per-lesson quotas when enabled; otherwise automatically spread all words. */
   const [batchMode, setBatchMode] = useState(false)
 
   // arrange-step state
@@ -255,8 +255,6 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
   const lessonWords = useMemo(() => planGroups.flat(), [planGroups])
 
-  const totalPerDay = useMemo(() => planQuotas.reduce((s, q) => s + q, 0), [planQuotas])
-
   const planDays = useMemo(
     () => countPlanDays(planStartDate, planEndDateStr),
     [planStartDate, planEndDateStr],
@@ -392,6 +390,35 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     [isEditingPlan, allPlans, planStartDate, vocab, masteryMap],
   )
 
+  const assignment = useMemo(() => {
+    const baseline = buildArrangeBaselineKey(
+      planStartDate, activeLessons, lessonKinds, lessonQuotas, batchMode,
+    )
+    if (
+      batchMode &&
+      isEditingPlan &&
+      editingPlan &&
+      baseline === editArrangeBaselineKey &&
+      planEndDateStr === planEndDate(editingPlan)
+    ) {
+      const days = editingPlan.days
+      const assigned = new Set(days.flatMap(day => day.newWordKeys))
+      const unassigned = lessonWords.map(wordKey).filter(key => !assigned.has(key))
+      return { days, unassigned, rolloverKeys: [] as string[] }
+    }
+    const { days, unassigned } = buildAutoAssignedPlan(
+      batchMode ? planGroups : [lessonWords],
+      batchMode ? planQuotas : [QUOTA_ALL],
+      planStartDate,
+      planEndDateStr,
+    )
+    return { days, unassigned, rolloverKeys: computeRolloverKeys(days, unassigned) }
+  }, [
+    planStartDate, planEndDateStr, activeLessons, lessonKinds, lessonQuotas, batchMode,
+    isEditingPlan, editingPlan, editArrangeBaselineKey, lessonWords, planGroups,
+    planQuotas, computeRolloverKeys,
+  ])
+
   const persistPlan = useCallback(
     async (days: WeeklyPlanDay[]) => {
       if (!activeLesson) return
@@ -413,11 +440,12 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
         unit: activeLessons.map((l) => l.unit).join(', '),
         lesson: activeLessons.map((l) => l.lesson).join(', '),
         weekStartDay,
-        newWordsPerDay: batchMode ? totalPerDay : lessonWords.length,
+        newWordsPerDay: Math.max(0, ...days.map(day => day.newWordKeys.length)),
         days,
         progress: wasEditing && editingPlan ? editingPlan.progress : {},
         previewLessonKeys,
-        batchMode,
+        // Both automatic and custom quotas persist a per-day allocation.
+        batchMode: true,
         ...(validFocus !== undefined ? { focusLessonKey: validFocus } : {}),
         ...(wasEditing && editingPlan?.weekCompletion
           ? { weekCompletion: editingPlan.weekCompletion }
@@ -445,9 +473,6 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
       activeLesson,
       activeLessons,
       planStartDate,
-      totalPerDay,
-      batchMode,
-      lessonWords.length,
       savePlan,
       deletePlan,
       editingPlanStart,
@@ -461,87 +486,20 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
     ],
   )
 
-  const handleDirectCreate = useCallback(async () => {
-    if (!activeLesson || batchMode) return
-    if (planEndDateStr < planStartDate || rangeHasOverlap) return
-
-    const rolloverKeys = computeRolloverKeys([], [])
-    const finalDays = buildDailyFullWordPlan(
-      planGroups,
-      planStartDate,
-      planEndDateStr,
-      rolloverKeys,
-    )
-    await persistPlan(finalDays)
-  }, [
-    activeLesson,
-    batchMode,
-    planEndDateStr,
-    planStartDate,
-    rangeHasOverlap,
-    planGroups,
-    computeRolloverKeys,
-    persistPlan,
-  ])
-
   const handleGoToArrange = useCallback(() => {
-    if (!activeLesson) return
-    if (planEndDateStr < planStartDate || rangeHasOverlap) return
-    const snap = buildArrangeBaselineKey(
-      planStartDate,
-      activeLessons,
-      lessonKinds,
-      lessonQuotas,
-      batchMode,
-    )
-    if (isEditingPlan && editingPlan && snap === editArrangeBaselineKey) {
-      setDraftDays(editingPlan.days.map((d) => ({ date: d.date, newWordKeys: [...d.newWordKeys] })))
-      const wordSet = new Set(lessonWords.map((w) => wordKey(w)))
-      const assigned = new Set(editingPlan.days.flatMap((d) => d.newWordKeys))
-      const un = [...wordSet].filter((k) => !assigned.has(k))
-      setUnassignedKeys(un)
-      setSelectedKeys(new Set())
-      setStep('arrange')
-      return
-    }
-
-    const { days, unassigned } = buildAutoAssignedPlan(
-      planGroups,
-      planQuotas,
-      planStartDate,
-      planEndDateStr,
-    )
-
-    // Carryover: previous plan's consolidate words with stage < CONSOLIDATE_PASS_STAGE (§3.7)
-    const rolloverKeys = computeRolloverKeys(days, unassigned)
-    const rolloverCount = rolloverKeys.length
-
-    setDraftDays(days)
-    setUnassignedKeys([...unassigned, ...rolloverKeys])
+    if (!activeLesson || planDays <= 0 || rangeHasOverlap) return
+    setDraftDays(assignment.days.map(day => ({ ...day, newWordKeys: [...day.newWordKeys] })))
+    setUnassignedKeys([...assignment.unassigned, ...assignment.rolloverKeys])
     setSelectedKeys(new Set())
-    if (rolloverCount > 0) {
-      sessionStorage.setItem('rollover_keys', JSON.stringify(rolloverKeys))
+    setDraggedKeys(null)
+    setDragOverIdx(null)
+    if (assignment.rolloverKeys.length > 0) {
+      sessionStorage.setItem('rollover_keys', JSON.stringify(assignment.rolloverKeys))
     } else {
       sessionStorage.removeItem('rollover_keys')
     }
     setStep('arrange')
-  }, [
-    activeLesson,
-    activeLessons,
-    lessonKinds,
-    lessonQuotas,
-    batchMode,
-    editArrangeBaselineKey,
-    editingPlan,
-    isEditingPlan,
-    lessonWords,
-    planGroups,
-    planQuotas,
-    planStartDate,
-    planEndDateStr,
-    rangeHasOverlap,
-    computeRolloverKeys,
-  ])
+  }, [activeLesson, planDays, rangeHasOverlap, assignment])
 
   const handleMoveWords = useCallback((keys: Set<string>, targetDayIdx: number) => {
     setDraftDays((prev) => {
@@ -573,10 +531,6 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
 
   // ── PARAMS STEP ────────────────────────────────────────────────────────
   if (step === 'params') {
-    const sourceCount =
-      consolidateGroups.filter((g) => g.length > 0).length +
-      previewGroups.filter((g) => g.length > 0).length
-
     return (
       <>
         <VocabRangeFilter
@@ -719,38 +673,33 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="text-[.68rem] font-extrabold tracking-widest text-[var(--wm-text-dim)] uppercase">
-                        是否分批
+                        自定义每日词数
                       </div>
                       <p className="mt-1 text-[.72rem] leading-snug text-[var(--wm-text-dim)]">
                         {batchMode
-                          ? '开启：按天分配必记新词，可手动调整'
-                          : '关闭：计划期内每天记忆全部单词'}
+                          ? '开启：按各课程设置的每日词数分配'
+                          : '关闭：将所选单词自动均分到计划每天'}
                       </p>
                     </div>
-                    <Button
-                      type="button"
-                      role="switch"
-                      aria-checked={batchMode}
-                      onClick={() => setBatchMode((v) => !v)}
-                      variant="ghost"
-                      color="gray"
-                      size="1"
-                      className="relative w-12 shrink-0"
-                    >
-                      <span
-                        className={`absolute top-0.5 h-5 w-5 rounded-full transition-all ${
-                          batchMode
-                            ? 'left-[calc(100%-1.375rem)] bg-[#fbbf24]'
-                            : 'left-0.5 bg-[var(--wm-text-dim)]'
-                        }`}
+                    <label className="flex shrink-0 items-center gap-3">
+                      <Switch
+                        aria-label="自定义每日词数"
+                        checked={batchMode}
+                        onCheckedChange={setBatchMode}
+                        color="amber"
+                        size="3"
                       />
-                    </Button>
+                    </label>
                   </div>
                 </div>
 
-                {!batchMode && (
+                {planDays > 0 && (
                   <div className="mb-4 rounded-xl border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-4 py-3 text-[.75rem] font-bold text-[#fbbf24]">
-                    不分批：{planDays} 天内每天记忆全部 {lessonWords.length} 个单词
+                    {batchMode ? '当前分配' : '自动分批'}：{planDays} 天，每天依次为{' '}
+                    {assignment.days.map(day => day.newWordKeys.length).join('、')} 个单词
+                    {assignment.unassigned.length + assignment.rolloverKeys.length > 0 && (
+                      <span>；另有 {assignment.unassigned.length + assignment.rolloverKeys.length} 词待分配</span>
+                    )}
                   </div>
                 )}
 
@@ -834,11 +783,6 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
                   </div>
                 )}
 
-                {batchMode && sourceCount > 1 && (
-                  <div className="-mt-1 mb-4 text-[.72rem] font-bold text-[var(--wm-text-dim)]">
-                    合计每天 {totalPerDay} 个新词
-                  </div>
-                )}
               </>
             ) : orderedLessons.length > 0 ? (
               <div className="mb-4 text-sm text-[var(--wm-text-dim)]">
@@ -851,25 +795,28 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
             )}
 
             {activeLesson && (
-              <div className="mt-2 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
+              <div className="mt-2 flex flex-col items-center gap-4 border-t border-[var(--wm-border)] pt-5 sm:flex-row">
                 <Button
                   type="button"
                   onClick={() => router.push('/setting/plans/english')}
-                  variant="outline"
+                  variant="soft"
                   color="gray"
-                  size="2"
-                  className="flex-1"
+                  size="3"
+                  className="w-full sm:flex-1"
                 >
                   取消
                 </Button>
                 <Button
-                  onClick={batchMode ? handleGoToArrange : handleDirectCreate}
+                  onClick={handleGoToArrange}
                   disabled={planDays <= 0 || planEndDateStr < planStartDate || rangeHasOverlap}
-                  variant="ghost"
-                  color="gray"
-                  size="2"
+                  variant="solid"
+                  color="amber"
+                  highContrast
+                  size="3"
+                  className="w-full sm:flex-1"
+                  style={{ color: '#4A2C00' }}
                 >
-                  {batchMode ? '下一步：编辑分配 ▶' : isEditingPlan ? '保存修改' : '创建计划'}
+                  下一步
                 </Button>
               </div>
             )}
@@ -959,6 +906,8 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
             })
           }}
           variant={isSelected ? 'solid' : 'soft'}
+          aria-pressed={isSelected}
+          style={isSelected ? { color: 'var(--amber-contrast)' } : undefined}
           color={
             isSelected
               ? 'amber'
@@ -991,7 +940,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
           {/* Header */}
           <div className="mb-1 flex items-center justify-between">
             <div className="font-fredoka text-2xl text-[#f59e0b]">
-              {isEditingPlan ? '编辑多日计划 · 分配' : '编辑单词分配'}
+              {batchMode ? '检查单词分配' : '自动分批结果'}
             </div>
             <div className="text-[.72rem] font-bold text-[var(--wm-text-dim)]">
               已分配 {totalAssigned} / {lessonWords.length} 词
@@ -1138,7 +1087,7 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
           </div>
 
           {/* Actions */}
-          <div className="mt-6 flex gap-2.5 border-t border-[var(--wm-border)] pt-5">
+          <div className="mt-6 flex items-center gap-4 border-t border-[var(--wm-border)] pt-5">
             <Button
               onClick={() => setStep('params')}
               variant="outline"
@@ -1148,7 +1097,15 @@ export default function EnglishWeeklyPlanEditor({ vocab, editPlanId }: Props) {
             >
               ← 返回
             </Button>
-            <Button onClick={handleConfirmArrange} variant="solid" color="amber" size="2">
+            <Button
+              onClick={handleConfirmArrange}
+              variant="solid"
+              color="amber"
+              highContrast
+              size="2"
+              className="flex-1"
+              style={{ color: '#4A2C00' }}
+            >
               {isEditingPlan ? '保存修改' : '创建多日计划'}
             </Button>
           </div>

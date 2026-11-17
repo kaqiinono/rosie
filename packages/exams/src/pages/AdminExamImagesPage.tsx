@@ -18,13 +18,12 @@ export function AdminExamImagesPage() {
 function ImagePage({ user }: { user: NonNullable<ReturnType<typeof useAuth>['user']> }) {
   const router = useRouter()
   const catalog = imageCatalogStore.useSessionData(user)
-  const [revision, setRevision] = useState('')
+  const [revision, setRevision] = useState(() => typeof window === 'undefined' ? '' : new URLSearchParams(window.location.search).get('revisionId') ?? '')
   const [dirty, setDirty] = useState(false)
   const [busy, setBusy] = useState(false)
   const [leave, setLeave] = useState<(() => void) | null>(null)
   const [refreshError, setRefreshError] = useState<unknown>(null)
   const [refreshing, setRefreshing] = useState(false)
-  useEffect(() => { setRevision(new URLSearchParams(window.location.search).get('revisionId') ?? '') }, [])
   useEffect(() => {
     if (!dirty) return
     const handler = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = '' }
@@ -256,6 +255,7 @@ function TaskEditor({ userId, workspace, task, locked, onDirty, onBusy, saved, n
         <LoadingOverlay visible={source.loading} placement="content" appearance="quiet" />
         {!task.sourceAvailable && <Text role="alert">{task.retired ? '裁切任务已删除。右侧仍可查看电子题与已绑定题图。' : '尚未准备此题原书页。'}</Text>}
         {source.error != null && <Text role="alert" color="red">{imageTaskError(source.error)}</Text>}
+        {/* eslint-disable-next-line @next/next/no-img-element -- admin-only authenticated source blob */}
         {source.url && !editing && <img src={source.url} alt={`原书 PDF 第 ${task.source?.pdfPage ?? '未知'} 页`} className="h-auto w-full" />}
         {source.url && editing && <ImageCropper imageUrl={source.url} initialRegion={task.savedRegion ?? task.source?.region} saving={busy} disabled={!!pending || locked}
           confirmLabel={task.binding ? '保存重裁并替换图片' : '裁切并上传图片'} onDirtyChange={onDirty} onPreview={setPreview}

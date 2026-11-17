@@ -1,6 +1,6 @@
 import type { TimetableData, TimetableOccurrence, TimetablePreferences, TimetableRule, CourseOccurrence } from './types'
 import type { CourseRule, RuleInput } from './types'
-import { atTime, dateAfter, localDate } from './time'
+import { atTime, dateAfter } from './time'
 
 export const DEFAULT_TIMETABLE_PREFERENCES: TimetablePreferences = { week_start: 1, show_weekends: true, start_hour: 7, end_hour: 22, hour_height: 64, hour12: false, show_teacher: true, show_location: true, default_reminder_minutes: 10 }
 const dayNumber = (date: string) => Math.floor(Date.parse(`${date}T00:00:00Z`) / 86400000)

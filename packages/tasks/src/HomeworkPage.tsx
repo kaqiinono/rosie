@@ -5,10 +5,14 @@ import { useRouter } from 'next/navigation'
 import { LoadingOverlay, PageBreadcrumb, StickerCard } from '@rosie/ui'
 import { Button, Flex, Tabs, Text } from '@rosie/ui/themes'
 import { useHomeworkData } from './useHomeworkData'
+import type { Homework } from './homework'
 import HomeworkManager from './components/homework/HomeworkManager'
 import { TASK_SECTIONS, sectionHref, type TaskSection } from './components/taskSections'
 
-export default function HomeworkPage({ children }: { children?: ReactNode }) {
+export default function HomeworkPage({ children, onPreview }: {
+  children?: ReactNode
+  onPreview?: (homework: Homework) => void
+}) {
   const router = useRouter()
   const api = useHomeworkData()
   const { user, isLoading, error, refresh } = api
@@ -92,7 +96,7 @@ export default function HomeworkPage({ children }: { children?: ReactNode }) {
                 </div>
                 <Tabs.Content value="homework">
                   {children}
-                  <HomeworkManager api={api} notify={notify} />
+                  <HomeworkManager api={api} notify={notify} onPreview={onPreview} />
                 </Tabs.Content>
               </Tabs.Root>
             </StickerCard>

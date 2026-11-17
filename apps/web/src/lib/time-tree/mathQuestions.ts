@@ -66,6 +66,8 @@ export function editMathQuestion(tree: TreeData, step: WorkStep, binding: Practi
 export function planMathQuestions(tree: TreeData, template: Homework) {
   const binding = template.practice_binding
   if (!binding?.progression?.enabled) return
+  // Occurrence-based batches are frozen by the homework schedule, not completion.
+  if (binding.progression.mode === 'homework') return
   const ledger = tree.mathQuestionProgress?.[binding.key]
   if (!ledger) return
   const first = binding.rows.findIndex(row => row.id === ledger.firstId)

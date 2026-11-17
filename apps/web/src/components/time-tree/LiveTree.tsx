@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type RefObject } from 'react'
-import { AppDialog, LearningIcon, PocketMenuButton, StickerCard } from '@rosie/ui'
+import { AppDialog, LearningIcon, PocketMenuButton, StickerCard, Sun } from '@rosie/ui'
 import { Badge, Button, Flex, Popover, Text, TextField } from '@rosie/ui/themes'
 import TreeScene, { type ItemKind, type TreeSceneHandle } from '@/components/tree-demo/garden/TreeScene'
 import Sky, { daypartOf } from '@/components/tree-demo/garden/Sky'
@@ -12,12 +12,13 @@ import StonePanel from '@/components/tree-demo/garden/StonePanel'
 import { buildRegions, todayCenter, type Region } from '@/components/tree-demo/garden/layout'
 import { bubbleSubject, CORE_SUBJECTS, SUBJECTS, type Apple, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
-import { SUN_MAGIC_COST, canGrowWithSun, isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { SUN_MAGIC_COST, canGrowWithSun, dayOf, isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
 import { isEarly } from '@/lib/time-tree/rewards'
 import { sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
+import DailyRainbowReward from './DailyRainbowReward'
 import DayTasksDialog from './DayTasksDialog'
 import { useTimeTree } from './useTimeTree'
 import { MinimizeTimeTreeButton } from './TimeTreeLauncher'
@@ -178,10 +179,14 @@ export default function LiveTree() {
   const [pin, setPin] = useState('')
   const [notice, notify] = useState('')
   const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
+  const [showRainbowDetails, setShowRainbowDetails] = useState(false)
   const [savingBubble, setSavingBubble] = useState<string | null>(null)
   const completingBubble = useRef(false)
   const bloomTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [hour, setHour] = useState(() => new Date().getHours())
+  const [skyNow, setSkyNow] = useState(Date.now)
+  const skyTime = new Date(skyNow + api.clockOffsetMs)
+  const skyDay = dayOf(skyTime)
+  const hour = Number(skyTime.toLocaleString('en-GB', { timeZone: 'Asia/Shanghai', hour: '2-digit', hourCycle: 'h23' }))
   const [fresh, setFresh] = useState<Record<string, 'born'>>({})
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => new Set())
   const fx = useRef<GardenFx | null>(null)
@@ -190,7 +195,8 @@ export default function LiveTree() {
   const waterRef = useRef<HTMLSpanElement>(null)
   const menuRef = useRef<HTMLButtonElement>(null)
   const piles = useRef<Partial<Record<SubjectKey, HTMLElement | null>>>({})
-  const picking = useRef(false)
+  const picking = useRef(new Set<string>())
+  const popping = useRef(new Set<string>())
   const boxTimer = useRef<number | null>(null)
   const floatSeq = useRef(0)
   const canvas = useRef<HTMLCanvasElement>(null)
@@ -219,6 +225,25 @@ export default function LiveTree() {
   useEffect(() => { previousRegions.current = regions }, [regions])
   const ready = !!tree
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>
+    const update = () => {
+      clearTimeout(timer)
+      const now = Date.now()
+      setSkyNow(now)
+      const corrected = now + api.clockOffsetMs
+      const midnight = Date.parse(`${shift(dayOf(new Date(corrected)), 1)}T00:00:00+08:00`)
+      timer = setTimeout(update, Math.max(1, Math.min(60000, midnight - corrected)))
+    }
+    update()
+    window.addEventListener('focus', update)
+    document.addEventListener('visibilitychange', update)
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('focus', update)
+      document.removeEventListener('visibilitychange', update)
+    }
+  }, [api.clockOffsetMs])
+  useEffect(() => {
     if (!ready || !canvas.current || !rail.current) return
     const effects = new GardenFx()
     effects.attach(canvas.current, () => null)
@@ -230,9 +255,7 @@ export default function LiveTree() {
     })
     if (rail.current) obs.observe(rail.current)
     if (scene.current) obs.observe(scene.current)
-    const timer = setInterval(() => setHour(new Date().getHours()), 60000)
     return () => {
-      clearInterval(timer)
       obs.disconnect()
       effects.detach()
       fx.current = null
@@ -244,19 +267,30 @@ export default function LiveTree() {
     const timer = setTimeout(() => notify(''), 3500)
     return () => clearTimeout(timer)
   }, [notice])
-  const celebrated = useRef<{ goal: string | null; day: string | null } | null>(null)
+  const celebrated = useRef<{ goal: string | null; day: string | null; rainbow: string | null } | null>(null)
   useEffect(() => {
     if (!tree) return
     const goal = tree.goalAwardedOn ?? null
     const day = tree.lastDoneDay ?? null
+    const rainbow = tree.dailyRainbowDay ?? null
     const previous = celebrated.current
-    celebrated.current = { goal, day }
+    celebrated.current = { goal, day, rainbow }
     if (!previous) return
     const parts: string[] = []
+    if (rainbow === skyDay && previous.rainbow !== rainbow) {
+      parts.push('🌈 今天的学习任务全部完成，收获彩虹果！')
+      const prize = [...tree.apples].reverse().find(apple => apple.kind === 'rainbow' && apple.dateKey === skyDay)
+      if (prize) setFresh(current => ({ ...current, [prize.id]: 'born' }))
+      const bounds = scene.current?.getBoundingClientRect()
+      if (bounds && fx.current && !fx.current.prefersReducedMotion()) {
+        fx.current.confetti(bounds.left + bounds.width * 0.3, bounds.top + bounds.height * 0.35)
+        fx.current.confetti(bounds.left + bounds.width * 0.7, bounds.top + bounds.height * 0.35)
+      }
+    }
     if (goal === tree.today && previous.goal !== goal) parts.push('今日目标达成，💧+2')
     if ((tree.streak ?? 0) > 1 && previous.day !== day) parts.push(`连续 ${tree.streak} 天`)
     if (parts.length) notify((current) => [current, ...parts].filter(Boolean).join(' · '))
-  }, [tree, notify])
+  }, [tree, notify, skyDay])
   useEffect(() => {
     return () => {
       if (boxTimer.current !== null) window.clearTimeout(boxTimer.current)
@@ -365,9 +399,10 @@ export default function LiveTree() {
     rewards: boolean,
     origin: { x: number; y: number } | null = null,
     onBloomed?: () => void,
+    burst = true,
   ) {
     const from = bubbleCenter(step.id) ?? origin
-    const ids = step.stages.map((_, index) => `${step.id}#${index}`)
+    const ids = step.settled ? [] : step.stages.map((_, index) => `${step.id}#${index}`)
     const effects = fx.current
     if (!from || !effects) {
       if (ids.length) {
@@ -378,7 +413,7 @@ export default function LiveTree() {
     }
     const reduced = effects.prefersReducedMotion()
     if (!reduced) {
-      effects.burst(from.x, from.y, bubbleSubject(step).color)
+      if (burst) effects.burst(from.x, from.y, bubbleSubject(step).color)
       if (rewards && step.sun > 0) flyCount(from, sunRef.current, '#ffd54a', 0)
       if (rewards && step.water > 0) flyCount(from, waterRef.current, '#74c0fc', 12)
       if (ids.length) {
@@ -419,18 +454,35 @@ export default function LiveTree() {
       setStep(id)
       return
     }
-    if (busy || completingBubble.current) return
+    if (s.subject !== 'life' && (busy || completingBubble.current)) return
     if (s?.subject !== 'life' && s?.end) {
       await completeRunning(id)
       return
     }
     if (s?.subject === 'life' && !s.end) {
+      if (popping.current.has(id)) return
+      popping.current.add(id)
       const origin = bubbleCenter(id)
-      const result = await run({ kind: 'pop', id })
-      const done = result?.steps.find(item => item.id === id)
-      if (!result || !done?.end) return
-      sow(done, result, false, origin)
-      notify(doneNotice(done))
+      setHidden(previous => new Set(previous).add(id))
+      if (origin && fx.current && !fx.current.prefersReducedMotion()) {
+        fx.current.burst(origin.x, origin.y, bubbleSubject(s).color)
+      }
+      try {
+        const result = await run({ kind: 'pop', id })
+        const done = result?.steps.find(item => item.id === id)
+        if (!result || !done?.end) {
+          releaseItem(id)
+          notify('这颗泡泡未保存成功，请再点一次。')
+          return
+        }
+        sow(done, result, false, origin, undefined, false)
+        notify(doneNotice(done))
+      } catch {
+        releaseItem(id)
+        notify('这颗泡泡未保存成功，请再点一次。')
+      } finally {
+        popping.current.delete(id)
+      }
       return
     }
     const origin = bubbleCenter(id)
@@ -465,6 +517,7 @@ export default function LiveTree() {
       const showReward = () => {
         release()
         notify(doneNotice(outcome.step))
+        setShowRainbowDetails(false)
         setRewardStep(outcome.step)
       }
       if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin, showReward)
@@ -501,7 +554,7 @@ export default function LiveTree() {
     setFloats((prev) => [...prev, { id, x: at.x, y: at.y, text, color }])
     window.setTimeout(() => setFloats((prev) => prev.filter((item) => item.id !== id)), 1200)
   }
-  function releaseApple(id: string): void {
+  function releaseItem(id: string): void {
     setHidden((prev) => {
       if (!prev.has(id)) return prev
       const next = new Set(prev)
@@ -519,9 +572,9 @@ export default function LiveTree() {
     return { left, top, transform: below ? 'translate(-50%, 0)' : 'translate(-50%, -120%)' }
   }
   async function commitPick(apple: Apple, color: SubjectKey, at: { x: number; y: number }) {
-    if (picking.current || busy) return
+    if (picking.current.has(apple.id)) return
     if (apple.kind === 'rainbow' && !isCoreSubject(color)) return
-    picking.current = true
+    picking.current.add(apple.id)
     setRainbowAt(null)
     setHidden((prev) => {
       const next = new Set(prev)
@@ -542,15 +595,16 @@ export default function LiveTree() {
     if (effects && !effects.prefersReducedMotion()) {
       effects.pluck(at.x, at.y, to.x, to.y, meta.color, meta.deep, rainbow, landed)
     } else landed()
-    addFloat(at.x, at.y, `${rainbow ? '🌈 ' : ''}+1 ${meta.stone}`, meta.color)
     try {
       const next = await run(
         rainbow && isCoreSubject(color) ? { kind: 'pick', id: apple.id, color } : { kind: 'pick', id: apple.id },
       )
       if (!next || next.apples.some((item) => item.id === apple.id)) {
-        releaseApple(apple.id)
+        releaseItem(apple.id)
+        notify('这颗苹果未保存成功，请再摘一次。')
         return
       }
+      addFloat(at.x, at.y, `${rainbow ? '🌈 ' : ''}+1 ${meta.stone}`, meta.color)
       if (rainbow && next.boxReady) {
         const wait = effects?.prefersReducedMotion() ? 0 : 980
         if (boxTimer.current !== null) window.clearTimeout(boxTimer.current)
@@ -559,12 +613,15 @@ export default function LiveTree() {
           show('box')
         }, wait)
       }
+    } catch {
+      releaseItem(apple.id)
+      notify('这颗苹果未保存成功，请再摘一次。')
     } finally {
-      picking.current = false
+      picking.current.delete(apple.id)
     }
   }
   function beginPick(id: string, at: { x: number; y: number }) {
-    if (!tree || busy || picking.current) return
+    if (!tree || picking.current.has(id)) return
     const apple = tree.apples.find((item) => item.id === id)
     if (!apple) return
     if (apple.kind === 'rainbow') {
@@ -588,7 +645,8 @@ export default function LiveTree() {
     show(kind)
   }
   const hasFlowers = tree.steps.some(canGrowWithSun)
-  let magicLabel = `☀️ 让花长大 · ${SUN_MAGIC_COST} 阳光`
+  const dailyRainbowStep = tree.steps.find(item => item.dailyRainbow && item.end && dayOf(item.end) === skyDay)
+  let magicLabel = '让花长大'
   if (casting) magicLabel = '施法中…'
   else if (busy) magicLabel = '正在保存…'
   else if (!hasFlowers) magicLabel = '暂无可催开的花'
@@ -632,6 +690,7 @@ export default function LiveTree() {
           onOpen={(id) => void clickBubble(id)}
           onHoldFinish={busy || savingBubble ? undefined : (id) => void completeRunning(id)}
           savingId={savingBubble}
+          hiddenIds={hidden}
         />
       <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
         <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
@@ -681,7 +740,7 @@ export default function LiveTree() {
             piles.current[key] = el
           }}
         />
-        <StickerCard size="sm" tone="paper" className="mt-2 max-md:hidden">
+        <StickerCard size="sm" tone="paper" className="tg-rail-tools mt-2">
           <Flex direction="column" gap="2">
             {nextWish && nextWish > tree.today && (
               <Text size="1" className="max-md:hidden">
@@ -691,37 +750,47 @@ export default function LiveTree() {
             <Button color="violet" variant="soft" onClick={() => show('box')}>
               🎁 {tree.boxReady ? '打开盲盒' : '我的盲盒'}
             </Button>
+            {dailyRainbowStep && (
+              <Button color="violet" variant="soft" onClick={() => {
+                setRewardStep(dailyRainbowStep)
+                setShowRainbowDetails(true)
+              }}>🌈 查看彩虹果奖励</Button>
+            )}
             <Text size="1" className="max-md:hidden">
-              再结 {12 - (tree.appleCount % 12)} 个学科苹果长出彩虹果
+              {tree.dailyRainbowDay === tree.today ? '🌈 今日全完成彩虹果已获得！' : '今天学习任务全部完成，最后一颗苹果变彩虹果！'}
+            </Text>
+            <Text size="1" color="gray" className="max-md:hidden">
+              累计奖励：再结 {12 - (tree.appleCount % 12)} 个学科苹果长出彩虹果
             </Text>
             {tree.apples.length > 0 && (
               <Button size="1" variant="soft" onClick={() => show('fruitList')}>
                 摘果子（{tree.apples.length}）
               </Button>
             )}
+            <Button
+              color="amber"
+              style={{ height: 'auto', paddingBlock: 8 }}
+              disabled={busy || casting || !hasFlowers || tree.sun < SUN_MAGIC_COST}
+              onClick={async () => {
+                setCasting(true)
+                try {
+                  await run({ kind: 'magic' })
+                } finally {
+                  setCasting(false)
+                }
+              }}
+            >
+              <span className="flex min-w-0 flex-col items-center gap-1">
+                <span className="whitespace-nowrap text-xs">{magicLabel}</span>
+                <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs">
+                  <Sun aria-hidden="true" size={16} /> {SUN_MAGIC_COST} 阳光
+                </span>
+              </span>
+            </Button>
+            <Button asChild variant="soft">
+              <Link href="/tasks/homework">作业管理</Link>
+            </Button>
           </Flex>
-        </StickerCard>
-        <StickerCard size="sm" tone="paper" elevation="sm" className="tg-rail-tools flex flex-col items-stretch justify-center gap-2">
-          <Button
-            color="amber"
-            disabled={busy || casting || !hasFlowers || tree.sun < SUN_MAGIC_COST}
-            onClick={async () => {
-              setCasting(true)
-              try {
-                await run({ kind: 'magic' })
-              } finally {
-                setCasting(false)
-              }
-            }}
-          >
-            {magicLabel}
-          </Button>
-          <Button asChild variant="soft">
-            <Link href="/tasks/homework">作业管理</Link>
-          </Button>
-          <Button asChild variant="soft">
-            <Link href="/today/calendar?view=homework">作业日历</Link>
-          </Button>
         </StickerCard>
       </aside>
       <canvas
@@ -750,7 +819,6 @@ export default function LiveTree() {
                 key={color}
                 size="2"
                 color={PILE_COLOR[color]}
-                disabled={busy}
                 aria-label={`放进${SUBJECTS[color].stone}`}
                 onClick={() => {
                   const apple = tree.apples.find((item) => item.id === rainbowAt.id)
@@ -796,6 +864,15 @@ export default function LiveTree() {
             void completeRunning(current.id)
           }}
           onFinished={(finished, snapshot, bloom) => {
+            if (finished.dailyRainbow) {
+              if (bloom) sow(finished, snapshot, true)
+              setStep(null)
+              setTaskDays(null)
+              setShowRainbowDetails(false)
+              setRewardStep(finished)
+              notify('🌈 今天的学习任务全部完成，彩虹果已经长在树上啦！')
+              return
+            }
             if (finished.flowers) {
               if (bloom) sow(finished, snapshot, true)
               return
@@ -805,9 +882,10 @@ export default function LiveTree() {
           }}
         />
       )}
-      <AppDialog open={!!rewardStep} title={rewardStep && isEarly(rewardStep) ? '提前完成，奖励翻倍！' : '完成啦，坚持就有收获！'} onOpenChange={(open) => { if (!open) setRewardStep(null) }}>
+      <AppDialog open={!!rewardStep && (!rewardStep.dailyRainbow || showRainbowDetails)} title={rewardStep?.dailyRainbow ? '全部完成，收获彩虹果！' : rewardStep && isEarly(rewardStep) ? '提前完成，奖励翻倍！' : '完成啦，坚持就有收获！'} onOpenChange={(open) => { if (!open) { setRewardStep(null); setShowRainbowDetails(false) } }}>
         {rewardStep && (
           <Flex direction="column" gap="4" align="center" p="4">
+            {rewardStep.dailyRainbow && <DailyRainbowReward />}
             <Text size="4" weight="bold">{rewardStep.name}</Text>
             <Text size="6" weight="bold">🌸 +{rewardStep.stages.length}　☀️ +{rewardStep.sun}　💧 +{rewardStep.water}</Text>
             {isEarly(rewardStep) && (
@@ -927,7 +1005,7 @@ export default function LiveTree() {
               <Button
                 key={a.id}
                 variant="soft"
-                disabled={busy}
+                disabled={hidden.has(a.id)}
                 onClick={() => {
                   const at = applePoint(a.id)
                   close()

@@ -2,6 +2,8 @@
 
 Shared **presentational** components used across modules. No data fetching, no business logic.
 
+可点击按钮悬停时统一显示 `cursor: pointer`；共享 Button / IconButton 由 `themes.css` 提供，禁用状态保留默认禁用光标。
+
 `AppDialog presentation="bottom-drawer"` opens a full-width, 92dvh bottom sheet with rounded
 top corners and reduced-motion-aware entrance. It preserves the shared close/focus contract.
 

@@ -77,6 +77,7 @@ function MatchActivity({ activity, group, answers, onAnswer, disabled, attemptId
     })}
     {imageUrl && renderImage && <ExamMaterialBlocks blocks={[{ id: `${activity.id}-image`, kind: 'image', mediaSlotId: activity.imageSlotId!, alt: activity.title, displayWidth: imageDisplayWidth }]} attemptId={attemptId} adminRevisionId={adminRevisionId} renderImage={renderImage} />}
     {imageUrl && !renderImage && !imageSize && <Text role="status" color={imageFailed ? 'red' : 'gray'}>{imageFailed ? '题图暂时无法读取，请稍后重新打开题组。' : '正在读取题图…'}</Text>}
+    {/* eslint-disable-next-line @next/next/no-img-element -- hidden intrinsic-size probe for authenticated media */}
     {imageUrl && !renderImage && <img src={imageUrl} alt="" hidden onError={() => setImageFailed(true)} onLoad={e => setImageSize({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })} />}
     <ExamAuthoringRegion target={{ kind: 'pool', groupId: group.id, poolId: pool.id }}><MatchingBoard layout="columns" items={entries.map(entry => ({ id: entry.id, label: entry.label, position: entry.position }))}
       options={options} value={value} allowReuse={pool.allowReuse} readOnly={disabled}

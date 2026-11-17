@@ -111,6 +111,8 @@ export interface Region {
   plannedMinutes?: { completed: number; total: number }
   /** 物件缩放：小叶区里的东西更小 */
   scale: number
+  /** Keep remaining fruit in their slots after harvesting. */
+  fruitCapacity?: number
 }
 
 function placeItems(items: RegionItem[], geom: Geom): { placed: PlacedItem[]; overflow: number } {
@@ -123,27 +125,33 @@ function placeItems(items: RegionItem[], geom: Geom): { placed: PlacedItem[]; ov
 }
 
 function placeFruitLeaf(items: RegionItem[], geom: Geom, previous?: Region) {
-  const visible = items.slice(0, FRUIT_SLOTS.length)
-  const available = new Set(FRUIT_SLOTS.keys())
+  const capacity = Math.max(FRUIT_SLOTS.length, items.length, previous?.fruitCapacity ?? 0)
+  const slots: [number, number][] = capacity <= FRUIT_SLOTS.length ? FRUIT_SLOTS :
+    Array.from({ length: capacity }, (_, i): [number, number] => {
+      const radius = 0.84 * Math.sqrt((i + 0.5) / capacity)
+      const angle = i * Math.PI * (3 - Math.sqrt(5))
+      return [radius * Math.cos(angle), radius * Math.sin(angle)]
+    })
+  const available = new Set(slots.keys())
   const retained = new Map<string, number>()
   for (const { item, fruitSlot } of previous?.placed ?? []) {
-    if (fruitSlot !== undefined && visible.some(next => next.id === item.id)) {
+    if (fruitSlot !== undefined && fruitSlot < capacity && items.some(next => next.id === item.id)) {
       retained.set(item.id, fruitSlot)
       available.delete(fruitSlot)
     }
   }
-  const placed = visible.map(item => {
+  const placed = items.map(item => {
     let seed = 2166136261
     for (const char of item.id) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0
     const free = [...available]
     const slot = retained.get(item.id) ?? free[seed % free.length]!
     available.delete(slot)
-    const [ux, uy] = FRUIT_SLOTS[slot]!
-    const x = geom.cx + ux * geom.rx + ((seed >>> 8) % 7 - 3)
-    const y = geom.cy + uy * geom.ry + ((seed >>> 16) % 7 - 3)
+    const [ux, uy] = slots[slot]!
+    const x = geom.cx + ux * geom.rx
+    const y = geom.cy + uy * geom.ry
     return { item, x, y, fruitSlot: slot }
   })
-  return { placed, overflow: items.length - placed.length }
+  return { placed, overflow: 0, fruitCapacity: capacity }
 }
 
 function itemsOfDates(state: GardenState, keys: string[], keepBubbleBuds = false): RegionItem[] {
@@ -174,9 +182,11 @@ export function buildRegions(state: GardenState, keepTodayBubbleBuds = false, pr
     if (!geom) return
     const merged = keys.length > 1
     const first = keys[0]
-    const { placed, overflow } = hasFruit
+    const fruit = hasFruit
       ? placeFruitLeaf(items, geom, previous.find(region => region.dateKey === first || region.mergedKeys.includes(first)))
-      : placeItems(items, geom)
+      : null
+    const { placed, overflow } = fruit ?? placeItems(items, geom)
+    const fruitCapacity = fruit?.fruitCapacity
     regions.push({
       key: `h${i}`,
       tone: 'history',
@@ -192,7 +202,8 @@ export function buildRegions(state: GardenState, keepTodayBubbleBuds = false, pr
       overflow,
       load: 0,
       capacity: 0,
-      scale: hasFruit ? 1.2 : 0.72,
+      fruitCapacity,
+      scale: fruitCapacity ? 1.2 * Math.sqrt(FRUIT_SLOTS.length / fruitCapacity) : 0.72,
     })
   })
 
@@ -202,9 +213,11 @@ export function buildRegions(state: GardenState, keepTodayBubbleBuds = false, pr
     const w = weekdayOf(key)
     const keepBuds = offset === 0 && keepTodayBubbleBuds
     const items = itemsOfDates(state, [key], keepBuds)
+    const fruit = items.some(item => item.kind === 'apple')
+      ? placeFruitLeaf(items, geom, previous.find(region => region.dateKey === key)) : null
     const dense = keepBuds && items.length > MAX_ITEMS_PER_REGION
     // Spread a busy day's items across the ellipse instead of hiding buds behind +N.
-    const placed = dense ? items.map((item, i) => {
+    const placed = fruit ? fruit.placed : dense ? items.map((item, i) => {
       const radius = 0.83 * Math.sqrt((i + 0.5) / items.length)
       const angle = i * Math.PI * (3 - Math.sqrt(5))
       return { item, x: geom.cx + geom.rx * radius * Math.cos(angle), y: geom.cy + geom.ry * radius * Math.sin(angle) }
@@ -224,7 +237,8 @@ export function buildRegions(state: GardenState, keepTodayBubbleBuds = false, pr
       overflow: items.length - placed.length,
       load: dayLoad(state, key),
       capacity: capacityOf(key),
-      scale: dense ? Math.sqrt(MAX_ITEMS_PER_REGION / items.length) : offset === 0 ? 1 : 0.86,
+      fruitCapacity: fruit?.fruitCapacity,
+      scale: fruit ? Math.sqrt(FRUIT_SLOTS.length / fruit.fruitCapacity) : dense ? Math.sqrt(MAX_ITEMS_PER_REGION / items.length) : offset === 0 ? 1 : 0.86,
     })
   })
 

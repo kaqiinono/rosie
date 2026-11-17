@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createUserSessionStore, useAuth } from '@rosie/core'
 import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import { Button, Flex, Spinner, Text, TextField } from '@rosie/ui/themes'
@@ -93,14 +93,14 @@ function SpeakingRecorder({ attemptId, question, answer, disabled, scopeClosed =
   const pendingKey = `${userId}:${attemptId}`
   const pendingToken = useRef(Symbol('speaking-recorder'))
   const current = (token: number) => alive.current && token === generation.current
-  const localMediaPending = () => recordingRef.current !== 'idle' || !!blobRef.current || !!operation.current
-  const mediaPending = () => localMediaPending() || latest.current.rows.some(row => row.status === 'uploading')
+  const localMediaPending = useCallback(() => recordingRef.current !== 'idle' || !!blobRef.current || !!operation.current, [])
+  const mediaPending = useCallback(() => localMediaPending() || latest.current.rows.some(row => row.status === 'uploading'), [localMediaPending])
   const otherTaskPending = () => [...(pendingScopes.get(pendingKey)?.entries() ?? [])].some(([token, entry]) => token !== pendingToken.current && entry.value)
-  const pendingValue = () => !ownerId && (mediaPending() || !!workRef.current || refreshLock.current || latest.current.listLoading || !!latest.current.listError)
-  function notifyPending() {
+  const pendingValue = useCallback(() => !ownerId && (mediaPending() || !!workRef.current || refreshLock.current || latest.current.listLoading || !!latest.current.listError), [ownerId, mediaPending])
+  const notifyPending = useCallback(() => {
     const entry = pendingScopes.get(pendingKey)?.get(pendingToken.current)
     if (entry) { entry.value = pendingValue(); publishPending(pendingKey) }
-  }
+  }, [pendingKey, pendingValue])
   function begin(next: Exclude<Work, null>) {
     if (!alive.current || workRef.current || ownerId) return false
     workRef.current = next; setWork(next); setError(null); notifyPending(); return true
@@ -131,8 +131,9 @@ function SpeakingRecorder({ attemptId, question, answer, disabled, scopeClosed =
 
   useEffect(() => {
     alive.current = true
+    const token = pendingToken.current
     const scope = pendingScopes.get(pendingKey) ?? new Map<symbol, PendingEntry>()
-    scope.set(pendingToken.current, { value: pendingValue(), notify: value => {
+    scope.set(token, { value: pendingValue(), notify: value => {
       if (!alive.current) return
       setScopePending(value); latest.current.onPendingChange?.(value)
     } })
@@ -147,14 +148,14 @@ function SpeakingRecorder({ attemptId, question, answer, disabled, scopeClosed =
       stream.current?.getTracks().forEach(track => track.stop())
       playerRef.current.stop()
       if (playbackUrl.current) URL.revokeObjectURL(playbackUrl.current)
-      scope.delete(pendingToken.current)
+      scope.delete(token)
       if (scope.size) publishPending(pendingKey)
       else pendingScopes.delete(pendingKey)
     }
     // This component is keyed by user, owner, attempt and question.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  useEffect(() => { notifyPending() }, [list.data, list.isLoading, list.error, work, blob, recordingState, refreshing, onPendingChange])
+  useEffect(() => { notifyPending() }, [list.data, list.isLoading, list.error, work, blob, recordingState, refreshing, onPendingChange, notifyPending])
   useEffect(() => {
     if (!script) return
     const timer = setTimeout(() => setScript(null), Math.max(0, Date.parse(script.expiresAt) - Date.now()))

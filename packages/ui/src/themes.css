@@ -27,6 +27,10 @@
 
 /* ---------- Button / IconButton ---------- */
 
+.rt-BaseButton:not(:disabled, [data-disabled], [aria-disabled='true']) {
+  cursor: pointer;
+}
+
 .rt-BaseButton:where(:not(.rt-variant-ghost)) {
   font-weight: var(--font-weight-bold);
 }

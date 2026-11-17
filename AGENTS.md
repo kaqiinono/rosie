@@ -329,9 +329,11 @@ current contracts, content gaps and the manual acceptance sequence.
 
 ### Practice entry management
 
-Homework course selection supports calendar-based progression stored in the existing binding JSON:
-enabled by default on saving the new settings, daily or weekly on a chosen weekday, with weekday-only
-daily work skipping weekends. New occurrences freeze their course at generation; completion and
+Homework course selection supports progression stored in the existing binding JSON:
+enabled by default on saving the new settings, daily, weekly on a chosen weekday, or once per homework
+occurrence following its recurrence schedule. Homework mode freezes its schedule in the binding and
+shares period calculation with generation; split/flower sessions and rescheduling never advance it again.
+Weekday-only daily work skips weekends. New occurrences freeze their course at generation; completion and
 makeup never advance these snapshots. Legacy unsaved bindings retain their completion cursor.
 See `packages/tasks/AGENTS.md` and `docs/task-practice-entries.md`.
 
@@ -359,7 +361,7 @@ Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database
 
 ### Life tree
 
-New weekly, biweekly and three-weekly academic assignments use daily flower collection when automatic progression is off or unconfigured. A versioned garden commit stores each session and its rewards; the practice occurrence spans sessions until the whole assignment is complete. See `tree.md` and `packages/tasks/AGENTS.md`.
+Weekly, biweekly and three-weekly academic assignments use daily flower collection independently of automatic course progression, starting at each occurrence's window opening. Normal sync upgrades untouched current/future legacy occurrences, preserving frozen content and notes. A versioned garden commit stores each session and its rewards; the practice occurrence spans sessions until the whole assignment is complete. See `tree.md` and `packages/tasks/AGENTS.md`.
 
 Daily homework supports an owner-saved `include_weekends` option, defaulting off for new definitions
 and remaining on for existing definitions. Migration `20261115104319_task_homework_include_weekends.sql`
@@ -404,16 +406,13 @@ they remain unpublished and frozen old attempts remain unchanged. The sentence-a
 migration `20261113163105` is applied; the service-only capability RPC returns true.
 The capability fallback remains for environments without this migration.
 See `docs/exams-question-rendering.md` and `packages/exams/AGENTS.md`.
-`/dev-preview/time-tree` is a playable, in-memory prototype of the 时间成长树 (rules in `tree.md`), adapted
-from the standalone 泡泡愿望树 demo: a full-viewport 2D SVG tree whose canopy is split into leaf regions
-(today + 6 days + faded history regions), floating bubbles, flowers/apples/stones, day/night sky, canvas
-particles and WebAudio. Code lives in `apps/web/src/components/tree-demo/garden/` (`model.ts` rules,
-`store.ts` external store + `useSyncExternalStore`, `layout.ts` region geometry, `TreeScene.tsx` / `Sky.tsx` /
-`Bubbles.tsx` art, `garden.css` scene styles, `GardenDialogs.tsx` dialogs); `TimeTreeDemo.tsx` loads it with
-`next/dynamic` (`ssr: false`). The illustration (sky, leaves, bubbles, fruit glow) intentionally uses gradients
-and glow, marked `visual-ok: 插画`; buttons, cards and dialogs still come from `@rosie/ui`. State is never
-persisted. `data.ts` / `TimeTreeScene.tsx` (the older R3F tree, `three` + `@react-three/*`) now only back the
-`/dev-preview/time-tree-organic` experiment.
+The outdated `/dev-preview/time-tree` prototype and its standalone in-memory store/seed are removed.
+Use `/time-tree` for the production life tree (rules in `tree.md`). Shared scene code remains in
+`apps/web/src/components/tree-demo/garden/`: model types, layout, TreeScene, Sky, Bubbles, particles,
+audio, styles and shared dialogs are still used by production. Do not delete this directory as demo-only.
+The illustration intentionally uses gradients and glow, marked `visual-ok: 插画`; controls use `@rosie/ui`.
+`data.ts` / `TimeTreeScene.tsx` (the older R3F tree) still back the separate
+`/dev-preview/time-tree-organic` experiment, whose back link goes to `/time-tree`.
 
 ### Data Flow
 

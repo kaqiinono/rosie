@@ -21,6 +21,7 @@ export function ExamMaterialImage({ src, alt, aspectRatio, message, displayWidth
         <Text size="2" align="center">{alt}</Text>
       </Flex>
     </StickerCard>}
+    {/* eslint-disable-next-line @next/next/no-img-element -- authenticated exam media URL */}
     {src && failed !== src && <img src={src} alt={alt} className="absolute inset-0 h-full w-full object-contain"
       hidden={!ready} onLoad={event => {
         const image = event.currentTarget

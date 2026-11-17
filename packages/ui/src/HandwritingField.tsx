@@ -55,7 +55,13 @@ export function HandwritingField({ label, value, onChange, readOnly = false, max
   const [drawing, setDrawing] = useState(false)
   const strokesRef = useRef<readonly HandwritingStroke[]>([])
   const pointer = useRef<number | null>(null)
-  const previouslyReadOnly = useRef(readOnly)
+  const [prevReadOnly, setPrevReadOnly] = useState(readOnly)
+  if (readOnly !== prevReadOnly) {
+    setPrevReadOnly(readOnly)
+    // Submission/deadline locks must never display an unconfirmed draft as the saved answer.
+    if (readOnly) { setDrawing(false); setOpen(false) }
+  }
+  useEffect(() => { if (readOnly) pointer.current = null }, [readOnly])
   const editingCallback = useRef(onEditingChange)
   useEffect(() => {
     editingCallback.current = onEditingChange
@@ -64,13 +70,6 @@ export function HandwritingField({ label, value, onChange, readOnly = false, max
     editingCallback.current?.(open && !readOnly)
     return () => editingCallback.current?.(false)
   }, [open, readOnly])
-  useEffect(() => {
-    if (readOnly && !previouslyReadOnly.current) {
-      // Submission/deadline locks must never display an unconfirmed draft as the saved answer.
-      pointer.current = null; setDrawing(false); setOpen(false)
-    }
-    previouslyReadOnly.current = readOnly
-  }, [readOnly])
   const writeStrokes = (next: readonly HandwritingStroke[]) => { strokesRef.current = next; setStrokes(next) }
   const changeOpen = (next: boolean) => {
     pointer.current = null; setDrawing(false)

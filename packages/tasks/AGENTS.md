@@ -17,6 +17,12 @@ are left to the user: verify new vs existing defaults, weekends off/on, preserve
 split tasks and an already-started weekend task.
 
 The production life tree at /time-tree generates owner-scoped occurrences from these templates.
+Homework cards expose a preview through the web-provided callback. Web reuses
+`HomeworkContentPanel` from the bubble detail panel, using the earliest unfinished occurrence
+snapshot or a read-only template/cursor preview when no occurrence exists.
+Life editing hides duration and practice-entry fields and saves a null practice binding.
+The legacy table's required 1–120 minute field is retained for storage compatibility only;
+life execution normalizes minutes to zero, and list/date totals exclude life durations.
 Life templates are daily persistent switches: while enabled, generate one current-day bubble,
 including weekends, irrespective of the template's academic recurrence window or duration.
 They never split, start a timer or bind practice. A pop atomically completes and grants ordinary
@@ -25,12 +31,20 @@ Unpopped life instances expire at Shanghai midnight without rewards or diary ent
 never enter wilted work or historical buds. Disable/delete removes their unfinished instances
 on sync. Completed records and their flowers/fruits/rewards remain. Academic rules are unchanged.
 The homework tab and /today/calendar share the execution records via /api/time-tree.
+Completing today's final non-life, non-skipped task grants one daily rainbow reward atomically
+with the garden commit. `time-tree/harvest.ts` settles today's academic flowers early and upgrades
+the last academic apple (guarantees one rainbow if below the fruit threshold). `dailyRainbowDay`
+and the triggering step's `dailyRainbow` flag prevent repeat rewards; settled flowers are never
+counted again at midnight. Partial flower sessions do not qualify as whole-task completion.
+Shared StepPanel and the life tree highlight the reward. Existing twelve-apple and blind-box
+cooldown rules remain. No migration or historical backfill; see `tree.md` for manual acceptance.
 Saving a homework template patches its list and awaits an owner-scoped refresh of the registered
 `time_tree` session store, including when its view is unmounted or initially loading. A failed
 derived refresh does not repeat the successful insert; its error remains on the tree store.
 Normal sync updates unfinished (including running and overdue) steps' name, subject, priority,
 instructions and changed practice binding. Completed/skipped/settled steps stay unchanged.
-Timing, estimated minutes, stages, placement, deadlines and occurrence notes stay intact.
+Timing, estimated minutes, stages, placement, deadlines and occurrence notes stay intact
+except for the untouched periodic-occurrence upgrade described below.
 Changing bindings releases obsolete legacy reservations without advancing them; completed split
 parts keep their original content while unfinished parts receive the new content.
 Both execution views expose 重新生成作业. The default inclusive range is today through today + 6;
@@ -46,7 +60,12 @@ for a failed request or generate performance timestamps from estimated minutes.
 
 ## 练习入口
 
-作业课程选择旁提供「自动推进」（默认开）、按日/按周，以及按周的推进星期（默认周一）。
+作业课程选择旁提供「自动推进」（默认开）、按日/按周/随作业推进，以及按周的推进星期（默认周一）。
+随作业推进保存 `progression.mode = 'homework'` 与 `progression.schedule` 排期快照，日期和星期跟随作业，无单独的推进星期。
+`homeworkSchedule.ts` 的周期窗口同时用于 web 生成和课程定位：每个 occurrence 使用下一组，
+按 occurrence 中的周期起点/序号定位，避免分次收花、拆分、补做、改期或重新生成重复推进。
+保存当日所在有效窗口作为首组；若当日不在排期中，下一有效窗口作为首组。改排期生成新 binding key 并重设锚点。
+该模式的数学题同样保留份次快照，不因其他作业完成而重排后续组。
 「推进数量」与推进方式同一行，默认 1，须为正整数；每份作业包含该数量的连续项，每周期切换下一组（数量 3：1–3、4–6），末组保留剩余项。快照 `items` 保存整组内容及逐项链接，列表和详情完整展示；旧单项快照继续读取 `row`/`href`，不改写。
 旧配置缺少 `progression.amount` 时按 1 处理；修改数量同样生成新版本并重设锚点。
 保存课程设置时将 `progression` 写入既有 `practice_binding` JSON，无需新增数据库列。
@@ -84,7 +103,10 @@ entry management loads the saved list and does not read the setup receipt. Click
 creates the current presets when no receipt exists; later clicks update same-subject, same-name
 preset rows and insert presets that are missing. Homework bindings are not auto-synchronized.
 
-学科作业的周期为每周、每两周或每三周，且未设置或未开启自动推进时，新份次自动使用分次收花。
+每周、每两周或每三周的学科作业均使用分次收花，自动推进独立负责选择新份次的课程。
+新份次从自己的周期窗口起点出现。普通同步将尚未开始、未完成、未编辑题目或手动改期的
+当前/未来旧份次补为分次收花；同份旧拆分步骤合并，保留总计划时长、已有课程快照和各步备注。
+当前周期的旧排期提前到今天，未来周期使用窗口起点；已有收花、计时、奖励或历史记录的份次保留。
 花位按预计耗时每 10 分钟一朵向上取整。题目进度从本份练习中的具体题目 ID 和答对记录派生；
 有具体题目时显示完成数/总数，无具体题目时隐藏。
 每次收工保留相同 occurrence、练习快照和独立的每日记录；完成整份才推进练习游标。

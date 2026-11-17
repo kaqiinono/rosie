@@ -704,8 +704,8 @@ export class GardenFx {
             c.fill()
           }
           c.globalAlpha = fade
-          const launch = p.morphed ? 0 : Math.sin(Math.min(1, p.t / 0.16) * Math.PI)
-          const radius = (p.morphed ? 14 : 18) * (1 - p.t * 0.16) * (p.morphed ? 1 : 1 + launch * 0.35)
+          const launch = p.morphed ? 0 : Math.sin(Math.min(1, p.t / 0.22) * Math.PI)
+          const radius = (p.morphed ? 14 : 18) * (1 - p.t * 0.16) * (p.morphed ? 1 : 1 + launch * 0.65)
           if (p.morphed) this.paintGem(p.x, p.y, radius, p.rot, p.color, p.deep)
           else this.paintApple(p.x, p.y, radius, p.rot, p.color, p.deep, p.rainbow, launch)
           break
