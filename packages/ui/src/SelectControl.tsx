@@ -117,10 +117,10 @@ export default function SelectControl({
             }
             if (event.key === 'Tab') setOpen(false)
           }}
-          className={`shadow-sticker-sm inline-flex min-h-11 w-full cursor-pointer items-center gap-2 rounded-full border-2 py-2 pr-9 pl-4 text-left text-sm font-extrabold whitespace-nowrap transition outline-none focus-visible:ring-2 disabled:cursor-not-allowed ${
+          className={`inline-flex min-h-11 w-full cursor-pointer items-center gap-2 py-2 pl-4 text-left text-sm font-extrabold whitespace-nowrap transition outline-none focus-visible:ring-2 disabled:cursor-not-allowed ${
             dark
-              ? 'border-violet-300/25 bg-slate-950/70 text-violet-100 hover:border-violet-300/45 hover:bg-violet-950/40 focus-visible:border-violet-300/70 focus-visible:ring-violet-400/25 disabled:bg-slate-900 disabled:text-slate-500'
-              : 'border-amber-200 bg-white text-amber-950 hover:border-amber-300 hover:bg-amber-50/50 focus-visible:border-amber-400 focus-visible:ring-amber-300 focus-visible:ring-offset-1 disabled:bg-slate-100 disabled:text-slate-400'
+              ? 'rounded-xl border border-[#2e2a4f] bg-[#1e1b38] pr-10 text-violet-100 hover:border-violet-300/45 hover:bg-[#272344] focus-visible:border-violet-300/70 focus-visible:ring-violet-400/60 disabled:bg-slate-900 disabled:text-slate-500'
+              : 'shadow-sticker-sm rounded-full border-2 border-amber-200 bg-white pr-9 text-amber-950 hover:border-amber-300 hover:bg-amber-50/50 focus-visible:border-amber-400 focus-visible:ring-amber-300 focus-visible:ring-offset-1 disabled:bg-slate-100 disabled:text-slate-400'
           } ${selectClassName}`}
         >
           {selectedOption?.swatchColor && (
@@ -136,12 +136,12 @@ export default function SelectControl({
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.8"
+          strokeWidth={dark ? 2.4 : 1.8}
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
-          className={`pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transition-transform ${
-            dark ? 'text-violet-300' : 'text-amber-700'
+          className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 transition-transform motion-reduce:transition-none ${
+            dark ? 'right-4 text-violet-200' : 'right-3 text-amber-700'
           } ${open ? 'rotate-180' : ''}`}
         >
           <path d="m6 8 4 4 4-4" />
@@ -152,10 +152,9 @@ export default function SelectControl({
             id={listboxId}
             role="listbox"
             aria-label={ariaLabel}
-            style={dark ? { backgroundColor: '#0f172a' } : undefined}
             className={`absolute top-[calc(100%+0.5rem)] right-0 left-0 z-50 max-h-72 min-w-max overflow-y-auto rounded-2xl border p-1.5 ${
               dark
-                ? 'shadow-sticker-lg isolate border-violet-300/30 bg-slate-950'
+                ? 'border-[#2e2a4f] bg-[#1e1b38]'
                 : 'shadow-sticker-lg border-amber-200 bg-white'
             }`}
           >

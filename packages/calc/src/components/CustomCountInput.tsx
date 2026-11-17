@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ChangeEvent } from 'react'
+import { TextField } from '@rosie/ui/themes'
 
 /** Shared preset choices for both the total and per-type question counts. */
 export const COUNT_OPTIONS = [10, 20, 30, 50, 100]
@@ -25,31 +26,38 @@ export default function CustomCountInput({ count, onChange, max, appearance = 'd
   const [draft, setDraft] = useState<string | null>(null)
   const value = draft ?? (isCustom ? String(count) : '')
 
-  const sizeCls =
-    size === 'md' ? 'w-20 rounded-xl px-3 py-2 text-[13px]' : 'w-14 rounded-md px-2 py-0.5 text-[11px]'
+  const inputProps = {
+    type: 'number' as const,
+    inputMode: 'numeric' as const,
+    min: 1,
+    max,
+    value,
+    placeholder: '自定义',
+    'aria-label': '自定义题量',
+    onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      const raw = event.target.value
+      setDraft(raw)
+      const number = Math.floor(Number(raw))
+      if (Number.isFinite(number) && number > 0) {
+        const next = max == null ? number : Math.min(max, number)
+        if (next !== number) setDraft(String(next))
+        onChange(next)
+      }
+    },
+    onBlur: () => setDraft(null),
+  }
+
+  if (appearance === 'light') {
+    return <TextField.Root {...inputProps} size={size === 'md' ? '3' : '2'} color="violet" variant="soft"
+      className="min-h-11 min-w-0 text-center text-sm font-semibold tabular-nums [--text-field-padding:0px] [&_input::placeholder]:opacity-100" />
+  }
+
+  const sizeCls = size === 'md' ? 'w-20 rounded-xl px-3 py-2 text-[13px]' : 'w-14 rounded-md px-2 py-0.5 text-[11px]'
 
   return (
-    <input
-      type="number"
-      inputMode="numeric"
-      min={1}
-      max={max}
-      value={value}
-      placeholder="自定义"
-      aria-label="自定义题量"
-      onChange={(e) => {
-        const raw = e.target.value
-        setDraft(raw)
-        const v = Math.floor(Number(raw))
-        if (Number.isFinite(v) && v > 0) {
-          const next = max == null ? v : Math.min(max, v)
-          if (next !== v) setDraft(String(next))
-          onChange(next)
-        }
-      }}
-      onBlur={() => setDraft(null)}
-      className={`${appearance === 'light' ? 'border-2 border-violet-300 bg-white text-violet-900 placeholder:text-violet-800 focus-visible:ring-2 focus-visible:ring-violet-700' : ''} font-extrabold tabular-nums outline-none transition-all ${sizeCls}`}
-      style={appearance === 'light' ? undefined : {
+    <input {...inputProps}
+      className={`font-extrabold tabular-nums outline-none transition-all ${sizeCls}`}
+      style={{
         background: isCustom ? 'rgba(139,92,246,0.22)' : 'rgba(255,255,255,0.04)',
         border: `1.5px solid ${isCustom ? 'rgba(139,92,246,0.6)' : 'rgba(255,255,255,0.1)'}`,
         color: isCustom ? '#c4b5fd' : 'rgba(196,181,253,0.6)',

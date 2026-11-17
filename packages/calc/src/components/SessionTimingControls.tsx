@@ -38,21 +38,22 @@ export default function SessionTimingControls({
   return (
     <Flex direction="column" gap="2">
       <Flex justify="between" align="center" gap="2" wrap="wrap">
-        <Heading as="h3" size="3">本次计时模式</Heading>
+        <Heading as="h3" size="4" weight="bold">本次计时模式</Heading>
         <Text size="2" weight="bold" color="amber" highContrast>{starBonusLine(timingMode, bonusSec)}</Text>
       </Flex>
-      <Grid columns={{ initial: '1', xs: '3' }} gap="2">
-        {(Object.keys(MODE_META) as CalcTimingMode[]).map(mode => (
-          <Button key={mode} type="button" size="3" color="violet" radius="large"
-            variant={timingMode === mode ? 'solid' : 'soft'} aria-pressed={timingMode === mode}
-            style={{ height: 'auto', minHeight: 48, padding: 8, whiteSpace: 'normal' }}
+      <Grid gap="2" role="group" aria-label="本次计时模式" className="grid-cols-1 @[26rem]:grid-cols-3">
+        {(Object.keys(MODE_META) as CalcTimingMode[]).map(mode => {
+          const selected = timingMode === mode
+          return <Button key={mode} type="button" size="3" color={selected ? 'violet' : 'gray'} radius="large"
+            variant={selected ? 'solid' : 'soft'} aria-pressed={selected} data-soft-outline="none"
+            className="h-auto min-h-12 min-w-0 whitespace-normal px-2 py-2 text-center"
             onClick={() => onChangeMode(mode)}>
-            <Flex direction="column" align="center">
-              <Text weight="bold">{MODE_META[mode].label}</Text>
-              <Text size="2">{MODE_META[mode].description}</Text>
+            <Flex direction="column" gap="1" align="center">
+              <Text size="3" className="font-semibold">{MODE_META[mode].label}</Text>
+              <Text size="1" weight="regular">{MODE_META[mode].description}</Text>
             </Flex>
           </Button>
-        ))}
+        })}
       </Grid>
       {timingMode === 'bonus' && (
         <Flex gap="2" wrap="wrap" align="center">

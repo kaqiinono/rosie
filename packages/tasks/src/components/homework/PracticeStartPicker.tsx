@@ -21,6 +21,7 @@ type Props = { value: PracticeBinding; onChange: (value: PracticeBinding) => voi
 
 export default function PracticeStartPicker({ value, onChange, purpose = 'start' }: Props) {
   const progression = value.progression ?? defaultPracticeProgression(localDate())
+  const amountLabel = progression.enabled ? '推进数量' : '显示数量'
   const rows = useMemo(() => value.rows.map((row) => ({
     row,
     path: [...practiceSelectionPath(row).map((node) => ({ ...node, id: `group:${node.level}:${node.id}` })),
@@ -66,25 +67,25 @@ export default function PracticeStartPicker({ value, onChange, purpose = 'start'
     <Text size="2" weight="bold">{purpose === 'content' ? '选择具体内容' : '开始位置'}</Text>
     {fallback && <TextField.Root aria-label={purpose === 'content' ? '搜索内容' : '搜索开始项'} placeholder="搜索内容名称" value={query} onChange={(e) => setQuery(e.target.value)} />}
     {controls}
-    {purpose === 'start' && progression.enabled && (
+    {purpose === 'start' && (
       <Flex direction="column" gap="3">
         <Flex gap="3" align="end">
-        <Flex direction="column" gap="1" flexGrow="1" minWidth="0">
-          <Text size="2">推进方式</Text>
-          <FormSelect ariaLabel="课程推进方式" value={progression.mode}
-            options={[{ value: 'daily', label: '按日推进' }, { value: 'weekly', label: '按周推进' }, { value: 'homework', label: '随作业推进' }]}
-            onValueChange={(mode) => onChange({ ...value, progression: { ...progression, mode: mode as PracticeProgression['mode'] } })} />
+          {progression.enabled && <Flex direction="column" gap="1" flexGrow="1" minWidth="0">
+            <Text size="2">推进方式</Text>
+            <FormSelect ariaLabel="课程推进方式" value={progression.mode}
+              options={[{ value: 'daily', label: '按日推进' }, { value: 'weekly', label: '按周推进' }, { value: 'homework', label: '随作业推进' }]}
+              onValueChange={(mode) => onChange({ ...value, progression: { ...progression, mode: mode as PracticeProgression['mode'] } })} />
+          </Flex>}
+          <Flex direction="column" gap="1" width="6rem" flexShrink="0">
+            <Text as="label" size="2" htmlFor="practice-advance-amount">{amountLabel}</Text>
+            <TextField.Root id="practice-advance-amount" type="number" min="1" step="1"
+              value={progression.amount === 0 ? '' : progression.amount ?? 1}
+              onChange={(event) => onChange({ ...value, progression: {
+                ...progression, amount: event.target.value === '' ? 0 : Number(event.target.value),
+              } })} />
+          </Flex>
         </Flex>
-        <Flex direction="column" gap="1" width="6rem" flexShrink="0">
-          <Text as="label" size="2" htmlFor="practice-advance-amount">推进数量</Text>
-          <TextField.Root id="practice-advance-amount" aria-label="推进数量" type="number" min="1" step="1"
-            value={progression.amount === 0 ? '' : progression.amount ?? 1}
-            onChange={(event) => onChange({ ...value, progression: {
-              ...progression, amount: event.target.value === '' ? 0 : Number(event.target.value),
-            } })} />
-        </Flex>
-        </Flex>
-        {progression.mode === 'weekly' && <Flex direction="column" gap="1" flexGrow="1" minWidth="0">
+        {progression.enabled && progression.mode === 'weekly' && <Flex direction="column" gap="1" flexGrow="1" minWidth="0">
           <Text size="2">推进星期</Text>
           <FormSelect ariaLabel="推进星期" value={String(progression.weekday)}
             options={HOMEWORK_WEEKDAY_ORDER.map((day) => ({ value: String(day), label: HOMEWORK_WEEKDAYS[day] }))}

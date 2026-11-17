@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { useAuth, type CalcTimingMode } from '@rosie/core'
-import { SelectControl } from '@rosie/ui'
+import { useAuth, type CalcTimingMode, type MixedOp } from '@rosie/core'
+import { SelectControl, Target } from '@rosie/ui'
 import { useCalcSettings, useCalcStrategies } from '../hooks/useCalcSettings'
 import { useCalcPracticeStats } from '../hooks/useCalcPracticeStats'
 import { useCalcWallet } from '@rosie/rewards'
@@ -41,6 +41,29 @@ const TIER_CHIP: Record<BlockTier, { label: string; className: string }> = {
   fluent: { label: '熟练', className: 'bg-cyan-400/15 text-cyan-200' },
   stable: { label: '稳固', className: 'bg-emerald-400/15 text-emerald-200' },
   entry: { label: '起步', className: 'bg-slate-400/15 text-slate-300' },
+}
+
+function compactMixedLabel(operation: MixedOp, name: string, label: string): string {
+  const labels = operation.blockIds.flatMap(id => {
+    const block = blockById(id)
+    return block ? [block.label] : []
+  })
+  if (label !== `${name} · ${labels.join('+')}`) return label
+
+  const uniqueLabels = [...new Set(labels)]
+  if (operation.skeleton === 'as') {
+    const ranges = uniqueLabels.flatMap(item => {
+      const carry = /^(\d+) 以内进位$/.exec(item)
+      return carry ? [carry[1]] : []
+    })
+    if (ranges.length && ranges.length * 2 === uniqueLabels.length &&
+        ranges.every(range => uniqueLabels.includes(`${range} 以内退位`))) {
+      return `${name} · ${ranges.join('/')} 以内进退位`
+    }
+  }
+
+  const shortLabel = `${name} · ${uniqueLabels.join('+')}`
+  return shortLabel.length <= 28 ? shortLabel : `${name} · ${labels.length} 种题型`
 }
 
 export default function CalcHomePage() {
@@ -98,25 +121,29 @@ export default function CalcHomePage() {
   const blockCount = settings.selectedBlocks.length
   const enabledMixed = settings.mixedOps.filter((m) => m.enabled)
   const mixedCount = enabledMixed.length
-  const selectedBlockLabels = settings.selectedBlocks.map((b) => {
-    const block = blockById(b.id)
-    if (!block) return b.id
-    const group = GROUP_LABEL[block.group]
-    // Labels like「10 以内」repeat across ops — prefix with 加/减/…
-    return group && !block.label.includes(group) ? `${group}·${block.label}` : block.label
-  })
-  const selectedMixedLabels = enabledMixed.map((m) => m.label ?? skeletonMeta(m.skeleton).label)
-  const tierItems: TierTargetItem[] = [
-    ...settings.selectedBlocks.map((b, i) => ({
-      label: selectedBlockLabels[i],
-      targetId: b.id,
-      kind: 'block' as const,
-    })),
-    ...enabledMixed.map((m, i) => ({
-      label: selectedMixedLabels[i],
-      targetId: m.skeleton,
-      kind: 'mixed' as const,
-    })),
+  const tierItems: (TierTargetItem & { key: string; shortLabel?: string })[] = [
+    ...settings.selectedBlocks.map(({ id }) => {
+      const block = blockById(id)
+      const label = block?.label ?? id
+      const group = block && GROUP_LABEL[block.group]
+      return {
+        key: `block:${id}`,
+        label: group && !label.includes(group) ? `${group}·${label}` : label,
+        targetId: id,
+        kind: 'block' as const,
+      }
+    }),
+    ...enabledMixed.map(operation => {
+      const name = skeletonMeta(operation.skeleton).label
+      const label = operation.label ?? name
+      return {
+        key: `mixed:${operation.id}`,
+        label,
+        shortLabel: compactMixedLabel(operation, name, label),
+        targetId: operation.skeleton,
+        kind: 'mixed' as const,
+      }
+    }),
   ]
   const totalQuestions = calcPlannedQuestionCount(settings)
   const currentSessionCount = sessionCount ?? totalQuestions
@@ -171,6 +198,12 @@ export default function CalcHomePage() {
   }
 
   const todayAccuracy = todayProblems > 0 ? Math.round((todayCorrect / todayProblems) * 100) : 0
+  const stats = [
+    { label: '今日', value: todayProblems, unit: `/${todayTarget}`, hint: `正确率 ${todayAccuracy}%`, progress: todayProgressPct },
+    { label: '本周', value: weekProblems, unit: '题' },
+    { label: '本月', value: monthProblems, unit: '题', hint: `今年 ${yearProblems} 题` },
+    { label: '累计', value: totalProblems, unit: '题', hint: `练习 ${practiceDays} 天` },
+  ]
 
   return (
     <>
@@ -179,7 +212,7 @@ export default function CalcHomePage() {
       <main className="relative mx-auto max-w-[640px] space-y-5 px-4 pt-5 pb-12">
         <Link
           href="/calc/report"
-          className="block rounded-2xl border border-cyan-300/15 bg-cyan-400/[0.06] p-4"
+          className="block rounded-2xl border border-cyan-300/15 bg-cyan-400/[0.06] p-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
         >
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -188,7 +221,10 @@ export default function CalcHomePage() {
                 核心算式已覆盖 {coverageDone}/{coverageTotal}
               </div>
             </div>
-            <div className="text-xl font-black text-cyan-300">{coveragePct}%</div>
+            <div className="flex shrink-0 flex-col items-end gap-0.5">
+              <div className="text-xl font-black text-cyan-300">{coveragePct}%</div>
+              <span className="text-xs font-semibold text-cyan-200">查看报告 <span aria-hidden="true">→</span></span>
+            </div>
           </div>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
             <div className="h-full rounded-full bg-cyan-400" style={{ width: `${coveragePct}%` }} />
@@ -228,16 +264,8 @@ export default function CalcHomePage() {
             </div>
           )}
         </Link>
-        {/* Level + Stats card */}
-        <section
-          className="rounded-2xl p-5"
-          style={{
-            background: 'rgba(139,92,246,0.08)',
-            border: '1px solid rgba(139,92,246,0.22)',
-            boxShadow: '0 3px 0 rgba(139,92,246,.3), inset 0 1px 0 rgba(255,255,255,0.06)',
-          }}
-        >
-          <div className="mb-3 flex items-start justify-between gap-3">
+        <section aria-label="本次口算策略" className="rounded-2xl border border-violet-500/[0.22] bg-violet-500/[0.08] px-5 py-3">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               {strategies.length > 0 ? (
                 <SelectControl
@@ -270,188 +298,12 @@ export default function CalcHomePage() {
               <button
                 type="button"
                 onClick={() => setTierSheetOpen(true)}
-                className="inline-flex min-h-11 shrink-0 items-center rounded-xl px-3 text-[11px] font-extrabold transition-all active:scale-95"
-                style={{
-                  background: 'rgba(139,92,246,0.14)',
-                  border: '1px solid rgba(139,92,246,0.35)',
-                  color: '#c4b5fd',
-                }}
+                className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-[#2e2a4f] bg-[#1e1b38] px-[18px] text-xs font-bold whitespace-nowrap text-violet-200 transition-colors hover:border-violet-300/45 hover:bg-[#272344] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-300 motion-reduce:transition-none"
               >
-                🎯 档位标准
+                <Target aria-hidden="true" className="size-4 shrink-0 text-violet-300" />
+                档位标准
               </button>
             )}
-          </div>
-
-          {(selectedBlockLabels.length > 0 || selectedMixedLabels.length > 0) && (
-            <div className="mb-4 flex flex-wrap gap-1.5">
-              {selectedBlockLabels.map((label, i) => (
-                <span
-                  key={`b-${settings.selectedBlocks[i].id}`}
-                  className="rounded-md px-2 py-1 text-[10px] leading-none font-extrabold"
-                  style={{
-                    background: 'rgba(139,92,246,0.16)',
-                    border: '1px solid rgba(139,92,246,0.35)',
-                    color: '#c4b5fd',
-                  }}
-                >
-                  {label}
-                </span>
-              ))}
-              {selectedMixedLabels.map((label, i) => (
-                <span
-                  key={`m-${enabledMixed[i].id}`}
-                  className="rounded-md px-2 py-1 text-[10px] leading-none font-extrabold"
-                  style={{
-                    background: 'rgba(236,72,153,0.12)',
-                    border: '1px solid rgba(236,72,153,0.3)',
-                    color: '#f0abfc',
-                  }}
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-3">
-            <div
-              className="rounded-xl px-3 py-3"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
-            >
-              <div
-                className="mb-1 text-[10px] font-bold tracking-wider uppercase"
-                style={{ color: 'rgba(196,181,253,0.45)' }}
-              >
-                今日
-              </div>
-              <div
-                className="font-fredoka text-[22px] leading-none font-black"
-                style={{ color: '#f5f3ff' }}
-              >
-                {todayProblems}
-                <span
-                  className="ml-0.5 text-[12px] font-semibold"
-                  style={{ color: 'rgba(245,243,255,0.35)' }}
-                >
-                  /{todayTarget}
-                </span>
-              </div>
-              <div
-                className="mt-1 mb-1.5 text-[10px] font-medium"
-                style={{ color: 'rgba(196,181,253,0.5)' }}
-              >
-                正确率 {todayAccuracy}%
-              </div>
-              <div
-                className="h-1 overflow-hidden rounded-full"
-                style={{ background: 'rgba(255,255,255,0.08)' }}
-              >
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{
-                    width: `${todayProgressPct}%`,
-                    background: '#7c3aed',
-                    boxShadow: '0 3px 0 rgba(139,92,246,0.6)',
-                  }}
-                />
-              </div>
-            </div>
-
-            <div
-              className="rounded-xl px-3 py-3"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
-            >
-              <div
-                className="mb-1 text-[10px] font-bold tracking-wider uppercase"
-                style={{ color: 'rgba(196,181,253,0.45)' }}
-              >
-                本周
-              </div>
-              <div
-                className="font-fredoka text-[22px] leading-none font-black"
-                style={{ color: '#f5f3ff' }}
-              >
-                {weekProblems}
-                <span
-                  className="ml-0.5 text-[13px] font-semibold"
-                  style={{ color: 'rgba(245,243,255,0.35)' }}
-                >
-                  题
-                </span>
-              </div>
-            </div>
-
-            <div
-              className="rounded-xl px-3 py-3"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
-            >
-              <div
-                className="mb-1 text-[10px] font-bold tracking-wider uppercase"
-                style={{ color: 'rgba(196,181,253,0.45)' }}
-              >
-                本月
-              </div>
-              <div
-                className="font-fredoka text-[22px] leading-none font-black"
-                style={{ color: '#f5f3ff' }}
-              >
-                {monthProblems}
-                <span
-                  className="ml-0.5 text-[12px] font-semibold"
-                  style={{ color: 'rgba(245,243,255,0.35)' }}
-                >
-                  /{yearProblems}
-                </span>
-              </div>
-              <div
-                className="mt-1 text-[10px] font-medium"
-                style={{ color: 'rgba(196,181,253,0.5)' }}
-              >
-                月 / 年
-              </div>
-            </div>
-
-            <div
-              className="rounded-xl px-3 py-3"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
-            >
-              <div
-                className="mb-1 text-[10px] font-bold tracking-wider uppercase"
-                style={{ color: 'rgba(196,181,253,0.45)' }}
-              >
-                累计
-              </div>
-              <div
-                className="font-fredoka text-[22px] leading-none font-black"
-                style={{ color: '#f5f3ff' }}
-              >
-                {totalProblems}
-                <span
-                  className="ml-0.5 text-[13px] font-semibold"
-                  style={{ color: 'rgba(245,243,255,0.35)' }}
-                >
-                  题
-                </span>
-              </div>
-              <div
-                className="mt-1 text-[10px] font-medium"
-                style={{ color: 'rgba(196,181,253,0.5)' }}
-              >
-                练习 {practiceDays} 天
-              </div>
-            </div>
           </div>
         </section>
 
@@ -459,6 +311,48 @@ export default function CalcHomePage() {
         <CalcStartPanel totalQuestions={totalQuestions} currentSessionCount={currentSessionCount} expandedSessionCount={expandedSessionCount}
           currentTimingMode={currentTimingMode} currentBonusSec={currentBonusSec} setSessionCount={setSessionCount}
           setSessionTimingMode={setSessionTimingMode} setSessionBonusSec={setSessionBonusSec} handleStart={handleStart} />
+
+        <section
+          aria-label="题型明细和练习统计"
+          className="rounded-2xl p-5"
+          style={{
+            background: 'rgba(139,92,246,0.08)',
+            border: '1px solid rgba(139,92,246,0.22)',
+            boxShadow: '0 3px 0 rgba(139,92,246,.3)',
+          }}
+        >
+          {tierItems.length > 0 && (
+            <ul aria-label="当前策略题型" className="mb-5 flex flex-wrap gap-1.5">
+              {tierItems.map(({ key, label, shortLabel }) => (
+                <li key={key} title={label} className="max-w-[min(100%,20rem)] truncate rounded-md bg-[#1e1b38] px-2 py-1 text-xs text-violet-200/75">
+                  {shortLabel ?? label}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <dl className="grid auto-rows-fr grid-cols-2 gap-3">
+            {stats.map(({ label, value, unit, hint, progress }) => (
+              <div key={label} className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.04] p-3">
+                <dt className="text-xs font-bold text-violet-200/75">{label}</dt>
+                <dd className="mt-1">
+                  <div className="flex flex-wrap items-baseline gap-x-1 font-fredoka text-[22px] leading-none font-black tabular-nums text-violet-50">
+                    <span>{value}</span>
+                    <span className="text-xs font-semibold text-violet-200/65">{unit}</span>
+                  </div>
+                  {hint && <div className="mt-1.5 text-xs text-violet-200/70">{hint}</div>}
+                  {progress !== undefined && (
+                    <div role="progressbar" aria-label="今日口算目标完成率" aria-valuenow={progress}
+                      className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/[0.14]">
+                      <div className="h-full rounded-full bg-violet-600 transition-[width] duration-700 motion-reduce:transition-none"
+                        style={{ width: `${progress}%` }} />
+                    </div>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
 
         {/* Secondary entries */}
         <div className="grid grid-cols-2 gap-3">
@@ -475,13 +369,13 @@ export default function CalcHomePage() {
               <div className="text-[12px] font-extrabold" style={{ color: '#fbbf24' }}>
                 错题本
               </div>
-              <div className="truncate text-[11px]" style={{ color: 'rgba(251,191,36,0.55)' }}>
+              <div className="truncate text-xs text-amber-200/80">
                 {unresolvedMistakes.length > 0
                   ? `${unresolvedMistakes.length} 题待掌握`
                   : '暂无错题'}
               </div>
             </div>
-            <span style={{ color: 'rgba(251,191,36,0.5)' }}>→</span>
+            <span aria-hidden="true" className="text-amber-200/75">→</span>
           </Link>
           <Link
             href="/vouchers"
@@ -496,33 +390,13 @@ export default function CalcHomePage() {
               <div className="text-[12px] font-extrabold" style={{ color: '#f9a8d4' }}>
                 我的奖券
               </div>
-              <div className="truncate text-[11px]" style={{ color: 'rgba(249,168,212,0.55)' }}>
+              <div className="truncate text-xs text-pink-200/80">
                 去兑换
               </div>
             </div>
-            <span style={{ color: 'rgba(249,168,212,0.5)' }}>→</span>
+            <span aria-hidden="true" className="text-pink-200/75">→</span>
           </Link>
         </div>
-
-        <Link
-          href="/calc/report"
-          className="flex items-center gap-2.5 rounded-2xl px-4 py-3 no-underline transition-all"
-          style={{
-            background: 'rgba(125,211,252,0.06)',
-            border: '1px solid rgba(125,211,252,0.18)',
-          }}
-        >
-          <span className="text-xl">📊</span>
-          <div className="min-w-0 flex-1">
-            <div className="text-[12px] font-extrabold" style={{ color: '#7dd3fc' }}>
-              练习报告
-            </div>
-            <div className="truncate text-[11px]" style={{ color: 'rgba(125,211,252,0.55)' }}>
-              查看关卡进度 · 最弱题 · 关键事件
-            </div>
-          </div>
-          <span style={{ color: 'rgba(125,211,252,0.5)' }}>→</span>
-        </Link>
 
         <Link
           href="/calc/faq"
@@ -537,11 +411,11 @@ export default function CalcHomePage() {
             <div className="text-[12px] font-extrabold" style={{ color: '#c4b5fd' }}>
               口算说明
             </div>
-            <div className="truncate text-[11px]" style={{ color: 'rgba(196,181,253,0.55)' }}>
+            <div className="truncate text-xs text-violet-200/80">
               题目怎么来 · 快慢怎么算 · 错题与掌握
             </div>
           </div>
-          <span style={{ color: 'rgba(196,181,253,0.5)' }}>→</span>
+          <span aria-hidden="true" className="text-violet-200/75">→</span>
         </Link>
 
         {/* Recent sessions — card toggle; sessions load on first expand only */}
@@ -565,11 +439,11 @@ export default function CalcHomePage() {
               <div className="text-[12px] font-extrabold" style={{ color: '#c4b5fd' }}>
                 最近练习
               </div>
-              <div className="truncate text-[11px]" style={{ color: 'rgba(196,181,253,0.55)' }}>
+              <div className="truncate text-xs text-violet-200/80">
                 {recentOpen ? '点击收起' : '点击查看近期记录'}
               </div>
             </div>
-            <span style={{ color: 'rgba(196,181,253,0.5)' }} aria-hidden>
+            <span className="text-violet-200/75" aria-hidden>
               {recentOpen ? '▾' : '→'}
             </span>
           </button>
@@ -579,7 +453,7 @@ export default function CalcHomePage() {
               style={{ borderTop: '1px solid rgba(167,139,250,0.12)' }}
             >
               {sessionsRequested && !wallet.sessionsReady && !wallet.sessionsFailed && (
-                <div className="px-1 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                <div className="px-1 py-2 text-xs text-violet-200/80">
                   加载中…
                 </div>
               )}
@@ -589,7 +463,7 @@ export default function CalcHomePage() {
                 </div>
               )}
               {wallet.sessionsReady && wallet.sessions.length === 0 && (
-                <div className="px-1 py-2 text-[12px]" style={{ color: 'rgba(196,181,253,0.45)' }}>
+                <div className="px-1 py-2 text-xs text-violet-200/80">
                   暂无练习记录
                 </div>
               )}
@@ -609,7 +483,7 @@ export default function CalcHomePage() {
                       {s.date.slice(5).replace('-', '/')}
                     </span>
                     <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
-                    <span style={{ color: 'rgba(245,243,255,0.45)' }}>
+                    <span className="text-violet-100/80">
                       {s.count} 题 {s.correctCount + s.retryCount} 对
                     </span>
                     <span

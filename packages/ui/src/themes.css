@@ -68,8 +68,8 @@
   color: color-mix(in srgb, var(--orange-11) 70%, var(--amber-12));
 }
 
-/* 次要按钮：同色系的 2px 柔和描边，像一张小贴纸。 */
-.rt-BaseButton:where(.rt-variant-soft):not([data-disabled]) {
+/* 次要按钮默认带描边，填充式选项可用 data-soft-outline="none" 省去描边。 */
+.rt-BaseButton:where(.rt-variant-soft):not([data-disabled]):where(:not([data-soft-outline='none'])) {
   box-shadow: inset 0 0 0 2px var(--accent-a4);
 }
 
