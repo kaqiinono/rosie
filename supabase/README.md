@@ -53,6 +53,13 @@ directory. Do not also run it through the retired custom runner.
 The legacy files and snapshot are retained for audit and recovery. Existing
 references to old file paths should point to `legacy-migrations/`.
 
+## Vocabulary assessment
+
+`20261118103008_vocabulary_assessments.sql` was applied to the hosted project on
+2026-11-18. The version matches the Supabase migration API record. Both tables
+have RLS enabled and are accessible through the service role. Reviewed banks
+are published separately with the [assessment workflow](../packages/english/SHARED-VOCABULARY.md#词汇量测评).
+
 ## Exam migrations
 
 The seven exam migrations were applied on 2026-11-13 after explicit user authorization,
@@ -141,3 +148,18 @@ Read-back confirmed both versions and that the updated `commit_time_tree` retain
 `20261117210030_time_tree_tomato_prices.sql` is also applied. The draw reads the active
 blind-box price from the garden rules in the same transaction. Read-back confirmed the
 price lookup, spending record and service-role-only execution.
+
+## Shared English vocabulary
+
+Applied via the connected migration API on 2026-11-18 (Asia/Shanghai):
+
+- `20261118045218_shared_english_vocabulary.sql`
+- `20261118045414_shared_english_vocabulary_progress.sql`
+
+Read-back confirmed the original 6,032 position IDs, 6,029 active positions,
+4,013 canonical headwords, and all 486 legacy mastery rows. Replay examined
+841 adaptive word logs and produced 477 answer receipts and 119 spelling
+progress rows. The current Web release retains its existing RLS-governed
+catalog insert/update grants until the Web cutover. The FCE import and
+application build/runtime acceptance remain separate. See
+[the migration and import guide](../packages/english/SHARED-VOCABULARY.md).

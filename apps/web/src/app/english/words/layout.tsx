@@ -15,6 +15,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   const {
     vocab,
     filteredWords,
+    practiceOverride,
+    setPracticeOverride,
     practiceTypes,
     recordBatch,
     previewCards,
@@ -26,7 +28,8 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setIsImmersive(false)
     setPreviewCards(false)
-  }, [pathname, setIsImmersive, setPreviewCards])
+    setPracticeOverride(null)
+  }, [pathname, setIsImmersive, setPreviewCards, setPracticeOverride])
 
   const isPracticePage = pathname.includes('/practice')
   const isPrintPage = pathname.endsWith('/print')
@@ -56,7 +59,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
         {children}
         <ImmersiveMode
           open={isImmersive && !suppressGlobalImmersive}
-          words={filteredWords}
+          words={practiceOverride ?? filteredWords}
           allWords={vocab}
           mode={immersiveMode}
           practiceTypes={practiceTypes}
@@ -66,6 +69,7 @@ function LayoutInner({ children }: { children: React.ReactNode }) {
               setPreviewCards(false)
             } else {
               setIsImmersive(false)
+              setPracticeOverride(null)
             }
           }}
           onQuizComplete={recordBatch}

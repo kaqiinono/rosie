@@ -114,7 +114,7 @@ function Form({ api, initial }: { api: TreeController; initial: Rules }) {
 export default function TreeSettings() {
   const api = useTimeTree()
   return (
-    <PageShell icon="🌳" title="生命树设置" backHref="/setting">
+    <PageShell icon="🌳" title="生命树设置" backHref="/setting" showAccount>
       {api.tree ? (
         <Form key={api.user?.id} api={api} initial={api.tree.upcoming?.rules ?? api.tree.rules} />
       ) : (

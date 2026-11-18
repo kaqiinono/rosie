@@ -1,0 +1,6691 @@
+{
+  "schemaVersion": 1,
+  "id": "pet-schools-1:test-1:full:revision-1",
+  "contentSetId": "pet-schools-1:test-1:full",
+  "revision": 1,
+  "status": "draft",
+  "materials": [
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:1:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-1:1:group:material:family",
+      "role": "exam",
+      "title": "School Badminton Club Membership",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "School Badminton Club Membership",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "If you’d like to join the new badminton club, sign below by Friday (tomorrow). There are only 18 places left now. Practice evenings are Tuesdays and Thursdays."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:2:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-1:2:group:material:family",
+      "role": "exam",
+      "title": "Recycling",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Recycling",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Put paper cups in green bin, plastic bottles and cups in blue bin, and food waste in red bin."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:3:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-1:3:group:material:family",
+      "role": "exam",
+      "title": "Daniel",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Daniel",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Your little brother’s just texted me. He’ll be late this afternoon. He forgot he had football practice at 4 p.m. Can you wait for him and bring him home as I’m really busy?\nMum"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:4:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-1:4:group:material:family",
+      "role": "exam",
+      "title": "Summer reading challenge",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Summer reading challenge",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Summer reading challenge for library members aged 12–18. Choose from the attached book list. You’ll get a certificate for each book you read and a prize if you read six."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 11,
+            "printedPage": "9",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:5:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-1:5:group:material:family",
+      "role": "exam",
+      "title": "Outdoor courts",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Outdoor courts",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "All players need T-shirts, shorts, sun hats and proper tennis shoes, apart from under-10s, who may wear their gym shoes.\nNo entry for students wearing the wrong shoes."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 11,
+            "printedPage": "9",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-2:group:material:family",
+      "role": "exam",
+      "title": "Dance and drama groups",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Dance and drama groups",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "title-A",
+          "kind": "text",
+          "text": "A  Let’s go!",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-A",
+          "kind": "text",
+          "text": "We offer classes for advanced dance and drama students who want to develop their talents to a really high level. Our expert teachers will work with you on your acting and your preferred dance style so that you are ready to compete against the best!"
+        },
+        {
+          "id": "title-B",
+          "kind": "text",
+          "text": "B  Mouse House",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-B",
+          "kind": "text",
+          "text": "We welcome all levels of ability and experience, and offer drama classes for children of all ages, led by professional performers. The activities are fun and great for building self-confidence, so you are soon ready to enter competitions. We meet every Saturday and parents are welcome to wait in the hall."
+        },
+        {
+          "id": "title-C",
+          "kind": "text",
+          "text": "C  The Phoenix Group",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-C",
+          "kind": "text",
+          "text": "With us, you’ll take part in weekend drama workshops and receive a free ticket per term to watch a play at the local theatre. You’ll have opportunities to perform to the public throughout the year. No experience is necessary, but you will need to book a term in advance."
+        },
+        {
+          "id": "title-D",
+          "kind": "text",
+          "text": "D  Monsters DC",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-D",
+          "kind": "text",
+          "text": "This group is for young people under 16 who want to develop their acting ability, or for more experienced actors who want to teach others their skills. All our members are encouraged to take part in our annual show, and every month you can meet successful actors and get their advice on a career in acting."
+        },
+        {
+          "id": "title-E",
+          "kind": "text",
+          "text": "E  Peppermint Performers",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-E",
+          "kind": "text",
+          "text": "Working with experienced theatre directors, you’ll learn performance skills through a year-long programme of workshops. The first term is a series of skills-based sessions covering a range of different performance styles, with certificates for successful students. In future terms, you’ll take part in plays performed for the general public."
+        },
+        {
+          "id": "title-F",
+          "kind": "text",
+          "text": "F  Moon Productions",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-F",
+          "kind": "text",
+          "text": "In our classes, we teach jazz, tap and street dance, and you’ll soon be creating your own dances. We hold contests against other clubs and put on displays for parents every summer. Want to find out what a life as a professional dancer is like? Every term we invite a star to talk about their career."
+        },
+        {
+          "id": "title-G",
+          "kind": "text",
+          "text": "G  The Focus Group",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-G",
+          "kind": "text",
+          "text": "Classes are available every evening. You’ll receive excellent training in dance and drama, and develop techniques and performance skills in no time. One-to-one tuition is offered, and it’s possible to work towards a certificate. You’ll also have the opportunity to take part in a professional play."
+        },
+        {
+          "id": "title-H",
+          "kind": "text",
+          "text": "H  Bubble Company",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "club-H",
+          "kind": "text",
+          "text": "Just come along with your friends and we’ll do the rest. There’s no need to have any experience, and we provide all the costumes and special dance shoes if you need them. We run small hour-long classes in dance or drama every evening after school, and family members are welcome to stay and watch."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 13,
+            "printedPage": "11",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "layout": [
+        {
+          "id": "heading",
+          "headingBlockId": "heading",
+          "bodyBlockIds": []
+        },
+        {
+          "id": "entry-A",
+          "headingBlockId": "title-A",
+          "bodyBlockIds": [
+            "club-A"
+          ]
+        },
+        {
+          "id": "entry-B",
+          "headingBlockId": "title-B",
+          "bodyBlockIds": [
+            "club-B"
+          ]
+        },
+        {
+          "id": "entry-C",
+          "headingBlockId": "title-C",
+          "bodyBlockIds": [
+            "club-C"
+          ]
+        },
+        {
+          "id": "entry-D",
+          "headingBlockId": "title-D",
+          "bodyBlockIds": [
+            "club-D"
+          ]
+        },
+        {
+          "id": "entry-E",
+          "headingBlockId": "title-E",
+          "bodyBlockIds": [
+            "club-E"
+          ]
+        },
+        {
+          "id": "entry-F",
+          "headingBlockId": "title-F",
+          "bodyBlockIds": [
+            "club-F"
+          ]
+        },
+        {
+          "id": "entry-G",
+          "headingBlockId": "title-G",
+          "bodyBlockIds": [
+            "club-G"
+          ]
+        },
+        {
+          "id": "entry-H",
+          "headingBlockId": "title-H",
+          "bodyBlockIds": [
+            "club-H"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-3:group:material:family",
+      "role": "exam",
+      "title": "Martin Cabello",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Martin Cabello",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "paragraph-1",
+          "kind": "text",
+          "text": "My name’s Martin Cabello and I’m a young photographer. Taking photographs was always my favourite activity as a child. And when I was 15, I felt that if I wanted to take my hobby to the next level, I had to do something special. So I decided to start a personal project: I would take one photograph every day for a whole year of my life. I knew that many other young photographers before me had done the same thing, but it seemed like a really great idea, and so I started."
+        },
+        {
+          "id": "paragraph-2",
+          "kind": "text",
+          "text": "After a few weeks, I decided to put these photos onto a website for young photographers because I was keen to create a photo diary, and also to have the chance to show other people my photos. I was amazed to discover that there were others who liked the way I saw and photographed things. I was also enjoying photographing a wide range of subjects. Then someone suggested that if my photographs all had a common topic or idea to connect them, my project would be even better – and I agreed."
+        },
+        {
+          "id": "paragraph-3",
+          "kind": "text",
+          "text": "So I began to concentrate more on taking photos of nature scenes, especially of birds and the sky. A lot of them were black and white photographs, which was very different to what many other young photographers were doing – they were all taking colour photos. As a result, I sometimes had doubts about my project, and I almost gave up several times. In the end, however, I trusted my own feelings, and became more confident about my photographic style and choices."
+        },
+        {
+          "id": "paragraph-4",
+          "kind": "text",
+          "text": "One day I showed my project to my art teacher at school. She told me about a national photography competition for people my age. So I entered some of my photos, just for fun. I’ll never forget the moment when the judges told me that I had won first prize; I was so happy, as my project meant so much to me. It was the first time I realised that maybe my photography really was good, and that I might actually be able to work as a professional photographer. I now have my own photography studio and I’ve never regretted my career choice."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 14,
+            "printedPage": "12",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-4:group:material:family",
+      "role": "exam",
+      "title": "Ballet for children and teenagers",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Ballet for children and teenagers",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "paragraph-1",
+          "kind": "text",
+          "text": "It can take a long time to reach a professional level in ballet, so most dancers begin their training very young. It is essential that very young dancers learn the ballet movements properly right from the beginning. (16) ______ This is because it is usually more difficult to change old habits than to learn new ones.",
+          "answerSlots": [
+            {
+              "start": 216,
+              "end": 227,
+              "sourceText": "(16) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-4:16",
+              "gapId": "16"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-2",
+          "kind": "text",
+          "text": "The first thing that young children who are interested in learning to dance often do is attend creative movement classes, where they can practise basic skills like jumping and turning, and just have fun. (17) ______ In addition, some people recommend that they should learn either to sing or play an instrument.",
+          "answerSlots": [
+            {
+              "start": 204,
+              "end": 215,
+              "sourceText": "(17) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-4:17",
+              "gapId": "17"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-3",
+          "kind": "text",
+          "text": "Young people who decide they want to have a ballet career can attend a dance school. Here, students not only study normal school subjects but also do daily dance training. (18) ______ And the whole dance-school environment is set up to support the young people’s artistic development; it allows them to focus on their dance more easily, and prepares them for their future. But how can a young dancer and their parents tell which dance school is the most suitable? (19) ______ The older students taking part in it should clearly have more highly-developed ballet skills than the younger dancers.",
+          "answerSlots": [
+            {
+              "start": 172,
+              "end": 183,
+              "sourceText": "(18) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-4:18",
+              "gapId": "18"
+            },
+            {
+              "start": 464,
+              "end": 475,
+              "sourceText": "(19) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-4:19",
+              "gapId": "19"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-4",
+          "kind": "text",
+          "text": "By the time they are 16 or 17, many ballet dancers are entering ballet competitions and taking classes at professional studios. (20) ______ It is important for young dancers to know how well they are doing, because the dance world is very competitive and the training hard; not everyone makes it to the top.",
+          "answerSlots": [
+            {
+              "start": 128,
+              "end": 139,
+              "sourceText": "(20) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-4:20",
+              "gapId": "20"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 16,
+            "printedPage": "14",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-5:group:material:family",
+      "role": "exam",
+      "title": "Living on a boat",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Living on a boat",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "paragraph-1",
+          "kind": "text",
+          "text": "Fourteen-year-old Jon Atkins hasn’t had a typical childhood. His parents had always intended to buy a boat and sail round the world, and when Jon was eight they did (21) ______ that. When they first told him of the plan, Jon felt sad about (22) ______ his friends, but also excited because of the adventures he would (23) ______. Since then, Jon has sailed over 8,000 km and (24) ______ that he loves living on a boat.",
+          "answerSlots": [
+            {
+              "start": 165,
+              "end": 176,
+              "sourceText": "(21) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-5:21"
+            },
+            {
+              "start": 240,
+              "end": 251,
+              "sourceText": "(22) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-5:22"
+            },
+            {
+              "start": 317,
+              "end": 328,
+              "sourceText": "(23) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-5:23"
+            },
+            {
+              "start": 375,
+              "end": 386,
+              "sourceText": "(24) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-5:24"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-2",
+          "kind": "text",
+          "text": "The boat has two sleeping cabins and Jon’s cabin has just enough (25) ______ to sit up in. In the main cabin there’s a desk where he studies every day, as he needs to continue his education. Although he doesn’t have any teachers, he doesn’t think his lifestyle will (26) ______ his future choices. He plans to become a ship’s captain, and is certain that life on a boat is excellent preparation for this.",
+          "answerSlots": [
+            {
+              "start": 65,
+              "end": 76,
+              "sourceText": "(25) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-5:25"
+            },
+            {
+              "start": 266,
+              "end": 277,
+              "sourceText": "(26) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-5:26"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 18,
+            "printedPage": "16",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:group:material",
+      "familyId": "pet-schools-1:test-1:exam:reading:part-6:group:material:family",
+      "role": "exam",
+      "title": "My city",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "My city",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "paragraph-1",
+          "kind": "text",
+          "text": "by Harry Salter",
+          "answerSlots": []
+        },
+        {
+          "id": "paragraph-2",
+          "kind": "text",
+          "text": "Do you live in a nice place? I do! The city (27) ______ I live is called Bristol, and it’s in the south-west of England. It’s not very big, but there are loads of things for teenagers to do here.",
+          "answerSlots": [
+            {
+              "start": 44,
+              "end": 55,
+              "sourceText": "(27) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-6:27",
+              "gapId": "27"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-3",
+          "kind": "text",
+          "text": "(28) ______ you’re interested in television, you should go to the Bristol TV and Radio Studios. On the tour of the studios, you can have a go at presenting and appear (29) ______ your own radio drama.",
+          "answerSlots": [
+            {
+              "start": 0,
+              "end": 11,
+              "sourceText": "(28) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-6:28",
+              "gapId": "28"
+            },
+            {
+              "start": 167,
+              "end": 178,
+              "sourceText": "(29) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-6:29",
+              "gapId": "29"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-4",
+          "kind": "text",
+          "text": "Or if you’re into sport, why (30) ______ try canoeing? The best place is a very pretty local section of the Kennet and Avon canal. It connects Bristol to London and it (31) ______ built in the early 18th century, so you can experience some local history at the same time.",
+          "answerSlots": [
+            {
+              "start": 29,
+              "end": 40,
+              "sourceText": "(30) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-6:30",
+              "gapId": "30"
+            },
+            {
+              "start": 168,
+              "end": 179,
+              "sourceText": "(31) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-6:31",
+              "gapId": "31"
+            }
+          ]
+        },
+        {
+          "id": "paragraph-5",
+          "kind": "text",
+          "text": "These are just two (32) ______ the many things you can do here. It really is a great place.",
+          "answerSlots": [
+            {
+              "start": 19,
+              "end": 30,
+              "sourceText": "(32) ______",
+              "questionId": "pet-schools-1:test-1:exam:reading:part-6:32",
+              "gapId": "32"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 19,
+            "printedPage": "17",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:writing:part-1:group:material",
+      "familyId": "pet-schools-1:test-1:exam:writing:part-1:group:material:family",
+      "role": "exam",
+      "title": "School talent show",
+      "blocks": [
+        {
+          "id": "email",
+          "kind": "email",
+          "from": "Mrs Hallam",
+          "to": "All students",
+          "subject": "School talent show",
+          "body": [
+            "Dear Students,",
+            "I’m planning to organise a school talent competition. Students taking part in the competition can sing, dance, play a musical instrument or perform in some other way.",
+            "The talent show could be for students of all ages, or just for students over 15. Which do you think would be better?",
+            "I think that some parents should judge the competition. Do you agree?",
+            "And finally, what prizes do you think the winners should receive?",
+            "Please reply soon.\nBeatrice Hallam"
+          ],
+          "notes": [
+            {
+              "paragraph": 1,
+              "text": "Good idea!"
+            },
+            {
+              "paragraph": 2,
+              "text": "Explain which is better"
+            },
+            {
+              "paragraph": 3,
+              "text": "Tell Mrs Hallam"
+            },
+            {
+              "paragraph": 4,
+              "text": "Suggest ..."
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 20,
+            "printedPage": "18",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:group:material",
+      "familyId": "pet-schools-1:test-1:exam:listening:part-3:group:material:family",
+      "role": "exam",
+      "title": "Talk by Marcia Wilson",
+      "blocks": [
+        {
+          "id": "heading",
+          "kind": "text",
+          "text": "Talk by Marcia Wilson",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "form",
+          "kind": "table",
+          "headers": [
+            "",
+            ""
+          ],
+          "rows": [
+            [
+              "Day of Marcia Wilson’s talk",
+              "(14) ______"
+            ],
+            [
+              "Name of her new book",
+              "The (15) ______"
+            ],
+            [
+              "Where she will talk",
+              "in the (16) ______"
+            ],
+            [
+              "Time the talk begins",
+              "(17) ______"
+            ],
+            [
+              "Cost of buying her book at school",
+              "£ (18) ______"
+            ],
+            [
+              "Useful website to look at",
+              "www. (19) ______ .uk"
+            ]
+          ],
+          "answerSlots": [
+            {
+              "start": 0,
+              "end": 11,
+              "sourceText": "(14) ______",
+              "questionId": "pet-schools-1:test-1:exam:listening:part-3:14",
+              "gapId": "14",
+              "row": 0,
+              "column": 1
+            },
+            {
+              "start": 4,
+              "end": 15,
+              "sourceText": "(15) ______",
+              "questionId": "pet-schools-1:test-1:exam:listening:part-3:15",
+              "gapId": "15",
+              "row": 1,
+              "column": 1
+            },
+            {
+              "start": 7,
+              "end": 18,
+              "sourceText": "(16) ______",
+              "questionId": "pet-schools-1:test-1:exam:listening:part-3:16",
+              "gapId": "16",
+              "row": 2,
+              "column": 1
+            },
+            {
+              "start": 0,
+              "end": 11,
+              "sourceText": "(17) ______",
+              "questionId": "pet-schools-1:test-1:exam:listening:part-3:17",
+              "gapId": "17",
+              "row": 3,
+              "column": 1
+            },
+            {
+              "start": 2,
+              "end": 13,
+              "sourceText": "(18) ______",
+              "questionId": "pet-schools-1:test-1:exam:listening:part-3:18",
+              "gapId": "18",
+              "row": 4,
+              "column": 1
+            },
+            {
+              "start": 5,
+              "end": 16,
+              "sourceText": "(19) ______",
+              "questionId": "pet-schools-1:test-1:exam:listening:part-3:19",
+              "gapId": "19",
+              "row": 5,
+              "column": 1
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 26,
+            "printedPage": "24",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-a:material",
+      "familyId": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-a:material:family",
+      "role": "exam",
+      "title": "Task 1A",
+      "blocks": [
+        {
+          "id": "candidate-a",
+          "kind": "image",
+          "mediaSlotId": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-a",
+          "alt": "Task 1A · Candidate A photograph",
+          "displayWidth": 640,
+          "aspectRatio": 1.4719
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 152,
+            "printedPage": "150",
+            "role": "exam",
+            "region": {
+              "x": 0.2,
+              "y": 0.245,
+              "width": 0.635,
+              "height": 0.305
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "speakingCandidate": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-b:material",
+      "familyId": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-b:material:family",
+      "role": "exam",
+      "title": "Task 1B",
+      "blocks": [
+        {
+          "id": "candidate-b",
+          "kind": "image",
+          "mediaSlotId": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-b",
+          "alt": "Task 1B · Candidate B photograph",
+          "displayWidth": 640,
+          "aspectRatio": 1.4816
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 152,
+            "printedPage": "150",
+            "role": "exam",
+            "region": {
+              "x": 0.2,
+              "y": 0.581,
+              "width": 0.635,
+              "height": 0.303
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "speakingCandidate": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-3:group:material",
+      "familyId": "pet-schools-1:test-1:exam:speaking:part-3:group:material:family",
+      "role": "exam",
+      "title": "Things to take for a walk in the mountains",
+      "blocks": [
+        {
+          "id": "scenario",
+          "kind": "text",
+          "text": "A class is going on a day trip walking in the mountains with their teacher. Here are some things they could take with them. Talk together about the different things they could take with them and say which would be most useful."
+        },
+        {
+          "id": "shared-discussion-card",
+          "kind": "image",
+          "mediaSlotId": "pet-schools-1:test-1:exam:speaking:part-3:group:shared-discussion-card",
+          "alt": "Task 1C · Things to take for a walk in the mountains",
+          "displayWidth": 650,
+          "aspectRatio": 1.088
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.246,
+              "y": 0.274,
+              "width": 0.672,
+              "height": 0.141
+            }
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 153,
+            "printedPage": "151",
+            "role": "exam",
+            "region": {
+              "x": 0.049,
+              "y": 0.223,
+              "width": 0.891,
+              "height": 0.579
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:1:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-1:1:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-1:1",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "short_messages",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 10,
+                "printedPage": "8",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "There are three badminton sessions a week at the new club."
+            },
+            {
+              "id": "B",
+              "label": "The new badminton club can only have 18 members."
+            },
+            {
+              "id": "C",
+              "label": "Students need to decide quickly whether they want to join the new club."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:1:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:2:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-1:2:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-1:2",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 1,
+            "questionNumber": "2"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "short_messages",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 10,
+                "printedPage": "8",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "Unfinished burgers should go in the red bin."
+            },
+            {
+              "id": "B",
+              "label": "Only bottles should go in the blue bin."
+            },
+            {
+              "id": "C",
+              "label": "Plastic cups should be put in the green bin."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:2:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:3:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-1:3:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-1:3",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Daniel’s mother is texting him to"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 1,
+            "questionNumber": "3"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "short_messages",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 10,
+                "printedPage": "8",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "ask Daniel to do her a favour."
+            },
+            {
+              "id": "B",
+              "label": "complain that she has too much to do."
+            },
+            {
+              "id": "C",
+              "label": "apologise for forgetting to tell Daniel something."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:3:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:4:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 11,
+            "printedPage": "9",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-1:4:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-1:4",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 1,
+            "questionNumber": "4"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "short_messages",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 11,
+                "printedPage": "9",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "People can read any book from the library as part of the reading challenge."
+            },
+            {
+              "id": "B",
+              "label": "Only certain people can take part in the reading challenge."
+            },
+            {
+              "id": "C",
+              "label": "Everyone who takes part in the reading challenge will receive a prize."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:4:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:5:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 11,
+            "printedPage": "9",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-1:5:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-1:5",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 1,
+            "questionNumber": "5"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "short_messages",
+            "primarySkillId": "short_messages",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 11,
+                "printedPage": "9",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "Younger players must have proper tennis shoes to play here."
+            },
+            {
+              "id": "B",
+              "label": "Only older students are allowed to play on these courts."
+            },
+            {
+              "id": "C",
+              "label": "All players must wear the correct kit when using these courts."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:5:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-1:5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 13,
+            "printedPage": "11",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer.\nThe young people below are interested in joining a dance or drama group. Read the descriptions of eight dance and drama groups. Decide which group would be the most suitable for the people below."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-2:group:material"
+      ],
+      "optionPools": [
+        {
+          "id": "options",
+          "options": [
+            {
+              "id": "A",
+              "label": "Let’s go!"
+            },
+            {
+              "id": "B",
+              "label": "Mouse House"
+            },
+            {
+              "id": "C",
+              "label": "The Phoenix Group"
+            },
+            {
+              "id": "D",
+              "label": "Monsters DC"
+            },
+            {
+              "id": "E",
+              "label": "Peppermint Performers"
+            },
+            {
+              "id": "F",
+              "label": "Moon Productions"
+            },
+            {
+              "id": "G",
+              "label": "The Focus Group"
+            },
+            {
+              "id": "H",
+              "label": "Bubble Company"
+            }
+          ],
+          "allowReuse": false
+        }
+      ],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-2:6",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Maiko loves dancing and wants to learn new dance styles quickly. She’d like to meet successful dancers and also take part in competitions."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 2,
+            "questionNumber": "6"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_text_matching",
+            "primarySkillId": "multiple_text_matching",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 12,
+                "printedPage": "10",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "6",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Maiko loves dancing and wants to learn new dance styles quickly. She’d like to meet successful dancers and also take part in competitions."
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-2:7",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Marta and her younger sister would like to join an acting group at the weekend. They haven’t done anything like this before, so their mum wants to go with them at first."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 2,
+            "questionNumber": "7"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_text_matching",
+            "primarySkillId": "multiple_text_matching",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 12,
+                "printedPage": "10",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "7",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Marta and her younger sister would like to join an acting group at the weekend. They haven’t done anything like this before, so their mum wants to go with them at first."
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-2:8",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Eliana’s quite nervous so would like the possibility of some drama training on her own at first. She’s free during the week and hopes to act in a play one day."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 2,
+            "questionNumber": "8"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_text_matching",
+            "primarySkillId": "multiple_text_matching",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 12,
+                "printedPage": "10",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "8",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Eliana’s quite nervous so would like the possibility of some drama training on her own at first. She’s free during the week and hopes to act in a play one day."
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-2:9",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Henri is an experienced dancer who enjoys entering competitions. He wants to concentrate on jazz dance and improve his drama skills too."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 2,
+            "questionNumber": "9"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_text_matching",
+            "primarySkillId": "multiple_text_matching",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 12,
+                "printedPage": "10",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "9",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Henri is an experienced dancer who enjoys entering competitions. He wants to concentrate on jazz dance and improve his drama skills too."
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-2:10",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "José wants to perform in plays, and is interested in joining an acting course run by professionals with a diploma at the end."
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 2,
+            "questionNumber": "10"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_text_matching",
+            "primarySkillId": "multiple_text_matching",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 12,
+                "printedPage": "10",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "10",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "José wants to perform in plays, and is interested in joining an acting course run by professionals with a diploma at the end."
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "matching",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-2:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-2:6",
+            "pet-schools-1:test-1:exam:reading:part-2:7",
+            "pet-schools-1:test-1:exam:reading:part-2:8",
+            "pet-schools-1:test-1:exam:reading:part-2:9",
+            "pet-schools-1:test-1:exam:reading:part-2:10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 14,
+            "printedPage": "12",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 15,
+            "printedPage": "13",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-3:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-3:11",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Martin started his project because he wanted to"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 3,
+            "questionNumber": "11"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "long_text_choice",
+            "primarySkillId": "long_text_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 15,
+                "printedPage": "13",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "influence other photographers."
+            },
+            {
+              "id": "B",
+              "label": "try an original idea of his own."
+            },
+            {
+              "id": "C",
+              "label": "take a lot more photos than he had before."
+            },
+            {
+              "id": "D",
+              "label": "develop his photography further."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-3:12",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What happened after Martin put his photos on the website?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 3,
+            "questionNumber": "12"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "long_text_choice",
+            "primarySkillId": "long_text_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 15,
+                "printedPage": "13",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "He became more interested in other photographers’ pictures."
+            },
+            {
+              "id": "B",
+              "label": "He was given some advice to improve his project."
+            },
+            {
+              "id": "C",
+              "label": "He decided that his photos weren’t good enough."
+            },
+            {
+              "id": "D",
+              "label": "He discovered that the website wasn’t the best place for his photos."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-3:13",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "How did Martin feel when he took his first nature photos?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 3,
+            "questionNumber": "13"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "long_text_choice",
+            "primarySkillId": "long_text_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 15,
+                "printedPage": "13",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "He wasn’t sure that he was doing the right thing."
+            },
+            {
+              "id": "B",
+              "label": "He was certain that the photos would be better in colour."
+            },
+            {
+              "id": "C",
+              "label": "He was anxious about what others would think."
+            },
+            {
+              "id": "D",
+              "label": "He was worried that his photos might not be interesting."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-3:14",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "How did winning the competition affect Martin?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 3,
+            "questionNumber": "14"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "long_text_choice",
+            "primarySkillId": "long_text_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 15,
+                "printedPage": "13",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "He realised how enjoyable competitions can be."
+            },
+            {
+              "id": "B",
+              "label": "It helped him to make a decision about his future."
+            },
+            {
+              "id": "C",
+              "label": "It gave him the opportunity to meet more young photographers."
+            },
+            {
+              "id": "D",
+              "label": "He started putting more effort into his photography."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-3:15",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What would be a good title for this text?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 3,
+            "questionNumber": "15"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "long_text_choice",
+            "primarySkillId": "long_text_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 15,
+                "printedPage": "13",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "My favourite websites for sharing photographs."
+            },
+            {
+              "id": "B",
+              "label": "The best way to become a successful young photographer."
+            },
+            {
+              "id": "C",
+              "label": "How a photography project changed my life."
+            },
+            {
+              "id": "D",
+              "label": "Why more photographers should take pictures of nature."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-3:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-3:11",
+            "pet-schools-1:test-1:exam:reading:part-3:12",
+            "pet-schools-1:test-1:exam:reading:part-3:13",
+            "pet-schools-1:test-1:exam:reading:part-3:14",
+            "pet-schools-1:test-1:exam:reading:part-3:15"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 16,
+            "printedPage": "14",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 17,
+            "printedPage": "15",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Five sentences have been removed from the text below.\nFor each question, choose the correct answer.\nThere are three extra sentences which you do not need to use."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-4:group:material"
+      ],
+      "optionPools": [
+        {
+          "id": "sentences",
+          "options": [
+            {
+              "id": "A",
+              "label": "For all these reasons, they enjoy meeting other dancers."
+            },
+            {
+              "id": "B",
+              "label": "Listening to different styles of music also helps."
+            },
+            {
+              "id": "C",
+              "label": "Travelling long distances to dance schools can be tiring, too."
+            },
+            {
+              "id": "D",
+              "label": "Attending one of their public performances is a good way of finding out."
+            },
+            {
+              "id": "E",
+              "label": "If they develop poor technique, they may have problems later on."
+            },
+            {
+              "id": "F",
+              "label": "Few people know where to find them."
+            },
+            {
+              "id": "G",
+              "label": "This allows them to compare themselves with teenagers from other schools."
+            },
+            {
+              "id": "H",
+              "label": "That means they do not waste time travelling from home to dance classes."
+            }
+          ],
+          "allowReuse": false
+        }
+      ],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-4:16",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(16)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 4,
+            "questionNumber": "16"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "gapped_text",
+            "primarySkillId": "gapped_text",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 16,
+                "printedPage": "14",
+                "role": "exam"
+              },
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 17,
+                "printedPage": "15",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "16",
+              "label": "16",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "sentences"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-4:17",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(17)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 4,
+            "questionNumber": "17"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "gapped_text",
+            "primarySkillId": "gapped_text",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 16,
+                "printedPage": "14",
+                "role": "exam"
+              },
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 17,
+                "printedPage": "15",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "17",
+              "label": "17",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "sentences"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-4:18",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(18)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 4,
+            "questionNumber": "18"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "gapped_text",
+            "primarySkillId": "gapped_text",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 16,
+                "printedPage": "14",
+                "role": "exam"
+              },
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 17,
+                "printedPage": "15",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "18",
+              "label": "18",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "sentences"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-4:19",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(19)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 4,
+            "questionNumber": "19"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "gapped_text",
+            "primarySkillId": "gapped_text",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 16,
+                "printedPage": "14",
+                "role": "exam"
+              },
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 17,
+                "printedPage": "15",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "19",
+              "label": "19",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "sentences"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-4:20",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(20)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 4,
+            "questionNumber": "20"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "gapped_text",
+            "primarySkillId": "gapped_text",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 16,
+                "printedPage": "14",
+                "role": "exam"
+              },
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 17,
+                "printedPage": "15",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "20",
+              "label": "20",
+              "maxWords": null
+            }
+          ],
+          "answerOrder": "fixed",
+          "optionPoolId": "sentences"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-4:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-4:16",
+            "pet-schools-1:test-1:exam:reading:part-4:17",
+            "pet-schools-1:test-1:exam:reading:part-4:18",
+            "pet-schools-1:test-1:exam:reading:part-4:19",
+            "pet-schools-1:test-1:exam:reading:part-4:20"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 18,
+            "printedPage": "16",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-5:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5:21",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(21)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 5,
+            "questionNumber": "21"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_choice_cloze",
+            "primarySkillId": "multiple_choice_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 18,
+                "printedPage": "16",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "definitely"
+            },
+            {
+              "id": "B",
+              "label": "exactly"
+            },
+            {
+              "id": "C",
+              "label": "certainly"
+            },
+            {
+              "id": "D",
+              "label": "absolutely"
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5:22",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(22)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 5,
+            "questionNumber": "22"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_choice_cloze",
+            "primarySkillId": "multiple_choice_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 18,
+                "printedPage": "16",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "departing"
+            },
+            {
+              "id": "B",
+              "label": "moving"
+            },
+            {
+              "id": "C",
+              "label": "remembering"
+            },
+            {
+              "id": "D",
+              "label": "leaving"
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5:23",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(23)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 5,
+            "questionNumber": "23"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_choice_cloze",
+            "primarySkillId": "multiple_choice_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 18,
+                "printedPage": "16",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "have"
+            },
+            {
+              "id": "B",
+              "label": "set"
+            },
+            {
+              "id": "C",
+              "label": "do"
+            },
+            {
+              "id": "D",
+              "label": "make"
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5:24",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(24)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 5,
+            "questionNumber": "24"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_choice_cloze",
+            "primarySkillId": "multiple_choice_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 18,
+                "printedPage": "16",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "expected"
+            },
+            {
+              "id": "B",
+              "label": "discovered"
+            },
+            {
+              "id": "C",
+              "label": "imagined"
+            },
+            {
+              "id": "D",
+              "label": "believed"
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5:25",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(25)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 5,
+            "questionNumber": "25"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_choice_cloze",
+            "primarySkillId": "multiple_choice_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 18,
+                "printedPage": "16",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "area"
+            },
+            {
+              "id": "B",
+              "label": "size"
+            },
+            {
+              "id": "C",
+              "label": "space"
+            },
+            {
+              "id": "D",
+              "label": "place"
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5:26",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(26)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 5,
+            "questionNumber": "26"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "multiple_choice_cloze",
+            "primarySkillId": "multiple_choice_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 18,
+                "printedPage": "16",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "contain"
+            },
+            {
+              "id": "B",
+              "label": "fix"
+            },
+            {
+              "id": "C",
+              "label": "limit"
+            },
+            {
+              "id": "D",
+              "label": "control"
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-5:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-5:21",
+            "pet-schools-1:test-1:exam:reading:part-5:22",
+            "pet-schools-1:test-1:exam:reading:part-5:23",
+            "pet-schools-1:test-1:exam:reading:part-5:24",
+            "pet-schools-1:test-1:exam:reading:part-5:25",
+            "pet-schools-1:test-1:exam:reading:part-5:26"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:group",
+      "role": "exam",
+      "sectionId": "reading",
+      "partNumber": 6,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 19,
+            "printedPage": "17",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, write the correct answer.\nWrite ONE word for each gap."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:reading:part-6:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6:27",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(27)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 6,
+            "questionNumber": "27"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "open_cloze",
+            "primarySkillId": "open_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 19,
+                "printedPage": "17",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "27",
+              "label": "27",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6:28",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(28)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 6,
+            "questionNumber": "28"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "open_cloze",
+            "primarySkillId": "open_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 19,
+                "printedPage": "17",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "28",
+              "label": "28",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6:29",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(29)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 6,
+            "questionNumber": "29"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "open_cloze",
+            "primarySkillId": "open_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 19,
+                "printedPage": "17",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "29",
+              "label": "29",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6:30",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(30)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 6,
+            "questionNumber": "30"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "open_cloze",
+            "primarySkillId": "open_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 19,
+                "printedPage": "17",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "30",
+              "label": "30",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6:31",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(31)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 6,
+            "questionNumber": "31"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "open_cloze",
+            "primarySkillId": "open_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 19,
+                "printedPage": "17",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "31",
+              "label": "31",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6:32",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(32)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "reading",
+            "partNumber": 6,
+            "questionNumber": "32"
+          },
+          "classification": {
+            "domain": "reading",
+            "questionTypeId": "open_cloze",
+            "primarySkillId": "open_cloze",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 19,
+                "printedPage": "17",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "32",
+              "label": "32",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:reading:part-6:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:reading:part-6:27",
+            "pet-schools-1:test-1:exam:reading:part-6:28",
+            "pet-schools-1:test-1:exam:reading:part-6:29",
+            "pet-schools-1:test-1:exam:reading:part-6:30",
+            "pet-schools-1:test-1:exam:reading:part-6:31",
+            "pet-schools-1:test-1:exam:reading:part-6:32"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:writing:part-1:group",
+      "role": "exam",
+      "sectionId": "writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 20,
+            "printedPage": "18",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "You must answer this question. Write your answer in about 100 words.\nRead this email from your English teacher Mrs Hallam and the notes you have made."
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:writing:part-1:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:writing:part-1:1",
+          "answerType": "writing",
+          "prompt": [
+            {
+              "id": "task",
+              "kind": "text",
+              "text": "Write your email to Mrs Hallam using all the notes."
+            }
+          ],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-writing-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "writing",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "classification": {
+            "domain": "writing",
+            "questionTypeId": "email_note",
+            "primarySkillId": "email_note",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 20,
+                "printedPage": "18",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "minimumWords": null,
+          "targetWords": 100,
+          "displayLabel": "Question 1 · Email"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:writing:part-1:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:writing:part-1:1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:writing:part-2:group",
+      "role": "exam",
+      "sectionId": "writing",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 21,
+            "printedPage": "19",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Choose one of these questions. Write your answer in about 100 words."
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:writing:part-2:2",
+          "answerType": "writing",
+          "prompt": [
+            {
+              "id": "context",
+              "kind": "text",
+              "text": "You see this announcement on an English-language website."
+            },
+            {
+              "id": "heading",
+              "kind": "text",
+              "text": "Articles wanted!\nSport and exercise",
+              "presentation": {
+                "role": "heading"
+              }
+            },
+            {
+              "id": "announcement",
+              "kind": "text",
+              "text": "Are there enough sports activities for young people to do in your area?\nDo you think it’s important for young people to do sport and exercise? Why?\nWrite an article answering these questions and we’ll publish the best ones."
+            },
+            {
+              "id": "task",
+              "kind": "text",
+              "text": "Write your article."
+            }
+          ],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-writing-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "writing",
+            "partNumber": 2,
+            "questionNumber": "2"
+          },
+          "classification": {
+            "domain": "writing",
+            "questionTypeId": "article_or_story",
+            "primarySkillId": "article_or_story",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 21,
+                "printedPage": "19",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "minimumWords": null,
+          "targetWords": 100,
+          "displayLabel": "Question 2 · Article"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:writing:part-2:3",
+          "answerType": "writing",
+          "prompt": [
+            {
+              "id": "context",
+              "kind": "text",
+              "text": "Your English teacher has asked you to write a story. Your story must begin with this sentence."
+            },
+            {
+              "id": "opening-sentence",
+              "kind": "text",
+              "text": "Lois smiled as she put the tickets in her pocket and walked out of her house."
+            },
+            {
+              "id": "task",
+              "kind": "text",
+              "text": "Write your story."
+            }
+          ],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-writing-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "writing",
+            "partNumber": 2,
+            "questionNumber": "3"
+          },
+          "classification": {
+            "domain": "writing",
+            "questionTypeId": "article_or_story",
+            "primarySkillId": "article_or_story",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 21,
+                "printedPage": "19",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "minimumWords": null,
+          "targetWords": 100,
+          "displayLabel": "Question 3 · Story"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:writing:part-2:2",
+            "pet-schools-1:test-1:exam:writing:part-2:3"
+          ]
+        }
+      ],
+      "writingChoice": true
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:1",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What will they eat for dinner?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 22,
+                "printedPage": "20",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-1-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-1-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-1-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:2",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Where did the police find the stolen statue?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "2"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 22,
+                "printedPage": "20",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-2-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-2-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-2-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:3",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "How did the mountain climbing group celebrate their success?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 22,
+                "printedPage": "20",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-3-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-3-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-3-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:4",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What does the boy think his friend should buy?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 23,
+                "printedPage": "21",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-4-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-4-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-4-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:5",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What’s the girl’s holiday job?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 23,
+                "printedPage": "21",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-5-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-5-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-5-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:6",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "How are the friends going to get to the cinema?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "6"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 23,
+                "printedPage": "21",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-6-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-6-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-6-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1:7",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What are they going to study in their next lesson?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "7"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "picture_choice",
+            "primarySkillId": "picture_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 23,
+                "printedPage": "21",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-7-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-7-pictures",
+              "imageRegion": {
+                "x": 0.338,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "pet-schools-1:test-1:exam:listening:part-1:group:question-7-pictures",
+              "imageRegion": {
+                "x": 0.676,
+                "y": 0,
+                "width": 0.324,
+                "height": 1
+              }
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:listening:part-1:1",
+            "pet-schools-1:test-1:exam:listening:part-1:2",
+            "pet-schools-1:test-1:exam:listening:part-1:3",
+            "pet-schools-1:test-1:exam:listening:part-1:4",
+            "pet-schools-1:test-1:exam:listening:part-1:5",
+            "pet-schools-1:test-1:exam:listening:part-1:6",
+            "pet-schools-1:test-1:exam:listening:part-1:7"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 24,
+            "printedPage": "22",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 25,
+            "printedPage": "23",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "pet-schools-1:test-1:exam:listening:part-2:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2:8",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear two students talking about a history book.\nThey agree that"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "8"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "short_dialogue_choice",
+            "primarySkillId": "short_dialogue_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 24,
+                "printedPage": "22",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "it should be shorter."
+            },
+            {
+              "id": "B",
+              "label": "it helps with their schoolwork."
+            },
+            {
+              "id": "C",
+              "label": "it has some information missing from it."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2:9",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear two friends talking about their lunch break at school.\nThey both plan to"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "9"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "short_dialogue_choice",
+            "primarySkillId": "short_dialogue_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 24,
+                "printedPage": "22",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "finish their homework."
+            },
+            {
+              "id": "B",
+              "label": "eat the same food."
+            },
+            {
+              "id": "C",
+              "label": "play games on their phones."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2:10",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear two friends talking about a film they have seen.\nWhat does the boy say about it?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "10"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "short_dialogue_choice",
+            "primarySkillId": "short_dialogue_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 24,
+                "printedPage": "22",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "It made him laugh."
+            },
+            {
+              "id": "B",
+              "label": "He guessed the ending."
+            },
+            {
+              "id": "C",
+              "label": "The acting was bad."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2:11",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear two friends talking about a school trip.\nThey agree that the trip was"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "11"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "short_dialogue_choice",
+            "primarySkillId": "short_dialogue_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 24,
+                "printedPage": "22",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "not long enough."
+            },
+            {
+              "id": "B",
+              "label": "quite expensive."
+            },
+            {
+              "id": "C",
+              "label": "badly organised."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2:12",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear a boy telling his friend about a science lesson with a new teacher.\nWhat does the boy say about the new teacher?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "12"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "short_dialogue_choice",
+            "primarySkillId": "short_dialogue_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 25,
+                "printedPage": "23",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "She asked a lot of questions."
+            },
+            {
+              "id": "B",
+              "label": "She made the lesson fun."
+            },
+            {
+              "id": "C",
+              "label": "She knew her subject well."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2:13",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear two friends talking about where to have a party.\nWhy do they prefer the park to the sports club?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "13"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "short_dialogue_choice",
+            "primarySkillId": "short_dialogue_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 25,
+                "printedPage": "23",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "There’s lots of space."
+            },
+            {
+              "id": "B",
+              "label": "They can play games there."
+            },
+            {
+              "id": "C",
+              "label": "It’s in a convenient location."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:listening:part-2:8",
+            "pet-schools-1:test-1:exam:listening:part-2:9",
+            "pet-schools-1:test-1:exam:listening:part-2:10",
+            "pet-schools-1:test-1:exam:listening:part-2:11",
+            "pet-schools-1:test-1:exam:listening:part-2:12",
+            "pet-schools-1:test-1:exam:listening:part-2:13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 26,
+            "printedPage": "24",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, write the correct answer in the gap.\nWrite one or two words or a number or a date or a time.\nYou will hear some information about a talk at school by a writer called Marcia Wilson."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "pet-schools-1:test-1:exam:listening:part-3:group:audio"
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:listening:part-3:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3:14",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(14)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "14"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "information_gap_fill",
+            "primarySkillId": "information_gap_fill",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 26,
+                "printedPage": "24",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "14",
+              "label": "14",
+              "maxWords": 2
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3:15",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(15)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "15"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "information_gap_fill",
+            "primarySkillId": "information_gap_fill",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 26,
+                "printedPage": "24",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "15",
+              "label": "15",
+              "maxWords": 2
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3:16",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(16)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "16"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "information_gap_fill",
+            "primarySkillId": "information_gap_fill",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 26,
+                "printedPage": "24",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "16",
+              "label": "16",
+              "maxWords": 2
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3:17",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(17)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "17"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "information_gap_fill",
+            "primarySkillId": "information_gap_fill",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 26,
+                "printedPage": "24",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "17",
+              "label": "17",
+              "maxWords": 3
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3:18",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(18)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "18"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "information_gap_fill",
+            "primarySkillId": "information_gap_fill",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 26,
+                "printedPage": "24",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "18",
+              "label": "18",
+              "maxWords": 2
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3:19",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(19)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "19"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "information_gap_fill",
+            "primarySkillId": "information_gap_fill",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 26,
+                "printedPage": "24",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "19",
+              "label": "19",
+              "maxWords": 2
+            }
+          ],
+          "answerOrder": "fixed"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:listening:part-3:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:listening:part-3:14",
+            "pet-schools-1:test-1:exam:listening:part-3:15",
+            "pet-schools-1:test-1:exam:listening:part-3:16",
+            "pet-schools-1:test-1:exam:listening:part-3:17",
+            "pet-schools-1:test-1:exam:listening:part-3:18",
+            "pet-schools-1:test-1:exam:listening:part-3:19"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 27,
+            "printedPage": "25",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer.\nYou will hear an interview with a girl called Anna Taylor, who is a champion cyclist."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "pet-schools-1:test-1:exam:listening:part-4:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4:20",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Anna became interested in cycling because"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "20"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "interview_choice",
+            "primarySkillId": "interview_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 27,
+                "printedPage": "25",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "she was bad at other sports."
+            },
+            {
+              "id": "B",
+              "label": "she had a friend who encouraged her."
+            },
+            {
+              "id": "C",
+              "label": "she enjoyed her first experience of it."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4:21",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "How does Anna practise her cycling as well as do her schoolwork?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "21"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "interview_choice",
+            "primarySkillId": "interview_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 27,
+                "printedPage": "25",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "She studies hard in the evenings."
+            },
+            {
+              "id": "B",
+              "label": "Her teachers give her extra time."
+            },
+            {
+              "id": "C",
+              "label": "She has to miss some classes."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4:22",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What does Anna say about track cycling?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "22"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "interview_choice",
+            "primarySkillId": "interview_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 27,
+                "printedPage": "25",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "It is faster than road cycling."
+            },
+            {
+              "id": "B",
+              "label": "It is harder to learn than road cycling."
+            },
+            {
+              "id": "C",
+              "label": "It requires more power than road cycling."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4:23",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What does Anna say about cycling with teammates in road races?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "23"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "interview_choice",
+            "primarySkillId": "interview_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 27,
+                "printedPage": "25",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "She likes the feeling of support around her."
+            },
+            {
+              "id": "B",
+              "label": "She likes learning techniques from others."
+            },
+            {
+              "id": "C",
+              "label": "She likes laughing with friends at difficult times."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4:24",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Anna says that at her last road race she was"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "24"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "interview_choice",
+            "primarySkillId": "interview_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 27,
+                "printedPage": "25",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "upset by the behaviour of her competitors."
+            },
+            {
+              "id": "B",
+              "label": "surprised by what happened at the beginning."
+            },
+            {
+              "id": "C",
+              "label": "disappointed by a teammate’s performance."
+            }
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4:25",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Anna thinks people who want to be champion cyclists should"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "25"
+          },
+          "classification": {
+            "domain": "listening",
+            "questionTypeId": "interview_choice",
+            "primarySkillId": "interview_choice",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 27,
+                "printedPage": "25",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "train hard every day in order to be the best."
+            },
+            {
+              "id": "B",
+              "label": "do lots of other sports to help them keep fit."
+            },
+            {
+              "id": "C",
+              "label": "spend time trying different activities."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:listening:part-4:20",
+            "pet-schools-1:test-1:exam:listening:part-4:21",
+            "pet-schools-1:test-1:exam:listening:part-4:22",
+            "pet-schools-1:test-1:exam:listening:part-4:23",
+            "pet-schools-1:test-1:exam:listening:part-4:24",
+            "pet-schools-1:test-1:exam:listening:part-4:25"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-1:group",
+      "role": "exam",
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 82,
+            "printedPage": "80",
+            "role": "exam",
+            "region": {
+              "x": 0.104,
+              "y": 0.16,
+              "width": 0.35,
+              "height": 0.05
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Part 1 · Interview"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-1:task",
+          "answerType": "speaking",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-speaking-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "speaking",
+            "partNumber": 1,
+            "questionNumber": "task"
+          },
+          "classification": {
+            "domain": "speaking",
+            "questionTypeId": "interview",
+            "primarySkillId": "interview",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 82,
+                "printedPage": "80",
+                "role": "exam",
+                "region": {
+                  "x": 0.104,
+                  "y": 0.16,
+                  "width": 0.35,
+                  "height": 0.05
+                }
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "displayLabel": "Part 1 · Interview"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:speaking:part-1:task"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:group",
+      "role": "exam",
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 84,
+            "printedPage": "82",
+            "role": "exam",
+            "region": {
+              "x": 0.107,
+              "y": 0.109,
+              "width": 0.245,
+              "height": 0.038
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Part 2 · Photograph description"
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-a:material",
+        "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-b:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-2:task",
+          "answerType": "speaking",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-speaking-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "speaking",
+            "partNumber": 2,
+            "questionNumber": "task"
+          },
+          "classification": {
+            "domain": "speaking",
+            "questionTypeId": "extended_turn",
+            "primarySkillId": "extended_turn",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 84,
+                "printedPage": "82",
+                "role": "exam",
+                "region": {
+                  "x": 0.107,
+                  "y": 0.109,
+                  "width": 0.245,
+                  "height": 0.038
+                }
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "displayLabel": "Part 2 · Photograph description"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-a:material",
+            "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-b:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:speaking:part-2:task"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-3:group",
+      "role": "exam",
+      "sectionId": "speaking",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.058,
+              "y": 0.184,
+              "width": 0.205,
+              "height": 0.017
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Part 3 · Walk in the mountains"
+        }
+      ],
+      "materialIds": [
+        "pet-schools-1:test-1:exam:speaking:part-3:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-3:task",
+          "answerType": "speaking",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-speaking-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "speaking",
+            "partNumber": 3,
+            "questionNumber": "task"
+          },
+          "classification": {
+            "domain": "speaking",
+            "questionTypeId": "picture_discussion",
+            "primarySkillId": "picture_discussion",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 85,
+                "printedPage": "83",
+                "role": "exam",
+                "region": {
+                  "x": 0.058,
+                  "y": 0.184,
+                  "width": 0.205,
+                  "height": 0.017
+                }
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "displayLabel": "Part 3 · Walk in the mountains"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "pet-schools-1:test-1:exam:speaking:part-3:group:material"
+          ],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:speaking:part-3:task"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-4:group",
+      "role": "exam",
+      "sectionId": "speaking",
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.058,
+              "y": 0.545,
+              "width": 0.205,
+              "height": 0.025
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Part 4 · Further discussion"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-4:task",
+          "answerType": "speaking",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "pet-speaking-v1"
+          },
+          "location": {
+            "sourceId": "pet-schools-1",
+            "testNumber": 1,
+            "role": "exam",
+            "sectionId": "speaking",
+            "partNumber": 4,
+            "questionNumber": "task"
+          },
+          "classification": {
+            "domain": "speaking",
+            "questionTypeId": "general_conversation",
+            "primarySkillId": "general_conversation",
+            "topicIds": [],
+            "knowledgePointIds": [],
+            "review": {
+              "status": "pending"
+            }
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 85,
+                "printedPage": "83",
+                "role": "exam",
+                "region": {
+                  "x": 0.058,
+                  "y": 0.545,
+                  "width": 0.205,
+                  "height": 0.025
+                }
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "displayLabel": "Part 4 · Further discussion"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "pet-schools-1:test-1:exam:speaking:part-4:task"
+          ]
+        }
+      ]
+    }
+  ],
+  "guidance": [],
+  "vocabularyLinks": [],
+  "mediaSlots": [
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-1-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 1 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam",
+            "region": {
+              "x": 0.145,
+              "y": 0.286,
+              "width": 0.807,
+              "height": 0.137
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-2-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 2 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam",
+            "region": {
+              "x": 0.145,
+              "y": 0.482,
+              "width": 0.807,
+              "height": 0.133
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-3-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 3 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam",
+            "region": {
+              "x": 0.145,
+              "y": 0.677,
+              "width": 0.807,
+              "height": 0.136
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-4-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 4 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.124,
+              "width": 0.807,
+              "height": 0.142
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-5-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 5 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.321,
+              "width": 0.807,
+              "height": 0.142
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-6-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 6 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.517,
+              "width": 0.807,
+              "height": 0.142
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:question-7-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Listening question 7 · pictures A–C",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.714,
+              "width": 0.807,
+              "height": 0.143
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening Part 1",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening Part 2",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-2:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 24,
+            "printedPage": "22",
+            "role": "exam"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 25,
+            "printedPage": "23",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening Part 3",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-3:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 26,
+            "printedPage": "24",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening Part 4",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:listening:part-4:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 27,
+            "printedPage": "25",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-a",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Task 1A · Candidate A photograph",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:speaking:part-2:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 152,
+            "printedPage": "150",
+            "role": "exam",
+            "region": {
+              "x": 0.2,
+              "y": 0.245,
+              "width": 0.635,
+              "height": 0.305
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:group:candidate-b",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Task 1B · Candidate B photograph",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:speaking:part-2:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 152,
+            "printedPage": "150",
+            "role": "exam",
+            "region": {
+              "x": 0.2,
+              "y": 0.581,
+              "width": 0.635,
+              "height": 0.303
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-3:group:shared-discussion-card",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Task 1C · Things to take for a walk in the mountains",
+      "target": {
+        "kind": "group",
+        "id": "pet-schools-1:test-1:exam:speaking:part-3:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 153,
+            "printedPage": "151",
+            "role": "exam",
+            "region": {
+              "x": 0.049,
+              "y": 0.223,
+              "width": 0.891,
+              "height": 0.579
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "mediaBindingRevisionId": null,
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "pending"
+    }
+  }
+}

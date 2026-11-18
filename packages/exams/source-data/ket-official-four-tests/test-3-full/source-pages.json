@@ -1,0 +1,386 @@
+[
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 41,
+    "printedPage": "40",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 42,
+    "printedPage": "41",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 43,
+    "printedPage": "42",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 44,
+    "printedPage": "43",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 44,
+    "printedPage": "43",
+    "role": "exam",
+    "region": {
+      "x": 0.075,
+      "y": 0.309,
+      "width": 0.165,
+      "height": 0.171
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 44,
+    "printedPage": "43",
+    "role": "exam",
+    "region": {
+      "x": 0.075,
+      "y": 0.522,
+      "width": 0.165,
+      "height": 0.168
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 44,
+    "printedPage": "43",
+    "role": "exam",
+    "region": {
+      "x": 0.075,
+      "y": 0.738,
+      "width": 0.165,
+      "height": 0.17
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 45,
+    "printedPage": "44",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 46,
+    "printedPage": "45",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 47,
+    "printedPage": "46",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 47,
+    "printedPage": "46",
+    "role": "exam",
+    "region": {
+      "x": 0.607,
+      "y": 0.202,
+      "width": 0.326,
+      "height": 0.15
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 48,
+    "printedPage": "47",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 49,
+    "printedPage": "48",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 50,
+    "printedPage": "49",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 50,
+    "printedPage": "49",
+    "role": "exam",
+    "region": {
+      "x": 0.055,
+      "y": 0.23,
+      "width": 0.85,
+      "height": 0.163
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 51,
+    "printedPage": "50",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 51,
+    "printedPage": "50",
+    "role": "exam",
+    "region": {
+      "x": 0.153,
+      "y": 0.317,
+      "width": 0.755,
+      "height": 0.139
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 51,
+    "printedPage": "50",
+    "role": "exam",
+    "region": {
+      "x": 0.153,
+      "y": 0.545,
+      "width": 0.757,
+      "height": 0.141
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 51,
+    "printedPage": "50",
+    "role": "exam",
+    "region": {
+      "x": 0.153,
+      "y": 0.776,
+      "width": 0.755,
+      "height": 0.136
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 52,
+    "printedPage": "51",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 52,
+    "printedPage": "51",
+    "role": "exam",
+    "region": {
+      "x": 0.092,
+      "y": 0.128,
+      "width": 0.766,
+      "height": 0.147
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 52,
+    "printedPage": "51",
+    "role": "exam",
+    "region": {
+      "x": 0.092,
+      "y": 0.364,
+      "width": 0.771,
+      "height": 0.15
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 53,
+    "printedPage": "52",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 54,
+    "printedPage": "53",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 55,
+    "printedPage": "54",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 56,
+    "printedPage": "55",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 79,
+    "printedPage": "78",
+    "role": "exam",
+    "region": {
+      "x": 0.035,
+      "y": 0.075,
+      "width": 0.33,
+      "height": 0.031
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 79,
+    "printedPage": "78",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 80,
+    "printedPage": "79",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 81,
+    "printedPage": "80",
+    "role": "exam",
+    "region": {
+      "x": 0.035,
+      "y": 0.075,
+      "width": 0.33,
+      "height": 0.031
+    }
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 81,
+    "printedPage": "80",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 119,
+    "printedPage": "118",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 120,
+    "printedPage": "119",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 121,
+    "printedPage": "120",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 122,
+    "printedPage": "121",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 122,
+    "printedPage": "121",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 123,
+    "printedPage": "122",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 124,
+    "printedPage": "123",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 125,
+    "printedPage": "124",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 126,
+    "printedPage": "125",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 127,
+    "printedPage": "126",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 128,
+    "printedPage": "127",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 129,
+    "printedPage": "128",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 130,
+    "printedPage": "129",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 131,
+    "printedPage": "130",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 132,
+    "printedPage": "131",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 133,
+    "printedPage": "132",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 134,
+    "printedPage": "133",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 135,
+    "printedPage": "134",
+    "role": "solution"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 162,
+    "printedPage": "161",
+    "role": "exam"
+  },
+  {
+    "sourceId": "ket-official-four-tests",
+    "pdfPage": 162,
+    "printedPage": "161",
+    "role": "exam",
+    "region": {
+      "x": 0.105,
+      "y": 0.139,
+      "width": 0.805,
+      "height": 0.341
+    }
+  }
+]

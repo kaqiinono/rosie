@@ -1,4 +1,4 @@
-import { PageBreadcrumb } from '@rosie/ui'
+import { PageAccountRow, PageBreadcrumb } from '@rosie/ui'
 import { Container, Flex, Heading, Separator } from '@rosie/ui/themes'
 import BaiduSyncDirectories from '@/components/settings/BaiduSyncDirectories'
 
@@ -6,12 +6,14 @@ export default function SyncPage() {
   return (
     <Flex direction="column" minHeight="100dvh">
       <Container size="3" width="100%" px="4" flexGrow="0">
-        <Flex align="center" gap="3" py="2">
-          <PageBreadcrumb variant="inline" />
-          <Heading as="h1" size="4">
-            同步管理
-          </Heading>
-        </Flex>
+        <PageAccountRow className="py-2">
+          <Flex align="center" gap="3">
+            <PageBreadcrumb variant="inline" />
+            <Heading as="h1" size="4">
+              同步管理
+            </Heading>
+          </Flex>
+        </PageAccountRow>
       </Container>
       <Separator size="4" />
       <Flex

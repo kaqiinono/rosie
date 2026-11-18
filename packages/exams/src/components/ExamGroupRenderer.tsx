@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react'
 import { MatchingBoard, StickerCard } from '@rosie/ui'
-import { Flex, Grid, Heading, Text } from '@rosie/ui/themes'
+import { Button, Flex, Grid, Heading, SegmentedControl, Text } from '@rosie/ui/themes'
 import type { ExamActivity, ExamOption, Material, MaterialBlock, QuestionGroup } from '../types/content'
 import type { Question, GapFillQuestion, MatchingQuestion } from '../types/questions'
 import type { ExamAnswer, ExamQuestionResult } from '../types/attempts'
@@ -27,6 +27,8 @@ export type ExamGroupRendererProps = {
   disabled?: boolean; solutions?: readonly Solution[]; results?: Readonly<Record<string, ExamQuestionResult>>
   /** Keep student layout when media is resolved through an admin preview. */
   studentPresentation?: boolean
+  /** Keep alternate prompts and candidate photos visible for authoring. */
+  authoring?: boolean
   handwritingEnabled?: boolean
   onHandwritingEditing?: (id: string, editing: boolean) => void
   annotations?: Readonly<Record<string, readonly string[]>>; onAnnotation?: (blockId: string, ids: string[]) => void
@@ -98,9 +100,15 @@ function MatchActivity({ activity, group, answers, onAnswer, disabled, attemptId
 }
 
 /** One group composition for attempts, review and authoring. No solutions are inferred. */
-export function ExamGroupRenderer({ audio, group, materials, attemptId, answers, onAnswer, disabled = false, studentPresentation = false, handwritingEnabled = false, onHandwritingEditing, solutions, results, annotations, onAnnotation, adminRevisionId, renderImage, renderOptionImage, renderMaterial, renderQuestion, renderQuestionTools, questionToolsForHiddenOnly = false, renderSpeaking }: ExamGroupRendererProps) {
+export function ExamGroupRenderer({ audio, group, materials, attemptId, answers, onAnswer, disabled = false, studentPresentation = false, authoring = false, handwritingEnabled = false, onHandwritingEditing, solutions, results, annotations, onAnnotation, adminRevisionId, renderImage, renderOptionImage, renderMaterial, renderQuestion, renderQuestionTools, questionToolsForHiddenOnly = false, renderSpeaking }: ExamGroupRendererProps) {
   const [localMarks, setLocalMarks] = useState<Record<string, string[]>>({})
+  const [writingChoice, setWritingChoice] = useState('')
+  const [candidate, setCandidate] = useState<'A' | 'B'>('A')
   const scopedMaterials = materials.filter(m => group.materialIds.includes(m.id))
+  const showWritingChoice = Boolean(group.writingChoice && adminRevisionId && !authoring)
+  const showCandidateChoice = !authoring && scopedMaterials.some(material => material.speakingCandidate)
+  const gapQuestion = group.questions.find(q => q.answerType === 'gap_fill' && q.classification.questionTypeId === 'gapped_text')
+  const sentencePool = gapQuestion?.answerType === 'gap_fill' ? group.optionPools.find(pool => pool.id === gapQuestion.optionPoolId) : undefined
   const sharedBlocks = [...group.instructions, ...scopedMaterials.flatMap(m => [...m.blocks])]
   const allBlocks = [...sharedBlocks, ...group.questions.flatMap(q => [...q.prompt])]
   const sharedSlots = sharedBlocks.flatMap(block => [...block.answerSlots ?? []])
@@ -119,9 +127,22 @@ export function ExamGroupRenderer({ audio, group, materials, attemptId, answers,
       solutions={solutions} results={results} renderMaterial={renderMaterial} renderQuestion={renderQuestion} renderQuestionTools={questionToolsForHiddenOnly ? undefined : renderQuestionTools} {...media} /> : <Flex key={activity.id} direction="column" gap="4">
       {activity.title && !group.instructions.some(block => activity.instructionIds.includes(block.id) && block.kind === 'text' && block.presentation?.role === 'instruction') && <ExamAuthoringRegion target={{ kind: 'activity', groupId: group.id, activityId: activity.id, field: 'title' }}><Heading as="h3" size="5">{activity.title}</Heading></ExamAuthoringRegion>}
       <ExamMaterialBlocks blocks={group.instructions.filter(b => activity.instructionIds.includes(b.id))} {...media} />
+      {showWritingChoice && <Flex gap="2" wrap="wrap" role="group" aria-label="选择一道写作题">
+        {group.questions.filter(question => activity.questionIds.includes(question.id)).map(question =>
+          <Button key={question.id} size="2" variant={writingChoice === question.id ? 'solid' : 'soft'}
+            aria-pressed={writingChoice === question.id} disabled={disabled} onClick={() => setWritingChoice(question.id)}>
+            {question.displayLabel ?? `Question ${question.location.questionNumber}`}
+          </Button>)}
+      </Flex>}
+      {showCandidateChoice && <Flex><SegmentedControl.Root value={candidate} size="2" aria-label="考生照片"
+        onValueChange={value => { if (value === 'A' || value === 'B') setCandidate(value) }}>
+        <SegmentedControl.Item value="A">Candidate A</SegmentedControl.Item>
+        <SegmentedControl.Item value="B">Candidate B</SegmentedControl.Item>
+      </SegmentedControl.Root></Flex>}
       <Grid columns={{ initial: '1', lg: activity.layout === 'handwriting' && activity.materialIds.length > 0 ? '2' : '1' }} gap="4" align="start">
       {activity.materialIds.length > 0 && <Flex direction="column" gap="3">
-      {scopedMaterials.filter(m => activity.materialIds.includes(m.id)).map(material => {
+      {scopedMaterials.filter(material => activity.materialIds.includes(material.id)
+        && (!showCandidateChoice || !material.speakingCandidate || material.speakingCandidate === candidate)).map(material => {
         const content = <Flex direction="column" gap="3">{!material.blocks.some(block => block.kind === 'text' && block.presentation?.role === 'heading' && block.text === material.title) && <ExamAuthoringRegion target={{ kind: 'material', groupId: group.id, materialId: material.id }}><Text weight="bold">{material.title}</Text></ExamAuthoringRegion>}<ExamReadingMaterial material={material} {...media} /></Flex>
         return renderMaterial ? <div key={material.id}>{renderMaterial(material, content)}</div>
           : <StickerCard key={material.id} tone="paper" elevation="flat">{content}</StickerCard>
@@ -157,6 +178,10 @@ export function ExamGroupRenderer({ audio, group, materials, attemptId, answers,
         </Grid>
       </Flex>}
       </Grid>
+      {sentencePool && gapQuestion && activity.questionIds.includes(gapQuestion.id) && <ExamAuthoringRegion target={{ kind: 'pool', groupId: group.id, poolId: sentencePool.id }}><Flex asChild direction="column" gap="2" lang="en">
+        <ol className="m-0 list-none p-0" aria-label="Sentences A–H">{sentencePool.options.map(option =>
+          <li key={option.id}><Text size="3"><Text weight="bold">{option.id}</Text> {option.label}</Text></li>)}</ol>
+      </Flex></ExamAuthoringRegion>}
       {(activity.layout === 'matching' || activity.layout === 'image_labels') && <MatchActivity key={`${group.id}:${activity.id}`} activity={activity} showExample={boardOwnsExample} imageDisplayWidth={activity.imageDisplayWidth ?? scopedMaterials.flatMap(material => material.blocks).find((block): block is Extract<MaterialBlock, { kind: 'image' }> => block.kind === 'image' && block.mediaSlotId === activity.imageSlotId)?.displayWidth} group={group} answers={answers} onAnswer={onAnswer} disabled={disabled} attemptId={attemptId} adminRevisionId={adminRevisionId} renderImage={renderImage} />}
       {group.questions.filter(q => activity.questionIds.includes(q.id)).map(question => {
         if (activity.layout === 'handwriting') return null
@@ -176,7 +201,8 @@ export function ExamGroupRenderer({ audio, group, materials, attemptId, answers,
         const fields = <ExamQuestionFields question={question} group={group} {...media} renderOptionImage={renderOptionImage}
           sharedInstructions={group.instructions.filter(block => activity.instructionIds.includes(block.id))}
           answer={answers[question.id]} onChange={answer => onAnswer(question.id, answer)} disabled={disabled || question.scoring.kind === 'example'}
-          hideControls={isBoard} solution={solution} result={results?.[question.id]} speaking={renderSpeaking?.(question)} />
+          hideControls={isBoard || (showWritingChoice && writingChoice !== question.id)}
+          solution={solution} result={results?.[question.id]} speaking={renderSpeaking?.(question)} />
         return <div key={question.id}>{renderQuestion ? renderQuestion(question, fields, { compact: false })
           : <StickerCard variant="soft" tone={question.scoring.kind === 'example' ? 'accent' : 'white'} size="sm" elevation="flat" radius="md">{fields}</StickerCard>}</div>
       })}

@@ -12,9 +12,9 @@ import {
 import { normalizeWordForms } from '../utils/word-forms'
 
 const SELECT_COLS =
-  'id, stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, part_of_speech, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
+  'id, headword_id, spelling_group_id, verified_sense_ids, practice_sense_id, preferred_spelling, accepted_spellings, case_sensitive, catalog_revision, stage, unit, lesson, word, display_explanation, display_chinese_def, ipa, example, phonics, syllables, keywords, vocab_type, part_of_speech, word_forms, image_path, image_match_score, image_match_query, image_source, image_pexels_id'
 
-const CACHE_VER = 'word_cache_v6'
+const CACHE_VER = 'word_cache_v7'
 /** v4 cached the entire word library locally; purge it on first use. */
 const LEGACY_CACHE_PREFIX = 'word_cache_v4_'
 const NULL_STAGE = '__null__'
@@ -97,18 +97,8 @@ function clearCacheForStages(userId: string, stages: string[]) {
   }
 }
 
-const UPSERT_OPTS = { onConflict: 'unit,lesson,word,stage', ignoreDuplicates: false } as const
 const FETCH_PAGE_SIZE = 1000
 const UPSERT_CHUNK = 500
-
-function isSameWordEntry(a: WordEntry, b: WordEntry): boolean {
-  return (
-    (a.stage ?? '') === (b.stage ?? '') &&
-    a.unit === b.unit &&
-    a.lesson === b.lesson &&
-    a.word === b.word
-  )
-}
 
 /**
  * wordKey (unit::lesson::word) ignores stage, so a key only leaves the vocab
@@ -120,17 +110,10 @@ export function keysRemovedFromVocab(deleted: WordEntry[], remaining: WordEntry[
   return [...new Set(deleted.map((x) => wordKey(x)))].filter((k) => !remainingKeys.has(k))
 }
 
-async function deleteWordRow(w: WordEntry): Promise<void> {
-  let q = supabase
-    .from('word_entries')
-    .delete()
-    .eq('unit', w.unit)
-    .eq('lesson', w.lesson)
-    .eq('word', w.word)
-  if (w.stage) q = q.eq('stage', w.stage)
-  else q = q.is('stage', null)
-  const { error } = await q
+async function writePositions(action: 'save' | 'archive' | 'archive_stage' | 'rename_stage', rows: object[]) {
+  const { data, error } = await supabase.rpc('write_vocabulary_positions', { p_action: action, p_rows: rows })
   if (error) throw error
+  return (data ?? []) as string[]
 }
 
 async function fetchAllWordEntries(): Promise<WordEntry[]> {
@@ -138,11 +121,12 @@ async function fetchAllWordEntries(): Promise<WordEntry[]> {
   let from = 0
   while (true) {
     const { data, error } = await supabase
-      .from('word_entries')
+      .from('vocabulary_positions')
       .select(SELECT_COLS)
       .order('stage', { nullsFirst: true })
       .order('unit')
       .order('lesson')
+      .order('id')
       .range(from, from + FETCH_PAGE_SIZE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
@@ -163,10 +147,9 @@ async function fetchStageWordEntries(stage: string): Promise<WordEntry[]> {
   const all: WordEntry[] = []
   let from = 0
   while (true) {
-    let q = supabase.from('word_entries').select(SELECT_COLS)
+    let q = supabase.from('vocabulary_positions').select(SELECT_COLS)
     q = stage === NULL_STAGE ? q.is('stage', null) : q.eq('stage', stage)
-    q = q.order('unit').order('lesson')
-    if (stage === 'PET') q = q.order('id')
+    q = q.order('unit').order('lesson').order('id')
     const { data, error } = await q.range(from, from + FETCH_PAGE_SIZE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
@@ -219,8 +202,9 @@ async function fetchStageIndex(): Promise<StageIndex> {
   let from = 0
   while (true) {
     const { data, error } = await supabase
-      .from('word_entries')
+      .from('vocabulary_positions')
       .select('stage, unit, lesson')
+      .order('id')
       .range(from, from + FETCH_PAGE_SIZE - 1)
     if (error) throw error
     if (!data || data.length === 0) break
@@ -286,8 +270,7 @@ async function upsertWordRows(creator: string, words: WordEntry[]) {
   const rows = words.map((w) => toRow(creator, w))
   for (let i = 0; i < rows.length; i += UPSERT_CHUNK) {
     const chunk = rows.slice(i, i + UPSERT_CHUNK)
-    const { error } = await supabase.from('word_entries').upsert(chunk, UPSERT_OPTS)
-    if (error) throw error
+    await writePositions('save', chunk)
   }
 }
 
@@ -321,12 +304,20 @@ function fromRow(row: Record<string, unknown>): WordEntry {
   const src = row.image_source
   return {
     id: typeof row.id === 'string' ? row.id : undefined,
+    headwordId: row.headword_id as string | undefined,
+    spellingGroupId: (row.spelling_group_id as string | null) ?? undefined,
+    preferredSpelling: (row.preferred_spelling as string | null) ?? undefined,
+    acceptedSpellings: (row.accepted_spellings as string[] | null) ?? undefined,
+    verifiedSenseIds: row.verified_sense_ids as string[] | undefined,
+    practiceSenseId: (row.practice_sense_id as string | null) ?? undefined,
+    caseSensitiveSpelling: row.case_sensitive === true,
+    catalogRevision: typeof row.catalog_revision === 'number' ? row.catalog_revision : undefined,
     stage: (row.stage as string) ?? undefined,
     unit: row.unit as string,
     lesson: row.lesson as string,
     word: row.word as string,
-    explanation: row.explanation as string,
-    chineseDef: (row.chinese_def as string) ?? undefined,
+    explanation: row.display_explanation as string,
+    chineseDef: (row.display_chinese_def as string) ?? undefined,
     ipa: (row.ipa as string) ?? undefined,
     example: (row.example as string) ?? undefined,
     phonics: (row.phonics as string) ?? undefined,
@@ -424,9 +415,6 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
       if (!user || !words.length) return
       const stages = [...new Set(words.map((w) => w.stage).filter(Boolean))] as string[]
       clearCacheForStages(user.id, stages.map(stageKey))
-      for (const stage of stages) {
-        await supabase.from('word_entries').delete().eq('stage', stage)
-      }
       await upsertWordRows(user.id, words)
       invalidateSessionStore('word_entries')
       if (scopeStage) {
@@ -444,15 +432,7 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
       if (!user || !words.length) return
       await upsertWordRows(user.id, words)
       clearCacheForStages(user.id, [...new Set(words.map((w) => stageKey(w.stage)))])
-      wordEntriesStore.patchSessionData(user.id, (prev) => {
-        const next = [...prev]
-        for (const w of words) {
-          const idx = next.findIndex((x) => isSameWordEntry(x, w))
-          if (idx >= 0) next[idx] = w
-          else next.push(w)
-        }
-        return next
-      })
+      await reloadWordEntries(user.id)
     },
     [user],
   )
@@ -460,17 +440,16 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
   const updateWord = useCallback(
     async (original: WordEntry, updated: WordEntry) => {
       if (!user) return
-      const base = supabase
-        .from('word_entries')
-        .update(toRow(user.id, updated))
-        .eq('unit', original.unit)
-        .eq('lesson', original.lesson)
-        .eq('word', original.word)
-      await (original.stage ? base.eq('stage', original.stage) : base.is('stage', null))
+      if (!original.id) throw new Error('Vocabulary position ID is required')
+      await writePositions('save', [{
+        ...toRow(user.id, updated),
+        id: original.id,
+        expected_revision: original.catalogRevision,
+      }])
       clearCacheForStages(user.id, [stageKey(original.stage), stageKey(updated.stage)])
-      wordEntriesStore.patchSessionData(user.id, (prev) => {
-        return prev.map((x) => (isSameWordEntry(x, original) ? updated : x))
-      })
+      wordEntriesStore.patchSessionData(user.id, (prev) =>
+        prev.map((x) => (x.id === original.id ? { ...original, ...updated } : x)),
+      )
       // Renaming unit/lesson/word changes the wordKey — carry adaptive-plan
       // progress to the new key (only when the old key truly left the vocab).
       const oldKey = wordKey(original)
@@ -481,6 +460,7 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
           await migrateAdaptiveProgressKey(user.id, oldKey, newKey)
         }
       }
+      await reloadWordEntries(user.id)
     },
     [user],
   )
@@ -488,9 +468,10 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
   const deleteWord = useCallback(
     async (w: WordEntry) => {
       if (!user) return
-      wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => !isSameWordEntry(x, w)))
+      if (!w.id) throw new Error('Vocabulary position ID is required')
       try {
-        await deleteWordRow(w)
+        await writePositions('archive', [{ id: w.id }])
+        wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => x.id !== w.id))
         clearCacheForStages(user.id, [stageKey(w.stage)])
         const remaining = wordEntriesStore.getSessionData(user.id) ?? []
         await archiveAdaptiveProgressForDeletedKeys(
@@ -512,10 +493,9 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
       const deleted = (wordEntriesStore.getSessionData(user.id) ?? []).filter(
         (x) => (x.stage ?? '') === stage,
       )
-      wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => (x.stage ?? '') !== stage))
       try {
-        const { error } = await supabase.from('word_entries').delete().eq('stage', stage)
-        if (error) throw error
+        await writePositions('archive_stage', [{ stage }])
+        wordEntriesStore.patchSessionData(user.id, (prev) => prev.filter((x) => (x.stage ?? '') !== stage))
         clearCacheForStages(user.id, [stageKey(stage)])
         const remaining = wordEntriesStore.getSessionData(user.id) ?? []
         await archiveAdaptiveProgressForDeletedKeys(
@@ -534,7 +514,7 @@ export function useWordData(user: User | null, opts?: { stage: string | null }) 
   const renameStage = useCallback(
     async (oldStage: string, newStage: string) => {
       if (!user || !newStage.trim() || oldStage === newStage) return
-      await supabase.from('word_entries').update({ stage: newStage }).eq('stage', oldStage)
+      await writePositions('rename_stage', [{ stage: oldStage, next_stage: newStage.trim() }])
       clearCacheForStages(user.id, [stageKey(oldStage), stageKey(newStage)])
       wordEntriesStore.patchSessionData(user.id, (prev) => {
         return prev.map((x) =>

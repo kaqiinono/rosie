@@ -4,10 +4,12 @@ import { Fragment } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { buildBreadcrumb, type BreadcrumbItem } from './breadcrumb-map'
+import { PageAccountRow } from './PageAccountRow'
 
 type PageBreadcrumbProps = {
   /** fixed=左上角悬浮（默认）；inline=无定位，由调用方放入 header 等容器 */
   variant?: 'fixed' | 'inline'
+  showAccount?: boolean
 }
 
 /** 单级回退（上级即首页）或未知路由时的「返回首页」按钮，视觉沿用原 BackLink */
@@ -37,11 +39,7 @@ function BackHomeLink({ variant }: { variant: 'fixed' | 'inline' }) {
   )
 }
 
-/**
- * 面包屑导航：按路由映射表自动生成层级链，每层可点击回退。
- * 上级为首页或未知路由时退化为「返回首页」按钮。
- */
-export default function PageBreadcrumb({ variant = 'fixed' }: PageBreadcrumbProps) {
+function BreadcrumbContent({ variant }: { variant: NonNullable<PageBreadcrumbProps['variant']> }) {
   const pathname = usePathname()
   const items = buildBreadcrumb(pathname)
 
@@ -75,4 +73,15 @@ export default function PageBreadcrumb({ variant = 'fixed' }: PageBreadcrumbProp
       </span>
     </nav>
   )
+}
+
+/**
+ * 面包屑导航：按路由映射表自动生成层级链，每层可点击回退。
+ * 上级为首页或未知路由时退化为「返回首页」按钮。
+ */
+export default function PageBreadcrumb({ variant = 'fixed', showAccount }: PageBreadcrumbProps) {
+  const breadcrumb = <BreadcrumbContent variant={variant} />
+  return variant === 'inline' && showAccount
+    ? <PageAccountRow>{breadcrumb}</PageAccountRow>
+    : breadcrumb
 }

@@ -19,9 +19,7 @@ export default function GradeLessonList({ grade }: { grade: number }) {
       <OrbBackground variant="math" />
       {/* 面包屑 inline 与内容同层（fixed 变体宽屏时会悬在左侧留白里） */}
       <div className="relative z-1 flex min-h-screen flex-col items-center gap-7 px-5 pt-5 pb-12 max-[500px]:gap-5 max-[500px]:px-3.5 max-[500px]:pb-8">
-        <div className="w-fit self-start">
-          <PageBreadcrumb variant="inline" />
-        </div>
+        <PageBreadcrumb variant="inline" showAccount />
         <section className="max-w-[480px] text-center">
           <h1 className="mt-2 text-[clamp(26px,5vw,34px)] leading-tight font-black text-amber-700">
             {label}

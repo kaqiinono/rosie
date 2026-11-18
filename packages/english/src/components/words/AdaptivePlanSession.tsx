@@ -54,7 +54,7 @@ import AdaptivePlanStageRoadmap from './AdaptivePlanStageRoadmap'
 import QuizQuestionBody from './QuizQuestionBody'
 import StudyPhase from './StudyPhase'
 import TodayWordDetailModal from './TodayWordDetailModal'
-import { useQuizRunner, type QuizCommitInfo } from './useQuizRunner'
+import { useQuizRunner, vocabularyEvidence, type QuizCommitInfo } from './useQuizRunner'
 import { Button } from '@rosie/ui/themes'
 
 type AdaptivePlanSessionProps = {
@@ -1098,6 +1098,7 @@ export default function AdaptivePlanSession({
         allDone: todaySummary.allDone,
       })
       patchMasteryPatches(user.id, settleResult.masteryPatches)
+      void wordMasteryStore.refreshInBackground(user.id)
       setRows(nextRows)
       setSettleFailed(null)
       setSettleError(null)
@@ -1269,6 +1270,7 @@ export default function AdaptivePlanSession({
         allDone: todaySummary.allDone,
       })
       patchMasteryPatches(user.id, settleResult.masteryPatches)
+      void wordMasteryStore.refreshInBackground(user.id)
       setRows(nextRows)
       setSettleFailed(null)
       setSettleError(null)
@@ -1607,7 +1609,7 @@ export default function AdaptivePlanSession({
       if (!q) return
       const key = wordKey(q.word)
       const usedHelpCount = helpClicks[key] ?? 0
-      const usedHelp = usedHelpCount > 0
+      const usedHelp = usedHelpCount > 0 || info.usedContextHint === true
       const outcome = {
         wordKey: key,
         correct: info.finalCorrect,
@@ -1615,6 +1617,7 @@ export default function AdaptivePlanSession({
         usedRetry: info.usedRetry,
         usedHelp,
         usedHelpCount,
+        evidence: vocabularyEvidence(q, info, usedHelp),
       }
 
       if (phase === 'review') {

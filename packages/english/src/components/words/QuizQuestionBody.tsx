@@ -87,9 +87,9 @@ function QuestionBody({
   const magicBusy = magicPhase !== 'idle'
   const magicAnswer = useMemo(
     () =>
-      acceptedSpellings(question.word.word).find((answer) => !/[()]/.test(answer)) ??
+      acceptedSpellings(question.word).find((answer) => !/[()]/.test(answer)) ??
       question.word.word,
-    [question.word.word],
+    [question.word],
   )
 
   useEffect(() => {
@@ -405,6 +405,7 @@ function QuestionBody({
           <SpellTiles
             key={questionKey}
             word={question.word.word}
+            entry={question.word}
             onSubmit={runner.handleSpellSubmit}
             answered={runner.answered}
             isCorrect={runner.spellOk}

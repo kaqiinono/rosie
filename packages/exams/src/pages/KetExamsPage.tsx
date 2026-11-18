@@ -22,7 +22,7 @@ export function KetExamsPage() {
   const unfinished = attempts.data.items.filter(item => item.status === 'active' || item.status === 'ready')
   const unfinishedWords = wordReviews.data.items.filter(item => item.status === 'active' || item.status === 'collecting')
     .sort((a, b) => Number(b.status === 'active') - Number(a.status === 'active') || b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id))
-  return <PageShell title="考一考 · KET" tone="paper" width="narrow">
+  return <PageShell title="考一考 · KET" tone="paper" width="narrow" showAccount>
     <Flex direction="column" gap="5">
       <Flex gap="3" wrap="wrap"><Button size="3" asChild><Link href="/exams/ket/practice">专项练习</Link></Button>
         <Button size="3" variant="soft" asChild><Link href="/exams/reports">学习报告与复盘</Link></Button>

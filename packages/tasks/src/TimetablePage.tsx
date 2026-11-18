@@ -41,9 +41,7 @@ export default function TimetablePage() {
         pt="3"
         pb="5"
       >
-        <Flex>
-          <PageBreadcrumb variant="inline" />
-        </Flex>
+        <PageBreadcrumb variant="inline" showAccount />
         <Flex role="main" direction="column" gap="3" flexGrow="1">
           {message && (
             <Text role="status" size="2">

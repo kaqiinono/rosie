@@ -1,5 +1,5 @@
-import { KET_SCHOOLS_2020_TEMPLATE } from '../templates/ket-schools-2020-v1'
-import type { ContentProvenance, ContentReview, ExamTemplate } from '../types/content'
+import { resolveExamTemplate } from '../templates/examTemplates'
+import type { ContentProvenance, ContentReview } from '../types/content'
 import type { Explanation, Solution } from '../types/solutions'
 import { issue, type ExamDraftInput, type ValidationIssue } from './contracts'
 
@@ -8,7 +8,11 @@ export function describeExamDraftReadiness(draft: ExamDraftInput): { exam: Valid
   const exam: ValidationIssue[] = []
   const explanations: ValidationIssue[] = []
   const { content, solutions, contentSet } = draft
-  const template: ExamTemplate = KET_SCHOOLS_2020_TEMPLATE
+  const template = resolveExamTemplate(contentSet.template)
+  if (!template) {
+    issue(exam, '$.contentSet.template', 'unknown_template', 'Only registered template versions may be referenced.')
+    return { exam, explanations }
+  }
   const solutionMap = new Map(solutions.solutions.map(solution => [solution.questionId, solution]))
   const review = (value: ContentReview, path: string, target: ValidationIssue[]): void => {
     if (value.status !== 'approved') issue(target, path, value.status === 'blocked' ? 'review_blocked' : 'review_pending', 'Content still requires an authorized source review.')
@@ -73,7 +77,8 @@ export function describeExamDraftReadiness(draft: ExamDraftInput): { exam: Valid
       const groups = content.groups.filter(group => group.role === 'exam' && group.sectionId === section.id)
       const questions = groups.flatMap(group => group.questions)
       const objectiveCount = questions.filter(question => question.scoring.kind === 'objective').length
-      const writingCount = questions.filter(question => question.answerType === 'writing' && question.scoring.kind === 'manual').length
+      const writingCount = groups.reduce((count, group) => count + (group.writingChoice ? 1
+        : group.questions.filter(question => question.answerType === 'writing' && question.scoring.kind === 'manual').length), 0)
       const speakingParts = new Set(questions.filter(question => question.answerType === 'speaking' && question.scoring.kind === 'manual').map(question => question.location.partNumber)).size
       if (objectiveCount !== section.objectiveQuestionCount || writingCount !== section.writingTaskCount || speakingParts !== section.speakingPartCount) issue(exam, '$.content.groups', 'section_coverage_incomplete', 'Exam section question/task coverage differs from the registered template.')
       for (const part of section.parts) {
@@ -82,7 +87,9 @@ export function describeExamDraftReadiness(draft: ExamDraftInput): { exam: Valid
     }
   }
   content.guidance.forEach((item, index) => provenance(item.provenance, `$.content.guidance[${index}].provenance`, exam))
-  content.vocabularyLinks.forEach((link, index) => review(link.review, `$.content.vocabularyLinks[${index}].review`, exam))
+  content.vocabularyLinks.forEach((link, index) => {
+    if (!link.matchSource || link.review.status === 'blocked') review(link.review, `$.content.vocabularyLinks[${index}].review`, exam)
+  })
   solutions.solutions.forEach((solution, index) => {
     const path = `$.solutions.solutions[${index}]`
     provenance(solution.provenance, `${path}.provenance`, exam)

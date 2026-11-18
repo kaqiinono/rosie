@@ -3613,6 +3613,861 @@
           ]
         }
       ]
+    },
+    {
+      "id": "pet-schools-1",
+      "title": "B1 Preliminary for Schools 1 with Answers",
+      "sha256": "cad957919bd3dad7a40c6650adbc56656e9e3d667035c291b083c51574a9ccde",
+      "pageCount": 163,
+      "coverage": "partial",
+      "pages": [
+        {
+          "id": "pet-schools-1:test-1:source-1",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 10,
+            "printedPage": "8",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-2",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 11,
+            "printedPage": "9",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-3",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 12,
+            "printedPage": "10",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-4",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 13,
+            "printedPage": "11",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-5",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 14,
+            "printedPage": "12",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-6",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 15,
+            "printedPage": "13",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-7",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 16,
+            "printedPage": "14",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-8",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 17,
+            "printedPage": "15",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-9",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 18,
+            "printedPage": "16",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-10",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 19,
+            "printedPage": "17",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-11",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 20,
+            "printedPage": "18",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-12",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 21,
+            "printedPage": "19",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-13",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-14",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam",
+            "region": {
+              "x": 0.145,
+              "y": 0.286,
+              "width": 0.807,
+              "height": 0.137
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-15",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam",
+            "region": {
+              "x": 0.145,
+              "y": 0.482,
+              "width": 0.807,
+              "height": 0.133
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-16",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 22,
+            "printedPage": "20",
+            "role": "exam",
+            "region": {
+              "x": 0.145,
+              "y": 0.677,
+              "width": 0.807,
+              "height": 0.136
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-17",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-18",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.124,
+              "width": 0.807,
+              "height": 0.142
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-19",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.321,
+              "width": 0.807,
+              "height": 0.142
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-20",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.517,
+              "width": 0.807,
+              "height": 0.142
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-21",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 23,
+            "printedPage": "21",
+            "role": "exam",
+            "region": {
+              "x": 0.097,
+              "y": 0.714,
+              "width": 0.807,
+              "height": 0.143
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-22",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 24,
+            "printedPage": "22",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-23",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 25,
+            "printedPage": "23",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-24",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 26,
+            "printedPage": "24",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-25",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 27,
+            "printedPage": "25",
+            "role": "exam"
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-26",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 82,
+            "printedPage": "80",
+            "role": "exam",
+            "region": {
+              "x": 0.104,
+              "y": 0.16,
+              "width": 0.35,
+              "height": 0.05
+            }
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-27",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 82,
+            "printedPage": "80",
+            "role": "teacher_notes"
+          },
+          "kind": "script",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-28",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 83,
+            "printedPage": "81",
+            "role": "teacher_notes"
+          },
+          "kind": "script",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-29",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 84,
+            "printedPage": "82",
+            "role": "exam",
+            "region": {
+              "x": 0.107,
+              "y": 0.109,
+              "width": 0.245,
+              "height": 0.038
+            }
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-30",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 84,
+            "printedPage": "82",
+            "role": "teacher_notes"
+          },
+          "kind": "script",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-31",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.246,
+              "y": 0.274,
+              "width": 0.672,
+              "height": 0.141
+            }
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-32",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.058,
+              "y": 0.184,
+              "width": 0.205,
+              "height": 0.017
+            }
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-33",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.058,
+              "y": 0.545,
+              "width": 0.205,
+              "height": 0.025
+            }
+          },
+          "kind": "question",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-34",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "teacher_notes"
+          },
+          "kind": "script",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-35",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          },
+          "kind": "answer",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-36",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 99,
+            "printedPage": "97",
+            "role": "solution"
+          },
+          "kind": "explanation",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-37",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 100,
+            "printedPage": "98",
+            "role": "solution"
+          },
+          "kind": "explanation",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-38",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 101,
+            "printedPage": "99",
+            "role": "solution"
+          },
+          "kind": "explanation",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-39",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 102,
+            "printedPage": "100",
+            "role": "solution"
+          },
+          "kind": "explanation",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-40",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 103,
+            "printedPage": "101",
+            "role": "solution"
+          },
+          "kind": "explanation",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-41",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 104,
+            "printedPage": "102",
+            "role": "solution"
+          },
+          "kind": "explanation",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-42",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          },
+          "kind": "answer",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-43",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "teacher_notes"
+          },
+          "kind": "transcript",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-44",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 106,
+            "printedPage": "104",
+            "role": "teacher_notes"
+          },
+          "kind": "transcript",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-45",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 107,
+            "printedPage": "105",
+            "role": "teacher_notes"
+          },
+          "kind": "transcript",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-46",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 108,
+            "printedPage": "106",
+            "role": "teacher_notes"
+          },
+          "kind": "transcript",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-47",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 109,
+            "printedPage": "107",
+            "role": "teacher_notes"
+          },
+          "kind": "transcript",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-48",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 152,
+            "printedPage": "150",
+            "role": "exam",
+            "region": {
+              "x": 0.2,
+              "y": 0.245,
+              "width": 0.635,
+              "height": 0.305
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-49",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 152,
+            "printedPage": "150",
+            "role": "exam",
+            "region": {
+              "x": 0.2,
+              "y": 0.581,
+              "width": 0.635,
+              "height": 0.303
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        },
+        {
+          "id": "pet-schools-1:test-1:source-50",
+          "reference": {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 153,
+            "printedPage": "151",
+            "role": "exam",
+            "region": {
+              "x": 0.049,
+              "y": 0.223,
+              "width": 0.891,
+              "height": 0.579
+            }
+          },
+          "kind": "picture",
+          "review": "pending"
+        }
+      ],
+      "groups": [
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-1",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "reading",
+          "partNumber": 1,
+          "pageIds": [
+            "pet-schools-1:test-1:source-1",
+            "pet-schools-1:test-1:source-35",
+            "pet-schools-1:test-1:source-2"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-2",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "reading",
+          "partNumber": 2,
+          "pageIds": [
+            "pet-schools-1:test-1:source-3",
+            "pet-schools-1:test-1:source-4",
+            "pet-schools-1:test-1:source-35"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-3",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "reading",
+          "partNumber": 3,
+          "pageIds": [
+            "pet-schools-1:test-1:source-5",
+            "pet-schools-1:test-1:source-6",
+            "pet-schools-1:test-1:source-35"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-4",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "reading",
+          "partNumber": 4,
+          "pageIds": [
+            "pet-schools-1:test-1:source-7",
+            "pet-schools-1:test-1:source-8",
+            "pet-schools-1:test-1:source-35"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-5",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "reading",
+          "partNumber": 5,
+          "pageIds": [
+            "pet-schools-1:test-1:source-9",
+            "pet-schools-1:test-1:source-35"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:reading:part-6",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "reading",
+          "partNumber": 6,
+          "pageIds": [
+            "pet-schools-1:test-1:source-10",
+            "pet-schools-1:test-1:source-35"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:writing:part-1",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "writing",
+          "partNumber": 1,
+          "pageIds": [
+            "pet-schools-1:test-1:source-11",
+            "pet-schools-1:test-1:source-36",
+            "pet-schools-1:test-1:source-37"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:writing:part-2",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "writing",
+          "partNumber": 2,
+          "pageIds": [
+            "pet-schools-1:test-1:source-12",
+            "pet-schools-1:test-1:source-38",
+            "pet-schools-1:test-1:source-39",
+            "pet-schools-1:test-1:source-40",
+            "pet-schools-1:test-1:source-41"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-1",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "listening",
+          "partNumber": 1,
+          "pageIds": [
+            "pet-schools-1:test-1:source-13",
+            "pet-schools-1:test-1:source-17",
+            "pet-schools-1:test-1:source-14",
+            "pet-schools-1:test-1:source-15",
+            "pet-schools-1:test-1:source-16",
+            "pet-schools-1:test-1:source-18",
+            "pet-schools-1:test-1:source-19",
+            "pet-schools-1:test-1:source-20",
+            "pet-schools-1:test-1:source-21",
+            "pet-schools-1:test-1:source-42",
+            "pet-schools-1:test-1:source-43",
+            "pet-schools-1:test-1:source-44"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-2",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "listening",
+          "partNumber": 2,
+          "pageIds": [
+            "pet-schools-1:test-1:source-22",
+            "pet-schools-1:test-1:source-23",
+            "pet-schools-1:test-1:source-42",
+            "pet-schools-1:test-1:source-45",
+            "pet-schools-1:test-1:source-46"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-3",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "listening",
+          "partNumber": 3,
+          "pageIds": [
+            "pet-schools-1:test-1:source-24",
+            "pet-schools-1:test-1:source-42",
+            "pet-schools-1:test-1:source-46"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:listening:part-4",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "listening",
+          "partNumber": 4,
+          "pageIds": [
+            "pet-schools-1:test-1:source-25",
+            "pet-schools-1:test-1:source-42",
+            "pet-schools-1:test-1:source-47"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-1",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "speaking",
+          "partNumber": 1,
+          "pageIds": [
+            "pet-schools-1:test-1:source-26",
+            "pet-schools-1:test-1:source-27",
+            "pet-schools-1:test-1:source-28"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-2",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "speaking",
+          "partNumber": 2,
+          "pageIds": [
+            "pet-schools-1:test-1:source-29",
+            "pet-schools-1:test-1:source-48",
+            "pet-schools-1:test-1:source-49",
+            "pet-schools-1:test-1:source-30"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-3",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "speaking",
+          "partNumber": 3,
+          "pageIds": [
+            "pet-schools-1:test-1:source-32",
+            "pet-schools-1:test-1:source-31",
+            "pet-schools-1:test-1:source-50",
+            "pet-schools-1:test-1:source-34"
+          ]
+        },
+        {
+          "id": "pet-schools-1:test-1:exam:speaking:part-4",
+          "testNumber": 1,
+          "role": "exam",
+          "sectionId": "speaking",
+          "partNumber": 4,
+          "pageIds": [
+            "pet-schools-1:test-1:source-33",
+            "pet-schools-1:test-1:source-34"
+          ]
+        }
+      ]
     }
   ]
 }

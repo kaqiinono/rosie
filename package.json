@@ -27,6 +27,8 @@
     "audio:transcribe": "node --env-file-if-exists=apps/web/.env.proxy.local --env-file-if-exists=apps/web/.env.local --use-env-proxy scripts/transcribe-audio.mjs",
     "story:import": "node scripts/import-story-pdf.mjs",
     "word-pos:backfill": "node --env-file-if-exists=apps/web/.env.local scripts/backfill-word-part-of-speech.mjs",
+    "vocab:import": "node --env-file-if-exists=apps/web/.env.local scripts/import-reviewed-vocabulary.mjs",
+    "vocab:assessment": "node --env-file-if-exists=apps/web/.env.local scripts/vocabulary-assessment-bank.mjs",
     "pet:import": "node --env-file-if-exists=apps/web/.env.local scripts/import-pet-vocabulary.mjs",
     "exams:content": "node scripts/import-exam-content.mjs",
     "exams:images": "node scripts/prepare-exam-image-crops.mjs",

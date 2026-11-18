@@ -1,12 +1,15 @@
 import Link from 'next/link'
+import { PageAccountRow } from '@rosie/ui'
 import type { StorySeries } from '../../utils/story-types'
 
 export default function StorySeriesView({ series }: { series: StorySeries }) {
   return (
     <main className="font-nunito relative z-[1] mx-auto max-w-5xl px-4 py-8 pb-24">
-      <Link href="/stories" className="text-sm font-bold text-amber-700">
-        ← 返回故事会
-      </Link>
+      <PageAccountRow>
+        <Link href="/stories" className="text-sm font-bold text-amber-700">
+          ← 返回故事会
+        </Link>
+      </PageAccountRow>
       <header className="mt-4 rounded-3xl bg-orange-50 p-6 ring-1 ring-amber-200">
         <p className="text-sm font-bold text-amber-700">{series.author}</p>
         <h1 className="font-fredoka mt-1 text-3xl font-black text-slate-900">{series.title}</h1>

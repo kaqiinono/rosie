@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useAuth } from '@rosie/core'
-import { useImmersive } from '@rosie/core'
+import { useAuth, useImmersive } from '@rosie/core'
+import { UserRound } from 'lucide-react'
+import { DropdownMenu, IconButton } from './themes'
 
 type AccountBarProps = {
   /** `header` — compact neutral chrome for in-page toolbars (e.g. math lesson nav). */
-  variant?: 'default' | 'header'
+  variant?: 'default' | 'header' | 'menu'
 }
 
 const HEADER_ICON_BTN =
@@ -17,6 +18,32 @@ export default function AccountBar({ variant = 'default' }: AccountBarProps) {
   const { isImmersive } = useImmersive()
 
   if (loading || isImmersive) return null
+
+  if (variant === 'menu') {
+    if (!user) return null
+
+    const account = user.email?.replace(/@rosie\.app$/, '') || '已登录用户'
+
+    return (
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <IconButton type="button" size="2" color="gray" variant="soft" aria-label="账号菜单" className="print:hidden">
+            <UserRound size={16} aria-hidden />
+          </IconButton>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end" size="2" className="max-w-64 print:hidden">
+          <DropdownMenu.Label className="wrap-anywhere whitespace-normal">当前账号：{account}</DropdownMenu.Label>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item asChild>
+            <Link href="/setting">用户配置</Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item color="red" onSelect={() => void signOut()}>
+            退出登录
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    )
+  }
 
   if (variant === 'header') {
     if (!user) {

@@ -110,8 +110,8 @@ export default function MathCatalogPage() {
     <div className="bg-kid-paper min-h-screen text-slate-800">
       <header className="bg-[#4895ef] px-7 py-[22px] text-white">
         {/* 面包屑 inline 放在渐变 header 内（fixed 变体会贴视口左缘，与内容脱节） */}
-        <div className="mb-3 w-fit">
-          <PageBreadcrumb variant="inline" />
+        <div className="mb-3">
+          <PageBreadcrumb variant="inline" showAccount />
         </div>
         <h1 className="m-0 text-[21px] font-bold">📚 小学数学思维教材 · 细分题型知识图谱</h1>
         <p className="mt-1.5 text-[13px] opacity-90">

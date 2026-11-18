@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { User } from '@supabase/supabase-js'
 import {
   advanceStage,
@@ -10,25 +10,28 @@ import {
   supabase,
 } from '@rosie/core'
 import { wordKey } from '../utils/english-helpers'
-import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord } from '@rosie/core'
+import type { WordEntry, WordMasteryMap, WordMasteryInfo, ReviewRecord, VocabularyEvidence, WordPracticeResult } from '@rosie/core'
 
 async function fetchWordMastery(userId: string): Promise<WordMasteryMap> {
-  const { data } = await supabase
-    .from('word_mastery')
-    .select(
-      'word_key, correct, incorrect, last_seen, stage, next_review_date, is_hard, review_history',
-    )
-    .eq('user_id', userId)
   const record: WordMasteryMap = {}
-  for (const row of data ?? []) {
-    record[row.word_key] = {
-      correct: row.correct ?? 0,
-      incorrect: row.incorrect ?? 0,
-      lastSeen: row.last_seen ?? '',
-      stage: row.stage ?? undefined,
-      nextReviewDate: row.next_review_date ?? undefined,
-      isHard: row.is_hard ?? undefined,
-      reviewHistory: (row.review_history as ReviewRecord[] | null) ?? [],
+  for (const table of ['word_mastery', 'vocabulary_mastery_overlay'] as const) {
+    for (let offset = 0; ; offset += 1000) {
+      const { data, error } = await supabase.from(table).select('*').eq('user_id', userId)
+        .order('word_key').range(offset, offset + 999)
+      if (error) throw error
+      for (const row of data ?? []) {
+        const previous = record[row.word_key]
+        record[row.word_key] = {
+          correct: row.correct ?? previous?.correct ?? 0,
+          incorrect: row.incorrect ?? 0,
+          lastSeen: row.last_seen ?? '',
+          stage: row.stage ?? undefined,
+          nextReviewDate: row.next_review_date ?? undefined,
+          isHard: row.is_hard ?? undefined,
+          reviewHistory: (row.review_history as ReviewRecord[] | null) ?? previous?.reviewHistory ?? [],
+        }
+      }
+      if (!data || data.length < 1000) break
     }
   }
   return record
@@ -39,18 +42,54 @@ export const wordMasteryStore = createUserSessionStore<WordMasteryMap>('word_mas
   empty: {},
 })
 
+const pendingEvidence = new Map<string, Map<string, VocabularyEvidence>>()
+const evidenceWrites = new Map<string, Promise<void>>()
+
+function submitVocabularyEvidence(userId: string, attempts: VocabularyEvidence[]) {
+  const queue = pendingEvidence.get(userId) ?? new Map<string, VocabularyEvidence>()
+  for (const attempt of attempts) queue.set(attempt.id, attempt)
+  if (!queue.size) return
+  pendingEvidence.set(userId, queue)
+  if (evidenceWrites.has(userId)) return
+
+  const operation = (async () => {
+    while (queue.size) {
+      const batch = Array.from(queue.values()).slice(0, 500)
+      const { error } = await supabase.rpc('record_vocabulary_practice', { p_user_id: userId, p_attempts: batch })
+      if (error) throw error
+      for (const attempt of batch) queue.delete(attempt.id)
+    }
+    pendingEvidence.delete(userId)
+  })()
+  evidenceWrites.set(userId, operation)
+  void operation
+    .finally(() => evidenceWrites.delete(userId))
+    .then(() => wordMasteryStore.refreshInBackground(userId))
+    .catch((error: unknown) => console.error('[vocabulary_skill_progress] save failed', error))
+}
+
 export function useWordMastery(user: User | null) {
   const { data: masteryMap, isLoading } = wordMasteryStore.useSessionData(user)
+  const userId = user?.id
+  useEffect(() => {
+    if (!userId) return
+    const retryPending = () => submitVocabularyEvidence(userId, [])
+    retryPending()
+    window.addEventListener('online', retryPending)
+    return () => window.removeEventListener('online', retryPending)
+  }, [userId])
 
   const recordBatch = useCallback(
-    (results: { entry: WordEntry; correct: boolean }[]) => {
+    (results: WordPracticeResult[]) => {
       if (!user) return
       if (results.length === 0) return
+      submitVocabularyEvidence(user.id, results.flatMap((result) => result.evidence ? [result.evidence] : []))
       const today = new Date().toISOString().slice(0, 10)
 
       type Group = { entry: WordEntry; corrects: number; total: number }
       const byKey = new Map<string, Group>()
-      for (const { entry, correct } of results) {
+      for (const { entry, correct, evidence } of results) {
+        if (evidence) continue
         const k = wordKey(entry)
         const g = byKey.get(k) ?? { entry, corrects: 0, total: 0 }
         if (correct) g.corrects += 1
@@ -58,6 +97,7 @@ export function useWordMastery(user: User | null) {
         byKey.set(k, g)
       }
 
+      if (byKey.size === 0) return
       const touchedKeys: string[] = []
       wordMasteryStore.patchSessionData(user.id, (prev) => {
         const next = { ...prev }
@@ -121,6 +161,17 @@ export function useWordMastery(user: User | null) {
   const recordRecallAttempt = useCallback(
     (entry: WordEntry, correct: boolean) => {
       if (!user) return
+      if (entry.id && entry.practiceSenseId) {
+        submitVocabularyEvidence(user.id, [{
+          id: crypto.randomUUID(),
+          wordEntryId: entry.id,
+          targetId: entry.practiceSenseId,
+          skill: 'meaning',
+          correct,
+          independent: true,
+        }])
+        return
+      }
       const today = new Date().toISOString().slice(0, 10)
       const key = wordKey(entry)
 

@@ -9,12 +9,12 @@ import { Badge, Button, Flex, Tabs, Text, TextArea } from '@rosie/ui/themes'
 import { validateExamDraft } from '../validation'
 import type { ExamDraftInput, ValidationIssue } from '../validation/contracts'
 import type { ExamPublicationState, ExamPublicationReceipt, ExamReviewScope } from '../types/publication'
+import type { VocabularyLink } from '../types/content'
 import { examRequest, ExamRequestError, examErrorMessage } from '../client/examApi'
 import { clearSavedExamCatalogCache, refreshAdminCatalog } from '../client/adminCatalog'
 import { clearSavedExamImageCache } from '../client/imageTasks'
 import { clearSavedExamMediaCache } from '../client/mediaEditor'
 import { DraftText } from '../components/admin/DraftFields'
-import { VocabularyFields } from '../components/admin/VocabularyFields'
 import { ExamIssueList } from '../components/admin/ExamIssueList'
 import { ExamPaperView } from '../components/admin/ExamPaperView'
 import { ExamImageTools } from '../components/admin/ExamImageTools'
@@ -23,7 +23,7 @@ import { ExamImageDialog } from '../components/admin/ExamImageDialog'
 import { ExamSourcePage } from '../components/admin/ExamSourcePage'
 
 type DraftRecord = { draft: ExamDraftInput; version: string; createdAt: string; updatedAt: string }
-type PendingCommand = { path: string; body: string; method: 'PATCH' | 'POST'; kind: 'save' | 'review' | 'publish' | 'withdraw' | 'reopen'; draft?: ExamDraftInput }
+type PendingCommand = { path: string; body: string; method: 'PATCH' | 'POST'; kind: 'save' | 'review' | 'publish' | 'withdraw' | 'reopen'; draft?: ExamDraftInput; vocabulary?: { matched: number; omitted: number } }
 const REVIEW_NAMES: Record<ExamReviewScope, string> = { exam: '题面与标准答案', explanations: '完整解析与来源', rubric: '主观题评分量表' }
 
 function Editor({ id, userId }: { id: string; userId: string }) {
@@ -112,17 +112,30 @@ function Editor({ id, userId }: { id: string; userId: string }) {
     let acknowledged = false
     try {
       if (command.kind === 'save' && command.draft) {
+        let savedDraft = command.draft
+        let vocabulary = command.vocabulary
+        if (!vocabulary) {
+          const { links, matched, omitted } = await examRequest<{ links: VocabularyLink[]; matched: number; omitted: number }>(
+            userId, '/api/admin/exams/words', { method: 'POST', body: command.body })
+          savedDraft = { ...savedDraft, content: { ...savedDraft.content, vocabularyLinks: links } }
+          vocabulary = { matched, omitted }
+          command = { ...command, draft: savedDraft, vocabulary,
+            body: JSON.stringify({ ...JSON.parse(command.body), draft: savedDraft }) }
+          // A retried save must replay these exact matches even if the word bank has since changed.
+          setPending(command)
+        }
         const receipt = await examRequest<{ version: string }>(userId, command.path, { method: command.method, body: command.body })
         acknowledged = true
-        setDraft(command.draft)
-        setBaseline(JSON.stringify(command.draft))
-        setRaw(JSON.stringify(command.draft, null, 2))
+        setDraft(savedDraft)
+        setBaseline(JSON.stringify(savedDraft))
+        setRaw(JSON.stringify(savedDraft, null, 2))
         setRawDirty(false)
         setPending(null)
         setBlockEditing(false)
         setMediaVersion(value => value + 1)
         setPublication(previous => previous ? { ...previous, version: receipt.version, reviews: { exam: null, explanations: null, rubric: null }, readiness: { exam: [], explanations: [], canPublish: false } } : previous)
-        setNotice('修改已保存。')
+        setNotice(vocabulary.omitted ? `修改已保存，自动关联 ${vocabulary.matched} 处。另有 ${vocabulary.omitted} 处超出内容包大小上限。`
+          : vocabulary.matched ? `修改已保存，自动关联词条 ${vocabulary.matched} 处。` : '修改已保存。')
         if (nextQuestionId) setSelectedQuestionId(nextQuestionId)
         const results = await Promise.allSettled([
           clearSavedExamCatalogCache(userId, id),
@@ -168,10 +181,10 @@ function Editor({ id, userId }: { id: string; userId: string }) {
 
   async function persist(value: ExamDraftInput): Promise<boolean> {
     if (!publication || pending || busyRef.current) return false
-    const result = validateExamDraft(value)
+    const result = validateExamDraft(value, { regenerateVocabulary: true })
     if (!result.ok) { setIssues(result.issues); setError(new ExamRequestError('exam_invalid_draft', 400, result.issues)); return false }
-    return execute({ path, method: 'PATCH', kind: 'save', draft: value,
-      body: JSON.stringify({ draft: value, requestId: crypto.randomUUID(), expectedVersion: publication.version }) })
+    return execute({ path, method: 'PATCH', kind: 'save', draft: result.value,
+      body: JSON.stringify({ draft: result.value, requestId: crypto.randomUUID(), expectedVersion: publication.version }) })
   }
 
   function save() {
@@ -197,7 +210,7 @@ function Editor({ id, userId }: { id: string; userId: string }) {
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
-  function openIssueSection(action: 'content' | 'words' | 'raw' | 'review') {
+  function openIssueSection(action: 'content' | 'raw' | 'review') {
     if (blockEditing) return
     if (action !== 'review') {
       setTab(action)
@@ -209,6 +222,7 @@ function Editor({ id, userId }: { id: string; userId: string }) {
   }
 
   const issueListProps = { draft, revisionId: id, navigationDisabled: dirty || busy || !!pending, onOpen: openIssueSection }
+  const linkedWordCount = new Set(draft?.content.vocabularyLinks.map(link => link.wordEntryId.toLowerCase())).size
   const questions = draft?.content.groups.flatMap(group => group.questions) ?? []
   const selectedQuestion = questions.find(question => question.id === selectedQuestionId) ?? questions[0]
   const selectedIndex = questions.findIndex(question => question.id === selectedQuestion?.id)
@@ -239,13 +253,14 @@ function Editor({ id, userId }: { id: string; userId: string }) {
           {pending && <Flex><Button size="3" variant="soft" loading={busy} onClick={() => void execute(pending)}>重试原操作</Button></Flex>}
         </Flex></StickerCard>}
         {draft && <Tabs.Root id="exam-editor-tabs" tabIndex={-1} value={tab} onValueChange={value => { if (blockEditing) return; setTab(value); if (value === 'raw' && !rawDirty) setRaw(JSON.stringify(draft, null, 2)) }}>
-          <Tabs.List><Tabs.Trigger disabled={blockEditing} value="paper">完整电子试卷</Tabs.Trigger><Tabs.Trigger disabled={blockEditing} value="content">管理试卷</Tabs.Trigger><Tabs.Trigger disabled={blockEditing} value="words">词条关联</Tabs.Trigger><Tabs.Trigger disabled={blockEditing} value="raw">内容包编辑</Tabs.Trigger></Tabs.List>
+          <Tabs.List><Tabs.Trigger disabled={blockEditing} value="paper">完整电子试卷</Tabs.Trigger><Tabs.Trigger disabled={blockEditing} value="content">管理试卷</Tabs.Trigger><Tabs.Trigger disabled={blockEditing} value="raw">内容包编辑</Tabs.Trigger></Tabs.List>
           <Tabs.Content value="paper" className="mt-4"><ExamPaperView draft={draft} revisionId={id} userId={userId}
             editingDisabled={busy || !!pending || rawDirty} onChange={persist} onEditingChange={setBlockEditing}
             onRecrop={slotId => openImage(slotId, true)} /></Tabs.Content>
           <Tabs.Content value="content" className="mt-4"><div className="grid items-start gap-4 xl:grid-cols-[210px_minmax(0,1fr)_minmax(320px,0.85fr)]">
             <StickerCard as="aside" size="sm" className="xl:sticky xl:top-24 xl:max-h-[calc(100dvh-7rem)] xl:overflow-auto"><Flex direction="column" gap="3">
               <Text weight="bold">逐题审阅 · {selectedIndex + 1}/{questions.length}</Text>
+              {linkedWordCount > 0 && <Text size="2" color="gray">已关联 {linkedWordCount} 个词库词条</Text>}
               {draft.content.groups.map(group => <Flex key={group.id} direction="column" gap="2">
                 <Text size="2" weight="bold">{group.sectionId} · Part {group.partNumber}</Text>
                 {group.questions.map(question => <Button key={question.id} size="2" variant={selectedQuestion?.id === question.id ? 'solid' : 'soft'}
@@ -267,13 +282,12 @@ function Editor({ id, userId }: { id: string; userId: string }) {
                 focusQuestionId={selectedQuestion?.id} editingDisabled={busy || !!pending || rawDirty} />}
             </Flex></StickerCard>
           </div></Tabs.Content>
-          <Tabs.Content value="words"><StickerCard as="section" size="lg" className="mt-4"><fieldset disabled={busy || !!pending} className="min-w-0"><VocabularyFields draft={draft} onChange={edit} /></fieldset></StickerCard></Tabs.Content>
           <Tabs.Content value="raw"><StickerCard as="section" size="lg" className="mt-4"><Flex direction="column" gap="3">
-            <Text as="p">高级编辑：包含完整题面、私有解答、来源页、媒体槽位和词条关联。保存会直接存储修改；审核通过状态不能从这里写入。</Text>
+            <Text as="p">在这里编辑试卷的 JSON 内容包。保存会直接存储修改，审核状态请在审核区设置。</Text>
             <TextArea aria-label="完整草稿内容包" size="3" rows={22} resize="vertical" value={raw} disabled={busy || !!pending} onChange={event => { setRaw(event.target.value); setRawDirty(true) }} />
             <Flex><Button size="3" variant="soft" loading={busy && pending?.kind === 'save'} disabled={busy || !!pending || !rawDirty} onClick={() => {
               try {
-                const result = validateExamDraft(JSON.parse(raw) as unknown)
+                const result = validateExamDraft(JSON.parse(raw) as unknown, { regenerateVocabulary: true })
                 if (!result.ok) { setIssues(result.issues); setError(new ExamRequestError('exam_invalid_draft', 400, result.issues)); return }
                 if (result.value.content.id !== id) { setIssues([]); setError(new ExamRequestError('exam_revision_mismatch', 400)); return }
                 void persist(result.value)

@@ -74,9 +74,9 @@ export function ExamQuestionFields({ question, group, attemptId, answer, disable
       options={pool.options} value={answer?.type === 'matching' ? answer.matches : {}} allowReuse={pool.allowReuse} readOnly={disabled}
       onValueChange={matches => onChange({ type: 'matching', matches })} />}
     </>}
-    {question.answerType === 'writing' && <>
+    {question.answerType === 'writing' && !hideControls && <>
       <TextArea size="3" rows={9} resize="vertical" aria-label="写作答案" readOnly={disabled} value={answer?.type === 'writing' ? answer.text : ''} onChange={event => onChange({ type: 'writing', text: event.target.value })} />
-      <Text size="2" color="gray">{answer?.type === 'writing' && answer.text.trim() ? answer.text.trim().split(/\s+/).length : 0} 词{question.minimumWords ? ` · 要求至少 ${question.minimumWords} 词` : ''}</Text>
+      <Text size="2" color="gray">{answer?.type === 'writing' && answer.text.trim() ? answer.text.trim().split(/\s+/).length : 0} 词{question.targetWords ? ` · 目标约 ${question.targetWords} 词` : question.minimumWords ? ` · 要求至少 ${question.minimumWords} 词` : ''}</Text>
     </>}
     {question.answerType === 'self_check' && question.checklist.map(item => <Text key={item.id} as="label"><Flex gap="2" align="center"><Checkbox disabled={disabled} checked={answer?.type === 'self_check' && answer.checkedIds.includes(item.id)} onCheckedChange={checked => {
       const previous = answer?.type === 'self_check' ? answer.checkedIds : []

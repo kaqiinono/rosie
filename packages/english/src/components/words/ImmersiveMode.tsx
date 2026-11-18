@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import type { WordEntry, QuizQuestion, QuizType } from '@rosie/core'
+import type { WordEntry, WordPracticeResult, QuizQuestion, QuizType } from '@rosie/core'
 import {
   hilite,
   highlightExample,
@@ -19,7 +19,7 @@ import PhonicsWord from './PhonicsWord'
 import { useStarHud } from '@rosie/rewards'
 import { ColoredStar } from '@rosie/rewards'
 import { useQuizRunner } from './useQuizRunner'
-import type { QuizCommitInfo } from './useQuizRunner'
+import { vocabularyEvidence, type QuizCommitInfo } from './useQuizRunner'
 import QuizQuestionBody from './QuizQuestionBody'
 import type { SpellButtonStyle } from './SpellTiles'
 import ZoomableWordImage from './ZoomableWordImage'
@@ -36,7 +36,7 @@ interface ImmersiveModeProps {
   /** Type-C 拼写题字母池样式（默认 'candy'，'jelly' 切换到圆角果冻砖） */
   spellButtonStyle?: SpellButtonStyle
   onClose: () => void
-  onQuizComplete?: (results: { entry: WordEntry; correct: boolean }[]) => void
+  onQuizComplete?: (results: WordPracticeResult[]) => void
 }
 
 export default function ImmersiveMode({
@@ -66,7 +66,7 @@ export default function ImmersiveMode({
   const [curQ, setCurQ] = useState(0)
   const [qScore, setQScore] = useState(0)
   const [showResults, setShowResults] = useState(false)
-  const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  const quizResultBuffer = useRef<WordPracticeResult[]>([])
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [reinforcementAppended, setReinforcementAppended] = useState(false)
   const [mainPassTotal, setMainPassTotal] = useState<number | null>(null)
@@ -165,9 +165,13 @@ export default function ImmersiveMode({
         const amount = currentQ.type === 'C' || currentQ.type === 'D' ? 2 : 1
         void awardStars('red', amount, { soundOnly: true })
       }
-      quizResultBuffer.current.push({ entry: currentQ.word, correct: info.finalCorrect })
+      quizResultBuffer.current.push({
+        entry: currentQ.word,
+        correct: info.finalCorrect,
+        evidence: vocabularyEvidence(currentQ, info, (helpClicks[wordKey(currentQ.word)] ?? 0) > 0),
+      })
     },
-    [currentQ, awardStars],
+    [currentQ, awardStars, helpClicks],
   )
 
   const handleAdvance = useCallback(() => {

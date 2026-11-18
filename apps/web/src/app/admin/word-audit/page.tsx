@@ -82,7 +82,7 @@ export default function WordAuditPage() {
       let from = 0
       while (true) {
         const { data, error: qErr } = await supabase
-          .from('word_entries')
+          .from('vocabulary_positions')
           .select(
             'stage, unit, lesson, word, explanation, chinese_def, ipa, example, phonics, syllables, keywords, vocab_type',
           )

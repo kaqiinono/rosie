@@ -6,7 +6,7 @@ export default function ChinesePage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6">
       <header>
-        <PageBreadcrumb variant="inline" />
+        <PageBreadcrumb variant="inline" showAccount />
         <div className="mt-4">
           <h1 className="text-2xl font-extrabold text-slate-900">语文学习</h1>
           <p className="mt-1 text-sm text-slate-500">先选择年级，再进入对应学习页面。</p>

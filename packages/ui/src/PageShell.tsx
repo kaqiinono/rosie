@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
+import AccountBar from './AccountBar'
 import PageBreadcrumb from './PageBreadcrumb'
 import { Button } from './themes'
 
@@ -25,6 +26,7 @@ export type PageShellProps = {
   onBack?: () => void
   /** 页头右侧的操作区（链接、按钮）。 */
   actions?: ReactNode
+  showAccount?: boolean
   /** 底色：paper 奶油（默认）；rose 管理 / 设置；mint 今日；peach 计划；sky 数学。 */
   tone?: PageShellTone
   /** 页头与内容区的最大宽度：narrow 860 / default 1024 / wide 1280 / full 不限。 */
@@ -59,6 +61,7 @@ export function PageShell({
   backLabel = '返回',
   onBack,
   actions,
+  showAccount,
   tone = 'paper',
   width = 'default',
   padded = true,
@@ -68,7 +71,7 @@ export function PageShell({
   return (
     <div className={clsx('min-h-screen text-[15px]', fillContent && 'flex min-h-dvh flex-col', TONE[tone])}>
       <header className="border-kid-line sticky top-0 z-30 border-b-2 bg-white">
-        <div className={clsx('mx-auto flex min-h-14 items-center gap-3 px-4 py-2', WIDTH[width])}>
+        <div className={clsx('mx-auto flex min-h-14 items-center gap-3 px-4 py-2', showAccount && !actions && '@container', WIDTH[width])}>
           {onBack ? (
             <Button type="button" variant="soft" size="3" onClick={onBack} aria-label={backLabel}>返回</Button>
           ) : backHref ? (
@@ -114,6 +117,11 @@ export function PageShell({
           </div>
 
           {actions ? <div className="flex shrink-0 items-center gap-1.5">{actions}</div> : null}
+          {showAccount && !actions && (
+            <div className={clsx('hidden shrink-0 empty:hidden print:hidden', backHref ? '@xs:block' : '@sm:block')}>
+              <AccountBar variant="menu" />
+            </div>
+          )}
         </div>
       </header>
 

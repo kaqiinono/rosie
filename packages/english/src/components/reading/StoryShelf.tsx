@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { PageAccountRow } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 import Link from 'next/link'
 import { storySeries } from '../../utils/story-data'
@@ -11,7 +12,9 @@ export default function StoryShelf() {
   return (
     <main className="font-nunito relative z-[1] mx-auto w-full max-w-[1280px] px-3 pt-6 pb-24 md:px-4">
       <div className="mb-5">
-        <h1 className="font-fredoka text-2xl font-black text-slate-900">📚 故事会</h1>
+        <PageAccountRow>
+          <h1 className="font-fredoka text-2xl font-black text-slate-900">📚 故事会</h1>
+        </PageAccountRow>
         <div role="group" aria-label="故事语言" className="mt-3 flex gap-2">
           {([['all', '全部'], ['zh', '中文'], ['en', 'English']] as const).map(([value, label]) => (
             <Button key={value} variant={language === value ? 'soft' : 'outline'}

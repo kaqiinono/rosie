@@ -53,7 +53,7 @@ async function manage(request: Request) {
     if (account.generation !== query.get('generation')) return fail('网盘账号已变更，请重新进入英语标签。', 409)
     const db = createAdminSupabase()
     const [words, lesson] = await Promise.all([
-      passage ? db.from('word_entries').select('word').eq('stage', passage.stage).eq('unit', passage.unit).eq('lesson', passage.lesson).order('word').returns<{ word: string }[]>() : { data: [], error: null },
+      passage ? db.from('vocabulary_positions').select('word').eq('stage', passage.stage).eq('unit', passage.unit).eq('lesson', passage.lesson).order('word').returns<{ word: string }[]>() : { data: [], error: null },
       db.from('english_audio_lessons').select('revision,directory_id,main_path,english_audio_bindings(slot,directory_id,path,file_id)')
         .eq('account_id', account.accountId).eq('lesson_key', key ?? '').returns<PublishedLesson[]>().maybeSingle(),
     ])

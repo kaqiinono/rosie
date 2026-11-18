@@ -141,7 +141,7 @@ export function ExamReportsPage() {
     try { await store.refreshInBackground(user.id) } catch { /* The session store owns the error. */ }
     finally { setRefreshing(false) }
   }
-  return <PageShell title="学习报告与复盘" tone="paper" width="default"><Flex direction="column" gap="5">
+  return <PageShell title="学习报告与复盘" tone="paper" width="default" showAccount><Flex direction="column" gap="5">
     <Flex gap="3" wrap="wrap" align="center"><Button size="3" variant={days === 14 ? 'solid' : 'soft'} aria-pressed={days === 14} onClick={() => setDays(14)}>最近 14 天</Button>
       <Button size="3" variant={days === 28 ? 'solid' : 'soft'} aria-pressed={days === 28} onClick={() => setDays(28)}>最近 28 天</Button>
       <Button size="3" variant="soft" loading={refreshing} onClick={() => void refresh()}>{error ? '重试' : '刷新报告'}</Button></Flex>

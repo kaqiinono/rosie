@@ -19,6 +19,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['setting', 'task-entries'], label: '作业内容管理' },
   { pattern: ['dev-preview', 'exams'], label: '考一考答题预览' },
   { pattern: ['dev-preview', 'homework-content'], label: '作业内容预览' },
+  { pattern: ['superpowers'], label: '我的超能力' },
   { pattern: ['exams', 'ket'], label: '考一考 · KET' },
   { pattern: ['exams', 'ket', 'practice'], label: '专项练习' },
   { pattern: ['exams', 'attempts'], label: '考一考记录' },

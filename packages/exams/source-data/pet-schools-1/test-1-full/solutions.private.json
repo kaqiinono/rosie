@@ -1,0 +1,2360 @@
+{
+  "schemaVersion": 1,
+  "contentRevisionId": "pet-schools-1:test-1:full:revision-1",
+  "solutions": [
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:1:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-1:1",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:2:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-1:2",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:3:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-1:3",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:4:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-1:4",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-1:5:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-1:5",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:6:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-2:6",
+      "role": "solution",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "6",
+            "optionId": "F"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:7:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-2:7",
+      "role": "solution",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "7",
+            "optionId": "B"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:8:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-2:8",
+      "role": "solution",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "8",
+            "optionId": "G"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:9:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-2:9",
+      "role": "solution",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "9",
+            "optionId": "A"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-2:10:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-2:10",
+      "role": "solution",
+      "answerType": "matching",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedMatches": [
+        [
+          {
+            "itemId": "10",
+            "optionId": "E"
+          }
+        ]
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:11:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-3:11",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "D"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:12:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-3:12",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:13:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-3:13",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:14:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-3:14",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-3:15:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-3:15",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:16:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-4:16",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "16",
+            "value": "If they develop poor technique, they may have problems later on."
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:17:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-4:17",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "17",
+            "value": "Listening to different styles of music also helps."
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:18:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-4:18",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "18",
+            "value": "That means they do not waste time travelling from home to dance classes."
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:19:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-4:19",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "19",
+            "value": "Attending one of their public performances is a good way of finding out."
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-4:20:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-4:20",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "20",
+            "value": "This allows them to compare themselves with teenagers from other schools."
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:21:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-5:21",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:22:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-5:22",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "D"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:23:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-5:23",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:24:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-5:24",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:25:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-5:25",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-5:26:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-5:26",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:27:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-6:27",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "27",
+            "value": "where"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:28:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-6:28",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "28",
+            "value": "If"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:29:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-6:29",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "29",
+            "value": "in"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:30:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-6:30",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "30",
+            "value": "not"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:31:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-6:31",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "31",
+            "value": "was"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:reading:part-6:32:solution",
+      "questionId": "pet-schools-1:test-1:exam:reading:part-6:32",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 98,
+            "printedPage": "96",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "32",
+            "value": "of"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:writing:part-1:1:solution",
+      "questionId": "pet-schools-1:test-1:exam:writing:part-1:1",
+      "role": "solution",
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 99,
+            "printedPage": "97",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "samples": [
+        {
+          "id": "sample-99",
+          "text": "Dear Mrs Hallam, I think the talent competicion is a really good idea.\nI think it will be better if the show is for boys and girls over fiveteen, because the younger\nstudents won't do it as well as the older students.\nAbout the judges, I'm agree with your idea but just the parents that their soons and\ndaughters doesn’t participate should judge, and maybe some teachers can judge too.\nI think it will be good to give some tikets to have free food from the cantine of the school\nor a week in the school sumer camp it's an other good option.\nThat's all what I have to say about the talent show.\nThanks, Marta",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 99,
+                "printedPage": "97",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 18,
+            "maximum": 20,
+            "source": {
+              "sourceId": "pet-schools-1",
+              "pdfPage": 99,
+              "printedPage": "97",
+              "role": "solution"
+            }
+          },
+          "originalComments": [],
+          "supplementaryComments": []
+        },
+        {
+          "id": "sample-100",
+          "text": "Hi Mrs Hallam\nI think that is a good idea, some students will be superstars for one day.\nI think that it will be better if only can participate students over 15 because it will be\nmore funny for us.\nIf some parents judge the competition it will be bored, and it will be more funny if some\nteachers of our school judge the competition.\nThe prize it will be some candys for all the performers and only two tickets to go to the\nfinal of the champions in Kiev for the first winner.\nBye see you soon\nAmav Montero",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 100,
+                "printedPage": "98",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 14,
+            "maximum": 20,
+            "source": {
+              "sourceId": "pet-schools-1",
+              "pdfPage": 100,
+              "printedPage": "98",
+              "role": "solution"
+            }
+          },
+          "originalComments": [],
+          "supplementaryComments": []
+        }
+      ],
+      "taskGuidance": []
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:writing:part-2:2:solution",
+      "questionId": "pet-schools-1:test-1:exam:writing:part-2:2",
+      "role": "solution",
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 101,
+            "printedPage": "99",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "samples": [
+        {
+          "id": "sample-101",
+          "text": "In my zone there aren't alot of areas to do sport without paying. I will like more areas\nwhere you can play with your friends and had a good time doing sport with friends,\nfamily or school partners I think all ages people have to do sport and young people\ntoo. It's important to do sport regulary if you are young you have to do sport more\nthan when you are older. Young people have to do more sport to be healthy and grew\nup correctly. I will like to have more areas to make sport and saw all ages people there\ndoing sport. I will like to invite some friends there and make a football match.",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 101,
+                "printedPage": "99",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 18,
+            "maximum": 20,
+            "source": {
+              "sourceId": "pet-schools-1",
+              "pdfPage": 101,
+              "printedPage": "99",
+              "role": "solution"
+            }
+          },
+          "originalComments": [],
+          "supplementaryComments": []
+        },
+        {
+          "id": "sample-102",
+          "text": "Yes I think there is a lot sport activities for young people and there is a lot of variety,\nyou can found an esport from karate to football. I think you wouldn't be worry for this\nbecaus I am sure that there is one esport that young people like.\nYes, I think the esport is very important to children because they are exhausted of\nexams and doing sport is a realy good form to relax and enjoy your free time.\nPlease reply soon\nAdriana De Lima",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 102,
+                "printedPage": "100",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 15,
+            "maximum": 20,
+            "source": {
+              "sourceId": "pet-schools-1",
+              "pdfPage": 102,
+              "printedPage": "100",
+              "role": "solution"
+            }
+          },
+          "originalComments": [],
+          "supplementaryComments": []
+        }
+      ],
+      "taskGuidance": []
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:writing:part-2:3:solution",
+      "questionId": "pet-schools-1:test-1:exam:writing:part-2:3",
+      "role": "solution",
+      "answerType": "writing",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 103,
+            "printedPage": "101",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "samples": [
+        {
+          "id": "sample-103",
+          "text": "Lois smiled as she put the tickets in her pocket and walked out of her house. These\ntickets were givven to her by her husband James as a present for her birthday. He'd put\nhis work off and took some days-off. They were flying to Norway where their friendsd\nlived. They hadn't told their friends about this trip, so it was a present for them all.\nWhen they arrived, their friends were sleeping. They'd bought some fruit, milk and\nchocolate bars before they came to their friends house. Their friends were glad to see\nthem again. For a week they were skating, going skiing and spending time together. Then\nthey congratulated Lois and gave her presents: a toy, a pen and a new phone. They all\nhad a great time.",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 103,
+                "printedPage": "101",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 19,
+            "maximum": 20,
+            "source": {
+              "sourceId": "pet-schools-1",
+              "pdfPage": 103,
+              "printedPage": "101",
+              "role": "solution"
+            }
+          },
+          "originalComments": [],
+          "supplementaryComments": []
+        },
+        {
+          "id": "sample-104",
+          "text": "Lois smiled as she put the tickets in her pocket and walked out of her house. It was the\nticket to the cinema. It was a new film about supermans. All of her friends saw this film\ntwo days ago. So in school they were discussing it all the time. Lois decided to watch\nthis film with her best friend Jo. The cinema was so far from her house so she decided\nto go by bus. One hour later she saw Jo near the cinema. They smiled to each other and\nwent into the cinema. There were a lot of people. They all were so excited. But at this\nmoment Lois checked her ticket in her pocket. It wasn't here.",
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "pet-schools-1",
+                "pdfPage": 104,
+                "printedPage": "102",
+                "role": "solution"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "originalScore": {
+            "score": 16,
+            "maximum": 20,
+            "source": {
+              "sourceId": "pet-schools-1",
+              "pdfPage": 104,
+              "printedPage": "102",
+              "role": "solution"
+            }
+          },
+          "originalComments": [],
+          "supplementaryComments": []
+        }
+      ],
+      "taskGuidance": []
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:1:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:1",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:2:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:2",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:3:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:3",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:4:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:4",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:5:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:5",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:6:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:6",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:7:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-1:7",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:8:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-2:8",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:9:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-2:9",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:10:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-2:10",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:11:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-2:11",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:12:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-2:12",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:13:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-2:13",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:14:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-3:14",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "14",
+            "value": "Thursday"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:15:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-3:15",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "15",
+            "value": "River"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:16:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-3:16",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "16",
+            "value": "hall"
+          }
+        ],
+        [
+          {
+            "gapId": "16",
+            "value": "school hall"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:17:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-3:17",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "17",
+            "value": "11.30"
+          }
+        ],
+        [
+          {
+            "gapId": "17",
+            "value": "half past eleven"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:18:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-3:18",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "18",
+            "value": "8.75"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:19:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-3:19",
+      "role": "solution",
+      "answerType": "gap_fill",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "acceptedAnswerSets": [
+        [
+          {
+            "gapId": "19",
+            "value": "youthlit"
+          }
+        ]
+      ],
+      "normalization": {
+        "trim": true,
+        "ignoreCase": true
+      }
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:20:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-4:20",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:21:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-4:21",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:22:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-4:22",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:23:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-4:23",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "A"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:24:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-4:24",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "B"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:25:solution",
+      "questionId": "pet-schools-1:test-1:exam:listening:part-4:25",
+      "role": "solution",
+      "answerType": "single_choice",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "solution"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "correctOptionId": "C"
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-1:task:solution",
+      "questionId": "pet-schools-1:test-1:exam:speaking:part-1:task",
+      "role": "solution",
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 82,
+            "printedPage": "80",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "reviewGuidance": []
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:task:solution",
+      "questionId": "pet-schools-1:test-1:exam:speaking:part-2:task",
+      "role": "solution",
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 84,
+            "printedPage": "82",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "reviewGuidance": []
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-3:task:solution",
+      "questionId": "pet-schools-1:test-1:exam:speaking:part-3:task",
+      "role": "solution",
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "reviewGuidance": []
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-4:task:solution",
+      "questionId": "pet-schools-1:test-1:exam:speaking:part-4:task",
+      "role": "solution",
+      "answerType": "speaking",
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "explanations": [],
+      "evidence": [],
+      "distractors": [],
+      "reviewGuidance": []
+    }
+  ],
+  "teacherNotes": [
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-1:group:listening_transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:listening:part-1:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 105,
+            "printedPage": "103",
+            "role": "teacher_notes"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 106,
+            "printedPage": "104",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "PART 1 Now look at the instructions for Part One.\nFor each question, choose the correct answer. Look at question one.\nQuestion 1 One. What will they eat for dinner?\nMan: Do you fancy an omelette and salad for dinner this evening, Grace? I haven't got\nmuch time so I'll just do something quick.\nGirl: Sounds good Dad. I'll give you a hand with the salad.\nMan: Well ... in that case I can do a few chips to go with it then. I know how you never\nsay no to those!\nGirl: (laughs) Great! By the way, we need some bread. We should tell Mum to get some\non her way home.\nMan: It can wait till tomorrow when I go shopping.\nGirl: Okay.\nNow listen again.\n[repeat]\nQuestion 2 Two. Where did the police find the stolen statue?\nWoman: A small statue of a horse was stolen from the city museum yesterday afternoon.\nMuseum security cameras showed the thieves driving out of the museum car park\nat five p.m.\nFortunately police discovered the valuable piece at the entrance to a tunnel on\nthe main city road. After hearing about the robbery on the radio, the manager of a\npetrol station rang the police to say he'd seen the car. It seems the thieves threw\nthe statue from the moving car while police were chasing them.\nNow listen again.\n[repeat]\nQuestion 3 Three. How did the mountain climbing group celebrate their success?\nMan: You know the school climbing group? Well, they managed to reach the top of\nMount Azra.\nGirl: Fantastic! Did they put the school flag at the top? They said they would.\n\nTest 1 answer key\n\nMan: The headteacher said it was forbidden to use a flag in that way, which seems a\nshame. So they just ended up taking selfies of themselves. I'd set off loads of\nfireworks to celebrate if I managed to climb up a mountain like that.\n\nWoman: But you'd have to carry the fireworks all the way up.\n\nMan: True, but it'd be fun!\n\nNow listen again.\n\n[repeat]\n\nQuestion 4 Four. What does the boy think his friend should buy?\n\nBoy: Hi Terry. It's Ben. You asked for some ideas for what you could buy for my sister's\nbirthday present. She's into sport and music, so I wondered about a new sports\nbag. I've got a feeling she’s just got a new one though. There’s a novel called\n‘A life in music’ I'm sure she'd like, so that’s what I'd go for. You mentioned\nheadphones because she’s always complaining hers are really old, but I think\nshe’d prefer to choose her own. Anyway call me back if you've got any questions.\n\nNow listen again.\n\n[repeat]\n\nQuestion 5 Five. What's the girl’s holiday job?\n\nGirl: I've got a job working in the school holidays.\n\nBoy: Cool! Doing what?\n\nGirl: Well, you know that clothes shop where my mum works? A friend who works with her\ntold her the local hairdresser’s was looking for someone to help there one day a week.\n\nBoy: Great! Have you started yet?\n\nGirl: Yeah. My first day was really crowded with mums bringing their kids for haircuts,\nso it was incredibly noisy. I enjoyed it though, and it means I can save more money\nfor new clothes than I ever could from babysitting!\n\nNow listen again.\n\n[repeat]\n\nQuestion 6 Six. How are the friends going to get to the cinema?\n\nBoy: Hi Anna. I'm really glad you can go to the cinema at the weekend, the film looks\ngreat. Shall we cycle? There are lots of places to leave bikes near the cinema.\n\nGirl: It's a good idea. I rode over some glass the other day though, so I may need a new tyre!\n\nBoy: I don’t think it'd take too long if we went on foot - it’s not that far! It'd be better\nthan getting the bus as there are so few at weekends.\n\nGirl: Sounds okay.\n\nNow listen again.\n\n[repeat]\n\nQuestion 7 Seven. What are they going to study in their next lesson?\n\nMan: I’m looking forward to reading your essays on zebras next week. Please don’t be\nlate handing them in. Africa’s full of amazing animals. Did you know there are even\npenguins there? Before we look at the lives of these creatures in our next class,\nthere’s a programme on TV tonight that you might be interested in. It’s all about\ngiraffes and the environment they live in. Try and watch it if you can. I'll ask you\nsome questions about it at a later date.\n\nNow listen again.\n\n[repeat]\n\nThat is the end of Part One."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-2:group:listening_transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 2,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:listening:part-2:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 107,
+            "printedPage": "105",
+            "role": "teacher_notes"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 108,
+            "printedPage": "106",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "PART 2 Now look at Part Two.\nFor each question, choose the correct answer.\nQuestion 8 Eight. You will hear two students talking about a history book.\n\nGirl: What did you think of that history book I lent you?\n\nBoy: Well, I'm not sure I'll remember much from it.\n\nGirl: Really? I used it to help me with an essay and I found some parts of it pretty\nuseful. The last two chapters just repeat information from earlier in the book,\nthough. so I don’t know why they included them.\n\nBoy: For studying I prefer books with maps and photos and stuff. That makes it easier\nto understand. The book you lent me has pages and pages of details that aren’t\nnecessary. Some of it could be left out.\n\nNow listen again.\n\n[repeat]\n\nQuestion 9 Nine. You will hear two friends talking about their lunch break at school.\n\nBoy: Not long till lunch break. I heard there'll be some strange new dish. I'd prefer\nburger and chips\n\nGirl: You're so boring. I'm going to try it. I hope there’ll be time to play that new game\nStarball. I downloaded it onto my phone this morning.\n\nBoy: Yeah. I want to try it. But don’t forget we've got to get that homework done before\nthe afternoon lesson. If not, we'll be in trouble.\n\nGirl: True. Okay. let’s do that — but then we won't have enough time for games as well.\n\nBoy: I'm sure we'll feel better after we've done it. Hope it's not too hard.\n\nNow listen again.\n\n[repeat]\n\nQuestion 10 Ten. You will hear two friends talking about a film they have seen.\n\nBoy: I really enjoyed that film, didn’t you?\n\nGirl: Well, to be honest, I was a bit disappointed, I was expecting something a bit\nmore exciting.\n\nBoy: Were you? I thought you were going to say the actors were awful — you did last time.\n\nGirl: I didn’t think much of them actually. What did you like so much about the film?\n\nBoy: Well, it was funny how easy it was to predict how it would all finish. But apart from\nthat it was great. You know action films are more my thing than comedies, and the\nspecial effects were fantastic.\n\nNow listen again.\n\n[repeat]\n\nQuestion 11 Eleven. You will hear two friends talking about a school trip.\n\nBoy: I really enjoyed the trip to the museum yesterday, didn’t you?\n\nGirl: It was great once we got there, but it just took a long time to get everybody ready\nand onto the coach. Things are usually better planned than that!\n\nBoy: I didn’t notice. But half a day was quite short, as there was so much to see — we really\nneeded to spend the whole day there. Especially as the entrance fee was quite high.\n\nGirl: I didn’t think the price was too bad, but I was a bit disappointed that I ended up\nonly seeing half the space exhibition.\n\nNow listen again.\n\n[repeat]\n\n\nTest 1 answer key\nQuestion 12 Twelve. You will hear a boy telling his friend about a science lesson with a new teacher.\n\nBoy: We had that new science teacher for our lesson today, Mrs Jones.\n\nGirl: Oh yes, I've heard she’s pretty good. What did you think of her?\n\nBoy: Yeah, good. Our usual teacher’s off sick this week. He always shows us cool\nexperiments and stuff. It’s a lot of fun. Mrs Jones had a different style. I was\nimpressed by her knowledge. You can ask questions about anything and she\nexplains the answers really clearly. I enjoy my normal lessons more though I think.\nI'm really into science anyway, especially when we get to do experiments in the lab.\n\nNow listen again.\n\n[repeat]\n\nQuestion 13 Thirteen. You will hear two friends talking about where to have a party.\n\nBoy: We need to think about where to have our end-of-year party.\n\nGirl: 1 think it'd be good to find somewhere we can play football and cricket.\n\nBoy: There's only the sports club where you can do that, but it isn’t that easy to get to\nunless we ask our parents for lifts. Why don’t we keep it simple and go to the park?\n\nGirl: Good ideal I don’t think anyone lives too far away so we'll all be able to walk there.\nIt’s not huge, but there’s enough space for us all and we can chat, play music and\nhave some snacks.\n\nNow listen again.\n\n[repeat]\n\nThat is the end of Part Two."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-3:group:listening_transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 3,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:listening:part-3:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 108,
+            "printedPage": "106",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "PART 3 Now look at Part Three.\n\nFor each question, write the correct answer in the gap. Write one or two words or a number\n\nor a date or a time. Look at questions 14 to 19 now. You have 20 seconds.\n\nYou will hear some information about a talk at school by a writer called Marcia Wilson.\n\nMan: Okay, everyone. The writer Marcia Wilson is coming to the school to give a talk\nnext week.\n\nIt’s been hard to find a free day! Marcia couldn't come on Friday, and some\nclasses are away on a trip on Wednesday, so Thursday. when the whole school's.\nhere. is the day we've arranged it for.\n\nMany of you enjoyed her last book, The Castle — I've seen lots of you reading it —\nand now in her latest novel. The River, you can read all about a mystery seton a\nboat. Marcia’s going to tell us about it, and you can ask her questions!\n\nBecause there'll be so many students at the talk, some of you will have to bring\nextra chairs from the school library into the hall. Your class teacher will tell you\nwhether you need to collect one.\n\nMarcia will be ready to begin her talk after our 11 o’clock morning break. She'll start at\nhalf past, so please make sure you're back inside ready to listen in plenty of time. The\ntalk with questions will last an hour and a half, and then you can go to lunch as normal.\nThere'll be the chance to buy a copy of Marcia’s new book. It usually costs £12 but\non the day of the talk you can buy a signed copy for £8.75. That's a great discount,\nI'm sure you'll agree.\n\nNow, for more information about Marcia and her work, there's a really good\nwebsite you can look at called youthlit.uk, I'll spell that: Y,0,U,T,H,L,I,T dot uk.\n\nSo - are there any questions?\n\nNow listen again.\n\n[repeat]\n\nThat is the end of Part Three."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:listening:part-4:group:listening_transcript",
+      "kind": "listening_transcript",
+      "role": "teacher_notes",
+      "sectionId": "listening",
+      "partNumber": 4,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:listening:part-4:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 109,
+            "printedPage": "107",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "transcript",
+          "kind": "text",
+          "text": "PART 4 Now look at Part Four.\n\nFor each question, choose the correct answer.\n\nLook at questions 20 to 25 now. You have 45 seconds.\n\nYou will hear an interview with a girl called Anna Taylor, who is a champion cyclist.\n\nInterviewer: Anna Taylor's a teenager and already a champion cyclist. Anna, when did you\nfirst get into cycling?\n\nAnna: Only a few years ago. I've always been keen on sports — I've tried everything\nfrom running to ice-skating — but I never tried to be good at anything in\nparticular. After I went to support a friend cycling in a competition. I decided to\ntry it myself — and loved it. Since then, it’s been a big part of my life.\n\nInterviewer: Is it hard to practise cycling and do your schoolwork?\n\nAnna: Studying’s difficult when there’s a big competition coming up. I still have\nto attend all my lessons — and the teachers are very strict about giving in\nhomework on time. I manage to get it done somehow. I have cycle practice in\nthe afternoons after school. so then I have to work till bedtime once I've had\ndinner with my family.\n\nInterviewer: You do a lot of track cycling in a stadium. Tell me about that.\n\nAnna: We cycle around a special indoor track and the fastest person wins. When\ncyclists race on the road, speed is important too of course, and being strong’s\nalso essential. I think more skills are needed for track cycling — watching\none another and waiting for a chance to move to the front. It takes a lot of\nexperience to get it right.\n\nInterviewer: Do you like cycling with teammates in road races?\n\nAnna: Yes. They're a great group of people, and we all have different styles. When\nthings go wrong it’s not always easy to see the funny side, so it's nice to know\nthe others are finding it as stressful as I am. We encourage each other. I'm\nbeginning to understand just how important that is.\n\nInterviewer: How was your last road race?\n\nAnna: My team actually came second. But just before the start of the race, I had to\nmake a quick phone call, and when I'd finished the call, 200 cyclists were racing\npast me — I was shocked to see it had already started! I ran to my bike, and then\nI saw my teammate had a tyre problem. But despite all that, things didn’t go too\nbadly in the end!\n\nInterviewer: What's your advice for anyone wanting to become a champion cyclist?\n\nAnna: Well, if all I did was cycling, life would be extremely difficult. It’s a good idea\nto have interests other than sport. I don’t want competing in races to be\neverything. When things go wrong in training, you have to remind yourself there\nare more things to life than winning competitions.\n\nNow listen again.\n\n[repeat]\n\nThat is the end of Part Four.\n\nYou now have six minutes to write your answers on the answer sheet.\n\nYou have one more minute.\n\nThat is the end of the test."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-1:group:examiner_script",
+      "kind": "examiner_script",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:speaking:part-1:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 82,
+            "printedPage": "80",
+            "role": "teacher_notes"
+          },
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 83,
+            "printedPage": "81",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "phase-1",
+          "kind": "text",
+          "text": "Phase 1",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "intro",
+          "kind": "text",
+          "text": "Ask for the candidates’ names and ages. Ask candidate B and then candidate A where they live and who they live with."
+        },
+        {
+          "id": "phase-2",
+          "kind": "text",
+          "text": "Phase 2 · Select one or more questions for each candidate. Ask candidate A first.",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "questions",
+          "kind": "text",
+          "text": "Tell us about a teacher you like.\nHow often do you use a mobile phone?\nWhich time of year do you like the most?\nWhich do you like best, the morning or the afternoon?\nTell us about sports you like.\nWhat type of music do you like listening to?\nTell us what you do in the school holidays.\nWhat new hobby would you like to try?"
+        },
+        {
+          "id": "backup",
+          "kind": "text",
+          "text": "Use the simpler questions in the source script if a candidate needs a prompt. Ask why where appropriate."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-2:group:examiner_script",
+      "kind": "examiner_script",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:speaking:part-2:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 84,
+            "printedPage": "82",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "intro",
+          "kind": "text",
+          "text": "Hand the corresponding Task 1A or Task 1B photo to each candidate in turn. Let the other candidate listen. Each candidate has approximately one minute."
+        },
+        {
+          "id": "task-a",
+          "kind": "text",
+          "text": "A, here is your photograph. It shows someone watching TV. A, please tell us what you can see in the photograph."
+        },
+        {
+          "id": "task-b",
+          "kind": "text",
+          "text": "B, here is your photograph. It shows people having a meal. B, please tell us what you can see in the photograph."
+        },
+        {
+          "id": "backup",
+          "kind": "text",
+          "text": "Talk about the people/person.\nTalk about the place.\nTalk about other things in the photograph."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-3:group:examiner_script",
+      "kind": "examiner_script",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 3,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:speaking:part-3:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "delivery",
+          "kind": "text",
+          "text": "Show Task 1C to both candidates. Describe the situation and let them discuss together for about two minutes. Retrieve the booklet before Part 4."
+        },
+        {
+          "id": "scenario",
+          "kind": "text",
+          "text": "A class is going on a day trip walking in the mountains with their teacher. Here are some things they could take with them. Talk together about the different things they could take with them and say which would be most useful."
+        }
+      ]
+    },
+    {
+      "id": "pet-schools-1:test-1:exam:speaking:part-4:group:examiner_script",
+      "kind": "examiner_script",
+      "role": "teacher_notes",
+      "sectionId": "speaking",
+      "partNumber": 4,
+      "groupIds": [
+        "pet-schools-1:test-1:exam:speaking:part-4:group"
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "pet-schools-1",
+            "pdfPage": 85,
+            "printedPage": "83",
+            "role": "teacher_notes"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "blocks": [
+        {
+          "id": "questions",
+          "kind": "text",
+          "text": "Do you like walking in the countryside? (Why?/Why not?)\nDo you walk to school? (Why?/Why not?)\nWhen was the last time you went for a really long walk? (Where did you go?)\nWhich outdoor activity do you enjoy doing most? (Why?)\nIs it important for young people to spend time outdoors? (Why?/Why not?)"
+        },
+        {
+          "id": "backup",
+          "kind": "text",
+          "text": "How/what about you?\nDo you agree?\nWhat do you think?"
+        }
+      ]
+    }
+  ],
+  "mediaSlots": []
+}

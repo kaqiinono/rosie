@@ -8,6 +8,7 @@ import { validateExamDraft, type ExamDraftInput } from '@rosie/exams/validation'
 import { fetchBaiduFileById, type BaiduFileFingerprint } from '@/lib/baidu-media'
 import { getBaiduAccountContext } from '@/lib/baidu-token'
 import { ExamApiError } from './http'
+import { examMediaParts } from './mediaParts'
 
 export const EXAM_MEDIA_COOKIE = 'rosie_exam_media_session'
 export const EXAM_MEDIA_COOKIE_PATH = '/api/exams/media'
@@ -112,7 +113,10 @@ async function bindingAccount(db: SupabaseClient, binding: StoredExamMediaBindin
   const { data, error } = await db.from('baidu_sync_directories').select('path').eq('id', binding.directory_id).eq('account_id', account.accountId).maybeSingle()
   if (error) throw new ExamApiError('exam_media_unavailable', 503)
   if (!data || typeof data.path !== 'string' || (binding.main_path !== data.path && !withinExamDirectory(binding.main_path, data.path))) {
-    throw new ExamApiError('exam_media_binding_changed', 409)
+    throw new ExamApiError('exam_media_binding_changed', 409, [{
+      path: '$.content.mediaBindingRevisionId', code: 'exam_media_directory_changed',
+      message: '考试资源主目录已失效。请联系管理员在同步管理中重新选择授权目录。',
+    }])
   }
   return account
 }
@@ -172,6 +176,20 @@ function slotInSection(slot: MediaSlot, draft: ExamDraftInput, sectionId?: strin
   return false
 }
 
+function attemptMediaSlotError(draft: ExamDraftInput, slot: MediaSlot<'student'>, code: string, reason: string) {
+  const parts = examMediaParts(draft)
+  const part = parts.find(item => item.slotIds.includes(slot.id))
+  const assigned = new Set(parts.flatMap(item => item.slotIds))
+  const slots = draft.content.mediaSlots.filter(item => part ? part.slotIds.includes(item.id) : !assigned.has(item.id))
+  const kind = slot.purpose === 'question_image' ? '题图' : '音频'
+  // Use position and type so the failure can be located without revealing unopened material or file paths.
+  const location = `${part?.label ?? '整套共享资源'} 的第 ${slots.indexOf(slot) + 1} 个资源槽位（${kind}）`
+  return new ExamApiError(code, 409, [{
+    path: `$.content.mediaSlots[${draft.content.mediaSlots.indexOf(slot)}]`, code,
+    message: `${location}${reason}。请联系管理员检查考试资源。`,
+  }])
+}
+
 function listeningDuration(draft: ExamDraftInput, binding: StoredExamMediaBinding, sectionId?: string): number | null {
   const slots = draft.content.mediaSlots.filter(slot => slot.required && slot.purpose === 'exam_listening' && slotInSection(slot, draft, sectionId))
   if (!slots.length) return null
@@ -183,7 +201,7 @@ function listeningDuration(draft: ExamDraftInput, binding: StoredExamMediaBindin
     if (!file?.reviewed || !isDeepStrictEqual(file.slot, slot) || !program || !length || !Number.isSafeInteger(length) || length <= 0
       || (slot.segment && file.duration_ms !== null && slot.segment.endMs > file.duration_ms)
       || (program.includesSourceRepetitions && (program.repeatCount !== 1 || program.waitAfterMs !== 0))) {
-      throw new ExamApiError('exam_listening_program_missing', 409)
+      throw attemptMediaSlotError(draft, slot, 'exam_listening_program_missing', '的时长或播放配置缺失或无效')
     }
     duration += length * program.repeatCount + program.waitAfterMs
     if (!Number.isSafeInteger(duration) || duration > 86_400_000) throw new ExamApiError('exam_listening_program_missing', 409)
@@ -206,13 +224,28 @@ export async function verifyExamMediaForAttempt(
     for (const slot of slots) {
       signal?.throwIfAborted()
       const file = binding.files.find(item => item.slot_id === slot.id)
-      if (!file?.reviewed || !isDeepStrictEqual(file.slot, slot)) throw new ExamApiError('exam_media_binding_changed', 409)
+      if (!file) throw attemptMediaSlotError(draft, slot, 'exam_media_binding_changed', '尚未绑定文件')
+      if (!isDeepStrictEqual(file.slot, slot)) throw attemptMediaSlotError(draft, slot, 'exam_media_binding_changed', '的配置已变化，需要重新绑定')
+      if (!file.reviewed) throw attemptMediaSlotError(draft, slot, 'exam_media_binding_changed', '的文件尚未核对')
       const key = JSON.stringify([file.file_id, file.path, file.size, file.md5, file.modified_at])
       if (!checked.has(key)) {
         const timeout = AbortSignal.timeout(15_000)
-        const { response } = await streamFile(file, account.accessToken, 'bytes=0-0', signal ? AbortSignal.any([signal, timeout]) : timeout)
-        await response.body?.cancel()
-        if (![200, 206].includes(response.status)) throw new ExamApiError('exam_media_file_missing', 409)
+        try {
+          const { response } = await streamFile(file, account.accessToken, 'bytes=0-0', signal ? AbortSignal.any([signal, timeout]) : timeout)
+          await response.body?.cancel()
+          if (![200, 206].includes(response.status)) throw new ExamApiError('exam_media_file_missing', 409)
+        } catch (error) {
+          if (error instanceof ExamApiError && error.code === 'exam_media_file_missing') {
+            throw attemptMediaSlotError(draft, slot, error.code, '的网盘文件无法读取')
+          }
+          if (error instanceof ExamApiError && error.code === 'exam_invalid_media_binding') {
+            throw attemptMediaSlotError(draft, slot, error.code, '绑定的文件类型不符合要求')
+          }
+          if (error instanceof Error && error.message === 'baidu_file_changed') {
+            throw attemptMediaSlotError(draft, slot, 'exam_media_binding_changed', '的网盘文件已变化，需要重新绑定')
+          }
+          throw error
+        }
         checked.add(key)
       }
     }
@@ -223,7 +256,6 @@ export async function verifyExamMediaForAttempt(
     if (error instanceof ExamApiError) throw error
     const code = baiduAuthErrorCode(error)
     if (code) throw new ExamApiError(code, 409)
-    if (error instanceof Error && error.message === 'baidu_file_changed') throw new ExamApiError('exam_media_binding_changed', 409)
     throw new ExamApiError('exam_media_unavailable', 503)
   }
 }

@@ -18,10 +18,11 @@ import {
 } from '@rosie/ui/themes'
 import type { User } from '@supabase/supabase-js'
 import type { WordEntry } from '@rosie/core'
-import { useWordData } from '@rosie/english'
+import { useWordData, wordEntriesStore } from '@rosie/english'
 import { STORAGE_KEYS } from '@rosie/core'
 import WordFormModal from './WordFormModal'
 import WordPreviewModal from './WordPreviewModal'
+import SharedWordSenseEditor from './SharedWordSenseEditor'
 import BatchAddModal from './BatchAddModal'
 import NewStageModal from './NewStageModal'
 import { withDraftEntry, type StageTree, type StageUnit } from './types'
@@ -117,6 +118,7 @@ export default function WordManagerPage({ user }: Props) {
   const { vocab, isLoading, error, addWords, updateWord, deleteWord, deleteStage, renameStage } =
     useWordData(user)
 
+  const [sharedWord, setSharedWord] = useState<WordEntry | null>(null)
   const [activeStage, setActiveStage] = useState<string | null>(null)
   const [draftStages, setDraftStagesState] = useState<StageTree[]>(() => readDraftStages(user?.id))
   const [selUnit, setSelUnit] = useState('')
@@ -237,7 +239,7 @@ export default function WordManagerPage({ user }: Props) {
     const count = stages.find((s) => s.stage === stage)?.count ?? 0
     const msg =
       count > 0
-        ? `确定删除词库「${stage || NO_STAGE_LABEL}」？将永久删除其中 ${count} 个单词，无法撤销。`
+        ? `确定移除词库「${stage || NO_STAGE_LABEL}」及其中 ${count} 个课程位置？`
         : `确定删除空词库「${stage || NO_STAGE_LABEL}」？`
     if (!window.confirm(msg)) return
     try {
@@ -273,7 +275,7 @@ export default function WordManagerPage({ user }: Props) {
   }
 
   const handleDeleteWord = async (w: WordEntry) => {
-    if (!window.confirm(`删除单词「${w.word}」（${w.unit} · ${w.lesson}）？`)) return
+    if (!window.confirm(`从 ${w.unit} · ${w.lesson} 移除「${w.word}」？`)) return
     const stage = w.stage
     const willEmptyStage = !!stage && stageWords.length === 1
     try {
@@ -623,8 +625,11 @@ export default function WordManagerPage({ user }: Props) {
                               color="gray"
                               onClick={() => setForm({ mode: 'edit', word: w })}
                             >
-                              编辑
+                              编辑本课
                             </Button>
+                            {w.headwordId && <Button type="button" size="1" variant="ghost" onClick={() => setSharedWord(w)}>
+                              共享义项
+                            </Button>}
                             <Button
                               type="button"
                               size="1"
@@ -655,6 +660,16 @@ export default function WordManagerPage({ user }: Props) {
       )}
 
       {previewWord && <WordPreviewModal word={previewWord} onClose={() => setPreviewWord(null)} />}
+
+      {sharedWord && <SharedWordSenseEditor
+        key={sharedWord.id}
+        word={sharedWord}
+        onClose={() => setSharedWord(null)}
+        onSaved={() => {
+          setSharedWord(null)
+          if (user) void wordEntriesStore.refreshInBackground(user.id)
+        }}
+      />}
 
       {form && (
         <WordFormModal

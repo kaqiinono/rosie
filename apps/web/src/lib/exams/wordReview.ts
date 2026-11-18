@@ -36,11 +36,16 @@ function wordFromRow(row: Record<string, unknown>): WordEntry {
 function matches(word: WordEntry, snapshot: VocabularyLink['sourceSnapshot']) {
   return word.stage === snapshot.stage && word.unit === snapshot.unit && word.lesson === snapshot.lesson && word.word === snapshot.word
 }
+function wordBatches(values: string[]) {
+  return Array.from({ length: Math.ceil(values.length / 100) }, (_, index) => values.slice(index * 100, (index + 1) * 100))
+}
 async function wordsByIds(db: SupabaseClient, ids: string[]) {
-  if (!ids.length) return new Map<string, WordEntry>()
-  const { data, error } = await db.from('word_entries').select(WORD_COLUMNS).in('id', ids)
-  if (error) storage(error)
-  return new Map((data ?? []).map(row => { const word = wordFromRow(row); return [word.id!, word] }))
+  const pages = await Promise.all(wordBatches(ids).map(async batch => {
+    const { data, error } = await db.from('word_entries').select(WORD_COLUMNS).in('id', batch)
+    if (error) storage(error)
+    return (data ?? []).map(wordFromRow)
+  }))
+  return new Map(pages.flat().map(word => [word.id!, word]))
 }
 export async function resolveExamWords(db: SupabaseClient, userId: string, attemptId: string): Promise<ExamResolvedWord[]> {
   const { attempt, draft } = await readAttemptEnvelope(db, userId, attemptId)
@@ -55,12 +60,16 @@ export async function resolveExamWords(db: SupabaseClient, userId: string, attem
   const links = draft.content.vocabularyLinks.filter(link => link.review.status !== 'blocked' && link.questionIds.length > 0 && link.questionIds.every(id => submitted.has(id)))
   const words = await wordsByIds(db, [...new Set(links.map(link => link.wordEntryId))])
   const keys = [...new Set([...words.values()].map(wordKey))]
-  const mastery = keys.length ? await db.from('word_mastery').select('word_key,correct,incorrect,last_seen,stage,next_review_date,is_hard').eq('user_id', userId).in('word_key', keys) : { data: [], error: null }
-  if (mastery.error) storage(mastery.error)
+  const masteryPages = await Promise.all(wordBatches(keys).map(async batch => {
+    const { data, error } = await db.from('word_mastery').select('word_key,correct,incorrect,last_seen,stage,next_review_date,is_hard').eq('user_id', userId).in('word_key', batch)
+    if (error) storage(error)
+    return data ?? []
+  }))
+  const masteryByKey = new Map(masteryPages.flat().map(row => [row.word_key, row]))
   return links.map(link => {
     const candidate = words.get(link.wordEntryId.toLowerCase())
     const valid = !!candidate && matches(candidate, link.sourceSnapshot)
-    const row = candidate ? mastery.data?.find(value => value.word_key === wordKey(candidate)) : undefined
+    const row = candidate ? masteryByKey.get(wordKey(candidate)) : undefined
     const info: WordMasteryInfo | null = row ? { correct: row.correct ?? 0, incorrect: row.incorrect ?? 0, lastSeen: row.last_seen ?? '', stage: row.stage ?? undefined, nextReviewDate: row.next_review_date ?? undefined, isHard: row.is_hard ?? undefined } : null
     return { link, word: valid ? candidate! : null, valid, mastery: info, masteryScope: 'legacy_shared', sources: link.questionIds.map(questionId => ({
       attemptId, contentRevisionId: attempt.contentRevisionId, questionId, linkId: link.id, title: draft.contentSet.title,
@@ -152,7 +161,7 @@ export async function commandWordReview(db: SupabaseClient, userId: string, id: 
     state.items = state.items.filter(item => item.wordEntryId !== body.wordEntryId)
   } else if (operation === 'start') {
     if (state.status !== 'collecting' || !state.items.length) throw new ExamApiError('exam_invalid_request', 400)
-    const poolResult = await db.from('word_entries').select(WORD_COLUMNS).in('stage', [...new Set(state.items.map(item => item.word.stage).filter((stage): stage is string => !!stage))]).order('id').limit(500)
+    const poolResult = await db.from('vocabulary_positions').select(WORD_COLUMNS).in('stage', [...new Set(state.items.map(item => item.word.stage).filter((stage): stage is string => !!stage))]).order('id').limit(500)
     if (poolResult.error) storage(poolResult.error)
     const pool = (poolResult.data ?? []).map(wordFromRow)
     state.items.forEach((item, index) => {

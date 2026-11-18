@@ -107,7 +107,7 @@ async function loadRows(client, stage) {
   const rows = []
   for (let from = 0; ; from += PAGE_SIZE) {
     let query = client
-      .from('word_entries')
+      .from('vocabulary_positions')
       .select('id, stage, unit, lesson, word, explanation, part_of_speech')
       .is('part_of_speech', null)
       .order('stage', { nullsFirst: true })
@@ -148,13 +148,18 @@ async function main() {
       const partOfSpeech = JSON.parse(key)
       for (let start = 0; start < ids.length; start += UPDATE_BATCH_SIZE) {
         const batch = ids.slice(start, start + UPDATE_BATCH_SIZE)
-        const { error } = await client
-          .from('word_entries')
-          .update({ part_of_speech: partOfSpeech })
-          .in('id', batch)
-          .is('part_of_speech', null)
+        const { data: positions, error: readError } = await client
+          .from('vocabulary_positions').select('id,catalog_revision').in('id', batch).is('part_of_speech', null)
+        if (readError) throw readError
+        if (!positions?.length) continue
+        const { error } = await client.rpc('write_vocabulary_positions', {
+          p_action: 'save',
+          p_rows: positions.map((position) => ({
+            id: position.id, expected_revision: position.catalog_revision, part_of_speech: partOfSpeech,
+          })),
+        })
         if (error) throw error
-        updated += batch.length
+        updated += positions.length
       }
     }
     console.log(`Applied up to ${updated} reviewed entries from ${options.review}.`)

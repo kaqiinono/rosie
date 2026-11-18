@@ -217,7 +217,7 @@ export default function SettingsHub() {
   const { user } = useAuth()
   const admin = isAdminUser(user)
   return (
-    <PageShell tone="rose" width="narrow" icon="⚙️" title="用户配置">
+    <PageShell tone="rose" width="narrow" icon="⚙️" title="用户配置" showAccount>
       <div className="space-y-10">
         <section>
           <h2 className="text-[22px] font-black text-slate-800">个人配置</h2>

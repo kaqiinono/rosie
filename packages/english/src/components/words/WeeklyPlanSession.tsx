@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect, type MutableRefObject } from 'react'
 import type {
   WordEntry,
+  WordPracticeResult,
   WeeklyPlan,
   WeekDayProgress,
   RescueRole,
@@ -33,7 +34,7 @@ import { getWordMasteryLevel, MASTERY_ICON } from '@rosie/core'
 import { findPassage, findSentenceForWord } from '../../utils/reading-data'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'
-import type { QuizCommitInfo } from './useQuizRunner'
+import { vocabularyEvidence, type QuizCommitInfo } from './useQuizRunner'
 import { useRescueQueue } from '../../hooks/useRescueQueue'
 import MonsterEatScene from './MonsterEatScene'
 import RescueReviewCarousel from './RescueReviewCarousel'
@@ -100,7 +101,7 @@ function applySnapshotToState(
     setCurQ: (n: number) => void
     setScore: (n: number) => void
     setPhase: (p: Phase) => void
-    quizResultBuffer: MutableRefObject<{ entry: WordEntry; correct: boolean }[]>
+    quizResultBuffer: MutableRefObject<WordPracticeResult[]>
   },
 ): void {
   handlers.setSelectedDate(snap.selectedDate || null)
@@ -116,11 +117,11 @@ function applySnapshotToState(
   handlers.setCurQ(snap.curQ)
   handlers.setScore(snap.quizResults.filter((r) => r.correct).length)
   handlers.quizResultBuffer.current = snap.quizResults
-    .map(({ key, correct }) => {
+    .map<WordPracticeResult | null>(({ key, correct, evidence }) => {
       const entry = vocab.find((w) => wordKey(w) === key)
-      return entry ? { entry, correct } : null
+      return entry ? { entry, correct, evidence } : null
     })
-    .filter((r): r is { entry: WordEntry; correct: boolean } => r !== null)
+    .filter((r): r is WordPracticeResult => r !== null)
   handlers.setPhase(snap.phase)
 }
 
@@ -282,7 +283,7 @@ export default function WeeklyPlanSession({
   // The done-screen "获得 N 颗星星" must equal this, NOT a base-point recompute — otherwise it
   // is silently capped at the main-round target and never reflects the bonus rounds.
   const starsAwardedThisRunRef = useRef(0)
-  const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  const quizResultBuffer = useRef<WordPracticeResult[]>([])
   // 🎈 帮助按钮：每揭一个字母 helpClicks[wordKey] += 1；练习结束后按计数追加 Type-C 巩固题。
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [reinforcementAppended, setReinforcementAppended] = useState(false)
@@ -305,11 +306,11 @@ export default function WeeklyPlanSession({
     if (hydrationDone.current || !snap0 || !vocab.length) return
     hydrationDone.current = true
     quizResultBuffer.current = snap0.quizResults
-      .map(({ key, correct }) => {
+      .map<WordPracticeResult | null>(({ key, correct, evidence }) => {
         const entry = vocab.find((w) => wordKey(w) === key)
-        return entry ? { entry, correct } : null
+        return entry ? { entry, correct, evidence } : null
       })
-      .filter((r): r is { entry: WordEntry; correct: boolean } => r !== null)
+      .filter((r): r is WordPracticeResult => r !== null)
     setIsImmersive(true)
   }, [snap0, vocab, setIsImmersive])
 
@@ -327,7 +328,7 @@ export default function WeeklyPlanSession({
       curQ,
       quizResults: quizResultBuffer.current
         .slice(0, curQ)
-        .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+        .map(({ entry, correct, evidence }) => ({ key: wordKey(entry), correct, evidence })),
     }
   }, [phase, selectedDate, currentSubTask, studyIdx, wordKeys, quizQKeys, curQ])
 
@@ -581,7 +582,11 @@ export default function WeeklyPlanSession({
           eatenShownCountRef.current += 1
           setEatenScene({ entry: q.word, monsterIdx, isAbbreviated })
         }
-        quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
+        quizResultBuffer.current.push({
+          entry: q.word,
+          correct: info.finalCorrect,
+          evidence: vocabularyEvidence(q, info, (helpClicks[wordKey(q.word)] ?? 0) > 0),
+        })
       } else {
         // reinforcement/rescue-ladder question: advance its queue stage
         rescue.advance(k, info.finalCorrect ? 'correct' : 'wrong')
@@ -592,7 +597,7 @@ export default function WeeklyPlanSession({
         void awardStars('red', amount, { soundOnly: true })
       }
     },
-    [quizQs, curQ, awardStars, rescue],
+    [quizQs, curQ, awardStars, rescue, helpClicks],
   )
 
   const nextQ = useCallback(() => {
@@ -673,7 +678,7 @@ export default function WeeklyPlanSession({
       }
     }
     const allRescue = [...rescue.retryList, ...rescue.eatenList]
-    const masteryBatch: { entry: WordEntry; correct: boolean }[] = []
+    const masteryBatch: WordPracticeResult[] = []
     for (const r of quizResultBuffer.current) {
       const k = wordKey(r.entry)
       const queueItem = allRescue.find((i) => i.wordKey === k)
@@ -684,17 +689,17 @@ export default function WeeklyPlanSession({
         // REGRESS — so we never mix; we record the single honest final verdict instead.
         if (queueItem.stage === 'consolidated' || queueItem.stage === 'saved') {
           // half word recovered, or eaten word climbed the rescue ladder → reward (advance)
-          masteryBatch.push({ entry: r.entry, correct: true })
+          masteryBatch.push({ ...r, correct: true })
         } else if (queueItem.stage === 'still_half' || queueItem.stage === 'lost') {
           // reinforcement / rescue ladder ultimately failed → one gentle regress
-          masteryBatch.push({ entry: r.entry, correct: false })
+          masteryBatch.push({ ...r, correct: false })
         } else {
           // unexpected intermediate stage at completion — fall back to the actual main result
-          masteryBatch.push({ entry: r.entry, correct: r.correct })
+          masteryBatch.push({ ...r, correct: r.correct })
         }
       } else {
         // plain main-round word that was never enqueued (answered cleanly or wrong-without-rescue)
-        masteryBatch.push({ entry: r.entry, correct: r.correct })
+        masteryBatch.push({ ...r, correct: r.correct })
       }
     }
     recordBatch(masteryBatch)

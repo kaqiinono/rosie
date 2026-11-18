@@ -20,7 +20,8 @@ export function ExamManagementFields({ draft, selectedQuestionId, disabled, onCh
 }) {
   useEffect(() => { if (selectedQuestionId) focusQuestionEditor(selectedQuestionId) }, [selectedQuestionId])
   return <fieldset disabled={disabled} className="min-w-0"><Flex direction="column" gap="5">
-    <DraftText label="内容名称" value={draft.contentSet.title} onChange={title => onChange({ ...draft, contentSet: { ...draft.contentSet, title } })} />
+    <DraftText label={draft.contentSet.kind === 'training_unit' ? '训练名称' : '试卷名称'}
+      value={draft.contentSet.title} onChange={title => onChange({ ...draft, contentSet: { ...draft.contentSet, title } })} />
     <label className="flex flex-col gap-2"><Text size="2">内容用途</Text><FormSelect size="3" value={draft.contentSet.purpose}
       options={[{ value: 'training', label: '日常训练' }, { value: 'reserved', label: '保留测评' }]}
       onValueChange={value => onChange({ ...draft, contentSet: { ...draft.contentSet, purpose: value as 'training' | 'reserved' } })} /></label>

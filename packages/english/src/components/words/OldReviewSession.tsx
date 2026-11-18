@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react'
-import type { WordEntry } from '@rosie/core'
+import type { VocabularyEvidence, WordEntry, WordPracticeResult } from '@rosie/core'
 import {
   buildQuizOptions,
   buildQuizQuestions,
@@ -13,7 +13,7 @@ import {
 import { getWordMasteryLevel } from '@rosie/core'
 import QuizQuestionBody from './QuizQuestionBody'
 import { useQuizRunner } from './useQuizRunner'
-import type { QuizCommitInfo } from './useQuizRunner'
+import { vocabularyEvidence, type QuizCommitInfo } from './useQuizRunner'
 import MasteryStatusPanel from './MasteryStatusPanel'
 import StudyPhase from './StudyPhase'
 import DoneSummary from './DoneSummary'
@@ -42,7 +42,7 @@ interface OldReviewSnapshot {
   wordKeys: string[]
   quizQs: { key: string; type: 'A' | 'B' | 'C' | 'D' }[]
   curQ: number
-  quizResults: { key: string; correct: boolean }[]
+  quizResults: { key: string; correct: boolean; evidence?: VocabularyEvidence }[]
 }
 
 const OLD_REVIEW_STORAGE_KEY = 'old_review_session'
@@ -104,7 +104,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
 
   const [curQ, setCurQ] = useState(() => snap0?.curQ ?? 0)
   const [score, setScore] = useState(() => snap0?.quizResults.filter((r) => r.correct).length ?? 0)
-  const quizResultBuffer = useRef<{ entry: WordEntry; correct: boolean }[]>([])
+  const quizResultBuffer = useRef<WordPracticeResult[]>([])
   const [helpClicks, setHelpClicks] = useState<Record<string, number>>({})
   const [reinforcementAppended, setReinforcementAppended] = useState(false)
 
@@ -113,11 +113,11 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
     if (hydrationDone.current || !snap0 || !vocab.length) return
     hydrationDone.current = true
     quizResultBuffer.current = snap0.quizResults
-      .map(({ key, correct }) => {
+      .map<WordPracticeResult | null>(({ key, correct, evidence }) => {
         const entry = vocab.find((w) => wordKey(w) === key)
-        return entry ? { entry, correct } : null
+        return entry ? { entry, correct, evidence } : null
       })
-      .filter((r): r is { entry: WordEntry; correct: boolean } => r !== null)
+      .filter((r): r is WordPracticeResult => r !== null)
     setIsImmersive(true)
   }, [snap0, vocab, setIsImmersive])
 
@@ -145,7 +145,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
           curQ,
           quizResults: quizResultBuffer.current
             .slice(0, curQ)
-            .map(({ entry, correct }) => ({ key: wordKey(entry), correct })),
+            .map(({ entry, correct, evidence }) => ({ key: wordKey(entry), correct, evidence })),
         } satisfies OldReviewSnapshot),
       )
     } catch {
@@ -185,7 +185,11 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
       if (info.finalCorrect) setScore((s) => s + 1)
       const q = quizQs[curQ]
       if (q) {
-        quizResultBuffer.current.push({ entry: q.word, correct: info.finalCorrect })
+        quizResultBuffer.current.push({
+          entry: q.word,
+          correct: info.finalCorrect,
+          evidence: vocabularyEvidence(q, info, (helpClicks[wordKey(q.word)] ?? 0) > 0),
+        })
         if (info.finalCorrect) {
           // 单选题 (A/B) +1 红星; 填空题 (C) / 课文语境填空 (D) +2 红星
           const amount = q.type === 'C' || q.type === 'D' ? 2 : 1
@@ -193,7 +197,7 @@ export default function OldReviewSession({ words, vocab, onBack }: OldReviewSess
         }
       }
     },
-    [quizQs, curQ, awardStars],
+    [quizQs, curQ, awardStars, helpClicks],
   )
 
   const nextQ = useCallback(() => {

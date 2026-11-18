@@ -18,16 +18,18 @@ export interface ExamMediaVerification {
 
 export interface ExamMediaEditor {
   revisionId: string
+  testNumber: number
   version: string
   bindingRevisionId: string | null
+  mainDirectory: { directory_id: string; path: string; generation: string } | null
   parts: readonly { sectionId: string; partNumber: number; label: string; slotIds: readonly string[] }[]
-  slots: readonly (MediaSlot & { binding: { name: string; size: number; reviewed: boolean; durationMs: number | null } | null })[]
+  slots: readonly (MediaSlot & { binding: { fileId: string; name: string; size: number; reviewed: boolean; durationMs: number | null } | null })[]
 }
 
 export interface ExamMediaSaveRequest {
   revisionId: string
-  /** Omitted by legacy/crop callers; null explicitly selects whole-set shared slots. */
-  scope?: { sectionId: string; partNumber: number } | null
+  /** Listening spans authored audio across Parts. Null selects whole-set shared slots. */
+  scope?: 'listening' | { sectionId: string; partNumber: number } | null
   expectedVersion: string
   expectedBindingRevisionId: string | null
   requestId: string

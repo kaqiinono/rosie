@@ -102,7 +102,8 @@ const block = tagged('kind', {
     heading: object({ role: oneOf('heading'), prefix: optional(text), originalText: optional(text) }),
     instruction: object({ role: oneOf('instruction'), number: text, originalText: optional(text) }),
   })) }),
-  email: object({ ...blockBase, kind: oneOf('email'), from: text, to: text, subject: cellText, body: array(text) }),
+  email: object({ ...blockBase, kind: oneOf('email'), from: text, to: text, subject: cellText, body: array(text),
+    notes: optional(array(object({ paragraph: number(0), text }), 1)) }),
   table: object({ ...blockBase, kind: oneOf('table'), headers: array(cellText), rows: array(array(cellText)) }),
   image: object({ ...blockBase, kind: oneOf('image'), mediaSlotId: id, alt: text, caption: optional(text), aspectRatio: optional(number(0.05, 20, false)), displayWidth: optional(number(80, 1200)) }),
   audio: object({ ...blockBase, kind: oneOf('audio'), mediaSlotId: id }),
@@ -130,7 +131,7 @@ const question = tagged('answerType', {
   single_choice: object({ ...questionBase, answerType: oneOf('single_choice'), options: array(option, 2), scoring: objectiveScoring }),
   gap_fill: object({ ...questionBase, answerType: oneOf('gap_fill'), gaps: array(object({ id, label: text, maxWords: nullable(number(1)) }), 1), answerOrder: oneOf('fixed', 'any'), optionPoolId: optional(id), scoring: objectiveScoring }),
   matching: object({ ...questionBase, answerType: oneOf('matching'), items: array(object({ id, prompt: blocks }), 1), optionPoolId: id, scoring: objectiveScoring }),
-  writing: object({ ...questionBase, answerType: oneOf('writing'), minimumWords: nullable(number(0)), scoring: manualScoring }),
+  writing: object({ ...questionBase, answerType: oneOf('writing'), minimumWords: nullable(number(0)), targetWords: optional(number(1)), scoring: manualScoring }),
   speaking: object({ ...questionBase, answerType: oneOf('speaking'), scoring: manualScoring }),
   self_check: object({ ...questionBase, answerType: oneOf('self_check'), checklist: array(object({ id, label: text })), scoring: tagged('kind', unscored) }),
 })
@@ -174,18 +175,19 @@ export const validateDraftShape: Validator = object({
   }),
   content: object({
     schemaVersion: oneOf(1), id, contentSetId: id, revision: number(1), status: oneOf('draft'),
-    materials: array(object({ id, familyId: id, role: questionRole, title: text, blocks, provenance,
+    materials: array(object({ id, familyId: id, role: questionRole, title: text, blocks, provenance, speakingCandidate: optional(oneOf('A', 'B')),
       layout: optional(array(object({ id, headingBlockId: optional(id), bodyBlockIds: array(id), imageBlockId: optional(id), imageSide: optional(oneOf('left', 'right')) }), 1)),
     })),
     groups: array(object({
-      id, role: questionRole, sectionId: id, partNumber: number(1), instructions: blocks, materialIds: array(id),
+      id, role: questionRole, sectionId: id, partNumber: number(1), instructions: blocks, materialIds: array(id), writingChoice: optional(oneOf(true)),
       activities: optional(array(object({ id, title: cellText, instructionIds: array(id), materialIds: array(id), questionIds: array(id), layout: oneOf('questions', 'matching', 'image_labels', 'cloze', 'handwriting'), handwritingSize: optional(oneOf('letter', 'word')), choicePresentation: optional(object({ kind: oneOf('judgment', 'letters'), options: array(object({ value: text, label: text }), 2) })), wordBank: optional(array(text)), imageDisplayWidth: optional(number(80, 1200)), imageSlotId: optional(id), positions: optional(array(object({ questionId: id, x: number(0, 100, false), y: number(0, 100, false) }))) }))),
       optionPools: array(object({ id, options: array(option, 1), allowReuse: bool })), questions: array(question), provenance,
     })),
     guidance: array(object({ id, role: oneOf('guidance'), groupIds: array(id), blocks, provenance })),
     vocabularyLinks: array(object({
       id, wordEntryId: uuid, sourceSnapshot: object({ stage: text, unit: text, lesson: text, word: text }),
-      questionIds: array(id), materialId: id, blockId: id, matchedForm: text, contextMeaning: text, sentence: text,
+      questionIds: array(id), materialId: optional(id), blockId: optional(id), matchSource: optional(array(id, 2)),
+      matchedForm: text, contextMeaning: text, sentence: text,
       textRange: object({ start: number(0), end: number(1) }), role: oneOf('key', 'background'), review,
     })),
     mediaSlots: array(studentMedia), mediaBindingRevisionId: nullable(id),
@@ -202,11 +204,13 @@ export const validateDraftShape: Validator = object({
 export function validateJsonBounds(input: unknown, issues: ValidationIssue[]): void {
   const seen = new WeakSet<object>()
   let nodes = 0
+  let vocabularyNodes = 0
   let characters = 0
-  const visit = (value: unknown, path: string, depth: number): void => {
+  const visit = (value: unknown, path: string, depth: number, vocabulary = false): void => {
     if (issues.length) return
-    nodes += 1
-    if (depth > 24 || nodes > 50_000) {
+    // A full paper can have thousands of compact, independently validated word references.
+    const nodeLimitExceeded = vocabulary ? ++vocabularyNodes > 80_000 : ++nodes > 50_000
+    if (depth > 24 || nodeLimitExceeded) {
       issue(issues, path, 'input_limit', 'Input exceeds the nesting or node limit.')
       return
     }
@@ -224,7 +228,7 @@ export function validateJsonBounds(input: unknown, issues: ValidationIssue[]): v
     seen.add(value)
     if (Array.isArray(value)) {
       if (value.length > 2_000) issue(issues, path, 'input_limit', 'Array exceeds the size limit.')
-      else for (let index = 0; index < value.length; index += 1) visit(value[index], `${path}[${index}]`, depth + 1)
+      else for (let index = 0; index < value.length; index += 1) visit(value[index], `${path}[${index}]`, depth + 1, vocabulary)
     } else {
       const prototype: unknown = Object.getPrototypeOf(value)
       if (prototype !== Object.prototype && prototype !== null) {
@@ -239,7 +243,7 @@ export function validateJsonBounds(input: unknown, issues: ValidationIssue[]): v
           break
         }
         const child: unknown = descriptors[key].value
-        visit(child, path, depth + 1)
+        visit(child, `${path}.${key}`, depth + 1, vocabulary || (path === '$.content' && key === 'vocabularyLinks'))
       }
     }
     seen.delete(value)

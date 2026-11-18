@@ -75,13 +75,16 @@ export type MaterialBlock = {
   | { readonly kind: 'text'; readonly text: string; readonly presentation?:
     | { readonly role: 'heading'; readonly prefix?: string; readonly originalText?: string }
     | { readonly role: 'instruction'; readonly number: string; readonly originalText?: string } }
-  | { readonly kind: 'email'; readonly from: string; readonly to: string; readonly subject: string; readonly body: readonly string[] }
+  | { readonly kind: 'email'; readonly from: string; readonly to: string; readonly subject: string; readonly body: readonly string[];
+      readonly notes?: readonly { readonly paragraph: number; readonly text: string }[] }
   | { readonly kind: 'table'; readonly headers: readonly string[]; readonly rows: readonly (readonly string[])[] }
   | { readonly kind: 'image'; readonly mediaSlotId: string; readonly alt: string; readonly caption?: string; readonly aspectRatio?: number; readonly displayWidth?: number }
   | { readonly kind: 'audio'; readonly mediaSlotId: string }
 )
 
 export interface Material {
+  /** A photo handed to one candidate during the extended speaking turn. */
+  readonly speakingCandidate?: 'A' | 'B'
   readonly id: string
   /** Stable across renumbering and revisions; deduplication is reviewed, not inferred here. */
   readonly familyId: string
@@ -126,6 +129,8 @@ export interface ExamActivity {
 }
 
 export interface QuestionGroup {
+  /** The alternate writing prompts share one assessed response. */
+  readonly writingChoice?: true
   readonly id: string
   readonly role: QuestionRole
   readonly sectionId: string
@@ -189,8 +194,10 @@ export interface VocabularyLink {
   readonly wordEntryId: string
   readonly sourceSnapshot: { readonly stage: string; readonly unit: string; readonly lesson: string; readonly word: string }
   readonly questionIds: readonly QuestionId[]
-  readonly materialId: string
-  readonly blockId: string
+  readonly materialId?: string
+  readonly blockId?: string
+  /** Stable path to public paper text for a word-bank match. */
+  readonly matchSource?: readonly string[]
   readonly matchedForm: string
   readonly contextMeaning: string
   readonly sentence: string
@@ -206,6 +213,8 @@ export interface ExamTemplateRef {
 }
 
 export interface ExamPartTemplate {
+  readonly writingChoice?: true
+  readonly speakingCandidatePhotos?: true
   readonly number: number
   readonly label: string
   readonly domains: readonly AbilityDomain[]

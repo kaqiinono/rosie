@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Flex, Text, Table } from '@rosie/ui/themes'
+import { Badge, Button, Flex, Text, Table } from '@rosie/ui/themes'
 import type { MaterialBlock } from '../types/content'
 import { useContext, useRef, type ReactNode } from 'react'
 import { ImageZoomTarget, SentenceHighlightText } from '@rosie/ui'
@@ -93,7 +93,13 @@ export function ExamMaterialBlocks({ blocks, attemptId, onAudio, audience = 'stu
           <Flex gap="2" align="center">{beside.map(item => <ExamInlineAudio key={item.id} slotId={item.mediaSlotId} />)}</Flex>
         </Flex>
       }
-      case 'email': return <Flex key={block.id} direction="column" gap="2" lang="en"><Text size="3">From: {block.from}</Text><Text size="3">To: {block.to}</Text><Text size="3" weight="bold">{block.subject}</Text>{block.body.map((line, index) => <div key={index} className="text-base font-normal leading-relaxed">{content(block, line, index)}</div>)}</Flex>
+      case 'email': return <Flex key={block.id} direction="column" gap="2" lang="en">
+        <Text size="3">From: {block.from}</Text><Text size="3">To: {block.to}</Text><Text size="3" weight="bold">{block.subject}</Text>
+        {block.body.map((line, index) => <Flex key={index} direction="column" gap="1" align="start">
+          <div className="text-base font-normal leading-relaxed">{content(block, line, index)}</div>
+          {block.notes?.filter(note => note.paragraph === index).map((note, noteIndex) => <Badge key={noteIndex} size="2" variant="soft">{note.text}</Badge>)}
+        </Flex>)}
+      </Flex>
       case 'table': return <div key={block.id} className="overflow-x-auto"><Table.Root><Table.Header><Table.Row>{block.headers.map((header, index) => <Table.ColumnHeaderCell key={index}>{header}</Table.ColumnHeaderCell>)}</Table.Row></Table.Header>
         <Table.Body>{block.rows.map((row, index) => <Table.Row key={index}>{row.map((cell, column) => <Table.Cell key={column}>{content(block, cell, index, column)}</Table.Cell>)}</Table.Row>)}</Table.Body></Table.Root></div>
       case 'image': {

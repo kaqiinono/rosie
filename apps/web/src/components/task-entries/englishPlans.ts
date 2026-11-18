@@ -89,7 +89,7 @@ export async function refreshEnglishPlanRows(rows: PracticeEntryRow[]): Promise<
     .in('id', planIds)
   if (error) throw error
   if (!data?.length) return rows
-  const words = await readAll<Pick<WordEntry, 'unit' | 'lesson' | 'word'>>('word_entries', 'unit,lesson,word', 'id')
+  const words = await readAll<Pick<WordEntry, 'unit' | 'lesson' | 'word'>>('vocabulary_positions', 'unit,lesson,word', 'id')
   const refreshedIds = new Set(data.map((plan) => plan.id))
   const retained = rows.filter((row) => row.values.contentType !== 'english-plan' || !refreshedIds.has(row.values.planId))
   const built = data.flatMap((plan) => weeklyPlanRows(planFromRow(plan), words))

@@ -26,7 +26,7 @@ export default function LibraryPage() {
 
   return (
     <main className="mx-auto max-w-3xl space-y-4 px-4 py-6">
-      <PageBreadcrumb variant="inline" />
+      <PageBreadcrumb variant="inline" showAccount />
       <h1 className="text-2xl font-black">词库</h1>
       <TextField.Root
         type="search"

@@ -163,6 +163,14 @@ export type WordForms = Partial<Record<WordFormType, string[]>> & {
 
 export interface WordEntry {
   id?: string
+  headwordId?: string
+  verifiedSenseIds?: string[]
+  practiceSenseId?: string
+  spellingGroupId?: string
+  preferredSpelling?: string
+  acceptedSpellings?: string[]
+  caseSensitiveSpelling?: boolean
+  catalogRevision?: number
   stage?: string
   unit: string
   lesson: string
@@ -199,6 +207,21 @@ export interface ReviewRecord {
   correct: boolean
   /** Where the review came from. Absent on legacy rows = treat as 'flashcard'. */
   source?: 'flashcard' | 'recall'
+}
+
+export type VocabularyEvidence = {
+  id: string
+  wordEntryId: string
+  targetId: string
+  skill: 'meaning' | 'usage' | 'spelling' | 'dictation'
+  correct: boolean
+  independent: boolean
+}
+
+export type WordPracticeResult = {
+  entry: WordEntry
+  correct: boolean
+  evidence?: VocabularyEvidence
 }
 
 export interface WordMasteryInfo {
@@ -289,7 +312,7 @@ export interface WeeklyPlanSessionStash {
     rescueRole?: string
   }[]
   curQ: number
-  quizResults: { key: string; correct: boolean }[]
+  quizResults: { key: string; correct: boolean; evidence?: VocabularyEvidence }[]
 }
 
 export interface WeeklyPlan {

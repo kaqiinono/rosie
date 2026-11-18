@@ -61,7 +61,7 @@ export default function EnglishQuickLinkGrid() {
     if (!user) return
     let cancelled = false
     void supabase
-      .from('word_entries')
+      .from('vocabulary_positions')
       .select('word', { count: 'exact', head: true })
       .then(({ count }) => {
         if (!cancelled) setWordCount(count ?? 0)

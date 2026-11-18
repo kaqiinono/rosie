@@ -34,6 +34,7 @@ export function ExamInlineAnswer({ slot }: { slot: AnswerSlot }) {
     }
     const options = pool.options.map(option => ({ ...option, disabled: occupied.has(option.label) }))
     return <InlineChoiceField label={question.gaps.length > 1 ? `${label} · ${gap.label}` : label} options={options}
+      sentenceOptions={question.classification.questionTypeId === 'gapped_text'}
       value={pool.options.find(option => option.label === value)?.id ?? ''} readOnly={context.disabled}
       onValueChange={id => change(pool.options.find(option => option.id === id)?.label ?? '')} />
   }

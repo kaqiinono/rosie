@@ -60,6 +60,7 @@ export interface MatchingQuestion extends QuestionBase {
 export interface WritingQuestion extends QuestionBase {
   readonly answerType: 'writing'
   readonly minimumWords: number | null
+  readonly targetWords?: number
   readonly scoring: ManualScoring
 }
 

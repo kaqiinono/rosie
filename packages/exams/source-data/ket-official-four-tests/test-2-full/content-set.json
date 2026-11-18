@@ -1,0 +1,17 @@
+{
+  "id": "ket-official-four-tests:test-2:full",
+  "kind": "official_paper",
+  "title": "KET 青少版官方真题 1 · Test 2",
+  "source": {
+    "id": "ket-official-four-tests",
+    "title": "剑桥通用五级考试KET青少版官方真题：新题型1（含答案和超详解析）",
+    "edition": "A2 Key for Schools 1 for the Revised 2020 Exam; FLTRP 2021 reprint; ISBN 978-7-5213-2371-9",
+    "fileHash": "1e67451d011e83999712119387dc40a5cdc5d260090bfde2758428bd8646c0c6"
+  },
+  "purpose": "training",
+  "template": {
+    "id": "ket-schools-2020-v1",
+    "version": 1
+  },
+  "testNumber": 2
+}

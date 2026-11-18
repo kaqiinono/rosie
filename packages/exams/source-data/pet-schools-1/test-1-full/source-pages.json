@@ -1,0 +1,392 @@
+[
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 10,
+    "printedPage": "8",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 11,
+    "printedPage": "9",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 12,
+    "printedPage": "10",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 13,
+    "printedPage": "11",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 14,
+    "printedPage": "12",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 15,
+    "printedPage": "13",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 16,
+    "printedPage": "14",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 17,
+    "printedPage": "15",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 18,
+    "printedPage": "16",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 19,
+    "printedPage": "17",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 20,
+    "printedPage": "18",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 21,
+    "printedPage": "19",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 22,
+    "printedPage": "20",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 22,
+    "printedPage": "20",
+    "role": "exam",
+    "region": {
+      "x": 0.145,
+      "y": 0.286,
+      "width": 0.807,
+      "height": 0.137
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 22,
+    "printedPage": "20",
+    "role": "exam",
+    "region": {
+      "x": 0.145,
+      "y": 0.482,
+      "width": 0.807,
+      "height": 0.133
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 22,
+    "printedPage": "20",
+    "role": "exam",
+    "region": {
+      "x": 0.145,
+      "y": 0.677,
+      "width": 0.807,
+      "height": 0.136
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 23,
+    "printedPage": "21",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 23,
+    "printedPage": "21",
+    "role": "exam",
+    "region": {
+      "x": 0.097,
+      "y": 0.124,
+      "width": 0.807,
+      "height": 0.142
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 23,
+    "printedPage": "21",
+    "role": "exam",
+    "region": {
+      "x": 0.097,
+      "y": 0.321,
+      "width": 0.807,
+      "height": 0.142
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 23,
+    "printedPage": "21",
+    "role": "exam",
+    "region": {
+      "x": 0.097,
+      "y": 0.517,
+      "width": 0.807,
+      "height": 0.142
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 23,
+    "printedPage": "21",
+    "role": "exam",
+    "region": {
+      "x": 0.097,
+      "y": 0.714,
+      "width": 0.807,
+      "height": 0.143
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 24,
+    "printedPage": "22",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 25,
+    "printedPage": "23",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 26,
+    "printedPage": "24",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 27,
+    "printedPage": "25",
+    "role": "exam"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 82,
+    "printedPage": "80",
+    "role": "exam",
+    "region": {
+      "x": 0.104,
+      "y": 0.16,
+      "width": 0.35,
+      "height": 0.05
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 82,
+    "printedPage": "80",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 83,
+    "printedPage": "81",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 84,
+    "printedPage": "82",
+    "role": "exam",
+    "region": {
+      "x": 0.107,
+      "y": 0.109,
+      "width": 0.245,
+      "height": 0.038
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 84,
+    "printedPage": "82",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 85,
+    "printedPage": "83",
+    "role": "exam",
+    "region": {
+      "x": 0.246,
+      "y": 0.274,
+      "width": 0.672,
+      "height": 0.141
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 85,
+    "printedPage": "83",
+    "role": "exam",
+    "region": {
+      "x": 0.058,
+      "y": 0.184,
+      "width": 0.205,
+      "height": 0.017
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 85,
+    "printedPage": "83",
+    "role": "exam",
+    "region": {
+      "x": 0.058,
+      "y": 0.545,
+      "width": 0.205,
+      "height": 0.025
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 85,
+    "printedPage": "83",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 98,
+    "printedPage": "96",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 99,
+    "printedPage": "97",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 100,
+    "printedPage": "98",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 101,
+    "printedPage": "99",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 102,
+    "printedPage": "100",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 103,
+    "printedPage": "101",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 104,
+    "printedPage": "102",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 105,
+    "printedPage": "103",
+    "role": "solution"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 105,
+    "printedPage": "103",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 106,
+    "printedPage": "104",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 107,
+    "printedPage": "105",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 108,
+    "printedPage": "106",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 109,
+    "printedPage": "107",
+    "role": "teacher_notes"
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 152,
+    "printedPage": "150",
+    "role": "exam",
+    "region": {
+      "x": 0.2,
+      "y": 0.245,
+      "width": 0.635,
+      "height": 0.305
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 152,
+    "printedPage": "150",
+    "role": "exam",
+    "region": {
+      "x": 0.2,
+      "y": 0.581,
+      "width": 0.635,
+      "height": 0.303
+    }
+  },
+  {
+    "sourceId": "pet-schools-1",
+    "pdfPage": 153,
+    "printedPage": "151",
+    "role": "exam",
+    "region": {
+      "x": 0.049,
+      "y": 0.223,
+      "width": 0.891,
+      "height": 0.579
+    }
+  }
+]

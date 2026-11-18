@@ -57,7 +57,7 @@ function Review({ id, userId, renderVocabulary, renderGrading }: { id: string; u
   }, [id, userId])
   useEffect(() => { const controller = new AbortController(); void load(controller.signal); return () => controller.abort() }, [load])
   const submittedGroups = data?.view.groups.filter(group => data.view.state.sections[group.sectionId]?.status === 'submitted') ?? []
-  return <PageShell title="作答复盘" tone="paper" width="narrow" backHref="/exams/ket"><Flex direction="column" gap="5">
+  return <PageShell title="作答复盘" tone="paper" width="narrow" backHref="/exams/ket" showAccount><Flex direction="column" gap="5">
     <Flex gap="3" wrap="wrap"><Button size="3" variant="soft" asChild><Link href={`/exams/attempts/${id}`}>返回本次学习</Link></Button><Button size="3" variant="soft" disabled={loading} onClick={() => void load()}>刷新批改结果</Button></Flex>
     <div className="relative flex min-h-[calc(100dvh-16rem)] flex-col gap-5"><LoadingOverlay appearance="quiet" visible={loading} placement="content" />
       {!loading && error != null && <StickerCard tone="danger" elevation="flat"><Text role="alert">{examErrorMessage(error)}</Text></StickerCard>}

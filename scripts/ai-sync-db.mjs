@@ -225,7 +225,9 @@ async function fetchAll(table, select, startOffset, pageSize = 500) {
   while (rows.length < perTableLimit) {
     const remaining = Number.isFinite(perTableLimit) ? perTableLimit - rows.length : pageSize
     const to = from + Math.min(pageSize, remaining) - 1
-    const { data, error } = await admin.from(table).select(select).range(from, to)
+    const query = admin.from(table).select(select)
+    if (table === 'vocabulary_search') query.order('headword_id')
+    const { data, error } = await query.range(from, to)
     if (error) throw error
     if (!data?.length) break
     rows.push(...data)
@@ -236,12 +238,12 @@ async function fetchAll(table, select, startOffset, pageSize = 500) {
 }
 
 async function syncWords() {
-  const sourceKey = 'english_words'
+  const sourceKey = 'english_headwords'
   const offset = await resolveOffset(sourceKey)
-  const totalRecords = await countRows('word_entries')
+  const totalRecords = await countRows('vocabulary_search')
   const data = await fetchAll(
-    'word_entries',
-    'id, word, ipa, chinese_def, explanation, example, unit, lesson, stage',
+    'vocabulary_search',
+    'id, headword_id, word, ipa, shared_chinese_def, shared_explanation, example, unit, lesson, stage',
     offset,
   )
   await updateSyncState({
@@ -258,8 +260,8 @@ async function syncWords() {
     const content = [
       `单词: ${row.word}`,
       row.ipa ? `音标: ${row.ipa}` : '',
-      row.chinese_def ? `中文: ${row.chinese_def}` : '',
-      row.explanation ? `英文释义: ${row.explanation}` : '',
+      row.shared_chinese_def ? `中文: ${row.shared_chinese_def}` : '',
+      row.shared_explanation ? `英文释义: ${row.shared_explanation}` : '',
       row.example ? `例句: ${row.example}` : '',
     ]
       .filter(Boolean)
@@ -278,12 +280,12 @@ async function syncWords() {
         unit: row.unit,
         lesson: row.lesson,
         stage: row.stage,
-        href: `/english/words/practice?focus=${encodeURIComponent(row.word)}`,
+        href: `/english/words/practice?focus=${encodeURIComponent([row.unit, row.lesson, row.word].join('::'))}`,
       },
     })
     manifestEntries.push({
       sourceRef,
-      href: `/english/words/practice?focus=${encodeURIComponent(row.word)}`,
+      href: `/english/words/practice?focus=${encodeURIComponent([row.unit, row.lesson, row.word].join('::'))}`,
       title: row.word,
       subject: 'english',
       wordKey: row.word,

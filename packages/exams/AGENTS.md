@@ -62,6 +62,14 @@ answers. Technical interruption is an explicit state transition, not a new time 
 Template numeric rubric ranges are authored; publication still requires the relevant
 source/rubric review. No official scaled score or pass prediction is defined.
 
+`src/templates/pet-schools-2020-v1.ts` registers the B1 Preliminary for Schools draft
+format with independent Reading, Writing, Listening and Speaking sections. Admin paper
+preview uses one shared, non-reusable sentence pool for Reading Part 4, one writing
+response editor for the selected Part 2 prompt, and separate Candidate A/B photographs
+for Speaking Part 2. Speaking Part 3 has its own shared card. Test 1 is an unpublished
+draft. Student PET attempts, timers and official scoring are outside this draft support.
+See [PET Test 1 coverage](source-data/pet-schools-1/test-1-full/README.md).
+
 ## Content ownership
 
 Generic, classification and handwriting question fields omit plain prompt text already rendered as the current activity's
@@ -659,16 +667,14 @@ pre-cropped media binding, publication, owner/session isolation, concurrency and
 - `LoadingOverlay appearance="quiet" placement="content"` and `PlayerDock appearance="quiet" placement="inline"` are public shared props used by exam pages. Background attempt reads retain mounted answer/recording components; an unknown command remains retryable with its original bytes.
 - Private `TeacherNote.kind = listening_transcript` distinguishes reviewable audio transcripts from examiner/teaching/scoring notes. `projectAttemptReview` returns transcripts only after every associated group has been submitted; it also returns separately scoped guidance and review-slot metadata. Full source bundles retain pending provenance.
 - `/api/exams/attempts/[id]/reflections` GET returns `{items:[{questionId,reason,version}]}`. POST accepts exactly `{requestId,questionId,expectedVersion,reason}`; `reason` is null or one of unknown_word/unclear_audio/spelling/misunderstood_question/unsure. Only owner-submitted non-example questions are eligible. The independent CAS/receipt tables in `20261113092155_exams_reflections.sql` never alter attempts, scores or insights. Shared per-user reads dedupe across question widgets. Pure reflection types/constants are available through `@rosie/exams/reflection`.
-- Source bundles intentionally contain no invented vocabulary UUIDs. The administrator selects existing KET entries and exact source text occurrences before review/publication. This authoring prerequisite is separate from the implemented student word-review bridge.
-
-`GET /api/admin/exams/words?q=...&limit=...` is administrator-only canonical KET lookup:
-1–80 query characters, 1–30 results (default20), no duplicate/extra parameters, escaped
-literal LIKE input, and only id/stage/unit/lesson/word returned. VocabularyFields can create,
-edit and remove draft candidates from those entries and an existing material text block.
-It preserves exact UTF-16 ranges; multiple occurrences require explicit selection, and the
-selected question IDs must belong to groups using that material. Only the local link ID is
-generated. The dictionary UUID is never generated. All six source bundles still have zero
-real vocabulary links until an administrator performs this authoring step and saves/reviews.
+- Draft management automatically matches the public paper text before saving. It uses the
+  shared vocabulary catalog's headwords, spelling variants, and the English module's word
+  forms. Links record actual UTF-16 ranges and the question scope of their text. The editor
+  freezes the result before the versioned save so retries reuse the same payload.
+  Source bundles can also carry authored links. Automatic matches are background vocabulary
+  for submitted review. Existing authored key links can also support transfer evidence.
+- `GET /api/admin/exams/words?q=...&limit=...` remains an administrator-only lookup for
+  canonical KET records used by authoring tools.
 
 ## Confirmed question rendering rollout (2026-11-14)
 
@@ -810,12 +816,21 @@ manual audio controls and retain the reviewed playback program. No audio positio
 or track numbers are inferred from printed text.
 
 Paper preview links carry revision, section, Part and optional slot into `/admin/sync`.
-The media editor lists slots by server-derived Part membership from explicit group,
-material, guidance and teacher-note references. Unassigned whole-set slots remain
-in the separate shared-resource scope. Scoped writes validate all changed slot IDs
-against current draft membership and preserve other bindings through existing CAS
-and immutable binding revisions. The root directory still covers the whole set.
-No migration, data import, publication or automated/runtime checks ran for this change.
+The media editor lists authored listening and training audio grouped by listening Part.
+It reads the selected authorized Baidu directory and its descendants. Batch matching stages
+unique authored track numbers or explicit filenames for single-track Parts, leaves ambiguous
+tracks for manual selection, and preserves existing bindings. The listening-only save validates
+every changed slot against current draft membership and commits across Parts using the existing
+CAS and immutable binding revisions. The root directory still covers the whole set.
+Question images continue through the separate image workspace.
+
+The admin catalog displays the stored content type (真题, 模拟题 or 专项训练).
+Paper and training names remain editable in 管理试卷 through the draft save flow.
+
+For additional authored papers, pass `--bundle <source-data path>` once per bundle
+and `--pages-dir <render directory>` to `scripts/prepare-exam-image-pages.mjs`.
+The selected directory supplies `page-NNN.png` originals and stores the batch's
+private source-assets manifest. Existing invocations still use their configured paths.
 
 ## Approved compact interactions applied (2026-11-14)
 

@@ -46,7 +46,7 @@ export function KetPracticePage({ wordReviewBatchId, revisionId }: { wordReviewB
     })
     setPage(1)
   }
-  return <PageShell title="KET 专项练习" tone="paper" width="narrow"><Flex direction="column" gap="5">
+  return <PageShell title="KET 专项练习" tone="paper" width="narrow" showAccount><Flex direction="column" gap="5">
     <StickerCard as="section"><Flex direction="column" gap="4">
       <Text as="p">先选试卷，再挑科目、Part 或考点。练习不限时，每次开始一个完整题组，逐组提交后查看解答。</Text>
       {wordReviewBatchId && <Text as="p" size="2">本页只显示与这次补练词有关、尚未见过材料的训练题组。</Text>}

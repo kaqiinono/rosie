@@ -2,7 +2,7 @@ import type { MediaSlot, QuestionGroup } from '../../types/content'
 import type { Question } from '../../types/questions'
 import type { ExamDraftInput, ValidationIssue } from '../../validation/contracts'
 
-export type IssueAction = 'content' | 'words' | 'raw' | 'images' | 'media' | 'review'
+export type IssueAction = 'content' | 'raw' | 'images' | 'media' | 'review'
 export type ExamIssueTask = {
   key: string
   location: string
@@ -39,7 +39,7 @@ const MESSAGES: Record<string, string> = {
   publication_review_required: '当前版本还没有审核记录。这不影响发布，需要时可以再核对。',
   publication_material_family_required: '请关联有原书依据的材料，并补充用于识别同源材料的标识。',
   publication_readiness_limit: '待办过多，当前报告尚未列全。请处理已列事项后保存并重新读取。',
-  exam_invalid_vocabulary_reference: '关联词条与当前词库不一致，请重新选择词条。',
+  exam_invalid_vocabulary_reference: '内容包中的词条引用与当前词库不一致。',
   exam_media_unavailable: '暂时无法确认媒体可用性，请查看共享网盘授权与资源绑定后重新读取。',
 }
 const SECTION_NAMES: Record<string, string> = { reading_writing: '阅读与写作', listening: '听力', speaking: '口语' }
@@ -134,7 +134,7 @@ export function examIssueTasks(issues: readonly ValidationIssue[], draft: ExamDr
     const action: IssueAction = issue.code === 'publication_review_required' || issue.code.startsWith('rubric_') ? 'review'
       : location.slot?.purpose === 'question_image' && ['media_availability_unverified', 'publication_media_unverified'].includes(issue.code) ? 'images'
       : location.slot || ['media_binding_missing', 'listening_media_missing', 'exam_media_unavailable'].includes(issue.code) ? 'media'
-      : issue.path.startsWith('$.content.vocabularyLinks') ? 'words'
+      : issue.path.startsWith('$.content.vocabularyLinks') ? 'raw'
       : invalidChoiceLabel || MESSAGES[issue.code] ? 'content' : 'raw'
     // Merge only duplicate diagnostics for the same underlying location; keep every raw issue.
     const normalizedCode = issue.code === 'publication_media_unverified' ? 'media_availability_unverified' : issue.code

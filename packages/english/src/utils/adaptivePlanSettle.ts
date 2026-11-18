@@ -1,4 +1,4 @@
-import type { QuizType, WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
+import type { VocabularyEvidence, QuizType, WordEntry, WordMasteryInfo, WordMasteryMap, WeeklyPlan } from '@rosie/core'
 import { advanceStage, regressStage } from '@rosie/core'
 import { applyBoxAnswer } from './adaptivePlanBoxes'
 import type { AdaptivePlanStats, AdaptivePlanWordProgress } from './adaptivePlanTypes'
@@ -11,6 +11,7 @@ export type SessionOutcome = {
   usedRetry?: boolean
   usedHelp?: boolean
   usedHelpCount?: number
+  evidence?: VocabularyEvidence
 }
 
 /** Any retry or help makes the answer assisted, regardless of question type. */

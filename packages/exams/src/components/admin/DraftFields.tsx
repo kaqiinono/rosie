@@ -41,6 +41,8 @@ export function BlocksEditor({ blocks, onChange, renderImageSize }: { blocks: re
         <DraftText label="收件人" value={block.to} onChange={to => replace({ ...block, to })} />
         <DraftText label="主题" value={block.subject} onChange={subject => replace({ ...block, subject })} />
         <DraftText label="邮件正文（每行一段）" multiline value={block.body.join('\n')} onChange={text => replace({ ...block, body: text.split('\n') })} />
+        {block.notes?.map((note, index) => <DraftText key={index} label={`第 ${note.paragraph + 1} 段旁注`} value={note.text}
+          onChange={text => replace({ ...block, notes: block.notes?.map((item, at) => at === index ? { ...item, text } : item) })} />)}
       </Flex>
       case 'table': return <Flex key={block.id} direction="column" gap="2">
         {block.headers.map((header, column) => <DraftText key={`h${column}`} label={`第 ${column + 1} 列标题`} value={header}

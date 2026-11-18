@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { QuizQuestion } from '@rosie/core'
+import type { QuizQuestion, VocabularyEvidence } from '@rosie/core'
 import { isAcceptedSpelling } from '../../utils/english-helpers'
 
 export type QuizAttempt = 'first' | 'retry' | 'done'
@@ -9,6 +9,25 @@ export type QuizAttempt = 'first' | 'retry' | 'done'
 export interface QuizCommitInfo {
   finalCorrect: boolean
   usedRetry: boolean
+  usedContextHint?: boolean
+}
+
+export function vocabularyEvidence(
+  question: Pick<QuizQuestion, 'word' | 'type'>,
+  result: QuizCommitInfo,
+  usedHelp: boolean,
+): VocabularyEvidence | undefined {
+  const { word, type } = question
+  const target = type === 'C' ? word.spellingGroupId : word.practiceSenseId
+  if (!word.id || !target) return
+  return {
+    id: crypto.randomUUID(),
+    wordEntryId: word.id,
+    targetId: target,
+    skill: type === 'C' ? 'spelling' : type === 'D' ? 'usage' : 'meaning',
+    correct: result.finalCorrect && !result.usedRetry,
+    independent: !usedHelp && !result.usedContextHint,
+  }
 }
 
 export interface QuizRunnerOptions {
@@ -57,6 +76,7 @@ export function useQuizRunner({
   const [wasCorrect, setWasCorrect] = useState<boolean | null>(null)
   const [wrongChoices, setWrongChoices] = useState<Set<string>>(new Set())
   const [showPassageHint, setShowPassageHint] = useState(false)
+  const [usedContextHint, setUsedContextHint] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
 
   const [prevQuestion, setPrevQuestion] = useState(question)
@@ -68,6 +88,7 @@ export function useQuizRunner({
     setWasCorrect(null)
     setWrongChoices(new Set())
     setShowPassageHint(false)
+    setUsedContextHint(false)
     setShowHelp(false)
   }
 
@@ -92,8 +113,8 @@ export function useQuizRunner({
   const finish = useCallback((finalCorrect: boolean, usedRetry: boolean) => {
     setAttempt('done')
     setWasCorrect(finalCorrect)
-    onCommitRef.current({ finalCorrect, usedRetry })
-  }, [])
+    onCommitRef.current({ finalCorrect, usedRetry, usedContextHint })
+  }, [usedContextHint])
 
   const handleMCAnswer = useCallback(
     (chosen: string) => {
@@ -118,7 +139,7 @@ export function useQuizRunner({
   const handleSpellSubmit = useCallback(
     (val: string) => {
       if (!question || attempt === 'done') return
-      const correct = isAcceptedSpelling(val, question.word.word)
+      const correct = isAcceptedSpelling(val, question.word)
       setSpellOk(correct)
       if (correct) {
         finish(true, attempt === 'retry')
@@ -141,7 +162,10 @@ export function useQuizRunner({
     onAdvanceRef.current()
   }, [])
 
-  const openPassageHint = useCallback(() => setShowPassageHint(true), [])
+  const openPassageHint = useCallback(() => {
+    setUsedContextHint(true)
+    setShowPassageHint(true)
+  }, [])
   const closePassageHint = useCallback(() => setShowPassageHint(false), [])
   const openHelp = useCallback(() => setShowHelp(true), [])
   const closeHelp = useCallback(() => setShowHelp(false), [])

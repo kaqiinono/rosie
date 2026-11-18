@@ -161,6 +161,7 @@ export default function UsersAdminPage() {
       backLabel="返回管理后台"
       title="用户管理"
       subtitle="账户、权限与密码"
+      showAccount
     >
       <StickerCard
         elevation="sm"

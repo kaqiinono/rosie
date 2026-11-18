@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react'
 import type { Dispatch, SetStateAction } from 'react'
 import type { User } from '@supabase/supabase-js'
-import type { WordEntry, WordMasteryMap, WordVocabType } from '@rosie/core'
+import type { WordEntry, WordMasteryMap, WordPracticeResult, WordVocabType } from '@rosie/core'
 import type { SpellButtonStyle } from './components/words/SpellTiles'
 import type { MasteryLevel } from '@rosie/core'
 import { getWordMasteryLevel } from '@rosie/core'
@@ -27,7 +27,7 @@ interface WordsContextValue {
   lessonStage: Record<string, string>
   upsertByStage: (words: WordEntry[]) => Promise<void>
   masteryMap: WordMasteryMap
-  recordBatch: (results: { entry: WordEntry; correct: boolean }[]) => void
+  recordBatch: (results: WordPracticeResult[]) => void
   recordRecallAttempt: (entry: WordEntry, correct: boolean) => void
   // filter state
   selStage: string
@@ -43,6 +43,8 @@ interface WordsContextValue {
   selVocabTypes: Set<WordVocabType>
   setSelVocabTypes: Dispatch<SetStateAction<Set<WordVocabType>>>
   filteredWords: WordEntry[]
+  practiceOverride: WordEntry[] | null
+  setPracticeOverride: Dispatch<SetStateAction<WordEntry[] | null>>
   // practice types (shared for immersive mode)
   practiceTypes: ('A' | 'B' | 'C' | 'D')[]
   setPracticeTypes: Dispatch<SetStateAction<('A' | 'B' | 'C' | 'D')[]>>
@@ -100,6 +102,7 @@ export function WordsProvider({
     () => new Set(ALL_VOCAB_TYPES),
   )
   const [practiceTypes, setPracticeTypes] = useState<('A' | 'B' | 'C' | 'D')[]>(['A', 'B'])
+  const [practiceOverride, setPracticeOverride] = useState<WordEntry[] | null>(null)
   const [previewCards, setPreviewCards] = useState(false)
   const [practiceButtonStyle, setPracticeButtonStyle] = useState<SpellButtonStyle>('candy')
 
@@ -144,7 +147,7 @@ export function WordsProvider({
     else void addWrong(k)
   }, [addWrong, markResolved])
 
-  const recordBatch = useCallback((results: { entry: WordEntry; correct: boolean }[]) => {
+  const recordBatch = useCallback((results: WordPracticeResult[]) => {
     recordBatchRaw(results)
     for (const r of results) syncWrongWord(r.entry, r.correct)
   }, [recordBatchRaw, syncWrongWord])
@@ -204,6 +207,15 @@ export function WordsProvider({
     if (masteryFilter !== null) {
       base = base.filter(v => getWordMasteryLevel(masteryMap[wordKey(v)]?.correct ?? 0) === masteryFilter)
     }
+    if (selLessons.size === 0 && selWords.size === 0) {
+      const seen = new Set<string>()
+      base = base.filter((entry) => {
+        if (!entry.headwordId) return true
+        if (seen.has(entry.headwordId)) return false
+        seen.add(entry.headwordId)
+        return true
+      })
+    }
     return base
   }, [vocab, selStage, selUnits, selLessons, selWords, selVocabTypes, masteryFilter, masteryMap])
 
@@ -220,7 +232,7 @@ export function WordsProvider({
       selWords, setSelWords,
       masteryFilter, setMasteryFilter,
       selVocabTypes, setSelVocabTypes,
-      filteredWords,
+      filteredWords, practiceOverride, setPracticeOverride,
       practiceTypes, setPracticeTypes,
       previewCards, setPreviewCards,
       practiceButtonStyle, setPracticeButtonStyle,

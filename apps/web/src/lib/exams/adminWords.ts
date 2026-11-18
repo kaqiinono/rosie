@@ -29,7 +29,7 @@ function choice(input: unknown): ExamAdminWordChoice {
 
 export async function searchExamAdminWords(db: SupabaseClient, search: { query: string; limit: number }): Promise<ExamAdminWordSearch> {
   const literal = search.query.replace(/[\\%_]/g, character => `\\${character}`)
-  const { data, error } = await db.from('word_entries').select('id,stage,unit,lesson,word')
+  const { data, error } = await db.from('vocabulary_positions').select('id,stage,unit,lesson,word')
     .eq('stage', 'KET').ilike('word', `%${literal}%`).order('word').order('unit').order('lesson').order('id').limit(search.limit + 1)
   if (error || !Array.isArray(data)) throw new ExamApiError('exam_unavailable', 503)
   return { query: search.query, items: data.slice(0, search.limit).map(choice), hasMore: data.length > search.limit }

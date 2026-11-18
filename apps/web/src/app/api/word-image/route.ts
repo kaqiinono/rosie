@@ -99,6 +99,34 @@ async function searchPexels(
   return null
 }
 
+async function activeImagePosition(
+  admin: SupabaseClient, stage: string, unit: string, lesson: string, word: string,
+) {
+  let query = admin.from('vocabulary_positions').select('id,catalog_revision,image_path')
+    .eq('unit', unit).eq('lesson', lesson).eq('word', word)
+  query = stage ? query.eq('stage', stage) : query.is('stage', null)
+  const { data, error } = await query.maybeSingle()
+  if (error) throw new WordImageError(`db_query_failed: ${error.message}`, 500)
+  if (!data) throw new WordImageError('not_found', 404)
+  return data as { id: string; catalog_revision: number; image_path: string | null }
+}
+
+async function saveImagePosition(
+  admin: SupabaseClient, position: { id: string; catalog_revision: number }, fields: {
+    image_path: string | null
+    image_match_score: number | null
+    image_match_query: string | null
+    image_source: 'pexels' | 'upload' | null
+    image_pexels_id: string | null
+  },
+) {
+  const { error } = await admin.rpc('write_vocabulary_positions', {
+    p_action: 'save',
+    p_rows: [{ id: position.id, expected_revision: position.catalog_revision, ...fields }],
+  })
+  if (error) throw new WordImageError(`db_update_failed: ${error.message}`, error.code === '40001' ? 409 : 500)
+}
+
 async function matchOne(admin: SupabaseClient, params: MatchParams): Promise<MatchResult> {
   const { stage, unit, lesson, word, explanation, excludePexelsIds } = params
   const query = params.query?.trim() || buildPexelsQuery(word, explanation)
@@ -121,6 +149,7 @@ async function matchOne(admin: SupabaseClient, params: MatchParams): Promise<Mat
   if (!imgResp.ok) throw new WordImageError('download_failed', 502)
   const bytes = await imgResp.arrayBuffer()
 
+  const position = await activeImagePosition(admin, stage, unit, lesson, word)
   const path = wordImageStoragePath(stage, unit, lesson, word)
   const { error: uploadError } = await admin.storage
     .from(WORD_IMAGES_BUCKET)
@@ -128,30 +157,18 @@ async function matchOne(admin: SupabaseClient, params: MatchParams): Promise<Mat
   if (uploadError) throw new WordImageError(`upload_failed: ${uploadError.message}`, 500)
 
   const imagePexelsId = String(photo.id)
-  let updateQuery = admin
-    .from('word_entries')
-    .update({
-      image_path: path,
-      image_match_score: score,
-      image_match_query: query,
-      image_source: 'pexels',
-      image_pexels_id: imagePexelsId,
+  try {
+    await saveImagePosition(admin, position, {
+      image_path: path, image_match_score: score, image_match_query: query,
+      image_source: 'pexels', image_pexels_id: imagePexelsId,
     })
-    .eq('unit', unit)
-    .eq('lesson', lesson)
-    .eq('word', word)
-  updateQuery = stage ? updateQuery.eq('stage', stage) : updateQuery.is('stage', null)
-  const { data: updatedRows, error: updateError } = await updateQuery.select('word')
-  if (updateError) throw new WordImageError(`db_update_failed: ${updateError.message}`, 500)
-  if (!updatedRows || updatedRows.length === 0) {
-    // Row didn't exist (or filters didn't match) — clean up the object we just
-    // uploaded so we don't leave orphaned files in Storage.
-    try {
-      await admin.storage.from(WORD_IMAGES_BUCKET).remove([path])
-    } catch {
-      // best-effort cleanup
+  } catch (error) {
+    // A conflicting metadata write can still refer to an existing object at this path.
+    if (!position.image_path) {
+      const current = await activeImagePosition(admin, stage, unit, lesson, word).catch(() => null)
+      if (current && current.image_path !== path) await admin.storage.from(WORD_IMAGES_BUCKET).remove([path])
     }
-    throw new WordImageError('not_found', 404)
+    throw error
   }
 
   return { imagePath: path, imageMatchScore: score, imageMatchQuery: query, imagePexelsId }
@@ -172,7 +189,7 @@ async function handleBatch(
   force: boolean,
 ): Promise<BatchResultItem[]> {
   let query = admin
-    .from('word_entries')
+    .from('vocabulary_positions')
     .select('stage, unit, lesson, word, explanation, image_source, image_path')
     .eq('unit', unit)
   query = stage ? query.eq('stage', stage) : query.is('stage', null)
@@ -217,48 +234,14 @@ async function handleClear(
   params: { stage: string; unit: string; lesson: string; word: string; imagePath?: string },
 ): Promise<void> {
   const { stage, unit, lesson, word } = params
-  let imagePath = params.imagePath
-
-  if (!imagePath) {
-    // Look up the current image_path so Storage still gets cleaned up when the
-    // caller doesn't already know it.
-    let lookupQuery = admin
-      .from('word_entries')
-      .select('image_path')
-      .eq('unit', unit)
-      .eq('lesson', lesson)
-      .eq('word', word)
-    lookupQuery = stage ? lookupQuery.eq('stage', stage) : lookupQuery.is('stage', null)
-    const { data: existing, error: lookupError } = await lookupQuery.maybeSingle()
-    if (lookupError) throw new WordImageError(`db_query_failed: ${lookupError.message}`, 500)
-    if (!existing) throw new WordImageError('not_found', 404)
-    imagePath = (existing as { image_path: string | null }).image_path ?? undefined
+  const position = await activeImagePosition(admin, stage, unit, lesson, word)
+  await saveImagePosition(admin, position, {
+    image_path: null, image_match_score: null, image_match_query: null,
+    image_source: null, image_pexels_id: null,
+  })
+  if (position.image_path) {
+    await admin.storage.from(WORD_IMAGES_BUCKET).remove([position.image_path])
   }
-
-  if (imagePath) {
-    try {
-      await admin.storage.from(WORD_IMAGES_BUCKET).remove([imagePath])
-    } catch {
-      // best-effort; row update below is the source of truth
-    }
-  }
-
-  let updateQuery = admin
-    .from('word_entries')
-    .update({
-      image_path: null,
-      image_match_score: null,
-      image_match_query: null,
-      image_source: null,
-      image_pexels_id: null,
-    })
-    .eq('unit', unit)
-    .eq('lesson', lesson)
-    .eq('word', word)
-  updateQuery = stage ? updateQuery.eq('stage', stage) : updateQuery.is('stage', null)
-  const { data: updatedRows, error } = await updateQuery.select('word')
-  if (error) throw new WordImageError(`db_update_failed: ${error.message}`, 500)
-  if (!updatedRows || updatedRows.length === 0) throw new WordImageError('not_found', 404)
 }
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024
@@ -289,6 +272,7 @@ async function handleUpload(
   if (!bytes.length) throw new WordImageError('empty_file', 400)
   if (bytes.length > MAX_UPLOAD_BYTES) throw new WordImageError('file_too_large', 413)
 
+  const position = await activeImagePosition(admin, stage, unit, lesson, word)
   const path = wordImageStoragePath(stage, unit, lesson, word)
   const { error: uploadError } = await admin.storage.from(WORD_IMAGES_BUCKET).upload(path, bytes, {
     contentType,
@@ -297,28 +281,18 @@ async function handleUpload(
   })
   if (uploadError) throw new WordImageError(`upload_failed: ${uploadError.message}`, 500)
 
-  let updateQuery = admin
-    .from('word_entries')
-    .update({
-      image_path: path,
-      image_match_score: null,
-      image_match_query: null,
-      image_source: 'upload',
-      image_pexels_id: null,
+  try {
+    await saveImagePosition(admin, position, {
+      image_path: path, image_match_score: null, image_match_query: null,
+      image_source: 'upload', image_pexels_id: null,
     })
-    .eq('unit', unit)
-    .eq('lesson', lesson)
-    .eq('word', word)
-  updateQuery = stage ? updateQuery.eq('stage', stage) : updateQuery.is('stage', null)
-  const { data: updatedRows, error: updateError } = await updateQuery.select('word')
-  if (updateError) throw new WordImageError(`db_update_failed: ${updateError.message}`, 500)
-  if (!updatedRows || updatedRows.length === 0) {
-    try {
-      await admin.storage.from(WORD_IMAGES_BUCKET).remove([path])
-    } catch {
-      // best-effort cleanup
+  } catch (error) {
+    // A conflicting metadata write can still refer to an existing object at this path.
+    if (!position.image_path) {
+      const current = await activeImagePosition(admin, stage, unit, lesson, word).catch(() => null)
+      if (current && current.image_path !== path) await admin.storage.from(WORD_IMAGES_BUCKET).remove([path])
     }
-    throw new WordImageError('not_found', 404)
+    throw error
   }
 
   return { imagePath: path }

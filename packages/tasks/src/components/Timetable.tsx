@@ -686,7 +686,7 @@ export default function Timetable() {
                       </button>
                       <footer
                         aria-label={`${course.name}操作`}
-                        className="border-kid-line border-t p-2"
+                        className="@container border-kid-line border-t p-2"
                       >
                         <Grid columns="4" gap="1">
                           <Button
@@ -695,7 +695,7 @@ export default function Timetable() {
                             onClick={() => setSelection({ course })}
                           >
                             <CourseActionIcon action="view" />
-                            查看
+                            <span className="hidden whitespace-nowrap sm:@[22rem]:inline">查看</span>
                           </Button>
                           <Button
                             variant="soft"
@@ -706,7 +706,7 @@ export default function Timetable() {
                             onClick={() => setEditor({ course, date })}
                           >
                             <CourseActionIcon action="edit" />
-                            编辑
+                            <span className="hidden whitespace-nowrap sm:@[22rem]:inline">编辑</span>
                           </Button>
                           <Button
                             variant="soft"
@@ -715,7 +715,7 @@ export default function Timetable() {
                             onClick={() => setEditor({ course, duplicate: true, date })}
                           >
                             <CourseActionIcon action="copy" />
-                            复制
+                            <span className="hidden whitespace-nowrap sm:@[22rem]:inline">复制</span>
                           </Button>
                           <Button
                             variant="soft"
@@ -729,7 +729,9 @@ export default function Timetable() {
                             }
                           >
                             <CourseActionIcon action={course.archived_at ? 'restore' : 'archive'} />
-                            {course.archived_at ? '恢复' : '归档'}
+                            <span className="hidden whitespace-nowrap sm:@[22rem]:inline">
+                              {course.archived_at ? '恢复' : '归档'}
+                            </span>
                           </Button>
                         </Grid>
                       </footer>

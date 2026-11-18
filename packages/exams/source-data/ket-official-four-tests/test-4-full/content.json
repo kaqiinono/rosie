@@ -1,0 +1,6111 @@
+{
+  "schemaVersion": 1,
+  "id": "ket-official-four-tests:test-4:full:revision-1",
+  "contentSetId": "ket-official-four-tests:test-4:full",
+  "revision": 1,
+  "status": "draft",
+  "materials": [
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:1:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-1:1:group:material:family",
+      "role": "exam",
+      "title": "Short message 1",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Lisa\nAbout our badminton match at the sports club this afternoon – I can’t find my racket anywhere. Do you have a spare one?\nSebastian"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 57,
+            "printedPage": "56",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:2:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-1:2:group:material:family",
+      "role": "exam",
+      "title": "Short message 2",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Mike,\nI looked online and there’s no bus to the beach on Saturday morning! My mum can’t drive us – is your dad free?\nDave"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 57,
+            "printedPage": "56",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:3:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-1:3:group:material:family",
+      "role": "exam",
+      "title": "Short message 3",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "From: Nancy\nTo: Fred\nI didn’t copy down what our maths homework is for tomorrow. Can you have a look in your homework diary and email me?"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 57,
+            "printedPage": "56",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:4:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-1:4:group:material:family",
+      "role": "exam",
+      "title": "Short message 4",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "School Library\nFrom next week library will open at 8.00 and close at 5.30\n(Wednesdays 8.30–4.30)\nSpeak to staff about booking a school laptop"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 58,
+            "printedPage": "57",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:5:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-1:5:group:material:family",
+      "role": "exam",
+      "title": "Short message 5",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "School Sports Day\n(This will take place in hall instead of field if it rains – check website)\nFriday, 28 September\n9.00 a.m. – 3.00 p.m.\nParents and friends welcome"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 58,
+            "printedPage": "57",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:6:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-1:6:group:material:family",
+      "role": "exam",
+      "title": "Short message 6",
+      "blocks": [
+        {
+          "id": "notice",
+          "kind": "text",
+          "text": "Joe,\nDid you discuss that homework with your teacher? Is it clearer now what she wants? I’m home now if you need to call.\nMum"
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 58,
+            "printedPage": "57",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:material:family",
+      "role": "exam",
+      "title": "My trip to Rome",
+      "blocks": [
+        {
+          "id": "title",
+          "kind": "text",
+          "text": "My trip to Rome",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "name-1",
+          "kind": "text",
+          "text": "Rhodri",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "body-1",
+          "kind": "text",
+          "text": "I had a great time in Rome with my family. It was my first holiday outside my own country and I couldn’t wait to go. I found out all I could about Rome from the library and on the internet. Knowing about the history made seeing all the old buildings, like the Colosseum, much more interesting. We were able to do lots of sightseeing because the taxis and buses and the metro were cheap and fast."
+        },
+        {
+          "id": "portrait-1",
+          "kind": "image",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:portrait-1",
+          "alt": "Portrait of Rhodri",
+          "aspectRatio": 0.7065,
+          "displayWidth": 135
+        },
+        {
+          "id": "name-2",
+          "kind": "text",
+          "text": "Patrick",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "body-2",
+          "kind": "text",
+          "text": "It was really hot when I arrived at Rome airport with my parents last summer. I loved walking around famous places like the Trevi Fountain, but all the cars and buses in the city sometimes made walking difficult. I really loved the food. The Italians have a special kind of ice cream called ‘gelato’ which is wonderful, but the best thing I had was a pizza at a local market. I also got some great things to take back for my friends."
+        },
+        {
+          "id": "portrait-2",
+          "kind": "image",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:portrait-2",
+          "alt": "Portrait of Patrick",
+          "aspectRatio": 0.7024,
+          "displayWidth": 135
+        },
+        {
+          "id": "name-3",
+          "kind": "text",
+          "text": "Josh",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "body-3",
+          "kind": "text",
+          "text": "It was so hot when my dad and I went to Rome last year that we usually waited until after the sun went down to explore the city on foot. During the day we went to museums, shops and restaurants. The pasta there is amazing, and I had some Italian ice cream, called ‘gelato’, for the first time. That was the thing I liked most. After a few days in Rome, we decided to take a train into the countryside for a day. It was nice to see all the small villages and farms."
+        },
+        {
+          "id": "portrait-3",
+          "kind": "image",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:portrait-3",
+          "alt": "Portrait of Josh",
+          "aspectRatio": 0.7319,
+          "displayWidth": 135
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam",
+            "region": {
+              "x": 0.076,
+              "y": 0.28,
+              "width": 0.165,
+              "height": 0.173
+            }
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam",
+            "region": {
+              "x": 0.076,
+              "y": 0.493,
+              "width": 0.165,
+              "height": 0.174
+            }
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam",
+            "region": {
+              "x": 0.076,
+              "y": 0.703,
+              "width": 0.165,
+              "height": 0.167
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "layout": [
+        {
+          "id": "title",
+          "headingBlockId": "title",
+          "bodyBlockIds": []
+        },
+        {
+          "id": "person-1",
+          "headingBlockId": "name-1",
+          "bodyBlockIds": [
+            "body-1"
+          ],
+          "imageBlockId": "portrait-1",
+          "imageSide": "left"
+        },
+        {
+          "id": "person-2",
+          "headingBlockId": "name-2",
+          "bodyBlockIds": [
+            "body-2"
+          ],
+          "imageBlockId": "portrait-2",
+          "imageSide": "left"
+        },
+        {
+          "id": "person-3",
+          "headingBlockId": "name-3",
+          "bodyBlockIds": [
+            "body-3"
+          ],
+          "imageBlockId": "portrait-3",
+          "imageSide": "left"
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-3:group:material:family",
+      "role": "exam",
+      "title": "A wonderful year",
+      "blocks": [
+        {
+          "id": "title",
+          "kind": "text",
+          "text": "A wonderful year",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "intro",
+          "kind": "text",
+          "text": "Ben Jones talks about his year of travel before studying at university."
+        },
+        {
+          "id": "paragraph-1",
+          "kind": "text",
+          "text": "I always knew I wanted to spend a year travelling before university. I wanted to see the world, improve my skiing, make new friends from other countries and, more than anything, try lots of things I’ve never done before."
+        },
+        {
+          "id": "paragraph-2",
+          "kind": "text",
+          "text": "The first place I visited was France. I’ve always loved the French language and I wanted to study it. Then, while I was there, I became interested in French food. I took some cooking lessons at a farmhouse in the French countryside, and learned to make lots of lovely dishes."
+        },
+        {
+          "id": "paragraph-3",
+          "kind": "text",
+          "text": "Next, I visited Australia. My cousins live near the river in Sydney, so I had somewhere to stay. To begin with, we spent a lot of time sailing in their boat. But then I got a job in a hotel. It was great – the customers and staff were so friendly."
+        },
+        {
+          "id": "paragraph-4",
+          "kind": "text",
+          "text": "My last country was Japan, where I learned to become a skiing teacher. I planned to do a three-week course. But when I got there, I saw that I wasn’t actually that good, so I changed to a seven-week one. The course was amazing and afterwards I got a job with a skiing company."
+        },
+        {
+          "id": "paragraph-5",
+          "kind": "text",
+          "text": "The other teachers were very friendly and on our days off, we did activities like snowboarding. One weekend we even did winter camping. That was quite interesting, but it was cold, so I can’t say I slept well! Anyway, we’re all planning to meet up soon and I can’t wait."
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 61,
+            "printedPage": "60",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:group:material:family",
+      "role": "exam",
+      "title": "Eric Koston",
+      "blocks": [
+        {
+          "id": "title",
+          "kind": "text",
+          "text": "Eric Koston",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "body-1",
+          "kind": "text",
+          "text": "Eric Koston is one of the world’s best-known skateboarders. He was born in Thailand, but his family (19) ______ to the US when he was a baby. His love of skateboarding began at the (20) ______ of 11, when his older brother gave him a skateboard. It was an old, broken board, but he learned how to skateboard by watching other kids and then he (21) ______ by himself every day.",
+          "answerSlots": [
+            {
+              "start": 100,
+              "end": 111,
+              "sourceText": "(19) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:19"
+            },
+            {
+              "start": 181,
+              "end": 192,
+              "sourceText": "(20) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:20"
+            },
+            {
+              "start": 343,
+              "end": 354,
+              "sourceText": "(21) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:21"
+            }
+          ]
+        },
+        {
+          "id": "body-2",
+          "kind": "text",
+          "text": "Three years later, he was so good that a company that made skateboards offered him a summer (22) ______. That’s when he (23) ______ to make skateboarding his life. Since then, Eric has (24) ______ many international competitions, made boarding videos and starred in a skateboarding video game. Now he owns a successful company making sports shoes and clothes.",
+          "answerSlots": [
+            {
+              "start": 92,
+              "end": 103,
+              "sourceText": "(22) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:22"
+            },
+            {
+              "start": 120,
+              "end": 131,
+              "sourceText": "(23) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:23"
+            },
+            {
+              "start": 185,
+              "end": 196,
+              "sourceText": "(24) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-4:24"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 63,
+            "printedPage": "62",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:group:material:family",
+      "role": "exam",
+      "title": "Playa del Carmen",
+      "blocks": [
+        {
+          "id": "body-1",
+          "kind": "text",
+          "text": "Hi everyone. My name is Juan and I’ve joined this website because I’m looking for a penfriend. I come (0) ______ Mexico and I live in a town called Playa del Carmen on the Caribbean Sea, near the city of Cancun. It’s not as famous (25) ______ Cancun but I think it is one of (26) ______ most beautiful places in Mexico.",
+          "answerSlots": [
+            {
+              "start": 102,
+              "end": 112,
+              "sourceText": "(0) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:example-0",
+              "gapId": "example-0"
+            },
+            {
+              "start": 231,
+              "end": 242,
+              "sourceText": "(25) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:25",
+              "gapId": "25"
+            },
+            {
+              "start": 275,
+              "end": 286,
+              "sourceText": "(26) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:26",
+              "gapId": "26"
+            }
+          ]
+        },
+        {
+          "id": "body-2",
+          "kind": "text",
+          "text": "Tourists come to Playa del Carmen from (27) ______ over the world because the weather’s always warm and the food’s great. (28) ______ fact, my friends and I go to the beach almost every day. It’s brilliant!",
+          "answerSlots": [
+            {
+              "start": 39,
+              "end": 50,
+              "sourceText": "(27) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:27",
+              "gapId": "27"
+            },
+            {
+              "start": 122,
+              "end": 133,
+              "sourceText": "(28) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:28",
+              "gapId": "28"
+            }
+          ]
+        },
+        {
+          "id": "body-3",
+          "kind": "text",
+          "text": "Do you want (29) ______ know more about Playa del Carmen? (30) ______ you do, write to me soon.",
+          "answerSlots": [
+            {
+              "start": 12,
+              "end": 23,
+              "sourceText": "(29) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:29",
+              "gapId": "29"
+            },
+            {
+              "start": 58,
+              "end": 69,
+              "sourceText": "(30) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:reading_writing:part-5:30",
+              "gapId": "30"
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 64,
+            "printedPage": "63",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-6:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-6:group:material:family",
+      "role": "exam",
+      "title": "Art group",
+      "blocks": [
+        {
+          "id": "email",
+          "kind": "email",
+          "from": "Casey",
+          "to": "You",
+          "subject": "",
+          "body": [
+            "Thanks for asking me to go with you to your art group on Saturday. What time does it start? What do I need to bring? How much does it cost?"
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 65,
+            "printedPage": "64",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-7:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:reading_writing:part-7:group:material:family",
+      "role": "exam",
+      "title": "Picture story",
+      "blocks": [
+        {
+          "id": "pictures",
+          "kind": "image",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:reading_writing:part-7:group:story-pictures",
+          "alt": "Three pictures in the story sequence",
+          "aspectRatio": 3.8628,
+          "displayWidth": 720
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 66,
+            "printedPage": "65",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-2:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:listening:part-2:group:material:family",
+      "role": "exam",
+      "title": "Holiday with Sophia",
+      "blocks": [
+        {
+          "id": "title",
+          "kind": "text",
+          "text": "Holiday with Sophia",
+          "presentation": {
+            "role": "heading"
+          }
+        },
+        {
+          "id": "form",
+          "kind": "table",
+          "headers": [
+            "",
+            ""
+          ],
+          "rows": [
+            [
+              "Time to arrive at Sophia’s house:",
+              "1.45 p.m."
+            ],
+            [
+              "Name of hotel:",
+              "(6) The ______"
+            ],
+            [
+              "Not available at hotel:",
+              "(7) ______"
+            ],
+            [
+              "For journey, bring:",
+              "(8) ______"
+            ],
+            [
+              "Weather will be:",
+              "(9) ______"
+            ],
+            [
+              "Sophia’s sister’s phone number:",
+              "(10) ______"
+            ]
+          ],
+          "answerSlots": [
+            {
+              "start": 8,
+              "end": 14,
+              "sourceText": "______",
+              "questionId": "ket-official-four-tests:test-4:exam:listening:part-2:6",
+              "gapId": "6",
+              "row": 1,
+              "column": 1
+            },
+            {
+              "start": 0,
+              "end": 10,
+              "sourceText": "(7) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:listening:part-2:7",
+              "gapId": "7",
+              "row": 2,
+              "column": 1
+            },
+            {
+              "start": 0,
+              "end": 10,
+              "sourceText": "(8) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:listening:part-2:8",
+              "gapId": "8",
+              "row": 3,
+              "column": 1
+            },
+            {
+              "start": 0,
+              "end": 10,
+              "sourceText": "(9) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:listening:part-2:9",
+              "gapId": "9",
+              "row": 4,
+              "column": 1
+            },
+            {
+              "start": 0,
+              "end": 11,
+              "sourceText": "(10) ______",
+              "questionId": "ket-official-four-tests:test-4:exam:listening:part-2:10",
+              "gapId": "10",
+              "row": 5,
+              "column": 1
+            }
+          ]
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 69,
+            "printedPage": "68",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:speaking:part-2:group:material",
+      "familyId": "ket-official-four-tests:test-4:exam:speaking:part-2:group:material:family",
+      "role": "exam",
+      "title": "Do you like these different school subjects?",
+      "blocks": [
+        {
+          "id": "discussion",
+          "kind": "text",
+          "text": "Do you like these different school subjects?"
+        },
+        {
+          "id": "pictures",
+          "kind": "image",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:speaking:part-2:group:picture-card",
+          "alt": "Five pictures for the speaking discussion",
+          "aspectRatio": 1.8115,
+          "displayWidth": 650
+        }
+      ],
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 163,
+            "printedPage": "162",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:1:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 57,
+            "printedPage": "56",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-1:1:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:1",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Sebastian is asking Lisa if"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 57,
+                "printedPage": "56",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "she knows where the match is taking place."
+            },
+            {
+              "id": "B",
+              "label": "she can lend him some equipment."
+            },
+            {
+              "id": "C",
+              "label": "she’s free to play badminton today."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:1:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:2:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 57,
+            "printedPage": "56",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-1:2:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:2",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Dave would like Mike to"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "2"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 57,
+                "printedPage": "56",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "check the bus timetable for Saturday."
+            },
+            {
+              "id": "B",
+              "label": "ask his father to give them a lift on Saturday."
+            },
+            {
+              "id": "C",
+              "label": "find out the quickest way to drive to the beach."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:2:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:3:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 57,
+            "printedPage": "56",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-1:3:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:3",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "3"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 57,
+                "printedPage": "56",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "Nancy has lost her homework diary."
+            },
+            {
+              "id": "B",
+              "label": "Nancy needs help with some difficult homework."
+            },
+            {
+              "id": "C",
+              "label": "Nancy forgot to make a note of what she needs to do."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:3:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:4:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 58,
+            "printedPage": "57",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-1:4:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:4",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "4"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 58,
+                "printedPage": "57",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "Library staff won’t have much time to help you next week."
+            },
+            {
+              "id": "B",
+              "label": "Arrive early at the library if you would like to book a school laptop."
+            },
+            {
+              "id": "C",
+              "label": "The times when you can visit the library will change soon."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:4:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:5:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 58,
+            "printedPage": "57",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-1:5:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:5",
+          "answerType": "single_choice",
+          "prompt": [],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "5"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 58,
+                "printedPage": "57",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "If the weather is bad, we will cancel sports day."
+            },
+            {
+              "id": "B",
+              "label": "All students should come to the hall at 9.00 a.m. on Friday."
+            },
+            {
+              "id": "C",
+              "label": "Students can invite visitors to come and enjoy the day."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:5:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:6:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 58,
+            "printedPage": "57",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-1:6:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-1:6",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Mum is asking if Joe’s teacher"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 1,
+            "questionNumber": "6"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_intent",
+            "questionTypeId": "short_messages",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 58,
+                "printedPage": "57",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "has changed his homework."
+            },
+            {
+              "id": "B",
+              "label": "helped him to understand his homework."
+            },
+            {
+              "id": "C",
+              "label": "needs to speak to her about his homework."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:6:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-1:6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 59,
+            "printedPage": "58",
+            "role": "exam"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:material"
+      ],
+      "optionPools": [
+        {
+          "id": "options",
+          "options": [
+            {
+              "id": "A",
+              "label": "Rhodri"
+            },
+            {
+              "id": "B",
+              "label": "Patrick"
+            },
+            {
+              "id": "C",
+              "label": "Josh"
+            }
+          ],
+          "allowReuse": true
+        }
+      ],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:7",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who says it was easy to travel around in Rome?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "7"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "7",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who says it was easy to travel around in Rome?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:8",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who says he felt very excited before his holiday?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "8"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "8",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who says he felt very excited before his holiday?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:9",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who says there was a lot of traffic in Rome?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "9"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "9",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who says there was a lot of traffic in Rome?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:10",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who says he prepared carefully for his trip?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "10"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "10",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who says he prepared carefully for his trip?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:11",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who says his favourite food on the trip was Italian ice cream?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "11"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "11",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who says his favourite food on the trip was Italian ice cream?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:12",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who bought some things to give as gifts?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "12"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "12",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who bought some things to give as gifts?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:13",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who took a short trip outside Rome?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 2,
+            "questionNumber": "13"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_detail",
+            "questionTypeId": "multiple_text_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 59,
+                "printedPage": "58",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "13",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "Who took a short trip outside Rome?"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "matching",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:7",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:8",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:9",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:10",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:11",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:12",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-2:13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 61,
+            "printedPage": "60",
+            "role": "exam"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 62,
+            "printedPage": "61",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-3:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:14",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What did Ben want to do during the year after he left school?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "questionNumber": "14"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_main_idea",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 62,
+                "printedPage": "61",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "try some different sports"
+            },
+            {
+              "id": "B",
+              "label": "have some new experiences"
+            },
+            {
+              "id": "C",
+              "label": "meet up with old friends"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:15",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why did Ben go to France?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "questionNumber": "15"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_main_idea",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 62,
+                "printedPage": "61",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "to do a French cooking course"
+            },
+            {
+              "id": "B",
+              "label": "to see the French countryside"
+            },
+            {
+              "id": "C",
+              "label": "to learn to speak French"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:16",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Where did Ben live when he was in Australia?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "questionNumber": "16"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_main_idea",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 62,
+                "printedPage": "61",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "in the hotel where he worked"
+            },
+            {
+              "id": "B",
+              "label": "with members of his family"
+            },
+            {
+              "id": "C",
+              "label": "on a boat on the river"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:17",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why did Ben change his course in Japan?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "questionNumber": "17"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_main_idea",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 62,
+                "printedPage": "61",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "He heard about a better one."
+            },
+            {
+              "id": "B",
+              "label": "He knew he needed more practice."
+            },
+            {
+              "id": "C",
+              "label": "He wasn’t enjoying the first one."
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-3:18",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What does Ben say about winter camping?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 3,
+            "questionNumber": "18"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "reading_main_idea",
+            "questionTypeId": "long_text_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 62,
+                "printedPage": "61",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "It wasn’t pleasant at night."
+            },
+            {
+              "id": "B",
+              "label": "He would love to do it again soon."
+            },
+            {
+              "id": "C",
+              "label": "It was the most interesting thing he’s ever done."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-3:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-3:14",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-3:15",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-3:16",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-3:17",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-3:18"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 63,
+            "printedPage": "62",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-4:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:19",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(19)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "questionNumber": "19"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "vocabulary_in_context",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 63,
+                "printedPage": "62",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "changed"
+            },
+            {
+              "id": "B",
+              "label": "moved"
+            },
+            {
+              "id": "C",
+              "label": "left"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:20",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(20)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "questionNumber": "20"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "vocabulary_in_context",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 63,
+                "printedPage": "62",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "year"
+            },
+            {
+              "id": "B",
+              "label": "time"
+            },
+            {
+              "id": "C",
+              "label": "age"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:21",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(21)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "questionNumber": "21"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "vocabulary_in_context",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 63,
+                "printedPage": "62",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "practised"
+            },
+            {
+              "id": "B",
+              "label": "taught"
+            },
+            {
+              "id": "C",
+              "label": "followed"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:22",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(22)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "questionNumber": "22"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "vocabulary_in_context",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 63,
+                "printedPage": "62",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "career"
+            },
+            {
+              "id": "B",
+              "label": "job"
+            },
+            {
+              "id": "C",
+              "label": "work"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:23",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(23)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "questionNumber": "23"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "vocabulary_in_context",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 63,
+                "printedPage": "62",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "thought"
+            },
+            {
+              "id": "B",
+              "label": "felt"
+            },
+            {
+              "id": "C",
+              "label": "decided"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-4:24",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(24)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 4,
+            "questionNumber": "24"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "vocabulary_in_context",
+            "questionTypeId": "multiple_choice_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 63,
+                "printedPage": "62",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "won"
+            },
+            {
+              "id": "B",
+              "label": "taken"
+            },
+            {
+              "id": "C",
+              "label": "tried"
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:19",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:20",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:21",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:22",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:23",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-4:24"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 64,
+            "printedPage": "63",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, write the correct answer.\nWrite ONE word for each gap."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-5:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:example-0",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Example: 0"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "example-0"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "example-0",
+              "label": "0",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed",
+          "exampleText": "from"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:25",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(25)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "25"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "25",
+              "label": "25",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:26",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(26)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "26"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "26",
+              "label": "26",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:27",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(27)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "27"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "27",
+              "label": "27",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:28",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(28)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "28"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "28",
+              "label": "28",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:29",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(29)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "29"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "29",
+              "label": "29",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-5:30",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(30)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 5,
+            "questionNumber": "30"
+          },
+          "classification": {
+            "domain": "reading",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "grammar_in_context",
+            "questionTypeId": "open_cloze",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 64,
+                "printedPage": "63",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "30",
+              "label": "30",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:example-0",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:25",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:26",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:27",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:28",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:29",
+            "ket-official-four-tests:test-4:exam:reading_writing:part-5:30"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-6:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 6,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 65,
+            "printedPage": "64",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Read the email from your English friend, Casey.\nWrite an email to Casey and answer the questions.\nWrite 25 words or more.\nWrite the email on your answer sheet."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-6:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-6:31",
+          "answerType": "writing",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-writing-v1"
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 6,
+            "questionNumber": "31"
+          },
+          "classification": {
+            "domain": "writing",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "writing_task_coverage",
+            "questionTypeId": "email_note",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 65,
+                "printedPage": "64",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "minimumWords": 25
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-6:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-6:31"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-7:group",
+      "role": "exam",
+      "sectionId": "reading_writing",
+      "partNumber": 7,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 66,
+            "printedPage": "65",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Look at the three pictures.\nWrite the story shown in the pictures.\nWrite 35 words or more.\nWrite the story on your answer sheet."
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:reading_writing:part-7:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:reading_writing:part-7:32",
+          "answerType": "writing",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-writing-v1"
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "reading_writing",
+            "partNumber": 7,
+            "questionNumber": "32"
+          },
+          "classification": {
+            "domain": "writing",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "writing_task_coverage",
+            "questionTypeId": "picture_story",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 66,
+                "printedPage": "65",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "minimumWords": 35
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-7:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:reading_writing:part-7:32"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 67,
+            "printedPage": "66",
+            "role": "exam"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 68,
+            "printedPage": "67",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-1:1",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Who is the boy’s sister?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "1"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 67,
+                "printedPage": "66",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-1-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-1-pictures",
+              "imageRegion": {
+                "x": 0.333333,
+                "y": 0,
+                "width": 0.333334,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-1-pictures",
+              "imageRegion": {
+                "x": 0.666667,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-1:2",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Why didn’t the girl go to the school dance?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "2"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 67,
+                "printedPage": "66",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-2-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-2-pictures",
+              "imageRegion": {
+                "x": 0.333333,
+                "y": 0,
+                "width": 0.333334,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-2-pictures",
+              "imageRegion": {
+                "x": 0.666667,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-1:3",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Where’s the girl going first?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "3"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 67,
+                "printedPage": "66",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-3-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-3-pictures",
+              "imageRegion": {
+                "x": 0.333333,
+                "y": 0,
+                "width": 0.333334,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-3-pictures",
+              "imageRegion": {
+                "x": 0.666667,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-1:4",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Which programme will the two friends watch together?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "4"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 68,
+                "printedPage": "67",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-4-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-4-pictures",
+              "imageRegion": {
+                "x": 0.333333,
+                "y": 0,
+                "width": 0.333334,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-4-pictures",
+              "imageRegion": {
+                "x": 0.666667,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-1:5",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Where will the girl go tomorrow?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 1,
+            "questionNumber": "5"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "picture_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 68,
+                "printedPage": "67",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "A",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-5-pictures",
+              "imageRegion": {
+                "x": 0,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            },
+            {
+              "id": "B",
+              "label": "B",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-5-pictures",
+              "imageRegion": {
+                "x": 0.333333,
+                "y": 0,
+                "width": 0.333334,
+                "height": 1
+              }
+            },
+            {
+              "id": "C",
+              "label": "C",
+              "imageSlotId": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-5-pictures",
+              "imageRegion": {
+                "x": 0.666667,
+                "y": 0,
+                "width": 0.333333,
+                "height": 1
+              }
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:listening:part-1:1",
+            "ket-official-four-tests:test-4:exam:listening:part-1:2",
+            "ket-official-four-tests:test-4:exam:listening:part-1:3",
+            "ket-official-four-tests:test-4:exam:listening:part-1:4",
+            "ket-official-four-tests:test-4:exam:listening:part-1:5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-2:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 69,
+            "printedPage": "68",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, write the correct answer in the gap.\nWrite one word or a number or a date or a time.\nYou will hear a girl called Sophia leaving a message for her friend."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:listening:part-2:group:audio"
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:listening:part-2:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-2:6",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(6)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "6"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 69,
+                "printedPage": "68",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "6",
+              "label": "6",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-2:7",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(7)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "7"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 69,
+                "printedPage": "68",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "7",
+              "label": "7",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-2:8",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(8)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "8"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 69,
+                "printedPage": "68",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "8",
+              "label": "8",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-2:9",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(9)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "9"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 69,
+                "printedPage": "68",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "9",
+              "label": "9",
+              "maxWords": 1
+            }
+          ],
+          "answerOrder": "fixed"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-2:10",
+          "answerType": "gap_fill",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "(10)"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 2,
+            "questionNumber": "10"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "information_gap_fill",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 69,
+                "printedPage": "68",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "gaps": [
+            {
+              "id": "10",
+              "label": "10",
+              "maxWords": 2
+            }
+          ],
+          "answerOrder": "fixed"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "cloze",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:listening:part-2:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:listening:part-2:6",
+            "ket-official-four-tests:test-4:exam:listening:part-2:7",
+            "ket-official-four-tests:test-4:exam:listening:part-2:8",
+            "ket-official-four-tests:test-4:exam:listening:part-2:9",
+            "ket-official-four-tests:test-4:exam:listening:part-2:10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-3:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 3,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 70,
+            "printedPage": "69",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer.\nYou will hear Maria talking to her friend Alex about visiting a science museum."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:listening:part-3:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-3:11",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Maria went to the museum"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "11"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 70,
+                "printedPage": "69",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "on Sunday."
+            },
+            {
+              "id": "B",
+              "label": "on Monday."
+            },
+            {
+              "id": "C",
+              "label": "on Tuesday."
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-3:12",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Alex usually goes to the museum with his"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "12"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 70,
+                "printedPage": "69",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "class."
+            },
+            {
+              "id": "B",
+              "label": "friends."
+            },
+            {
+              "id": "C",
+              "label": "family."
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-3:13",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "Alex usually travels to the museum"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "13"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 70,
+                "printedPage": "69",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "by bike."
+            },
+            {
+              "id": "B",
+              "label": "by bus."
+            },
+            {
+              "id": "C",
+              "label": "on foot."
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-3:14",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "What did Maria prefer at the museum?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "14"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 70,
+                "printedPage": "69",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "talking to the guide"
+            },
+            {
+              "id": "B",
+              "label": "watching a video"
+            },
+            {
+              "id": "C",
+              "label": "making a model"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-3:15",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "In the café, Maria had"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 3,
+            "questionNumber": "15"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "long_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 70,
+                "printedPage": "69",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "a cake."
+            },
+            {
+              "id": "B",
+              "label": "an ice cream."
+            },
+            {
+              "id": "C",
+              "label": "a drink."
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:listening:part-3:11",
+            "ket-official-four-tests:test-4:exam:listening:part-3:12",
+            "ket-official-four-tests:test-4:exam:listening:part-3:13",
+            "ket-official-four-tests:test-4:exam:listening:part-3:14",
+            "ket-official-four-tests:test-4:exam:listening:part-3:15"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-4:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 4,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 71,
+            "printedPage": "70",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:listening:part-4:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-4:16",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear a teacher talking to his students.\nWhat does he tell them?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "16"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 71,
+                "printedPage": "70",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "They’ve got less work to do."
+            },
+            {
+              "id": "B",
+              "label": "They should do more exercise."
+            },
+            {
+              "id": "C",
+              "label": "They’ve got more time to study."
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-4:17",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear a girl, Emily, talking to her mum in the kitchen.\nWhat’s Emily’s mum doing?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "17"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 71,
+                "printedPage": "70",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "making a shopping list"
+            },
+            {
+              "id": "B",
+              "label": "explaining how to cook a dish"
+            },
+            {
+              "id": "C",
+              "label": "deciding what they’re going to eat"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-4:18",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear a girl talking to her friend Dan.\nWhat job does Dan’s mum do?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "18"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 71,
+                "printedPage": "70",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "She’s a guide."
+            },
+            {
+              "id": "B",
+              "label": "She’s a receptionist."
+            },
+            {
+              "id": "C",
+              "label": "She’s a shop assistant."
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-4:19",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear a mother and daughter talking together.\nWhat will they do today?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "19"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 71,
+                "printedPage": "70",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "visit the hospital"
+            },
+            {
+              "id": "B",
+              "label": "go to the train station"
+            },
+            {
+              "id": "C",
+              "label": "buy some stamps"
+            }
+          ]
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-4:20",
+          "answerType": "single_choice",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "You will hear two friends talking about something they did together at the weekend.\nWhat did they do together?"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 4,
+            "questionNumber": "20"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "short_dialogue_choice",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 71,
+                "printedPage": "70",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "options": [
+            {
+              "id": "A",
+              "label": "visit the countryside"
+            },
+            {
+              "id": "B",
+              "label": "do a sport"
+            },
+            {
+              "id": "C",
+              "label": "have a meal"
+            }
+          ]
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:listening:part-4:16",
+            "ket-official-four-tests:test-4:exam:listening:part-4:17",
+            "ket-official-four-tests:test-4:exam:listening:part-4:18",
+            "ket-official-four-tests:test-4:exam:listening:part-4:19",
+            "ket-official-four-tests:test-4:exam:listening:part-4:20"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-5:group",
+      "role": "exam",
+      "sectionId": "listening",
+      "partNumber": 5,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 72,
+            "printedPage": "71",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "For each question, choose the correct answer.\nYou will hear Zara telling her friend about the presents she got for her birthday.\nWhat present did she get from each person?\nPeople / Presents\nYou now have 6 minutes to write your answers on the answer sheet."
+        },
+        {
+          "id": "audio",
+          "kind": "audio",
+          "mediaSlotId": "ket-official-four-tests:test-4:exam:listening:part-5:group:audio"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [
+        {
+          "id": "options",
+          "options": [
+            {
+              "id": "A",
+              "label": "backpack"
+            },
+            {
+              "id": "B",
+              "label": "basketball"
+            },
+            {
+              "id": "C",
+              "label": "book"
+            },
+            {
+              "id": "D",
+              "label": "bracelet"
+            },
+            {
+              "id": "E",
+              "label": "poster"
+            },
+            {
+              "id": "F",
+              "label": "scarf"
+            },
+            {
+              "id": "G",
+              "label": "tablet"
+            },
+            {
+              "id": "H",
+              "label": "tent"
+            }
+          ],
+          "allowReuse": false
+        }
+      ],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-5:example-0",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "dad"
+            }
+          ],
+          "scoring": {
+            "kind": "example",
+            "points": 0
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "questionNumber": "example-0"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 72,
+                "printedPage": "71",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "example-0",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "dad"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options",
+          "exampleText": "book"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-5:21",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "mum"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "questionNumber": "21"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 72,
+                "printedPage": "71",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "21",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "mum"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-5:22",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "brother"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "questionNumber": "22"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 72,
+                "printedPage": "71",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "22",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "brother"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-5:23",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "grandma"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "questionNumber": "23"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 72,
+                "printedPage": "71",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "23",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "grandma"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-5:24",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "sister"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "questionNumber": "24"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 72,
+                "printedPage": "71",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "24",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "sister"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        },
+        {
+          "id": "ket-official-four-tests:test-4:exam:listening:part-5:25",
+          "answerType": "matching",
+          "prompt": [
+            {
+              "id": "prompt",
+              "kind": "text",
+              "text": "uncle"
+            }
+          ],
+          "scoring": {
+            "kind": "objective",
+            "maxPoints": 1
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "listening",
+            "partNumber": 5,
+            "questionNumber": "25"
+          },
+          "classification": {
+            "domain": "listening",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "listening_detail",
+            "questionTypeId": "listening_matching",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 72,
+                "printedPage": "71",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          },
+          "items": [
+            {
+              "id": "25",
+              "prompt": [
+                {
+                  "id": "item",
+                  "kind": "text",
+                  "text": "uncle"
+                }
+              ]
+            }
+          ],
+          "optionPoolId": "options"
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "matching",
+          "instructionIds": [
+            "instructions",
+            "audio"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:listening:part-5:example-0",
+            "ket-official-four-tests:test-4:exam:listening:part-5:21",
+            "ket-official-four-tests:test-4:exam:listening:part-5:22",
+            "ket-official-four-tests:test-4:exam:listening:part-5:23",
+            "ket-official-four-tests:test-4:exam:listening:part-5:24",
+            "ket-official-four-tests:test-4:exam:listening:part-5:25"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:speaking:part-1:group",
+      "role": "exam",
+      "sectionId": "speaking",
+      "partNumber": 1,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 82,
+            "printedPage": "81",
+            "role": "exam",
+            "region": {
+              "x": 0.035,
+              "y": 0.075,
+              "width": 0.33,
+              "height": 0.031
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Part 1 (3–4 minutes)"
+        }
+      ],
+      "materialIds": [],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:speaking:part-1:task",
+          "answerType": "speaking",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-speaking-v1"
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "speaking",
+            "partNumber": 1,
+            "questionNumber": "task"
+          },
+          "classification": {
+            "domain": "speaking",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "personal_information",
+            "questionTypeId": "interview",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 82,
+                "printedPage": "81",
+                "role": "exam",
+                "region": {
+                  "x": 0.035,
+                  "y": 0.075,
+                  "width": 0.33,
+                  "height": 0.031
+                }
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:speaking:part-1:task"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:speaking:part-2:group",
+      "role": "exam",
+      "sectionId": "speaking",
+      "partNumber": 2,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 84,
+            "printedPage": "83",
+            "role": "exam",
+            "region": {
+              "x": 0.035,
+              "y": 0.075,
+              "width": 0.33,
+              "height": 0.031
+            }
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 163,
+            "printedPage": "162",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      },
+      "instructions": [
+        {
+          "id": "instructions",
+          "kind": "text",
+          "text": "Part 2 (5–6 minutes)"
+        }
+      ],
+      "materialIds": [
+        "ket-official-four-tests:test-4:exam:speaking:part-2:group:material"
+      ],
+      "optionPools": [],
+      "questions": [
+        {
+          "id": "ket-official-four-tests:test-4:exam:speaking:part-2:task",
+          "answerType": "speaking",
+          "prompt": [],
+          "scoring": {
+            "kind": "manual",
+            "rubricId": "ket-speaking-v1"
+          },
+          "location": {
+            "sourceId": "ket-official-four-tests",
+            "testNumber": 4,
+            "role": "exam",
+            "sectionId": "speaking",
+            "partNumber": 2,
+            "questionNumber": "task"
+          },
+          "classification": {
+            "domain": "speaking",
+            "review": {
+              "status": "pending"
+            },
+            "topicIds": [],
+            "primarySkillId": "discuss_preferences",
+            "questionTypeId": "picture_discussion",
+            "knowledgePointIds": []
+          },
+          "provenance": {
+            "origin": "source",
+            "sources": [
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 84,
+                "printedPage": "83",
+                "role": "exam",
+                "region": {
+                  "x": 0.035,
+                  "y": 0.075,
+                  "width": 0.33,
+                  "height": 0.031
+                }
+              },
+              {
+                "sourceId": "ket-official-four-tests",
+                "pdfPage": 163,
+                "printedPage": "162",
+                "role": "exam"
+              }
+            ],
+            "authorship": "ai_assisted",
+            "review": {
+              "status": "pending"
+            }
+          }
+        }
+      ],
+      "activities": [
+        {
+          "id": "main",
+          "title": "",
+          "layout": "questions",
+          "instructionIds": [
+            "instructions"
+          ],
+          "materialIds": [
+            "ket-official-four-tests:test-4:exam:speaking:part-2:group:material"
+          ],
+          "questionIds": [
+            "ket-official-four-tests:test-4:exam:speaking:part-2:task"
+          ]
+        }
+      ]
+    }
+  ],
+  "guidance": [],
+  "vocabularyLinks": [],
+  "mediaSlots": [
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:portrait-1",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Rhodri",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group"
+      },
+      "required": false,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam",
+            "region": {
+              "x": 0.076,
+              "y": 0.28,
+              "width": 0.165,
+              "height": 0.173
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:portrait-2",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Patrick",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group"
+      },
+      "required": false,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam",
+            "region": {
+              "x": 0.076,
+              "y": 0.493,
+              "width": 0.165,
+              "height": 0.174
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group:portrait-3",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Josh",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:reading_writing:part-2:group"
+      },
+      "required": false,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 60,
+            "printedPage": "59",
+            "role": "exam",
+            "region": {
+              "x": 0.076,
+              "y": 0.703,
+              "width": 0.165,
+              "height": 0.167
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:reading_writing:part-7:group:story-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Three story pictures",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:reading_writing:part-7:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 66,
+            "printedPage": "65",
+            "role": "exam",
+            "region": {
+              "x": 0.055,
+              "y": 0.23,
+              "width": 0.85,
+              "height": 0.163
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-1-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Question 1 picture options",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 67,
+            "printedPage": "66",
+            "role": "exam",
+            "region": {
+              "x": 0.155,
+              "y": 0.304,
+              "width": 0.757,
+              "height": 0.144
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-2-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Question 2 picture options",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 67,
+            "printedPage": "66",
+            "role": "exam",
+            "region": {
+              "x": 0.155,
+              "y": 0.538,
+              "width": 0.757,
+              "height": 0.144
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-3-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Question 3 picture options",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 67,
+            "printedPage": "66",
+            "role": "exam",
+            "region": {
+              "x": 0.155,
+              "y": 0.771,
+              "width": 0.757,
+              "height": 0.139
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-4-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Question 4 picture options",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 68,
+            "printedPage": "67",
+            "role": "exam",
+            "region": {
+              "x": 0.092,
+              "y": 0.129,
+              "width": 0.766,
+              "height": 0.145
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group:question-5-pictures",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Question 5 picture options",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 68,
+            "printedPage": "67",
+            "role": "exam",
+            "region": {
+              "x": 0.092,
+              "y": 0.366,
+              "width": 0.771,
+              "height": 0.146
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-1:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening test audio",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-1:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 67,
+            "printedPage": "66",
+            "role": "exam"
+          },
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 68,
+            "printedPage": "67",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-2:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening test audio",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-2:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 69,
+            "printedPage": "68",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-3:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening test audio",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-3:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 70,
+            "printedPage": "69",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-4:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening test audio",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-4:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 71,
+            "printedPage": "70",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:listening:part-5:group:audio",
+      "audience": "student",
+      "purpose": "exam_listening",
+      "sourceTrackLabel": "Listening test audio",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:listening:part-5:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 72,
+            "printedPage": "71",
+            "role": "exam"
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "ket-official-four-tests:test-4:exam:speaking:part-2:group:picture-card",
+      "audience": "student",
+      "purpose": "question_image",
+      "sourceTrackLabel": "Speaking picture card",
+      "target": {
+        "kind": "group",
+        "id": "ket-official-four-tests:test-4:exam:speaking:part-2:group"
+      },
+      "required": true,
+      "segment": null,
+      "playback": null,
+      "provenance": {
+        "origin": "source",
+        "sources": [
+          {
+            "sourceId": "ket-official-four-tests",
+            "pdfPage": 163,
+            "printedPage": "162",
+            "role": "exam",
+            "region": {
+              "x": 0.105,
+              "y": 0.139,
+              "width": 0.837,
+              "height": 0.341
+            }
+          }
+        ],
+        "authorship": "ai_assisted",
+        "review": {
+          "status": "pending"
+        }
+      }
+    }
+  ],
+  "mediaBindingRevisionId": null,
+  "readiness": {
+    "exam": {
+      "status": "pending"
+    },
+    "explanations": {
+      "status": "pending"
+    }
+  }
+}

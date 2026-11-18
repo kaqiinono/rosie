@@ -8,7 +8,7 @@ Shared **presentational** components used across modules. No data fetching, no b
 top corners and reduced-motion-aware entrance. It preserves the shared close/focus contract.
 
 **Contents:** `CandyButton`/`JellyButton` (+ presets/tiles), `StickerCard`, `PageShell`, `StatTile`, `DarkScope`, `BrandLogo`, `SelectControl`,
-`PageBreadcrumb`, `ArrowIcon`,
+`PageBreadcrumb`, `PageAccountRow`, `ArrowIcon`,
 `OrbBackground`, `LoadingOverlay`, `ModuleCard`, `AccountBar`, `AuthGuard`, `NavigationLink`,
 `TopRightBar`, `ServiceWorkerRegistrar`.
 
@@ -16,6 +16,11 @@ top corners and reduced-motion-aware entrance. It preserves the shared close/foc
 driven by the route map in `breadcrumb-map.ts` (subpath export `@rosie/ui/breadcrumb-map`).
 **When adding a new page route, check `breadcrumb-map.ts` and add an entry** — otherwise the
 page falls back to the plain 返回首页 button.
+
+Opt in to the compact account menu with `PageShell showAccount` (only when there are no header
+actions), `PageBreadcrumb variant="inline" showAccount`, or `PageAccountRow` for a short custom
+heading. These slots use header width, not viewport width, to hide the menu on narrow layouts.
+Do not opt in for immersive practice, ongoing exams, or crowded navigation.
 
 `ProblemSolutionView` and `AnalysisImage` are data-agnostic shared presentation for authoritative
 math solutions. Math-kit resolves `Problem`/Supabase image data; AI passes structured block data.

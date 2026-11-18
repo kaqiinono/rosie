@@ -80,7 +80,7 @@ async function buildRawCatalog(kind: CatalogKind, section: string): Promise<Cata
     })).filter((group) => group.rows.length > 0)
     return { subject: 'english', path: '/english/grammar/{book}/{unitId}', groups }
   }
-  const words = await readAll<{ stage: string | null; unit: string; lesson: string }>('word_entries', 'id,stage,unit,lesson', 'id')
+  const words = await readAll<{ stage: string | null; unit: string; lesson: string }>('vocabulary_positions', 'id,stage,unit,lesson', 'id')
   const groups = new Map<string, CatalogGroup>()
   const seen = new Set<string>()
   const sorted = [...words].sort((a, b) => `${a.stage}\t${a.unit}\t${a.lesson}`.localeCompare(`${b.stage}\t${b.unit}\t${b.lesson}`, 'en', { numeric: true }))

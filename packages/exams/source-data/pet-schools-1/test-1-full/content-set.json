@@ -1,0 +1,17 @@
+{
+  "id": "pet-schools-1:test-1:full",
+  "kind": "official_paper",
+  "title": "PET 青少版官方真题 1 · Test 1",
+  "source": {
+    "id": "pet-schools-1",
+    "title": "B1 Preliminary for Schools 1 with Answers",
+    "edition": "Cambridge University Press 2019 · Revised 2020 exam · ISBN 9781108652292",
+    "fileHash": "cad957919bd3dad7a40c6650adbc56656e9e3d667035c291b083c51574a9ccde"
+  },
+  "purpose": "training",
+  "template": {
+    "id": "pet-schools-2020-v1",
+    "version": 1
+  },
+  "testNumber": 1
+}

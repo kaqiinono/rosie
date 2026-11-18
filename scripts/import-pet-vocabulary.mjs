@@ -265,8 +265,8 @@ async function readPages(load, label) {
 
 async function comparePlan(client, plan) {
   const [wordRows, contentRows, setRows] = await Promise.all([
-    readPages(() => client.from('word_entries')
-      .select(['id', 'word', 'stage', 'unit', 'lesson', ...WORD_COLUMNS].join(','))
+    readPages(() => client.from('vocabulary_positions')
+      .select(['id', 'catalog_revision', 'word', 'stage', 'unit', 'lesson', ...WORD_COLUMNS].join(','))
       .eq('stage', STAGE).order('id'), 'Read PET words'),
     readPages(() => client.from('pet_word_content').select('word_entry_id,revision,content,published')
       .order('word_entry_id'), 'Read PET content'),
@@ -290,6 +290,7 @@ async function comparePlan(client, plan) {
       key: entry.key,
       locationConflicts: matches.filter((row) => row.id !== before?.id)
         .map(({ unit, lesson, word }) => ({ unit, lesson, word })),
+      catalogRevision: before?.catalog_revision,
       word: plannedChange(before, entry.row),
       content: plannedChange(byContentId.get(before?.id), contentPayload(entry)),
     }
@@ -317,20 +318,16 @@ async function applyPlan(client, creator, plan, comparison, progress, checkpoint
   }
   const applyWord = async (entry, index) => {
     const { key, row } = entry
-    const { word, content } = comparison.words[index]
+    const { word, content, catalogRevision } = comparison.words[index]
     progress.current = { kind: 'word', id: key }
     if (word.action !== 'unchanged') {
-      const { stage, unit, lesson, word: spelling, ...fields } = row
-      if (word.action === 'insert') {
-        // Ignore a concurrent insert and use the winning row's original ID.
-        await query(client.from('word_entries').upsert({ ...row, creator }, {
-          onConflict: 'unit,lesson,word,stage', ignoreDuplicates: true,
-        }), `Ensure PET word ${key}`)
-      }
-      const { id } = await query(client.from('word_entries').update(fields)
-        .eq('stage', stage).eq('unit', unit).eq('lesson', lesson).eq('word', spelling)
-        .select('id').single(), `Update PET word ${key}`)
-      idByKey.set(key, id)
+      const id = idByKey.get(key)
+      const ids = await query(client.rpc('write_vocabulary_positions', {
+        p_action: 'save',
+        p_rows: [{ ...row, creator, ...(id ? { id, expected_revision: catalogRevision } : {}) }],
+      }), `Save PET vocabulary position ${key}`)
+      if (ids?.length !== 1) throw new Error(`Missing position ID for ${key}`)
+      idByKey.set(key, ids[0])
     }
     if (content.action !== 'unchanged') {
       await query(client.from('pet_word_content').upsert({
@@ -396,7 +393,7 @@ async function main() {
   const client = values.apply || values['compare-db'] ? getClient() : null
   const [existing, comparison] = client
     ? await Promise.all([
-      readPages(() => client.from('word_entries').select('word,stage').order('id'), 'Read word library'),
+      readPages(() => client.from('vocabulary_positions').select('word,stage').order('id'), 'Read word library'),
       comparePlan(client, plan),
     ])
     : [[], null]

@@ -47,8 +47,9 @@ export function ExamImageTools({ draft, revisionId, questionId, onChange, onOpen
   return <Flex direction="column" gap="3">
     <Flex gap="2" wrap="wrap">
       {[...new Set(group.provenance.sources.map(source => source.pdfPage))].map(page => <Button key={page} size="1" variant="soft" onClick={() => onOpenSource(page)}>原书 PDF {page}</Button>)}
-      {navigationDisabled ? <Button size="1" variant="soft" disabled>绑定本 Part 资源</Button>
-        : <Button size="1" variant="soft" asChild><Link href={bindingHref}>绑定本 Part 资源</Link></Button>}
+      {group.sectionId === 'listening' && (navigationDisabled
+        ? <Button size="1" variant="soft" disabled>绑定听力音频</Button>
+        : <Button size="1" variant="soft" asChild><Link href={bindingHref}>绑定听力音频</Link></Button>)}
     </Flex>
     {images.size > 0 && <Text weight="bold">题组图片 · 尺寸与裁切</Text>}
     {[...images].map(([slotId, image]) => <StickerCard key={slotId} tone="paper" elevation="flat" size="sm">

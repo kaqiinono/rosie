@@ -4,16 +4,20 @@
 // Never exposes scans through public/. Does not publish exam content.
 import { readFile, mkdir, writeFile, unlink } from 'node:fs/promises'
 import { createHash, randomUUID } from 'node:crypto'
-import { parseEnv } from 'node:util'
+import { parseArgs, parseEnv } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 
-const args = process.argv.slice(2)
-if (args.some(arg => !['--apply', '--restore'].includes(arg)) || (args.includes('--restore') && !args.includes('--apply'))) {
-  throw new Error('Usage: node scripts/prepare-exam-image-pages.mjs [--apply [--restore]]')
+const { values } = parseArgs({ options: {
+  apply: { type: 'boolean' }, restore: { type: 'boolean' },
+  bundle: { type: 'string', multiple: true }, 'pages-dir': { type: 'string' },
+} })
+if ((values.restore && !values.apply) || (Boolean(values.bundle?.length) !== Boolean(values['pages-dir']))) {
+  throw new Error('Usage: node scripts/prepare-exam-image-pages.mjs [--bundle <source-data path> ... --pages-dir <rendered pages>] [--apply [--restore]]')
 }
 const root = fileURLToPath(new URL('../', import.meta.url))
-const apply = args.includes('--apply'), restore = args.includes('--restore')
+const { apply, restore } = values
+const pagesDirectory = values['pages-dir'] ? resolve(values['pages-dir']) : null
 const env = { ...parseEnv(await readFile(resolve(root, 'apps/web/.env.local'), 'utf8').catch(() => '')), ...process.env }
 const origin = env.NEXT_PUBLIC_SUPABASE_URL, token = env.SUPABASE_SERVICE_ROLE_KEY
 if (apply && (!origin || !token)) throw new Error('Supabase server configuration is required for --apply')
@@ -23,7 +27,7 @@ async function request(path, init = {}) {
   if (!response.ok) throw new Error(`Source upload request failed (${response.status}); no credentials or response content logged.`)
   return response
 }
-const bundles = ['ket-official-four-tests/test-1-full', 'ket-trainer-1/test-3-full',
+const bundles = values.bundle ?? ['ket-official-four-tests/test-1-full', 'ket-trainer-1/test-3-full',
   'ket-trainer-1/test-1-rw-part1-training', 'ket-trainer-1/test-1-listening-part1-training']
 const pages = {}
 for (const bundle of bundles) {
@@ -35,7 +39,7 @@ for (const bundle of bundles) {
       const key = `${source.sourceId}:${source.pdfPage}:${set.source.fileHash}`
       if (pages[key]) continue
       const page = String(source.pdfPage).padStart(3, '0')
-      const input = source.sourceId === 'ket-official-four-tests'
+      const input = pagesDirectory ? resolve(pagesDirectory, `page-${page}.png`) : source.sourceId === 'ket-official-four-tests'
         ? `output/exams/source-reading/official-test-1-full/page-${page}.png`
         : source.pdfPage <= 30 ? `output/exams/source-reading/trainer-training/page-${page}.png`
         : `output/exams/ket-trainer-1/test-3-full-review/${source.pdfPage === 209 ? 'speaking-card' : 'exam'}-${page}.png`
@@ -65,10 +69,10 @@ for (const bundle of bundles) {
     }
   }
 }
-const output = resolve(root, 'output/exams/image-sources')
+const output = pagesDirectory ?? resolve(root, 'output/exams/image-sources')
 await mkdir(output, { recursive: true, mode: 0o700 })
-await writeFile(resolve(output, 'manifest.json'), JSON.stringify(pages, null, 2) + '\n', { mode: 0o600 })
-if (apply) {
+await writeFile(resolve(output, pagesDirectory ? 'source-assets.json' : 'manifest.json'), JSON.stringify(pages, null, 2) + '\n', { mode: 0o600 })
+if (apply && !pagesDirectory) {
   // Remove only the temporary server-bundle copies made by the earlier preparation step.
   // Original user PDFs and source-reading renders remain untouched.
   for (const row of Object.values(pages)) {

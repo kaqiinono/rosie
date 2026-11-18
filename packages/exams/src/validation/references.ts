@@ -1,11 +1,10 @@
 import { validatePresentation } from './presentation'
-import { KET_SCHOOLS_2020_TEMPLATE } from '../templates/ket-schools-2020-v1'
-import type { ContentProvenance, ExamOption, ExamTemplate, MaterialBlock, MediaSlot, QuestionGroup, SourceReference } from '../types/content'
+import { examVocabularyText } from './vocabularyText'
+import { resolveExamTemplate } from '../templates/examTemplates'
+import type { ContentProvenance, ExamOption, MaterialBlock, MediaSlot, QuestionGroup, SourceReference } from '../types/content'
 import type { Question } from '../types/questions'
 import type { Explanation, Solution } from '../types/solutions'
 import { issue, type ExamDraftInput, type ValidationIssue } from './contracts'
-
-const template: ExamTemplate = KET_SCHOOLS_2020_TEMPLATE
 
 function unique(values: readonly string[], path: string, issues: ValidationIssue[]): void {
   const seen = new Set<string>()
@@ -19,6 +18,11 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
   validatePresentation(draft, issues)
   const { contentSet, content, solutions } = draft
   const fail = (path: string, code: string, message: string): void => issue(issues, path, code, message)
+  const template = resolveExamTemplate(contentSet.template)
+  if (!template) {
+    fail('$.contentSet.template', 'unknown_template', 'Only registered template versions may be referenced.')
+    return
+  }
   const materials = new Map(content.materials.map(material => [material.id, material]))
   const groups = new Map(content.groups.map(group => [group.id, group]))
   const guidance = new Map(content.guidance.map(item => [item.id, item]))
@@ -31,7 +35,6 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
 
   if (content.contentSetId !== contentSet.id) fail('$.content.contentSetId', 'reference_mismatch', 'Content must belong to the supplied content set.')
   if (solutions.contentRevisionId !== content.id) fail('$.solutions.contentRevisionId', 'reference_mismatch', 'Solutions must belong to the supplied content revision.')
-  if (contentSet.template.id !== template.id || contentSet.template.version !== template.version) fail('$.contentSet.template', 'unknown_template', 'Only registered template versions may be referenced.')
 
   const entityEntries = [
     ...content.materials.map((item, index) => ({ id: item.id, path: `$.content.materials[${index}].id` })),
@@ -112,6 +115,9 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
     blocks.forEach((block, index) => {
       if (block.kind === 'image' || block.kind === 'audio') useMedia(block.mediaSlotId, `${path}[${index}].mediaSlotId`, student, block.kind, scope)
       if (block.kind === 'table' && block.rows.some(row => row.length !== block.headers.length)) fail(`${path}[${index}].rows`, 'table_width_mismatch', 'Table rows must have one cell per header.')
+      if (block.kind === 'email' && block.notes?.some(note => note.paragraph >= block.body.length)) {
+        fail(`${path}[${index}].notes`, 'invalid_email_note', 'Each note must refer to an existing email paragraph.')
+      }
     })
   }
   const checkOptions = (options: readonly ExamOption[], path: string, group: QuestionGroup): void => {
@@ -124,12 +130,27 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
   content.materials.forEach((material, index) => {
     const path = `$.content.materials[${index}]`
     const groupId = materialGroups.get(material.id)
+    const group = groupId ? groups.get(groupId) : undefined
+    const part = template.sections.find(section => section.id === group?.sectionId)?.parts.find(item => item.number === group?.partNumber)
+    if (material.speakingCandidate && (!part?.speakingCandidatePhotos || material.blocks.filter(block => block.kind === 'image').length !== 1)) {
+      fail(path, 'invalid_speaking_photo', 'Each candidate photo must belong to an extended-turn Part and include one image.')
+    }
     checkBlocks(material.blocks, `${path}.blocks`, true, groupId ? { kind: 'group', id: groupId } : undefined)
     checkProvenance(material.provenance, `${path}.provenance`, true)
   })
   content.groups.forEach((group, index) => {
     const path = `$.content.groups[${index}]`
-    checkSection(group.sectionId, group.partNumber, path)
+    const part = checkSection(group.sectionId, group.partNumber, path)
+    if (group.role === 'exam' && (group.writingChoice !== part?.writingChoice
+      || (group.writingChoice && (group.questions.length !== 2 || group.questions.some(question => question.answerType !== 'writing' || question.scoring.kind !== 'manual'))))) {
+      fail(path, 'invalid_writing_choice', 'Writing alternatives must be kept together as two manual writing questions in one response group.')
+    }
+    if (group.role === 'exam' && part?.speakingCandidatePhotos) {
+      const photos = group.materialIds.flatMap(id => materials.get(id)?.speakingCandidate ?? [])
+      if (photos.length !== 2 || !photos.includes('A') || !photos.includes('B')) {
+        fail(path, 'invalid_speaking_photo', 'The extended turn requires separate materials for candidate A and candidate B.')
+      }
+    }
     checkProvenance(group.provenance, `${path}.provenance`, true)
     checkBlocks(group.instructions, `${path}.instructions`, true, { kind: 'group', id: group.id })
     unique(group.optionPools.map(pool => pool.id), `${path}.optionPools`, issues)
@@ -173,10 +194,24 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
     checkBlocks(item.blocks, `${path}.blocks`, true, { kind: 'guidance', id: item.id })
     checkProvenance(item.provenance, `${path}.provenance`, true)
   })
+  const matchSources = new Map((content.vocabularyLinks.some(link => link.matchSource) ? examVocabularyText(content) : [])
+    .map(source => [JSON.stringify(source.path), source] as const))
   content.vocabularyLinks.forEach((link, index) => {
     const path = `$.content.vocabularyLinks[${index}]`
     unique(link.questionIds, `${path}.questionIds`, issues)
-    const material = materials.get(link.materialId)
+    if (link.matchSource) {
+      const source = matchSources.get(JSON.stringify(link.matchSource))
+      if (!source || link.materialId !== undefined || link.blockId !== undefined) {
+        fail(`${path}.matchSource`, 'invalid_vocabulary_block', 'An automatic match must identify a single public text source.')
+      } else if (link.textRange.end <= link.textRange.start || link.textRange.end > source.text.length
+        || source.text.slice(link.textRange.start, link.textRange.end) !== link.matchedForm) {
+        fail(`${path}.textRange`, 'invalid_text_range', 'Vocabulary UTF-16 range must identify its exact matched form.')
+      } else if (source.questionIds.length !== link.questionIds.length || link.questionIds.some(id => !source.questionIds.includes(id))) {
+        fail(`${path}.questionIds`, 'vocabulary_scope_mismatch', 'An automatic match must retain the source text’s question scope.')
+      }
+      return
+    }
+    const material = link.materialId ? materials.get(link.materialId) : undefined
     const block = material?.blocks.find(item => item.id === link.blockId)
     if (!material) fail(`${path}.materialId`, 'unknown_material', 'Vocabulary material does not exist.')
     if (!block || block.kind !== 'text') fail(`${path}.blockId`, 'invalid_vocabulary_block', 'Vocabulary ranges must refer to a text block in their material.')

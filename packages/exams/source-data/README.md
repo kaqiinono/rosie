@@ -1,4 +1,4 @@
-# KET authored source bundles
+# Authored exam source bundles
 
 Rendering revision (2026-11-14): all four imported bundles now have sibling
 `-rendering-v2` directories, saved as r2 drafts with 36 inherited media bindings.
@@ -31,7 +31,11 @@ pages rendered for transcription; their independent hashes and mappings are in
 | ket-trainer-1/test-1-rw-part1-training | All four RW Part 1 training activities (26 items including examples) |
 | ket-trainer-1/test-1-listening-part1-training | All nine Listening Part 1 training activities (58 items); Ex7 source/key conflict blocks release |
 | ket-official-four-tests/test-1-full | Complete Test 1: 55 objective questions, two writing tasks, two speaking Parts, original private solutions/scripts/feedback |
+| ket-official-four-tests/test-2-full | Official Test 2: 55 objective questions, two writing tasks, two speaking Parts, private answers, transcripts and scripts |
+| ket-official-four-tests/test-3-full | Official Test 3: 55 objective questions, two writing tasks, two speaking Parts, private answers, transcripts and scripts |
+| ket-official-four-tests/test-4-full | Official Test 4: 55 objective questions, two writing tasks, two speaking Parts, private answers, transcripts and scripts |
 | ket-trainer-1/test-3-full | Complete reserved Test 3: 55 objective questions, two writing tasks, two speaking Parts; original keys and explicitly AI-assisted supplemental explanations |
+| pet-schools-1/test-1-full | B1 Preliminary for Schools Test 1: 57 objective questions, three writing prompts across two tasks, four speaking Parts; unpublished draft |
 
 Full bundles have their own identities; the small samples are extraction examples, not
 additional full papers. Importing both would create duplicate learning content, so select
@@ -40,6 +44,11 @@ are declared but unbound. Full papers cannot be released without images/audio, p
 source review, rubric review, and resolving all blocked states. Each full bundle README
 records exact pages and content-specific limitations. Do not convert pending to approved
 in JSON or quietly fix a publisher conflict.
+
+2026-11-18: official Tests 2, 3 and 4 were saved as separate revision-1 drafts.
+They share the Test 1 source edition and have their own question, material and media
+identities. The Trainer mock Test 3 belongs to a different source and content set.
+Answer keys, writing samples, listening transcripts and examiner scripts remain private.
 
 The official book gives written speaking feedback, not numeric band scales. Separate
 Cambridge handbook evidence for the shared 0–5 dimension ranges is documented in the

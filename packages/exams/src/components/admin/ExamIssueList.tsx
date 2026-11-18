@@ -12,10 +12,10 @@ type Props = {
   draft: ExamDraftInput | null
   revisionId: string
   navigationDisabled: boolean
-  onOpen: (action: 'content' | 'words' | 'raw' | 'review') => void
+  onOpen: (action: 'content' | 'raw' | 'review') => void
 }
 const ACTION_LABELS: Record<IssueAction, string> = {
-  content: '打开题面与解答', words: '打开词条关联', raw: '打开内容包',
+  content: '打开题面与解答', raw: '打开内容包',
   images: '前往图片任务', media: '管理媒体资源', review: '前往审核区',
 }
 

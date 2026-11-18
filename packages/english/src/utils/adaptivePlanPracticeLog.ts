@@ -108,12 +108,15 @@ function buildPracticeWordRows(args: SaveAdaptivePracticeLogArgs) {
     return [
       {
         word_key: wordKey,
-        outcomes: outcomes.map(({ phase, quizType, correct, usedRetry, usedHelp }) => ({
+        outcomes: outcomes.map(({ phase, quizType, correct, usedRetry, usedHelp, evidence }) => ({
           phase,
           quizType,
           correct,
           usedRetry: usedRetry === true,
           usedHelp: usedHelp === true,
+          wordEntryId: evidence?.wordEntryId,
+          targetId: evidence?.targetId,
+          skill: evidence?.skill,
         })),
         question_count: outcomes.length,
         correct_count: outcomes.filter((outcome) => outcome.correct).length,

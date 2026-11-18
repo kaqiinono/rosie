@@ -39,9 +39,7 @@ export default function MathFavoritesPage() {
 
   return (
     <div className="mx-auto max-w-[1040px] px-4 py-5">
-      <div className="w-fit">
-        <PageBreadcrumb variant="inline" />
-      </div>
+      <PageBreadcrumb variant="inline" showAccount />
 
       <div className="mt-3 mb-5 rounded-[14px] bg-rose-50 p-6">
         <h1 className="mb-1 text-2xl font-extrabold text-rose-700">我的收藏 ❤️</h1>

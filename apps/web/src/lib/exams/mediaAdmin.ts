@@ -7,6 +7,7 @@ import { getBaiduAccountContext } from '@/lib/baidu-token'
 import { readBaiduDirectoryPage } from '@/lib/baidu-directory-page'
 import { readBaiduFileMetadata } from '@/lib/baidu-media'
 import { ExamApiError, examIdentifier } from './http'
+import { examListeningParts } from './listeningMedia'
 import { examMediaParts } from './mediaParts'
 import { examMediaMime, readExamMediaBinding, readExamMediaDraft, validExamMediaPath, withinExamDirectory, type StoredExamMediaFile } from './media'
 
@@ -44,7 +45,7 @@ export async function readExamMediaSaveRequest(request: Request): Promise<ExamMe
     || (value.removeSlotIds !== undefined && (!Array.isArray(value.removeSlotIds) || value.removeSlotIds.length > 2000))
     || (value.updates !== undefined && (!Array.isArray(value.updates) || value.updates.length > 2000))) invalid()
   examIdentifier(value.revisionId)
-  if (value.scope !== undefined && value.scope !== null) {
+  if (value.scope !== undefined && value.scope !== null && value.scope !== 'listening') {
     if (!record(value.scope) || Object.keys(value.scope).some(key => !['sectionId', 'partNumber'].includes(key))
       || typeof value.scope.sectionId !== 'string' || !value.scope.sectionId
       || typeof value.scope.partNumber !== 'number' || !Number.isSafeInteger(value.scope.partNumber) || value.scope.partNumber < 1) invalid()
@@ -79,9 +80,10 @@ export async function readExamMediaEditor(db: SupabaseClient, revisionId: string
   if (status !== 'draft') throw new ExamApiError('exam_not_editable', 409)
   const bindingRevisionId = draft.content.mediaBindingRevisionId
   const binding = bindingRevisionId ? await readExamMediaBinding(db, revisionId, bindingRevisionId) : null
-  return { revisionId, version, bindingRevisionId, parts: examMediaParts(draft), slots: [...draft.content.mediaSlots, ...draft.solutions.mediaSlots].map(slot => {
+  const mainDirectory = binding ? { directory_id: binding.directory_id, path: binding.main_path, generation: binding.account_generation } : null
+  return { revisionId, testNumber: draft.contentSet.testNumber, version, bindingRevisionId, mainDirectory, parts: examMediaParts(draft), slots: [...draft.content.mediaSlots, ...draft.solutions.mediaSlots].map(slot => {
     const file = binding?.files.find(item => item.slot_id === slot.id && isDeepStrictEqual(item.slot, slot))
-    return { ...slot, binding: file ? { name: file.path.slice(file.path.lastIndexOf('/') + 1), size: file.size, reviewed: file.reviewed, durationMs: file.duration_ms } : null }
+    return { ...slot, binding: file ? { fileId: file.file_id, name: file.path.slice(file.path.lastIndexOf('/') + 1), size: file.size, reviewed: file.reviewed, durationMs: file.duration_ms } : null }
   }) }
 }
 
@@ -91,10 +93,17 @@ export async function saveExamMediaBindings(db: SupabaseClient, actorId: string,
   if (command.scope !== undefined) {
     const parts = examMediaParts(draft)
     const scope = command.scope
-    const part = scope && parts.find(item => item.sectionId === scope.sectionId && item.partNumber === scope.partNumber)
-    if (scope && !part) invalid()
-    const assigned = new Set(parts.flatMap(item => [...item.slotIds]))
-    const allowed = new Set(part ? part.slotIds : [...slots.keys()].filter(id => !assigned.has(id)))
+    let allowed: Set<string>
+    if (scope === 'listening') {
+      allowed = new Set(examListeningParts(parts, draft.content.mediaSlots).flatMap(part => part.slots.map(slot => slot.id)))
+    } else if (scope) {
+      const part = parts.find(item => item.sectionId === scope.sectionId && item.partNumber === scope.partNumber)
+      if (!part) invalid()
+      allowed = new Set(part.slotIds)
+    } else {
+      const assigned = new Set(parts.flatMap(item => [...item.slotIds]))
+      allowed = new Set([...slots.keys()].filter(id => !assigned.has(id)))
+    }
     const changed = [...command.picks.map(item => item.slotId), ...(command.updates ?? []).map(item => item.slotId), ...(command.removeSlotIds ?? [])]
     if (changed.some(id => !allowed.has(id))) invalid()
   }

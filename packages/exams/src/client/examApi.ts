@@ -1,7 +1,17 @@
 'use client'
 
-import { supabase } from '@rosie/core'
+import { BAIDU_AUTH_MESSAGES, supabase } from '@rosie/core'
 import type { ValidationIssue } from '../validation/contracts'
+
+const mediaErrorMessages: Record<string, string> = {
+  exam_media_binding_changed: '考试资源绑定需要更新。请联系管理员检查考试资源。',
+  exam_media_binding_missing: '试卷所需资源尚未绑定。请联系管理员检查考试资源。',
+  exam_media_file_missing: '试卷所需的网盘文件无法读取。请联系管理员检查考试资源。',
+  exam_invalid_media_binding: '考试资源的文件类型或绑定无效。请联系管理员检查考试资源。',
+  exam_listening_program_missing: '听力时长或播放配置缺失或无效。请联系管理员检查考试资源。',
+  exam_media_unavailable: '考试资源暂时无法读取，请稍后重试。',
+  baidu_account_changed: '共享网盘账号已变化。请联系管理员检查考试资源绑定。',
+}
 
 export class ExamRequestError extends Error {
   constructor(readonly code: string, readonly status: number, readonly issues: readonly ValidationIssue[] = []) {
@@ -44,6 +54,11 @@ export async function examRequest<T>(userId: string, path: string, init: Request
 
 export function examErrorMessage(error: unknown): string {
   if (!(error instanceof ExamRequestError)) return '操作未完成，请重试。'
+  if (Object.hasOwn(mediaErrorMessages, error.code)) {
+    const detail = error.issues[0]?.message
+    return typeof detail === 'string' && detail ? detail : mediaErrorMessages[error.code]
+  }
+  if (Object.hasOwn(BAIDU_AUTH_MESSAGES, error.code)) return BAIDU_AUTH_MESSAGES[error.code]
   if (error.code === 'exam_invalid_id') return '试卷或记录的标识格式不正确，请返回列表重新打开。'
   if (error.code === 'exam_revision_mismatch') return '提交内容与当前打开的试卷版本不一致，请保留修改并重新打开对应试卷。'
   if (error.code === 'exam_invalid_json') return '提交的内容不是有效的 JSON，请修正内容包格式后重试。'
@@ -52,7 +67,7 @@ export function examErrorMessage(error: unknown): string {
   if (error.code === 'exam_invalid_draft') return error.issues.length
     ? '草稿内容未通过格式校验，请根据问题明细修正。'
     : '草稿内容未通过格式校验，服务端未返回具体问题明细。'
-  if (error.code === 'exam_invalid_vocabulary_reference') return '关联词条已变更或与词库不一致，请重新选择词条后保存。'
+  if (error.code === 'exam_invalid_vocabulary_reference') return '内容包中的词条引用与当前词库不一致。'
   if (error.code === 'exam_network_error') return '请求未能完成或响应无法读取，请稍后重试。'
   if (error.code === 'auth_unavailable') return '暂时无法验证登录状态，请稍后重试。当前输入仍保留。'
   if (error.code === 'auth_timeout') return '服务端验证登录超时，请稍后重试。当前输入仍保留。'

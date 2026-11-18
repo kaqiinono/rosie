@@ -24,6 +24,7 @@ const modules = [
   { href: '/chinese', title: '语文园地', icon: '📜', tint: 'bg-orange-100' },
   { href: '/stories', title: '故事会', icon: '📚', tint: 'bg-amber-100' },
   { href: '/exams/ket', title: '考一考', icon: '📝', tint: 'bg-amber-100' },
+  { href: '/superpowers', title: '我的超能力', description: '测测英语词汇量', icon: '⚡', tint: 'bg-violet-100' },
   { href: '/ai', title: 'AI 助手', icon: '✨', tint: 'bg-cyan-100' },
   { href: '/mistakes', title: '错题本', icon: '📕', tint: 'bg-rose-100' },
   { href: '/vouchers', title: '我的奖券', icon: '⭐', tint: 'bg-yellow-100' },
@@ -84,7 +85,7 @@ export default function HomePage() {
           aria-label="功能菜单"
           className="grid w-full max-w-[1040px] grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-6"
         >
-          {modules.map(({ href, title, icon, tint }) => (
+          {modules.map(({ href, title, description, icon, tint }) => (
             <NavigationLink
               key={href}
               href={href}
@@ -96,7 +97,10 @@ export default function HomePage() {
               >
                 {icon}
               </span>
-              <span className="text-text-primary text-sm font-bold">{title}</span>
+              <span>
+                <span className="text-text-primary block text-sm font-bold">{title}</span>
+                {description && <span className="text-text-secondary block text-xs">{description}</span>}
+              </span>
             </NavigationLink>
           ))}
         </nav>

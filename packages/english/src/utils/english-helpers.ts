@@ -9,7 +9,15 @@ import { parseWordFormsCell } from './word-forms'
  * American spelling, and the full catalog value. The AmE text may itself be a
  * phrase, for example `do a favour (AmE do a favor)`.
  */
-export function acceptedSpellings(word: string): string[] {
+export function acceptedSpellings(entry: WordEntry | string): string[] {
+  const word = typeof entry === 'string' ? entry : entry.word
+  if (typeof entry !== 'string' && entry.acceptedSpellings?.length) {
+    const preferred = entry.preferredSpelling
+    const answers = entry.acceptedSpellings
+    return preferred && answers.includes(preferred)
+      ? [preferred, ...answers.filter((answer) => answer !== preferred)]
+      : answers
+  }
   const clean = (value: string) => value.replace(/\s+/g, ' ').trim()
   const parentheticals = Array.from(word.matchAll(/\(([^)]+)\)/g), (match) => match[1].trim())
   const primary = clean(word.replace(/\s*\([^)]+\)\s*/g, ' '))
@@ -23,13 +31,15 @@ export function acceptedSpellings(word: string): string[] {
   return Array.from(new Set([primary, ...aliases, optionalText, clean(word)].filter(Boolean)))
 }
 
-export function normalizeSpelling(value: string): string {
-  return value.trim().replace(/\s+/g, ' ').toLowerCase()
+export function normalizeSpelling(value: string, caseSensitive = false): string {
+  const cleaned = value.normalize('NFC').replace(/[‘’]/g, "'").trim().replace(/\s+/g, ' ')
+  return caseSensitive ? cleaned : cleaned.toLowerCase()
 }
 
-export function isAcceptedSpelling(value: string, word: string): boolean {
-  const normalized = normalizeSpelling(value)
-  return acceptedSpellings(word).some((answer) => normalizeSpelling(answer) === normalized)
+export function isAcceptedSpelling(value: string, entry: WordEntry | string): boolean {
+  const caseSensitive = typeof entry !== 'string' && entry.caseSensitiveSpelling === true
+  const normalized = normalizeSpelling(value, caseSensitive)
+  return acceptedSpellings(entry).some((answer) => normalizeSpelling(answer, caseSensitive) === normalized)
 }
 
 export function escHtml(s: string): string {

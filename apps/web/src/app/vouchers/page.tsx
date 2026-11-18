@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { PageBreadcrumb } from '@rosie/ui'
+import { PageAccountRow, PageBreadcrumb } from '@rosie/ui'
 import { supabase, todayStr, useAuth, voucherSolidClass } from '@rosie/core'
 import { useCalcWallet } from '@rosie/rewards'
 import { useCalcVouchers } from '@rosie/rewards'
@@ -146,7 +146,7 @@ export default function VouchersPage() {
           boxShadow: '0 3px 0 rgba(251,191,36,.3)',
         }}
       >
-        <div className="mx-auto flex h-14 max-w-[640px] items-center gap-2 pr-3 pl-3 sm:gap-3 sm:pr-4 sm:pl-4">
+        <PageAccountRow className="mx-auto h-14 max-w-[640px] px-3 sm:gap-3 sm:px-4">
           <PageBreadcrumb variant="inline" />
 
           <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -162,7 +162,7 @@ export default function VouchersPage() {
               我的奖券
             </span>
           </div>
-        </div>
+        </PageAccountRow>
       </header>
 
       <main className="mx-auto max-w-[640px] space-y-5 px-3 pt-5 pb-16 sm:space-y-6 sm:px-4 sm:pt-6">

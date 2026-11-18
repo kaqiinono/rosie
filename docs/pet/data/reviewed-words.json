@@ -5726,7 +5726,7 @@
   },
   {
     "key": "fresh",
-    "revision": "3",
+    "revision": "4",
     "reviewed": true,
     "scope": "exercise-support",
     "fields": {
@@ -5767,15 +5767,26 @@
       "senses": [
         {
           "id": "fresh-1",
+          "example": "We bought fresh strawberries at the market.",
+          "exampleZh": "我们在市场买了新鲜草莓。",
+          "collocations": [],
+          "definitionEn": "Recently picked, made or collected, and not preserved or frozen.",
+          "definitionZh": "新鲜的（食物）",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "recently made, picked or replaced",
-          "definitionZh": "新鲜的；刚换的",
-          "example": "The birds need fresh water every morning.",
-          "exampleZh": "鸟儿每天早上都需要干净的新水。",
+          ]
+        },
+        {
+          "id": "fresh-2",
+          "example": "Replace the birds’ drinking water with fresh water each morning.",
+          "exampleZh": "每天早上都给鸟换上新的饮用水。",
           "collocations": [
             "fresh water"
+          ],
+          "definitionEn": "New, or replacing what was there before.",
+          "definitionZh": "新换的；重新拿来的",
+          "partOfSpeech": [
+            "adj."
           ]
         }
       ],
@@ -18886,7 +18897,7 @@
   },
   {
     "key": "kit",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -19006,16 +19017,28 @@
       ],
       "senses": [
         {
+          "id": "kit-1",
+          "ipa": "/kɪt/",
+          "example": "He forgot his football kit for the match.",
+          "exampleZh": "他忘了带比赛要用的足球装备。",
+          "collocations": [],
+          "definitionEn": "The clothes and small items worn or used by a sports team.",
+          "definitionZh": "运动队服；运动装备",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "A set of clothes and equipment needed for a sport or activity.",
-          "definitionZh": "全套装备",
-          "example": "He forgot his football kit for the match.",
-          "exampleZh": "他忘了带参加比赛用的足球装备。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "kit-2",
           "ipa": "/kɪt/",
-          "id": "kit-1"
+          "example": "Keep a first-aid kit in the car.",
+          "exampleZh": "车里要备一个急救包。",
+          "collocations": [],
+          "definitionEn": "A set of things needed for a particular task or purpose.",
+          "definitionZh": "成套工具；全套用品",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -25681,7 +25704,7 @@
   },
   {
     "key": "level",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -25778,16 +25801,16 @@
       ],
       "senses": [
         {
+          "id": "level-1",
+          "ipa": "/ˈlevəl/",
+          "example": "She is at an intermediate level in English.",
+          "exampleZh": "她的英语达到了中级水平。",
+          "collocations": [],
+          "definitionEn": "A point on a scale that shows how skilled someone is.",
+          "definitionZh": "水平（能力或程度）",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "The position of something in a range from low to high.",
-          "definitionZh": "水平",
-          "example": "She is at an intermediate level in English.",
-          "exampleZh": "她的英语处于中等水平。",
-          "collocations": [],
-          "ipa": "/ˈlevəl/",
-          "id": "level-1"
+          ]
         }
       ]
     },
@@ -50362,7 +50385,7 @@
   },
   {
     "key": "card",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -50449,16 +50472,28 @@
       ],
       "senses": [
         {
-          "partOfSpeech": [
-            "n."
-          ],
-          "definitionEn": "A small flat piece of stiff paper with information or a message.",
-          "definitionZh": "卡片",
+          "id": "card-1",
+          "ipa": "/kɑːd/",
           "example": "She sent him a birthday card.",
           "exampleZh": "她给他寄了一张生日贺卡。",
           "collocations": [],
+          "definitionEn": "A stiff paper card sent with a personal message for a special occasion.",
+          "definitionZh": "贺卡",
+          "partOfSpeech": [
+            "n."
+          ]
+        },
+        {
+          "id": "card-2",
           "ipa": "/kɑːd/",
-          "id": "card-1"
+          "example": "Show your membership card at the desk.",
+          "exampleZh": "请在服务台出示会员卡。",
+          "collocations": [],
+          "definitionEn": "A stiff paper or plastic card with information printed on it.",
+          "definitionZh": "信息卡片；证件卡",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -52632,7 +52667,7 @@
   },
   {
     "key": "painter",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -52763,16 +52798,28 @@
       ],
       "senses": [
         {
-          "partOfSpeech": [
-            "n."
-          ],
-          "definitionEn": "A person who paints pictures or walls.",
-          "definitionZh": "画家；油漆匠",
+          "id": "painter-1",
+          "ipa": "/ˈpeɪntər/",
           "example": "He is a famous painter.",
           "exampleZh": "他是一位著名的画家。",
           "collocations": [],
+          "definitionEn": "Someone who makes pictures with paint.",
+          "definitionZh": "画家",
+          "partOfSpeech": [
+            "n."
+          ]
+        },
+        {
+          "id": "painter-2",
           "ipa": "/ˈpeɪntər/",
-          "id": "painter-1"
+          "example": "The painter will paint the doors tomorrow.",
+          "exampleZh": "油漆工明天会给门刷漆。",
+          "collocations": [],
+          "definitionEn": "Someone whose job is painting walls or other surfaces.",
+          "definitionZh": "油漆工",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -66476,7 +66523,7 @@
   },
   {
     "key": "dot",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -66563,16 +66610,16 @@
       ],
       "senses": [
         {
+          "id": "dot-1",
+          "ipa": "/dɒt/",
+          "example": "Her email address ends with dot com.",
+          "exampleZh": "她的电子邮箱地址以 .com 结尾。",
+          "collocations": [],
+          "definitionEn": "The spoken name of the full stop in a web or email address.",
+          "definitionZh": "网址或邮箱里读作 dot 的点",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "A small round mark, used in internet addresses.",
-          "definitionZh": "点",
-          "example": "Her email address ends with dot com.",
-          "exampleZh": "她的电子邮件地址以点com结尾。",
-          "collocations": [],
-          "ipa": "/dɒt/",
-          "id": "dot-1"
+          ]
         }
       ]
     },
@@ -69692,7 +69739,7 @@
   },
   {
     "key": "know",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -69794,16 +69841,28 @@
       ],
       "senses": [
         {
-          "partOfSpeech": [
-            "v."
-          ],
-          "definitionEn": "To have information or understanding about something.",
-          "definitionZh": "知道；了解",
+          "id": "know-1",
+          "ipa": "/nəʊ/",
           "example": "Do you know the answer?",
           "exampleZh": "你知道答案吗？",
           "collocations": [],
+          "definitionEn": "To have particular information in your mind.",
+          "definitionZh": "知道；知晓",
+          "partOfSpeech": [
+            "v."
+          ]
+        },
+        {
+          "id": "know-2",
           "ipa": "/nəʊ/",
-          "id": "know-1"
+          "example": "She knows this neighbourhood very well.",
+          "exampleZh": "她很熟悉这个街区。",
+          "collocations": [],
+          "definitionEn": "To be familiar with something through experience or study.",
+          "definitionZh": "熟悉；了解",
+          "partOfSpeech": [
+            "v."
+          ]
         }
       ]
     },
@@ -83479,7 +83538,7 @@
   },
   {
     "key": "garage",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -83676,16 +83735,28 @@
       ],
       "senses": [
         {
+          "id": "garage-1",
+          "ipa": "/ˈɡærɑːʒ/",
+          "example": "She puts her car in the garage.",
+          "exampleZh": "她把车停进车库。",
+          "collocations": [],
+          "definitionEn": "A building or enclosed space where a car is kept.",
+          "definitionZh": "车库",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "A building where a car is kept, or a place to repair cars.",
-          "definitionZh": "车库；汽车修理厂",
-          "example": "She puts her car in the garage.",
-          "exampleZh": "她把车停在车库里。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "garage-2",
           "ipa": "/ˈɡærɑːʒ/",
-          "id": "garage-1"
+          "example": "We took the car to a garage to have the brakes checked.",
+          "exampleZh": "我们把车开到修理厂检查刹车。",
+          "collocations": [],
+          "definitionEn": "A business that repairs cars.",
+          "definitionZh": "汽车修理厂",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -95963,7 +96034,7 @@
   },
   {
     "key": "animal",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -96050,16 +96121,28 @@
       ],
       "senses": [
         {
+          "id": "animal-1",
+          "ipa": "/ˈænɪməl/",
+          "example": "The farm has animals such as cows and goats.",
+          "exampleZh": "农场里养着奶牛和山羊等动物。",
+          "collocations": [],
+          "definitionEn": "A creature such as a dog or a horse, in the everyday sense that treats birds, fish and insects separately.",
+          "definitionZh": "动物（如狗、马）",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "A living creature, such as a dog or bird, that can move and eat.",
-          "definitionZh": "动物",
-          "example": "We saw many different animals at the zoo.",
-          "exampleZh": "我们在动物园看见了许多不同的动物。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "animal-2",
           "ipa": "/ˈænɪməl/",
-          "id": "animal-1"
+          "example": "Birds and insects are animals, too.",
+          "exampleZh": "鸟类和昆虫也属于动物。",
+          "collocations": [],
+          "definitionEn": "A member of the group of living things that includes mammals, birds, fish, insects and humans.",
+          "definitionZh": "动物（生物分类）",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -108297,7 +108380,7 @@
   },
   {
     "key": "amazing",
-    "revision": "2",
+    "revision": "3",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -108413,16 +108496,28 @@
       ],
       "senses": [
         {
+          "id": "amazing-1",
+          "ipa": "/əˈmeɪzɪŋ/",
+          "example": "The view from the top was amazing.",
+          "exampleZh": "从顶部看到的景色令人赞叹。",
+          "collocations": [],
+          "definitionEn": "Very good or impressive, used to express approval.",
+          "definitionZh": "很棒的；令人赞叹的",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "Very surprising or impressive.",
-          "definitionZh": "令人惊奇的",
-          "example": "The view from the top was amazing.",
-          "exampleZh": "从顶部看到的景色令人惊叹。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "amazing-2",
           "ipa": "/əˈmeɪzɪŋ/",
-          "id": "amazing-1"
+          "example": "It was amazing that the tiny plant survived the winter.",
+          "exampleZh": "这株小植物居然熬过了冬天，真令人吃惊。",
+          "collocations": [],
+          "definitionEn": "Extremely surprising because it is hard to believe or expect.",
+          "definitionZh": "令人吃惊的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },
@@ -108456,7 +108551,7 @@
   },
   {
     "key": "bad",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -108550,16 +108645,28 @@
       ],
       "senses": [
         {
+          "id": "bad-1",
+          "ipa": "/bæd/",
+          "example": "We had bad weather on our trip.",
+          "exampleZh": "我们旅行时遇到了坏天气。",
+          "collocations": [],
+          "definitionEn": "Unpleasant or not good to experience.",
+          "definitionZh": "糟糕的；令人不愉快的",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "Not good; unpleasant.",
-          "definitionZh": "坏的",
+          ]
+        },
+        {
+          "id": "bad-2",
+          "ipa": "/bæd/",
           "example": "She had a bad headache.",
           "exampleZh": "她头痛得很厉害。",
           "collocations": [],
-          "ipa": "/bæd/",
-          "id": "bad-1"
+          "definitionEn": "Serious or severe.",
+          "definitionZh": "严重的；厉害的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },
@@ -110572,7 +110679,7 @@
   },
   {
     "key": "modern",
-    "revision": "2",
+    "revision": "3",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -110677,16 +110784,28 @@
       ],
       "senses": [
         {
+          "id": "modern-1",
+          "ipa": "/ˈmɒdən/",
+          "example": "She lives in a modern flat.",
+          "exampleZh": "她住在一套设计现代的公寓里。",
+          "collocations": [],
+          "definitionEn": "Using recent designs, ideas or technology.",
+          "definitionZh": "现代的；新式的",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "Relating to the present time; new.",
-          "definitionZh": "现代的",
-          "example": "She lives in a modern flat.",
-          "exampleZh": "她住在一套现代公寓里。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "modern-2",
           "ipa": "/ˈmɒdən/",
-          "id": "modern-1"
+          "example": "The book compares life in ancient and modern societies.",
+          "exampleZh": "这本书比较了古代与现代社会的生活。",
+          "collocations": [],
+          "definitionEn": "Relating to the present time rather than the past.",
+          "definitionZh": "现今的；当代的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },
@@ -111586,7 +111705,7 @@
   },
   {
     "key": "strange",
-    "revision": "2",
+    "revision": "3",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -111701,16 +111820,28 @@
       ],
       "senses": [
         {
+          "id": "strange-1",
+          "ipa": "/streɪndʒ/",
+          "example": "She heard a strange noise at night.",
+          "exampleZh": "她夜里听到一个奇怪的声音。",
+          "collocations": [],
+          "definitionEn": "Unusual or unexpected.",
+          "definitionZh": "奇怪的；反常的",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "Unusual; not familiar.",
-          "definitionZh": "奇怪的；陌生的",
-          "example": "She heard a strange noise at night.",
-          "exampleZh": "她在夜里听到了奇怪的声音。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "strange-2",
           "ipa": "/streɪndʒ/",
-          "id": "strange-1"
+          "example": "The town felt strange to her when she first arrived.",
+          "exampleZh": "她刚到这座小镇时，对这里感到陌生。",
+          "collocations": [],
+          "definitionEn": "Not known or familiar to someone.",
+          "definitionZh": "陌生的；不熟悉的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },
@@ -118470,7 +118601,7 @@
   },
   {
     "key": "team",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -118557,16 +118688,28 @@
       ],
       "senses": [
         {
+          "id": "team-1",
+          "ipa": "/tiːm/",
+          "example": "She is on the school football team.",
+          "exampleZh": "她是学校足球队的一员。",
+          "collocations": [],
+          "definitionEn": "A group of people who play a sport or game together.",
+          "definitionZh": "运动队",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "A group of people who work or play together.",
-          "definitionZh": "队",
-          "example": "She is on the school football team.",
-          "exampleZh": "她在学校足球队里。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "team-2",
           "ipa": "/tiːm/",
-          "id": "team-1"
+          "example": "A small team is working on the new app.",
+          "exampleZh": "一个小团队正在开发这款新应用。",
+          "collocations": [],
+          "definitionEn": "A group of people who work together on a shared task.",
+          "definitionZh": "工作团队",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -139812,7 +139955,7 @@
   },
   {
     "key": "sorry",
-    "revision": "2",
+    "revision": "3",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -139906,16 +140049,28 @@
       ],
       "senses": [
         {
+          "id": "sorry-1",
+          "ipa": "/ˈsɒri/",
+          "example": "I am sorry that I broke your favourite cup.",
+          "exampleZh": "我弄坏了你最喜欢的杯子，真抱歉。",
+          "collocations": [],
+          "definitionEn": "Used when you regret something you have done.",
+          "definitionZh": "抱歉的",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "Feeling regret about something bad you have done or something sad that has happened.",
-          "definitionZh": "抱歉的；难过的",
-          "example": "I am sorry that I broke your favourite cup.",
-          "exampleZh": "很抱歉，我打碎了你最喜欢的杯子。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "sorry-2",
           "ipa": "/ˈsɒri/",
-          "id": "sorry-1"
+          "example": "I’m sorry to hear that you’re ill.",
+          "exampleZh": "听说你生病了，我很难过。",
+          "collocations": [],
+          "definitionEn": "Feeling sadness or sympathy about someone else's misfortune.",
+          "definitionZh": "难过的；表示同情的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },
@@ -141827,7 +141982,7 @@
   },
   {
     "key": "field",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -141947,16 +142102,28 @@
       ],
       "senses": [
         {
+          "id": "field-1",
+          "ipa": "/fiːld/",
+          "example": "The farmer grows wheat in this field.",
+          "exampleZh": "农民在这块田里种小麦。",
+          "collocations": [],
+          "definitionEn": "An area of land where crops are grown or farm animals are kept.",
+          "definitionZh": "田地；农田",
           "partOfSpeech": [
             "n."
-          ],
-          "definitionEn": "An open area of land used for farming or sport.",
-          "definitionZh": "田地；运动场",
-          "example": "The children played in the field.",
-          "exampleZh": "孩子们在田野里玩耍。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "field-2",
           "ipa": "/fiːld/",
-          "id": "field-1"
+          "example": "The teams warmed up on the football field.",
+          "exampleZh": "两支队伍在足球场上热身。",
+          "collocations": [],
+          "definitionEn": "An area of ground used for a sport.",
+          "definitionZh": "运动场",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -160001,7 +160168,7 @@
   },
   {
     "key": "classical",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -160069,16 +160236,30 @@
       ],
       "senses": [
         {
-          "partOfSpeech": [
-            "adj."
-          ],
-          "definitionEn": "Relating to traditional European music or a traditional style.",
-          "definitionZh": "古典的",
+          "id": "classical-1",
+          "ipa": "/ˈklæsɪkəl/",
           "example": "She prefers classical music to pop.",
           "exampleZh": "比起流行音乐，她更喜欢古典音乐。",
-          "collocations": [],
+          "collocations": [
+            "classical music"
+          ],
+          "definitionEn": "Relating to Western classical music.",
+          "definitionZh": "古典音乐的",
+          "partOfSpeech": [
+            "adj."
+          ]
+        },
+        {
+          "id": "classical-2",
           "ipa": "/ˈklæsɪkəl/",
-          "id": "classical-1"
+          "example": "He studies classical ballet.",
+          "exampleZh": "他学习古典芭蕾。",
+          "collocations": [],
+          "definitionEn": "Following an established tradition in style or form.",
+          "definitionZh": "传统风格的；古典的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },
@@ -175412,7 +175593,7 @@
   },
   {
     "key": "timetable",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -175467,16 +175648,28 @@
       ],
       "senses": [
         {
-          "partOfSpeech": [
-            "n."
-          ],
-          "definitionEn": "A list showing the times of trains, buses, or lessons.",
-          "definitionZh": "时刻表",
+          "id": "timetable-1",
+          "ipa": "/ˈtaɪmteɪbəl/",
           "example": "She checked the train timetable.",
           "exampleZh": "她查了火车时刻表。",
           "collocations": [],
+          "definitionEn": "A list of times when trains, buses or other transport services arrive or leave.",
+          "definitionZh": "交通时刻表",
+          "partOfSpeech": [
+            "n."
+          ]
+        },
+        {
+          "id": "timetable-2",
           "ipa": "/ˈtaɪmteɪbəl/",
-          "id": "timetable-1"
+          "example": "Maths is first on Monday’s timetable.",
+          "exampleZh": "星期一的第一节是数学课。",
+          "collocations": [],
+          "definitionEn": "A schedule showing when lessons or classes take place.",
+          "definitionZh": "课程表",
+          "partOfSpeech": [
+            "n."
+          ]
         }
       ]
     },
@@ -181931,7 +182124,7 @@
   },
   {
     "key": "musical",
-    "revision": "1",
+    "revision": "2",
     "reviewed": true,
     "scope": "full-corpus",
     "fields": {
@@ -181993,16 +182186,28 @@
       ],
       "senses": [
         {
+          "id": "musical-1",
+          "ipa": "/ˈmjuːzɪkəl/",
+          "example": "The school offers several musical activities.",
+          "exampleZh": "学校开设了几项音乐活动。",
+          "collocations": [],
+          "definitionEn": "Connected with music.",
+          "definitionZh": "音乐的；与音乐有关的",
           "partOfSpeech": [
             "adj."
-          ],
-          "definitionEn": "Connected with music, or showing skill in music.",
-          "definitionZh": "音乐的",
-          "example": "She has a musical talent.",
-          "exampleZh": "她有音乐天赋。",
-          "collocations": [],
+          ]
+        },
+        {
+          "id": "musical-2",
           "ipa": "/ˈmjuːzɪkəl/",
-          "id": "musical-1"
+          "example": "Her brother is very musical and can play by ear.",
+          "exampleZh": "她哥哥很有音乐天赋，能凭听觉演奏。",
+          "collocations": [],
+          "definitionEn": "Good at making or playing music, or strongly drawn to music.",
+          "definitionZh": "有音乐天赋的",
+          "partOfSpeech": [
+            "adj."
+          ]
         }
       ]
     },

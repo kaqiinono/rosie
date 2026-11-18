@@ -19,6 +19,7 @@ import { DraftFields } from './DraftFields'
 import { ImageSizeControl } from './ImageSizeControl'
 import { resizeDraftImage } from './resizeDraftImage'
 import { validateExamDraft } from '../../validation'
+import { resolveExamTemplate } from '../../templates/examTemplates'
 import { examIssueTasks } from './examIssueTasks'
 
 type Props = {
@@ -58,6 +59,8 @@ export function ExamPaperView({ draft, revisionId, focusQuestionId, userId, edit
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const previewDraft = draft
+  const template = resolveExamTemplate(draft.contentSet.template)
+  const petTemplate = template?.examType === 'pet' ? template : undefined
   const finish = () => { setEditing(null); setSaveError(''); onEditingChange?.(false) }
   // An acknowledged retry may finish outside this component's original Save callback.
   useEffect(() => {
@@ -68,7 +71,7 @@ export function ExamPaperView({ draft, revisionId, focusQuestionId, userId, edit
   const saveRegion = async () => {
     if (!editing || !onChange || saving || editingDisabled) return
     const payload = JSON.parse(JSON.stringify(editing.draft)) as ExamDraftInput
-    const result = validateExamDraft(payload)
+    const result = validateExamDraft(payload, { regenerateVocabulary: true })
     if (!result.ok) {
       setSaveError(examIssueTasks(result.issues, editing.draft).map(task => `${task.location}：${task.message}`).join('\n'))
       return
@@ -76,7 +79,7 @@ export function ExamPaperView({ draft, revisionId, focusQuestionId, userId, edit
     setSaving(true)
     setSaveError('')
     try {
-      if (await onChange(payload)) finish()
+      if (await onChange(result.value)) finish()
       else setSaveError('保存未成功，修改已保留在编辑区。请查看页面错误提示后重试。')
     } catch {
       setSaveError('保存未成功，修改已保留在编辑区。请重试。')
@@ -169,8 +172,9 @@ export function ExamPaperView({ draft, revisionId, focusQuestionId, userId, edit
         instructionIds: group.instructions.map(block => block.id), materialIds: group.materialIds,
         questionIds: group.questions.map(question => question.id), layout: 'questions' }]
       const materials = previewDraft.content.materials.filter(item => group.materialIds.includes(item.id))
+      const sectionLabel = petTemplate?.sections.find(section => section.id === group.sectionId)?.label ?? group.sectionId
       return <section key={group.id}><Flex direction="column" gap="4">
-        {!focusQuestionId && <Heading as="h2" size="7">{group.sectionId} · Part {group.partNumber}</Heading>}
+        {!focusQuestionId && <Heading as="h2" size="7">{sectionLabel} · Part {group.partNumber}</Heading>}
         <Flex direction="column" gap="8">
         {activities.filter(activity => !focusQuestionId || activity.questionIds.some(id => id === focusQuestionId)).map(activity => {
           const previewGroup = { ...group, activities: [activity], questions: group.questions.filter(question => activity.questionIds.includes(question.id)) }
@@ -194,7 +198,7 @@ export function ExamPaperView({ draft, revisionId, focusQuestionId, userId, edit
               {saveError && <Text role="alert" size="2" color="red" className="whitespace-pre-wrap">{saveError}</Text>}
               <Text size="1" color="gray">保存会直接存储修改，成功后返回预览。</Text>
             </Flex> : <ExamActivityEditContext.Provider value={onChange ? { start: () => { setEditing({ key: activityKey, draft }); onEditingChange?.(true) }, disabled: !!editing || !!editingDisabled } : null}>
-            <ExamGroupRenderer handwritingEnabled studentPresentation group={previewGroup} materials={materials} attemptId="" adminRevisionId={revisionId}
+            <ExamGroupRenderer handwritingEnabled studentPresentation authoring={editMode} group={previewGroup} materials={materials} attemptId="" adminRevisionId={revisionId}
               answers={previewAnswers} onAnswer={(questionId, answer) => setPreviewAnswers(previous => ({ ...previous, [questionId]: answer }))} disabled={editingDisabled || !!editing}
               renderImage={(slotId, alt, aspectRatio, displayWidth) => renderImage(`${group.id}/${activity.id}`, slotId, alt, aspectRatio, displayWidth)}
               renderMaterial={onChange ? (_material, content) => content : undefined}
@@ -202,7 +206,10 @@ export function ExamPaperView({ draft, revisionId, focusQuestionId, userId, edit
               renderOptionImage={option => <PaperImage userId={userId} revisionId={revisionId} slotId={option.imageSlotId!} alt={option.label} workspace={workspace} option={option} displayWidth={option.displayWidth}
                 onRecrop={recropFor(option.imageSlotId!)} recropDisabled={editingDisabled || !!editing} />}
               renderQuestion={(question, fields, { compact }) => {
-                const content = renderUnit(question.id, question.displayLabel ?? `第 ${question.location.questionNumber} 题`, fields, value =>
+                const labeledFields = petTemplate && question.answerType !== 'speaking'
+                  ? <Flex direction="column" gap="2"><Text weight="bold" lang="en">{question.displayLabel ?? `Question ${question.location.questionNumber}`}</Text>{fields}</Flex>
+                  : fields
+                const content = renderUnit(question.id, question.displayLabel ?? `第 ${question.location.questionNumber} 题`, labeledFields, value =>
                   <DraftFields draft={value} onChange={updateLocal} selectedQuestionId={question.id} questionOnly />)
                 return compact ? content : <StickerCard asChild={!!onChange && editMode} variant="soft" tone={question.scoring.kind === 'example' ? 'accent' : 'white'} size="sm" elevation="flat" radius="md">{content}</StickerCard>
               }}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { pickMessage, RETRY_SPELL_MESSAGES } from '@rosie/core'
+import { pickMessage, RETRY_SPELL_MESSAGES, type WordEntry } from '@rosie/core'
 import { CandyButton, CANDY_PRESETS, DEFAULT_PRESET_ORDER } from '@rosie/ui'
 import { JellyButton, pickNonAdjacentJellyPresets, type JellyPresetKey } from '@rosie/ui'
 import { MAGIC_STAR_COLOR } from './MagicWand'
@@ -12,6 +12,7 @@ export type SpellButtonStyle = 'candy' | 'jelly'
 
 interface SpellTilesProps {
   word: string
+  entry?: WordEntry
   onSubmit: (val: string) => void
   answered: boolean
   isCorrect: boolean | null
@@ -49,6 +50,7 @@ type PoolState =
 
 export default function SpellTiles({
   word,
+  entry,
   onSubmit,
   answered,
   isCorrect,
@@ -63,8 +65,8 @@ export default function SpellTiles({
   // make the learner spell the annotation itself; size the board for either
   // real spelling and allow submission as soon as one is complete.
   const spellingAnswers = useMemo(
-    () => acceptedSpellings(word).filter((answer) => !/[()]/.test(answer)),
-    [word],
+    () => acceptedSpellings(entry ?? word).filter((answer) => !/[()]/.test(answer)),
+    [entry, word],
   )
   const slotTemplate = useMemo(
     () =>

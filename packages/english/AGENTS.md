@@ -152,6 +152,23 @@ bossEveryNNew` once at least one waiting word exists, freezes **all** waiting wo
   (`archiveOrphanWords`) only when found. DDL lives in **`sql/adaptive-word-plans.sql`** (tracked
   mirror of the gitignored `docs/sql` copy).
 
+## Shared English vocabulary
+
+KET, PET, FCE and textbook vocabulary share headwords, verified senses, usages and
+graded spelling groups. `word_entries.id` identifies the course position for existing
+routes, lessons and immutable exam snapshots. Active catalog reads use `vocabulary_positions`.
+Use the vocabulary write RPCs for admin edits/imports and archive a course position to unlist
+it. Verified spelling, dictation and sense evidence uses owner-scoped shared skill progress.
+Unknown legacy aggregate evidence stays available through its original course key.
+See [the migration and import guide](SHARED-VOCABULARY.md).
+
+`src/assessment/model.ts` owns the standalone reading vocabulary measurement used at
+`/superpowers`. Each bank has one countable sense per shared headword. A frozen attempt
+samples each level in blocks of 12, with optional diagnostic items tagged separately.
+Only main answers feed the ruler. Answers and the bank version are retained for the
+submitted Word Screen. The [assessment workflow](SHARED-VOCABULARY.md#词汇量测评)
+describes bank publication and trial calibration.
+
 ## PET vocabulary and practice
 
 `/english/words/practice/pet` uses `pet/PetLearningPage.tsx` for daily learning, standalone

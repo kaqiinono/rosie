@@ -17,8 +17,8 @@ function directoryUrl(id: string, path: string, generation: string, start: numbe
 type FileListProps = {
   main: LessonAudioDirectory
   inventory: ReturnType<typeof useEnglishFileInventory>
-  onlyUnmatched: boolean
-  boundFiles: Set<string>
+  onlyUnmatched?: boolean
+  boundFiles?: ReadonlySet<string>
   disabled: boolean
   choose: (pick: LessonAudioPick) => void
 }
@@ -83,7 +83,7 @@ export function EnglishFileList({ inventory, main, onlyUnmatched, boundFiles, di
   const loading = !ready && !error
   const query = search.trim().toLowerCase()
   const matches = files.filter(file => {
-    if (onlyUnmatched && (!file.fileId || boundFiles.has(file.fileId) || !lessonAudioMime(file.name))) return false
+    if (onlyUnmatched && (!file.fileId || boundFiles?.has(file.fileId) || !lessonAudioMime(file.name))) return false
     return !query || (directoryPrefix(file.directory) + file.name).toLowerCase().includes(query)
   })
   const pageSize = 50

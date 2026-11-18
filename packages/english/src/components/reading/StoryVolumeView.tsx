@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import clsx from 'clsx'
 import { useAuth } from '@rosie/core'
+import { PageAccountRow } from '@rosie/ui'
 import { useStoryReadingProgress } from '../../hooks/useStoryReadingProgress'
 import { useStoryRecordings } from '../../hooks/useStoryRecordings'
 import type { StorySeries, StoryVolume } from '../../utils/story-types'
@@ -29,12 +30,11 @@ export default function StoryVolumeView({
 
   return (
     <main className="font-nunito relative z-[1] mx-auto max-w-5xl px-4 py-8 pb-24">
-      <Link
-        href={`/stories/${series.slug}`}
-        className="text-sm font-bold text-amber-700"
-      >
-        ← 返回 {series.title}
-      </Link>
+      <PageAccountRow>
+        <Link href={`/stories/${series.slug}`} className="text-sm font-bold text-amber-700">
+          ← 返回 {series.title}
+        </Link>
+      </PageAccountRow>
       <header className="mt-4 rounded-3xl bg-orange-50 p-6 ring-1 ring-amber-200">
         <p className="text-xs font-extrabold tracking-wider text-amber-600 uppercase">
           第 {volume.number} 辑

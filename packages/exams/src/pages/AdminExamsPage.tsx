@@ -9,6 +9,11 @@ import { adminCatalogStore, type AdminExamItem } from '../client/adminCatalog'
 import { examErrorMessage } from '../client/examApi'
 
 const STATUSES = { draft: '草稿', published: '已发布', withdrawn: '已下架' } as const
+const KINDS: Record<AdminExamItem['kind'], string> = {
+  official_paper: '真题',
+  mock_paper: '模拟题',
+  training_unit: '专项训练',
+}
 
 function isCatalogStatus(value: string): value is AdminExamItem['status'] {
   return Object.hasOwn(STATUSES, value)
@@ -65,7 +70,10 @@ export function AdminExamsPage() {
               <Flex direction="column" gap="3">
                 <Flex justify="between" align="start" gap="3" wrap="wrap">
                   <Text as="p" size="4" weight="bold">{item.title}</Text>
-                  <Badge variant="soft" radius="full">{STATUSES[item.status]} · 第 {item.revision} 版</Badge>
+                  <Flex gap="2" wrap="wrap">
+                    <Badge variant="soft" radius="full" color={item.kind === 'official_paper' ? 'green' : item.kind === 'mock_paper' ? 'blue' : 'gray'}>{KINDS[item.kind]}</Badge>
+                    <Badge variant="soft" radius="full">{STATUSES[item.status]} · 第 {item.revision} 版</Badge>
+                  </Flex>
                 </Flex>
                 <Text as="p" size="2" color="gray">{item.source.title} · {item.purpose === 'reserved' ? '保留测评' : '日常训练'}</Text>
                 <Flex><Button asChild size="3" variant="soft"><Link href={`/admin/exams/${encodeURIComponent(item.revisionId)}`}>{item.status === 'draft' ? '编辑与审核' : '查看发布状态'}</Link></Button></Flex>

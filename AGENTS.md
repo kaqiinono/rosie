@@ -285,6 +285,16 @@ Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils),
 `@rosie/tasks` reads owner-scoped timetable data through core. See `packages/tasks/AGENTS.md`.
 Adding a new math lesson is a guided flow — see `.Codex/skills/add-lesson` + `docs/add-new-lesson.md`.
 
+### Shared English vocabulary
+
+English course positions, including 厚海, retain their IDs and link to shared headwords,
+verified senses, usage and spelling groups. The admin and vocabulary import entry points use
+the catalog RPCs. The new skill progress and source receipts are installed by the two
+`shared_english_vocabulary` migrations. See [the migration and import guide](packages/english/SHARED-VOCABULARY.md).
+「我的超能力」at `/superpowers` offers a KET/PET/FCE reading vocabulary assessment.
+Its service-only, owner-scoped attempts and reviewed banks use the vocabulary assessment migration.
+Publication and calibration use the [assessment workflow](packages/english/SHARED-VOCABULARY.md#词汇量测评).
+
 ### 考一考
 
 `/admin/exams/images` provides a source-page crop task workspace. Temporary originals are

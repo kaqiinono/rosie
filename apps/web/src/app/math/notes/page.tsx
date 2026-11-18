@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { OrbBackground, StickerCard } from '@rosie/ui'
+import { OrbBackground, PageAccountRow, StickerCard } from '@rosie/ui'
 import { RICH_CONTENT_CLEARFIX_TW } from '@rosie/math-kit/components/shared/rich-text-image'
 import LessonSummaryBody from '@rosie/math-kit/components/shared/LessonSummaryBody'
 import { lessonSummaryProblemId } from '@rosie/math-kit/constants'
@@ -413,7 +413,7 @@ export default function MathNotesPage() {
       <OrbBackground variant="math" />
 
       <header className="shadow-sticker-sm fixed top-0 right-0 left-0 z-20 border-b border-violet-200/60 bg-[#faf8ff]/92">
-        <div className="flex items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-4 sm:py-2.5">
+        <PageAccountRow className="px-2.5 py-2 sm:gap-3 sm:px-4 sm:py-2.5">
           <Link
             href="/math"
             className="shadow-sticker-sm flex h-9 shrink-0 items-center gap-1.5 rounded-xl border border-violet-100 bg-white px-3 text-[12px] font-bold text-violet-900/55 no-underline transition-all hover:border-violet-200 hover:text-violet-900 active:scale-95 sm:text-[13px]"
@@ -446,7 +446,7 @@ export default function MathNotesPage() {
               )}
             </div>
           </div>
-        </div>
+        </PageAccountRow>
       </header>
 
       <div className="relative z-1 mx-auto flex min-h-screen w-full max-w-[900px] flex-col px-2 pt-[4.75rem] pb-4 sm:px-3 sm:pt-[5.25rem] sm:pb-6">
