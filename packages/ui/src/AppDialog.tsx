@@ -2,7 +2,7 @@
 
 import { Dialog, Flex, IconButton } from '@radix-ui/themes'
 import { X } from 'lucide-react'
-import { useCallback, useState, type ReactElement, type ReactNode, type RefObject } from 'react'
+import { createContext, useCallback, useContext, useState, type CSSProperties, type ReactElement, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 
 type AppDialogProps = {
@@ -21,9 +21,11 @@ type AppDialogProps = {
   chrome?: 'standard' | 'none'
   /** Drawer uses the same focus/escape contract, with a full-height trailing panel. */
   presentation?: 'dialog' | 'drawer' | 'bottom-drawer' | 'fullscreen'
-  /** Full viewport on phones; retain the standard dialog on wider screens. */
+  /** Size the bottom drawer to its content, within the viewport limits. */
   compactBottomDrawer?: boolean
-  /** A read-only card next to the bottom drawer, sharing its backdrop. */
+  /** Center the bottom drawer and its companion together on wide screens. */
+  centerBottomDrawerOnDesktop?: boolean
+  /** A read-only card shared with any nested bottom drawer. */
   bottomDrawerCompanion?: ReactNode
   mobileFullscreen?: boolean
   /** Remains visible outside the scrolling content, e.g. media transport. */
@@ -38,6 +40,7 @@ type AppDialogProps = {
 }
 
 const MAX_WIDTH = { standard: '32rem', form: '42rem', preview: '56rem' } as const
+const BottomDrawerCompanionContext = createContext<ReactNode>(null)
 
 export function AppDialog({
   title,
@@ -49,6 +52,7 @@ export function AppDialog({
   presentation = 'dialog',
   mobileFullscreen = false,
   compactBottomDrawer = false,
+  centerBottomDrawerOnDesktop = false,
   bottomDrawerCompanion,
   footer,
   contentLayout = 'scroll',
@@ -59,7 +63,10 @@ export function AppDialog({
   children,
 }: AppDialogProps) {
   const bare = chrome === 'none'
-  const hasCompanion = presentation === 'bottom-drawer' && bottomDrawerCompanion != null
+  const inheritedCompanion = useContext(BottomDrawerCompanionContext)
+  const bottomDrawer = presentation === 'bottom-drawer'
+  const companion = bottomDrawer ? bottomDrawerCompanion ?? inheritedCompanion : null
+  const companionPlacement = companion == null ? undefined : bottomDrawerCompanion == null ? 'secondary' : 'primary'
   const [companionHost, setCompanionHost] = useState<HTMLElement | null>(null)
   const attachCompanionHost = useCallback((content: HTMLDivElement | null) => {
     setCompanionHost(content?.parentElement ?? null)
@@ -69,32 +76,24 @@ export function AppDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger && <Dialog.Trigger>{trigger}</Dialog.Trigger>}
       <Dialog.Content
-        ref={hasCompanion ? attachCompanionHost : undefined}
+        ref={companionPlacement ? attachCompanionHost : undefined}
         data-presentation={presentation}
         data-mobile-fullscreen={mobileFullscreen || undefined}
-        data-bottom-drawer-companion={hasCompanion || undefined}
+        data-bottom-drawer-compact={bottomDrawer && compactBottomDrawer || undefined}
+        data-bottom-drawer-centered={bottomDrawer && centerBottomDrawerOnDesktop || undefined}
+        data-bottom-drawer-companion={companionPlacement}
         {...(description ? {} : { 'aria-describedby': undefined })}
-        maxWidth={presentation === 'fullscreen' || presentation === 'bottom-drawer' ? '100vw' : presentation === 'drawer' ? 'min(64rem, 100vw)' : MAX_WIDTH[size]}
-        maxHeight={presentation !== 'dialog' ? '100dvh' : '88dvh'}
+        maxWidth={bottomDrawer ? 'var(--bottom-drawer-max-width, 100vw)' : presentation === 'fullscreen' ? '100vw' : presentation === 'drawer' ? 'min(64rem, 100vw)' : MAX_WIDTH[size]}
+        maxHeight={bottomDrawer ? undefined : presentation !== 'dialog' ? '100dvh' : '88dvh'}
         style={{
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           ...(bare ? { padding: 0 } : null),
-          ...(presentation !== 'dialog' ? {
+          ...(bottomDrawer ? { '--bottom-drawer-width': MAX_WIDTH[size] } as CSSProperties : null),
+          ...(presentation !== 'dialog' && !bottomDrawer ? {
             position: 'fixed', top: 0, right: 0, bottom: 0, left: 'auto',
             margin: 0, width: '100vw', height: '100dvh', borderRadius: 0,
-          } : null),
-          ...(presentation === 'bottom-drawer' ? {
-            top: 'auto', left: 0, height: '92dvh', borderRadius: '28px 28px 0 0',
-            ...(compactBottomDrawer ? { maxWidth: MAX_WIDTH[size], marginInline: 'auto', height: 'auto', maxHeight: '92dvh' } : null),
-            ...(hasCompanion ? {
-              left: 'var(--drawer-companion-content-left)',
-              bottom: 'var(--drawer-companion-content-bottom)',
-              width: 'var(--drawer-companion-content-width)',
-              maxHeight: 'var(--drawer-companion-content-height)',
-              marginInline: 'var(--drawer-companion-content-margin)',
-            } : null),
           } : null),
         }}
         onEscapeKeyDown={(event) => {
@@ -105,7 +104,8 @@ export function AppDialog({
           returnFocusRef.current?.focus({ preventScroll: true })
         } : undefined}
         onInteractOutside={(event) => {
-          if (closeDisabled) event.preventDefault()
+          const card = event.target instanceof Element && event.target.closest('.rosie-bottom-drawer-companion')
+          if (closeDisabled || (card && card.parentElement === companionHost)) event.preventDefault()
         }}
       >
         {bare ? (
@@ -160,12 +160,14 @@ export function AppDialog({
               : `-mx-[var(--dialog-content-padding)] ${footer ? '' : '-mb-[var(--dialog-content-padding)]'} min-h-0 flex-1 px-[var(--dialog-content-padding)] pb-[var(--dialog-content-padding)] ${contentLayout === 'fill' ? 'flex flex-col overflow-hidden' : 'overflow-y-auto'}`
           }
         >
-          {children}
+          <BottomDrawerCompanionContext.Provider value={companion ?? inheritedCompanion}>
+            {children}
+          </BottomDrawerCompanionContext.Provider>
         </div>
         {footer && <Flex direction="column" flexShrink="0" pt="3">{footer}</Flex>}
       </Dialog.Content>
-      {hasCompanion && companionHost && createPortal(
-        <div className="rosie-bottom-drawer-companion" aria-hidden="true">{bottomDrawerCompanion}</div>,
+      {companionPlacement && companionHost && createPortal(
+        <div className="rosie-bottom-drawer-companion" aria-hidden="true">{companion}</div>,
         companionHost,
       )}
     </Dialog.Root>

@@ -1,0 +1,4662 @@
+{
+  "items": [
+    {
+      "headwordId": "9b502a27-304b-4ebf-a593-514c685eac74",
+      "senseId": "cb7a2b64-9fbd-4702-8544-6d686c8f2a88",
+      "senseRevision": 3,
+      "word": "bag",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A soft thing you carry other things in",
+      "definitionZh": "包；袋子",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bag",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small box for keeping food cold",
+        "A piece of cloth for washing dishes",
+        "A hard board you use to write on"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "db0191b7-368c-4994-a71d-3ded66d9058d",
+      "senseId": "57d67857-b340-40a6-8342-0b6aa4d43f75",
+      "senseRevision": 3,
+      "word": "banana",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A long yellow fruit that you peel",
+      "definitionZh": "香蕉",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/banana",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small red fruit with seeds on its skin",
+        "A round green fruit you cut in half",
+        "A round orange fruit with a skin you can peel"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "665c0b25-dc1b-4731-988e-ef0d3bfcb3e7",
+      "senseId": "fa5ff180-df2c-4368-af03-1f6790b06e5c",
+      "senseRevision": 3,
+      "word": "bedroom",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A room where you sleep",
+      "definitionZh": "卧室",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bedroom",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A room where you cook meals",
+        "A room where you wash your body",
+        "A room where you eat with guests"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5bd40aae-dc8c-4f0e-b1d8-1036bd55e4b8",
+      "senseId": "198e6043-fde1-48a4-81bd-c1f23b26faf8",
+      "senseRevision": 3,
+      "word": "bike",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A vehicle with two wheels that you move with your feet",
+      "definitionZh": "自行车",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bike",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A large road vehicle that carries many people",
+        "A small vehicle that moves across water",
+        "A long vehicle that runs on metal tracks"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "e7b9c79c-21ef-4301-8c96-a117852f43de",
+      "senseId": "cc14b786-5d34-4576-9137-817cc6e0763b",
+      "senseRevision": 3,
+      "word": "birthday",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "The day each year when you celebrate being born",
+      "definitionZh": "生日",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/birthday?topic=describing-age-and-birthdays",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The day you move into a new home",
+        "The first day you begin a new job",
+        "The last day before a school holiday"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "16a5a3c1-0071-413b-9647-c6fb29d14f2f",
+      "senseId": "87ebda73-1bbd-45ff-967b-2c8458819be8",
+      "senseRevision": 3,
+      "word": "boat",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A small vehicle that takes people across water",
+      "definitionZh": "船",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/boat",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A large vehicle that takes people along a road",
+        "A small vehicle that carries people through the air",
+        "A long vehicle that takes people along tracks"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4bd0d446-5fe8-4aef-98d4-5d6165860270",
+      "senseId": "f68ef551-bb13-4d53-8f59-84f3bdc41f10",
+      "senseRevision": 3,
+      "word": "bookcase",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Furniture with shelves for keeping books",
+      "definitionZh": "书柜；书架",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bookcase",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Furniture with drawers for keeping socks",
+        "Furniture with a top for writing letters",
+        "Furniture with a soft seat for resting"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "663266de-b0ce-4409-8f17-76296978628a",
+      "senseId": "b6608024-3ccf-4474-9811-37e518720fa5",
+      "senseRevision": 3,
+      "word": "bread",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A baked food you often cut into slices",
+      "definitionZh": "面包",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bread?topic=bread",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A sweet cold food you eat from a dish",
+        "A hot food made by cooking rice in water",
+        "A soft food made by cooking eggs in a pan"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7fd8efa2-d68b-44d9-af43-f8f0fcda2e99",
+      "senseId": "edc80fc0-e977-4e3f-89a2-02b176979f48",
+      "senseRevision": 3,
+      "word": "brother",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A boy or man with the same parents as you",
+      "definitionZh": "兄弟",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/brother",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A man who is your father's father",
+        "A boy who is your aunt's son",
+        "A man who is married to your aunt"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "60704e03-3ca0-4492-89b9-5c78b647241b",
+      "senseId": "6ceb59a9-85c1-4ecf-b36c-c9fb13bb06d6",
+      "senseRevision": 3,
+      "word": "bus",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A large road vehicle that carries many people",
+      "definitionZh": "公交车",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/bus",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A long vehicle that carries people on tracks",
+        "A small car whose driver you pay for a ride",
+        "A large vehicle that carries goods across water"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "1455d73b-adc1-452d-8156-1c2464da4ed2",
+      "senseId": "9f4c4b74-16d5-4386-b507-36a5675c16a4",
+      "senseRevision": 3,
+      "word": "butter",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A soft yellow food made from cream",
+      "definitionZh": "黄油",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/butter",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A sweet food made from cooked fruit",
+        "A white drink made by cows",
+        "A sweet liquid made by bees"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "b5f6559a-a128-4f2a-9558-4624f735bc6f",
+      "senseId": "608f0b4f-1997-47c4-a830-39526e16738a",
+      "senseRevision": 3,
+      "word": "cake",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A sweet food made in an oven with eggs and flour",
+      "definitionZh": "蛋糕",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/cake",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A cold food made with milk and ice",
+        "A hot food made from meat and water",
+        "A soft food made with cooked rice and salt"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a375f841-52b3-44e1-be33-9e291d523d84",
+      "senseId": "a89b4292-7bd3-4efd-986d-64909e929156",
+      "senseRevision": 3,
+      "word": "chair",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A seat with a back for one person",
+      "definitionZh": "椅子",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/chair",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A long seat for several people to share",
+        "A low piece of furniture you put drinks on",
+        "A wide piece of furniture you sleep on"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "03a1f7b0-74a4-434f-b7d6-8551405eb9b3",
+      "senseId": "f2f6e3c6-1d5b-4565-88eb-286158d16a18",
+      "senseRevision": 3,
+      "word": "classroom",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A room at school where lessons take place",
+      "definitionZh": "教室",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/classroom",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A room at school where lunch is made",
+        "A room at home where people watch TV",
+        "A room at a shop where people try on clothes"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "1a802be0-38f6-4067-8728-c6e94921d23a",
+      "senseId": "1d70578b-7724-4d9b-a3a9-e6f19e04b5c6",
+      "senseRevision": 3,
+      "word": "clock",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A thing that shows what time it is",
+      "definitionZh": "时钟",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/clock",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A thing that tells you how hot it is",
+        "A thing that shows you which way is north",
+        "A thing that measures how heavy a bag is"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "87a4ee4d-6850-4e2c-b8dd-e208e1af4f03",
+      "senseId": "59359999-9e92-4afb-9f43-f1e05cbfcd5d",
+      "senseRevision": 3,
+      "word": "cow",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A large farm animal people often keep for milk",
+      "definitionZh": "母牛",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/cow",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small farm animal people often keep for eggs",
+        "A large farm animal people often keep for riding",
+        "A small farm animal people often keep for wool"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "20f8db74-1193-43d1-9200-a9a0faf42d0e",
+      "senseId": "c37ab43a-bca2-4552-8f03-a8ceba5598ad",
+      "senseRevision": 3,
+      "word": "desk",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A table you use for studying or writing",
+      "definitionZh": "书桌",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/desk",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A seat you use when you want to rest",
+        "A box you use to keep food cool",
+        "A shelf you use to put books away"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5e942369-3e7e-4312-a74a-594da130c70c",
+      "senseId": "cd019342-c20a-4620-b2fd-e160ec3250f9",
+      "senseRevision": 3,
+      "word": "doctor",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person who helps people who are ill or hurt",
+      "definitionZh": "医生",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/doctor",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who teaches children at school",
+        "A person who cooks food in a restaurant",
+        "A person who brings letters to homes"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c993008c-2b1e-4e9f-b3c0-2c20b9f81dd7",
+      "senseId": "ab5db9d6-ee65-460c-b527-82d80041a6ac",
+      "senseRevision": 3,
+      "word": "eat",
+      "level": "A1",
+      "partOfSpeech": "v.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "To put food in your mouth and swallow it",
+      "definitionZh": "吃",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/eat?q=Eat",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To make food hot before a meal",
+        "To cut food into very small pieces",
+        "To bring a meal to someone at a table"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "71f12998-222b-4594-9af1-40b017ee6942",
+      "senseId": "ecd98554-12f3-4091-8100-844399ec383c",
+      "senseRevision": 3,
+      "word": "eye",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "The part of your face you use to see",
+      "definitionZh": "眼睛",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/eye",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The part of your face you use to smell",
+        "The part of your mouth you use to bite",
+        "The part of your head you use to hear"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "d766743d-bb62-46b9-9343-b3570b6266e5",
+      "senseId": "85219f39-1c0d-4a0f-9156-74b788ccf859",
+      "senseRevision": 3,
+      "word": "father",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A male parent",
+      "definitionZh": "父亲",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/father",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A parent's brother",
+        "A man whose child is one of your parents",
+        "A woman's brother"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "170c9f79-db4e-4fda-9517-5f7391400061",
+      "senseId": "3b8625a3-bea8-46e3-bc59-84149e23fb25",
+      "senseRevision": 3,
+      "word": "friend",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Someone you know well and enjoy being with",
+      "definitionZh": "朋友",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/friend",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Someone who pays you to do a job",
+        "Someone who lives in the home next to yours",
+        "Someone who is the child of your uncle"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c18f53bf-b746-4314-9a16-5b138917d566",
+      "senseId": "5f0de300-af07-4d52-b9ae-c6b11e852f85",
+      "senseRevision": 3,
+      "word": "garden",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A place near a home where people grow plants",
+      "definitionZh": "花园",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/garden?topic=gardens-and-yards",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A place near a home where cars are kept",
+        "A place in town where people buy food",
+        "A place in town where people catch a train"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "b9a52768-d211-46c2-a7cd-bb3cb1244a67",
+      "senseId": "2d29bddf-9c5a-412f-b117-93571e2fd6f3",
+      "senseRevision": 3,
+      "word": "girl",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A child who is female",
+      "definitionZh": "女孩",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/girl",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A child who is male",
+        "A man who has a child",
+        "A woman who has a child"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "215b5e81-c1f1-4003-8138-e726cd586179",
+      "senseId": "e33e4adb-9e24-4c21-a409-99faef99cd10",
+      "senseRevision": 3,
+      "word": "hospital",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A place where ill or hurt people get care",
+      "definitionZh": "医院",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/hospital",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A place where people wait for a train",
+        "A place where people buy or borrow books",
+        "A place where people go to see a film"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "af81edff-859c-4cdc-837c-c8edf73f0367",
+      "senseId": "6dec0623-bbd8-47dc-86f6-2473e85c03f4",
+      "senseRevision": 3,
+      "word": "kitchen",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A room where people make and cook food",
+      "definitionZh": "厨房",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/kitchen",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A room where people sleep at night",
+        "A room where people take a bath",
+        "A room where people hang up their coats"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "13f659d3-1744-47a4-a921-98b6c2833b00",
+      "senseId": "72691658-638f-4eef-9540-2221d9cb4983",
+      "senseRevision": 3,
+      "word": "leg",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A body part that joins your foot to the rest of your body",
+      "definitionZh": "腿",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/leg",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A body part that joins your hand to the rest of your body",
+        "A body part that joins your head to the rest of your body",
+        "A body part on your face that helps you smell"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a36594dd-730b-4538-aa88-b1f346cd3bc3",
+      "senseId": "57bf20ca-8566-477d-a6a5-128a98a1a8fd",
+      "senseRevision": 3,
+      "word": "lunch",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "The meal you eat in the middle of the day",
+      "definitionZh": "午餐",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/lunch",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The meal you eat early in the morning",
+        "The meal you eat at the end of the day",
+        "The sweet food you eat after a meal"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9e442c89-28e4-44e9-8cf8-f92942b6e06e",
+      "senseId": "af75632f-f839-4848-80ce-2d67fd84b838",
+      "senseRevision": 3,
+      "word": "milk",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A white drink that comes from cows and some other animals",
+      "definitionZh": "奶；牛奶",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/milk",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A sweet drink made by pressing oranges",
+        "A drink made by putting dry leaves in hot water",
+        "A drink made by mixing lemon juice and water"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5d800824-e99a-43f4-b981-b164653d1cfa",
+      "senseId": "3d3e9a85-18b9-4e7f-8f5b-db039e6a99cd",
+      "senseRevision": 3,
+      "word": "mother",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A female parent",
+      "definitionZh": "母亲",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/mother",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A parent's sister",
+        "A woman whose child is one of your parents",
+        "A brother's daughter"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f184e33a-f7b6-4800-9b94-79d2a47aa7a4",
+      "senseId": "6cc7717b-0537-4cae-b0d8-2dd209bff607",
+      "senseRevision": 3,
+      "word": "pencil",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A tool for writing with a thin dark centre inside wood",
+      "definitionZh": "铅笔",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/pencil?q=pencil_2",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A tool for cutting paper with two moving parts",
+        "A tool for taking away marks you have made",
+        "A tool for putting paint on paper with soft hairs"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "b62515e3-cd8f-4a40-b1d8-84f4a914a6b0",
+      "senseId": "3957c5c8-6c5c-455b-88a3-7eb57f4daeee",
+      "senseRevision": 3,
+      "word": "picture",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Something you draw, paint, or make with a camera",
+      "definitionZh": "图片；图画；照片",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/picture",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Something you read to find out the time of a train",
+        "Something you write to tell a friend about your day",
+        "Something you buy to get into a cinema"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "64356e1d-c60b-4a67-bd86-0859a98111f1",
+      "senseId": "c5bd09ea-42b6-465c-96bc-353efbfac310",
+      "senseRevision": 3,
+      "word": "potato",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A vegetable with a round or long shape that grows under the ground",
+      "definitionZh": "土豆",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/potato",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A long green vegetable that grows above the ground",
+        "A small sweet fruit that grows on a tree",
+        "A round orange fruit with a thick skin"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "822278f4-2f32-4cad-a232-10a7b5c06f37",
+      "senseId": "85ebcd18-8522-4f7a-8299-478a3cb91dc8",
+      "senseRevision": 3,
+      "word": "rice",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Small grains that people often cook in water",
+      "definitionZh": "大米；米饭",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/rice",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Small leaves that people often cook in oil",
+        "Small pieces of bread that people eat in soup",
+        "Small pieces of fruit that people put on a cake"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "1631d635-ad95-4162-8fe0-0e15519b102d",
+      "senseId": "797ae287-c26a-44f9-8494-4a3d39db49f9",
+      "senseRevision": 3,
+      "word": "school",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A place where children go to learn",
+      "definitionZh": "学校",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/school",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A place where children go to see sick people",
+        "A place where people go to get a passport",
+        "A place where people go to watch a film"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "ffbca000-1289-4c02-ae5a-22aacf3a69fb",
+      "senseId": "7a53ff91-80b1-4694-b761-93933f15c4db",
+      "senseRevision": 3,
+      "word": "sister",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A girl or woman with the same parents as you",
+      "definitionZh": "姐妹",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/sister",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A woman who is your father's mother",
+        "A girl who is your uncle's daughter",
+        "A woman who is your brother's wife"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "58bce1d0-51a1-4135-95d6-5df011dcc060",
+      "senseId": "f0c247c8-be3f-4ec9-a40d-35bc82524707",
+      "senseRevision": 3,
+      "word": "soup",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A food you eat from a bowl that is mostly liquid",
+      "definitionZh": "汤",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/soup",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A food you eat cold that is made from fruit and ice",
+        "A baked food you often cut into slices",
+        "A sweet food you spread on bread"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f0cee15a-1f5f-41ff-a086-24572dabf9de",
+      "senseId": "4a7cb696-3d1a-4939-a79e-f675d92cbc46",
+      "senseRevision": 3,
+      "word": "taxi",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A car you pay someone to drive you in",
+      "definitionZh": "出租车",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/learner-english/taxi",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A car people use to take sick people to hospital",
+        "A large road vehicle with seats for many people",
+        "A small road vehicle with two wheels and no motor"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "2be05658-fc72-461c-a2ed-26ef0acf4e4e",
+      "senseId": "bcf734c2-f1b2-4595-9227-69e6855cf28c",
+      "senseRevision": 3,
+      "word": "tooth",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "One of the hard white parts you use to bite",
+      "definitionZh": "牙齿",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/tooth",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "One of the soft parts around your eyes",
+        "One of the small hairs on your head",
+        "One of the hard parts at the end of your foot"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "641a238c-ff5a-4f31-87b6-e7f9c03215ce",
+      "senseId": "6273f6d5-222c-4f56-b0f0-8587182c9e10",
+      "senseRevision": 3,
+      "word": "window",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "An opening in a wall with glass that lets light in",
+      "definitionZh": "窗户",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/window",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "An opening in a wall that you walk through to leave a room",
+        "A board on a wall where you put books",
+        "A cloth you put on a floor to keep it warm"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9621dd54-4372-4f33-a621-67e1d78a7425",
+      "senseId": "f3be6992-5d28-4b4b-8f58-9b8c56420771",
+      "senseRevision": 3,
+      "word": "winter",
+      "level": "A1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "The coldest part of the year",
+      "definitionZh": "冬天",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/winter",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The hottest part of the year",
+        "The time of year when many leaves fall",
+        "The time of year just before summer"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a0ce2ac7-30b3-4b43-b6c8-48807ce9403b",
+      "senseId": "04a2377d-aa47-4636-8d5e-f50402071f2f",
+      "senseRevision": 3,
+      "word": "able",
+      "level": "A2",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Having the skill or power to do something",
+      "definitionZh": "有能力的；能够的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/able",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Ready to stop doing something you dislike",
+        "Happy that your work has finished",
+        "Afraid to try something for the first time"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7c56738f-7be8-4487-8827-7f740d2edfb9",
+      "senseId": "ce6fdd95-3b3a-4653-a77d-7f525bcc6826",
+      "senseRevision": 3,
+      "word": "advertisement",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A message that asks people to buy or try something",
+      "definitionZh": "广告",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/advertisement",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A message that tells people the time of a class",
+        "A message that thanks people for a gift",
+        "A message that asks a friend to come to a party"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "74ea024b-2d45-4cf2-975f-22c5bb57d999",
+      "senseId": "4687fdde-fc49-4bd6-897a-f4fbbe7eb816",
+      "senseRevision": 3,
+      "word": "ambulance",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A vehicle that takes ill or hurt people to hospital",
+      "definitionZh": "救护车",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/ambulance",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A vehicle that brings letters to homes",
+        "A vehicle that takes children to school",
+        "A vehicle that carries water to put out fires"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4db9d760-4b6b-4d81-ad59-9f590acca067",
+      "senseId": "89190675-0f84-478f-bb2c-d045d15261f3",
+      "senseRevision": 3,
+      "word": "bridge",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Something built over a river or road so people can cross",
+      "definitionZh": "桥",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bridge",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Something built beside a river so boats can stop",
+        "Something built under a house to keep things cool",
+        "Something built around a house to stop people getting in"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "34637c7b-0f38-4b73-afe4-cb59165a040d",
+      "senseId": "94afbad3-04fb-4ab0-81f7-3c42d3735c40",
+      "senseRevision": 3,
+      "word": "camping",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Staying outside in a tent for a night or more",
+      "definitionZh": "露营",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/camping",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Walking around a city to see old buildings",
+        "Travelling across water in a small boat",
+        "Going up a hill and coming back the same day"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4a857335-c498-42c1-95dc-9fd6c4fd9a0d",
+      "senseId": "e653f6cb-a5c8-4a5f-9f6e-66728eedfbc2",
+      "senseRevision": 3,
+      "word": "carpet",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A thick soft material that covers the floor",
+      "definitionZh": "地毯",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/carpet",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A soft cloth that hangs in front of a window",
+        "A hard board that covers the top of a table",
+        "A thin cloth that you put over a bed"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "343ed613-e7c3-4498-991d-fa4bceed6f2f",
+      "senseId": "5596e767-7637-44b2-911c-9b76bb48545d",
+      "senseRevision": 3,
+      "word": "chess",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A two-person board game where the pieces move in different ways",
+      "definitionZh": "国际象棋",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/chess",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A game where players hit a small ball over a net",
+        "A race where people see who can swim fastest",
+        "A game where players throw and catch a ball in a pool"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4855c118-7bf8-48eb-aa82-230c4dd3d948",
+      "senseId": "14298049-4187-4cd2-ae37-3ddd603ae39a",
+      "senseRevision": 3,
+      "word": "climb",
+      "level": "A2",
+      "partOfSpeech": "v.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "To go up something using your hands and feet",
+      "definitionZh": "爬；攀登",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/climb",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To step back from something in front of you",
+        "To walk quickly around something in your way",
+        "To move down something without taking steps"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "87384114-603d-449f-bf48-aa7c31ecf097",
+      "senseId": "dd861243-7cdf-468c-bb04-e0737da04276",
+      "senseRevision": 3,
+      "word": "club",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A group that meets to do something its members enjoy",
+      "definitionZh": "俱乐部",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/club?topic=societies-clubs-and-organizations",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A group that travels on the same bus by chance",
+        "A group of people waiting to pay for things",
+        "A group of people living in the same house"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "23414fa7-944d-4aa1-a6a7-e1e03ad6c4a1",
+      "senseId": "5f2ccb6e-51e0-438a-b3af-0bfa09928ea6",
+      "senseRevision": 3,
+      "word": "competition",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "An event where people try to do better than others and win",
+      "definitionZh": "比赛；竞赛",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/competition?topic=competitions-and-parts-of-competitions",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "An event where people meet to watch a new film",
+        "An event where people bring books to give away",
+        "An event where people celebrate someone's birthday"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "04abf3e9-f06f-4394-9a5b-e747958a7439",
+      "senseId": "49004908-868b-4af2-9458-637b1067edd4",
+      "senseRevision": 3,
+      "word": "cupboard",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A piece of furniture with doors where you store things",
+      "definitionZh": "橱柜；储藏柜",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/cupboard",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A piece of furniture with a long top where you eat",
+        "A piece of furniture with a soft seat for two people",
+        "A piece of furniture with a wide flat top to sleep on"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0e1cb686-4569-4a1c-9085-1bd96714d6c5",
+      "senseId": "80e78861-18f8-4869-b7f2-b011204b3c06",
+      "senseRevision": 3,
+      "word": "dancer",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person who moves to music as an art or job",
+      "definitionZh": "舞者；舞蹈演员",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/dancer",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who writes stories for a job",
+        "A person who acts in a film for a job",
+        "A person who makes or repairs shoes"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "dacb73db-4bc9-4db2-afaf-f30a6c7c3d67",
+      "senseId": "aea55ca5-fe54-4b82-b363-6715f0e86d7a",
+      "senseRevision": 3,
+      "word": "dentist",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person whose job is to care for teeth",
+      "definitionZh": "牙医",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/dentist",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person whose job is to check people's eyes",
+        "A person whose job is to cut people's hair",
+        "A person whose job is to care for sick animals"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5680f9f9-5d26-4027-b7c8-23b84be170cf",
+      "senseId": "fa475115-6b21-4ee6-8bb0-b02655883995",
+      "senseRevision": 3,
+      "word": "drawing",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A picture made with a pencil or pen",
+      "definitionZh": "图画",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/drawing",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A picture taken with a camera",
+        "A picture made by sticking many photos together",
+        "A picture made with pieces of coloured glass"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7a8d98e0-9c54-4695-90d1-2de74fc84332",
+      "senseId": "1f83ec30-d842-4c2d-9576-9063d210c8ff",
+      "senseRevision": 3,
+      "word": "electricity",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Energy used by lights and many machines",
+      "definitionZh": "电；电力",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/electricity",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Heat that comes from the sun",
+        "Water that falls from clouds",
+        "Light that comes from a small fire"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "58e0e535-6988-4a7d-8fec-e5078a7663fa",
+      "senseId": "a83bc04d-5f54-4256-89ee-38e816061ec4",
+      "senseRevision": 3,
+      "word": "entrance",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A door or opening you use to go inside",
+      "definitionZh": "入口",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/entrance?topic=inspiration-and-inspiring",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A wall that keeps people out of a garden",
+        "A sign that tells you the name of a street",
+        "A place where you stay until a bus comes"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "48722723-5f97-4f01-96cf-c690fdddbe69",
+      "senseId": "3d29aab1-73c8-4534-988c-3410d937b5ae",
+      "senseRevision": 3,
+      "word": "fog",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A low cloud that makes it hard to see",
+      "definitionZh": "雾",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/fog?q=fog_3",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A light rain that falls for a short time",
+        "A strong wind that blows through the trees",
+        "A thin layer of ice on a winter road"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "616f3665-f60c-4914-a71a-edfd6fd30bd3",
+      "senseId": "e37506d3-8b3f-4dc0-a59f-1e502101445b",
+      "senseRevision": 2,
+      "word": "garage",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "The garage is next to our house.",
+      "requiresContext": true,
+      "definitionEn": "A building or room where you keep a car",
+      "definitionZh": "车库",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/garage",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small building where you grow plants",
+        "A small room where you keep food cold",
+        "A room where you leave shoes at school"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fbdb15ec-5dc6-4bcb-b4d0-54da9ddecc01",
+      "senseId": "4e7c0a27-d4d5-4199-98d9-0db4d9687fc5",
+      "senseRevision": 3,
+      "word": "honey",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A thick sweet food made by bees",
+      "definitionZh": "蜂蜜",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/honey",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A thick white food made from milk",
+        "A brown food made from baked flour",
+        "A cold sweet food made with fruit juice"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "28dfd676-8db4-4209-8912-38b5ecd120b8",
+      "senseId": "95063abd-d6ae-47d0-a26a-cec75428ca37",
+      "senseRevision": 3,
+      "word": "information",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Facts or details that tell you about something",
+      "definitionZh": "信息",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/information",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Words you say to ask for help",
+        "Rules you follow as part of a game",
+        "Pictures you draw to make a place look nice"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f804518e-d48e-470e-95ab-9247bb984ee8",
+      "senseId": "efe33170-979f-4da3-b26d-52eb2e4fd700",
+      "senseRevision": 3,
+      "word": "invitation",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Something that asks a person to come to an event",
+      "definitionZh": "邀请；邀请函",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/invitation?q=invitations",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Something that tells a person they have won a prize",
+        "Something that tells a person when a shop closes",
+        "Something that shows a person has paid for a ticket"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fad81528-7643-4be2-8c72-edbb45bfc331",
+      "senseId": "f2a83dd5-856b-4fc2-a718-d1e7eeb029ed",
+      "senseRevision": 3,
+      "word": "jumper",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A warm piece of clothing that you pull on over your head",
+      "definitionZh": "套头毛衣",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/jumper",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A long piece of clothing that you wrap around your neck",
+        "A short piece of clothing that you wear on each foot",
+        "A loose piece of clothing that you wear over your legs"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0b12b46f-ed78-4d45-a5c2-2bb75e86b075",
+      "senseId": "3231ab2c-094a-468b-8096-0a7092e3f19b",
+      "senseRevision": 3,
+      "word": "kite",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A toy you hold by a string as it flies in the wind",
+      "definitionZh": "风筝",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/kite?q=KITE",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A toy you move along the floor on small wheels",
+        "A toy you squeeze so it makes a sound",
+        "A toy you throw up and catch again"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "8d82c521-53e1-46a1-9203-b93452131c4d",
+      "senseId": "3a662a8b-a767-4c72-85bf-9dbe0eea0daa",
+      "senseRevision": 3,
+      "word": "lemonade",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A sweet drink made with lemon juice and water",
+      "definitionZh": "柠檬水",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/essential-american-english/lemonade",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A warm drink made with tea and milk",
+        "A cold drink made by pressing apples",
+        "A thick drink made by mixing milk and bananas"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "892f6855-2fa1-4236-a82e-98e2721d2b18",
+      "senseId": "53d82a8f-2c23-438a-9285-85a479db5fb9",
+      "senseRevision": 3,
+      "word": "magazine",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A thin book with articles and pictures that comes out regularly",
+      "definitionZh": "杂志；期刊",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/magazine",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A book that lists the meaning of each word",
+        "A sheet of paper you use to find an address",
+        "A blank book in which you write your own notes"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0c3c1b4a-2ad8-4c66-9903-a55c69681135",
+      "senseId": "eac6aeae-aca8-433c-b617-5d94e2cb36d3",
+      "senseRevision": 2,
+      "word": "modern",
+      "level": "A2",
+      "partOfSpeech": "adj.",
+      "context": "They live in a modern flat.",
+      "requiresContext": true,
+      "definitionEn": "Using ideas or styles from the present time",
+      "definitionZh": "现代的；新式的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/modern",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Made in the same way as a long time ago",
+        "Used only by people in one small town",
+        "Easy to repair with things you have at home"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "2ae442ff-9b83-48d9-9015-0ad4ab6ecbb9",
+      "senseId": "eafeb3e8-71fb-46ef-aa50-f6dccbe8acc5",
+      "senseRevision": 3,
+      "word": "notebook",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A book with blank pages for writing in",
+      "definitionZh": "笔记本",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/notebook?q=notebooks",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A book with a story about real people",
+        "A book with maps of different countries",
+        "A book that tells you the meanings of words"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "ab7c6d9d-1daf-4f4a-aac8-0911ca235bae",
+      "senseId": "149d6782-91c8-47ca-94e7-249880153fd2",
+      "senseRevision": 3,
+      "word": "pale",
+      "level": "A2",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Light in colour",
+      "definitionZh": "浅色的；淡的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/pale",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Very dark in colour",
+        "Very bright in colour",
+        "Full of different colours"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "67c7e3fb-b0c5-40e3-bcec-93d806323af0",
+      "senseId": "5225e2db-0677-4d75-8253-fb3dc15690ef",
+      "senseRevision": 3,
+      "word": "pear",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A sweet fruit with a wide bottom and narrow top",
+      "definitionZh": "梨",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/pear",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A long yellow fruit with thick skin",
+        "A small soft fruit that is often blue",
+        "A round fruit with orange skin you can peel"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "20286c64-d8c2-48d7-9269-22b5fed0763d",
+      "senseId": "46f4725d-bde7-4693-9ef4-a1e3befbf9f1",
+      "senseRevision": 3,
+      "word": "photography",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "The activity of taking pictures with a camera",
+      "definitionZh": "摄影",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/photography",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The activity of drawing pictures with a pen",
+        "The activity of making small things out of wood",
+        "The activity of reading stories to other people"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0bbd1f71-50e0-4996-9385-e8f97c943937",
+      "senseId": "960b6f07-b8a3-4dcc-b08d-543302cdfcc9",
+      "senseRevision": 3,
+      "word": "poster",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A large picture or notice put up on a wall",
+      "definitionZh": "海报",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/poster",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small card you give someone on their birthday",
+        "A sheet of paper where you write a shopping list",
+        "A small piece of paper you use to mark a page"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "dab69a6d-112e-4c4e-af2e-62f4ba6b8d6e",
+      "senseId": "190a805f-1b83-4aeb-b0d6-474651b5b631",
+      "senseRevision": 3,
+      "word": "quiet",
+      "level": "A2",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Making little or no noise",
+      "definitionZh": "安静的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/quiet",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Making a loud sound all the time",
+        "Moving with a lot of speed",
+        "Full of people and things to do"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4eefe608-c150-43c2-b7fe-6a91fd1fec2c",
+      "senseId": "96d57ab7-dc90-4346-bd44-15b56dab8d17",
+      "senseRevision": 2,
+      "word": "repair",
+      "level": "A2",
+      "partOfSpeech": "v.",
+      "context": "They can repair it tomorrow.",
+      "requiresContext": true,
+      "definitionEn": "To make something work again after it breaks",
+      "definitionZh": "修理",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/repair",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To take something apart to throw it away",
+        "To put something aside so it can dry",
+        "To put something in a new place so people see it"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5bfcb433-102a-4718-8876-33e537d2e56e",
+      "senseId": "17179d19-1535-427d-a00b-cb60781e0e6b",
+      "senseRevision": 3,
+      "word": "ruler",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A straight tool you can draw lines or measure with",
+      "definitionZh": "尺子",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/ruler",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A round tool you use to draw a circle",
+        "A sharp tool you use to cut cloth",
+        "A small tool you use to rub out pencil marks"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "15b44b33-7e32-4560-b930-35aef4903215",
+      "senseId": "1a39a2b1-2966-4375-8a38-2976f0c1be0f",
+      "senseRevision": 3,
+      "word": "science",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Studying how the world works by asking and testing questions",
+      "definitionZh": "科学",
+      "cefrSource": "https://dictionary.cambridge.org/uk/dictionary/english/science",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Studying past people by reading old stories and records",
+        "Studying how to play music with different instruments",
+        "Studying how people make and use money"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "11425fe9-bc77-4151-9465-864cd1d0a0b7",
+      "senseId": "4efb5e46-bde9-4f60-8a98-d34f311aeab2",
+      "senseRevision": 3,
+      "word": "shelf",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A flat board on which you can put things",
+      "definitionZh": "架子；隔板",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/shelf",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A long stick that holds up a plant",
+        "A thin sheet that covers a window",
+        "A low wall that goes around a garden"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0a542b0f-9d78-44c4-aa74-d27881f22f5a",
+      "senseId": "b3d080f3-0a9f-4760-91dc-ef174959a89f",
+      "senseRevision": 3,
+      "word": "snack",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A small amount of food eaten between meals",
+      "definitionZh": "点心；零食",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/snack",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A large meal eaten late in the day",
+        "A hot drink you have when you wake up",
+        "A large meal shared at a party"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7fa5b5cd-9863-4b9c-9065-5151b09f4d67",
+      "senseId": "56d2db09-949c-4953-8c32-8b17305d4a3a",
+      "senseRevision": 3,
+      "word": "suitcase",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A large case for carrying clothes on a trip",
+      "definitionZh": "行李箱",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/suitcase",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small case for carrying pens to school",
+        "A hard case for carrying a guitar",
+        "A clear box for keeping food fresh"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "3c6ffdc9-2a9e-41c2-bae5-4a0794111c0b",
+      "senseId": "3e1e1bb7-317e-4a8f-8916-b38766bcfca7",
+      "senseRevision": 3,
+      "word": "teenager",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person aged from thirteen to nineteen",
+      "definitionZh": "青少年",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/teenager",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A child who has just started to walk",
+        "An adult who has stopped working because of age",
+        "A person whose child has just been born"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4d6bd7fe-a4d1-4269-b959-06bb1919bd25",
+      "senseId": "1fd412b1-dbaf-430a-808a-c6c5e76181e7",
+      "senseRevision": 2,
+      "word": "timetable",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "I looked at my new timetable.",
+      "requiresContext": true,
+      "definitionEn": "A list that shows what time things will happen",
+      "definitionZh": "课表；时间表",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/timetable",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A list that shows what books you must buy",
+        "A list that shows the names of everyone in class",
+        "A list that shows how much each meal costs"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "ae32a355-2aed-4cab-9662-ad68b8e02607",
+      "senseId": "79433cac-df60-4d7d-821b-319282af473b",
+      "senseRevision": 3,
+      "word": "umbrella",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Something you hold over your head to stay dry",
+      "definitionZh": "雨伞",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/umbrella",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Something you wear on your hands to stay warm",
+        "Something you wrap around your body after a bath",
+        "Something you wear on your feet in deep water"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "1bd5c8a9-7e20-4446-afbd-0eda74011c03",
+      "senseId": "ab50c285-3698-47dc-b543-cd225c4c5660",
+      "senseRevision": 2,
+      "word": "act",
+      "level": "B1",
+      "partOfSpeech": "v.",
+      "context": "Mia will act in the school show.",
+      "requiresContext": true,
+      "definitionEn": "To play a person in a film or a show",
+      "definitionZh": "扮演；表演",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/act",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To write the words that people in a show say",
+        "To direct a camera while a film is being made",
+        "To build the things you see behind people on a stage"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c395f352-600b-4fb3-98b2-41f15324199b",
+      "senseId": "bc2121fa-1459-48a6-9b4d-c89cf9e21eb5",
+      "senseRevision": 3,
+      "word": "article",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "I read the article after school.",
+      "requiresContext": true,
+      "definitionEn": "A piece of writing in a newspaper or magazine",
+      "definitionZh": "文章；报道",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/article",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A piece of paper on which someone plans their day",
+        "A piece of paper that proves you paid for something",
+        "A piece of writing sent in an envelope to a friend"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "415e9d2a-333a-429e-ab4c-1c4496f01307",
+      "senseId": "b8e32951-5c5a-4609-b225-feedd49d76b2",
+      "senseRevision": 3,
+      "word": "assistant",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person who helps someone else do their work",
+      "definitionZh": "助手",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/assistant",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who decides how much an item costs",
+        "A person who visits someone at work",
+        "A person who learns a job by watching others"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5741786d-5556-4004-9968-f5be9cb2c6aa",
+      "senseId": "fc9a574b-4825-4947-9410-c5479665944b",
+      "senseRevision": 3,
+      "word": "backpack",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A bag you carry on your back",
+      "definitionZh": "双肩背包",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/backpack",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A case you pull on small wheels",
+        "A small bag you wear around your waist",
+        "A flat case you carry by a short handle"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c3266feb-89f6-4ef9-ad3a-bd8367aa078f",
+      "senseId": "b48fa7b1-ebf2-4ce3-926f-6a5ff258a9d4",
+      "senseRevision": 3,
+      "word": "bee",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A flying insect that can make honey",
+      "definitionZh": "蜜蜂",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bee?q=bee_1",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A flying insect with large bright wings",
+        "A small insect that often lives under stones",
+        "A small insect with six legs that does not fly"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0aa7ff66-0d8f-40a6-84ed-af7d385030c4",
+      "senseId": "95d2850f-3d6c-4b42-aa5c-caf03ace5d34",
+      "senseRevision": 3,
+      "word": "beef",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Meat from a cow",
+      "definitionZh": "牛肉",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/beef?q=beefs",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Meat from a pig",
+        "Meat from a sheep",
+        "Meat from a chicken"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7083e832-d580-4268-9766-d4dac35b4a23",
+      "senseId": "a9d2bac4-1064-429c-9be2-e51401e3dc15",
+      "senseRevision": 3,
+      "word": "bin",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A container you use to throw rubbish away",
+      "definitionZh": "垃圾桶",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/bin?q=bin_1",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A container you use to keep food cold",
+        "A container you use to carry water",
+        "A container you place a plant in"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7dfc0063-c6df-408e-b068-0683be7dd91f",
+      "senseId": "f9ba0a72-ddd4-4350-a046-7342b7069061",
+      "senseRevision": 3,
+      "word": "blog",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A website where someone regularly shares their own writing",
+      "definitionZh": "博客",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/blog",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A website where you look up the meaning of words",
+        "A website where you book seats to see a film",
+        "A website where you can see a map of the world"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a0317fa7-443e-471e-8ea7-22e9cafd928a",
+      "senseId": "44491122-7957-42d1-8182-327953792b00",
+      "senseRevision": 3,
+      "word": "brave",
+      "level": "B1",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Willing to do something even when it feels scary",
+      "definitionZh": "勇敢的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/brave?topic=brave-and-courageous",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Willing to give other people what you have",
+        "Keen to learn everything about a new subject",
+        "Happy to talk when you meet new people"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c7209a3d-8aff-45a5-9fcf-823a12852907",
+      "senseId": "d372c300-9ad7-4b73-a744-298e545a24ef",
+      "senseRevision": 3,
+      "word": "camel",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A large animal with one or two raised parts on its back",
+      "definitionZh": "骆驼",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/camel",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A large animal with a very long neck",
+        "A large animal with a long nose joined to its mouth",
+        "A large animal with black and white stripes"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "970d5376-d8ba-4f35-957f-34ab105512fc",
+      "senseId": "7bdfae60-4e48-402a-bda6-f4c131aa47f0",
+      "senseRevision": 3,
+      "word": "campsite",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A place where people can put up tents and sleep",
+      "definitionZh": "露营地",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/campsite?topic=camping",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A place where boats stop so people can get off",
+        "A place where people wait to watch a film",
+        "A place where buses are washed and kept"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fdeb024a-4140-4ec1-a621-f9fd1489b8a5",
+      "senseId": "53b53841-d824-4cfa-8c26-a257bc83199b",
+      "senseRevision": 3,
+      "word": "celebrity",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A well-known person, often from films or music",
+      "definitionZh": "名人",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/celebrity",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who pays to watch a show",
+        "A person who teaches a new skill to others",
+        "A person who has just joined a group"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fe724061-8671-4c82-aeb8-56bb7c8720bd",
+      "senseId": "121085c0-3937-49db-9981-5b0bb0669203",
+      "senseRevision": 3,
+      "word": "character",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "We talked about the main character.",
+      "requiresContext": true,
+      "definitionEn": "A person someone has made up for a story",
+      "definitionZh": "角色；人物",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/character",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who reads a story to an audience",
+        "A person who draws the pictures for a book",
+        "A person who owns a shop that sells books"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "48c426a0-5a5d-4f09-aa8c-a8846659f672",
+      "senseId": "7c4f44d1-618e-470f-ad9a-bdad5ea5f4c2",
+      "senseRevision": 3,
+      "word": "coast",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "The land near the sea",
+      "definitionZh": "海岸",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/coast?topic=country-and-nation",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The flat land between two hills",
+        "The land where two roads meet",
+        "The high land on top of a mountain"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "1652859f-634f-4dcc-887d-b0d8da8d87a7",
+      "senseId": "f24c9e3b-a71b-4a93-a5e1-75a4083cd845",
+      "senseRevision": 3,
+      "word": "collect",
+      "level": "B1",
+      "partOfSpeech": "v.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "To bring things together from different places",
+      "definitionZh": "收集",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/collect",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To give things away to different people",
+        "To keep one thing apart from everything else",
+        "To use something and then put it back"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "19f8e78c-1b7f-473e-a478-0d367a6c6f2d",
+      "senseId": "debb73db-52f4-4280-82e8-a23e673d492d",
+      "senseRevision": 3,
+      "word": "comedy",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A show or story made to make people laugh",
+      "definitionZh": "喜剧",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/comedy",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A show about what is happening in the news",
+        "A story that is meant to frighten people",
+        "A show where people try to win a prize"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c94f1228-2fdd-4e63-93c1-e6c24b7f7a89",
+      "senseId": "76a5242d-a180-4749-86ae-ad8d37717683",
+      "senseRevision": 3,
+      "word": "dolphin",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A clever sea animal that comes up for air and has a long nose",
+      "definitionZh": "海豚",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/dolphin",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A sea animal with eight long arms",
+        "A sea animal with a hard shell and two large claws",
+        "A long fish with sharp teeth that does not come up for air"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a17a3602-b25b-4bd4-bb3e-7f8f187b220b",
+      "senseId": "d7212c27-0044-4c92-962c-f547e645b027",
+      "senseRevision": 3,
+      "word": "exhibition",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "An event where people can see art or other things on display",
+      "definitionZh": "展览",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/exhibition",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "An event where people train to run faster",
+        "An event where people take a test at the end of school",
+        "An event where teams play to win a prize"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "5d4fbfa5-60e3-4f5f-b0f1-dfb9b06d3143",
+      "senseId": "461f958d-b4a1-4edf-ac12-d21e2295a997",
+      "senseRevision": 3,
+      "word": "festival",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A public event with music, food or other activities",
+      "definitionZh": "节日；庆典活动",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/festival",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A public event where people vote for a new leader",
+        "A public event where a class takes a written test",
+        "A public event where an office closes for repairs"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "28440b3f-6f9c-4d4b-97e9-e2f518b52d8e",
+      "senseId": "c0e7062e-7db4-47f9-87e8-fb0aa9713d3f",
+      "senseRevision": 3,
+      "word": "fry",
+      "level": "B1",
+      "partOfSpeech": "v.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "To cook food in hot oil",
+      "definitionZh": "煎；炸；炒",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/fry?topic=burning-burnt-and-on-fire",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To cook food in a pot of water",
+        "To cook food with steam above hot water",
+        "To cook food inside an oven"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fefe4c09-67a1-4e8f-b23f-7cb38dbd5ba3",
+      "senseId": "88f5b3ae-1105-4ebb-90e7-0bf6b7464ccf",
+      "senseRevision": 3,
+      "word": "gallery",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A room or building where art is shown",
+      "definitionZh": "美术馆；画廊",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/gallery",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A room or building where indoor games are played",
+        "A room or building where books are borrowed",
+        "A room or building where food is made"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "8fdc1d35-02c9-429a-bf6b-06401da6dd55",
+      "senseId": "7a057ae4-8eee-4984-b5e1-87e6d2207ff5",
+      "senseRevision": 3,
+      "word": "hairdryer",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A tool that blows air to dry your hair",
+      "definitionZh": "吹风机",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/hairdryer",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A tool that cuts hair quickly",
+        "A tool that pulls hair straight between two hot sides",
+        "A tool that you pull through wet hair to take out knots"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "0ab11c71-2b82-41ce-886d-fca73ab1b104",
+      "senseId": "467cfd10-8f76-4da0-9c74-4601aab7ae87",
+      "senseRevision": 3,
+      "word": "harbour",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A protected area of water where boats can stop",
+      "definitionZh": "港口",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/harbour?topic=ports-and-docks",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A deep part of the sea far from land",
+        "A place on a river where water falls over rocks",
+        "A small piece of land with water all around it"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "ec04aec7-273b-4c4a-8899-10afcba66dba",
+      "senseId": "4ec18d87-5034-4bc5-bac6-b9e0c9b148a8",
+      "senseRevision": 3,
+      "word": "ingredient",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "One of the things you use to make a dish",
+      "definitionZh": "食材；原料",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/ingredient",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The tool you use to eat a dish",
+        "The place where you buy a cooked meal",
+        "The person who brings a cooked meal to your table"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fa0a597a-d50e-4a39-a039-6b502cbd060b",
+      "senseId": "73440fcf-afa4-48ea-8156-e24c624bf560",
+      "senseRevision": 3,
+      "word": "journalist",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person who finds and reports news",
+      "definitionZh": "记者",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/journalist",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who takes care of sick animals",
+        "A person who sells books and magazines",
+        "A person who repairs phones and cameras"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f7d1fb48-2c3d-43ac-814e-1ea6b10e587a",
+      "senseId": "c04ae6f4-caea-47cb-8d2c-57560ec9e775",
+      "senseRevision": 3,
+      "word": "lorry",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A large road vehicle used to carry goods",
+      "definitionZh": "卡车",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/lorry",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A large road vehicle used to carry many people",
+        "A small vehicle that runs on two wheels",
+        "A long vehicle that carries people on metal tracks"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "dcaa4e78-a7e0-4408-a172-b37a441d4010",
+      "senseId": "b46817c8-b007-4f73-ba27-7a7fb3856fe9",
+      "senseRevision": 3,
+      "word": "musician",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Someone who writes or plays music",
+      "definitionZh": "音乐家",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/musician",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Someone who builds homes out of wood",
+        "Someone who paints scenes for a play",
+        "Someone who writes books about history"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "400e3188-ccbc-497e-b7cc-7b76ab2635f8",
+      "senseId": "207ded1f-c07b-4c0d-bfbb-a2a8e9fdd3b2",
+      "senseRevision": 3,
+      "word": "oven",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A box-shaped part of a cooker that heats food",
+      "definitionZh": "烤箱；烤炉",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/oven",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A box-shaped tool that washes dirty dishes",
+        "A deep kitchen bowl used to wash fruit",
+        "A large kitchen box that keeps food cold"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9ccd0ca0-d12a-45ee-a22d-c69496e2cfaf",
+      "senseId": "86184c62-7a9f-4981-9edc-f194578df2cd",
+      "senseRevision": 3,
+      "word": "parrot",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A colourful bird that can learn to copy words",
+      "definitionZh": "鹦鹉",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/parrot",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small black bird that often sings at night",
+        "A large bird that swims but cannot fly",
+        "A long-legged bird that stands in shallow water"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "b0b080b0-35f8-4087-940b-2ac593d61f38",
+      "senseId": "b5e4d834-0489-49b7-a93c-d3e999e26f65",
+      "senseRevision": 3,
+      "word": "password",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A secret word or set of letters used to get into an account",
+      "definitionZh": "密码",
+      "cefrSource": "https://dictionary.cambridge.org/uk/dictionary/english/password",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A public name used to tell people who you are online",
+        "A message sent to everyone who uses a website",
+        "A number that tells you when your next class starts"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "cb272bf1-6927-4d89-8544-83ab2e674214",
+      "senseId": "f3deb9bb-8360-4f19-992c-91b4b6f30c7e",
+      "senseRevision": 3,
+      "word": "perform",
+      "level": "B1",
+      "partOfSpeech": "v.",
+      "context": "Our class will perform on Friday.",
+      "requiresContext": true,
+      "definitionEn": "To act, sing, or dance for people to watch",
+      "definitionZh": "表演",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/perform",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To buy a ticket before a show begins",
+        "To stand in a line before going into a theatre",
+        "To watch a recording of a show at home"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "46953fc7-e2e4-4b3a-8392-188f8714c197",
+      "senseId": "755a0abd-5595-4ec4-985a-d784a8ee3622",
+      "senseRevision": 3,
+      "word": "pharmacy",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A shop where you buy medicines",
+      "definitionZh": "药房",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/pharmacy?topic=medical-studies-and-the-people-who-study-them",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A shop where you buy bread and cakes",
+        "A shop where you buy flowers",
+        "A shop where you buy tools for the garden"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "20d18230-2095-4d9c-9901-a4fef4d5ec33",
+      "senseId": "5466c552-aa68-489c-ad1d-59db54e1a7d4",
+      "senseRevision": 3,
+      "word": "quiz",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A short test with questions to answer",
+      "definitionZh": "小测验",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/quiz?topic=questioning-people-and-asking-questions-in-general",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A set of rules for a new game",
+        "A list of things needed for a meal",
+        "A message sent to invite someone to a party"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4a87c6e4-a5bb-4f2a-a18a-445320e1820c",
+      "senseId": "e6101ecc-b0b1-405b-ba49-8228df68ca05",
+      "senseRevision": 3,
+      "word": "rainforest",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A thick forest in a warm place with a lot of rain",
+      "definitionZh": "热带雨林",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/rainforest",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A wide area with little rain and few plants",
+        "A flat area covered in ice most of the year",
+        "A field of grass where farm animals live"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9534f218-83f6-413a-87a5-7e378767b74b",
+      "senseId": "00fea2d4-e423-4d07-af1b-0f9540074878",
+      "senseRevision": 3,
+      "word": "recipe",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Words that tell you what to use and how to make a dish",
+      "definitionZh": "食谱",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/recipe",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Words that tell you how to find the way to a shop",
+        "Words that tell you the price of each food in a shop",
+        "Words that tell you what someone thought of a meal"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "e1af91b2-96f1-4858-8239-8ff6b9435f50",
+      "senseId": "38805f60-358b-469d-9a82-ac86858f26b3",
+      "senseRevision": 3,
+      "word": "scientist",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person who studies how the world works by testing ideas",
+      "definitionZh": "科学家",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/scientist",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who paints places they have visited",
+        "A person who takes people to see famous places",
+        "A person who plans where others should go on holiday"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "bbbe1372-57c5-43d2-b36e-3207af0c5742",
+      "senseId": "00813b2f-8cf0-4b64-846c-745032aaba88",
+      "senseRevision": 3,
+      "word": "surf",
+      "level": "B1",
+      "partOfSpeech": "v.",
+      "context": "He learned to surf during the summer.",
+      "requiresContext": false,
+      "definitionEn": "To ride on sea waves on a board",
+      "definitionZh": "冲浪",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/surf?topic=waves",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To move a small boat using a long stick with a flat end",
+        "To swim below the surface with air from a tank",
+        "To stand in a boat and try to catch fish"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "72d9cb23-7ec1-46ac-be1e-504252eece3a",
+      "senseId": "bb191c09-caf9-45c8-819a-776d00655a24",
+      "senseRevision": 3,
+      "word": "tent",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A cloth shelter you can put up and take down",
+      "definitionZh": "帐篷",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/tent?topic=covering-and-adding-layers",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A small boat you move by pulling on two long sticks",
+        "A hard wooden box used for storing food",
+        "A thin cloth you use to dry yourself after a swim"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "08040251-ace4-41cd-a3c2-b96616ab8259",
+      "senseId": "a04c1628-6cac-43af-abc9-ccc37511d817",
+      "senseRevision": 3,
+      "word": "wildlife",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Animals that live wild in nature",
+      "definitionZh": "野生动物",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/wildlife",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Animals kept on a farm to make food",
+        "Animals people teach to live in their homes",
+        "Animals people use to do jobs on a farm"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "55a72bf3-cddb-41b0-9859-e4bd2c950fef",
+      "senseId": "6b0e7f76-3b10-4f27-bb0e-492dae48ddd8",
+      "senseRevision": 3,
+      "word": "writer",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A person whose work is writing stories or books",
+      "definitionZh": "作家",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/writer",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person whose work is selling books in a shop",
+        "A person whose work is reading the news aloud",
+        "A person whose work is taking pictures for a newspaper"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a192704b-8289-4cf9-92bb-014936e6e6f1",
+      "senseId": "065c894e-63c0-483c-b4d0-156cee43fe76",
+      "senseRevision": 3,
+      "word": "satisfied",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "She looked satisfied when she saw the final result.",
+      "requiresContext": false,
+      "definitionEn": "Pleased because the result is as good as you wanted",
+      "definitionZh": "满意的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, satisfied #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/satisfied#satisfied_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Worried that the result may be worse than you expected",
+        "Tired because your work has taken longer than planned",
+        "Surprised because the result was different from what you expected"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "61dd6151-9cfd-44d6-903d-35ef5aedf4f0",
+      "senseId": "0f9cc394-9991-4a87-9e9e-5657fd1a57c4",
+      "senseRevision": 3,
+      "word": "ashamed",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "He felt ashamed when he thought about what he had done.",
+      "requiresContext": false,
+      "definitionEn": "Feeling bad about something wrong or embarrassing you did",
+      "definitionZh": "羞愧的；惭愧的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, ashamed #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/ashamed#ashamed_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Feeling worried that something may go wrong soon",
+        "Feeling glad because you did something difficult well",
+        "Feeling cross because you had to wait a long time"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4bddebff-3bfe-4cf0-98dc-3b30b10be37f",
+      "senseId": "1441766d-45b7-4b47-89d5-9ef13da5289e",
+      "senseRevision": 3,
+      "word": "interval",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "We went outside during the interval.",
+      "requiresContext": true,
+      "definitionEn": "A short break between parts of a show",
+      "definitionZh": "幕间休息",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, interval #2, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/interval#interval_sng_2",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The first part of a show when people take their seats",
+        "The last part when the people on stage say goodbye",
+        "A practice show held before the real one"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "37318013-bf6e-4717-ad6f-42149885d200",
+      "senseId": "16c762c2-3470-44c7-81f9-472cfe5004d7",
+      "senseRevision": 3,
+      "word": "restriction",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The school put a restriction on the use of phones.",
+      "requiresContext": false,
+      "definitionEn": "A rule that limits what people are allowed to do",
+      "definitionZh": "限制；约束",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, restriction #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/restriction#restriction_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A plan that tells people when something will happen",
+        "A promise that something will be done on time",
+        "A message asking people what they think about a plan"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "aa91bf6a-38be-4350-bd33-dadfb20016ae",
+      "senseId": "19a11b65-7258-4f1c-ac9d-e9fc8001e570",
+      "senseRevision": 3,
+      "word": "agency",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "We got help from a travel agency.",
+      "requiresContext": false,
+      "definitionEn": "A business that provides a particular service",
+      "definitionZh": "代理机构；服务机构",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, agency #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/agency#agency_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A place where people go to watch a show",
+        "A group of people who share the same set of homes",
+        "An event where businesses show what they make"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "78917ae4-c17d-4b75-842c-9b45c940b349",
+      "senseId": "1b0d70d5-2a8c-46bd-8e2d-55306e3e402b",
+      "senseRevision": 3,
+      "word": "canal",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "A boat passed slowly along the canal.",
+      "requiresContext": false,
+      "definitionEn": "A waterway people made for boats or to carry water",
+      "definitionZh": "运河；水渠",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, canal #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/canal#canal_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A river that formed naturally over time",
+        "A small area of water with land around it",
+        "An opening under a hill that cars can drive through"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "21afa6e3-3e18-45e4-b498-c1db17159140",
+      "senseId": "1b3fafb0-74f7-4276-9c03-cd295107af72",
+      "senseRevision": 3,
+      "word": "graphics",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "She noticed the new graphics when she opened the game.",
+      "requiresContext": false,
+      "definitionEn": "Images and designs used in books, games, or on screens",
+      "definitionZh": "图形；图像",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, graphics #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/graphics#graphics_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Recorded voices played at the start of a game",
+        "Written rules that tell people how to win a game",
+        "Short messages that players send to each other"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f9ece76b-eb64-4239-94c8-971b3ae8a56d",
+      "senseId": "364eb54a-eb86-42b7-a05a-9aa84ec58a54",
+      "senseRevision": 3,
+      "word": "construction",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Construction began just outside the town.",
+      "requiresContext": false,
+      "definitionEn": "The work of building something",
+      "definitionZh": "建造；建设",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, construction #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/construction#construction_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The work of keeping a building clean",
+        "The work of moving things from one town to another",
+        "The work of taking apart a building that is no longer used"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "d764219b-d8eb-40fc-adaf-9a8284e279f0",
+      "senseId": "3827b987-bb8c-49ab-b32a-3d2429e16e2e",
+      "senseRevision": 3,
+      "word": "guarantee",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "They guarantee that it will be ready by Friday.",
+      "requiresContext": false,
+      "definitionEn": "To promise that something will happen or meet a standard",
+      "definitionZh": "保证；担保",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, guarantee #6, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/guarantee#guarantee_sng_6",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To ask someone to guess what will happen",
+        "To warn someone that something may go wrong",
+        "To explain why something went wrong in the past"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9a01e178-faed-4213-8887-08bdb5b96b34",
+      "senseId": "387c9dc4-8edb-49a0-afdf-ff5beccfe2b8",
+      "senseRevision": 3,
+      "word": "slope",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The path crossed a grassy slope.",
+      "requiresContext": false,
+      "definitionEn": "A surface with one end higher than the other",
+      "definitionZh": "斜坡；坡地",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, slope #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/slope#slope_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A flat area at the top of a hill",
+        "A deep narrow gap between two hills",
+        "A round opening in the side of a rock"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "d28d1b94-b7f6-407a-95bd-a9c498c261a6",
+      "senseId": "42aca72b-e81f-42d5-85ae-0e9ba4b245fa",
+      "senseRevision": 3,
+      "word": "fare",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Dad checked the fare before we left.",
+      "requiresContext": false,
+      "definitionEn": "The money you pay to travel on public transport",
+      "definitionZh": "车费；船费；机票价",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, fare #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/fare#fare_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The money you pay to have a car fixed",
+        "The money someone pays to buy fuel",
+        "The money you pay to leave your car somewhere"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7a64d1d4-6eab-47ec-8c3b-60e27cc46aa9",
+      "senseId": "4416e94c-7db1-45a3-9b23-e6780e416207",
+      "senseRevision": 2,
+      "word": "excuse",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "He gave an excuse for coming late.",
+      "requiresContext": true,
+      "definitionEn": "A reason someone gives for what they did or did not do",
+      "definitionZh": "借口；理由",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, excuse #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/excuse#excuse_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A promise that someone will pay back money",
+        "A warning that something dangerous may happen",
+        "A question someone asks when they need help"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "40002f66-9c45-43e3-88ba-8fe1a58166c8",
+      "senseId": "4464e507-3f8a-4501-863f-1167bed1565b",
+      "senseRevision": 2,
+      "word": "litter",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "There was litter near the gate.",
+      "requiresContext": true,
+      "definitionEn": "Small pieces of rubbish people have left in a public place",
+      "definitionZh": "乱丢的垃圾",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, litter #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/litter#litter_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Old things people have stored neatly in a box",
+        "Food people have packed for a meal outside",
+        "Plants that people have put near a path"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "849967b1-6f1a-42cc-93ca-88c29f046b35",
+      "senseId": "4bc8bdd0-7316-4f67-b2a5-f222cc77ab50",
+      "senseRevision": 3,
+      "word": "volume",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Could you turn the volume down a little?",
+      "requiresContext": true,
+      "definitionEn": "How loud a sound is",
+      "definitionZh": "音量",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, volume #3, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/volume#volume_sng_3",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "How high or low a note sounds",
+        "How quickly the notes are played",
+        "How long the sound lasts"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "dc7174ea-5a05-4f3c-9217-7324ea7ea6c2",
+      "senseId": "5162113a-54f5-484b-8b6f-ae3b150e4523",
+      "senseRevision": 3,
+      "word": "anxiety",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "She felt some anxiety before the event.",
+      "requiresContext": false,
+      "definitionEn": "A feeling of worry that something may go wrong",
+      "definitionZh": "焦虑；忧虑",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, anxiety #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/anxiety#anxiety_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A feeling of anger that someone was unfair",
+        "A feeling of pride in something you did well",
+        "A feeling of surprise at something funny"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "79ba82d8-aee5-48ee-891c-aabc85122b52",
+      "senseId": "56ec8b7c-531e-4f75-947b-c46c7c551a92",
+      "senseRevision": 3,
+      "word": "anxious",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "He looked anxious as he waited for news.",
+      "requiresContext": false,
+      "definitionEn": "Worried that something may go wrong",
+      "definitionZh": "焦虑的；担心的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, anxious #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/anxious#anxious_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Glad that something went better than expected",
+        "Annoyed that someone took too long",
+        "Upset that something you liked has ended"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "ab65202a-51c5-4563-91d9-d8763d537b93",
+      "senseId": "57f0c397-e5b5-4cc3-997a-586ba2b17abb",
+      "senseRevision": 3,
+      "word": "aggressive",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "The dog became aggressive when the man came near.",
+      "requiresContext": false,
+      "definitionEn": "Acting in an angry way that may lead to a fight",
+      "definitionZh": "有攻击性的；好斗的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, aggressive #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/aggressive#aggressive_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Acting in a friendly way to help others relax",
+        "Acting in a nervous way when meeting people",
+        "Acting in a quiet way to avoid being heard"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "21f54f95-ac7c-404f-88e1-77fa31a596da",
+      "senseId": "5905855e-b6f4-4ada-a9c4-ba5e54363efc",
+      "senseRevision": 3,
+      "word": "dig",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "They plan to dig near the tree.",
+      "requiresContext": false,
+      "definitionEn": "To make a hole by moving earth away",
+      "definitionZh": "挖；掘",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, dig #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/dig#dig_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To make the ground flat by walking on it",
+        "To spread dry leaves over the ground",
+        "To pour water onto a garden plant"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "95f0774a-524c-403e-881c-542c1fd4be8d",
+      "senseId": "5b1655dc-cf05-409f-a687-08993bfd489b",
+      "senseRevision": 3,
+      "word": "disturb",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "Please do not disturb Mia right now.",
+      "requiresContext": false,
+      "definitionEn": "To interrupt someone who is resting or trying to work",
+      "definitionZh": "打扰；干扰",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, disturb #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/disturb#disturb_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To remind someone about work they need to do later",
+        "To help someone finish a difficult piece of work",
+        "To invite someone to rest after working"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "d4ec5acb-341b-4e7f-8618-abdf5bfbc4b4",
+      "senseId": "629cc00e-0909-4eb2-8cc7-f7035a85640f",
+      "senseRevision": 3,
+      "word": "stream",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "We had lunch near the stream.",
+      "requiresContext": false,
+      "definitionEn": "A small narrow river",
+      "definitionZh": "小溪；溪流",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, stream #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/stream#stream_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A deep part of a large lake",
+        "A piece of land surrounded by water",
+        "A pool of water left on a road after rain"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "376bc763-193d-44ee-8797-5aeeadec6f10",
+      "senseId": "65c59f27-d5f0-4722-880e-c8641ca37d92",
+      "senseRevision": 2,
+      "word": "revision",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The teacher read the revision of the plan.",
+      "requiresContext": true,
+      "definitionEn": "A change made to an earlier version to improve it",
+      "definitionZh": "修订；修改",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, revision #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/revision#revision_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The first idea for something that has not been made yet",
+        "A second copy made without changing any part",
+        "A list of reasons why someone liked the original"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "d6136173-0187-439a-8ee6-2e29c508eab6",
+      "senseId": "6957dbf0-09f3-4440-b834-e4e7088ddcb4",
+      "senseRevision": 3,
+      "word": "miserable",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "He looked miserable when the trip ended.",
+      "requiresContext": false,
+      "definitionEn": "Very unhappy or uncomfortable",
+      "definitionZh": "很不开心的；难受的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, miserable #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/miserable#miserable_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Very proud of something you have done",
+        "Very surprised by unexpected good news",
+        "Very eager for an event to begin"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "e8039750-87c2-414a-bdd2-0ebfca672710",
+      "senseId": "6b3aa581-f0ab-4f9a-941d-34e5f992c37f",
+      "senseRevision": 3,
+      "word": "elderly",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "Old, said politely about people",
+      "definitionZh": "年长的；上年纪的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, elderly #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/elderly#elderly_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Young and just learning to walk",
+        "New to a place and still getting to know it",
+        "Ready to move to a place far away"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c351cef9-d045-422a-8b2b-8b120b83286b",
+      "senseId": "71fca7a3-d54b-4bf4-861a-4779cb3590b6",
+      "senseRevision": 3,
+      "word": "choir",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The choir went on stage after lunch.",
+      "requiresContext": false,
+      "definitionEn": "A group of people who sing together",
+      "definitionZh": "合唱团",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, choir #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/choir#choir_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A group of people who act out a story",
+        "A group of people who run in a race",
+        "A group of people who make pictures together"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "cae6687d-a842-41fe-bd95-1660b3d335eb",
+      "senseId": "7383e62b-c4bd-429a-9fe9-dc6c28a1df6f",
+      "senseRevision": 3,
+      "word": "extraordinary",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "Everyone agreed it was an extraordinary result.",
+      "requiresContext": false,
+      "definitionEn": "Far more impressive than what is usual",
+      "definitionZh": "非凡的；出色的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, extraordinary #2, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/extraordinary#extraordinary_sng_2",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Almost exactly the same as what is usual",
+        "Only useful at one time and place",
+        "Easy for most people to forget"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "69a53780-c9e3-4557-a9c5-df6ba96c639f",
+      "senseId": "7da1b050-8ab7-4f8d-93ff-900874edf152",
+      "senseRevision": 3,
+      "word": "delivery",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The delivery came just after lunch.",
+      "requiresContext": false,
+      "definitionEn": "Taking goods or letters to where they need to go",
+      "definitionZh": "递送；配送",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, delivery #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/delivery#delivery_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Putting goods on a shelf for people to see",
+        "Making goods out of paper, wood, or metal",
+        "Sending a question about how something works"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a1fb705e-27fb-49c4-9541-c4ee1cf42228",
+      "senseId": "81504486-0174-4cfd-ad41-6de8d496e149",
+      "senseRevision": 3,
+      "word": "limited",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "We had a limited amount of paint.",
+      "requiresContext": false,
+      "definitionEn": "Available only in a small or fixed amount",
+      "definitionZh": "有限的；受限制的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, limited #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/limited#limited_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Easy to get at any time without a limit",
+        "Put in a new place with a different name",
+        "Made to last for as long as possible"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "55f28db6-8f51-4a95-bd76-ec7031451b1c",
+      "senseId": "86de807e-d4d9-42a7-9ceb-d89d7b8cfdf3",
+      "senseRevision": 3,
+      "word": "outfit",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "",
+      "requiresContext": false,
+      "definitionEn": "A set of clothes worn together",
+      "definitionZh": "一套衣服；一身搭配",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, outfit #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/outfit#outfit_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A set of tools for fixing things",
+        "A set of plates for eating a meal",
+        "A set of books by the same writer"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9b12704b-b3ea-498f-8cb4-a111e9e2e768",
+      "senseId": "8acfd6e8-dfea-4dfc-8fb0-157b4f5bcafa",
+      "senseRevision": 3,
+      "word": "rocket",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Everyone watched the rocket rise.",
+      "requiresContext": false,
+      "definitionEn": "A vehicle that uses powerful engines to travel into space",
+      "definitionZh": "火箭",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, rocket #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/rocket#rocket_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A vehicle that moves over water using the wind",
+        "A vehicle that takes passengers along tracks underground",
+        "A vehicle that lifts people up the side of a mountain"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "274a182f-2bde-445a-aeaf-cf6de3359959",
+      "senseId": "8be28e1b-d83b-4ebe-94bc-b6c1cda36955",
+      "senseRevision": 3,
+      "word": "elegant",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "She chose a simple, elegant dress.",
+      "requiresContext": false,
+      "definitionEn": "Attractive in a stylish and often simple way",
+      "definitionZh": "优雅的；雅致的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, elegant #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/elegant#elegant_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Strong enough to hold a very heavy object",
+        "Unusual in a way that is hard to understand",
+        "Old and broken in several places"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "6539aed7-d354-4772-ab17-db745692e7b9",
+      "senseId": "8d3387f5-977c-45e6-baaf-3b2fe2c734ef",
+      "senseRevision": 3,
+      "word": "referee",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The referee called both players over.",
+      "requiresContext": false,
+      "definitionEn": "The person who makes players follow the rules of a game",
+      "definitionZh": "裁判；裁判员",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, referee #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/referee#referee_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The person who teaches a team how to improve",
+        "The person who sells seats before a game",
+        "The person who speaks to the crowd about the game"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f0c16915-cb06-44bb-a2d8-0371d62dc5f0",
+      "senseId": "8f2ad1a2-3636-40f2-a8d2-7a09a1e08bea",
+      "senseRevision": 3,
+      "word": "steep",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "The path became very steep.",
+      "requiresContext": false,
+      "definitionEn": "Rising or falling very quickly over a short distance",
+      "definitionZh": "陡峭的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, steep #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/steep#steep_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Turning slowly from one side to the other",
+        "Running straight over completely flat ground",
+        "Covered with water during most of the year"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "d054351e-ba4c-4e32-a947-16651c9e981e",
+      "senseId": "95ff2231-9a24-4697-bac5-d94e6c73ed08",
+      "senseRevision": 3,
+      "word": "lively",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "The room felt lively after lunch.",
+      "requiresContext": false,
+      "definitionEn": "Full of energy and activity",
+      "definitionZh": "活泼的；充满活力的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, lively #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/lively#lively_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Quiet and easy to fall asleep in",
+        "Busy in a way that makes people angry",
+        "Slow and very hard to finish"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "420d0a33-1c3e-4d16-9f95-f975585648b6",
+      "senseId": "9f8d55c0-5485-4c43-9ff6-b22add05104f",
+      "senseRevision": 3,
+      "word": "declare",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "They will declare the result tomorrow.",
+      "requiresContext": false,
+      "definitionEn": "To say something in an official or public way",
+      "definitionZh": "宣布；声明",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, declare #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/declare#declare_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To keep an idea secret from other people",
+        "To ask a question in a quiet voice",
+        "To change a story after it has been told"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "b5eaf5b4-2be4-4ef3-a5b8-8b2336d988a5",
+      "senseId": "a1a78a98-f2ff-4a69-99f1-638659849c7d",
+      "senseRevision": 3,
+      "word": "pride",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "She took pride in her work.",
+      "requiresContext": false,
+      "definitionEn": "The good feeling you get when you or someone you care about does well",
+      "definitionZh": "自豪",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, pride #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/pride#pride_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The bad feeling you get when you miss a chance",
+        "The worry you have when you try a new job",
+        "The anger you feel when someone treats you badly"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "387ce3fd-2a99-45d3-be79-21ebe873d110",
+      "senseId": "a8808c38-314e-4385-b413-536462b35137",
+      "senseRevision": 3,
+      "word": "challenging",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "The last part of the activity was challenging.",
+      "requiresContext": false,
+      "definitionEn": "Difficult in a way that tests what you can do",
+      "definitionZh": "有挑战性的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, challenging #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/challenging#challenging_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "So easy that you can do it without thinking",
+        "Very fast and over before anyone notices",
+        "Always done in exactly the same way each time"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "74bab656-2853-4584-b7d0-402a0545d376",
+      "senseId": "aca936e1-5596-4156-a733-fda7619a688a",
+      "senseRevision": 2,
+      "word": "opponent",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "She shook hands with her opponent.",
+      "requiresContext": true,
+      "definitionEn": "A person or team you compete against",
+      "definitionZh": "对手；竞争者",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, opponent #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/opponent#opponent_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person who makes sure players follow rules",
+        "A person who watches a game in the crowd",
+        "A person who teaches players new skills"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "be2340a5-e7db-4010-aeee-1db95994e844",
+      "senseId": "ad4e2914-c378-4579-ac69-8ffa0fcc750e",
+      "senseRevision": 3,
+      "word": "survival",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Food was important for their survival.",
+      "requiresContext": false,
+      "definitionEn": "Continuing to live even when there is danger",
+      "definitionZh": "生存；幸存",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, survival #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/survival#survival_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Moving to a new place to look for work",
+        "Getting stronger after regular exercise",
+        "Learning new ways to do a job faster"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "519296d2-3e85-4b73-a3de-ceafb27d5250",
+      "senseId": "af81c256-fdd1-4350-b724-fc5967244188",
+      "senseRevision": 3,
+      "word": "furious",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "He was furious when he found out.",
+      "requiresContext": false,
+      "definitionEn": "Very angry",
+      "definitionZh": "暴怒的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, furious #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/furious#furious_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Very proud",
+        "Very worried",
+        "Very tired"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "83e54bed-770b-47d9-a42b-26f33dbdf29c",
+      "senseId": "b8465cd6-b57d-464f-91cb-2e69c8c259ad",
+      "senseRevision": 3,
+      "word": "disappoint",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "She did not want to disappoint her team.",
+      "requiresContext": false,
+      "definitionEn": "To make someone unhappy because things were not as good as they hoped",
+      "definitionZh": "使失望",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, disappoint #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/disappoint#disappoint_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To make someone laugh by doing something funny",
+        "To make someone proud by doing something difficult",
+        "To make someone calm after something scary"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "78cca0d7-8c52-4f36-a6fd-ac8889169c43",
+      "senseId": "bcd44233-4fc4-4536-a82e-40154e420133",
+      "senseRevision": 2,
+      "word": "regret",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "Do you regret that choice?",
+      "requiresContext": true,
+      "definitionEn": "To feel sorry about something you did or did not do",
+      "definitionZh": "后悔；遗憾",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, regret #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/regret#regret_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To feel glad about a choice you made",
+        "To feel sure that something good will happen",
+        "To feel curious about what someone has done"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "65cece37-45aa-436c-a26d-68fd612a322f",
+      "senseId": "c725c86e-8272-4fec-9d44-adb53e9c06ab",
+      "senseRevision": 3,
+      "word": "ancestor",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "We learned about an ancestor in our family.",
+      "requiresContext": false,
+      "definitionEn": "A person in your family who lived a long time ago",
+      "definitionZh": "祖先",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, ancestor #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/ancestor#ancestor_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person in your family who was only just born",
+        "A person who is married to your brother",
+        "A person who lives next to one of your parents"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "f2c05792-b8b7-4d66-a48b-1b1c39eafe44",
+      "senseId": "c96dfd0e-a503-42d8-b58f-10b41493c1c2",
+      "senseRevision": 3,
+      "word": "contract",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Both sides read the contract carefully.",
+      "requiresContext": false,
+      "definitionEn": "An official agreement, usually written down",
+      "definitionZh": "合同；契约",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, contract #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/contract#contract_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A short message asking for some information",
+        "A written report about something that has already happened",
+        "A set of ideas for a story someone might write"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "830458e3-e0ac-427f-bb47-214df77af1d9",
+      "senseId": "ca7458f4-8f05-418d-a6dd-d2e1aa33c703",
+      "senseRevision": 3,
+      "word": "creature",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The story is about a strange creature.",
+      "requiresContext": false,
+      "definitionEn": "A real or imagined living thing, often an animal",
+      "definitionZh": "生物；动物",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, creature #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/creature#creature_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A person whose job is caring for plants",
+        "A machine that moves by itself",
+        "A tool used to make a picture"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "42a492ee-29b7-47be-b965-ebf23f667c14",
+      "senseId": "d3325052-b8b3-4c58-b83f-e861a42bc13d",
+      "senseRevision": 3,
+      "word": "unique",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "Every design in the show was unique.",
+      "requiresContext": false,
+      "definitionEn": "The only one of its kind, or very unusual",
+      "definitionZh": "独一无二的；独特的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, unique #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/unique#unique_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Looking almost the same as all the others",
+        "Cheap to make in very large numbers",
+        "Old enough to have lost all its colour"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a23f0c31-d1fe-45cd-a93e-5a492d656a97",
+      "senseId": "d4bd2443-7aec-4081-bd2f-a08240846680",
+      "senseRevision": 3,
+      "word": "landscape",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "She stopped to look at the landscape.",
+      "requiresContext": false,
+      "definitionEn": "What you can see across a large area of land",
+      "definitionZh": "风景；景色",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, landscape #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/landscape#landscape_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The line where the open sea seems to meet the sky",
+        "A building where people keep old paintings",
+        "A list of places a bus will stop"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "7c060b86-c8b8-4a06-80cd-69bfef98cb53",
+      "senseId": "d637061a-0d97-4251-8800-68e7ce06cd34",
+      "senseRevision": 3,
+      "word": "shallow",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "This part of the pool is shallow.",
+      "requiresContext": false,
+      "definitionEn": "Having little distance from the top to the bottom",
+      "definitionZh": "浅的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, shallow #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/shallow#shallow_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Having a long distance from one side to the other",
+        "Having a strong flow that is hard to swim against",
+        "Having a high edge that is hard to climb"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "b271ea60-a444-447d-bb9a-9c61cf47e468",
+      "senseId": "d9a3e291-c1aa-4bee-ae86-935a07f43730",
+      "senseRevision": 3,
+      "word": "stall",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "They sold apples from a stall at the market.",
+      "requiresContext": false,
+      "definitionEn": "A small place such as a table where things are sold",
+      "definitionZh": "摊位；货摊",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, stall #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/stall#stall_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A large room where people keep old books",
+        "A machine you use to pay a bill at home",
+        "A place where people wait for a train"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "8ac74514-112e-404b-a749-f679fff4b5c0",
+      "senseId": "dfef5881-7f99-4311-a086-c8122a2cb8e5",
+      "senseRevision": 3,
+      "word": "promotion",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "She was pleased to hear about her promotion.",
+      "requiresContext": false,
+      "definitionEn": "A move to a higher or more important job",
+      "definitionZh": "晋升；升职",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, promotion #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/promotion#promotion_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A move to a different house in the same town",
+        "A short break from work to visit family",
+        "A plan for making a product cost less"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "ed5b743e-89fc-497c-9a1a-5a2658d02abf",
+      "senseId": "e09bd5ae-fac7-46c6-909e-313fe37998fb",
+      "senseRevision": 3,
+      "word": "forbid",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "The school rules forbid this.",
+      "requiresContext": false,
+      "definitionEn": "To tell someone they are not allowed to do something",
+      "definitionZh": "禁止",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, forbid #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/forbid#forbid_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "To ask someone to do something as a favour",
+        "To show someone the safest way to do something",
+        "To offer someone a choice between two things"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "98c23c48-6c77-44eb-9af2-25e8f3d70858",
+      "senseId": "e2a825e7-51e8-408a-ab36-e26cd1cb05dd",
+      "senseRevision": 3,
+      "word": "orchestra",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The orchestra played at our school.",
+      "requiresContext": false,
+      "definitionEn": "A large group that plays different musical instruments together",
+      "definitionZh": "管弦乐队",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, orchestra #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/orchestra#orchestra_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A group that sings together without playing instruments",
+        "A group that acts out a story on a stage",
+        "A group that gives talks in different places"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "95faaa23-c4cd-4839-9322-72086347fe1d",
+      "senseId": "e4a0c5a9-9e44-4cad-b657-2f860d4cd7e9",
+      "senseRevision": 3,
+      "word": "impatient",
+      "level": "B2",
+      "partOfSpeech": "adj.",
+      "context": "He became impatient as the line grew longer.",
+      "requiresContext": true,
+      "definitionEn": "Annoyed because you have to wait",
+      "definitionZh": "不耐烦的",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, impatient #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/impatient#impatient_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "Worried that you might forget something",
+        "Pleased about something that has just finished",
+        "Shy about speaking to someone new"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "e6df96e1-310b-4c6b-91f1-db8354ce4e52",
+      "senseId": "e9afac9c-deaf-4d3b-9c1f-c7af6ce112cd",
+      "senseRevision": 3,
+      "word": "shore",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "We walked along the shore in the evening.",
+      "requiresContext": false,
+      "definitionEn": "The land along the edge of the sea or a lake",
+      "definitionZh": "岸；滨",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, shore #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/shore#shore_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The deepest part of the sea far from land",
+        "The highest part of a mountain",
+        "The bottom of a narrow river"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "c611ab71-cec3-4bef-a050-37df9de1c53c",
+      "senseId": "ea34dfff-b684-4df4-99a6-788f2943759c",
+      "senseRevision": 3,
+      "word": "angle",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "Draw the lines so they meet at this angle.",
+      "requiresContext": false,
+      "definitionEn": "The amount of turn between two lines that meet",
+      "definitionZh": "角；角度",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, angle #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/angle#angle_sng_1",
+      "sourceLists": [
+        "FCE"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The length from one end of a line to the other",
+        "The distance all the way around a circle",
+        "The space inside a flat shape"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "07a8e3ea-ec1b-4c25-999d-971c2cb00042",
+      "senseId": "ed87c5d5-28c8-4652-aa64-ee8d8f64835a",
+      "senseRevision": 3,
+      "word": "elbow",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "He rested his elbow on the table.",
+      "requiresContext": false,
+      "definitionEn": "The place where your arm bends",
+      "definitionZh": "肘；肘部",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, elbow #1, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/elbow#elbow_sng_1",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "The place where your leg bends",
+        "The part between your hand and your arm",
+        "The part between your foot and your leg"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "839ed9cd-87de-4a26-98a7-8a754f50082f",
+      "senseId": "fcf66403-c876-45d3-819b-2436923a3819",
+      "senseRevision": 3,
+      "word": "enquiry",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The office answered my enquiry.",
+      "requiresContext": true,
+      "definitionEn": "A question you ask to get some information",
+      "definitionZh": "询问；查询",
+      "cefrSource": "Oxford Advanced Learner’s Dictionary, enquiry #2, B2 — https://www.oxfordlearnersdictionaries.com/definition/english/enquiry#enquiry_sng_2",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "main",
+      "distractors": [
+        "A written promise to do something by a set time",
+        "A warning that tells people about danger",
+        "An offer to give someone a prize"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "a41f0b91-39ae-45df-9d79-c37cd2252bf5",
+      "senseId": "4a166686-454a-47b2-9456-6bd4e24a52b6",
+      "senseRevision": 2,
+      "word": "delay",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "There was a delay before we could leave.",
+      "requiresContext": true,
+      "definitionEn": "Extra time you have to wait before something happens",
+      "definitionZh": "延期；推迟",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/delay?q=delay",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Extra space you have to leave between two things",
+        "Extra money you have to pay when you buy something",
+        "Extra work you have to do before a holiday"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "568e1018-da8c-49ac-888b-36d2c13c14a8",
+      "senseId": "b315eb6c-acbd-4b86-bd01-4dee8ea62738",
+      "senseRevision": 2,
+      "word": "goal",
+      "level": "A2",
+      "partOfSpeech": "n.",
+      "context": "The ball rolled past the goal.",
+      "requiresContext": true,
+      "definitionEn": "The frame or area a player sends the ball into to score",
+      "definitionZh": "球门",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/goal",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "The line that shows where the ball has gone out",
+        "The place where players sit between games",
+        "The mark in the middle where a game begins"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "dfe9ab6c-ea56-4460-a968-e37425d4f0ad",
+      "senseId": "a3ddf4b6-80f6-4470-b2fc-46cc8954fe64",
+      "senseRevision": 2,
+      "word": "rent",
+      "level": "A2",
+      "partOfSpeech": "v.",
+      "context": "We want to rent a flat near the park.",
+      "requiresContext": true,
+      "definitionEn": "To pay to use something that belongs to someone else",
+      "definitionZh": "租用",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/rent",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "To pay to keep something as your own",
+        "To give something away without asking for money",
+        "To change one thing for another at a shop"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "bd7580bb-5bef-46ee-89af-fe08b492baba",
+      "senseId": "105453b2-2c5b-4ee5-9715-b8e1a76592dd",
+      "senseRevision": 2,
+      "word": "sorry",
+      "level": "A2",
+      "partOfSpeech": "adj.",
+      "context": "I was sorry to hear she was ill.",
+      "requiresContext": true,
+      "definitionEn": "Feeling sad for someone who is having a hard time",
+      "definitionZh": "难过的；表示同情的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/sorry",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Feeling proud of someone who has done well",
+        "Feeling jealous of someone who has something you want",
+        "Feeling nervous about meeting someone new"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "2491ada4-46c8-49d2-bf37-53f0341b0459",
+      "senseId": "f078beed-3aea-4b4e-8e50-be11fc5feb33",
+      "senseRevision": 2,
+      "word": "bad",
+      "level": "B1",
+      "partOfSpeech": "adj.",
+      "context": "He had a bad headache after lunch.",
+      "requiresContext": true,
+      "definitionEn": "Serious or strong, said of a problem or pain",
+      "definitionZh": "严重的；厉害的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/bad",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Easy to ignore, said of a problem or pain",
+        "Lasting only a moment, said of a problem or pain",
+        "Slowly getting better, said of a problem or pain"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "108be1ee-3c85-4526-b474-2f1fb7bac0a8",
+      "senseId": "a3cd7a8e-53a4-4260-99ce-247518798333",
+      "senseRevision": 2,
+      "word": "card",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "She showed her membership card at the desk.",
+      "requiresContext": true,
+      "definitionEn": "A small piece of stiff material with information on it",
+      "definitionZh": "证件卡；信息卡片",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/card",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "A thin sheet of paper used to wrap a gift",
+        "A small piece of cloth that keeps a table clean",
+        "A long strip of paper used for drawing a straight line"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fe724061-8671-4c82-aeb8-56bb7c8720bd",
+      "senseId": "890fdda1-6a3e-440b-adaf-87786de9d747",
+      "senseRevision": 2,
+      "word": "character",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "It says a lot about her character.",
+      "requiresContext": true,
+      "definitionEn": "The qualities that make someone the kind of person they are",
+      "definitionZh": "性格；品质",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/character",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "The clothes someone chooses to wear to a party",
+        "The places someone visits in their free time",
+        "The things someone keeps on their desk"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "3fed7676-9bc4-4de2-934a-98ece41f1262",
+      "senseId": "6ae060b3-13dd-4718-8437-e048a38099bd",
+      "senseRevision": 2,
+      "word": "field",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "The teams walked onto the field.",
+      "requiresContext": true,
+      "definitionEn": "An area of ground used to play a sport",
+      "definitionZh": "运动场",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/field",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "An area of ground where cars can be left",
+        "A room where a group can watch a film",
+        "A room where tools are kept for the garden"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9d54908f-8941-4d78-9733-8da667e8f548",
+      "senseId": "590dee86-54f6-4d30-ac48-56a1e62e9110",
+      "senseRevision": 2,
+      "word": "fresh",
+      "level": "B1",
+      "partOfSpeech": "adj.",
+      "context": "Please bring a fresh sheet of paper.",
+      "requiresContext": true,
+      "definitionEn": "New, replacing what was there before",
+      "definitionZh": "新换的；重新拿来的",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/fresh",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Old and worth keeping for many years",
+        "Used for a long time without a change",
+        "Hard to find in most shops"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "616f3665-f60c-4914-a71a-edfd6fd30bd3",
+      "senseId": "58626133-ad2d-4ff0-952d-249a1942ddce",
+      "senseRevision": 2,
+      "word": "garage",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "She took the car to a garage.",
+      "requiresContext": true,
+      "definitionEn": "A business where people fix cars",
+      "definitionZh": "汽车修理厂",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/garage",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "A business where people sell food",
+        "A business where people make clothes",
+        "A business where people print books"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "fd5829e9-ef4a-41d7-b40f-03c750aa5ee3",
+      "senseId": "da07a23d-0bcf-41c1-8c62-fe98557876cf",
+      "senseRevision": 2,
+      "word": "kit",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "He packed his first-aid kit.",
+      "requiresContext": true,
+      "definitionEn": "A set of things needed for a particular task",
+      "definitionZh": "成套工具；全套用品",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/kit",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "A list of places to visit on a trip",
+        "A group of people who play together",
+        "A note telling someone when to leave"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "bb5e232c-9c3c-4058-9f46-68951adc38a5",
+      "senseId": "4b5925a3-3321-4120-96e0-4b5193100185",
+      "senseRevision": 2,
+      "word": "memory",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "My grandpa has a good memory.",
+      "requiresContext": true,
+      "definitionEn": "Your ability to remember things",
+      "definitionZh": "记忆；记忆力",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/memory",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Your ability to hear quiet sounds",
+        "Your ability to move quickly",
+        "Your ability to see in low light"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4eefe608-c150-43c2-b7fe-6a91fd1fec2c",
+      "senseId": "0dfd080b-f7d1-4413-aacd-5f624da10bf6",
+      "senseRevision": 2,
+      "word": "repair",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "The bike needed a repair.",
+      "requiresContext": true,
+      "definitionEn": "Work done to fix something that is broken",
+      "definitionZh": "修理；修补",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/english/repair",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Work done to make something look a different colour",
+        "Work done to carry something to a new place",
+        "Work done to take a new tool out of its box"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "694aaa3f-d296-471f-bc15-aa62cc97bfbc",
+      "senseId": "47cebb6d-2ec2-49c5-8c14-0c4abf990098",
+      "senseRevision": 3,
+      "word": "space",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "She read a story about a trip into space.",
+      "requiresContext": true,
+      "definitionEn": "The area beyond the air around Earth",
+      "definitionZh": "太空",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/space?topic=the-earth-and-outer-space-general-words",
+      "sourceLists": [
+        "FCE",
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "The area deep below the ground",
+        "The area below the surface of the sea",
+        "The area along the edge of a forest"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "e6ac8e2a-eadc-4b80-8a1c-497753accbb6",
+      "senseId": "9a8fd416-3712-41cc-b4ee-ea309d8ffd93",
+      "senseRevision": 2,
+      "word": "team",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "A small team is working on the new app.",
+      "requiresContext": true,
+      "definitionEn": "People working together on the same task",
+      "definitionZh": "工作团队",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/team",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "People waiting for the same bus",
+        "People shopping in the same store by chance",
+        "People living next to each other"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "4d6bd7fe-a4d1-4269-b959-06bb1919bd25",
+      "senseId": "ee86b551-fff9-44b0-9465-3ac335a00e75",
+      "senseRevision": 2,
+      "word": "timetable",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "We looked at the train timetable.",
+      "requiresContext": true,
+      "definitionEn": "A list of the times when trains or buses arrive and leave",
+      "definitionZh": "交通时刻表",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/learner-english/timetable",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "A list of the prices of different tickets",
+        "A map showing all the streets in a town",
+        "A notice telling people where to buy food"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "20849ee4-09d1-47be-a049-341f6300e166",
+      "senseId": "5be2182f-5cc4-438a-ac94-5c91ff550dbd",
+      "senseRevision": 2,
+      "word": "view",
+      "level": "B1",
+      "partOfSpeech": "n.",
+      "context": "I wanted to hear her view on the plan.",
+      "requiresContext": true,
+      "definitionEn": "What someone thinks about something",
+      "definitionZh": "看法；观点",
+      "cefrSource": "https://dictionary.cambridge.org/us/dictionary/learner-english/view",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "What someone heard on the radio today",
+        "What someone can see from a window",
+        "What someone wrote down to buy later"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "1bd5c8a9-7e20-4446-afbd-0eda74011c03",
+      "senseId": "155f0638-5a93-45b4-ac77-d4e9c7270203",
+      "senseRevision": 2,
+      "word": "act",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "It was an act of kindness.",
+      "requiresContext": true,
+      "definitionEn": "Something a person does",
+      "definitionZh": "行为；举动",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/act",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "Something a person owns",
+        "Something a person hears",
+        "Something a person can see"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "cb272bf1-6927-4d89-8544-83ab2e674214",
+      "senseId": "f0b48a4e-1fac-42b7-9fc5-4ab3207af977",
+      "senseRevision": 2,
+      "word": "perform",
+      "level": "B2",
+      "partOfSpeech": "v.",
+      "context": "The class will perform the experiment today.",
+      "requiresContext": true,
+      "definitionEn": "To carry out an action or task",
+      "definitionZh": "执行；做",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/perform",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "To write down a plan for doing something later",
+        "To explain what a task was about after it is done",
+        "To ask someone to stop doing a task"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "9d615ddb-2d52-4561-8047-f049920c2edb",
+      "senseId": "7f32d3e7-e80c-4ec6-80c2-c2e6da954d49",
+      "senseRevision": 2,
+      "word": "programme",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "They joined a summer sports programme.",
+      "requiresContext": true,
+      "definitionEn": "A planned series of activities or events",
+      "definitionZh": "计划；活动安排",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/programme",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "A list of things that have already gone wrong",
+        "A note asking to borrow money for a few days",
+        "A set of ideas that have no connection to each other"
+      ],
+      "reviewed": true
+    },
+    {
+      "headwordId": "31272112-a295-461a-a127-7e828c4e1349",
+      "senseId": "47103d04-ede1-4035-a32a-d756826ef8c2",
+      "senseRevision": 2,
+      "word": "sale",
+      "level": "B2",
+      "partOfSpeech": "n.",
+      "context": "The sale of the house took several months.",
+      "requiresContext": true,
+      "definitionEn": "The act of selling something",
+      "definitionZh": "销售；出售",
+      "cefrSource": "https://dictionary.cambridge.org/dictionary/english/sale",
+      "sourceLists": [
+        "PET"
+      ],
+      "item_role": "diagnostic",
+      "distractors": [
+        "The act of lending something to a friend",
+        "The act of fixing something that is broken",
+        "The act of looking after something for a while"
+      ],
+      "reviewed": true
+    }
+  ]
+}

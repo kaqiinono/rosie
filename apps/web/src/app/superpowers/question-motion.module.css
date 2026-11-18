@@ -1,0 +1,24 @@
+.slideOut {
+  animation: slide-out 180ms ease-out both;
+}
+
+.slideIn {
+  animation: slide-in 170ms cubic-bezier(0.12, 0.8, 0.25, 1) both;
+}
+
+@keyframes slide-out {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(30%); opacity: 0; }
+}
+
+@keyframes slide-in {
+  from { transform: translateX(18%); opacity: 0.55; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slideOut,
+  .slideIn {
+    animation: none;
+  }
+}

@@ -169,6 +169,11 @@ Only main answers feed the ruler. Answers and the bank version are retained for 
 submitted Word Screen. The [assessment workflow](SHARED-VOCABULARY.md#词汇量测评)
 describes bank publication and trial calibration.
 
+The browser receives the current segment's remaining question prompts and advances
+locally. It retains only the pending sync journal in per-tab session storage. The
+account-scoped API commits consecutive answers with revision checks and operation
+receipts. Pausing and final submission follow outstanding saves.
+
 ## PET vocabulary and practice
 
 `/english/words/practice/pet` uses `pet/PetLearningPage.tsx` for daily learning, standalone

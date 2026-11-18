@@ -211,7 +211,8 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
       }
       return
     }
-    const material = link.materialId ? materials.get(link.materialId) : undefined
+    const materialId = link.materialId
+    const material = materialId ? materials.get(materialId) : undefined
     const block = material?.blocks.find(item => item.id === link.blockId)
     if (!material) fail(`${path}.materialId`, 'unknown_material', 'Vocabulary material does not exist.')
     if (!block || block.kind !== 'text') fail(`${path}.blockId`, 'invalid_vocabulary_block', 'Vocabulary ranges must refer to a text block in their material.')
@@ -221,7 +222,7 @@ export function validateDraftReferences(draft: ExamDraftInput, issues: Validatio
     link.questionIds.forEach((questionId, questionIndex) => {
       const entry = questions.get(questionId)
       if (!entry) fail(`${path}.questionIds[${questionIndex}]`, 'unknown_question', 'Vocabulary question does not exist.')
-      else if (!entry.group.materialIds.includes(link.materialId)) fail(`${path}.questionIds[${questionIndex}]`, 'vocabulary_scope_mismatch', 'Vocabulary question must belong to the group containing its material.')
+      else if (materialId === undefined || !entry.group.materialIds.includes(materialId)) fail(`${path}.questionIds[${questionIndex}]`, 'vocabulary_scope_mismatch', 'Vocabulary question must belong to the group containing its material.')
     })
   })
   solutions.teacherNotes.forEach((note, index) => {

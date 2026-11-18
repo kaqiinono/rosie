@@ -41,6 +41,7 @@ export type Answer = {
   item_role: Question['item_role']
   answeredAt: string
   elapsedMs: number | null
+  operationId?: string
 }
 
 export type Attempt = {
@@ -53,6 +54,16 @@ export type Attempt = {
 }
 
 export type PublicQuestion = Pick<Question, 'word' | 'partOfSpeech' | 'context' | 'options'>
+export type SegmentQuestion = PublicQuestion & { id: string; index: number }
+export type SeenWord = { index: number; word: string; decision: Decision }
+export type QueuedAnswer = {
+  operationId: string
+  questionId: string
+  index: number
+  decision: Decision
+  optionIndex?: number
+  elapsedMs?: number
+}
 export type ReviewItem = PublicQuestion & Pick<Question, 'definitionEn' | 'definitionZh' | 'senseId'> & {
   status: ReviewStatus
   optionIndex: number | null
@@ -78,6 +89,7 @@ export type AttemptView = {
   totalWords: number
   range: Range | null
   previousRange: Range | null
+  liveRange: Range | null
   bands: Band[]
   isPilot: boolean
   formal: boolean
@@ -86,12 +98,17 @@ export type AttemptView = {
   canAddDiagnostics: boolean
   suggestRest: boolean
   question: PublicQuestion | null
+  nextQuestion?: PublicQuestion | null
+  segment: { questions: SegmentQuestion[]; endsAttempt: boolean } | null
+  answerReceipts: { index: number; operationId: string }[]
+  seenWords: SeenWord[]
   review: ReviewItem[] | null
 }
 
 export type AttemptAction =
   | { kind: 'start'; previousId: string | null }
   | { kind: 'answer'; id: string; revision: number; decision: Decision; optionIndex?: number; elapsedMs?: number }
+  | { kind: 'sync'; id: string; revision: number; answers: QueuedAnswer[] }
   | { kind: 'continue' | 'pause' | 'finish' | 'diagnostic'; id: string; revision: number }
 
 function shuffle<T>(items: readonly T[], random: () => number): T[] {
@@ -141,7 +158,7 @@ function statusFor(question: Question, answer: Answer): ReviewStatus {
   return answer.optionIndex === question.correctIndex ? 'correct' : 'wrong'
 }
 
-function estimate(attempt: Attempt, count: number) {
+function estimate(attempt: Attempt, count: number, lookStep = SEGMENT_SIZE) {
   const scores = Object.fromEntries(LEVELS.map(level => [level, {
     correct: 0, wrong: 0, unknown: 0, unreadable: 0,
   }])) as Record<Level, Record<ReviewStatus, number>>
@@ -176,8 +193,8 @@ function estimate(attempt: Attempt, count: number) {
   })
 
   const size = bands.reduce((sum, band) => sum + band.size, 0)
-  const looks = 1 + (MAX_ITEMS - MIN_ESTIMATE_ITEMS) / SEGMENT_SIZE
-  // Bounded-score sampling margin, simultaneous across the scheduled looks.
+  const looks = 1 + (MAX_ITEMS - MIN_ESTIMATE_ITEMS) / lookStep
+  // Bounded-score sampling margin, accounting for the frequency of updates.
   // Treat unreadable responses as unknown within the full score range.
   const margin = (1 - wrongWeight) * Math.sqrt(varianceFactor * Math.log(2 * looks / 0.05) / 2)
   const bound = (value: number) => Math.min(size, Math.max(0, value))
@@ -193,6 +210,8 @@ export function attemptView(id: string, bankVersion: string, revision: number, a
   const mainAnswered = answers.filter(answer => answer.item_role === 'main').length
   const scheduledCount = Math.floor(mainAnswered / SEGMENT_SIZE) * SEGMENT_SIZE
   const current = estimate(attempt, scheduledCount)
+  const liveRange = phase !== 'submitted' && mainAnswered >= MIN_ESTIMATE_ITEMS
+    ? estimate(attempt, mainAnswered, 1).range : null
   const previousRange = scheduledCount > MIN_ESTIMATE_ITEMS
     ? estimate(attempt, scheduledCount - SEGMENT_SIZE).range : null
   const a1 = current.bands[0]
@@ -211,13 +230,29 @@ export function attemptView(id: string, bankVersion: string, revision: number, a
         recent.every(answer => answer.elapsedMs !== null && answer.elapsedMs < 3_000)))
   const publicQuestion = ({ word, partOfSpeech, context, options }: Question): PublicQuestion =>
     ({ word, partOfSpeech, context, options })
+  const segmentEnd = Math.min(questions.length, (Math.floor(answered / SEGMENT_SIZE) + 1) * SEGMENT_SIZE)
+  const segment = phase === 'question' ? {
+    questions: questions.slice(answered, segmentEnd).map((question, offset) => ({
+      ...publicQuestion(question), id: question.senseId, index: answered + offset,
+    })),
+    endsAttempt: segmentEnd === questions.length,
+  } : null
+  const nextQuestion = segment?.questions[1]
+  const receiptStart = Math.max(0, answered - SEGMENT_SIZE)
   return {
     id, bankVersion, revision, phase, answered, mainAnswered, estimatedFrom: scheduledCount, totalWords: current.size,
-    range: current.range, previousRange, bands: current.bands,
+    range: current.range, previousRange, liveRange, bands: current.bands,
     isPilot: !calibration, formal, offerEarlyFinish, suggestFinish, suggestRest,
     canAddDiagnostics: phase === 'break' && mainAnswered === answered && answered >= 72 &&
       answered + SEGMENT_SIZE <= MAX_ITEMS && suggestFinish,
     question: phase === 'question' ? publicQuestion(questions[answered]) : null,
+    nextQuestion: nextQuestion ? publicQuestion(nextQuestion) : null,
+    segment,
+    answerReceipts: answers.slice(receiptStart).flatMap(({ operationId }, offset) =>
+      operationId ? [{ operationId, index: receiptStart + offset }] : []),
+    seenWords: phase === 'submitted' ? [] : answers.map((answer, index) => ({
+      index, word: questions[index].word, decision: answer.decision,
+    })),
     review: phase === 'submitted' ? answers.map((answer, index) => {
       const question = questions[index]
       return {

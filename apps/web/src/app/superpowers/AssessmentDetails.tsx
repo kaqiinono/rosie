@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { StickerCard } from '@rosie/ui'
 import { Badge, Button } from '@rosie/ui/themes'
-import { MIN_ESTIMATE_ITEMS, type AttemptView, type Range, type ReviewStatus } from '@rosie/english/assessment/model'
+import { MIN_ESTIMATE_ITEMS, type AttemptView, type Range, type ReviewStatus, type SeenWord } from '@rosie/english/assessment/model'
 
 const number = new Intl.NumberFormat('zh-CN')
 const statusText: Record<ReviewStatus, string> = {
@@ -20,49 +20,95 @@ function intervalStyle(interval: Range, size: number) {
   return { left: `${interval.low / size * 100}%`, width: `${(interval.high - interval.low) / size * 100}%` }
 }
 
-export function AssessmentRuler({ attempt }: { attempt: AttemptView }) {
-  const { range, previousRange, totalWords, mainAnswered, formal, phase } = attempt
+function rulerTicks(size: number) {
+  const spacing = Math.max(1, size / 4)
+  const unit = 10 ** Math.floor(Math.log10(spacing))
+  const step = ([1, 2, 5, 10].find(factor => factor * unit >= spacing) ?? 10) * unit
+  const minorStep = Math.max(1, step / 5)
+  const ticks = Array.from({ length: Math.ceil(size / minorStep) }, (_, index) => {
+    const value = index * minorStep
+    const major = value % step === 0
+    return { value, major, label: value === 0 || (major && size - value >= size * 0.12) }
+  })
+  return [...ticks, { value: size, major: true, label: true }]
+}
+
+export function AssessmentRuler({ attempt, live = false, answered }: {
+  attempt: AttemptView
+  live?: boolean
+  answered?: number
+}) {
+  const { previousRange, totalWords, mainAnswered, formal, phase } = attempt
+  const range = live ? attempt.liveRange : attempt.range
+  const comparison = live ? (range ? attempt.range : null) : previousRange
   const headline = range ? `${number.format(range.low)}–${number.format(range.high)} 词`
     : mainAnswered >= MIN_ESTIMATE_ITEMS || phase === 'submitted' ? '总词数暂无法估计' : '正在估算'
-  const hint = range ? (formal ? '估计范围' : attempt.isPilot ? '试测范围' : '初步范围')
+  const hint = range ? (live ? '实时试算 · 随已保存作答更新'
+    : formal ? '估计范围' : attempt.isPilot ? '试测范围' : '初步范围')
     : mainAnswered >= MIN_ESTIMATE_ITEMS || phase === 'submitted' ? '部分层级的有效作答还不够。'
-      : '完成四小段后，会根据各层作答更新范围。'
-  const ticks = Array.from({ length: 5 }, (_, index) => Math.round(totalWords * index / 4))
+      : '累计 48 题且各层证据充足后显示范围。'
+  const ticks = rulerTicks(totalWords)
 
   return (
     <StickerCard as="section" size="md" tone="paper" elevation="flat" aria-label="词汇量卡尺" className="grid gap-3">
-      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
-        <div>
-          <p className="text-text-secondary text-sm font-medium">Rosie KET／PET／FCE</p>
-          <p className="text-text-secondary text-xs">本版收录词头的阅读识别量</p>
-        </div>
-        <div aria-live="polite" aria-atomic="true">
-          <p className="text-lg font-bold tabular-nums sm:text-xl">{headline}</p>
-          <p className="text-text-secondary text-xs">{hint}</p>
-        </div>
-      </div>
+      <p className="text-text-secondary text-center text-xs font-medium">Rosie KET／PET／FCE · 本版词库识别范围</p>
       <div aria-hidden="true">
-        <div className="relative h-5 rounded-full border border-violet-200 bg-violet-100">
-          {range && <span className="absolute inset-y-0 min-w-px rounded-full bg-violet-600
-            motion-safe:transition-[left,width] motion-safe:duration-300" style={intervalStyle(range, totalWords)} />}
-          {previousRange && <span className="absolute bottom-[-4px] min-w-px border-b-2 border-slate-500"
-            style={intervalStyle(previousRange, totalWords)} />}
+        <div className="relative h-4 rounded-md bg-[var(--gray-a4)] sm:h-5">
+          {range && (
+            <span className="absolute inset-y-0 min-w-px rounded-md bg-orange-500
+              motion-safe:transition-[left,width] motion-safe:duration-300" style={intervalStyle(range, totalWords)} />
+          )}
+          {comparison && (
+            <span className="absolute -top-1 min-w-px border-t-2 border-dashed border-[var(--gray-9)]"
+              style={intervalStyle(comparison, totalWords)} />
+          )}
         </div>
-        <div className="relative mt-2 h-6 text-xs tabular-nums">
-          {ticks.map((tick, index) => (
-            <span key={index} className={`text-text-secondary absolute grid justify-items-center gap-0.5
-              ${index === 0 ? '' : index === ticks.length - 1 ? '-translate-x-full' : '-translate-x-1/2'}`}
-              style={{ left: `${index * 25}%` }}>
-              <span className={`h-1.5 w-px bg-slate-400 ${index === 0 ? 'justify-self-start'
-                : index === ticks.length - 1 ? 'justify-self-end' : ''}`} />
-              <span>{number.format(tick)}</span>
+        <div className="relative mt-1.5 h-8 text-xs tabular-nums">
+          {ticks.map(({ value, major, label }) => (
+            <span key={value} className="absolute top-0" style={{ left: `${value / totalWords * 100}%` }}>
+              <span className={`absolute top-0 w-px -translate-x-1/2 ${major
+                ? 'h-2.5 bg-[var(--gray-10)]' : 'h-1.5 bg-[var(--gray-8)]'}`} />
+              {label && <span className={`text-text-secondary absolute top-3 whitespace-nowrap
+                ${value === 0 ? '' : value === totalWords ? '-translate-x-full' : '-translate-x-1/2'}`}>
+                {number.format(value)}
+              </span>}
             </span>
           ))}
         </div>
       </div>
-      {previousRange && <p className="text-text-secondary text-xs">
-        上一次 {number.format(previousRange.low)}–{number.format(previousRange.high)} 词
-      </p>}
+      <div aria-live="polite" aria-atomic="true" className="text-center">
+        <p className="text-lg font-bold tabular-nums sm:text-xl">{headline}</p>
+        <p className="text-text-secondary text-xs">{hint}</p>
+        {live && !range && mainAnswered < MIN_ESTIMATE_ITEMS && (
+          <p className="text-text-secondary mt-1 text-xs tabular-nums">已答 {answered ?? attempt.answered} 题</p>
+        )}
+        {comparison && <p className="text-text-secondary mt-1 text-xs">
+          {live ? '上一个完整段' : '上一段'} {number.format(comparison.low)}–{number.format(comparison.high)} 词
+        </p>}
+      </div>
+    </StickerCard>
+  )
+}
+
+const seenStatuses: Record<SeenWord['decision'], string> = {
+  answer: '已作答', unknown: '不认识', unreadable: '看不懂选项',
+}
+
+export function AssessmentSeenWords({ words }: { words: SeenWord[] }) {
+  if (!words.length) return null
+  return (
+    <StickerCard as="section" tone="white" size="md" elevation="flat">
+      <details>
+        <summary className="cursor-pointer font-semibold">测过的单词 · {words.length}</summary>
+        <ul className="divide-border-light mt-2 max-h-64 overflow-y-auto divide-y">
+          {[...words].reverse().map(({ index, word, decision }) => (
+            <li key={index} className="flex items-center justify-between gap-3 py-2">
+              <strong lang="en" className="min-w-0 break-words">{word}</strong>
+              <span className="text-text-secondary shrink-0 text-xs">{seenStatuses[decision]}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
     </StickerCard>
   )
 }

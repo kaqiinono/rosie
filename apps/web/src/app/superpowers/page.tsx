@@ -1,37 +1,16 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { supabase, useAuth } from '@rosie/core'
-import { AnswerChoiceGroup, LearningIcon, PageShell, StickerCard } from '@rosie/ui'
-import { Button, Spinner, Theme } from '@rosie/ui/themes'
+import { useAuth } from '@rosie/core'
+import { LearningIcon, LoadingOverlay, PageShell, StickerCard } from '@rosie/ui'
+import { Button, Theme } from '@rosie/ui/themes'
 import {
   MAX_ITEMS, MIN_ESTIMATE_ITEMS, SEGMENT_SIZE,
-  type AttemptAction, type AttemptView, type Decision,
+  type AttemptView, type Decision, type SeenWord, type SegmentQuestion,
 } from '@rosie/english/assessment/model'
-import { AssessmentRuler, AssessmentResults } from './AssessmentDetails'
-
-const API = '/api/vocabulary-assessment'
-
-async function requestAssessment(userId: string, action?: AttemptAction, signal?: AbortSignal) {
-  const { data } = await supabase.auth.getSession()
-  if (!data.session || data.session.user.id !== userId) throw new Error('请先登录再继续。')
-  const response = await fetch(API, {
-    method: action ? 'POST' : 'GET',
-    cache: 'no-store',
-    signal,
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}` },
-    body: action ? JSON.stringify(action) : undefined,
-  })
-  const body = await response.json().catch(() => null) as {
-    attempt?: AttemptView | null
-    bankReady?: boolean
-    error?: string
-  } | null
-  if ((!response.ok && response.status !== 409) || !body || !('attempt' in body)) {
-    throw new Error(body?.error ?? '暂时无法连接测评，请重试。')
-  }
-  return { attempt: body.attempt ?? null, bankReady: body.bankReady !== false, error: body.error ?? '' }
-}
+import { AssessmentRuler, AssessmentResults, AssessmentSeenWords } from './AssessmentDetails'
+import { useAssessmentSession } from './useAssessmentSession'
+import motion from './question-motion.module.css'
 
 function Welcome({ pending, bankReady, onStart }: { pending: boolean; bankReady: boolean; onStart: () => void }) {
   return (
@@ -61,30 +40,28 @@ function Welcome({ pending, bankReady, onStart }: { pending: boolean; bankReady:
 }
 
 function QuestionCard({
-  attempt, pending, onAnswer, onPause,
+  question, suggestRest = false, outgoing = false, onAnswer, onPause,
 }: {
-  attempt: AttemptView
-  pending: boolean
-  onAnswer: (decision: Decision, optionIndex?: number, elapsedMs?: number) => void
-  onPause: () => void
+  question: SegmentQuestion
+  suggestRest?: boolean
+  outgoing?: boolean
+  onAnswer?: (decision: Decision, optionIndex?: number, elapsedMs?: number) => void
+  onPause?: () => void
 }) {
-  const question = attempt.question
-  const [selected, setSelected] = useState('')
   const openedAt = useRef<number | null>(null)
   const heading = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
+    if (outgoing) return
     openedAt.current = performance.now()
-    heading.current?.focus()
-  }, [])
-  if (!question) return null
+    heading.current?.focus({ preventScroll: true })
+  }, [outgoing])
   const answer = (decision: Decision, optionIndex?: number) => {
-    onAnswer(decision, optionIndex, openedAt.current === null ? undefined : performance.now() - openedAt.current)
+    onAnswer?.(decision, optionIndex, openedAt.current === null ? undefined : performance.now() - openedAt.current)
   }
   return (
     <StickerCard as="section" size="lg" className="grid gap-4">
-      <div>
-        <p className="text-text-secondary text-sm">选择最合适的英文释义</p>
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+      <div className="text-center">
+        <div className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
           <h2 ref={heading} tabIndex={-1} lang="en" className="scroll-mt-24 break-words text-4xl font-bold sm:text-5xl">
             {question.word}
           </h2>
@@ -92,58 +69,62 @@ function QuestionCard({
         </div>
         {question.context && <p lang="en" className="mt-3 text-lg leading-relaxed">{question.context}</p>}
       </div>
-      <AnswerChoiceGroup
-        label="请选择单词的英文释义"
-        optionLang="en"
-        options={question.options.map((label, index) => ({ id: 'ABCD'[index], label }))}
-        value={selected}
-        onValueChange={setSelected}
-        disabled={pending}
-        reserveFeedbackSpace={false}
-      />
-      <Button type="button" size="4" className="w-full" loading={pending}
-        disabled={!selected} onClick={() => answer('answer', 'ABCD'.indexOf(selected))}>
-        确定答案
-      </Button>
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" size="3" variant="soft" color="gray" disabled={pending} className="min-h-11"
-          onClick={() => answer('unknown')}>不认识这个词</Button>
-        <Button type="button" size="3" variant="soft" color="gray" disabled={pending} className="min-h-11"
-          onClick={() => answer('unreadable')}>看不懂选项</Button>
-        <Button type="button" size="3" variant="ghost" color="gray" disabled={pending}
-          onClick={onPause} className="ml-auto min-h-11">暂停</Button>
+      <div role="group" aria-label="英文释义选项" className="grid auto-rows-fr grid-cols-2 gap-2.5 sm:gap-3">
+        {question.options.map((definition, index) => (
+          <StickerCard key={definition} asChild size="none" radius="md" elevation="sm"
+            className="min-h-20 min-w-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-8)]">
+            <Button type="button" lang="en" variant="ghost" color="gray" disabled={outgoing}
+              className="m-0 h-auto justify-start px-3 py-3 text-left text-sm leading-snug whitespace-normal break-words sm:px-4 sm:text-base"
+              onClick={() => answer('answer', index)}>
+              {definition}
+            </Button>
+          </StickerCard>
+        ))}
       </div>
-      {attempt.suggestRest && <p role="status" className="text-text-secondary text-sm">累了可以暂停，进度已经保存。</p>}
+      <div className="grid grid-cols-3 gap-2">
+        <Button type="button" size="3" variant="soft" color="gray" disabled={outgoing} className="min-h-11 min-w-0 justify-center px-2"
+          onClick={() => answer('unknown')}>不认识</Button>
+        <Button type="button" size="3" variant="soft" color="gray" disabled={outgoing} className="min-h-11 min-w-0 justify-center px-2"
+          onClick={() => answer('unreadable')}>看不懂</Button>
+        <Button type="button" size="3" variant="soft" color="gray" disabled={outgoing} className="min-h-11 min-w-0 justify-center px-2"
+          onClick={onPause}>暂停</Button>
+      </div>
+      {suggestRest && <p role="status" className="text-text-secondary text-sm">累了可以暂停休息。</p>}
     </StickerCard>
   )
 }
 
 function BreakCard({
-  attempt, pending, onChange,
+  phase, answered, attempt, pending, syncFailed, onChange,
 }: {
+  phase: 'break' | 'paused'
+  answered: number
   attempt: AttemptView
   pending: boolean
+  syncFailed: boolean
   onChange: (kind: 'continue' | 'pause' | 'finish' | 'diagnostic') => void
 }) {
-  const paused = attempt.phase === 'paused'
-  const canFinish = attempt.answered > 0
+  const paused = phase === 'paused'
+  const canFinish = answered > 0
   const recommended = attempt.offerEarlyFinish || attempt.suggestFinish
   const [confirm, setConfirm] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
     heading.current?.focus()
   }, [])
-  const title = paused ? '进度已保存'
-    : attempt.answered === 24 ? '已经完成两小段！'
-    : attempt.answered === 48 ? '已经完成四小段！'
-    : `完成了第 ${attempt.answered / SEGMENT_SIZE} 小段！`
+  const title = paused ? (attempt.phase === 'paused' ? '进度已保存' : '测评已暂停')
+    : answered === 24 ? '已经完成两小段！'
+    : answered === 48 ? '已经完成四小段！'
+    : `完成了第 ${answered / SEGMENT_SIZE} 小段！`
 
   return (
     <StickerCard as="section" size="lg" tone="white" className="grid gap-4">
       <header>
         <h2 ref={heading} tabIndex={-1} className="scroll-mt-24 text-2xl font-bold">{title}</h2>
         <p className="text-text-secondary mt-2 text-base">
-          {recommended ? '今天测到这里也可以。交卷后就能看单词解析。'
+          {syncFailed ? '同步后可以继续测评。'
+            : pending ? '正在同步本段进度…'
+            : recommended ? '今天测到这里也可以。交卷后就能看单词解析。'
             : '可以休息一下，下次从这里继续。'}
         </p>
       </header>
@@ -151,7 +132,7 @@ function BreakCard({
         <div className="grid gap-3">
           <p className="text-sm">交卷后会打开单词解析，这次答卷到此结束。</p>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" size="3" loading={pending} onClick={() => onChange('finish')}>确认交卷</Button>
+            <Button type="button" size="3" loading={pending && !syncFailed} disabled={pending} onClick={() => onChange('finish')}>确认交卷</Button>
             <Button type="button" size="3" variant="soft" disabled={pending} onClick={() => setConfirm(false)}>返回</Button>
           </div>
         </div>
@@ -161,7 +142,8 @@ function BreakCard({
             <Button type="button" size="4" disabled={pending} onClick={() => setConfirm(true)}>今天就测到这里</Button>
           )}
           <Button type="button" size="4" variant={recommended ? 'soft' : 'solid'}
-            loading={pending} onClick={() => onChange('continue')}>{paused ? '继续测评' : '再做一小段'}</Button>
+            loading={pending && !syncFailed} disabled={pending}
+            onClick={() => onChange('continue')}>{paused ? '继续测评' : '再做一小段'}</Button>
           {!paused && <Button type="button" size="4" variant="soft" color="gray"
             disabled={pending} onClick={() => onChange('pause')}>下次继续</Button>}
           {attempt.canAddDiagnostics && <Button type="button" size="4" variant="soft"
@@ -174,17 +156,16 @@ function BreakCard({
   )
 }
 
-function SegmentProgress({ attempt }: { attempt: AttemptView }) {
-  const inQuestion = attempt.phase === 'question'
-  const index = Math.max(0, attempt.answered - (inQuestion ? 0 : 1))
+function SegmentProgress({ answered, inQuestion }: { answered: number; inQuestion: boolean }) {
+  const index = Math.max(0, answered - (inQuestion ? 0 : 1))
   const segment = Math.floor(index / SEGMENT_SIZE) + 1
-  const completedInSegment = attempt.answered - (segment - 1) * SEGMENT_SIZE
+  const completedInSegment = answered - (segment - 1) * SEGMENT_SIZE
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between gap-2 text-sm font-semibold">
         <span>第 {segment} 小段</span>
         <span className="text-text-secondary">
-          {inQuestion ? `第 ${completedInSegment + 1} / ${SEGMENT_SIZE} 题` : `已答 ${attempt.answered} 题`}
+          {inQuestion ? `第 ${completedInSegment + 1} / ${SEGMENT_SIZE} 题` : `已答 ${answered} 题`}
         </span>
       </div>
       <div role="progressbar" aria-label="本段进度" aria-valuemin={0} aria-valuemax={SEGMENT_SIZE}
@@ -199,73 +180,86 @@ function SegmentProgress({ attempt }: { attempt: AttemptView }) {
 }
 
 function Assessment({ userId }: { userId: string }) {
-  const [attempt, setAttempt] = useState<AttemptView | null>(null)
-  const [ready, setReady] = useState(false)
-  const [bankReady, setBankReady] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const inFlight = useRef(false)
+  const session = useAssessmentSession(userId)
+  const { attempt, ready, bankReady, busy, syncing, error, pending, deferred, storageWarning } = session
+  const [transition, setTransition] = useState<{ from: SegmentQuestion; to: number; attemptId: string } | null>(null)
+  const answered = (attempt?.answered ?? 0) + pending.length
+  const question = !deferred && attempt?.phase === 'question'
+    ? attempt.segment?.questions[pending.length] : undefined
+  const outgoing = transition && attempt?.id === transition.attemptId && question?.index === transition.to
+    ? transition.from : null
+  const finishing = deferred === 'finish' || (
+    attempt?.phase === 'question' && attempt.segment?.endsAttempt &&
+    pending.length > 0 && pending.length === attempt.segment.questions.length
+  )
+  const waiting = busy || Boolean(pending.length || deferred)
+  const seenWords: SeenWord[] = [...(attempt?.seenWords ?? []), ...pending.flatMap(({ index, decision }, offset) => {
+    const word = attempt?.segment?.questions[offset]?.word
+    return word ? [{ index, word, decision }] : []
+  })]
 
-  useEffect(() => {
-    const controller = new AbortController()
-    requestAssessment(userId, undefined, controller.signal).then(({ attempt, bankReady }) => {
-      if (controller.signal.aborted) return
-      setAttempt(attempt)
-      setBankReady(bankReady)
-      setReady(true)
-    }).catch(failure => {
-      if (!controller.signal.aborted) setError(failure.message)
+  function answer(decision: Decision, optionIndex?: number, elapsedMs?: number) {
+    if (!attempt || !question) return
+    const accepted = session.answer({
+      operationId: crypto.randomUUID(), questionId: question.id, index: question.index,
+      decision, optionIndex, elapsedMs,
     })
-    return () => controller.abort()
-  }, [userId])
-
-  async function move(action?: AttemptAction) {
-    if (inFlight.current) return
-    inFlight.current = true
-    setBusy(true)
-    setError('')
-    try {
-      const response = await requestAssessment(userId, action)
-      setAttempt(response.attempt)
-      setBankReady(response.bankReady)
-      setError(response.error)
-      setReady(true)
-    } catch (failure) {
-      setError(failure instanceof Error ? failure.message : '暂时无法保存，请重试。')
-    } finally {
-      inFlight.current = false
-      setBusy(false)
+    if (accepted && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTransition({ from: question, to: question.index + 1, attemptId: attempt.id })
     }
   }
 
-  const start = () => move({ kind: 'start', previousId: attempt?.id ?? null })
   return (
     <div className="mx-auto grid max-w-2xl gap-4">
       {error && (
         <StickerCard tone="warning" elevation="flat">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p role="alert">{error}</p>
-            {!ready && <Button type="button" size="3" loading={busy} onClick={() => move()}>重试</Button>}
+            {(!ready || pending.length > 0 || deferred) && (
+              <Button type="button" size="3" loading={busy || syncing} onClick={session.retry}>重试</Button>
+            )}
           </div>
         </StickerCard>
       )}
-      {!ready && !error && <p role="status" className="flex items-center gap-2"><Spinner /> 正在加载进度</p>}
-      {ready && !attempt && <Welcome pending={busy} bankReady={bankReady} onStart={start} />}
-      {attempt?.phase === 'submitted' && <AssessmentResults key={attempt.id} attempt={attempt} pending={busy} onStart={start} />}
+      {storageWarning && <p role="status" className="text-text-secondary text-sm">浏览器暂时无法保存待同步答案，请保持页面打开。</p>}
+      {!ready && !error && (
+        <div className="flex min-h-[60dvh] flex-col">
+          <LoadingOverlay visible placement="content" />
+        </div>
+      )}
+      {ready && !attempt && <Welcome pending={busy} bankReady={bankReady} onStart={session.start} />}
+      {attempt?.phase === 'submitted' && <AssessmentResults key={attempt.id} attempt={attempt} pending={busy} onStart={session.start} />}
       {attempt && attempt.phase !== 'submitted' && (
         <>
-          <SegmentProgress attempt={attempt} />
-          <AssessmentRuler attempt={attempt} />
-          {attempt.phase === 'question'
-            ? <QuestionCard key={`${attempt.id}:${attempt.answered}`} attempt={attempt} pending={busy}
-                onAnswer={(decision, optionIndex, elapsedMs) => move({
-                  kind: 'answer', id: attempt.id, revision: attempt.revision, decision, optionIndex, elapsedMs,
-                })}
-                onPause={() => move({ kind: 'pause', id: attempt.id, revision: attempt.revision })} />
-            : <BreakCard key={`${attempt.id}:${attempt.revision}`} attempt={attempt} pending={busy}
-                onChange={kind => move({ kind, id: attempt.id, revision: attempt.revision })} />}
+          <SegmentProgress answered={answered} inQuestion={Boolean(question)} />
+          {question ? (
+            <div className="relative isolate overflow-x-clip pb-1">
+              {outgoing && (
+                <div key={`out:${outgoing.id}`} aria-hidden="true" className={`pointer-events-none absolute inset-x-0 top-0 ${motion.slideOut}`}
+                  onAnimationEnd={() => setTransition(value => value?.from.id === outgoing.id ? null : value)}>
+                  <QuestionCard question={outgoing} outgoing />
+                </div>
+              )}
+              <div key={`in:${question.id}`} className={outgoing ? motion.slideIn : undefined}>
+                <QuestionCard question={question} suggestRest={attempt.suggestRest}
+                  onAnswer={answer} onPause={() => { setTransition(null); session.change('pause') }} />
+              </div>
+            </div>
+          ) : finishing ? (
+            <StickerCard as="section" size="lg" elevation="flat">
+              <p role="status">已完成作答，{error ? '等待同步后查看结果。' : '正在同步答卷…'}</p>
+            </StickerCard>
+          ) : (
+            <BreakCard key={`${attempt.id}:${answered}:${deferred === 'pause' || attempt.phase === 'paused'}`}
+              phase={deferred === 'pause' || attempt.phase === 'paused' ? 'paused' : 'break'}
+              answered={answered} attempt={attempt} pending={waiting}
+              syncFailed={Boolean(error && (pending.length || deferred))}
+              onChange={kind => { setTransition(null); session.change(kind) }} />
+          )}
+          <AssessmentRuler attempt={attempt} live answered={answered} />
+          <AssessmentSeenWords words={seenWords} />
           {attempt.mainAnswered < MIN_ESTIMATE_ITEMS && (
-            <p className="text-text-secondary text-sm">已答 {attempt.answered} 题 · 整次最多 {MAX_ITEMS} 题</p>
+            <p className="text-text-secondary text-sm">已答 {answered} 题 · 整次最多 {MAX_ITEMS} 题</p>
           )}
         </>
       )}

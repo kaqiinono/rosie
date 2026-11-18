@@ -1,11 +1,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { describeSchedule, useHomeworkData } from '@rosie/tasks'
 import { previewPractice } from '@/lib/time-tree/practicePreview'
-import { AppDialog, LearningIcon, LoadingOverlay, Moon, StickerCard, StatTile, Timer, X, type StatTileTone } from '@rosie/ui'
+import { AppDialog, LoadingOverlay, Moon, StickerCard, StatTile, Timer, X, type StatTileTone } from '@rosie/ui'
 import { Avatar, Badge, Button, Flex, Grid, Heading, IconButton, Text, TextField } from '@rosie/ui/themes'
 import { flowerQuestionProgress, MINUTES_PER_FLOWER, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import { homeworkTomatoProgress } from '@/lib/time-tree/rewards'
@@ -21,6 +20,7 @@ import {
   type TreeAction,
 } from '@/lib/time-tree/types'
 import { SUBJECTS, type SubjectKey } from '@/components/tree-demo/garden/model'
+import BubbleTaskIcon from '@/components/tree-demo/garden/BubbleTaskIcon'
 import { kidNote, kidReward, kidTime } from './kidStepCopy'
 import { HomeworkNotesDialog } from './HomeworkNotesDialog'
 import FlowerCollection from './FlowerCollection'
@@ -260,9 +260,10 @@ export function StepPanel({
       {api.message && <Text color="red" align="center" size="2" role="alert">{api.message}</Text>}
     </Flex>
   ) : undefined
+  const taskIcon = <BubbleTaskIcon subject={step.subject} crown={step.crown} />
   if (step.subject === 'life') {
     return (
-      <AppDialog open title={step.name} icon={step.crown ? <LearningIcon name="crown" size={24} /> : '🌱'} onOpenChange={open => { if (!open) close() }}>
+      <AppDialog open title={step.name} icon={taskIcon} onOpenChange={open => { if (!open) close() }}>
         <Flex direction="column" gap="3">
           {step.notes && <Text>{step.notes}</Text>}
           {step.planNote && <Text>本次备注：{step.planNote}</Text>}
@@ -290,7 +291,7 @@ export function StepPanel({
       ? `${step.end || step.skipped ? '当前安排 · ' : ''}${describeSchedule(template, { compact: true, weeklyGroups: template.cycle === 'weekly' })} · ${template.cycle === 'weekly' ? '周目标' : '每次'} ${template.estimated_minutes} 分钟`
       : null
   if (!homework) {
-    const subject = SUBJECTS[step.subject]
+    const subjectIcon = <Avatar size="5" radius="large" color={SUBJECT_BADGE[step.subject]} fallback={taskIcon} className="shrink-0" aria-hidden="true" />
     const note = kidNote(step)
     const reward = step.flowers ? null : kidReward(tree, step, now)
     const later = !!step.planned && step.planned > tree.today
@@ -338,10 +339,11 @@ export function StepPanel({
         open
         title={step.name}
         description={tomato ? `番茄钟共 ${tomato.rounds} 轮，随作业计时。` : undefined}
-        size={step.flowers ? 'form' : 'standard'}
+        size={weeklyPlan ? 'preview' : step.flowers ? 'form' : 'standard'}
         chrome="none"
         presentation="bottom-drawer"
         compactBottomDrawer={!weeklyPlan}
+        centerBottomDrawerOnDesktop
         bottomDrawerCompanion={tomato ? <HomeworkTomatoTimer progress={tomato} /> : undefined}
         onOpenChange={(v) => {
           if (!v) close()
@@ -356,8 +358,7 @@ export function StepPanel({
           </span>}
           {step.flowers ? (
             <Flex align="center" gap={{ initial: '2', sm: '3' }}>
-              <Image src="/time-tree/workbook-sticker.png" width={128} height={128} alt=""
-                unoptimized draggable={false} className="size-12 shrink-0 sm:size-[4.5rem]" />
+              {subjectIcon}
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
                 <Flex align="center" gap="2" wrap="wrap" minWidth="0">
                   <Heading as="h2" size={{ initial: '4', xs: '5' }} className="max-w-full break-words">{step.name}</Heading>
@@ -383,7 +384,7 @@ export function StepPanel({
           ) : (
           <Flex align="center" justify="between" gap="3">
             <Flex align="center" gap="3" minWidth="0">
-              <Avatar size="5" radius="large" color={SUBJECT_BADGE[step.subject]} fallback={subject.emoji} aria-hidden="true" />
+              {subjectIcon}
               <Flex direction="column" gap="1" minWidth="0">
                 <Flex align="center" gap="2" wrap="wrap" minWidth="0">
                   <Heading as="h2" size="5" className="break-words max-w-full">{step.name}</Heading>

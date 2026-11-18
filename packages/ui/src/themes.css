@@ -461,33 +461,100 @@ a.rt-Button[aria-current='page'] {
   }
 }
 
-.rt-DialogContent[data-bottom-drawer-companion] {
-  --drawer-companion-content-left: 0;
-  --drawer-companion-content-bottom: calc(env(safe-area-inset-bottom) + 8rem);
-  --drawer-companion-content-width: 100%;
-  --drawer-companion-content-height: min(92dvh, calc(100dvh - env(safe-area-inset-top) - var(--drawer-companion-content-bottom)));
-  --drawer-companion-content-margin: auto;
+.rt-DialogContent[data-presentation='bottom-drawer'] {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  height: 92dvh;
+  max-height: 92dvh;
+  margin: 0;
+  border-radius: 28px 28px 0 0;
+}
+
+.rt-DialogContent[data-bottom-drawer-compact] {
+  --bottom-drawer-max-width: var(--bottom-drawer-width);
+  height: auto;
+  margin-inline: auto;
+}
+
+.rt-DialogContent[data-bottom-drawer-companion='primary'] {
+  --bottom-drawer-offset: calc(env(safe-area-inset-bottom) + 8rem);
+  bottom: var(--bottom-drawer-offset);
+  max-height: min(92dvh, calc(100dvh - env(safe-area-inset-top) - var(--bottom-drawer-offset)));
 }
 
 .rosie-bottom-drawer-companion {
   position: fixed;
   inset: auto 0.75rem calc(env(safe-area-inset-bottom) + 0.75rem);
-  pointer-events: none;
+  pointer-events: auto;
+}
+
+.rt-DialogContent:is([data-bottom-drawer-companion='secondary'], [data-state='closed']) + .rosie-bottom-drawer-companion {
+  display: none;
 }
 
 @media (min-width: 768px) {
-  .rt-DialogContent[data-bottom-drawer-companion] {
-    --drawer-companion-content-left: auto;
-    --drawer-companion-content-bottom: 0;
-    --drawer-companion-content-width: calc(100vw - min(34vw, 20rem) - clamp(1rem, 4vw, 4rem) - 1rem);
-    --drawer-companion-content-height: 92dvh;
-    --drawer-companion-content-margin: 0;
+  .rt-DialogScrollPadding:has(> .rt-DialogContent[data-bottom-drawer-centered]) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
   }
 
-  .rosie-bottom-drawer-companion {
-    right: auto;
-    left: clamp(1rem, 4vw, 4rem);
-    width: min(34vw, 20rem);
+  .rt-DialogContent[data-bottom-drawer-centered] {
+    position: relative;
+    inset: auto;
+    width: var(--bottom-drawer-width);
+    min-width: 0;
+    height: auto;
+    max-height: 88dvh;
+    margin: 0;
+    border-radius: 28px;
+  }
+
+  .rt-DialogScrollPadding:has(> .rt-DialogContent[data-bottom-drawer-centered]) > .rosie-bottom-drawer-companion {
+    position: relative;
+    inset: auto;
+    order: -1;
+    flex: 0 0 min(34vw, 20rem);
+  }
+
+  .rt-DialogScrollPadding:has(> .rt-DialogContent[data-bottom-drawer-companion='secondary']) {
+    --bottom-drawer-companion-width: min(34vw, 20rem);
+    --bottom-drawer-companion-inset: clamp(1rem, 4vw, 4rem);
+  }
+
+  .rt-DialogContent[data-bottom-drawer-companion='secondary'] {
+    --bottom-drawer-max-width: 100vw;
+    inset: 0 0 0 auto;
+    width: calc(100% - var(--bottom-drawer-companion-width) - var(--bottom-drawer-companion-inset) - 1rem);
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 28px 0 0 28px;
+  }
+
+  .rt-DialogContent[data-bottom-drawer-companion='secondary'][data-state='open'] + .rosie-bottom-drawer-companion {
+    display: block;
+    inset: 50% auto auto var(--bottom-drawer-companion-inset);
+    width: var(--bottom-drawer-companion-width);
+    translate: 0 -50%;
+  }
+
+  /* Radix hides the parent overlay from assistive tech while the nested drawer is active. */
+  body:has(.rt-DialogContent[data-bottom-drawer-companion='secondary'][data-state='open'])
+    .rt-DialogOverlay[aria-hidden='true']:has(.rt-DialogContent[data-bottom-drawer-companion='primary']) {
+    visibility: hidden;
+  }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .rt-DialogContent[data-presentation='bottom-drawer'][data-bottom-drawer-centered][data-state='open'] {
+    animation: rt-kid-pop 0.42s var(--kid-spring);
+  }
+
+  .rt-DialogContent[data-presentation='bottom-drawer'][data-bottom-drawer-companion='secondary'][data-state='open'] {
+    animation: rt-kid-drawer 0.25s ease-out;
   }
 }
 

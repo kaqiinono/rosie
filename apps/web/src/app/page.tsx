@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { NavigationLink, OrbBackground } from '@rosie/ui'
+import { NavigationLink, StickerCard } from '@rosie/ui'
 import { useAuth } from '@rosie/core'
 import { useGreeting } from '@/hooks/useGreeting'
 import HomeStatsPanel from '@/components/HomeStatsPanel'
@@ -15,22 +15,51 @@ const TodayPlanSummary = dynamic(() => import('@/components/today/TodayPlanSumma
   ),
 })
 
-const modules = [
-  { href: '/time-tree', title: '生命树', icon: '🌳', tint: 'bg-emerald-100' },
-  { href: '/tasks/timetable', title: '课程表', icon: '🗓️', tint: 'bg-sky-100' },
-  { href: '/calc', title: '口算天地', icon: '🧮', tint: 'bg-violet-100' },
-  { href: '/math', title: '数学乐园', icon: '🔢', tint: 'bg-indigo-100' },
-  { href: '/english', title: '英语天地', icon: '📖', tint: 'bg-emerald-100' },
-  { href: '/chinese', title: '语文园地', icon: '📜', tint: 'bg-orange-100' },
-  { href: '/stories', title: '故事会', icon: '📚', tint: 'bg-amber-100' },
-  { href: '/exams/ket', title: '考一考', icon: '📝', tint: 'bg-amber-100' },
-  { href: '/superpowers', title: '我的超能力', description: '测测英语词汇量', icon: '⚡', tint: 'bg-violet-100' },
-  { href: '/ai', title: 'AI 助手', icon: '✨', tint: 'bg-cyan-100' },
-  { href: '/mistakes', title: '错题本', icon: '📕', tint: 'bg-rose-100' },
-  { href: '/vouchers', title: '我的奖券', icon: '⭐', tint: 'bg-yellow-100' },
-  { href: '/tomato', title: '番茄计时', icon: '🍅', tint: 'bg-rose-100' },
-  { href: '/draw', title: '抽一抽', icon: '🎡', tint: 'bg-amber-100' },
-]
+const moduleTones = {
+  green: '[--accent-2:var(--color-emerald-50)] [--accent-6:var(--color-emerald-200)] [--module-icon:var(--color-emerald-100)] [--module-hover:var(--color-emerald-400)]',
+  blue: '[--accent-2:var(--color-sky-50)] [--accent-6:var(--color-sky-200)] [--module-icon:var(--color-sky-100)] [--module-hover:var(--color-sky-400)]',
+  purple: '[--accent-2:var(--color-violet-50)] [--accent-6:var(--color-violet-200)] [--module-icon:var(--color-violet-100)] [--module-hover:var(--color-violet-400)]',
+  amber: '[--accent-2:var(--color-amber-50)] [--accent-6:var(--color-amber-200)] [--module-icon:var(--color-amber-100)] [--module-hover:var(--color-amber-400)]',
+  rose: '[--accent-2:var(--color-rose-50)] [--accent-6:var(--color-rose-200)] [--module-icon:var(--color-rose-100)] [--module-hover:var(--color-rose-400)]',
+}
+
+const moduleGroups = [
+  {
+    id: 'daily',
+    title: '每日必练',
+    columns: 'sm:grid-cols-3',
+    modules: [
+      { href: '/time-tree', title: '生命树', description: '做作业养生命树', icon: '🌳', tone: 'green' },
+      { href: '/tasks/timetable', title: '课程表', description: '看课表和提醒', icon: '🗓️', tone: 'blue' },
+      { href: '/tomato', title: '番茄计时', description: '分段专注和休息', icon: '🍅', tone: 'rose' },
+    ],
+  },
+  {
+    id: 'subjects',
+    title: '学科提升',
+    columns: 'sm:grid-cols-3 md:grid-cols-5',
+    modules: [
+      { href: '/calc', title: '口算天地', description: '练口算提速度', icon: '🧮', tone: 'purple' },
+      { href: '/math', title: '数学乐园', description: '学新课练数学', icon: '🔢', tone: 'blue' },
+      { href: '/english', title: '英语天地', description: '背词阅读学语法', icon: '📖', tone: 'green' },
+      { href: '/chinese', title: '语文园地', description: '认字写字背古诗', icon: '📜', tone: 'amber' },
+      { href: '/exams/ket', title: '考一考', description: '练剑桥英语真题', icon: '📝', tone: 'blue' },
+    ],
+  },
+  {
+    id: 'extras',
+    title: '趣味与工具',
+    columns: 'sm:grid-cols-3 xl:grid-cols-6',
+    modules: [
+      { href: '/ai', title: 'AI 助手', description: '提问和查资料', icon: '✨', tone: 'blue' },
+      { href: '/mistakes', title: '错题本', description: '复习和订正错题', icon: '📕', tone: 'rose' },
+      { href: '/stories', title: '故事会', description: '听读中英故事', icon: '📚', tone: 'amber' },
+      { href: '/superpowers', title: '我的超能力', description: '测测英语词汇量', icon: '⚡', tone: 'purple' },
+      { href: '/vouchers', title: '我的奖券', description: '用星星兑换奖券', icon: '⭐', tone: 'amber' },
+      { href: '/draw', title: '抽一抽', description: '转转盘抽奖', icon: '🎡', tone: 'amber' },
+    ],
+  },
+] as const
 
 export default function HomePage() {
   const greeting = useGreeting()
@@ -40,38 +69,36 @@ export default function HomePage() {
 
   return (
     <>
-      <OrbBackground variant="home" />
-
-      <div className="relative z-1 flex min-h-screen flex-col items-center justify-center gap-5 px-4 py-12 sm:px-5">
-        <section className="max-w-[540px] text-center">
-          <picture>
+      <div className="bg-kid-paper relative z-1 flex min-h-screen flex-col items-center gap-3.5 px-4 pt-14 pb-8 sm:px-5">
+        <section className="flex max-w-[540px] items-center gap-3">
+          <picture className="shrink-0">
             {/* Animated WebP must stay unoptimized so the browser receives every frame. */}
             <img
               src="/brand/rosie-fun-hop.webp?v=3"
               alt="Rosie Fun"
               width={144}
               height={128}
-              className="home-rosie-animation mx-auto h-32 w-36 object-contain drop-shadow-[0_12px_18px_rgba(251,113,133,0.2)]"
+              className="home-rosie-animation h-14 w-16 object-contain sm:h-16 sm:w-18"
             />
             <img
               src="/brand/rosie-fun-mascot.png"
               alt="Rosie Fun"
               width={144}
               height={128}
-              className="home-rosie-static mx-auto hidden h-32 w-36 object-contain drop-shadow-[0_12px_18px_rgba(251,113,133,0.2)]"
+              className="home-rosie-static hidden h-14 w-16 object-contain sm:h-16 sm:w-18"
             />
           </picture>
-          <div className="text-text-secondary mt-2 text-[15px] font-semibold tracking-wide">
-            {greeting}
+          <div className="min-w-0">
+            <div className="text-text-secondary text-xs">{greeting}</div>
+            <h1 className="text-text-primary mt-1 text-lg leading-tight font-bold sm:text-xl">
+              {username ?? 'Rosie'} 的炸弹乐园
+            </h1>
           </div>
-          <h1 className="mt-1.5 text-[clamp(28px,5vw,38px)] leading-tight font-black text-[var(--accent-11)]">
-            {username ?? 'Rosie'} 的炸弹乐园
-          </h1>
         </section>
 
         <section aria-labelledby="home-today-title" className="w-full max-w-[1040px]">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 id="home-today-title" className="text-text-primary text-lg font-bold">
+          <div className="mb-1.5 flex items-center justify-between">
+            <h2 id="home-today-title" className="text-text-primary text-sm font-bold">
               今日计划
             </h2>
             <NavigationLink href="/today" className="text-sm font-bold text-[var(--accent-11)]">
@@ -81,27 +108,41 @@ export default function HomePage() {
           {user && <TodayPlanSummary />}
         </section>
 
-        <nav
-          aria-label="功能菜单"
-          className="grid w-full max-w-[1040px] grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-6"
-        >
-          {modules.map(({ href, title, description, icon, tint }) => (
-            <NavigationLink
-              key={href}
-              href={href}
-              className="border-kid-line shadow-sticker-sm ease-spring hover:shadow-sticker-accent active:shadow-sticker-pressed flex min-h-14 items-center gap-2 rounded-full border-2 bg-white px-3 py-2 transition duration-200 hover:-translate-y-0.5 hover:border-[var(--accent-8)] focus-visible:outline-2 focus-visible:outline-[var(--focus-8)] active:translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-            >
-              <span
-                aria-hidden
-                className={`grid size-9 shrink-0 place-items-center rounded-full text-lg ${tint}`}
-              >
-                {icon}
-              </span>
-              <span>
-                <span className="text-text-primary block text-sm font-bold">{title}</span>
-                {description && <span className="text-text-secondary block text-xs">{description}</span>}
-              </span>
-            </NavigationLink>
+        <nav aria-label="功能菜单" className="grid w-full max-w-[1040px] gap-2.5">
+          {moduleGroups.map(group => (
+            <section key={group.id} aria-labelledby={`home-${group.id}-title`}>
+              <h2 id={`home-${group.id}-title`} className="text-text-secondary mb-1 text-xs font-medium">
+                {group.title}
+              </h2>
+              <div className={`grid grid-cols-2 gap-2 ${group.columns}`}>
+                {group.modules.map(({ href, title, description, icon, tone }) => (
+                  <StickerCard
+                    key={href}
+                    asChild
+                    radius="md"
+                    size="none"
+                    tone="accent"
+                    elevation="flat"
+                    className={`ease-spring flex min-h-17 items-center gap-2 px-2.5 py-1.5 lg:px-3
+                      transition-[translate,scale,border-color,box-shadow] duration-200
+                      hover:border-[var(--module-hover)] hover:shadow-[0_2px_0_var(--accent-6)]
+                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-8)]
+                      motion-safe:hover:-translate-y-[3px] motion-safe:active:scale-[0.97]
+                      motion-reduce:transition-none ${moduleTones[tone]}`}
+                  >
+                    <NavigationLink href={href}>
+                      <span aria-hidden className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--module-icon)] text-xl lg:size-12 lg:text-2xl">
+                        {icon}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="text-text-primary block text-sm leading-tight font-bold">{title}</span>
+                        <span className="text-text-secondary mt-0.5 block text-xs leading-tight">{description}</span>
+                      </span>
+                    </NavigationLink>
+                  </StickerCard>
+                ))}
+              </div>
+            </section>
           ))}
         </nav>
 
