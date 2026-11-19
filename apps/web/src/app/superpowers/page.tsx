@@ -222,6 +222,35 @@ function Assessment({ userId }: { userId: string }) {
 
   return (
     <div className="mx-auto grid max-w-2xl gap-4">
+      {attempt && attempt.phase !== 'submitted' && (
+        <>
+          <SegmentProgress answered={answered} inQuestion={Boolean(question)} />
+          {question ? (
+            <div className="relative isolate overflow-clip pb-1">
+              {outgoing && (
+                <div key={`out:${outgoing.id}`} aria-hidden="true" className={`pointer-events-none absolute inset-x-0 top-0 ${motion.slideOut}`}
+                  onAnimationEnd={() => setTransition(value => value?.from.id === outgoing.id ? null : value)}>
+                  <QuestionCard question={outgoing} outgoing />
+                </div>
+              )}
+              <div key={`in:${question.id}`} className={outgoing ? motion.slideIn : undefined}>
+                <QuestionCard question={question} suggestRest={attempt.suggestRest}
+                  onAnswer={answer} onPause={() => { setTransition(null); session.change('pause') }} />
+              </div>
+            </div>
+          ) : finishing ? (
+            <StickerCard as="section" size="lg" elevation="flat">
+              <p role="status">已完成作答，{error ? '等待同步后查看结果。' : '正在同步答卷…'}</p>
+            </StickerCard>
+          ) : (
+            <BreakCard key={`${attempt.id}:${answered}:${deferred === 'pause' || attempt.phase === 'paused'}`}
+              phase={deferred === 'pause' || attempt.phase === 'paused' ? 'paused' : 'break'}
+              answered={answered} attempt={attempt} pending={waiting}
+              canFallback={session.canFallback} syncFailed={!session.online || Boolean(error && session.hasPending)}
+              onChange={kind => { setTransition(null); session.change(kind) }} />
+          )}
+        </>
+      )}
       {error && (
         <StickerCard tone="warning" elevation="flat">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -250,31 +279,6 @@ function Assessment({ userId }: { userId: string }) {
       {attempt?.phase === 'submitted' && <AssessmentResults key={attempt.id} attempt={attempt} pending={busy} onStart={session.start} />}
       {attempt && attempt.phase !== 'submitted' && (
         <>
-          <SegmentProgress answered={answered} inQuestion={Boolean(question)} />
-          {question ? (
-            <div className="relative isolate overflow-x-clip pb-1">
-              {outgoing && (
-                <div key={`out:${outgoing.id}`} aria-hidden="true" className={`pointer-events-none absolute inset-x-0 top-0 ${motion.slideOut}`}
-                  onAnimationEnd={() => setTransition(value => value?.from.id === outgoing.id ? null : value)}>
-                  <QuestionCard question={outgoing} outgoing />
-                </div>
-              )}
-              <div key={`in:${question.id}`} className={outgoing ? motion.slideIn : undefined}>
-                <QuestionCard question={question} suggestRest={attempt.suggestRest}
-                  onAnswer={answer} onPause={() => { setTransition(null); session.change('pause') }} />
-              </div>
-            </div>
-          ) : finishing ? (
-            <StickerCard as="section" size="lg" elevation="flat">
-              <p role="status">已完成作答，{error ? '等待同步后查看结果。' : '正在同步答卷…'}</p>
-            </StickerCard>
-          ) : (
-            <BreakCard key={`${attempt.id}:${answered}:${deferred === 'pause' || attempt.phase === 'paused'}`}
-              phase={deferred === 'pause' || attempt.phase === 'paused' ? 'paused' : 'break'}
-              answered={answered} attempt={attempt} pending={waiting}
-              canFallback={session.canFallback} syncFailed={!session.online || Boolean(error && session.hasPending)}
-              onChange={kind => { setTransition(null); session.change(kind) }} />
-          )}
           <AssessmentRuler attempt={attempt} live answered={answered} />
           <AssessmentSeenWords key={attempt.id} words={seenWords} />
           {attempt.version !== 2 && attempt.mainAnswered < MIN_ESTIMATE_ITEMS && (

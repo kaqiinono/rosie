@@ -75,11 +75,14 @@ export type QueuedAnswer = {
   elapsedMs?: number
 }
 export type ReviewItem = PublicQuestion & Pick<Question, 'definitionEn' | 'definitionZh' | 'senseId'> & {
+  ipa?: string
+  levelLabel: string | null
   status: ReviewStatus
   optionIndex: number | null
 }
 
 export type Band = {
+  tally?: { correct: number; total: number }
   level: string
   size: number
   answered: number
@@ -108,6 +111,7 @@ export type AttemptView = {
   liveRange: (Range & { center: number; focusLevel?: Level }) | null
   bands: Band[]
   isPilot: boolean
+  guessAdjusted?: boolean
   formal: boolean
   offerEarlyFinish: boolean
   suggestFinish: boolean
@@ -302,6 +306,15 @@ export function attemptView(id: string, bankVersion: string, revision: number, a
   const mainAnswered = answers.filter(answer => answer.item_role === 'main').length
   const scheduledCount = Math.floor(mainAnswered / SEGMENT_SIZE) * SEGMENT_SIZE
   const current = estimate(attempt, scheduledCount)
+  // Submission can fall between two scheduled V1 estimates. Count every main
+  // answer in the child's tally while preserving the frozen estimation rules.
+  if (phase === 'submitted') {
+    const results = scoreBands(attempt, answered)
+    current.bands.forEach((band, index) => {
+      const { correct, wrong, unknown, unreadable } = results[LEVELS[index]]
+      band.tally = { correct, total: correct + wrong + unknown + unreadable }
+    })
+  }
   const liveRange = phase === 'submitted' ? null : estimateLiveRange(attempt, mainAnswered)
   const previousRange = scheduledCount > MIN_ESTIMATE_ITEMS
     ? estimate(attempt, scheduledCount - SEGMENT_SIZE).range : null
@@ -323,7 +336,7 @@ export function attemptView(id: string, bankVersion: string, revision: number, a
   return {
     id, bankVersion, revision, phase, answered, mainAnswered, estimatedFrom: scheduledCount, totalWords: current.size,
     range: current.range, previousRange, liveRange, bands: current.bands,
-    isPilot: !calibration, formal, offerEarlyFinish, suggestFinish, suggestRest,
+    isPilot: !calibration, guessAdjusted: calibration?.method !== 'raw', formal, offerEarlyFinish, suggestFinish, suggestRest,
     canAddDiagnostics: phase === 'break' && mainAnswered === answered && answered >= 72 &&
       answered + SEGMENT_SIZE <= MAX_ITEMS && suggestFinish,
     ...answerView(phase, questions, answers, questions.length),
@@ -352,7 +365,7 @@ export function addDiagnostics(attempt: Attempt, bank: Bank, random: () => numbe
 }
 
 
-type ReviewQuestion = Omit<Question, 'level'> & { segmentId?: string }
+type ReviewQuestion = Omit<Question, 'level'> & { level?: Level; band?: number | null; segmentId?: string }
 
 function publicQuestion({ word, partOfSpeech, context, options }: PublicQuestion): PublicQuestion {
   return { word, partOfSpeech, context, options }
@@ -391,6 +404,7 @@ export function answerView(phase: Attempt['phase'], questions: ReviewQuestion[],
       return {
         ...publicQuestion(question), senseId: question.senseId, definitionEn: question.definitionEn,
         definitionZh: question.definitionZh,
+        levelLabel: question.level ?? (question.band ? `第 ${question.band} 千词段` : null),
         status: statusFor(question, answer), optionIndex: answer.optionIndex,
       }
     }) : null,

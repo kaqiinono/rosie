@@ -8,7 +8,7 @@ import {
 
 import { frequencyEstimate } from '@rosie/english/assessment/frequency'
 import { issueSegment, pilotView, startPilot, type PilotAttempt, type PilotBank } from '@rosie/english/assessment/adaptive'
-import { pilotBank, pilotVersion } from '@/lib/vocabulary-pilot-bank'
+import { pilotBank, pilotVersion, reviewPronunciations } from '@/lib/vocabulary-pilot-bank'
 
 const seed = () => randomBytes(4).readUInt32LE()
 export const dynamic = 'force-dynamic'
@@ -27,8 +27,13 @@ function json(body: object, status = 200) {
 }
 
 function project(row: StoredAttempt, device: string) {
-  if (row.state.modelVersion === 'frequency-v2-pilot-1') return pilotView(row.id, row.bank_version, row.revision, row.state, device)
-  return attemptView(row.id, row.bank_version, row.revision, row.state)
+  const view = row.state.modelVersion === 'frequency-v2-pilot-1'
+    ? pilotView(row.id, row.bank_version, row.revision, row.state, device)
+    : attemptView(row.id, row.bank_version, row.revision, row.state)
+  for (const item of view.review ?? []) {
+    item.ipa = reviewPronunciations[`${item.word}|${item.partOfSpeech}`]
+  }
+  return view
 }
 
 async function latest(db: Db, userId: string, version?: 1 | 2): Promise<StoredAttempt | null> {

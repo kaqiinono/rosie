@@ -1,0 +1,8 @@
+.bandProgress:global(.rt-ProgressRoot),
+.bandProgress :global(.rt-ProgressIndicator) {
+  background-image: none;
+}
+
+.bandProgress :global(.rt-ProgressIndicator) {
+  background-color: color-mix(in oklab, var(--accent-9) 75%, var(--gray-10));
+}

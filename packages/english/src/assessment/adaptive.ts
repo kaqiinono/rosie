@@ -137,6 +137,12 @@ export function pilotView(id: string, bankVersion: string, revision: number, sta
   const { answers, questions, phase } = state
   const answered = answers.length
   const score = frequencyEstimate(questions, answers)
+  if (phase === 'submitted') {
+    score.bands.forEach((band, index) => {
+      const correct = score.cells.slice(index * 4, index * 4 + 4).reduce((sum, cell) => sum + cell.correct, 0)
+      band.tally = { correct, total: band.answered }
+    })
+  }
   const diagnostics = answered - score.main
   const canContinue = answered < questions.length || Boolean(state.fallback)
   const canAddDiagnostics = answered === questions.length && phase !== 'submitted' &&
@@ -147,7 +153,7 @@ export function pilotView(id: string, bankVersion: string, revision: number, sta
     ...answerView(phase, questions, answers, MAX_ITEMS),
     id, bankVersion, revision, phase, answered, version: 2, activeSegmentId: state.segments.at(-1)?.id, mainAnswered: score.main, estimatedFrom: score.main,
     totalWords: TOTAL_WORDS, bands: score.bands, liveRange: score.range, range: score.range, previousRange: null,
-    isPilot: true, formal: false, edge: score.edge, canContinue, offerEarlyFinish, canAddDiagnostics,
+    isPilot: true, guessAdjusted: true, formal: false, edge: score.edge, canContinue, offerEarlyFinish, canAddDiagnostics,
     suggestFinish: score.main >= 72 || (!canContinue && phase !== 'question'),
     suggestRest: recent.length === 4 && recent.every(a => a.elapsedMs !== null && a.elapsedMs < 900),
     resumedElsewhere: phase !== 'submitted' && state.segments.at(-1)?.device !== device,

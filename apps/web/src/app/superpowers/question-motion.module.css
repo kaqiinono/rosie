@@ -7,13 +7,13 @@
 }
 
 @keyframes slide-out {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(30%); opacity: 0; }
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(16px); opacity: 0; }
 }
 
 @keyframes slide-in {
-  from { transform: translateX(18%); opacity: 0.55; }
-  to { transform: translateX(0); opacity: 1; }
+  from { transform: translateY(-12px); opacity: 0.55; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

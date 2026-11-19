@@ -143,6 +143,8 @@ pnpm vocab:assessment --reviewed /tmp/rosie-assessment-review.json --calibration
 
 #### 阶段 ③ 手动验收
 
+已交卷报告的总答对数包含主测和诊断，各等级或频率段的答对数只统计实际答过的主测题。Word Screen 的[音标表](source-data/vocabulary-assessment/review-ipa.json)按拼写和词性维护，增补测评词时同步补录。服务端读取新旧答卷时将音标附在已答词上。
+
 | 场景 | 可观察结果 |
 | --- | --- |
 | 从已答 60 题的旧卷进入新版，再返回旧卷 | 新卷从 0 道开始，尺上限 4,000。旧卷仍保留原题号、答案和旧版量程 |
