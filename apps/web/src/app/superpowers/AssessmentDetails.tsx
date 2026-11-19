@@ -315,7 +315,8 @@ export function AssessmentResults({ attempt, pending, onStart }: {
           题库版本 {attempt.bankVersion.slice(0, 15)}
         </p>
       </StickerCard>
-      <StickerCard as="section" aria-labelledby="vocab-review-heading" size="lg" className="@container grid gap-3">
+      <StickerCard as="section" aria-labelledby="vocab-review-heading" size="lg"
+        className="@container grid content-start gap-3 max-md:min-h-lvh">
         <div>
           <h3 id="vocab-review-heading" className="text-xl font-bold">单词回顾</h3>
           <p className="text-text-secondary mt-1 text-sm">Word Screen</p>
@@ -340,7 +341,7 @@ export function AssessmentResults({ attempt, pending, onStart }: {
           </SegmentedControl.Root>
         </div>
         <p role="status" className="sr-only">共 {visible.length} 个词</p>
-        <ol className="border-border-light divide-border-light divide-y border-t">
+        <ol className="border-border-light divide-border-light divide-y border-t max-md:[overflow-anchor:none]">
           {visible.map(item => (
             <li key={item.senseId} className="grid gap-1.5 py-3">
               <div className="flex items-start justify-between gap-2">
