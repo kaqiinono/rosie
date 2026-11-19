@@ -26,7 +26,6 @@
     "@rosie/core": "workspace:*",
     "@rosie/english": "workspace:*",
     "@rosie/exams": "workspace:*",
-    "@rosie/flipbook": "workspace:*",
     "@rosie/math": "workspace:*",
     "@rosie/math-content": "workspace:*",
     "@rosie/math-kit": "workspace:*",
@@ -40,7 +39,6 @@
     "pdfjs-dist": "^4.10.38",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-pageflip": "^2.0.3",
     "three": "^0.187.0",
     "xlsx": "^0.18.5"
   },

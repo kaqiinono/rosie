@@ -114,15 +114,6 @@ export const ADMIN_TOOLS: SettingTool[] = [
     ring: 'rgba(244,63,94,0.28)',
   },
   {
-    href: '/admin/audio',
-    emoji: '🎬',
-    title: '公共媒体管理',
-    description: '上传、修改和删除公共音频与视频资源。',
-    from: 'rgba(168,85,247,0.14)',
-    to: 'rgba(236,72,153,0.10)',
-    ring: 'rgba(168,85,247,0.28)',
-  },
-  {
     href: '/admin/math',
     emoji: '📐',
     title: '数学题管理',

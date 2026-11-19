@@ -1,0 +1,55 @@
+name: Supabase backup to Baidu
+
+on:
+  schedule:
+    # UTC. 19:17 is 03:17 the following day in Beijing.
+    - cron: '17 19 * * *'
+    # 10:43 in Beijing. Check separately even if the export event did not run.
+    - cron: '43 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rosie-supabase-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    if: vars.ROSIE_BACKUPS_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.schedule == '17 19 * * *')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - name: Export, upload, and verify
+        run: node scripts/supabase-backup.mjs backup
+        env:
+          SUPABASE_BACKUP_POOLER_URL: ${{ vars.SUPABASE_BACKUP_POOLER_URL }}
+          SUPABASE_BACKUP_DB_PASSWORD: ${{ secrets.SUPABASE_BACKUP_DB_PASSWORD }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BAIDU_APP_KEY: ${{ secrets.BAIDU_APP_KEY }}
+          BAIDU_SECRET_KEY: ${{ secrets.BAIDU_SECRET_KEY }}
+
+  check-backup:
+    if: vars.ROSIE_BACKUPS_ENABLED == 'true' && github.event.schedule == '43 2 * * *'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+      - name: Check for a recent verified copy
+        run: node scripts/supabase-backup.mjs check
+        env:
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BAIDU_APP_KEY: ${{ secrets.BAIDU_APP_KEY }}
+          BAIDU_SECRET_KEY: ${{ secrets.BAIDU_SECRET_KEY }}

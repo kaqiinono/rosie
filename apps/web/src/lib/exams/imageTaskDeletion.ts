@@ -1,11 +1,15 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { deleteProjectMedia } from '@/lib/project-media'
 import { IMAGE_SOURCE_BUCKET } from './imageSources'
 import { ExamApiError } from './http'
 
 export async function finishSourceCleanup(db: SupabaseClient, id: string, path: string) {
-  const { error } = await db.storage.from(IMAGE_SOURCE_BUCKET).remove([path])
-  if (error) return false
+  try {
+    await deleteProjectMedia(IMAGE_SOURCE_BUCKET, path)
+  } catch {
+    return false
+  }
   const saved = await db.from('exam_image_source_pages').update({ state: 'deleted' }).eq('id', id).eq('object_path', path).eq('state', 'deleting')
   return !saved.error
 }

@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, supabase } from '@rosie/core'
+import { createUserSessionStore, removeProjectMedia, signProjectMedia, supabase, uploadProjectMedia } from '@rosie/core'
 import { compressAudioToMp3 } from '@rosie/player'
 import {
   STORY_RECORDINGS_BUCKET,
@@ -12,8 +12,6 @@ import {
   type StoryRecording,
   type StoryRecordingScope,
 } from '../utils/story-recording-types'
-
-const SIGNED_URL_TTL_SECONDS = 60 * 60
 
 async function fetchRecordings(userId: string): Promise<StoryRecording[]> {
   const { data, error } = await supabase
@@ -65,12 +63,7 @@ export function useStoryRecordings(user: User | null) {
         recordingId,
         extension,
       })
-      const { error: uploadError } = await supabase.storage
-        .from(STORY_RECORDINGS_BUCKET)
-        .upload(storagePath, compressed.blob, {
-          contentType,
-          upsert: true,
-        })
+      const { error: uploadError } = await uploadProjectMedia(STORY_RECORDINGS_BUCKET, storagePath, compressed.blob)
       if (uploadError) return { error: uploadError.message }
 
       const updatedAt = new Date().toISOString()
@@ -106,7 +99,7 @@ export function useStoryRecordings(user: User | null) {
         .eq('id', recording.id)
         .eq('user_id', user.id)
       if (error) return { error: error.message }
-      await supabase.storage.from(STORY_RECORDINGS_BUCKET).remove([recording.storagePath])
+      await removeProjectMedia(STORY_RECORDINGS_BUCKET, recording.storagePath)
       storyRecordingsStore.patchSessionData(user.id, (prev) =>
         prev.filter((entry) => entry.id !== recording.id),
       )
@@ -115,12 +108,8 @@ export function useStoryRecordings(user: User | null) {
     [user],
   )
 
-  const getSignedUrl = useCallback(async (storagePath: string): Promise<string | null> => {
-    const { data, error } = await supabase.storage
-      .from(STORY_RECORDINGS_BUCKET)
-      .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS)
-    return error ? null : (data?.signedUrl ?? null)
-  }, [])
+  const getSignedUrl = useCallback((storagePath: string): Promise<string | null> =>
+    signProjectMedia(STORY_RECORDINGS_BUCKET, storagePath), [])
 
   return { recordings, isLoading, recordingsFor, saveRecording, deleteRecording, getSignedUrl }
 }

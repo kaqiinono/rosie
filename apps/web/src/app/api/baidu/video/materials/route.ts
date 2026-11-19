@@ -6,6 +6,7 @@ import { BAIDU_VIDEO_COOKIE } from '@/lib/baidu-math-video'
 import { lessonDirectory } from '@/lib/baidu-lesson-directory'
 import { readBaiduDirectoryPage } from '@/lib/baidu-directory-page'
 import { exactBaiduId } from '@/lib/baidu-identity'
+import { isPrivateProjectPath } from '@/lib/baidu-project-transfer.mjs'
 import { fetchBaiduFileById } from '@/lib/baidu-media'
 import { validVideoLessonKey } from '@/lib/baidu-math-video-catalog'
 import { materialType } from '@rosie/math-kit/utils/lesson-material'
@@ -26,6 +27,7 @@ export async function GET(req: NextRequest) {
     const root = await lessonDirectory(lesson, account.accountId)
     if (!root) return fail(404)
     const dir = [root.replace(/\/$/, ''), ...parts].join('/') || '/'
+    if (isPrivateProjectPath(dir)) return fail(404)
     const prefix = dir === '/' ? '/' : dir + '/'
     const id = params.get('id')
     if (id !== null) {
@@ -49,7 +51,7 @@ export async function GET(req: NextRequest) {
     if (!Number.isSafeInteger(start) || start < 0) return fail(400)
     const rows = await readBaiduDirectoryPage(account.accessToken, dir, start, 100)
     const files = rows.flatMap(row => {
-      if (typeof row.path !== 'string' || !row.path.startsWith(prefix)) return []
+      if (typeof row.path !== 'string' || isPrivateProjectPath(row.path) || !row.path.startsWith(prefix)) return []
       const name = row.path.slice(prefix.length)
       if (!safeName(name) || (row.isdir !== 1 && row.isdir !== 0)) return []
       return [{ name, id: exactBaiduId(row.fs_id), directory: row.isdir === 1 }]

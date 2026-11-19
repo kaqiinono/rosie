@@ -1,3 +1,4 @@
+import { migrateProjectMediaUrl } from '@rosie/core/project-media-url'
 import type { HomeworkSubject } from './homework'
 import type { HomeworkSchedule } from './homeworkSchedule'
 
@@ -132,8 +133,9 @@ export function bindEntry(entry: PracticeEntry, startId: string | null): Practic
 
 /** Stable same-origin binding URLs or explicit HTTPS media links; no executable schemes. */
 export function resourceHref(value: string): string {
-  if (value.startsWith('/')) return entryHref(value, {})
-  const url = new URL(value)
+  const migrated = migrateProjectMediaUrl(value, 'reading')
+  if (migrated.startsWith('/')) return entryHref(migrated, {})
+  const url = new URL(migrated)
   if (url.protocol !== 'https:' || url.username || url.password) throw new Error('资源请使用本站相对路径或 HTTPS 直链')
   return url.href
 }

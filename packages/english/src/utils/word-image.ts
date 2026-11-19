@@ -1,3 +1,5 @@
+import { projectMediaUrl } from '@rosie/core/project-media-url'
+
 export const WORD_IMAGES_BUCKET = 'word-images'
 
 export function slugWord(word: string): string {
@@ -43,9 +45,6 @@ export function scorePexelsCandidate(alt: string, query: string, rankIndex: numb
   return Math.min(100, base + boost)
 }
 
-/** Public URL for a path in the word-images bucket (no Supabase client import — safe for API routes). */
-export function getWordImagePublicUrl(imagePath: string, supabaseUrl?: string): string {
-  const base = (supabaseUrl ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '')
-  if (!base) return ''
-  return `${base}/storage/v1/object/public/${WORD_IMAGES_BUCKET}/${imagePath}`
+export function getWordImagePublicUrl(imagePath: string): string {
+  return projectMediaUrl(WORD_IMAGES_BUCKET, imagePath)
 }

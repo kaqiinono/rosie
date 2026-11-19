@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createUserSessionStore, useAuth } from '@rosie/core'
+import { createUserSessionStore, PROJECT_PART_BYTES, uploadProjectMedia, useAuth } from '@rosie/core'
 import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import { Button, Flex, Spinner, Text, TextField } from '@rosie/ui/themes'
 import type { ExamAnswer, ExamAttemptView } from '../types/attempts'
@@ -226,9 +226,22 @@ function SpeakingRecorder({ attemptId, question, answer, disabled, scopeClosed =
       if (!row || !current(token)) return
       if (row.status === 'abandoned') { clearLocal(); setMessage('服务器已放弃本段，请重新录音。'); return }
       if (latest.current.disabled && row.status !== 'complete') { setMessage('当前已暂停作答，录音仍保留。恢复后可重试，或明确放弃本段。'); return }
-      const saved = row.status === 'complete' ? row : (await examRequest<RecordingReceipt>(userId, `${path}/${row.id}`, {
-        method: 'PUT', body: active.blob, headers: { 'Content-Type': active.mimeType },
-      })).recording
+      let saved = row
+      if (row.status !== 'complete') {
+        const endpoint = `${path}/${row.id}`
+        if (active.blob.size > PROJECT_PART_BYTES) {
+          const upload = await uploadProjectMedia('exam-recordings', `${userId}/${attemptId}/${row.id}`, active.blob)
+          if (!current(token)) return
+          // Finalization can recover an earlier successful upload whose response was lost.
+          const finalized = await examRequest<RecordingReceipt>(userId, endpoint, { method: 'POST' })
+            .catch(error => { throw upload.error ?? error })
+          saved = finalized.recording
+        } else {
+          saved = (await examRequest<RecordingReceipt>(userId, endpoint, {
+            method: 'PUT', body: active.blob, headers: { 'Content-Type': active.mimeType },
+          })).recording
+        }
+      }
       if (!current(token)) return
       active.row = saved; patch(saved)
       if (saved.status !== 'complete') throw new ExamRequestError('exam_recording_incomplete', 409)

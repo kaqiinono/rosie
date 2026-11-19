@@ -1,6 +1,6 @@
 'use client'
 
-import { createUserSessionStore, supabase, baiduResponseMessage, type UserSessionStore } from '@rosie/core'
+import { createUserSessionStore, projectMediaUrl, supabase, baiduResponseMessage } from '@rosie/core'
 import { mergeAutoResources, type PracticeEntryRow, type PracticeResource } from '@rosie/tasks'
 import { loadProblemVideoCatalog } from '@rosie/math-kit/hooks/useProblemVideoCatalog'
 import { readAll } from './catalogData'
@@ -25,8 +25,11 @@ const audioStore = createUserSessionStore<AudioCatalog>('task_entry_audio_catalo
       warning: result.catalogComplete ? '' : '部分网盘音频目录读取失败，已找到的资源仍可使用，请重试' }
   },
 })
-const narrationStore = createUserSessionStore<string[]>('task_entry_storage_narrations', {
-  empty: [], fetch: async () => (await readAll<{ passage_key: string }>('reading_passage_media', 'passage_key', 'passage_key')).map((row) => row.passage_key),
+const narrationStore = createUserSessionStore<Record<string, string>>('task_entry_project_narrations', {
+  empty: {},
+  fetch: async () => Object.fromEntries(
+    (await readAll<{ passage_key: string; audio_path: string }>('reading_passage_media', 'passage_key,audio_path', 'passage_key'))
+      .map(row => [row.passage_key, row.audio_path])),
 })
 async function loadAudio(userId: string, refresh: boolean) {
   const [audio, storage] = await Promise.allSettled([
@@ -37,23 +40,19 @@ async function loadAudio(userId: string, refresh: boolean) {
       if (state.status !== 'ready') throw new Error('网盘音频目录读取失败')
       return state.data
     })(),
-    readStore(userId, narrationStore, refresh),
+    (async () => {
+      if (refresh) await narrationStore.refreshInBackground(userId)
+      else await narrationStore.ensureLoaded(userId)
+      const state = narrationStore.getSnapshot(userId)
+      if (state.status !== 'ready') throw new Error('备用音频读取失败')
+      return state.data
+    })(),
   ])
   return {
     keys: new Set(audio.status === 'fulfilled' ? audio.value.keys : []),
-    storage: storage.status === 'fulfilled' ? storage.value : new Set<string>(),
+    narrations: storage.status === 'fulfilled' ? storage.value : {},
     warning: [audio.status === 'fulfilled' ? audio.value.warning : '网盘音频读取失败', storage.status === 'rejected' ? '备用音频读取失败' : ''].filter(Boolean).join('；'),
   }
-}
-async function readStore(userId: string, store: UserSessionStore<string[]>, refresh: boolean) {
-  if (refresh) await store.refreshInBackground(userId)
-  else {
-    if (store.getSnapshot(userId).status === 'error') throw new Error('资源目录读取失败，请点击刷新重试')
-    await store.ensureLoaded(userId)
-  }
-  const state = store.getSnapshot(userId)
-  if (state.status !== 'ready') throw new Error('读取关联资源失败，请重试')
-  return new Set(state.data)
 }
 const auto = (id: string, label: string, type: PracticeResource['type'], url: string): PracticeResource => ({ id, label, type, source: 'auto', url })
 
@@ -118,7 +117,8 @@ export async function attachResources(rows: PracticeEntryRow[], refresh = false)
         warning = audio.warning
         const base = `/api/baidu/audio/${encodeURIComponent(passage.key)}`
         const assetUrl = (slot: string) => `${base}?asset=${encodeURIComponent(slot)}`
-        const fallback = audio.storage.has(passage.key) ? supabase.storage.from('reading').getPublicUrl(`passages/${passage.key}/narration.mp3`).data.publicUrl : null
+        const path = audio.narrations[passage.key]
+        const fallback = path ? projectMediaUrl('reading', path) : null
         const narration = keys.has(passage.key + '#narration') ? assetUrl('narration') : keys.has(passage.key) ? base : fallback
         if (v.sentenceId) {
           const slot = 'clip:' + v.sentenceId

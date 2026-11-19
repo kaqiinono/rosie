@@ -3,6 +3,7 @@ import 'server-only'
 import { createHash } from 'node:crypto'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { ExamRecording } from '@rosie/exams'
+import { fetchProjectMedia, storeProjectMedia } from '@/lib/project-media'
 import { ExamApiError, examIdentifier, readExamJsonBody } from './http'
 import { attemptUuid } from './attempts'
 
@@ -61,6 +62,12 @@ async function recordingRow(db: SupabaseClient, userId: string, attemptId: strin
   return row
 }
 
+export async function getExamRecordingUploadSize(db: SupabaseClient, userId: string, attemptId: string, recordingId: string) {
+  const row = await recordingRow(db, userId, attemptUuid(attemptId), attemptUuid(recordingId))
+  if (row.status !== 'uploading') throw new ExamApiError('exam_recording_closed', 409)
+  return row.size_bytes
+}
+
 export async function listExamRecordings(db: SupabaseClient, userId: string, attemptId: string): Promise<ExamRecording[]> {
   const attempt = await db.from('exam_attempts').select('id').eq('id', attemptId).eq('user_id', userId).maybeSingle()
   if (attempt.error) assessmentStorageError(attempt.error)
@@ -108,8 +115,13 @@ async function readRecordingBytes(request: Request, row: RecordingRow): Promise<
     throw new ExamApiError('exam_recording_upload_interrupted', 400)
   } finally { clearTimeout(timeout); reader.releaseLock() }
   const bytes = Buffer.concat(chunks, size)
-  if (size !== row.size_bytes) throw new ExamApiError('exam_recording_size_mismatch', 400)
-  if (createHash('sha256').update(bytes).digest('hex') !== row.sha256) throw new ExamApiError('exam_recording_hash_mismatch', 400)
+  validateRecordingBytes(bytes, row)
+  return bytes
+}
+
+function validateRecordingBytes(bytes: Buffer, row: RecordingRow, mismatchStatus = 400) {
+  if (bytes.length !== row.size_bytes) throw new ExamApiError('exam_recording_size_mismatch', 400)
+  if (createHash('sha256').update(bytes).digest('hex') !== row.sha256) throw new ExamApiError('exam_recording_hash_mismatch', mismatchStatus)
   const header = bytes.subarray(0, 12)
   const valid = row.mime_type === 'audio/webm' ? header.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]))
     : row.mime_type === 'audio/ogg' ? header.subarray(0, 4).toString() === 'OggS'
@@ -117,16 +129,29 @@ async function readRecordingBytes(request: Request, row: RecordingRow): Promise<
     : row.mime_type === 'audio/wav' ? header.subarray(0, 4).toString() === 'RIFF' && header.subarray(8, 12).toString() === 'WAVE'
     : header.subarray(0, 3).toString() === 'ID3' || (header[0] === 0xff && (header[1] & 0xe0) === 0xe0)
   if (!valid) throw new ExamApiError('exam_recording_type_mismatch', 415)
-  return bytes
 }
 
-async function storedRecordingBytes(db: SupabaseClient, row: RecordingRow): Promise<Blob> {
-  const result = await db.storage.from(BUCKET).download(row.object_path)
-  if (result.error || !result.data) throw new ExamApiError('exam_recording_unavailable', 503)
-  if (result.data.size !== row.size_bytes) throw new ExamApiError('exam_recording_hash_mismatch', 409)
-  const bytes = await result.data.arrayBuffer()
-  if (createHash('sha256').update(Buffer.from(bytes)).digest('hex') !== row.sha256) throw new ExamApiError('exam_recording_hash_mismatch', 409)
-  return result.data
+async function storedRecordingBytes(row: RecordingRow): Promise<Blob> {
+  const response = await fetchProjectMedia(BUCKET, row.object_path, null, AbortSignal.timeout(90_000))
+  if (!response?.ok) throw new ExamApiError('exam_recording_unavailable', 503)
+  const blob = await response.blob()
+  if (blob.size !== row.size_bytes) throw new ExamApiError('exam_recording_hash_mismatch', 409)
+  validateRecordingBytes(Buffer.from(await blob.arrayBuffer()), row, 409)
+  return blob
+}
+
+async function finishStoredRecording(db: SupabaseClient, row: RecordingRow) {
+  const { data, error } = await db.rpc('finish_exam_recording', { p_user: row.user_id, p_attempt_id: row.attempt_id, p_recording_id: row.id, p_status: 'complete', p_request_id: null })
+  if (error) assessmentStorageError(error)
+  return rpcReceipt(data, row.attempt_id)
+}
+
+export async function finalizeExamRecording(db: SupabaseClient, userId: string, attemptId: string, recordingId: string) {
+  const row = await recordingRow(db, userId, attemptId, recordingId)
+  if (row.status === 'abandoned') throw new ExamApiError('exam_recording_closed', 409)
+  if (row.status === 'complete') return receipt(row)
+  await storedRecordingBytes(row)
+  return finishStoredRecording(db, row)
 }
 
 export async function uploadExamRecording(db: SupabaseClient, userId: string, attemptId: string, recordingId: string, request: Request): Promise<ExamRecording> {
@@ -136,11 +161,13 @@ export async function uploadExamRecording(db: SupabaseClient, userId: string, at
   if (row.status === 'complete') return receipt(row)
   // Never upsert: a lost response retries the same immutable object and verifies
   // its bytes before finalization. Concurrent abandon leaves only a private orphan.
-  const stored = await db.storage.from(BUCKET).upload(row.object_path, bytes, { contentType: row.mime_type, upsert: false, cacheControl: '0' })
-  if (stored.error) await storedRecordingBytes(db, row)
-  const { data, error } = await db.rpc('finish_exam_recording', { p_user: userId, p_attempt_id: attemptId, p_recording_id: recordingId, p_status: 'complete', p_request_id: null })
-  if (error) assessmentStorageError(error)
-  return rpcReceipt(data, attemptId)
+  try {
+    await storeProjectMedia(BUCKET, row.object_path, bytes)
+  } catch {
+    // The provider may have committed before the response was lost.
+  }
+  await storedRecordingBytes(row)
+  return finishStoredRecording(db, row)
 }
 
 export async function abandonExamRecording(db: SupabaseClient, userId: string, attemptId: string, recordingId: string, request: Request): Promise<ExamRecording> {
@@ -154,8 +181,8 @@ export async function abandonExamRecording(db: SupabaseClient, userId: string, a
 export async function playExamRecording(db: SupabaseClient, userId: string, attemptId: string, recordingId: string): Promise<Response> {
   const row = await recordingRow(db, userId, attemptId, recordingId)
   if (row.status !== 'complete') throw new ExamApiError('exam_recording_incomplete', 409)
-  const blob = await storedRecordingBytes(db, row)
-  return new Response(blob, { headers: { 'Content-Type': row.mime_type, 'Content-Length': String(row.size_bytes),
+  const blob = await storedRecordingBytes(row)
+  return new Response(blob.stream(), { headers: { 'Content-Type': row.mime_type, 'Content-Length': String(row.size_bytes),
     'Cache-Control': 'private, no-store', Vary: 'Authorization', 'X-Content-Type-Options': 'nosniff',
     'Content-Security-Policy': "default-src 'none'; sandbox", 'Referrer-Policy': 'no-referrer' } })
 }

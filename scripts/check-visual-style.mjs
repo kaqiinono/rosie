@@ -26,8 +26,6 @@ const SOURCE_EXTENSIONS = new Set(['.css', '.ts', '.tsx'])
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', '.next-dev', 'tests', '__tests__'])
 // Radix 控件层与全局令牌层本身定义这套语言（含弹窗遮罩模糊），不计入。
 const EXEMPT_FILES = new Set(['packages/ui/src/themes.css'])
-// 整个目录不检查：即将废弃的页面，不值得清理。
-const EXEMPT_DIRS = ['packages/flipbook/']
 
 // CSS / 行内样式写法的模糊投影：`0 4px 20px rgba(...)`（模糊半径 > 0）。text-shadow、drop-shadow 不计。
 const INLINE_BLUR_SHADOW =
@@ -122,7 +120,7 @@ async function scan() {
   for (const sourceRoot of SOURCE_ROOTS) {
     for (const file of await sourceFiles(resolve(ROOT, sourceRoot))) {
       const repoPath = relative(ROOT, file).split('\\').join('/')
-      if (EXEMPT_FILES.has(repoPath) || EXEMPT_DIRS.some((d) => repoPath.startsWith(d))) continue
+      if (EXEMPT_FILES.has(repoPath)) continue
       const counts = countViolations(await readFile(file, 'utf8'), repoPath)
       if (Object.keys(counts).length > 0) result[repoPath] = counts
     }

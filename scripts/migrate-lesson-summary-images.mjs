@@ -58,7 +58,7 @@ const deleteRegistry = process.argv.includes('--delete-registry')
 const supabase = createClient(url, key)
 
 function publicImageUrl(storagePath) {
-  return `${url}/storage/v1/object/public/math/${storagePath}`
+  return `/api/project-media/math/${storagePath.split('/').map(encodeURIComponent).join('/')}`
 }
 
 function summaryBodyHtml(imageUrl) {

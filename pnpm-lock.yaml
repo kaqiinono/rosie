@@ -68,9 +68,6 @@ importers:
       '@rosie/exams':
         specifier: workspace:*
         version: link:../../packages/exams
-      '@rosie/flipbook':
-        specifier: workspace:*
-        version: link:../../packages/flipbook
       '@rosie/math':
         specifier: workspace:*
         version: link:../../packages/math
@@ -110,9 +107,6 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
-      react-pageflip:
-        specifier: ^2.0.3
-        version: 2.0.3
       three:
         specifier: ^0.187.0
         version: 0.187.0
@@ -220,9 +214,6 @@ importers:
       '@rosie/english':
         specifier: workspace:*
         version: link:../english
-      '@rosie/flipbook':
-        specifier: workspace:*
-        version: link:../flipbook
       '@rosie/player':
         specifier: workspace:*
         version: link:../player
@@ -442,52 +433,6 @@ importers:
       react:
         specifier: ^19.0.0
         version: 19.2.4
-      typescript:
-        specifier: ^5.8.2
-        version: 5.9.3
-
-  packages/flipbook:
-    dependencies:
-      '@rosie/core':
-        specifier: workspace:*
-        version: link:../core
-      '@rosie/english':
-        specifier: workspace:*
-        version: link:../english
-      '@rosie/player':
-        specifier: workspace:*
-        version: link:../player
-      '@supabase/supabase-js':
-        specifier: ^2.99.2
-        version: 2.99.2
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      pdfjs-dist:
-        specifier: ^4.10.38
-        version: 4.10.38
-      react-dom:
-        specifier: ^19.0.0
-        version: 19.2.4(react@19.2.4)
-      react-pageflip:
-        specifier: ^2.0.3
-        version: 2.0.3
-    devDependencies:
-      '@types/react':
-        specifier: ^19.0.12
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19.0.4
-        version: 19.2.3(@types/react@19.2.14)
-      next:
-        specifier: ^15.2.4
-        version: 15.5.13(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react:
-        specifier: ^19.0.0
-        version: 19.2.4
-      styled-jsx:
-        specifier: ^5.1.6
-        version: 5.1.6(@babel/core@7.29.0)(react@19.2.4)
       typescript:
         specifier: ^5.8.2
         version: 5.9.3
@@ -4203,9 +4148,6 @@ packages:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
 
-  page-flip@2.0.7:
-    resolution: {integrity: sha512-96lQFUUz7r/LZzEUZJ3yBIMEKU9+m8HMFDzTvTdD6P7Ag/wXINjp9n0W7b4wanwnDbQETo4uNUoL3zMqpFxwGA==}
-
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -4400,9 +4342,6 @@ packages:
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
-
-  react-pageflip@2.0.3:
-    resolution: {integrity: sha512-k81mHhRvUM52y8jyzTCh5t4O0lepkLhp+XGSUzq2C3uD+iW99Cv0jfRlqFCjZbD5N3jKkIFr7/3giucoXKDP3Q==}
 
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
@@ -8526,8 +8465,6 @@ snapshots:
     dependencies:
       p-limit: 3.1.0
 
-  page-flip@2.0.7: {}
-
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
@@ -8744,10 +8681,6 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
-
-  react-pageflip@2.0.3:
-    dependencies:
-      page-flip: 2.0.7
 
   react-remove-scroll-bar@2.3.8(@types/react@19.2.14)(react@19.2.4):
     dependencies:

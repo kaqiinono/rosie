@@ -1,3 +1,4 @@
+import { migrateProjectMediaUrl } from '@rosie/core/project-media-url'
 import { toPng } from 'html-to-image'
 
 export function fitFigureLayout(
@@ -25,7 +26,7 @@ export function loadHtmlImage(src: string): Promise<HTMLImageElement> {
     }
     img.onload = () => resolve(img)
     img.onerror = () => reject(new Error('image load failed'))
-    img.src = src
+    img.src = migrateProjectMediaUrl(src, 'math')
   })
 }
 

@@ -1,9 +1,9 @@
 /**
  * 插图的写入/删除（admin 专用）。练习组级 figure + 讲解 Section 级 figures。
- * 流程：canvas 裁出的 PNG blob → Storage upload → jsonb 字段（exercises / lesson）
+ * 流程：canvas 裁出的 PNG blob → 百度网盘 → jsonb 字段（exercises / lesson）
  * → 模块缓存 patch。失败补偿：DB 写失败时回滚删除已上传文件。
  */
-import { supabase } from '@rosie/core'
+import { removeProjectMedia, supabase, uploadProjectMedia } from '@rosie/core'
 import type { GrammarFigure, GrammarUnitDetail } from './types'
 import { GRAMMAR_PAGES_BUCKET } from './types'
 import { patchGrammarUnitCache } from './hooks/useGrammarUnit'
@@ -47,9 +47,7 @@ async function updateLesson(unit: GrammarUnitDetail, lesson: unknown): Promise<v
 }
 
 function removeFigureFile(path: string, label: string): void {
-  void supabase.storage
-    .from(GRAMMAR_PAGES_BUCKET)
-    .remove([path])
+  void removeProjectMedia(GRAMMAR_PAGES_BUCKET, path)
     .then(({ error }) => {
       if (error) console.warn(`[grammar-figure] ${label}:`, error.message)
     })
@@ -63,9 +61,7 @@ export async function saveGroupFigure(
   page: number,
 ): Promise<GrammarUnitDetail> {
   const path = figurePath(unit)
-  const { error: uploadError } = await supabase.storage
-    .from(GRAMMAR_PAGES_BUCKET)
-    .upload(path, blob, { contentType: 'image/png', upsert: true })
+  const { error: uploadError } = await uploadProjectMedia(GRAMMAR_PAGES_BUCKET, path, blob)
   if (uploadError) throw new Error(uploadError.message)
 
   const exercises = withGroupFigure(unit, groupIdx, { path, page })
@@ -73,7 +69,7 @@ export async function saveGroupFigure(
     await updateExercises(unit, exercises)
   } catch (err) {
     // 失败补偿：不留孤儿文件
-    const { error: removeError } = await supabase.storage.from(GRAMMAR_PAGES_BUCKET).remove([path])
+    const { error: removeError } = await removeProjectMedia(GRAMMAR_PAGES_BUCKET, path)
     if (removeError) console.warn('[grammar-figure] rollback remove failed:', removeError.message)
     throw err
   }
@@ -140,9 +136,7 @@ export async function saveSectionFigure(
   replaceIdx?: number,
 ): Promise<GrammarUnitDetail> {
   const path = figurePath(unit)
-  const { error: uploadError } = await supabase.storage
-    .from(GRAMMAR_PAGES_BUCKET)
-    .upload(path, blob, { contentType: 'image/png', upsert: true })
+  const { error: uploadError } = await uploadProjectMedia(GRAMMAR_PAGES_BUCKET, path, blob)
   if (uploadError) throw new Error(uploadError.message)
 
   const current = unit.lesson.sections[sectionIdx]?.figures ?? []
@@ -152,7 +146,7 @@ export async function saveSectionFigure(
     await updateLesson(unit, withSectionFigures(unit, sectionIdx, next))
   } catch (err) {
     // 失败补偿：不留孤儿文件
-    const { error: removeError } = await supabase.storage.from(GRAMMAR_PAGES_BUCKET).remove([path])
+    const { error: removeError } = await removeProjectMedia(GRAMMAR_PAGES_BUCKET, path)
     if (removeError) console.warn('[grammar-figure] rollback remove failed:', removeError.message)
     throw err
   }

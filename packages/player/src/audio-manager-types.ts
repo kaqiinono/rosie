@@ -1,27 +1,6 @@
-export const AUDIO_MEDIA_BUCKET = 'media'
-
 export type MediaType = 'audio' | 'video'
 
-export function mediaAssetStoragePath(assetId: string, ext: string): string {
-  return `standalone/${assetId}.${ext}`
-}
-
-export function audioAssetStoragePath(assetId: string): string {
-  return `standalone/${assetId}.mp3`
-}
-
-export type AudioItemType = 'standalone' | 'reading' | 'flipbook'
-
-export interface AudioAsset {
-  id: string
-  userId: string
-  label: string
-  storagePath: string
-  mediaType: MediaType
-  durationSec: number | null
-  createdAt: string
-  updatedAt: string
-}
+export type AudioItemType = 'reading'
 
 export interface AudioPlaylist {
   id: string
@@ -72,14 +51,14 @@ export interface PlayerTrack {
   source: AddPlaylistItemInput | null
 }
 
-export type AudioCollectionKind = 'favorites' | 'reading' | 'flipbook' | 'playlist'
+export type AudioCollectionKind = 'favorites' | 'reading' | 'playlist'
 
 export interface AudioCollection {
-  id: 'favorites' | 'reading' | 'flipbook' | `pl:${string}`
+  id: 'favorites' | 'reading' | `pl:${string}`
   name: string
   kind: AudioCollectionKind
-  removable: boolean // 三个预设(favorites/reading/flipbook)=false，用户歌单=true
-  acceptsItems: boolean // favorites + 用户歌单=true；reading/flipbook(虚拟)=false
+  removable: boolean // 两个预设(favorites/reading)=false，用户歌单=true
+  acceptsItems: boolean // favorites + 用户歌单=true；reading(虚拟)=false
   tracks: PlayerTrack[]
 }
 

@@ -13,13 +13,11 @@ type Props = {
   onDelete: (collection: AudioCollection) => Promise<void>
   onPlay: (collection: AudioCollection) => void
   onEnqueue: (collection: AudioCollection) => void
-  showLibrary?: boolean
 }
 
 const KIND_ICON: Record<AudioCollectionKind, string> = {
   favorites: '❤️',
   reading: '📖',
-  flipbook: '📚',
   playlist: '🎵',
 }
 
@@ -32,7 +30,6 @@ export default function PlaylistSidebar({
   onDelete,
   onPlay,
   onEnqueue,
-  showLibrary = true,
 }: Props) {
   const [creatingName, setCreatingName] = useState('')
   const [creating, setCreating] = useState(false)
@@ -89,24 +86,6 @@ export default function PlaylistSidebar({
       )}
 
       <div className="flex flex-col gap-1.5 overflow-y-auto">
-        {/* 独立媒体库（非收藏夹，管理 audio_assets） */}
-        {showLibrary && (
-          <Button
-            type="button"
-            onClick={() => onSelect('library')}
-            variant={selectedId === 'library' ? 'solid' : 'soft'}
-            color="indigo"
-            size="2"
-            radius="full"
-            className="w-full justify-start"
-          >
-            <span className="shrink-0 text-[13px]">🎬</span>
-            <span className="min-w-0 flex-1 truncate text-left">独立媒体库</span>
-          </Button>
-        )}
-
-        {showLibrary && <div className="my-0.5 h-px bg-slate-200/70" />}
-
         {collections.map((c) => {
           const isSelected = selectedId === c.id
           const isRenaming = renamingId === c.id

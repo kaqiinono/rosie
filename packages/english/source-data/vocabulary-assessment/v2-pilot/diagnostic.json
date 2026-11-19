@@ -1,0 +1,863 @@
+{
+  "format": "rosie-vocabulary-v2-draft-1",
+  "status": "editorial_draft",
+  "referenceVersion": "BNC/COCA WordFamilyFinder 1.3.0; Kilgarriff full BNC quartiles, 2026-11-19",
+  "legacyBankVersion": "va-aa1dc4c4102c534a2a6794f74a7b4c532334a9f96ab5fcd7cdbeaa074baac16d",
+  "item_role": "diagnostic",
+  "items": [
+    {
+      "itemId": "rosie-v2-diagnostic-assistant",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "415e9d2a-333a-429e-ab4c-1c4496f01307",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "b8e32951-5c5a-4609-b225-feedd49d76b2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "assistant",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A person who helps someone else do their work",
+      "definitionZh": "助手",
+      "distractors": [
+        "A person who decides how much an item costs",
+        "A person who visits someone at work",
+        "A person who learns a job by watching others"
+      ],
+      "familyCandidate": "assist"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-camping",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "34637c7b-0f38-4b73-afe4-cb59165a040d",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "94afbad3-04fb-4ab0-81f7-3c42d3735c40",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "camping",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Staying outside in a tent for a night or more",
+      "definitionZh": "露营",
+      "distractors": [
+        "Walking around a city to see old buildings",
+        "Travelling across water in a small boat",
+        "Going up a hill and coming back the same day"
+      ],
+      "familyCandidate": "camp"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-challenging",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "387ce3fd-2a99-45d3-be79-21ebe873d110",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "a8808c38-314e-4385-b413-536462b35137",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "challenging",
+      "partOfSpeech": "adj.",
+      "context": "The last part of the activity was challenging.",
+      "definitionEn": "Difficult in a way that tests what you can do",
+      "definitionZh": "有挑战性的",
+      "distractors": [
+        "So easy that you can do it without thinking",
+        "Very fast and over before anyone notices",
+        "Always done in exactly the same way each time"
+      ],
+      "familyCandidate": "challenge"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-dancer",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "0e1cb686-4569-4a1c-9085-1bd96714d6c5",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "80e78861-18f8-4869-b7f2-b011204b3c06",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "dancer",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A person who moves to music as an art or job",
+      "definitionZh": "舞者；舞蹈演员",
+      "distractors": [
+        "A person who writes stories for a job",
+        "A person who acts in a film for a job",
+        "A person who makes or repairs shoes"
+      ],
+      "familyCandidate": "dance"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-invitation",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "f804518e-d48e-470e-95ab-9247bb984ee8",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "efe33170-979f-4da3-b26d-52eb2e4fd700",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "invitation",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Something that asks a person to come to an event",
+      "definitionZh": "邀请；邀请函",
+      "distractors": [
+        "Something that tells a person they have won a prize",
+        "Something that tells a person when a shop closes",
+        "Something that shows a person has paid for a ticket"
+      ],
+      "familyCandidate": "invite"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-musician",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "dcaa4e78-a7e0-4408-a172-b37a441d4010",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "b46817c8-b007-4f73-ba27-7a7fb3856fe9",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "musician",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Someone who writes or plays music",
+      "definitionZh": "音乐家",
+      "distractors": [
+        "Someone who builds homes out of wood",
+        "Someone who paints scenes for a play",
+        "Someone who writes books about history"
+      ],
+      "familyCandidate": "music"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-restriction",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "37318013-bf6e-4717-ad6f-42149885d200",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "16c762c2-3470-44c7-81f9-472cfe5004d7",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "restriction",
+      "partOfSpeech": "n.",
+      "context": "The school put a restriction on the use of phones.",
+      "definitionEn": "A rule that limits what people are allowed to do",
+      "definitionZh": "限制；约束",
+      "distractors": [
+        "A plan that tells people when something will happen",
+        "A promise that something will be done on time",
+        "A message asking people what they think about a plan"
+      ],
+      "familyCandidate": "restrict"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-timetable",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "4d6bd7fe-a4d1-4269-b959-06bb1919bd25",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "ee86b551-fff9-44b0-9465-3ac335a00e75",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "timetable",
+      "partOfSpeech": "n.",
+      "context": "We looked at the train timetable.",
+      "definitionEn": "A list of the times when trains or buses arrive and leave",
+      "definitionZh": "交通时刻表",
+      "distractors": [
+        "A list of the prices of different tickets",
+        "A map showing all the streets in a town",
+        "A notice telling people where to buy food"
+      ],
+      "familyCandidate": null
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-writer",
+      "item_role": "diagnostic",
+      "referenceHeadword": null,
+      "band": null,
+      "quartile": null,
+      "catalogHeadwordId": "55a72bf3-cddb-41b0-9859-e4bd2c950fef",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reassigned",
+      "legacySource": {
+        "senseId": "6b0e7f76-3b10-4f27-bb0e-492dae48ddd8",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "writer",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A person whose work is writing stories or books",
+      "definitionZh": "作家",
+      "distractors": [
+        "A person whose work is selling books in a shop",
+        "A person whose work is reading the news aloud",
+        "A person whose work is taking pictures for a newspaper"
+      ],
+      "familyCandidate": "write"
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-act",
+      "item_role": "diagnostic",
+      "referenceHeadword": "act",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "1bd5c8a9-7e20-4446-afbd-0eda74011c03",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "155f0638-5a93-45b4-ac77-d4e9c7270203",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B2"
+      },
+      "word": "act",
+      "partOfSpeech": "n.",
+      "context": "It was an act of kindness.",
+      "definitionEn": "Something a person does",
+      "definitionZh": "行为；举动",
+      "distractors": [
+        "Something a person owns",
+        "Something a person hears",
+        "Something a person can see"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-field",
+      "item_role": "diagnostic",
+      "referenceHeadword": "field",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "3fed7676-9bc4-4de2-934a-98ece41f1262",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "6ae060b3-13dd-4718-8437-e048a38099bd",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "field",
+      "partOfSpeech": "n.",
+      "context": "The teams walked onto the field.",
+      "definitionEn": "An area of ground used to play a sport",
+      "definitionZh": "运动场",
+      "distractors": [
+        "An area of ground where cars can be left",
+        "A room where a group can watch a film",
+        "A room where tools are kept for the garden"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-programme",
+      "item_role": "diagnostic",
+      "referenceHeadword": "programme",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "9d615ddb-2d52-4561-8047-f049920c2edb",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "7f32d3e7-e80c-4ec6-80c2-c2e6da954d49",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B2"
+      },
+      "word": "programme",
+      "partOfSpeech": "n.",
+      "context": "They joined a summer sports programme.",
+      "definitionEn": "A planned series of activities or events",
+      "definitionZh": "计划；活动安排",
+      "distractors": [
+        "A list of things that have already gone wrong",
+        "A note asking to borrow money for a few days",
+        "A set of ideas that have no connection to each other"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-team",
+      "item_role": "diagnostic",
+      "referenceHeadword": "team",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "e6ac8e2a-eadc-4b80-8a1c-497753accbb6",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "9a8fd416-3712-41cc-b4ee-ea309d8ffd93",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "team",
+      "partOfSpeech": "n.",
+      "context": "A small team is working on the new app.",
+      "definitionEn": "People working together on the same task",
+      "definitionZh": "工作团队",
+      "distractors": [
+        "People waiting for the same bus",
+        "People shopping in the same store by chance",
+        "People living next to each other"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-view",
+      "item_role": "diagnostic",
+      "referenceHeadword": "view",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "20849ee4-09d1-47be-a049-341f6300e166",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "5be2182f-5cc4-438a-ac94-5c91ff550dbd",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "view",
+      "partOfSpeech": "n.",
+      "context": "What is your view on the new rule?",
+      "definitionEn": "Your opinion about it",
+      "definitionZh": "看法；观点",
+      "distractors": [
+        "Your memory of its exact words",
+        "Your guess about its starting date",
+        "Your copy of the written rule"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-bad",
+      "item_role": "diagnostic",
+      "referenceHeadword": "bad",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "2491ada4-46c8-49d2-bf37-53f0341b0459",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "f078beed-3aea-4b4e-8e50-be11fc5feb33",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "bad",
+      "partOfSpeech": "adj.",
+      "context": "He had a bad headache after lunch.",
+      "definitionEn": "Very painful",
+      "definitionZh": "（头痛）很厉害的",
+      "distractors": [
+        "Easy to ignore",
+        "Over in a moment",
+        "Slowly getting better"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-sorry",
+      "item_role": "diagnostic",
+      "referenceHeadword": "sorry",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "bd7580bb-5bef-46ee-89af-fe08b492baba",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "105453b2-2c5b-4ee5-9715-b8e1a76592dd",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "A2"
+      },
+      "word": "sorry",
+      "partOfSpeech": "adj.",
+      "context": "I was sorry to hear she was ill.",
+      "definitionEn": "Feeling sad for someone who is having a hard time",
+      "definitionZh": "难过的；表示同情的",
+      "distractors": [
+        "Feeling proud of someone who has done well",
+        "Feeling jealous of someone who has something you want",
+        "Feeling nervous about meeting someone new"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-space",
+      "item_role": "diagnostic",
+      "referenceHeadword": "space",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "694aaa3f-d296-471f-bc15-aa62cc97bfbc",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "47cebb6d-2ec2-49c5-8c14-0c4abf990098",
+        "senseRevision": 3,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "space",
+      "partOfSpeech": "n.",
+      "context": "She read a story about a trip into space.",
+      "definitionEn": "The area beyond the air around Earth",
+      "definitionZh": "太空",
+      "distractors": [
+        "The area deep below the ground",
+        "The area below the surface of the sea",
+        "The area along the edge of a forest"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-card",
+      "item_role": "diagnostic",
+      "referenceHeadword": "card",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "108be1ee-3c85-4526-b474-2f1fb7bac0a8",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "a3cd7a8e-53a4-4260-99ce-247518798333",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "card",
+      "partOfSpeech": "n.",
+      "context": "She showed her membership card at the desk.",
+      "definitionEn": "A flat piece of plastic or thick paper showing you're a member",
+      "definitionZh": "会员卡；载有会员信息的卡片",
+      "distractors": [
+        "A paper ticket showing your seat at a show",
+        "A small label showing the price of a shirt",
+        "A paper slip showing what you paid at a shop"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-fresh",
+      "item_role": "diagnostic",
+      "referenceHeadword": "fresh",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "9d54908f-8941-4d78-9733-8da667e8f548",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "590dee86-54f6-4d30-ac48-56a1e62e9110",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "fresh",
+      "partOfSpeech": "adj.",
+      "context": "Please bring a fresh sheet of paper.",
+      "definitionEn": "New, replacing what was there before",
+      "definitionZh": "新换的；重新拿来的",
+      "distractors": [
+        "Old and worth keeping for many years",
+        "Used for a long time without a change",
+        "Hard to find in most shops"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-rent",
+      "item_role": "diagnostic",
+      "referenceHeadword": "rent",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "dfe9ab6c-ea56-4460-a968-e37425d4f0ad",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "a3ddf4b6-80f6-4470-b2fc-46cc8954fe64",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "A2"
+      },
+      "word": "rent",
+      "partOfSpeech": "v.",
+      "context": "We want to rent a flat near the park.",
+      "definitionEn": "To pay to use something that belongs to someone else",
+      "definitionZh": "租用",
+      "distractors": [
+        "To pay to keep something as your own",
+        "To give something away without asking for money",
+        "To change one thing for another at a shop"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-character",
+      "item_role": "diagnostic",
+      "referenceHeadword": "character",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "fe724061-8671-4c82-aeb8-56bb7c8720bd",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "890fdda1-6a3e-440b-adaf-87786de9d747",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "character",
+      "partOfSpeech": "n.",
+      "context": "It says a lot about her character.",
+      "definitionEn": "The qualities that make someone the kind of person they are",
+      "definitionZh": "性格；品质",
+      "distractors": [
+        "The clothes someone chooses to wear to a party",
+        "The places someone visits in their free time",
+        "The things someone keeps on their desk"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-memory",
+      "item_role": "diagnostic",
+      "referenceHeadword": "memory",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "bb5e232c-9c3c-4058-9f46-68951adc38a5",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4b5925a3-3321-4120-96e0-4b5193100185",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "memory",
+      "partOfSpeech": "n.",
+      "context": "My grandpa has a good memory.",
+      "definitionEn": "Your ability to remember things",
+      "definitionZh": "记忆；记忆力",
+      "distractors": [
+        "Your ability to hear quiet sounds",
+        "Your ability to move quickly",
+        "Your ability to see in low light"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-perform",
+      "item_role": "diagnostic",
+      "referenceHeadword": "perform",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "cb272bf1-6927-4d89-8544-83ab2e674214",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "f0b48a4e-1fac-42b7-9fc5-4ab3207af977",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B2"
+      },
+      "word": "perform",
+      "partOfSpeech": "v.",
+      "context": "The class will perform the experiment today.",
+      "definitionEn": "To carry out an action or task",
+      "definitionZh": "执行；做",
+      "distractors": [
+        "To write down a plan for doing something later",
+        "To explain what a task was about after it is done",
+        "To ask someone to stop doing a task"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-sale",
+      "item_role": "diagnostic",
+      "referenceHeadword": "sale",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "31272112-a295-461a-a127-7e828c4e1349",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "47103d04-ede1-4035-a32a-d756826ef8c2",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B2"
+      },
+      "word": "sale",
+      "partOfSpeech": "n.",
+      "context": "The sale of the house took several months.",
+      "definitionEn": "The act of selling something",
+      "definitionZh": "销售；出售",
+      "distractors": [
+        "The act of lending something to a friend",
+        "The act of fixing something that is broken",
+        "The act of looking after something for a while"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-goal",
+      "item_role": "diagnostic",
+      "referenceHeadword": "goal",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "568e1018-da8c-49ac-888b-36d2c13c14a8",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "b315eb6c-acbd-4b86-bd01-4dee8ea62738",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "A2"
+      },
+      "word": "goal",
+      "partOfSpeech": "n.",
+      "context": "The ball rolled past the goal.",
+      "definitionEn": "The frame or area a player sends the ball into to score",
+      "definitionZh": "球门",
+      "distractors": [
+        "The line that shows where the ball has gone out",
+        "The place where players sit between games",
+        "The mark in the middle where a game begins"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-repair",
+      "item_role": "diagnostic",
+      "referenceHeadword": "repair",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "4eefe608-c150-43c2-b7fe-6a91fd1fec2c",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "0dfd080b-f7d1-4413-aacd-5f624da10bf6",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "repair",
+      "partOfSpeech": "n.",
+      "context": "The bike needed a repair.",
+      "definitionEn": "Work done to fix something that is broken",
+      "definitionZh": "修理；修补",
+      "distractors": [
+        "Work done to make something look a different colour",
+        "Work done to carry something to a new place",
+        "Work done to take a new tool out of its box"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-garage",
+      "item_role": "diagnostic",
+      "referenceHeadword": "garage",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "616f3665-f60c-4914-a71a-edfd6fd30bd3",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "58626133-ad2d-4ff0-952d-249a1942ddce",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "garage",
+      "partOfSpeech": "n.",
+      "context": "She took the car to a garage.",
+      "definitionEn": "A business where people fix cars",
+      "definitionZh": "汽车修理厂",
+      "distractors": [
+        "A business where people sell food",
+        "A business where people make clothes",
+        "A business where people print books"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-delay",
+      "item_role": "diagnostic",
+      "referenceHeadword": "delay",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "a41f0b91-39ae-45df-9d79-c37cd2252bf5",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4a166686-454a-47b2-9456-6bd4e24a52b6",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "A2"
+      },
+      "word": "delay",
+      "partOfSpeech": "n.",
+      "context": "There was a delay before we could leave.",
+      "definitionEn": "Extra time you have to wait before something happens",
+      "definitionZh": "延期；推迟",
+      "distractors": [
+        "Extra space you have to leave between two things",
+        "Extra money you have to pay when you buy something",
+        "Extra work you have to do before a holiday"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-diagnostic-kit",
+      "item_role": "diagnostic",
+      "referenceHeadword": "kit",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "fd5829e9-ef4a-41d7-b40f-03c750aa5ee3",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "da07a23d-0bcf-41c1-8c62-fe98557876cf",
+        "senseRevision": 2,
+        "originalRole": "diagnostic",
+        "originalCefr": "B1"
+      },
+      "word": "kit",
+      "partOfSpeech": "n.",
+      "context": "He packed his first-aid kit.",
+      "definitionEn": "A set of things needed for a particular task",
+      "definitionZh": "成套工具；全套用品",
+      "distractors": [
+        "A list of places to visit on a trip",
+        "A group of people who play together",
+        "A note telling someone when to leave"
+      ]
+    }
+  ]
+}

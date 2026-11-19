@@ -12,7 +12,7 @@ shared types (`type.ts` — `Problem`/`WordEntry`/`Calc*`/voucher & mastery type
 
 **Depends on:** only npm (`@supabase/supabase-js`, react, next). **Nothing** module-specific.
 
-**Rule:** core must NEVER import a subject module (calc/math/english/flipbook/audio) or
+**Rule:** core must NEVER import a subject module (calc/math/english/audio) or
 ui/rewards/player. Only put something here if it's genuinely shared across modules. A type used
 by exactly one module belongs in that module's package, not here.
 
@@ -51,3 +51,5 @@ events so account metadata changes remain visible across page navigation.
 `WordEntry.id?: string` carries the canonical `word_entries` UUID when loaded from the database.
 Legacy static entries may omit it. Features requiring durable word references must require this
 ID rather than invent one from a spelling string or reuse a different stage's entry.
+
+Project media URLs preserve legacy object keys. Browser writes go through the web project-media API.

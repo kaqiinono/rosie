@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FlipbookPage, openPdfDocument, renderPdfPageUrl, revokePageUrls } from '@rosie/flipbook'
+import { openPdfFile, renderPdfPageUrl, revokePageUrls } from '@rosie/math/utils/math-pdf'
 import { LoadingOverlay } from '@rosie/ui'
 import { Button, Flex, Text } from '@rosie/ui/themes'
 import DemoMedia from './DemoMedia'
@@ -17,23 +17,28 @@ export default function PdfSample({ active, epoch }: { active: boolean; epoch: n
   useEffect(() => {
     let cancelled = false
     const owned: string[] = []
-    const source = URL.createObjectURL(makeGardenPdf())
+    const source = new File([makeGardenPdf()], 'garden.pdf', { type: 'application/pdf' })
     setLoading(true); setError(''); setUrls([])
     void (async () => {
       try {
-        const { doc, numPages } = await openPdfDocument(source)
+        const { doc, numPages } = await openPdfFile(source)
         try {
           for (let i = 1; i <= numPages && !cancelled; i++) {
             const url = await renderPdfPageUrl(doc, i, 1)
-            if (cancelled) { URL.revokeObjectURL(url); break }
+            if (cancelled) {
+              URL.revokeObjectURL(url)
+              break
+            }
             owned.push(url)
           }
           if (!cancelled) setUrls([...owned])
-        } finally { await doc.destroy() }
+        } finally {
+          await doc.destroy()
+        }
       } catch { if (!cancelled) setError('PDF 暂时无法读取，请检查网络后重试。') }
       finally { if (!cancelled) setLoading(false) }
     })()
-    return () => { cancelled = true; revokePageUrls(owned); URL.revokeObjectURL(source) }
+    return () => { cancelled = true; revokePageUrls(owned) }
   }, [attempt])
   return <Flex direction="column" gap="4">
     <Flex gap="2" wrap="wrap">
@@ -46,7 +51,10 @@ export default function PdfSample({ active, epoch }: { active: boolean; epoch: n
     {loading && <div className="relative min-h-80"><LoadingOverlay visible placement="content" /></div>}
     {error && <Flex direction="column" gap="2"><Text role="alert" color="red">{error}</Text><Button onClick={() => setAttempt(n => n + 1)}>重试读取 PDF</Button></Flex>}
     {!loading && !error && <div className={spread ? 'grid grid-cols-2 gap-2' : 'mx-auto w-full max-w-lg'}>
-      {urls.slice(page, page + (spread ? 2 : 1)).map((url, i) => <div key={url} className="aspect-[3/4] min-w-0"><FlipbookPage pageNumber={page + i + 1} imageUrl={url} /></div>)}
+      {urls.slice(page, page + (spread ? 2 : 1)).map((url, i) => (
+        // eslint-disable-next-line @next/next/no-img-element -- rendered PDF blob URLs
+        <img key={url} src={url} alt={`第 ${page + i + 1} 页`} className="aspect-[3/4] w-full min-w-0 object-contain" />
+      ))}
     </div>}
     <Text size="2">页面词汇：garden 花园 · bird 小鸟 · tree 树</Text>
     <DemoMedia type="audio" active={active} epoch={epoch} />

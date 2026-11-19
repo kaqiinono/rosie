@@ -1,0 +1,6490 @@
+{
+  "format": "rosie-vocabulary-v2-draft-1",
+  "status": "editorial_draft",
+  "referenceVersion": "BNC/COCA WordFamilyFinder 1.3.0; Kilgarriff full BNC quartiles, 2026-11-19",
+  "legacyBankVersion": "va-aa1dc4c4102c534a2a6794f74a7b4c532334a9f96ab5fcd7cdbeaa074baac16d",
+  "item_role": "main",
+  "bandSizes": [
+    1000,
+    1000,
+    1000,
+    1000
+  ],
+  "quartileSize": 250,
+  "items": [
+    {
+      "itemId": "rosie-v2-main-able",
+      "item_role": "main",
+      "referenceHeadword": "able",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "a0ce2ac7-30b3-4b43-b6c8-48807ce9403b",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "04a2377d-aa47-4636-8d5e-f50402071f2f",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "able",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "definitionEn": "Having the skill or power to do something",
+      "definitionZh": "有能力的；能够的",
+      "distractors": [
+        "Ready to stop doing something you dislike",
+        "Happy that your work has finished",
+        "Afraid to try something for the first time"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-act",
+      "item_role": "main",
+      "referenceHeadword": "act",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "1bd5c8a9-7e20-4446-afbd-0eda74011c03",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "ab50c285-3698-47dc-b543-cd225c4c5660",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "act",
+      "partOfSpeech": "v.",
+      "context": "Mia will act in the school show.",
+      "definitionEn": "To play a part in a show",
+      "definitionZh": "扮演角色；表演",
+      "distractors": [
+        "To sell tickets for a show",
+        "To paint the scenery for a show",
+        "To choose the music for a show"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-always",
+      "item_role": "main",
+      "referenceHeadword": "always",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "a1a58bdc-879a-46f5-b66b-0b673856f1d0",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "always",
+      "partOfSpeech": "adv.",
+      "context": "Jo always walks to class.",
+      "definitionEn": "Every time",
+      "definitionZh": "每次都；总是",
+      "distractors": [
+        "Once in a while",
+        "Hardly ever",
+        "Just this once"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-any",
+      "item_role": "main",
+      "referenceHeadword": "any",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "be64cc30-f149-4baa-a82d-f334e3f3237b",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "any",
+      "partOfSpeech": "det.",
+      "context": "Pick any seat you like.",
+      "definitionEn": "Whichever one you choose",
+      "definitionZh": "任一；随便哪个",
+      "distractors": [
+        "The same one as before",
+        "The only one left",
+        "The one closest to you"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-centre",
+      "item_role": "main",
+      "referenceHeadword": "centre",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "4be3ee19-6c0b-4d34-9612-be699b51c0cf",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "centre",
+      "partOfSpeech": "n.",
+      "context": "Put the dot in the centre of the circle.",
+      "definitionEn": "The middle part",
+      "definitionZh": "中心；中间",
+      "distractors": [
+        "The outside edge",
+        "The highest point",
+        "The left side"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-follow",
+      "item_role": "main",
+      "referenceHeadword": "follow",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "d11872ca-1b1a-4583-8752-b91405aedda4",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "follow",
+      "partOfSpeech": "v.",
+      "context": "Please follow Mia along the path.",
+      "definitionEn": "To go behind someone",
+      "definitionZh": "跟随",
+      "distractors": [
+        "To go past someone",
+        "To wait for someone",
+        "To walk towards someone"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-mister",
+      "item_role": "main",
+      "referenceHeadword": "mister",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "mister",
+      "partOfSpeech": "n.",
+      "context": "The name on his door was Mister Lee.",
+      "definitionEn": "A title used before a man's name",
+      "definitionZh": "先生；用于男子姓名前的称呼",
+      "distractors": [
+        "A title for a king's son",
+        "A title for a ship's captain",
+        "A title for the head of a city"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-or",
+      "item_role": "main",
+      "referenceHeadword": "or",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "55634ae1-824a-4682-ab8c-fbb957cf6102",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "or",
+      "partOfSpeech": "conj.",
+      "context": "Is it red or blue?",
+      "definitionEn": "Shows a choice between two things",
+      "definitionZh": "或者；连接可选的事物",
+      "distractors": [
+        "Shows why something happened",
+        "Shows when something happened",
+        "Shows how two things are alike"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-school",
+      "item_role": "main",
+      "referenceHeadword": "school",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "1631d635-ad95-4162-8fe0-0e15519b102d",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "797ae287-c26a-44f9-8494-4a3d39db49f9",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "school",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A place where children go to learn",
+      "definitionZh": "学校",
+      "distractors": [
+        "A place where children go to see sick people",
+        "A place where people go to get a passport",
+        "A place where people go to watch a film"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-support",
+      "item_role": "main",
+      "referenceHeadword": "support",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "e5e9acec-e5f2-45d9-927c-3bef222bd73e",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "support",
+      "partOfSpeech": "v.",
+      "context": "Two posts support the roof.",
+      "definitionEn": "To hold something up",
+      "definitionZh": "支撑；托住",
+      "distractors": [
+        "To pull something apart",
+        "To cover something up",
+        "To turn something over"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-than",
+      "item_role": "main",
+      "referenceHeadword": "than",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "e9396364-7e84-44a1-a610-acf6b2687dda",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "than",
+      "partOfSpeech": "conj.",
+      "context": "Our tree is taller than the wall.",
+      "definitionEn": "Helps say which of two things is bigger or smaller",
+      "definitionZh": "比；引出比较对象",
+      "distractors": [
+        "Helps say when something starts or ends",
+        "Helps say why something happens",
+        "Helps say where something is"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-very",
+      "item_role": "main",
+      "referenceHeadword": "very",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "2facac4b-3949-409d-a5e4-c0de482750ef",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "very",
+      "partOfSpeech": "adv.",
+      "context": "The water felt very cold.",
+      "definitionEn": "A lot",
+      "definitionZh": "很；非常",
+      "distractors": [
+        "Only a little",
+        "For a moment",
+        "Once again"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-want",
+      "item_role": "main",
+      "referenceHeadword": "want",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "e9f74007-1030-414c-9788-647e20e3467a",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "want",
+      "partOfSpeech": "v.",
+      "context": "I want a blue pen.",
+      "definitionEn": "To wish to have something",
+      "definitionZh": "想要",
+      "distractors": [
+        "To try to hide something",
+        "To forget to bring something",
+        "To plan to return something"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-while",
+      "item_role": "main",
+      "referenceHeadword": "while",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "a7999f0c-d2cf-42a6-9abb-6f1994383429",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "while",
+      "partOfSpeech": "conj.",
+      "context": "I read while Jo drew.",
+      "definitionEn": "During the time that",
+      "definitionZh": "在……的时候",
+      "distractors": [
+        "Long before",
+        "Right after",
+        "Because"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-who",
+      "item_role": "main",
+      "referenceHeadword": "who",
+      "band": 1,
+      "quartile": 1,
+      "catalogHeadwordId": "feea2585-6b8e-4996-a59b-f3cf2e409858",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "who",
+      "partOfSpeech": "pron.",
+      "context": "Who is at the door?",
+      "definitionEn": "Asks about a person",
+      "definitionZh": "用来问是哪个人；谁",
+      "distractors": [
+        "Asks about a place",
+        "Asks about a time",
+        "Asks about a number"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-church",
+      "item_role": "main",
+      "referenceHeadword": "church",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "dd6c0444-b80a-40c9-a71c-10ebb371bcb3",
+      "sourceStages": [
+        "KET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "church",
+      "partOfSpeech": "n.",
+      "context": "There is a church on our street.",
+      "definitionEn": "A place where Christians meet to pray",
+      "definitionZh": "教堂",
+      "distractors": [
+        "A place where people go to borrow books",
+        "A place where judges hear cases",
+        "A place where trains pick up passengers"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-club",
+      "item_role": "main",
+      "referenceHeadword": "club",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "87384114-603d-449f-bf48-aa7c31ecf097",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "dd861243-7cdf-468c-bb04-e0737da04276",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "club",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A group that meets to do something its members enjoy",
+      "definitionZh": "俱乐部",
+      "distractors": [
+        "A group that travels on the same bus by chance",
+        "A group of people waiting to pay for things",
+        "A group of people living in the same house"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-collect",
+      "item_role": "main",
+      "referenceHeadword": "collect",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "1652859f-634f-4dcc-887d-b0d8da8d87a7",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "f24c9e3b-a71b-4a93-a5e1-75a4083cd845",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "collect",
+      "partOfSpeech": "v.",
+      "context": "",
+      "definitionEn": "To bring things together from different places",
+      "definitionZh": "收集",
+      "distractors": [
+        "To give things away to different people",
+        "To keep one thing apart from everything else",
+        "To use something and then put it back"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-doctor",
+      "item_role": "main",
+      "referenceHeadword": "doctor",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "5e942369-3e7e-4312-a74a-594da130c70c",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "cd019342-c20a-4620-b2fd-e160ec3250f9",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "doctor",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A person who helps people who are ill or hurt",
+      "definitionZh": "医生",
+      "distractors": [
+        "A person who teaches children at school",
+        "A person who cooks food in a restaurant",
+        "A person who brings letters to homes"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-eye",
+      "item_role": "main",
+      "referenceHeadword": "eye",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "71f12998-222b-4594-9af1-40b017ee6942",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "ecd98554-12f3-4091-8100-844399ec383c",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "eye",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "The part of your face you use to see",
+      "definitionZh": "眼睛",
+      "distractors": [
+        "The part of your face you use to smell",
+        "The part of your mouth you use to bite",
+        "The part of your head you use to hear"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-father",
+      "item_role": "main",
+      "referenceHeadword": "father",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "d766743d-bb62-46b9-9343-b3570b6266e5",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "85219f39-1c0d-4a0f-9156-74b788ccf859",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "father",
+      "partOfSpeech": "n.",
+      "context": "Tom is her father.",
+      "definitionEn": "Her male parent",
+      "definitionZh": "她的父亲",
+      "distractors": [
+        "Her male child",
+        "Her mother's brother",
+        "Her brother's son"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-friend",
+      "item_role": "main",
+      "referenceHeadword": "friend",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "170c9f79-db4e-4fda-9517-5f7391400061",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "3b8625a3-bea8-46e3-bc59-84149e23fb25",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "friend",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Someone you know well and enjoy being with",
+      "definitionZh": "朋友",
+      "distractors": [
+        "Someone who pays you to do a job",
+        "Someone who lives in the home next to yours",
+        "Someone who is the child of your uncle"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-girl",
+      "item_role": "main",
+      "referenceHeadword": "girl",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "b9a52768-d211-46c2-a7cd-bb3cb1244a67",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "2d29bddf-9c5a-412f-b117-93571e2fd6f3",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "girl",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A child who is female",
+      "definitionZh": "女孩",
+      "distractors": [
+        "A child who is male",
+        "A man who has a child",
+        "A woman who has a child"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hundred",
+      "item_role": "main",
+      "referenceHeadword": "hundred",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "91dd1dc3-4f86-4650-95fa-901dbfd504a0",
+      "sourceStages": [
+        "KET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "hundred",
+      "partOfSpeech": "num.",
+      "context": "The jar held a hundred beads.",
+      "definitionEn": "The number just after ninety-nine",
+      "definitionZh": "一百",
+      "distractors": [
+        "The number just after nineteen",
+        "The number just before ninety",
+        "The number just before ten"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-major",
+      "item_role": "main",
+      "referenceHeadword": "major",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "major",
+      "partOfSpeech": "adj.",
+      "context": "Moving house was a major change.",
+      "definitionEn": "Big or important",
+      "definitionZh": "重大的；重要的",
+      "distractors": [
+        "Small and easy to miss",
+        "Slow and gradual",
+        "Lasting only a short time"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-mother",
+      "item_role": "main",
+      "referenceHeadword": "mother",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "5d800824-e99a-43f4-b981-b164653d1cfa",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "3d3e9a85-18b9-4e7f-8f5b-db039e6a99cd",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "mother",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A female parent",
+      "definitionZh": "母亲",
+      "distractors": [
+        "A parent's sister",
+        "A woman whose child is one of your parents",
+        "A brother's daughter"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-price",
+      "item_role": "main",
+      "referenceHeadword": "price",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "d83f2ba4-a8ab-491d-93c6-52a3cc68e40d",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "price",
+      "partOfSpeech": "n.",
+      "context": "I checked the price of the kite.",
+      "definitionEn": "What something costs",
+      "definitionZh": "价格",
+      "distractors": [
+        "How much something weighs",
+        "How long something lasts",
+        "How many people want something"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-science",
+      "item_role": "main",
+      "referenceHeadword": "science",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "15b44b33-7e32-4560-b930-35aef4903215",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "1a39a2b1-2966-4375-8a38-2976f0c1be0f",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "science",
+      "partOfSpeech": "n.",
+      "context": "Science is Mia's favourite subject.",
+      "definitionEn": "Learning how nature works by observing and testing ideas",
+      "definitionZh": "科学",
+      "distractors": [
+        "Learning how to read and play music",
+        "Learning about events in the past",
+        "Learning to draw and paint pictures"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-stand",
+      "item_role": "main",
+      "referenceHeadword": "stand",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "533c97b6-b10e-4288-80b3-caf2543466cc",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "stand",
+      "partOfSpeech": "v.",
+      "context": "Please stand beside your desk.",
+      "definitionEn": "To be on your feet",
+      "definitionZh": "站立",
+      "distractors": [
+        "To rest on your knees",
+        "To lie on your back",
+        "To bend at the waist"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-until",
+      "item_role": "main",
+      "referenceHeadword": "until",
+      "band": 1,
+      "quartile": 2,
+      "catalogHeadwordId": "cb733d97-a6b5-41de-9b55-2aa85eece310",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "until",
+      "partOfSpeech": "prep.",
+      "context": "We stayed until lunch.",
+      "definitionEn": "Up to the time of",
+      "definitionZh": "直到",
+      "distractors": [
+        "Just after the time of",
+        "At the same time as",
+        "Long before the time of"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-brother",
+      "item_role": "main",
+      "referenceHeadword": "brother",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "7fd8efa2-d68b-44d9-af43-f8f0fcda2e99",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "edc80fc0-e977-4e3f-89a2-02b176979f48",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "brother",
+      "partOfSpeech": "n.",
+      "context": "Ben is Mia's brother.",
+      "definitionEn": "A boy or man who shares a parent with her",
+      "definitionZh": "兄弟",
+      "distractors": [
+        "Her father's father",
+        "Her aunt's son",
+        "Her aunt's husband"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-chair",
+      "item_role": "main",
+      "referenceHeadword": "chair",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "a375f841-52b3-44e1-be33-9e291d523d84",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "a89b4292-7bd3-4efd-986d-64909e929156",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "chair",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A seat with a back for one person",
+      "definitionZh": "椅子",
+      "distractors": [
+        "A long seat for several people to share",
+        "A low piece of furniture you put drinks on",
+        "A wide piece of furniture you sleep on"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-depend",
+      "item_role": "main",
+      "referenceHeadword": "depend",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "depend",
+      "partOfSpeech": "v.",
+      "context": "The picnic will depend on the weather.",
+      "definitionEn": "To be decided by something else",
+      "definitionZh": "取决于",
+      "distractors": [
+        "To happen before something else",
+        "To hide something from view",
+        "To make a copy of something"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-eat",
+      "item_role": "main",
+      "referenceHeadword": "eat",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "c993008c-2b1e-4e9f-b3c0-2c20b9f81dd7",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "ab5db9d6-ee65-460c-b527-82d80041a6ac",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "eat",
+      "partOfSpeech": "v.",
+      "context": "",
+      "definitionEn": "To put food in your mouth and swallow it",
+      "definitionZh": "吃",
+      "distractors": [
+        "To make food hot before a meal",
+        "To cut food into very small pieces",
+        "To bring a meal to someone at a table"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-enjoy",
+      "item_role": "main",
+      "referenceHeadword": "enjoy",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "19c704d4-9e1c-4e50-b481-1e8f8e42e3b1",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "enjoy",
+      "partOfSpeech": "v.",
+      "context": "Did you enjoy the play?",
+      "definitionEn": "To get pleasure from something",
+      "definitionZh": "喜欢；享受",
+      "distractors": [
+        "To get tired of something",
+        "To worry about something",
+        "To forget about something"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-fly",
+      "item_role": "main",
+      "referenceHeadword": "fly",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "7f8830ec-b6f1-4385-9da7-aa6a33cdd88b",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "fly",
+      "partOfSpeech": "v.",
+      "context": "I saw the bird fly past.",
+      "definitionEn": "To move through the air",
+      "definitionZh": "飞行",
+      "distractors": [
+        "To move through deep water",
+        "To move along the ground",
+        "To move under the soil"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-garden",
+      "item_role": "main",
+      "referenceHeadword": "garden",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "c18f53bf-b746-4314-9a16-5b138917d566",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "5f0de300-af07-4d52-b9ae-c6b11e852f85",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "garden",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A place near a home where people grow plants",
+      "definitionZh": "花园",
+      "distractors": [
+        "A place near a home where cars are kept",
+        "A place in town where people buy food",
+        "A place in town where people catch a train"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hang",
+      "item_role": "main",
+      "referenceHeadword": "hang",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "da284bd8-6ada-409b-95c3-be3015b33d69",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "hang",
+      "partOfSpeech": "v.",
+      "context": "Hang the coat here, please.",
+      "definitionEn": "To put something up so it is held from above",
+      "definitionZh": "挂起；悬挂",
+      "distractors": [
+        "To fold something into a small square",
+        "To lay something flat on a surface",
+        "To wrap something around a box"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hospital",
+      "item_role": "main",
+      "referenceHeadword": "hospital",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "215b5e81-c1f1-4003-8138-e726cd586179",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e33e4adb-9e24-4c21-a409-99faef99cd10",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "hospital",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A place where ill or hurt people get care",
+      "definitionZh": "医院",
+      "distractors": [
+        "A place where people wait for a train",
+        "A place where people buy or borrow books",
+        "A place where people go to see a film"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-leg",
+      "item_role": "main",
+      "referenceHeadword": "leg",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "13f659d3-1744-47a4-a921-98b6c2833b00",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "72691658-638f-4eef-9540-2221d9cb4983",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "leg",
+      "partOfSpeech": "n.",
+      "context": "He hurt his leg.",
+      "definitionEn": "The part of the body between hip and foot",
+      "definitionZh": "腿",
+      "distractors": [
+        "The part between shoulder and hand",
+        "The part between head and shoulders",
+        "The part between wrist and fingers"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-picture",
+      "item_role": "main",
+      "referenceHeadword": "picture",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "b62515e3-cd8f-4a40-b1d8-84f4a914a6b0",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "3957c5c8-6c5c-455b-88a3-7eb57f4daeee",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "picture",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Something you draw, paint, or make with a camera",
+      "definitionZh": "图片；图画；照片",
+      "distractors": [
+        "Something you read to find out the time of a train",
+        "Something you write to tell a friend about your day",
+        "Something you buy to get into a cinema"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-quiet",
+      "item_role": "main",
+      "referenceHeadword": "quiet",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "dab69a6d-112e-4c4e-af2e-62f4ba6b8d6e",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "190a805f-1b83-4aeb-b0d6-474651b5b631",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "quiet",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "definitionEn": "Making little or no noise",
+      "definitionZh": "安静的",
+      "distractors": [
+        "Making a loud sound all the time",
+        "Moving with a lot of speed",
+        "Full of people and things to do"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-shoot",
+      "item_role": "main",
+      "referenceHeadword": "shoot",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "12f27de5-68c0-405c-9511-a7a56bc79261",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "shoot",
+      "partOfSpeech": "v.",
+      "context": "Mia had a chance to shoot in the football match.",
+      "definitionEn": "To kick the ball at the goal to score",
+      "definitionZh": "射门；把球踢向球门，试图得分",
+      "distractors": [
+        "To pass the ball to another player",
+        "To stop the ball with your foot",
+        "To carry the ball off the field"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-strange",
+      "item_role": "main",
+      "referenceHeadword": "strange",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "dff52561-4062-4abd-84d7-2d9573f839d8",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "strange",
+      "partOfSpeech": "adj.",
+      "context": "There was a strange noise upstairs.",
+      "definitionEn": "Unusual or hard to explain",
+      "definitionZh": "奇怪的；不寻常的",
+      "distractors": [
+        "Easy to hear from far away",
+        "The same each time",
+        "So quiet you can hardly hear it"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-window",
+      "item_role": "main",
+      "referenceHeadword": "window",
+      "band": 1,
+      "quartile": 3,
+      "catalogHeadwordId": "641a238c-ff5a-4f31-87b6-e7f9c03215ce",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "6273f6d5-222c-4f56-b0f0-8587182c9e10",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "window",
+      "partOfSpeech": "n.",
+      "context": "Mia looked through the window.",
+      "definitionEn": "An opening with glass that lets light in",
+      "definitionZh": "窗户",
+      "distractors": [
+        "A cover that keeps rain off a house",
+        "A set of steps between floors",
+        "A shelf fixed to a wall"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-ashamed",
+      "item_role": "main",
+      "referenceHeadword": "ashamed",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "61dd6151-9cfd-44d6-903d-35ef5aedf4f0",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "0f9cc394-9991-4a87-9e9e-5657fd1a57c4",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "ashamed",
+      "partOfSpeech": "adj.",
+      "context": "He felt ashamed when he thought about what he had done.",
+      "definitionEn": "Feeling bad about something wrong or embarrassing you did",
+      "definitionZh": "羞愧的；惭愧的",
+      "distractors": [
+        "Feeling worried that something may go wrong soon",
+        "Feeling glad because you did something difficult well",
+        "Feeling cross because you had to wait a long time"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bag",
+      "item_role": "main",
+      "referenceHeadword": "bag",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "9b502a27-304b-4ebf-a593-514c685eac74",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "cb7a2b64-9fbd-4702-8544-6d686c8f2a88",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "bag",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A soft thing you carry other things in",
+      "definitionZh": "包；袋子",
+      "distractors": [
+        "A small box for keeping food cold",
+        "A piece of cloth for washing dishes",
+        "A hard board you use to write on"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-boat",
+      "item_role": "main",
+      "referenceHeadword": "boat",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "16a5a3c1-0071-413b-9647-c6fb29d14f2f",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "87ebda73-1bbd-45ff-967b-2c8458819be8",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "boat",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A small vehicle that takes people across water",
+      "definitionZh": "船",
+      "distractors": [
+        "A large vehicle that takes people along a road",
+        "A small vehicle that carries people through the air",
+        "A long vehicle that takes people along tracks"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bread",
+      "item_role": "main",
+      "referenceHeadword": "bread",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "663266de-b0ce-4409-8f17-76296978628a",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "b6608024-3ccf-4474-9811-37e518720fa5",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "bread",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A baked food you often cut into slices",
+      "definitionZh": "面包",
+      "distractors": [
+        "A sweet cold food you eat from a dish",
+        "A hot food made by cooking rice in water",
+        "A soft food made by cooking eggs in a pan"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bus",
+      "item_role": "main",
+      "referenceHeadword": "bus",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "60704e03-3ca0-4492-89b9-5c78b647241b",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "6ceb59a9-85c1-4ecf-b36c-c9fb13bb06d6",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "bus",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A large road vehicle that carries many people",
+      "definitionZh": "公交车",
+      "distractors": [
+        "A long vehicle that carries people on tracks",
+        "A small car whose driver you pay for a ride",
+        "A large vehicle that carries goods across water"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-cake",
+      "item_role": "main",
+      "referenceHeadword": "cake",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "b5f6559a-a128-4f2a-9558-4624f735bc6f",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "608f0b4f-1997-47c4-a830-39526e16738a",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "cake",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A sweet food made in an oven with eggs and flour",
+      "definitionZh": "蛋糕",
+      "distractors": [
+        "A cold food made with milk and ice",
+        "A hot food made from meat and water",
+        "A soft food made with cooked rice and salt"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-climb",
+      "item_role": "main",
+      "referenceHeadword": "climb",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "4855c118-7bf8-48eb-aa82-230c4dd3d948",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "14298049-4187-4cd2-ae37-3ddd603ae39a",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "climb",
+      "partOfSpeech": "v.",
+      "context": "",
+      "definitionEn": "To go up something using your hands and feet",
+      "definitionZh": "爬；攀登",
+      "distractors": [
+        "To step back from something in front of you",
+        "To walk quickly around something in your way",
+        "To move down something without taking steps"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-clock",
+      "item_role": "main",
+      "referenceHeadword": "clock",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "1a802be0-38f6-4067-8728-c6e94921d23a",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "1d70578b-7724-4d9b-a3a9-e6f19e04b5c6",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "clock",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A thing that shows what time it is",
+      "definitionZh": "时钟",
+      "distractors": [
+        "A thing that tells you how hot it is",
+        "A thing that shows you which way is north",
+        "A thing that measures how heavy a bag is"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-dig",
+      "item_role": "main",
+      "referenceHeadword": "dig",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "21f54f95-ac7c-404f-88e1-77fa31a596da",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "5905855e-b6f4-4ada-a9c4-ba5e54363efc",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "dig",
+      "partOfSpeech": "v.",
+      "context": "They plan to dig near the tree.",
+      "definitionEn": "To make a hole by moving earth away",
+      "definitionZh": "挖；掘",
+      "distractors": [
+        "To make the ground flat by walking on it",
+        "To spread dry leaves over the ground",
+        "To pour water onto a garden plant"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-eleven",
+      "item_role": "main",
+      "referenceHeadword": "eleven",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "eleven",
+      "partOfSpeech": "num.",
+      "context": "There were eleven seats.",
+      "definitionEn": "Ten and one more",
+      "definitionZh": "十一",
+      "distractors": [
+        "Ten and two more",
+        "Ten and three more",
+        "Ten and four more"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-excuse",
+      "item_role": "main",
+      "referenceHeadword": "excuse",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "7a64d1d4-6eab-47ec-8c3b-60e27cc46aa9",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "4416e94c-7db1-45a3-9b23-e6780e416207",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "excuse",
+      "partOfSpeech": "n.",
+      "context": "He gave an excuse for coming late.",
+      "definitionEn": "A reason you give to stay out of trouble",
+      "definitionZh": "为自己的过错或迟到作解释的理由；借口",
+      "distractors": [
+        "A promise to do better next time",
+        "A plan for getting to school on time",
+        "A request for help with a problem"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-guy",
+      "item_role": "main",
+      "referenceHeadword": "guy",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "ac8ac91e-393f-4547-b97f-ea9bdbe85549",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "guy",
+      "partOfSpeech": "n.",
+      "context": "Do you know the guy at the door?",
+      "definitionEn": "An informal word for a man",
+      "definitionZh": "男人；小伙子（口语）",
+      "distractors": [
+        "A word for a baby girl",
+        "A word for a married couple",
+        "A word for a group of children"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hate",
+      "item_role": "main",
+      "referenceHeadword": "hate",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "e619b850-4aeb-48a5-b99d-a69a5435a0e0",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "hate",
+      "partOfSpeech": "v.",
+      "context": "I hate being late.",
+      "definitionEn": "To dislike something very much",
+      "definitionZh": "非常讨厌",
+      "distractors": [
+        "To forget something very quickly",
+        "To find something hard to understand",
+        "To do something without thinking"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-kitchen",
+      "item_role": "main",
+      "referenceHeadword": "kitchen",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "af81edff-859c-4cdc-837c-c8edf73f0367",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "6dec0623-bbd8-47dc-86f6-2473e85c03f4",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "kitchen",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A room where people make and cook food",
+      "definitionZh": "厨房",
+      "distractors": [
+        "A room where people sleep at night",
+        "A room where people take a bath",
+        "A room where people hang up their coats"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-lunch",
+      "item_role": "main",
+      "referenceHeadword": "lunch",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "a36594dd-730b-4538-aa88-b1f346cd3bc3",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "57bf20ca-8566-477d-a6a5-128a98a1a8fd",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "lunch",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "The meal you eat in the middle of the day",
+      "definitionZh": "午餐",
+      "distractors": [
+        "The meal you eat early in the morning",
+        "The meal you eat at the end of the day",
+        "The sweet food you eat after a meal"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-master",
+      "item_role": "main",
+      "referenceHeadword": "master",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "master",
+      "partOfSpeech": "v.",
+      "context": "Mia wants to master this tune.",
+      "definitionEn": "To learn to do something very well",
+      "definitionZh": "熟练掌握",
+      "distractors": [
+        "To try something for the first time",
+        "To ask someone else to do something",
+        "To stop doing something for a while"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-milk",
+      "item_role": "main",
+      "referenceHeadword": "milk",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "9e442c89-28e4-44e9-8cf8-f92942b6e06e",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "af75632f-f839-4848-80ce-2d67fd84b838",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "milk",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A white drink that comes from cows and some other animals",
+      "definitionZh": "奶；牛奶",
+      "distractors": [
+        "A sweet drink made by pressing oranges",
+        "A drink made by putting dry leaves in hot water",
+        "A drink made by mixing lemon juice and water"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-sister",
+      "item_role": "main",
+      "referenceHeadword": "sister",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "ffbca000-1289-4c02-ae5a-22aacf3a69fb",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "7a53ff91-80b1-4694-b761-93933f15c4db",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "sister",
+      "partOfSpeech": "n.",
+      "context": "Lea is Sam's sister.",
+      "definitionEn": "A girl or woman who shares a parent with him",
+      "definitionZh": "姐妹",
+      "distractors": [
+        "His mother's mother",
+        "His uncle's daughter",
+        "His brother's wife"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-stupid",
+      "item_role": "main",
+      "referenceHeadword": "stupid",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "4990dd9e-85c7-4e2e-bac9-e7c51a2d42ed",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "stupid",
+      "partOfSpeech": "adj.",
+      "context": "I made a stupid mistake.",
+      "definitionEn": "Showing poor sense or judgment",
+      "definitionZh": "愚蠢的；欠考虑的",
+      "distractors": [
+        "Caused by bad weather",
+        "Made on purpose as a joke",
+        "Easy for others to put right"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-tooth",
+      "item_role": "main",
+      "referenceHeadword": "tooth",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "2be05658-fc72-461c-a2ed-26ef0acf4e4e",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "bcf734c2-f1b2-4595-9227-69e6855cf28c",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "tooth",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "One of the hard white parts you use to bite",
+      "definitionZh": "牙齿",
+      "distractors": [
+        "One of the soft parts around your eyes",
+        "One of the small hairs on your head",
+        "One of the hard parts at the end of your foot"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-winter",
+      "item_role": "main",
+      "referenceHeadword": "winter",
+      "band": 1,
+      "quartile": 4,
+      "catalogHeadwordId": "9621dd54-4372-4f33-a621-67e1d78a7425",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "f3be6992-5d28-4b4b-8f58-9b8c56420771",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "winter",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "The coldest part of the year",
+      "definitionZh": "冬天",
+      "distractors": [
+        "The hottest part of the year",
+        "The time of year when many leaves fall",
+        "The time of year just before summer"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-advance",
+      "item_role": "main",
+      "referenceHeadword": "advance",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "51dc936e-8feb-4e61-a2b4-ec82cdb0d11d",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "advance",
+      "partOfSpeech": "v.",
+      "context": "The runners advance towards the line.",
+      "definitionEn": "To move forward",
+      "definitionZh": "向前移动",
+      "distractors": [
+        "To turn around",
+        "To spread apart",
+        "To slow down"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-character",
+      "item_role": "main",
+      "referenceHeadword": "character",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "fe724061-8671-4c82-aeb8-56bb7c8720bd",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "121085c0-3937-49db-9981-5b0bb0669203",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "character",
+      "partOfSpeech": "n.",
+      "context": "We talked about the main character.",
+      "definitionEn": "A person someone has made up for a story",
+      "definitionZh": "角色；人物",
+      "distractors": [
+        "A person who reads a story to an audience",
+        "A person who draws the pictures for a book",
+        "A person who owns a shop that sells books"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-contract",
+      "item_role": "main",
+      "referenceHeadword": "contract",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "f2c05792-b8b7-4d66-a48b-1b1c39eafe44",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "c96dfd0e-a503-42d8-b58f-10b41493c1c2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "contract",
+      "partOfSpeech": "n.",
+      "context": "Both sides read the contract carefully.",
+      "definitionEn": "An official agreement, usually written down",
+      "definitionZh": "合同；契约",
+      "distractors": [
+        "A short message asking for some information",
+        "A written report about something that has already happened",
+        "A set of ideas for a story someone might write"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-firm",
+      "item_role": "main",
+      "referenceHeadword": "firm",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "beb95d3b-2f1f-4f8e-88f5-7e6df14bf53a",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "firm",
+      "partOfSpeech": "adj.",
+      "context": "The pillow felt firm.",
+      "definitionEn": "Hard to press in",
+      "definitionZh": "结实的；硬实的",
+      "distractors": [
+        "Rough to the skin",
+        "Wet on the outside",
+        "Warm all the way through"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-improve",
+      "item_role": "main",
+      "referenceHeadword": "improve",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "ec0e7477-a864-4f46-a12b-ff438bdbd7ee",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "improve",
+      "partOfSpeech": "v.",
+      "context": "Practice can improve your singing.",
+      "definitionEn": "To make something better",
+      "definitionZh": "改善；使进步",
+      "distractors": [
+        "To keep something secret",
+        "To copy something exactly",
+        "To bring something to an end"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-likely",
+      "item_role": "main",
+      "referenceHeadword": "likely",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "338631c7-4e23-4fea-88e5-2f918d12155c",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "likely",
+      "partOfSpeech": "adj.",
+      "context": "Rain is likely this afternoon.",
+      "definitionEn": "Probably going to happen",
+      "definitionZh": "很可能发生的",
+      "distractors": [
+        "Certain to end soon",
+        "Impossible to repeat",
+        "Too late to change"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-model",
+      "item_role": "main",
+      "referenceHeadword": "model",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "d38981c3-747e-4fca-82b5-4b47c47acda3",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "model",
+      "partOfSpeech": "n.",
+      "context": "Lina made a model of the bridge.",
+      "definitionEn": "A copy showing what something looks like",
+      "definitionZh": "模型",
+      "distractors": [
+        "A list of things you need to buy",
+        "A tool for measuring a distance",
+        "A written account of what happened"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-modern",
+      "item_role": "main",
+      "referenceHeadword": "modern",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "0c3c1b4a-2ad8-4c66-9903-a55c69681135",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "eac6aeae-aca8-433c-b617-5d94e2cb36d3",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "modern",
+      "partOfSpeech": "adj.",
+      "context": "They live in a modern flat.",
+      "definitionEn": "Using ideas or styles from the present time",
+      "definitionZh": "现代的；新式的",
+      "distractors": [
+        "Made in the same way as a long time ago",
+        "Used only by people in one small town",
+        "Easy to repair with things you have at home"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-northern",
+      "item_role": "main",
+      "referenceHeadword": "northern",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "387d4c4e-aeec-426f-a8a6-dbf5f5ecfb42",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "northern",
+      "partOfSpeech": "adj.",
+      "context": "We drove to the northern coast.",
+      "definitionEn": "In or towards the north",
+      "definitionZh": "北部的；向北的",
+      "distractors": [
+        "In or towards the east",
+        "In or towards the west",
+        "In or towards the south"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-perform",
+      "item_role": "main",
+      "referenceHeadword": "perform",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "cb272bf1-6927-4d89-8544-83ab2e674214",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "f3deb9bb-8360-4f19-992c-91b4b6f30c7e",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "perform",
+      "partOfSpeech": "v.",
+      "context": "Our class will perform on Friday.",
+      "definitionEn": "To act, sing, or dance for people to watch",
+      "definitionZh": "表演",
+      "distractors": [
+        "To buy a ticket before a show begins",
+        "To stand in a line before going into a theatre",
+        "To watch a recording of a show at home"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-population",
+      "item_role": "main",
+      "referenceHeadword": "population",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "996c922b-a0bc-4b24-a3dc-04f78eed3347",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "population",
+      "partOfSpeech": "n.",
+      "context": "The island's population has grown.",
+      "definitionEn": "The people who live in a place",
+      "definitionZh": "一个地方的人口",
+      "distractors": [
+        "The visitors arriving for a day",
+        "The homes built in a year",
+        "The land inside a border"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-regular",
+      "item_role": "main",
+      "referenceHeadword": "regular",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "9ff3f207-aa3a-4bb4-b07e-24d3c7ab31ac",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "regular",
+      "partOfSpeech": "adj.",
+      "context": "The bus comes at regular times.",
+      "definitionEn": "Happening at set times again and again",
+      "definitionZh": "有规律的；定时的",
+      "distractors": [
+        "Happening at times that keep changing",
+        "Happening just once",
+        "Happening only when someone calls"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-section",
+      "item_role": "main",
+      "referenceHeadword": "section",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "fe152757-7eb2-4715-999a-4a73bc94df5a",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "section",
+      "partOfSpeech": "n.",
+      "context": "Read the last section of the book.",
+      "definitionEn": "One part of something",
+      "definitionZh": "部分；段落",
+      "distractors": [
+        "The name on the front",
+        "A copy made later",
+        "The person who wrote it"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-suffer",
+      "item_role": "main",
+      "referenceHeadword": "suffer",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "ef0d3328-14de-4dd0-b752-c60181227846",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "suffer",
+      "partOfSpeech": "v.",
+      "context": "Some hikers suffer from the cold.",
+      "definitionEn": "To experience pain or difficulty",
+      "definitionZh": "受苦；遭受",
+      "distractors": [
+        "To notice a small change",
+        "To get ready in advance",
+        "To recover one's strength"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-therefore",
+      "item_role": "main",
+      "referenceHeadword": "therefore",
+      "band": 2,
+      "quartile": 1,
+      "catalogHeadwordId": "57e50ef1-19f3-439e-a3cd-10326d194615",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "therefore",
+      "partOfSpeech": "adv.",
+      "context": "The road was closed. Therefore, we walked home.",
+      "definitionEn": "For that reason",
+      "definitionZh": "因此；所以",
+      "distractors": [
+        "At that moment",
+        "In the same way",
+        "On the other hand"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-article",
+      "item_role": "main",
+      "referenceHeadword": "article",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "c395f352-600b-4fb3-98b2-41f15324199b",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "bc2121fa-1459-48a6-9b4d-c89cf9e21eb5",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "article",
+      "partOfSpeech": "n.",
+      "context": "I read the article after school.",
+      "definitionEn": "A piece of writing in a newspaper or magazine",
+      "definitionZh": "文章；报道",
+      "distractors": [
+        "A message on a birthday card",
+        "A list of things to buy",
+        "A sign giving directions"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bridge",
+      "item_role": "main",
+      "referenceHeadword": "bridge",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "4db9d760-4b6b-4d81-ad59-9f590acca067",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "89190675-0f84-478f-bb2c-d045d15261f3",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "bridge",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Something built over a river or road so people can cross",
+      "definitionZh": "桥",
+      "distractors": [
+        "Something built beside a river so boats can stop",
+        "Something built under a house to keep things cool",
+        "Something built around a house to stop people getting in"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-coast",
+      "item_role": "main",
+      "referenceHeadword": "coast",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "48c426a0-5a5d-4f09-aa8c-a8846659f672",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "7c4f44d1-618e-470f-ad9a-bdad5ea5f4c2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "coast",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "The land near the sea",
+      "definitionZh": "海岸",
+      "distractors": [
+        "The flat land between two hills",
+        "The land where two roads meet",
+        "The high land on top of a mountain"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-competition",
+      "item_role": "main",
+      "referenceHeadword": "competition",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "23414fa7-944d-4aa1-a6a7-e1e03ad6c4a1",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "5f2ccb6e-51e0-438a-b3af-0bfa09928ea6",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "competition",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "An event where people try to do better than others and win",
+      "definitionZh": "比赛；竞赛",
+      "distractors": [
+        "An event where people meet to watch a new film",
+        "An event where people bring books to give away",
+        "An event where people celebrate someone's birthday"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-disturb",
+      "item_role": "main",
+      "referenceHeadword": "disturb",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "95f0774a-524c-403e-881c-542c1fd4be8d",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "5b1655dc-cf05-409f-a687-08993bfd489b",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "disturb",
+      "partOfSpeech": "v.",
+      "context": "Please do not disturb Mia right now.",
+      "definitionEn": "To interrupt someone who is resting or trying to work",
+      "definitionZh": "打扰；干扰",
+      "distractors": [
+        "To remind someone about work they need to do later",
+        "To help someone finish a difficult piece of work",
+        "To invite someone to rest after working"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-estate",
+      "item_role": "main",
+      "referenceHeadword": "estate",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "estate",
+      "partOfSpeech": "n.",
+      "context": "They walked through the country estate.",
+      "definitionEn": "A large property with land",
+      "definitionZh": "庄园；大片私有土地",
+      "distractors": [
+        "A narrow strip of land beside a road",
+        "A public place where trains stop",
+        "A piece of land surrounded by water"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-famous",
+      "item_role": "main",
+      "referenceHeadword": "famous",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "7a8e6866-ee73-472d-ad37-2e9429175efa",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "famous",
+      "partOfSpeech": "adj.",
+      "context": "They met a famous dancer.",
+      "definitionEn": "Known by many people",
+      "definitionZh": "著名的",
+      "distractors": [
+        "New to a job",
+        "Good at teaching others",
+        "Always on time"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-guarantee",
+      "item_role": "main",
+      "referenceHeadword": "guarantee",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "d764219b-d8eb-40fc-adaf-9a8284e279f0",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "3827b987-bb8c-49ab-b32a-3d2429e16e2e",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "guarantee",
+      "partOfSpeech": "v.",
+      "context": "They guarantee that it will be ready by Friday.",
+      "definitionEn": "To promise that something will happen or meet a standard",
+      "definitionZh": "保证；担保",
+      "distractors": [
+        "To ask someone to guess what will happen",
+        "To warn someone that something may go wrong",
+        "To explain why something went wrong in the past"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-intense",
+      "item_role": "main",
+      "referenceHeadword": "intense",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "intense",
+      "partOfSpeech": "adj.",
+      "context": "The heat was intense that day.",
+      "definitionEn": "Very strong",
+      "definitionZh": "强烈的",
+      "distractors": [
+        "Slow to arrive",
+        "Easy to miss",
+        "Quick to pass"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-intent",
+      "item_role": "main",
+      "referenceHeadword": "intent",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "intent",
+      "partOfSpeech": "n.",
+      "context": "What was her intent in sending the note?",
+      "definitionEn": "What someone means to do",
+      "definitionZh": "意图；目的",
+      "distractors": [
+        "What someone has forgotten",
+        "What someone fears most",
+        "What someone was told to repeat"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-magazine",
+      "item_role": "main",
+      "referenceHeadword": "magazine",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "892f6855-2fa1-4236-a82e-98e2721d2b18",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "53d82a8f-2c23-438a-9285-85a479db5fb9",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "magazine",
+      "partOfSpeech": "n.",
+      "context": "She bought the latest magazine.",
+      "definitionEn": "A regular publication with articles and pictures",
+      "definitionZh": "杂志；期刊",
+      "distractors": [
+        "A book that explains words",
+        "A notebook for your own ideas",
+        "A map showing local streets"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-option",
+      "item_role": "main",
+      "referenceHeadword": "option",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "f5ccdcc5-cb20-412c-b624-92ff6ed5c577",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "option",
+      "partOfSpeech": "n.",
+      "context": "Taking the bus is one option.",
+      "definitionEn": "Something you can choose",
+      "definitionZh": "可选的办法；选项",
+      "distractors": [
+        "Something you must pay",
+        "Something you already finished",
+        "Something you cannot change"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-pray",
+      "item_role": "main",
+      "referenceHeadword": "pray",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "0c430cd2-634b-46af-b384-2b7535cfe613",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "pray",
+      "partOfSpeech": "v.",
+      "context": "They pray together in the morning.",
+      "definitionEn": "To speak to God or a god",
+      "definitionZh": "祈祷",
+      "distractors": [
+        "To speak in front of a class",
+        "To read a message aloud",
+        "To tell a friend a secret"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-protest",
+      "item_role": "main",
+      "referenceHeadword": "protest",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "protest",
+      "partOfSpeech": "v.",
+      "context": "The pupils plan to protest against the new rule.",
+      "definitionEn": "To speak out against something",
+      "definitionZh": "抗议",
+      "distractors": [
+        "To explain how something works",
+        "To ask when something starts",
+        "To promise to obey something"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-version",
+      "item_role": "main",
+      "referenceHeadword": "version",
+      "band": 2,
+      "quartile": 2,
+      "catalogHeadwordId": "662bd670-20e6-46d1-a4f6-2a83f658e599",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "version",
+      "partOfSpeech": "n.",
+      "context": "We read a shorter version of the story.",
+      "definitionEn": "Another form of something",
+      "definitionZh": "版本",
+      "distractors": [
+        "A list of everyone who helped",
+        "A note showing the date",
+        "A guess about the ending"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-anxious",
+      "item_role": "main",
+      "referenceHeadword": "anxious",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "79ba82d8-aee5-48ee-891c-aabc85122b52",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "56ec8b7c-531e-4f75-947b-c46c7c551a92",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "anxious",
+      "partOfSpeech": "adj.",
+      "context": "He looked anxious as he waited for news.",
+      "definitionEn": "Worried that something may go wrong",
+      "definitionZh": "焦虑的；担心的",
+      "distractors": [
+        "Glad that something went better than expected",
+        "Annoyed that someone took too long",
+        "Upset that something you liked has ended"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-blind",
+      "item_role": "main",
+      "referenceHeadword": "blind",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "edcba7e5-77d8-4588-8bc3-df76c36665de",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "blind",
+      "partOfSpeech": "adj.",
+      "context": "The dog has been blind since birth.",
+      "definitionEn": "Unable to see",
+      "definitionZh": "失明的",
+      "distractors": [
+        "Unable to hear",
+        "Unable to smell",
+        "Unable to move"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bury",
+      "item_role": "main",
+      "referenceHeadword": "bury",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "a3f79f00-87c5-4463-8832-bef0390f1716",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "bury",
+      "partOfSpeech": "v.",
+      "context": "They decided to bury the box.",
+      "definitionEn": "To put something under the ground",
+      "definitionZh": "埋藏",
+      "distractors": [
+        "To lift something above the ground",
+        "To drag something across the ground",
+        "To balance something on one end"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-carpet",
+      "item_role": "main",
+      "referenceHeadword": "carpet",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "4a857335-c498-42c1-95dc-9fd6c4fd9a0d",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e653f6cb-a5c8-4a5f-9f6e-66728eedfbc2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "carpet",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A thick soft material that covers the floor",
+      "definitionZh": "地毯",
+      "distractors": [
+        "A soft cloth that hangs in front of a window",
+        "A hard board that covers the top of a table",
+        "A thin cloth that you put over a bed"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-creature",
+      "item_role": "main",
+      "referenceHeadword": "creature",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "830458e3-e0ac-427f-bb47-214df77af1d9",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "ca7458f4-8f05-418d-a6dd-d2e1aa33c703",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "creature",
+      "partOfSpeech": "n.",
+      "context": "The story is about a strange creature.",
+      "definitionEn": "A real or imagined living thing, often an animal",
+      "definitionZh": "生物；动物",
+      "distractors": [
+        "A person whose job is caring for plants",
+        "A machine that moves by itself",
+        "A tool used to make a picture"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-desk",
+      "item_role": "main",
+      "referenceHeadword": "desk",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "20f8db74-1193-43d1-9200-a9a0faf42d0e",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "c37ab43a-bca2-4552-8f03-a8ceba5598ad",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "desk",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A table you use for studying or writing",
+      "definitionZh": "书桌",
+      "distractors": [
+        "A seat you use when you want to rest",
+        "A box you use to keep food cool",
+        "A shelf you use to put books away"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-disappoint",
+      "item_role": "main",
+      "referenceHeadword": "disappoint",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "83e54bed-770b-47d9-a42b-26f33dbdf29c",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "b8465cd6-b57d-464f-91cb-2e69c8c259ad",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "disappoint",
+      "partOfSpeech": "v.",
+      "context": "She did not want to disappoint her team.",
+      "definitionEn": "To make someone unhappy because things were not as good as they hoped",
+      "definitionZh": "使失望",
+      "distractors": [
+        "To make someone laugh by doing something funny",
+        "To make someone proud by doing something difficult",
+        "To make someone calm after something scary"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-exhaust",
+      "item_role": "main",
+      "referenceHeadword": "exhaust",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "exhaust",
+      "partOfSpeech": "v.",
+      "context": "A long climb can exhaust a walker.",
+      "definitionEn": "To make someone very tired",
+      "definitionZh": "使筋疲力尽",
+      "distractors": [
+        "To make someone feel welcome",
+        "To help someone remember",
+        "To help someone get stronger"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-pride",
+      "item_role": "main",
+      "referenceHeadword": "pride",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "b5eaf5b4-2be4-4ef3-a5b8-8b2336d988a5",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "a1a78a98-f2ff-4a69-99f1-638659849c7d",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "pride",
+      "partOfSpeech": "n.",
+      "context": "She took pride in her work.",
+      "definitionEn": "Pleasure in something you have done well",
+      "definitionZh": "自豪；得意",
+      "distractors": [
+        "Worry about a possible mistake",
+        "Anger at being treated unfairly",
+        "Surprise at unexpected news"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-punish",
+      "item_role": "main",
+      "referenceHeadword": "punish",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "dbb1f5cf-8433-40e8-a4b4-f0dc0fb35b4f",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "punish",
+      "partOfSpeech": "v.",
+      "context": "The coach decided to punish a player.",
+      "definitionEn": "To make someone do something unpleasant for breaking a rule",
+      "definitionZh": "惩罚",
+      "distractors": [
+        "To remind someone of a rule before a game",
+        "To ask someone why they broke a rule",
+        "To thank someone for following a rule"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-repair",
+      "item_role": "main",
+      "referenceHeadword": "repair",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "4eefe608-c150-43c2-b7fe-6a91fd1fec2c",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "96d57ab7-dc90-4346-bd44-15b56dab8d17",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "repair",
+      "partOfSpeech": "v.",
+      "context": "They can repair it tomorrow.",
+      "definitionEn": "To make something work again after it breaks",
+      "definitionZh": "修理",
+      "distractors": [
+        "To take something apart to throw it away",
+        "To put something aside so it can dry",
+        "To put something in a new place so people see it"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-shelf",
+      "item_role": "main",
+      "referenceHeadword": "shelf",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "11425fe9-bc77-4151-9465-864cd1d0a0b7",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4efb5e46-bde9-4f60-8a98-d34f311aeab2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "shelf",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A flat board on which you can put things",
+      "definitionZh": "架子；隔板",
+      "distractors": [
+        "A long stick that holds up a plant",
+        "A thin sheet that covers a window",
+        "A low wall that goes around a garden"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-stream",
+      "item_role": "main",
+      "referenceHeadword": "stream",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": "d4ec5acb-341b-4e7f-8618-abdf5bfbc4b4",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "629cc00e-0909-4eb2-8cc7-f7035a85640f",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "stream",
+      "partOfSpeech": "n.",
+      "context": "We had lunch near the stream.",
+      "definitionEn": "A small narrow river",
+      "definitionZh": "小溪；溪流",
+      "distractors": [
+        "A deep part of a large lake",
+        "A piece of land surrounded by water",
+        "A pool of water left on a road after rain"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-string",
+      "item_role": "main",
+      "referenceHeadword": "string",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "string",
+      "partOfSpeech": "n.",
+      "context": "Jo tied the parcel with string.",
+      "definitionEn": "Thin cord used for tying things",
+      "definitionZh": "细绳",
+      "distractors": [
+        "Soft paper used for wrapping things",
+        "Sticky tape used for sealing things",
+        "A small pin used for holding things"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-twist",
+      "item_role": "main",
+      "referenceHeadword": "twist",
+      "band": 2,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "twist",
+      "partOfSpeech": "v.",
+      "context": "Twist the cloth with both hands.",
+      "definitionEn": "To turn the ends opposite ways",
+      "definitionZh": "拧；扭",
+      "distractors": [
+        "To pull two ends straight apart",
+        "To press something flat",
+        "To fold something in half"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-banana",
+      "item_role": "main",
+      "referenceHeadword": "banana",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "db0191b7-368c-4994-a71d-3ded66d9058d",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "57d67857-b340-40a6-8342-0b6aa4d43f75",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "banana",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A long yellow fruit that you peel",
+      "definitionZh": "香蕉",
+      "distractors": [
+        "A small red fruit with seeds on its skin",
+        "A round green fruit you cut in half",
+        "A round orange fruit with a skin you can peel"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bee",
+      "item_role": "main",
+      "referenceHeadword": "bee",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "c3266feb-89f6-4ef9-ad3a-bd8367aa078f",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "b48fa7b1-ebf2-4ce3-926f-6a5ff258a9d4",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "bee",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A flying insect that can make honey",
+      "definitionZh": "蜜蜂",
+      "distractors": [
+        "A flying insect with large bright wings",
+        "A small insect that often lives under stones",
+        "A small insect with six legs that does not fly"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-beef",
+      "item_role": "main",
+      "referenceHeadword": "beef",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "0aa7ff66-0d8f-40a6-84ed-af7d385030c4",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "95d2850f-3d6c-4b42-aa5c-caf03ace5d34",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "beef",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Meat from a cow",
+      "definitionZh": "牛肉",
+      "distractors": [
+        "Meat from a pig",
+        "Meat from a sheep",
+        "Meat from a chicken"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bike",
+      "item_role": "main",
+      "referenceHeadword": "bike",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "5bd40aae-dc8c-4f0e-b1d8-1036bd55e4b8",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "198e6043-fde1-48a4-81bd-c1f23b26faf8",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "bike",
+      "partOfSpeech": "n.",
+      "context": "She rides her bike to school.",
+      "definitionEn": "A vehicle with two wheels and pedals",
+      "definitionZh": "自行车",
+      "distractors": [
+        "A road vehicle that carries many passengers",
+        "A boat that moves across water",
+        "A train that travels along tracks"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bin",
+      "item_role": "main",
+      "referenceHeadword": "bin",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "7083e832-d580-4268-9766-d4dac35b4a23",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "a9d2bac4-1064-429c-9be2-e51401e3dc15",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "bin",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A container you use to throw rubbish away",
+      "definitionZh": "垃圾桶",
+      "distractors": [
+        "A container you use to keep food cold",
+        "A container you use to carry water",
+        "A container you place a plant in"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-brave",
+      "item_role": "main",
+      "referenceHeadword": "brave",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "a0317fa7-443e-471e-8ea7-22e9cafd928a",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "44491122-7957-42d1-8182-327953792b00",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "brave",
+      "partOfSpeech": "adj.",
+      "context": "",
+      "definitionEn": "Willing to do something even when it feels scary",
+      "definitionZh": "勇敢的",
+      "distractors": [
+        "Willing to give other people what you have",
+        "Keen to learn everything about a new subject",
+        "Happy to talk when you meet new people"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bunch",
+      "item_role": "main",
+      "referenceHeadword": "bunch",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "6061d7d2-8637-4914-a01a-d2a16d6518b0",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "bunch",
+      "partOfSpeech": "n.",
+      "context": "She carried a bunch of flowers.",
+      "definitionEn": "A group held or growing together",
+      "definitionZh": "束；把；串",
+      "distractors": [
+        "A single piece that fell off",
+        "A layer spread over the ground",
+        "A row with wide gaps between things"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-butter",
+      "item_role": "main",
+      "referenceHeadword": "butter",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "1455d73b-adc1-452d-8156-1c2464da4ed2",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "9f4c4b74-16d5-4386-b507-36a5675c16a4",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "butter",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A soft yellow food made from cream",
+      "definitionZh": "黄油",
+      "distractors": [
+        "A sweet food made from cooked fruit",
+        "A white drink made by cows",
+        "A sweet liquid made by bees"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-cow",
+      "item_role": "main",
+      "referenceHeadword": "cow",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "87a4ee4d-6850-4e2c-b8dd-e208e1af4f03",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "59359999-9e92-4afb-9f43-f1e05cbfcd5d",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "cow",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A large farm animal people often keep for milk",
+      "definitionZh": "母牛",
+      "distractors": [
+        "A small farm animal people often keep for eggs",
+        "A large farm animal people often keep for riding",
+        "A small farm animal people often keep for wool"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-fry",
+      "item_role": "main",
+      "referenceHeadword": "fry",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "28440b3f-6f9c-4d4b-97e9-e2f518b52d8e",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "c0e7062e-7db4-47f9-87e8-fb0aa9713d3f",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "fry",
+      "partOfSpeech": "v.",
+      "context": "",
+      "definitionEn": "To cook food in hot oil",
+      "definitionZh": "煎；炸；炒",
+      "distractors": [
+        "To cook food in a pot of water",
+        "To cook food with steam above hot water",
+        "To cook food inside an oven"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-garage",
+      "item_role": "main",
+      "referenceHeadword": "garage",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "616f3665-f60c-4914-a71a-edfd6fd30bd3",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e37506d3-8b3f-4dc0-a59f-1e502101445b",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "garage",
+      "partOfSpeech": "n.",
+      "context": "The garage is next to our house.",
+      "definitionEn": "A building or room where you keep a car",
+      "definitionZh": "车库",
+      "distractors": [
+        "A small building where you grow plants",
+        "A small room where you keep food cold",
+        "A room where you leave shoes at school"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-honey",
+      "item_role": "main",
+      "referenceHeadword": "honey",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "fbdb15ec-5dc6-4bcb-b4d0-54da9ddecc01",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4e7c0a27-d4d5-4199-98d9-0db4d9687fc5",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "honey",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A thick sweet food made by bees",
+      "definitionZh": "蜂蜜",
+      "distractors": [
+        "A thick white food made from milk",
+        "A brown food made from baked flour",
+        "A cold sweet food made with fruit juice"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-oven",
+      "item_role": "main",
+      "referenceHeadword": "oven",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "400e3188-ccbc-497e-b7cc-7b76ab2635f8",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "207ded1f-c07b-4c0d-bfbb-a2a8e9fdd3b2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "oven",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A box-shaped part of a cooker that heats food",
+      "definitionZh": "烤箱；烤炉",
+      "distractors": [
+        "A box-shaped tool that washes dirty dishes",
+        "A deep kitchen bowl used to wash fruit",
+        "A large kitchen box that keeps food cold"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-pig",
+      "item_role": "main",
+      "referenceHeadword": "pig",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "dbf7d8a8-d0ff-4591-b286-b36f607622d3",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "pig",
+      "partOfSpeech": "n.",
+      "context": "They kept a pig on the farm.",
+      "definitionEn": "A farm animal with a short, flat-ended nose",
+      "definitionZh": "猪",
+      "distractors": [
+        "A farm bird with webbed feet",
+        "A farm animal that grows thick wool",
+        "A farm animal people ride like a pony"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-potato",
+      "item_role": "main",
+      "referenceHeadword": "potato",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "64356e1d-c60b-4a67-bd86-0859a98111f1",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "c5bd09ea-42b6-465c-96bc-353efbfac310",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "potato",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A vegetable with a round or long shape that grows under the ground",
+      "definitionZh": "土豆",
+      "distractors": [
+        "A long green vegetable that grows above the ground",
+        "A small sweet fruit that grows on a tree",
+        "A round orange fruit with a thick skin"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-recipe",
+      "item_role": "main",
+      "referenceHeadword": "recipe",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "9534f218-83f6-413a-87a5-7e378767b74b",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "00fea2d4-e423-4d07-af1b-0f9540074878",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "recipe",
+      "partOfSpeech": "n.",
+      "context": "Mia wrote down the recipe.",
+      "definitionEn": "Instructions for making a dish",
+      "definitionZh": "食谱",
+      "distractors": [
+        "A list of dishes for sale",
+        "A bill for a meal",
+        "A note about today's special dish"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-rice",
+      "item_role": "main",
+      "referenceHeadword": "rice",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "822278f4-2f32-4cad-a232-10a7b5c06f37",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "85ebcd18-8522-4f7a-8299-478a3cb91dc8",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "rice",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "Small grains that people often cook in water",
+      "definitionZh": "大米；米饭",
+      "distractors": [
+        "Small leaves that people often cook in oil",
+        "Small pieces of bread that people eat in soup",
+        "Small pieces of fruit that people put on a cake"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-shore",
+      "item_role": "main",
+      "referenceHeadword": "shore",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "e6df96e1-310b-4c6b-91f1-db8354ce4e52",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e9afac9c-deaf-4d3b-9c1f-c7af6ce112cd",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "shore",
+      "partOfSpeech": "n.",
+      "context": "We walked along the shore in the evening.",
+      "definitionEn": "The land along the edge of the sea or a lake",
+      "definitionZh": "岸；滨",
+      "distractors": [
+        "The deepest part of the sea far from land",
+        "The highest part of a mountain",
+        "The bottom of a narrow river"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-sore",
+      "item_role": "main",
+      "referenceHeadword": "sore",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "38f3cdf7-a112-4422-8d84-a4f4804705c0",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "sore",
+      "partOfSpeech": "adj.",
+      "context": "My feet feel sore.",
+      "definitionEn": "Painful or hurting",
+      "definitionZh": "疼痛的；酸痛的",
+      "distractors": [
+        "Cold and wet",
+        "Hard to move quickly",
+        "Covered in dust"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-soup",
+      "item_role": "main",
+      "referenceHeadword": "soup",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "58bce1d0-51a1-4135-95d6-5df011dcc060",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "f0c247c8-be3f-4ec9-a40d-35bc82524707",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "soup",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A food you eat from a bowl that is mostly liquid",
+      "definitionZh": "汤",
+      "distractors": [
+        "A food you eat cold that is made from fruit and ice",
+        "A baked food you often cut into slices",
+        "A sweet food you spread on bread"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-taxi",
+      "item_role": "main",
+      "referenceHeadword": "taxi",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "f0cee15a-1f5f-41ff-a086-24572dabf9de",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4a7cb696-3d1a-4939-a79e-f675d92cbc46",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "taxi",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A car you pay someone to drive you in",
+      "definitionZh": "出租车",
+      "distractors": [
+        "A car people use to take sick people to hospital",
+        "A large road vehicle with seats for many people",
+        "A small road vehicle with two wheels and no motor"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-tent",
+      "item_role": "main",
+      "referenceHeadword": "tent",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "72d9cb23-7ec1-46ac-be1e-504252eece3a",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "bb191c09-caf9-45c8-819a-776d00655a24",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "tent",
+      "partOfSpeech": "n.",
+      "context": "We slept in a tent.",
+      "definitionEn": "A cloth shelter you can carry and put up",
+      "definitionZh": "帐篷",
+      "distractors": [
+        "A bag for carrying clothes",
+        "A cover you wear in the rain",
+        "A mat you sleep on"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-toy",
+      "item_role": "main",
+      "referenceHeadword": "toy",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": "57d0750e-72db-45a1-bcd9-ca6ab713fb96",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "toy",
+      "partOfSpeech": "n.",
+      "context": "She took one toy on the trip.",
+      "definitionEn": "An object for play",
+      "definitionZh": "玩具",
+      "distractors": [
+        "Something made for washing clothes",
+        "Something made for opening doors",
+        "Something made for telling time"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-wolf",
+      "item_role": "main",
+      "referenceHeadword": "wolf",
+      "band": 2,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "wolf",
+      "partOfSpeech": "n.",
+      "context": "A wolf walked out of the forest.",
+      "definitionEn": "A wild animal like a large dog",
+      "definitionZh": "狼",
+      "distractors": [
+        "A wild cat with dark stripes",
+        "A small animal with long ears",
+        "A large animal with antlers"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-agency",
+      "item_role": "main",
+      "referenceHeadword": "agency",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "aa91bf6a-38be-4350-bd33-dadfb20016ae",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "19a11b65-7258-4f1c-ac9d-e9fc8001e570",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "agency",
+      "partOfSpeech": "n.",
+      "context": "We got help from a travel agency.",
+      "definitionEn": "A business that provides a particular service",
+      "definitionZh": "代理机构；服务机构",
+      "distractors": [
+        "A place where people go to watch a show",
+        "A group of people who share the same set of homes",
+        "An event where businesses show what they make"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-award",
+      "item_role": "main",
+      "referenceHeadword": "award",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "e10963db-73cf-4e78-80d7-564e7556acc5",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "award",
+      "partOfSpeech": "n.",
+      "context": "Mia received an award for her work.",
+      "definitionEn": "A prize given for doing something well",
+      "definitionZh": "奖项",
+      "distractors": [
+        "A request for more information",
+        "A note giving someone permission",
+        "A list of jobs still to do"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-cell",
+      "item_role": "main",
+      "referenceHeadword": "cell",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "cell",
+      "partOfSpeech": "n.",
+      "context": "They looked at a leaf cell under the microscope.",
+      "definitionEn": "The basic living unit in a leaf",
+      "definitionZh": "细胞",
+      "distractors": [
+        "A tiny opening that lets air into a room",
+        "A drop of water resting on a surface",
+        "A grain of rock found in soil"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-cycle",
+      "item_role": "main",
+      "referenceHeadword": "cycle",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "cb41ec24-8e06-4ea9-a572-842006998f34",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "cycle",
+      "partOfSpeech": "n.",
+      "context": "The diagram shows the water cycle.",
+      "definitionEn": "A series of changes that keeps repeating",
+      "definitionZh": "循环；周而复始的一系列变化",
+      "distractors": [
+        "A single change that cannot be undone",
+        "A line marking the edge of an area",
+        "A measure of how heavy something is"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-declare",
+      "item_role": "main",
+      "referenceHeadword": "declare",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "420d0a33-1c3e-4d16-9f95-f975585648b6",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "9f8d55c0-5485-4c43-9ff6-b22add05104f",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "declare",
+      "partOfSpeech": "v.",
+      "context": "They will declare the result tomorrow.",
+      "definitionEn": "To say something in an official or public way",
+      "definitionZh": "宣布；声明",
+      "distractors": [
+        "To keep an idea secret from other people",
+        "To ask a question in a quiet voice",
+        "To change a story after it has been told"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-distinct",
+      "item_role": "main",
+      "referenceHeadword": "distinct",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "distinct",
+      "partOfSpeech": "adj.",
+      "context": "We heard two distinct sounds.",
+      "definitionEn": "Clearly different from one another",
+      "definitionZh": "明显不同的；有区别的",
+      "distractors": [
+        "Close together in time",
+        "Hard to hear from far away",
+        "Repeated at the same speed"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-impact",
+      "item_role": "main",
+      "referenceHeadword": "impact",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "impact",
+      "partOfSpeech": "n.",
+      "context": "They discussed the impact of the new road.",
+      "definitionEn": "The effect something has",
+      "definitionZh": "影响",
+      "distractors": [
+        "The cost of building something",
+        "The plan for repairing something",
+        "The time it takes to finish something"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-independent",
+      "item_role": "main",
+      "referenceHeadword": "independent",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "eab06671-192b-4e3b-a640-71b6cf48d855",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "independent",
+      "partOfSpeech": "adj.",
+      "context": "Mia became more independent this year.",
+      "definitionEn": "Able to manage without help",
+      "definitionZh": "独立的；能自理的",
+      "distractors": [
+        "Eager to try a new sport",
+        "Quick to notice changes",
+        "Happy to share with others"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-method",
+      "item_role": "main",
+      "referenceHeadword": "method",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "aa655721-9415-4406-aa38-e5ee3c82288b",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "method",
+      "partOfSpeech": "n.",
+      "context": "Jo tried a new method.",
+      "definitionEn": "A way of doing something",
+      "definitionZh": "方法",
+      "distractors": [
+        "A reason for starting something",
+        "A mistake made along the way",
+        "A result written down afterwards"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-museum",
+      "item_role": "main",
+      "referenceHeadword": "museum",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "0f8dff24-6ae9-44a6-9d63-b3851afba005",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "museum",
+      "partOfSpeech": "n.",
+      "context": "Their class visited a museum.",
+      "definitionEn": "A place that keeps and shows objects of interest",
+      "definitionZh": "博物馆",
+      "distractors": [
+        "A place that sells used things",
+        "A place that makes goods by machine",
+        "A place that stores goods for shops"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-obtain",
+      "item_role": "main",
+      "referenceHeadword": "obtain",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "obtain",
+      "partOfSpeech": "v.",
+      "context": "We had to obtain a map.",
+      "definitionEn": "To get hold of something",
+      "definitionZh": "获得；取得",
+      "distractors": [
+        "To keep something out of sight",
+        "To offer something for sale",
+        "To give something back"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-offence",
+      "item_role": "main",
+      "referenceHeadword": "offence",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "offence",
+      "partOfSpeech": "n.",
+      "context": "The sign said that dumping rubbish here was an offence.",
+      "definitionEn": "An action against the law",
+      "definitionZh": "违法或违规行为",
+      "distractors": [
+        "An act that earns a reward",
+        "A written request for help",
+        "A promise made in public"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-psychology",
+      "item_role": "main",
+      "referenceHeadword": "psychology",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "psychology",
+      "partOfSpeech": "n.",
+      "context": "Her next class is psychology.",
+      "definitionEn": "How people think, feel and act",
+      "definitionZh": "心理学；研究人的思维、感受和行为的学科",
+      "distractors": [
+        "How rocks and mountains form",
+        "How words change over time",
+        "How machines use power"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-source",
+      "item_role": "main",
+      "referenceHeadword": "source",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "source",
+      "partOfSpeech": "n.",
+      "context": "They looked for the source of the river.",
+      "definitionEn": "The place where something begins",
+      "definitionZh": "源头；发源地",
+      "distractors": [
+        "The place where two paths cross",
+        "The deepest part of a lake",
+        "The far side of a valley"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-volume",
+      "item_role": "main",
+      "referenceHeadword": "volume",
+      "band": 3,
+      "quartile": 1,
+      "catalogHeadwordId": "849967b1-6f1a-42cc-93ca-88c29f046b35",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4bc8bdd0-7316-4f67-b2a5-f222cc77ab50",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "volume",
+      "partOfSpeech": "n.",
+      "context": "Could you turn the volume down a little?",
+      "definitionEn": "How loud a sound is",
+      "definitionZh": "音量",
+      "distractors": [
+        "How high or low a note sounds",
+        "How quickly the notes are played",
+        "How long the sound lasts"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-angle",
+      "item_role": "main",
+      "referenceHeadword": "angle",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "c611ab71-cec3-4bef-a050-37df9de1c53c",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "ea34dfff-b684-4df4-99a6-788f2943759c",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "angle",
+      "partOfSpeech": "n.",
+      "context": "Draw the lines so they meet at this angle.",
+      "definitionEn": "The amount of turn between two lines that meet",
+      "definitionZh": "角；角度",
+      "distractors": [
+        "The length from one end of a line to the other",
+        "The distance all the way around a circle",
+        "The space inside a flat shape"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-assumption",
+      "item_role": "main",
+      "referenceHeadword": "assumption",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "assumption",
+      "partOfSpeech": "n.",
+      "context": "They based the plan on one assumption.",
+      "definitionEn": "An idea accepted without proof",
+      "definitionZh": "假设；未经证实的看法",
+      "distractors": [
+        "Something already proved by a test",
+        "An instruction given in writing",
+        "An event that no one expected"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-clinic",
+      "item_role": "main",
+      "referenceHeadword": "clinic",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "a4bd9299-db0f-4123-a48d-546d7279bb99",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "clinic",
+      "partOfSpeech": "n.",
+      "context": "She has an appointment at the clinic.",
+      "definitionEn": "A place for health care",
+      "definitionZh": "诊所",
+      "distractors": [
+        "A shop where people buy food",
+        "A room where people learn to dance",
+        "An office where people send letters"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-colony",
+      "item_role": "main",
+      "referenceHeadword": "colony",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "colony",
+      "partOfSpeech": "n.",
+      "context": "They watched a colony of seabirds.",
+      "definitionEn": "Animals of one kind living together",
+      "definitionZh": "聚居的动物群",
+      "distractors": [
+        "A route animals use to reach food",
+        "A sound animals make to signal danger",
+        "A season when animals grow new feathers"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-crew",
+      "item_role": "main",
+      "referenceHeadword": "crew",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "8e3cbde1-e800-4423-94f8-4c9ed63dbfc8",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "crew",
+      "partOfSpeech": "n.",
+      "context": "The ship's crew came aboard.",
+      "definitionEn": "The people who work together on a ship",
+      "definitionZh": "全体船员",
+      "distractors": [
+        "The people paying to travel on a ship",
+        "The goods packed inside a ship",
+        "The tools used to build a ship"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-exploit",
+      "item_role": "main",
+      "referenceHeadword": "exploit",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "exploit",
+      "partOfSpeech": "v.",
+      "context": "The mill can exploit the power of the river.",
+      "definitionEn": "To put something to use",
+      "definitionZh": "开发利用",
+      "distractors": [
+        "To hide something from view",
+        "To look for the cause of something",
+        "To repair something after it breaks"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-gallery",
+      "item_role": "main",
+      "referenceHeadword": "gallery",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "fefe4c09-67a1-4e8f-b23f-7cb38dbd5ba3",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "88f5b3ae-1105-4ebb-90e7-0bf6b7464ccf",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "gallery",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A room or building where art is shown",
+      "definitionZh": "美术馆；画廊",
+      "distractors": [
+        "A room or building where indoor games are played",
+        "A room or building where books are borrowed",
+        "A room or building where food is made"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-isolate",
+      "item_role": "main",
+      "referenceHeadword": "isolate",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "isolate",
+      "partOfSpeech": "v.",
+      "context": "The vet had to isolate the sick rabbit.",
+      "definitionEn": "To keep apart from others",
+      "definitionZh": "隔离；使分开",
+      "distractors": [
+        "To look after several animals together",
+        "To search for something far away",
+        "To let someone return to the group"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-landscape",
+      "item_role": "main",
+      "referenceHeadword": "landscape",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "a23f0c31-d1fe-45cd-a93e-5a492d656a97",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "d4bd2443-7aec-4081-bd2f-a08240846680",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "landscape",
+      "partOfSpeech": "n.",
+      "context": "She stopped to look at the landscape.",
+      "definitionEn": "What you can see across a large area of land",
+      "definitionZh": "风景；景色",
+      "distractors": [
+        "The line where the open sea seems to meet the sky",
+        "A building where people keep old paintings",
+        "A list of places a bus will stop"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-lecture",
+      "item_role": "main",
+      "referenceHeadword": "lecture",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "a418d244-364e-43dd-975b-c2f36259ec42",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "lecture",
+      "partOfSpeech": "n.",
+      "context": "We went to a lecture on stars.",
+      "definitionEn": "A talk that teaches a subject",
+      "definitionZh": "讲座",
+      "distractors": [
+        "A short quiz taken without notes",
+        "A meeting to choose a new leader",
+        "A show in which actors tell a story"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-resolution",
+      "item_role": "main",
+      "referenceHeadword": "resolution",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "resolution",
+      "partOfSpeech": "n.",
+      "context": "Finding a resolution to the argument took time.",
+      "definitionEn": "A way of settling a problem",
+      "definitionZh": "解决办法；化解",
+      "distractors": [
+        "A reason for starting an argument",
+        "A record of who spoke first",
+        "A warning about a future risk"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-transact",
+      "item_role": "main",
+      "referenceHeadword": "transact",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "transact",
+      "partOfSpeech": "v.",
+      "context": "The two firms transact business online.",
+      "definitionEn": "To carry out a business deal",
+      "definitionZh": "办理交易；做买卖",
+      "distractors": [
+        "To close a business for good",
+        "To advertise a job opening",
+        "To keep a business secret"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-trend",
+      "item_role": "main",
+      "referenceHeadword": "trend",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "9e6a5459-e491-45bb-9d8f-07e79abf1ffe",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "trend",
+      "partOfSpeech": "n.",
+      "context": "The shopkeeper noticed a trend.",
+      "definitionEn": "A pattern in how things are changing",
+      "definitionZh": "趋势",
+      "distractors": [
+        "A sudden change that happens only once",
+        "A rule everyone must follow",
+        "An error made when counting"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-unique",
+      "item_role": "main",
+      "referenceHeadword": "unique",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": "42a492ee-29b7-47be-b965-ebf23f667c14",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "d3325052-b8b3-4c58-b83f-e861a42bc13d",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "unique",
+      "partOfSpeech": "adj.",
+      "context": "Every design in the show was unique.",
+      "definitionEn": "The only one of its kind, or very unusual",
+      "definitionZh": "独一无二的；独特的",
+      "distractors": [
+        "Looking almost the same as all the others",
+        "Cheap to make in very large numbers",
+        "Old enough to have lost all its colour"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-visible",
+      "item_role": "main",
+      "referenceHeadword": "visible",
+      "band": 3,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "visible",
+      "partOfSpeech": "adj.",
+      "context": "The tower was visible from the park.",
+      "definitionEn": "Able to be seen",
+      "definitionZh": "看得见的",
+      "distractors": [
+        "Able to be heard",
+        "Safe to climb",
+        "Easy to reach"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-anxiety",
+      "item_role": "main",
+      "referenceHeadword": "anxiety",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "dc7174ea-5a05-4f3c-9217-7324ea7ea6c2",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "5162113a-54f5-484b-8b6f-ae3b150e4523",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "anxiety",
+      "partOfSpeech": "n.",
+      "context": "She felt some anxiety before the event.",
+      "definitionEn": "A feeling of worry that something may go wrong",
+      "definitionZh": "焦虑；忧虑",
+      "distractors": [
+        "A feeling of anger that someone was unfair",
+        "A feeling of pride in something you did well",
+        "A feeling of surprise at something funny"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-discount",
+      "item_role": "main",
+      "referenceHeadword": "discount",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "c98a85b8-4c6a-44d8-842a-2f5610524b4d",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "discount",
+      "partOfSpeech": "n.",
+      "context": "The shop offered a discount on boots.",
+      "definitionEn": "A cut in the usual price",
+      "definitionZh": "折扣",
+      "distractors": [
+        "A fee for bringing something to you",
+        "A promise to repair something",
+        "A bill for work already done"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-entrance",
+      "item_role": "main",
+      "referenceHeadword": "entrance",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "58e0e535-6988-4a7d-8fec-e5078a7663fa",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "a83bc04d-5f54-4256-89ee-38e816061ec4",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "entrance",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A door or opening you use to go inside",
+      "definitionZh": "入口",
+      "distractors": [
+        "A wall that keeps people out of a garden",
+        "A sign that tells you the name of a street",
+        "A place where you stay until a bus comes"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-extraordinary",
+      "item_role": "main",
+      "referenceHeadword": "extraordinary",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "cae6687d-a842-41fe-bd95-1660b3d335eb",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "7383e62b-c4bd-429a-9fe9-dc6c28a1df6f",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "extraordinary",
+      "partOfSpeech": "adj.",
+      "context": "Everyone agreed it was an extraordinary result.",
+      "definitionEn": "Far more impressive than what is usual",
+      "definitionZh": "非凡的；出色的",
+      "distractors": [
+        "Almost exactly the same as what is usual",
+        "Only useful at one time and place",
+        "Easy for most people to forget"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-festival",
+      "item_role": "main",
+      "referenceHeadword": "festival",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "5d4fbfa5-60e3-4f5f-b0f1-dfb9b06d3143",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "461f958d-b4a1-4edf-ac12-d21e2295a997",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "festival",
+      "partOfSpeech": "n.",
+      "context": "Our town holds a festival each June.",
+      "definitionEn": "A time when people come together to celebrate",
+      "definitionZh": "节日；人们聚在一起庆祝的活动",
+      "distractors": [
+        "A race to see who can run the fastest",
+        "A meeting where people choose a new leader",
+        "A market where people buy and sell things"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-fragment",
+      "item_role": "main",
+      "referenceHeadword": "fragment",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "fragment",
+      "partOfSpeech": "n.",
+      "context": "They kept a fragment of the broken cup.",
+      "definitionEn": "A small piece of something larger",
+      "definitionZh": "碎片；片段",
+      "distractors": [
+        "The mark where two things join",
+        "A copy of the whole thing",
+        "A thin layer covering the outside"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-journalist",
+      "item_role": "main",
+      "referenceHeadword": "journalist",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "fa0a597a-d50e-4a39-a039-6b502cbd060b",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "73440fcf-afa4-48ea-8156-e24c624bf560",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "journalist",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A person who finds and reports news",
+      "definitionZh": "记者",
+      "distractors": [
+        "A person who takes care of sick animals",
+        "A person who sells books and magazines",
+        "A person who repairs phones and cameras"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-mixture",
+      "item_role": "main",
+      "referenceHeadword": "mixture",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "mixture",
+      "partOfSpeech": "n.",
+      "context": "The bowl held a mixture.",
+      "definitionEn": "Two or more things put together",
+      "definitionZh": "混合物",
+      "distractors": [
+        "One piece cut from a larger thing",
+        "A layer spread over a surface",
+        "The mark left by a spilled drink"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-objected",
+      "item_role": "main",
+      "referenceHeadword": "objected",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "objected",
+      "partOfSpeech": "v.",
+      "context": "Sam objected to the plan at the meeting.",
+      "definitionEn": "Said he was against it",
+      "definitionZh": "表示反对",
+      "distractors": [
+        "Asked to hear it again",
+        "Offered to help with it",
+        "Wrote the details down"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-opponent",
+      "item_role": "main",
+      "referenceHeadword": "opponent",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "74bab656-2853-4584-b7d0-402a0545d376",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "aca936e1-5596-4156-a733-fda7619a688a",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "opponent",
+      "partOfSpeech": "n.",
+      "context": "She shook hands with her opponent.",
+      "definitionEn": "A person or team you compete against",
+      "definitionZh": "对手；竞争者",
+      "distractors": [
+        "A person who makes sure players follow rules",
+        "A person who watches a game in the crowd",
+        "A person who teaches players new skills"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-pale",
+      "item_role": "main",
+      "referenceHeadword": "pale",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "ab7c6d9d-1daf-4f4a-aac8-0911ca235bae",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "149d6782-91c8-47ca-94e7-249880153fd2",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "pale",
+      "partOfSpeech": "adj.",
+      "context": "Jo chose a pale green paint.",
+      "definitionEn": "Light in colour",
+      "definitionZh": "浅色的；淡的",
+      "distractors": [
+        "Very dark in colour",
+        "Full of different colours",
+        "Without any colour at all"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-provoke",
+      "item_role": "main",
+      "referenceHeadword": "provoke",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "provoke",
+      "partOfSpeech": "v.",
+      "context": "His remark might provoke an argument.",
+      "definitionEn": "To cause a reaction or trouble",
+      "definitionZh": "引起；激起",
+      "distractors": [
+        "To bring a disagreement to an end",
+        "To keep a conversation private",
+        "To repeat someone's exact words"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-raid",
+      "item_role": "main",
+      "referenceHeadword": "raid",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "raid",
+      "partOfSpeech": "n.",
+      "context": "The police carried out a raid on the building.",
+      "definitionEn": "A sudden police search",
+      "definitionZh": "突击搜查",
+      "distractors": [
+        "A planned visit to welcome someone",
+        "A careful count of people passing by",
+        "A public meeting about road safety"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-regret",
+      "item_role": "main",
+      "referenceHeadword": "regret",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "78cca0d7-8c52-4f36-a6fd-ac8889169c43",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "bcd44233-4fc4-4536-a82e-40154e420133",
+        "senseRevision": 2,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "regret",
+      "partOfSpeech": "v.",
+      "context": "Do you regret that choice?",
+      "definitionEn": "To feel sorry about something you did or did not do",
+      "definitionZh": "后悔；遗憾",
+      "distractors": [
+        "To feel glad about a choice you made",
+        "To feel sure that something good will happen",
+        "To feel curious about what someone has done"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-slope",
+      "item_role": "main",
+      "referenceHeadword": "slope",
+      "band": 3,
+      "quartile": 3,
+      "catalogHeadwordId": "9a01e178-faed-4213-8887-08bdb5b96b34",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "387c9dc4-8edb-49a0-afdf-ff5beccfe2b8",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "slope",
+      "partOfSpeech": "n.",
+      "context": "The path crossed a grassy slope.",
+      "definitionEn": "A surface with one end higher than the other",
+      "definitionZh": "斜坡；坡地",
+      "distractors": [
+        "A flat area at the top of a hill",
+        "A deep narrow gap between two hills",
+        "A round opening in the side of a rock"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-accumulate",
+      "item_role": "main",
+      "referenceHeadword": "accumulate",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "accumulate",
+      "partOfSpeech": "v.",
+      "context": "Leaves accumulate by the gate.",
+      "definitionEn": "To build up little by little",
+      "definitionZh": "积累；逐渐堆积",
+      "distractors": [
+        "To come apart in small pieces",
+        "To move away in a straight line",
+        "To spread out in a thin layer"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-aggressive",
+      "item_role": "main",
+      "referenceHeadword": "aggressive",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "ab65202a-51c5-4563-91d9-d8763d537b93",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "57f0c397-e5b5-4cc3-997a-586ba2b17abb",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "aggressive",
+      "partOfSpeech": "adj.",
+      "context": "The dog became aggressive when the man came near.",
+      "definitionEn": "Acting in an angry way that may lead to a fight",
+      "definitionZh": "有攻击性的；好斗的",
+      "distractors": [
+        "Acting in a friendly way to help others relax",
+        "Acting in a nervous way when meeting people",
+        "Acting in a quiet way to avoid being heard"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-album",
+      "item_role": "main",
+      "referenceHeadword": "album",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "8e2ee649-c728-42f9-8257-627dabbef2b4",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "album",
+      "partOfSpeech": "n.",
+      "context": "We listened to her new album.",
+      "definitionEn": "A collection of recorded songs",
+      "definitionZh": "音乐专辑",
+      "distractors": [
+        "A piece of music for one voice",
+        "A ticket to see a singer",
+        "A list of times for music lessons"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-cattle",
+      "item_role": "main",
+      "referenceHeadword": "cattle",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "ec117a02-7e01-4773-ba0b-168a2cc6e0e1",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "cattle",
+      "partOfSpeech": "n.",
+      "context": "The farmer counted the cattle.",
+      "definitionEn": "Farm animals including cows and bulls",
+      "definitionZh": "牛；牛群",
+      "distractors": [
+        "Sheep kept for their wool",
+        "Horses kept for riding",
+        "Birds kept for their eggs"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-comedy",
+      "item_role": "main",
+      "referenceHeadword": "comedy",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "19f8e78c-1b7f-473e-a478-0d367a6c6f2d",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "debb73db-52f4-4280-82e8-a23e673d492d",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "comedy",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A show or story made to make people laugh",
+      "definitionZh": "喜剧",
+      "distractors": [
+        "A show about what is happening in the news",
+        "A story that is meant to frighten people",
+        "A show where people try to win a prize"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-courage",
+      "item_role": "main",
+      "referenceHeadword": "courage",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "d02c1bb1-e09e-4860-851b-480b71ff5843",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "courage",
+      "partOfSpeech": "n.",
+      "context": "It took courage to speak up.",
+      "definitionEn": "Being able to face something that frightens you",
+      "definitionZh": "勇气",
+      "distractors": [
+        "Being able to remember a long speech",
+        "Being able to work without a break",
+        "Being able to tell when someone is joking"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-dictate",
+      "item_role": "main",
+      "referenceHeadword": "dictate",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "dictate",
+      "partOfSpeech": "v.",
+      "context": "Please dictate the letter to me.",
+      "definitionEn": "To say words for someone to write down",
+      "definitionZh": "口述；让人听写",
+      "distractors": [
+        "To read silently without moving your lips",
+        "To copy words from another page",
+        "To make the writing on a page shorter"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-episode",
+      "item_role": "main",
+      "referenceHeadword": "episode",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "86361324-4e91-4b02-a420-d1e35b2b4c29",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "episode",
+      "partOfSpeech": "n.",
+      "context": "We watched an episode after supper.",
+      "definitionEn": "One part of a series of shows",
+      "definitionZh": "一集",
+      "distractors": [
+        "A list of the people in a show",
+        "A short message selling something",
+        "The music played before a show"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-era",
+      "item_role": "main",
+      "referenceHeadword": "era",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "era",
+      "partOfSpeech": "n.",
+      "context": "They found a tool from an earlier era.",
+      "definitionEn": "A period of history",
+      "definitionZh": "时代；时期",
+      "distractors": [
+        "A place on a map",
+        "A type of material",
+        "A group of neighbours"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-ingredient",
+      "item_role": "main",
+      "referenceHeadword": "ingredient",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "ec04aec7-273b-4c4a-8899-10afcba66dba",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4ec18d87-5034-4bc5-bac6-b9e0c9b148a8",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "ingredient",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "One of the things you use to make a dish",
+      "definitionZh": "食材；原料",
+      "distractors": [
+        "The tool you use to eat a dish",
+        "The place where you buy a cooked meal",
+        "The person who brings a cooked meal to your table"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-magnet",
+      "item_role": "main",
+      "referenceHeadword": "magnet",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "magnet",
+      "partOfSpeech": "n.",
+      "context": "I found a magnet in the box.",
+      "definitionEn": "Something that pulls iron towards it",
+      "definitionZh": "磁铁",
+      "distractors": [
+        "Something that shows how hot a room is",
+        "Something that stores water for later",
+        "Something that makes quiet sounds louder"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-menu",
+      "item_role": "main",
+      "referenceHeadword": "menu",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": "540921ec-0f27-4148-b3b3-8ea2ab89aec4",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "menu",
+      "partOfSpeech": "n.",
+      "context": "We asked for the menu.",
+      "definitionEn": "A list of dishes you can order",
+      "definitionZh": "菜单",
+      "distractors": [
+        "A note showing what you have paid",
+        "A set of steps for cooking one dish",
+        "A list of people waiting for a table"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-oriented",
+      "item_role": "main",
+      "referenceHeadword": "oriented",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "oriented",
+      "partOfSpeech": "adj.",
+      "context": "The course is oriented towards younger players.",
+      "definitionEn": "Designed for a particular group",
+      "definitionZh": "面向特定人群的",
+      "distractors": [
+        "Run entirely by the players themselves",
+        "Held only once each year",
+        "Open to people by invitation only"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-simultaneous",
+      "item_role": "main",
+      "referenceHeadword": "simultaneous",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "simultaneous",
+      "partOfSpeech": "adj.",
+      "context": "We heard two simultaneous knocks.",
+      "definitionEn": "Happening at the same time",
+      "definitionZh": "同时发生的",
+      "distractors": [
+        "Happening in a set order",
+        "Happening again and again",
+        "Happening without warning"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-vague",
+      "item_role": "main",
+      "referenceHeadword": "vague",
+      "band": 3,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "vague",
+      "partOfSpeech": "adj.",
+      "context": "The directions were vague.",
+      "definitionEn": "Unclear or missing details",
+      "definitionZh": "含糊的；不明确的",
+      "distractors": [
+        "Impossible to carry out",
+        "Written a long time ago",
+        "Easy to learn by heart"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-accountant",
+      "item_role": "main",
+      "referenceHeadword": "accountant",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "4b050a2a-5d24-48f9-b1de-fa72d1d5a881",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "accountant",
+      "partOfSpeech": "n.",
+      "context": "The club hired an accountant.",
+      "definitionEn": "Someone who looks after money records",
+      "definitionZh": "会计",
+      "distractors": [
+        "Someone who draws plans for buildings",
+        "Someone who gives advice about food",
+        "Someone who repairs office machines"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-canal",
+      "item_role": "main",
+      "referenceHeadword": "canal",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "78917ae4-c17d-4b75-842c-9b45c940b349",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "1b0d70d5-2a8c-46bd-8e2d-55306e3e402b",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "canal",
+      "partOfSpeech": "n.",
+      "context": "A boat passed slowly along the canal.",
+      "definitionEn": "A waterway people made for boats or to carry water",
+      "definitionZh": "运河；水渠",
+      "distractors": [
+        "A river that formed naturally over time",
+        "A small area of water with land around it",
+        "An opening under a hill that cars can drive through"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-convenient",
+      "item_role": "main",
+      "referenceHeadword": "convenient",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "c3874e71-11f0-48e5-985c-92f955d13788",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "convenient",
+      "partOfSpeech": "adj.",
+      "context": "Is the meeting time convenient for you?",
+      "definitionEn": "Easy to fit into your day",
+      "definitionZh": "方便的；合适的",
+      "distractors": [
+        "Certain to change soon",
+        "Chosen a long time ago",
+        "Taking longer than expected"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-elegant",
+      "item_role": "main",
+      "referenceHeadword": "elegant",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "274a182f-2bde-445a-aeaf-cf6de3359959",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "8be28e1b-d83b-4ebe-94bc-b6c1cda36955",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "elegant",
+      "partOfSpeech": "adj.",
+      "context": "She chose a simple, elegant dress.",
+      "definitionEn": "Attractive in a stylish and often simple way",
+      "definitionZh": "优雅的；雅致的",
+      "distractors": [
+        "Strong enough to hold a very heavy object",
+        "Unusual in a way that is hard to understand",
+        "Old and broken in several places"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-essence",
+      "item_role": "main",
+      "referenceHeadword": "essence",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "essence",
+      "partOfSpeech": "n.",
+      "context": "The last line gives the essence of the story.",
+      "definitionEn": "The most important part or idea",
+      "definitionZh": "核心；要点",
+      "distractors": [
+        "The part that sets the scene",
+        "The name of the person speaking",
+        "The order of events"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-fare",
+      "item_role": "main",
+      "referenceHeadword": "fare",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "d28d1b94-b7f6-407a-95bd-a9c498c261a6",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "42aca72b-e81f-42d5-85ae-0e9ba4b245fa",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "fare",
+      "partOfSpeech": "n.",
+      "context": "Dad checked the fare before we left.",
+      "definitionEn": "The money you pay to travel on public transport",
+      "definitionZh": "车费；船费；机票价",
+      "distractors": [
+        "The money you pay to have a car fixed",
+        "The money someone pays to buy fuel",
+        "The money you pay to leave your car somewhere"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-furious",
+      "item_role": "main",
+      "referenceHeadword": "furious",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "519296d2-3e85-4b73-a3de-ceafb27d5250",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "af81c256-fdd1-4350-b724-fc5967244188",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "furious",
+      "partOfSpeech": "adj.",
+      "context": "He was furious when he found out.",
+      "definitionEn": "Very angry",
+      "definitionZh": "暴怒的",
+      "distractors": [
+        "Very proud",
+        "Very worried",
+        "Very tired"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-guardian",
+      "item_role": "main",
+      "referenceHeadword": "guardian",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "guardian",
+      "partOfSpeech": "n.",
+      "context": "A child's guardian signed the form.",
+      "definitionEn": "Someone responsible for a child's care",
+      "definitionZh": "监护人",
+      "distractors": [
+        "Someone hired to lead a tour",
+        "Someone chosen to judge a contest",
+        "Someone paid to deliver letters"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hierarchy",
+      "item_role": "main",
+      "referenceHeadword": "hierarchy",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "hierarchy",
+      "partOfSpeech": "n.",
+      "context": "The chart shows the hierarchy of the team.",
+      "definitionEn": "A system of higher and lower positions",
+      "definitionZh": "等级制度；层级结构",
+      "distractors": [
+        "An arrangement of seats around a table",
+        "A list of tasks for one day",
+        "A record of points won in games"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-interval",
+      "item_role": "main",
+      "referenceHeadword": "interval",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "4bddebff-3bfe-4cf0-98dc-3b30b10be37f",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "1441766d-45b7-4b47-89d5-9ef13da5289e",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "interval",
+      "partOfSpeech": "n.",
+      "context": "A bell rang twice. The interval was short.",
+      "definitionEn": "The time between two events",
+      "definitionZh": "两件事之间的时间；间隔",
+      "distractors": [
+        "The number of times something happens",
+        "The time an event begins",
+        "The order in which events happen"
+      ],
+      "senseNote": "V1 为演出幕间休息。V2 改考通用时间间隔，旧义项仅供溯源。"
+    },
+    {
+      "itemId": "rosie-v2-main-orchestra",
+      "item_role": "main",
+      "referenceHeadword": "orchestra",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "98c23c48-6c77-44eb-9af2-25e8f3d70858",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e2a825e7-51e8-408a-ab36-e26cd1cb05dd",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "orchestra",
+      "partOfSpeech": "n.",
+      "context": "The orchestra played at our school.",
+      "definitionEn": "A large group that plays different musical instruments together",
+      "definitionZh": "管弦乐队",
+      "distractors": [
+        "A group that sings together without playing instruments",
+        "A group that acts out a story on a stage",
+        "A group that gives talks in different places"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-patent",
+      "item_role": "main",
+      "referenceHeadword": "patent",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "patent",
+      "partOfSpeech": "n.",
+      "context": "Jo got a patent for her invention.",
+      "definitionEn": "A right to stop others making your invention without permission",
+      "definitionZh": "专利权",
+      "distractors": [
+        "A prize for the best invention",
+        "A drawing of how an invention works",
+        "A bill for the cost of an invention"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-sensation",
+      "item_role": "main",
+      "referenceHeadword": "sensation",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "sensation",
+      "partOfSpeech": "n.",
+      "context": "Mia felt a strange sensation in her hand.",
+      "definitionEn": "A feeling you notice in your body",
+      "definitionZh": "身体感受到的感觉",
+      "distractors": [
+        "A thought you keep to yourself",
+        "A movement you practise every day",
+        "A sound you remember from a dream"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-steep",
+      "item_role": "main",
+      "referenceHeadword": "steep",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": "f0c16915-cb06-44bb-a2d8-0371d62dc5f0",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "8f2ad1a2-3636-40f2-a8d2-7a09a1e08bea",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "steep",
+      "partOfSpeech": "adj.",
+      "context": "The path became very steep.",
+      "definitionEn": "Rising or falling very quickly over a short distance",
+      "definitionZh": "陡峭的",
+      "distractors": [
+        "Turning slowly from one side to the other",
+        "Running straight over completely flat ground",
+        "Covered with water during most of the year"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-terminal",
+      "item_role": "main",
+      "referenceHeadword": "terminal",
+      "band": 4,
+      "quartile": 1,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "terminal",
+      "partOfSpeech": "n.",
+      "context": "We met inside the airport terminal.",
+      "definitionEn": "A building for passengers arriving or leaving",
+      "definitionZh": "航站楼；客运站房",
+      "distractors": [
+        "A long strip where planes land",
+        "A tall tower that guides planes",
+        "A large shed where planes are repaired"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-abnormal",
+      "item_role": "main",
+      "referenceHeadword": "abnormal",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "abnormal",
+      "partOfSpeech": "adj.",
+      "context": "The tree showed abnormal growth.",
+      "definitionEn": "Different from what is usual",
+      "definitionZh": "异常的",
+      "distractors": [
+        "Difficult to measure",
+        "Likely to last a long time",
+        "Happening in every season"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-ambulance",
+      "item_role": "main",
+      "referenceHeadword": "ambulance",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "74ea024b-2d45-4cf2-975f-22c5bb57d999",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "4687fdde-fc49-4bd6-897a-f4fbbe7eb816",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "ambulance",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A vehicle that takes ill or hurt people to hospital",
+      "definitionZh": "救护车",
+      "distractors": [
+        "A vehicle that brings letters to homes",
+        "A vehicle that takes children to school",
+        "A vehicle that carries water to put out fires"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-archive",
+      "item_role": "main",
+      "referenceHeadword": "archive",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "archive",
+      "partOfSpeech": "n.",
+      "context": "The letters are kept in an archive.",
+      "definitionEn": "A collection of records kept for later use",
+      "definitionZh": "档案库；档案收藏",
+      "distractors": [
+        "A list of jobs that still need doing",
+        "A place for sending letters overseas",
+        "A page showing today's events"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-deem",
+      "item_role": "main",
+      "referenceHeadword": "deem",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "deem",
+      "partOfSpeech": "v.",
+      "context": "The judges deem the design suitable.",
+      "definitionEn": "To consider something to be a certain way",
+      "definitionZh": "认为；判定",
+      "distractors": [
+        "To ask for something to be shown again",
+        "To pass something to another person",
+        "To wait for someone else's decision"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-dolphin",
+      "item_role": "main",
+      "referenceHeadword": "dolphin",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "c94f1228-2fdd-4e63-93c1-e6c24b7f7a89",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "76a5242d-a180-4749-86ae-ad8d37717683",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "dolphin",
+      "partOfSpeech": "n.",
+      "context": "We saw a dolphin from the boat.",
+      "definitionEn": "A sea animal with smooth skin and a curved mouth",
+      "definitionZh": "海豚",
+      "distractors": [
+        "A sea animal with a hard shell and two claws",
+        "A soft sea animal with eight long arms",
+        "A flat fish with both eyes on one side"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-elbow",
+      "item_role": "main",
+      "referenceHeadword": "elbow",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "07a8e3ea-ec1b-4c25-999d-971c2cb00042",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "ed87c5d5-28c8-4652-aa64-ee8d8f64835a",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "elbow",
+      "partOfSpeech": "n.",
+      "context": "He rested his elbow on the table.",
+      "definitionEn": "The place where your arm bends",
+      "definitionZh": "肘；肘部",
+      "distractors": [
+        "The place where your leg bends",
+        "The part between your hand and your arm",
+        "The part between your foot and your leg"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-exclusion",
+      "item_role": "main",
+      "referenceHeadword": "exclusion",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "exclusion",
+      "partOfSpeech": "n.",
+      "context": "They talked about his exclusion from the game.",
+      "definitionEn": "Being kept out of something",
+      "definitionZh": "被排除在外",
+      "distractors": [
+        "Being put in charge of something",
+        "Being asked to return early",
+        "Being named as the winner"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-forbid",
+      "item_role": "main",
+      "referenceHeadword": "forbid",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "ed5b743e-89fc-497c-9a1a-5a2658d02abf",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e09bd5ae-fac7-46c6-909e-313fe37998fb",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "forbid",
+      "partOfSpeech": "v.",
+      "context": "The school rules forbid this.",
+      "definitionEn": "To tell someone they are not allowed to do something",
+      "definitionZh": "禁止",
+      "distractors": [
+        "To ask someone to do something as a favour",
+        "To show someone the safest way to do something",
+        "To offer someone a choice between two things"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-impatient",
+      "item_role": "main",
+      "referenceHeadword": "impatient",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "95faaa23-c4cd-4839-9322-72086347fe1d",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "e4a0c5a9-9e44-4cad-b657-2f860d4cd7e9",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "impatient",
+      "partOfSpeech": "adj.",
+      "context": "He became impatient as the line grew longer.",
+      "definitionEn": "Annoyed because you have to wait",
+      "definitionZh": "不耐烦的",
+      "distractors": [
+        "Worried that you might forget something",
+        "Pleased about something that has just finished",
+        "Shy about speaking to someone new"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-lively",
+      "item_role": "main",
+      "referenceHeadword": "lively",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "d054351e-ba4c-4e32-a947-16651c9e981e",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "95ff2231-9a24-4697-bac5-d94e6c73ed08",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "lively",
+      "partOfSpeech": "adj.",
+      "context": "The room felt lively after lunch.",
+      "definitionEn": "Full of energy and activity",
+      "definitionZh": "活泼的；充满活力的",
+      "distractors": [
+        "Quiet and easy to fall asleep in",
+        "Busy in a way that makes people angry",
+        "Slow and very hard to finish"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-pencil",
+      "item_role": "main",
+      "referenceHeadword": "pencil",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "f184e33a-f7b6-4800-9b94-79d2a47aa7a4",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "6cc7717b-0537-4cae-b0d8-2dd209bff607",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A1"
+      },
+      "word": "pencil",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A tool for writing with a thin dark centre inside wood",
+      "definitionZh": "铅笔",
+      "distractors": [
+        "A tool for cutting paper with two moving parts",
+        "A tool for taking away marks you have made",
+        "A tool for putting paint on paper with soft hairs"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-poster",
+      "item_role": "main",
+      "referenceHeadword": "poster",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "0bbd1f71-50e0-4996-9385-e8f97c943937",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "revised",
+      "legacySource": {
+        "senseId": "960b6f07-b8a3-4dcc-b08d-543302cdfcc9",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "poster",
+      "partOfSpeech": "n.",
+      "context": "Jo put a poster up at school.",
+      "definitionEn": "A large printed picture or notice for a wall",
+      "definitionZh": "海报；招贴",
+      "distractors": [
+        "A small card used for sending greetings",
+        "A sheet used for wrapping a gift",
+        "A slip used for marking a page"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-shallow",
+      "item_role": "main",
+      "referenceHeadword": "shallow",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "7c060b86-c8b8-4a06-80cd-69bfef98cb53",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "d637061a-0d97-4251-8800-68e7ce06cd34",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "shallow",
+      "partOfSpeech": "adj.",
+      "context": "This part of the pool is shallow.",
+      "definitionEn": "Having little distance from the top to the bottom",
+      "definitionZh": "浅的",
+      "distractors": [
+        "Having a long distance from one side to the other",
+        "Having a strong flow that is hard to swim against",
+        "Having a high edge that is hard to climb"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-stall",
+      "item_role": "main",
+      "referenceHeadword": "stall",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "b271ea60-a444-447d-bb9a-9c61cf47e468",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "d9a3e291-c1aa-4bee-ae86-935a07f43730",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "stall",
+      "partOfSpeech": "n.",
+      "context": "They sold apples from a stall at the market.",
+      "definitionEn": "A small place such as a table where things are sold",
+      "definitionZh": "摊位；货摊",
+      "distractors": [
+        "A large room where people keep old books",
+        "A machine you use to pay a bill at home",
+        "A place where people wait for a train"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-whale",
+      "item_role": "main",
+      "referenceHeadword": "whale",
+      "band": 4,
+      "quartile": 2,
+      "catalogHeadwordId": "86d8c53d-fc57-43bb-911b-16f2d443a3b1",
+      "sourceStages": [
+        "KET",
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "whale",
+      "partOfSpeech": "n.",
+      "context": "The class read about a whale.",
+      "definitionEn": "A huge sea animal that comes up to breathe air",
+      "definitionZh": "鲸",
+      "distractors": [
+        "A large fish with sharp teeth and a fin on its back",
+        "A small fish with a head like a horse",
+        "A sea animal with a shell and two claws"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-absurd",
+      "item_role": "main",
+      "referenceHeadword": "absurd",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "absurd",
+      "partOfSpeech": "adj.",
+      "context": "She thought the idea was absurd.",
+      "definitionEn": "Too silly to make sense",
+      "definitionZh": "荒唐的",
+      "distractors": [
+        "So simple anyone could do it",
+        "So surprising everyone remembers it",
+        "So useful everyone wants it"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-ancestor",
+      "item_role": "main",
+      "referenceHeadword": "ancestor",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": "65cece37-45aa-436c-a26d-68fd612a322f",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "c725c86e-8272-4fec-9d44-adb53e9c06ab",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "ancestor",
+      "partOfSpeech": "n.",
+      "context": "We learned about an ancestor in our family.",
+      "definitionEn": "A person in your family who lived a long time ago",
+      "definitionZh": "祖先",
+      "distractors": [
+        "A person in your family who was only just born",
+        "A person who is married to your brother",
+        "A person who lives next to one of your parents"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-bureaucracy",
+      "item_role": "main",
+      "referenceHeadword": "bureaucracy",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "bureaucracy",
+      "partOfSpeech": "n.",
+      "context": "Opening the new shop involved a lot of bureaucracy.",
+      "definitionEn": "The rules to follow and forms to fill in",
+      "definitionZh": "官僚程序；繁琐的行政手续",
+      "distractors": [
+        "A list of workers and the hours they work",
+        "A map showing which room each office uses",
+        "A note saying when the office opens and closes"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-choir",
+      "item_role": "main",
+      "referenceHeadword": "choir",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": "c351cef9-d045-422a-8b2b-8b120b83286b",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "71fca7a3-d54b-4bf4-861a-4779cb3590b6",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "choir",
+      "partOfSpeech": "n.",
+      "context": "The choir went on stage after lunch.",
+      "definitionEn": "A group of people who sing together",
+      "definitionZh": "合唱团",
+      "distractors": [
+        "A group of people who act out a story",
+        "A group of people who run in a race",
+        "A group of people who make pictures together"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-electron",
+      "item_role": "main",
+      "referenceHeadword": "electron",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "electron",
+      "partOfSpeech": "n.",
+      "context": "Mia drew an electron as part of an atom.",
+      "definitionEn": "A tiny part with a negative charge (−)",
+      "definitionZh": "电子；带负电的微粒",
+      "distractors": [
+        "A tiny part with a positive charge (+)",
+        "A tiny part with no electric charge",
+        "The whole center of an atom"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-embassy",
+      "item_role": "main",
+      "referenceHeadword": "embassy",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": "fd5fce40-5a15-4fac-8280-12c71a71977c",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "embassy",
+      "partOfSpeech": "n.",
+      "context": "She went to her country's embassy in Paris.",
+      "definitionEn": "An office representing one country in another",
+      "definitionZh": "大使馆",
+      "distractors": [
+        "An office selling tickets for trips abroad",
+        "A building where passengers wait for trains",
+        "A building where people vote for a mayor"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-fax",
+      "item_role": "main",
+      "referenceHeadword": "fax",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": "f887abfb-c570-420f-bc9b-07f07ba15b57",
+      "sourceStages": [
+        "PET"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "fax",
+      "partOfSpeech": "n.",
+      "context": "The office received a fax.",
+      "definitionEn": "A copy of a page sent over a phone line",
+      "definitionZh": "传真",
+      "distractors": [
+        "A message someone leaves after a phone call",
+        "A parcel carried by a delivery van",
+        "A picture taken with a film camera"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-habitat",
+      "item_role": "main",
+      "referenceHeadword": "habitat",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "habitat",
+      "partOfSpeech": "n.",
+      "context": "The wetland is the frog's habitat.",
+      "definitionEn": "A living thing's natural home",
+      "definitionZh": "栖息地",
+      "distractors": [
+        "The route an animal takes each winter",
+        "The food an animal eats most often",
+        "The sound an animal makes when afraid"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-miserable",
+      "item_role": "main",
+      "referenceHeadword": "miserable",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": "d6136173-0187-439a-8ee6-2e29c508eab6",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "6957dbf0-09f3-4440-b834-e4e7088ddcb4",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "miserable",
+      "partOfSpeech": "adj.",
+      "context": "He looked miserable when the trip ended.",
+      "definitionEn": "Very unhappy or uncomfortable",
+      "definitionZh": "很不开心的；难受的",
+      "distractors": [
+        "Very proud of something you have done",
+        "Very surprised by unexpected good news",
+        "Very eager for an event to begin"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-nonetheless",
+      "item_role": "main",
+      "referenceHeadword": "nonetheless",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "nonetheless",
+      "partOfSpeech": "adv.",
+      "context": "It was raining. Nonetheless, we went out.",
+      "definitionEn": "Even so",
+      "definitionZh": "尽管如此；仍然",
+      "distractors": [
+        "Because of that",
+        "For example",
+        "By that time"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-ram",
+      "item_role": "main",
+      "referenceHeadword": "ram",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "ram",
+      "partOfSpeech": "n.",
+      "context": "They saw a ram in the field.",
+      "definitionEn": "An adult male sheep",
+      "definitionZh": "公羊",
+      "distractors": [
+        "An adult male goat",
+        "A young female horse",
+        "A young female cow"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-testament",
+      "item_role": "main",
+      "referenceHeadword": "testament",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "testament",
+      "partOfSpeech": "n.",
+      "context": "Her neat work is a testament to her patience.",
+      "definitionEn": "Evidence of something",
+      "definitionZh": "证明；有力的体现",
+      "distractors": [
+        "Something that hides a mistake",
+        "A guess about what will happen",
+        "A reason to stop trying"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-texture",
+      "item_role": "main",
+      "referenceHeadword": "texture",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "texture",
+      "partOfSpeech": "n.",
+      "context": "Jo noticed the texture of the cloth.",
+      "definitionEn": "How a surface feels",
+      "definitionZh": "质地；手感",
+      "distractors": [
+        "How much a piece weighs",
+        "How far a piece stretches",
+        "How bright its colour looks"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-volcano",
+      "item_role": "main",
+      "referenceHeadword": "volcano",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "volcano",
+      "partOfSpeech": "n.",
+      "context": "Their island has a volcano.",
+      "definitionEn": "An opening where melted rock comes out",
+      "definitionZh": "火山",
+      "distractors": [
+        "A long crack worn into rock by a river",
+        "A hill made of sand moved by wind",
+        "A cave formed by waves at the coast"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-weary",
+      "item_role": "main",
+      "referenceHeadword": "weary",
+      "band": 4,
+      "quartile": 3,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "weary",
+      "partOfSpeech": "adj.",
+      "context": "The walkers felt weary.",
+      "definitionEn": "Very tired",
+      "definitionZh": "疲倦的",
+      "distractors": [
+        "Very hungry",
+        "Very anxious",
+        "Very thirsty"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-anchor",
+      "item_role": "main",
+      "referenceHeadword": "anchor",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "anchor",
+      "partOfSpeech": "n.",
+      "context": "The sailors checked the anchor.",
+      "definitionEn": "A heavy object that holds a boat in place",
+      "definitionZh": "锚",
+      "distractors": [
+        "A wide cloth that catches the wind",
+        "A flat board used to steer a boat",
+        "A round window in the side of a boat"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-calorie",
+      "item_role": "main",
+      "referenceHeadword": "calorie",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": "76efaff7-f4da-4354-8876-ed34b7ce45cd",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "new",
+      "legacySource": null,
+      "word": "calorie",
+      "partOfSpeech": "n.",
+      "context": "We learned what a calorie measures.",
+      "definitionEn": "A unit for measuring energy in food",
+      "definitionZh": "卡路里；衡量食物能量的单位",
+      "distractors": [
+        "A unit for measuring the weight of food",
+        "A unit for measuring the temperature of food",
+        "A unit for measuring the volume of food"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-celebrity",
+      "item_role": "main",
+      "referenceHeadword": "celebrity",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": "fdeb024a-4140-4ec1-a621-f9fd1489b8a5",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "53b53841-d824-4cfa-8c26-a257bc83199b",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B1"
+      },
+      "word": "celebrity",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A well-known person, often from films or music",
+      "definitionZh": "名人",
+      "distractors": [
+        "A person who pays to watch a show",
+        "A person who teaches a new skill to others",
+        "A person who has just joined a group"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-choke",
+      "item_role": "main",
+      "referenceHeadword": "choke",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "choke",
+      "partOfSpeech": "v.",
+      "context": "He began to choke during lunch.",
+      "definitionEn": "To have trouble breathing because something blocks the throat",
+      "definitionZh": "噎住；呛住",
+      "distractors": [
+        "To feel a sudden pain in a tooth",
+        "To lose the sense of taste for a moment",
+        "To swallow food without chewing it much"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-consistency",
+      "item_role": "main",
+      "referenceHeadword": "consistency",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "consistency",
+      "partOfSpeech": "n.",
+      "context": "The chef checked the consistency of the sauce.",
+      "definitionEn": "How thick or watery something is",
+      "definitionZh": "稠度",
+      "distractors": [
+        "How sweet or sour something is",
+        "How hot or cold something is",
+        "How bright or pale something is"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-fog",
+      "item_role": "main",
+      "referenceHeadword": "fog",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": "48722723-5f97-4f01-96cf-c690fdddbe69",
+      "sourceStages": [
+        "FCE",
+        "KET",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "3d29aab1-73c8-4534-988c-3410d937b5ae",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "A2"
+      },
+      "word": "fog",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A low cloud that makes it hard to see",
+      "definitionZh": "雾",
+      "distractors": [
+        "A light rain that falls for a short time",
+        "A strong wind that blows through the trees",
+        "A thin layer of ice on a winter road"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hatch",
+      "item_role": "main",
+      "referenceHeadword": "hatch",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "hatch",
+      "partOfSpeech": "v.",
+      "context": "The chicks will hatch soon.",
+      "definitionEn": "To come out of an egg",
+      "definitionZh": "孵出；破壳而出",
+      "distractors": [
+        "To grow a thick coat of feathers",
+        "To build a nest in a tree",
+        "To learn to find food alone"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-hostage",
+      "item_role": "main",
+      "referenceHeadword": "hostage",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "hostage",
+      "partOfSpeech": "n.",
+      "context": "In the story, the captain was held hostage.",
+      "definitionEn": "Someone held to force others to do something",
+      "definitionZh": "人质",
+      "distractors": [
+        "Someone helping two sides reach peace",
+        "Someone watching an event to report the news",
+        "Someone guarding the entrance to a building"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-mobilise",
+      "item_role": "main",
+      "referenceHeadword": "mobilise",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "mobilise",
+      "partOfSpeech": "v.",
+      "context": "The village will mobilise volunteers for the clean-up.",
+      "definitionEn": "To get people ready for action",
+      "definitionZh": "动员",
+      "distractors": [
+        "To ask people to wait their turn",
+        "To let people leave early",
+        "To help people choose a prize"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-outfit",
+      "item_role": "main",
+      "referenceHeadword": "outfit",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": "55f28db6-8f51-4a95-bd76-ec7031451b1c",
+      "sourceStages": [
+        "FCE"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "86de807e-d4d9-42a7-9ceb-d89d7b8cfdf3",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "outfit",
+      "partOfSpeech": "n.",
+      "context": "",
+      "definitionEn": "A set of clothes worn together",
+      "definitionZh": "一套衣服；一身搭配",
+      "distractors": [
+        "A set of tools for fixing things",
+        "A set of plates for eating a meal",
+        "A set of books by the same writer"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-presidency",
+      "item_role": "main",
+      "referenceHeadword": "presidency",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "presidency",
+      "partOfSpeech": "n.",
+      "context": "She wrote about her years in the presidency of France.",
+      "definitionEn": "The elected leader's job or term",
+      "definitionZh": "总统职位或任期",
+      "distractors": [
+        "The speech given before a vote",
+        "The meeting where a law is signed",
+        "The house where a leader lives"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-rocket",
+      "item_role": "main",
+      "referenceHeadword": "rocket",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": "9b12704b-b3ea-498f-8cb4-a111e9e2e768",
+      "sourceStages": [
+        "FCE",
+        "PET"
+      ],
+      "origin": "reused",
+      "legacySource": {
+        "senseId": "8acfd6e8-dfea-4dfc-8fb0-157b4f5bcafa",
+        "senseRevision": 3,
+        "originalRole": "main",
+        "originalCefr": "B2"
+      },
+      "word": "rocket",
+      "partOfSpeech": "n.",
+      "context": "Everyone watched the rocket rise.",
+      "definitionEn": "A vehicle that uses powerful engines to travel into space",
+      "definitionZh": "火箭",
+      "distractors": [
+        "A vehicle that moves over water using the wind",
+        "A vehicle that takes passengers along tracks underground",
+        "A vehicle that lifts people up the side of a mountain"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-skip",
+      "item_role": "main",
+      "referenceHeadword": "skip",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "skip",
+      "partOfSpeech": "v.",
+      "context": "We had to skip the last page.",
+      "definitionEn": "To leave something out and go on",
+      "definitionZh": "跳过；略过",
+      "distractors": [
+        "To read something twice",
+        "To mark something with a cross",
+        "To turn something the other way up"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-spouse",
+      "item_role": "main",
+      "referenceHeadword": "spouse",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "spouse",
+      "partOfSpeech": "n.",
+      "context": "Each guest could bring a spouse.",
+      "definitionEn": "A husband or wife",
+      "definitionZh": "配偶",
+      "distractors": [
+        "A brother or sister",
+        "A son or daughter",
+        "An aunt or uncle"
+      ]
+    },
+    {
+      "itemId": "rosie-v2-main-telescope",
+      "item_role": "main",
+      "referenceHeadword": "telescope",
+      "band": 4,
+      "quartile": 4,
+      "catalogHeadwordId": null,
+      "sourceStages": [],
+      "origin": "new",
+      "legacySource": null,
+      "word": "telescope",
+      "partOfSpeech": "n.",
+      "context": "Mia set up a telescope.",
+      "definitionEn": "A tool that makes faraway things look closer",
+      "definitionZh": "望远镜",
+      "distractors": [
+        "A tool that measures how fast the wind blows",
+        "A tool that records a sound and plays it back",
+        "A tool that shows which direction is north"
+      ]
+    }
+  ]
+}

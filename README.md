@@ -1,7 +1,7 @@
 # Rosie 的炸弹乐园
 
 面向小学低年级（单个孩子 Rosie）的互动学习 PWA，覆盖**数学、英语、语文、口算**，
-外加**绘本阅读、音频、奖励系统**。**强制登录，Supabase 为唯一数据源**（无游客模式）。
+外加**音频、奖励系统**。**强制登录，Supabase 存业务数据，百度网盘存项目文件**（无游客模式）。
 
 > 架构与开发约定以 [`AGENTS.md`](AGENTS.md) 为准，各学科模块细节见对应包的 `AGENTS.md`。
 > 本文件只做快速上手。
@@ -16,7 +16,7 @@
 | pnpm workspace + Turborepo | monorepo，`apps/web` + `packages/*` |
 | Supabase（`@supabase/supabase-js`） | 认证 + 唯一数据存储 |
 | Workbox 7（CDN） | Service Worker 缓存（HTML NetworkFirst / JS·CSS SWR / 图片 CacheFirst 30d） |
-| pdfjs-dist · react-pageflip | 绘本 PDF 翻页 |
+| pdfjs-dist | PDF 页面渲染 |
 | xlsx · @breezystack/lamejs | 单词 Excel 导入 · 朗读录音编码 |
 
 ## Monorepo 结构
@@ -32,7 +32,7 @@ packages/
   player/          内容无关的播放引擎 + PlayerDock
   calc/            口算          | math/     人教版数学
   english/         英语（词汇+阅读）| chinese/  语文（生字·古诗·朗读）
-  flipbook/        绘本 PDF 阅读器 | audio/    音频合集/收藏
+  audio/           音频合集/收藏
 supabase/          数据库 schema 快照 + 迁移（见 supabase/README.md）
 docs/              扩展指南、规则、每学科 SQL/灌库脚本
 ```
@@ -75,7 +75,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 - **所有用户数据存 Supabase**（`word_entries`、`math_*`、`chinese_*`、`calc_*`、`*_weekly_plans` 等，
   约 47 张表）。数据 hook 走 `@rosie/core` 的 `createUserSessionStore`（per-user 缓存 + 写后 patch）。
 - **`localStorage` 只存 UI 偏好 / 筛选与选择项 / 少量瞬时会话态**（侧栏折叠、英语与生字筛选、
-  周计划上次选择、绘本播放偏好、拯救队列等，见 `@rosie/core` 的 `STORAGE_KEYS`），**从不存持久用户数据**。
+  周计划上次选择、拯救队列等，见 `@rosie/core` 的 `STORAGE_KEYS`），**从不存持久用户数据**。
 - **数据库迁移**：`supabase/migrations/` 与 Supabase 官方迁移历史对应；旧的自建迁移保存在
   `supabase/legacy-migrations/`。`supabase/schema.sql` 是历史快照。详见 [`supabase/README.md`](supabase/README.md)。
 

@@ -60,6 +60,10 @@ references to old file paths should point to `legacy-migrations/`.
 have RLS enabled and are accessible through the service role. Reviewed banks
 are published separately with the [assessment workflow](../packages/english/SHARED-VOCABULARY.md#词汇量测评).
 
+Hosted migration `20261119033956_vocabulary_assessment_open_versions.sql` allows one
+open attempt per user and model version. Remote read-back confirmed the partial unique
+index is valid and the former user-only index has been removed.
+
 ## Exam migrations
 
 The seven exam migrations were applied on 2026-11-13 after explicit user authorization,
@@ -163,3 +167,14 @@ progress rows. The current Web release retains its existing RLS-governed
 catalog insert/update grants until the Web cutover. The FCE import and
 application build/runtime acceptance remain separate. See
 [the migration and import guide](../packages/english/SHARED-VOCABULARY.md).
+
+## Database backups
+
+The scheduled backup exports the hosted database and verifies its compressed
+archive in Baidu Netdisk. See [backup setup and recovery](backup.md).
+
+## Project files
+
+The project media cutover moves project assets and private recordings to Baidu Netdisk.
+See [project file storage](../docs/project-file-storage.md) for the source
+inventory, resumable copy, and production cleanup steps.

@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from '@rosie/core'
+import { projectMediaUrl, removeProjectMedia, supabase, uploadProjectMedia } from '@rosie/core'
 import {
   MATH_IMAGES_BUCKET,
   type MathImageKind,
@@ -55,8 +55,7 @@ export function invalidateLessonImageCache(lessonId?: string): void {
 }
 
 export function getMathImagePublicUrl(storagePath: string): string {
-  const { data } = supabase.storage.from(MATH_IMAGES_BUCKET).getPublicUrl(storagePath)
-  return data.publicUrl
+  return projectMediaUrl(MATH_IMAGES_BUCKET, storagePath)
 }
 
 async function fetchLessonImageMap(lessonId: string): Promise<LessonImageMap> {
@@ -119,10 +118,9 @@ export async function uploadMathProblemImage(
   }
 
   const storagePath = mathImageStoragePath(kind, lessonId, problemId, ext === 'jpeg' ? 'jpg' : ext)
+    .replace(/\.([^.]+)$/, `.${crypto.randomUUID()}.$1`)
 
-  const { error: storageErr } = await supabase.storage
-    .from(MATH_IMAGES_BUCKET)
-    .upload(storagePath, file, { upsert: true, contentType: file.type || undefined })
+  const { error: storageErr } = await uploadProjectMedia(MATH_IMAGES_BUCKET, storagePath, file)
 
   if (storageErr) return { error: storageErr.message, image: null }
 
@@ -144,7 +142,7 @@ export async function uploadMathProblemImage(
     .single()
 
   if (upsertErr || !data) {
-    await supabase.storage.from(MATH_IMAGES_BUCKET).remove([storagePath])
+    await removeProjectMedia(MATH_IMAGES_BUCKET, storagePath)
     return { error: upsertErr?.message ?? '保存失败', image: null }
   }
 
@@ -161,18 +159,13 @@ export async function changeMathProblemImageKind(
 
   const ext = (image.storagePath.split('.').pop() ?? 'png').toLowerCase()
   const newPath = mathImageStoragePath(targetKind, image.lessonId, image.problemId, ext)
+    .replace(/\.([^.]+)$/, `.${crypto.randomUUID()}.$1`)
 
-  const { data: blob, error: downloadErr } = await supabase.storage
-    .from(MATH_IMAGES_BUCKET)
-    .download(image.storagePath)
+  const original = await fetch(getMathImagePublicUrl(image.storagePath), { cache: 'no-store' }).catch(() => null)
+  if (!original?.ok) return { error: '读取原图失败', image: null }
+  const blob = await original.blob()
 
-  if (downloadErr || !blob) {
-    return { error: downloadErr?.message ?? '读取原图失败', image: null }
-  }
-
-  const { error: uploadErr } = await supabase.storage
-    .from(MATH_IMAGES_BUCKET)
-    .upload(newPath, blob, { upsert: true, contentType: blob.type || undefined })
+  const { error: uploadErr } = await uploadProjectMedia(MATH_IMAGES_BUCKET, newPath, blob)
 
   if (uploadErr) return { error: uploadErr.message, image: null }
 
@@ -194,33 +187,34 @@ export async function changeMathProblemImageKind(
     .single()
 
   if (upsertErr || !data) {
-    await supabase.storage.from(MATH_IMAGES_BUCKET).remove([newPath])
+    await removeProjectMedia(MATH_IMAGES_BUCKET, newPath)
     return { error: upsertErr?.message ?? '保存失败', image: null }
   }
 
-  await supabase.storage.from(MATH_IMAGES_BUCKET).remove([image.storagePath])
-  await supabase
+  const { error: cleanupError } = await supabase
     .from('math_problem_images')
     .delete()
     .eq('lesson_id', image.lessonId)
     .eq('problem_id', image.problemId)
     .eq('image_kind', image.imageKind)
+    .eq('storage_path', image.storagePath)
+  if (!cleanupError) await removeProjectMedia(MATH_IMAGES_BUCKET, image.storagePath)
 
   invalidateLessonImageCache(image.lessonId)
   return { error: null, image: rowToImage(data as RawRow) }
 }
 
 export async function deleteMathProblemImage(image: MathProblemImage): Promise<{ error: string | null }> {
-  await supabase.storage.from(MATH_IMAGES_BUCKET).remove([image.storagePath])
-
   const { error } = await supabase
     .from('math_problem_images')
     .delete()
     .eq('lesson_id', image.lessonId)
     .eq('problem_id', image.problemId)
     .eq('image_kind', image.imageKind)
+    .eq('storage_path', image.storagePath)
 
   if (error) return { error: error.message }
+  await removeProjectMedia(MATH_IMAGES_BUCKET, image.storagePath)
 
   invalidateLessonImageCache(image.lessonId)
   return { error: null }
@@ -254,9 +248,7 @@ export async function uploadLessonSummaryContentImage(
     ext === 'jpeg' ? 'jpg' : ext,
   )
 
-  const { error } = await supabase.storage
-    .from(MATH_IMAGES_BUCKET)
-    .upload(storagePath, file, { upsert: false, contentType: file.type || undefined })
+  const { error } = await uploadProjectMedia(MATH_IMAGES_BUCKET, storagePath, file)
 
   if (error) return { error: error.message, url: null }
   return { error: null, url: getMathImagePublicUrl(storagePath) }
@@ -281,9 +273,7 @@ export async function uploadProblemNoteContentImage(
     ext === 'jpeg' ? 'jpg' : ext,
   )
 
-  const { error } = await supabase.storage
-    .from(MATH_IMAGES_BUCKET)
-    .upload(storagePath, file, { upsert: false, contentType: file.type || undefined })
+  const { error } = await uploadProjectMedia(MATH_IMAGES_BUCKET, storagePath, file)
 
   if (error) return { error: error.message, url: null }
   return { error: null, url: getMathImagePublicUrl(storagePath) }

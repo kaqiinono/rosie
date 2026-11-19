@@ -19,3 +19,6 @@ export * from './useBaiduMediaError'
 export * from './voucherColors'
 
 export { useFloatingLauncherPosition } from './useFloatingLauncherPosition'
+
+export * from './projectMedia'
+export * from './projectMediaUrl'

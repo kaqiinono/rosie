@@ -2,8 +2,7 @@
 
 import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, supabase } from '@rosie/core'
-import { readingPassages } from '../utils/reading-data'
+import { createUserSessionStore, projectMediaUrl, removeProjectMedia, supabase, uploadProjectMedia } from '@rosie/core'
 import {
   READING_AUDIO_BUCKET,
   readingPassageAudioPath,
@@ -25,35 +24,7 @@ function rowToMedia(row: RawMediaRow): ReadingPassageMediaRow {
   }
 }
 
-async function discoverStorageAudio(): Promise<Record<string, ReadingPassageMediaRow>> {
-  const map: Record<string, ReadingPassageMediaRow> = {}
-  await Promise.all(
-    readingPassages.map(async (p) => {
-      const audioPath = readingPassageAudioPath(p.key)
-      const { data, error } = await supabase.storage
-        .from(READING_AUDIO_BUCKET)
-        .list(`passages/${p.key}`, { limit: 5 })
-      if (error || !data?.some((f) => f.name === 'narration.mp3')) return
-      const file = data.find((f) => f.name === 'narration.mp3')
-      map[p.key] = {
-        passageKey: p.key,
-        audioPath,
-        updatedAt: file?.updated_at ?? file?.created_at ?? 'storage',
-      }
-    }),
-  )
-  return map
-}
-
-function mergeMediaMaps(
-  storageMap: Record<string, ReadingPassageMediaRow>,
-  dbMap: Record<string, ReadingPassageMediaRow>,
-): Record<string, ReadingPassageMediaRow> {
-  return { ...storageMap, ...dbMap }
-}
-
 async function fetchReadingPassageMedia(_userId: string): Promise<Record<string, ReadingPassageMediaRow>> {
-  const storageMap = await discoverStorageAudio()
   const { data, error } = await supabase
     .from('reading_passage_media')
     .select('passage_key, audio_path, updated_at')
@@ -63,7 +34,7 @@ async function fetchReadingPassageMedia(_userId: string): Promise<Record<string,
       dbMap[row.passage_key] = rowToMedia(row)
     }
   }
-  return mergeMediaMaps(storageMap, dbMap)
+  return dbMap
 }
 
 export const readingPassageMediaStore = createUserSessionStore<
@@ -82,17 +53,13 @@ export function useReadingPassageMedia(user: User | null) {
     readingPassageMediaStore.ensureLoaded(user.id)
   }, [user])
 
-  const getAudioUrl = useCallback((audioPath: string): string | null => {
-    const { data } = supabase.storage.from(READING_AUDIO_BUCKET).getPublicUrl(audioPath)
-    return data.publicUrl ?? null
-  }, [])
+  const getAudioUrl = useCallback((audioPath: string) => projectMediaUrl(READING_AUDIO_BUCKET, audioPath), [])
 
   const getUrlForPassage = useCallback(
     (passageKey: string): string | null => {
       const media = mediaByKey[passageKey]
       if (!media) return null
       const base = getAudioUrl(media.audioPath)
-      if (!base) return null
       return `${base}?v=${encodeURIComponent(media.updatedAt)}`
     },
     [mediaByKey, getAudioUrl],
@@ -103,13 +70,8 @@ export function useReadingPassageMedia(user: User | null) {
       if (!user) return { error: '请先登录' }
 
       const compressed = await compressAudioToMp3(file)
-      const audioPath = readingPassageAudioPath(passageKey)
-      const { error: storageErr } = await supabase.storage
-        .from(READING_AUDIO_BUCKET)
-        .upload(audioPath, compressed.blob, {
-          upsert: true,
-          contentType: compressed.contentType,
-        })
+      const audioPath = readingPassageAudioPath(passageKey).replace(/\.mp3$/, `-${crypto.randomUUID()}.mp3`)
+      const { error: storageErr } = await uploadProjectMedia(READING_AUDIO_BUCKET, audioPath, compressed.blob)
       if (storageErr) return { error: storageErr.message }
 
       const updatedAt = new Date().toISOString()
@@ -122,15 +84,14 @@ export function useReadingPassageMedia(user: User | null) {
         },
         { onConflict: 'passage_key' },
       )
+      if (dbErr) {
+        await removeProjectMedia(READING_AUDIO_BUCKET, audioPath)
+        return { error: dbErr.message }
+      }
       readingPassageMediaStore.patchSessionData(user.id, (prev) => ({
         ...prev,
         [passageKey]: { passageKey, audioPath, updatedAt },
       }))
-      if (dbErr) {
-        return {
-          error: `音频已上传，但记录保存失败（请执行 docs/reading-audio-tables.sql）：${dbErr.message}`,
-        }
-      }
       return { error: null }
     },
     [user],

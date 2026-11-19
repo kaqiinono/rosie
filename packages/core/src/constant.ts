@@ -51,10 +51,6 @@ export const STORAGE_KEYS = {
   RESCUE_QUEUE: 'rescue_queue_v1',
   /** 管理后台「草稿词库」：新建但还没写入单词的 stage 名（按 user.id 分 key 持久化） */
   ADMIN_DRAFT_STAGES: 'admin-draft-stages',
-  /** 打开绘本详情后是否自动播放讲解音频（默认开） */
-  FLIPBOOK_AUTO_PLAY: 'flipbook-auto-play',
-  /** 阅读时右上角显示当前页词汇释义（默认开） */
-  FLIPBOOK_WORD_OVERLAY: 'flipbook-word-overlay',
   /** 生字库页单元/课文筛选（实际 key 为 `${CHINESE_CHARS_FILTER}:${bookSlug}`） */
   CHINESE_CHARS_FILTER: 'chinese-chars-filter',
   /** 数学管理后台讲次/来源/题型筛选，下次进入恢复上次选择 */

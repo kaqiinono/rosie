@@ -2,9 +2,6 @@
   "apps/web/src/app/admin/awards/page.tsx": {
     "hand-card": 1
   },
-  "apps/web/src/app/flipbook/page.tsx": {
-    "native-control": 3
-  },
   "apps/web/src/app/math/mistakes/page.tsx": {
     "hand-card": 2
   },
@@ -28,9 +25,6 @@
     "hand-card": 1
   },
   "packages/audio/src/admin/CollectionView.tsx": {
-    "hand-card": 1
-  },
-  "packages/audio/src/admin/StandaloneAudioTab.tsx": {
     "hand-card": 1
   },
   "packages/chinese/src/components/chars/ChineseCharsFilterBar.tsx": {

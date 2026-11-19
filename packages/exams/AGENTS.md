@@ -14,7 +14,7 @@ have a separate `@rosie/exams/validation` entry point so server code does not lo
 original page with candidate crop, and electronic question-group preview. It reuses
 `@rosie/ui` ImageCropper; grammar imports that shared primitive independently. Four current
 bundles have 37 image slots (29 required), with 14 originals prepared in the private temporary
-`exam-image-sources` bucket. Source access is admin-only/no-store; finished images upload to
+`/airosie/project/exam-image-sources`. Source access is admin-only/no-store; finished images upload to
 Baidu and commit through the existing immutable media-binding RPC plus a crop receipt.
 Actual crop coordinates, upload identity and leases live in service-only authoring tables.
 
@@ -596,13 +596,13 @@ grant. Other Parts, teaching/scoring guidance and examples remain private. Old r
 not renew an expired grant. POST `/api/exams/parent-session/revoke` has no body and clears
 matching grants for the verified current owner/session, rotating affected attempt versions.
 
-Recordings use private bucket `exam-recordings` and service-only metadata. POST
+Recordings use Baidu `/airosie/project/record/exam-recordings` and service-only metadata. POST
 `attempts/[id]/recordings` prepares `{requestId,expectedVersion,questionId,mimeType,sizeBytes,
 sha256}`; GET lists own recovery metadata. PUT `.../recordings/[recordingId]` accepts bounded
-binary bytes, validates declared length/hash/container and uploads without overwrite.
+binary bytes up to 4 MiB. Larger recordings upload through the owner-scoped multipart route, then POST the same exam recording URL to finalize. Both routes verify Baidu bytes against the declared length, SHA-256 and container before recording completion.
 The limit is 20 MiB per file; accepted base MIME types are audio/webm, audio/ogg, audio/mp4,
 audio/mpeg and audio/wav. GET the same URL returns authorized private bytes, never a public
-Storage URL. POST `.../[recordingId]/abandon` with `{requestId}` explicitly abandons an
+Baidu URL. POST `.../[recordingId]/abandon` with `{requestId}` explicitly abandons an
 unfinished upload. Complete objects are immutable. Normal submission and completion share
 the attempt lock: uploading blocks submission unless explicitly abandoned; only matching
 owner/attempt/question complete recordings can be attached. Automatic deadline settlement

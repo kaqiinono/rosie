@@ -1,3 +1,4 @@
+import { projectMediaUrl } from '@rosie/core/project-media-url'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { KnowledgeSearchHit, AgentBlock } from '../../types'
 
@@ -92,7 +93,7 @@ async function resolveAnalysisImageUrl(
     .eq('image_kind', 'analysis')
     .maybeSingle()
   if (error || !data?.storage_path) return staticUrl
-  return supabase.storage.from('math').getPublicUrl(data.storage_path).data.publicUrl || staticUrl
+  return projectMediaUrl('math', data.storage_path)
 }
 
 export async function buildMathSolutionFromHit(

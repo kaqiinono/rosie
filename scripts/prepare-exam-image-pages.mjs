@@ -7,6 +7,8 @@ import { createHash, randomUUID } from 'node:crypto'
 import { parseArgs, parseEnv } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
+import { getProjectStorageAccount } from './lib/project-storage-account.mjs'
+import { projectPath, putProjectObject } from '../apps/web/src/lib/baidu-project-transfer.mjs'
 
 const { values } = parseArgs({ options: {
   apply: { type: 'boolean' }, restore: { type: 'boolean' },
@@ -59,10 +61,8 @@ for (const bundle of bundles) {
         continue
       }
       if (restore && existing[0]) row.object_path = `${source.sourceId}/${set.source.fileHash}/page-${page}-${randomUUID()}.png`
-      const object = row.object_path.split('/').map(encodeURIComponent).join('/')
-      // Same prepared source identity and bytes; upsert also recovers interrupted first uploads.
-      await request(`/storage/v1/object/exam-image-sources/${object}`, { method: 'POST', body: bytes,
-        headers: { 'Content-Type': 'image/png', 'x-upsert': 'true' } })
+      const { token: baiduToken } = await getProjectStorageAccount(env)
+      await putProjectObject(baiduToken, projectPath('exam-image-sources', row.object_path), bytes, { verify: true })
       await request('/rest/v1/exam_image_source_pages?on_conflict=id', { method: 'POST', body: JSON.stringify(row),
         headers: { 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' } })
       console.log(`${source.sourceId} page ${page}: uploaded`)

@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+import { migrateProjectMediaUrl, projectMediaUrl } from '@rosie/core/project-media-url'
 import { MATH_IMAGES_BUCKET } from '@rosie/math-kit/constants'
 import { isNoteBodyEmpty } from '@rosie/math-kit/utils/sanitize-note-html'
 import {
@@ -48,14 +49,12 @@ function ensureDomPurifyHooks(): void {
 
 /** Images uploaded to math bucket summaries/ or notes/ paths. */
 export function isAllowedRichImageSrc(src: string): boolean {
-  if (!src) return false
+  const normalized = migrateProjectMediaUrl(src, MATH_IMAGES_BUCKET)
+  if (!normalized.startsWith(projectMediaUrl(MATH_IMAGES_BUCKET, ''))) return false
   try {
-    const url = new URL(src)
-    const base = `/storage/v1/object/public/${MATH_IMAGES_BUCKET}/`
-    return (
-      url.pathname.includes(`${base}summaries/`) ||
-      url.pathname.includes(`${base}notes/`)
-    )
+    const { pathname } = new URL(normalized, 'https://rosie.invalid')
+    return ['summaries', 'notes'].some(folder =>
+      pathname.startsWith(projectMediaUrl(MATH_IMAGES_BUCKET, folder) + '/'))
   } catch {
     return false
   }
@@ -69,6 +68,7 @@ function stripInvalidImages(html: string): string {
     const src = img.getAttribute('src') ?? ''
     if (!isAllowedRichImageSrc(src)) img.remove()
     else {
+      img.setAttribute('src', migrateProjectMediaUrl(src, MATH_IMAGES_BUCKET))
       const className = img.getAttribute('class') ?? ''
       const widthPct = img.getAttribute('data-img-width-pct')
         ? clampRichImgWidthPct(parseInt(img.getAttribute('data-img-width-pct')!, 10))

@@ -1,4 +1,5 @@
 import 'server-only'
+import { isPrivateProjectPath } from './baidu-project-transfer.mjs'
 import { exactBaiduId, parseBaiduJson } from './baidu-identity'
 import { getBaiduAccountContext, getBaiduAccessToken } from './baidu-token'
 
@@ -164,6 +165,7 @@ export async function fetchBaiduFileById(
   token: string,
   expectedPath?: string,
   expectedFingerprint?: BaiduFileFingerprint,
+  access: 'published' | 'project' = 'published',
 ): Promise<Response | null> {
   const id = exactBaiduId(fsId)
   const metadata = await baiduJson(
@@ -182,6 +184,7 @@ export async function fetchBaiduFileById(
     exactBaiduId(info.fs_id) !== id ||
     info.isdir === 1 ||
     typeof info.path !== 'string' ||
+    (access === 'published' && isPrivateProjectPath(info.path)) ||
     !info.path.startsWith(prefix) ||
     info.path.slice(prefix.length).includes('/') ||
     (expectedPath && info.path !== expectedPath) ||

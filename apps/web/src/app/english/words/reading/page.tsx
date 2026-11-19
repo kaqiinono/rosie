@@ -16,7 +16,6 @@ import { usePlaylistPlayer } from '@rosie/player'
 import { useWordsContext } from '@rosie/english'
 import { PlayerDock } from '@rosie/player'
 import { parseFocusLessonKey, readingPassages } from '@rosie/english'
-import { READING_AUDIO_BUCKET, readingPassageAudioPath } from '@rosie/english'
 import { wordKey } from '@rosie/english'
 import { getWordMasteryLevel } from '@rosie/core'
 import { type PlayerTrack } from '@rosie/player'
@@ -28,7 +27,7 @@ export default function ReadingIndexPage() {
   const { vocab, masteryMap, selStage, setSelStage } = useWordsContext()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { hasAudio } = useReadingPassageMedia(user)
+  const { hasAudio, getUrlForPassage } = useReadingPassageMedia(user)
   const {
     hasAudio: hasBaiduAudio,
     isLoading: loadingBaidu,
@@ -131,10 +130,11 @@ export default function ReadingIndexPage() {
       let url: string
       if (hasBaiduAudio(p.key + '#narration')) url = lessonAudioUrl(p.key, 'narration')
       else if (hasBaiduAudio(p.key)) url = baiduReadingAudioUrl(p.key)
-      else
-        url = supabase.storage
-          .from(READING_AUDIO_BUCKET)
-          .getPublicUrl(readingPassageAudioPath(p.key)).data.publicUrl
+      else {
+        const projectUrl = getUrlForPassage(p.key)
+        if (!projectUrl) continue
+        url = projectUrl
+      }
       map.set(p.key, {
         url,
         label: p.title,
@@ -144,7 +144,7 @@ export default function ReadingIndexPage() {
       })
     }
     return map
-  }, [stagePassages, hasPlayableAudio, hasBaiduAudio])
+  }, [stagePassages, hasPlayableAudio, getUrlForPassage, hasBaiduAudio])
 
   const audiobookKeys = useMemo(
     () =>

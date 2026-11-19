@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from '@rosie/core'
+import { uploadProjectMedia } from '@rosie/core'
 import {
   MATH_IMAGES_BUCKET,
   lessonIdFromProblemId,
@@ -70,9 +70,7 @@ export async function uploadScratchDraftImage(
   const imageId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
   const storagePath = scratchDraftImagePath(lessonId, problemId, imageId, ext)
 
-  const { error } = await supabase.storage
-    .from(MATH_IMAGES_BUCKET)
-    .upload(storagePath, file, { upsert: false, contentType: file.type || undefined })
+  const { error } = await uploadProjectMedia(MATH_IMAGES_BUCKET, storagePath, file)
 
   if (error) return { error: error.message, url: null }
   return { error: null, url: getMathImagePublicUrl(storagePath) }

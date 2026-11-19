@@ -16,7 +16,6 @@
     "test": "turbo run test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "flipbook:sync": "node scripts/generate-flipbook-sync.mjs",
     "ai:sync-db": "node scripts/ai-sync-db.mjs",
     "ai:sync-catalog": "node scripts/ai-sync-catalog.mjs",
     "ai:sync-status": "node scripts/ai-sync-status.mjs",

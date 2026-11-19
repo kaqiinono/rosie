@@ -32,8 +32,7 @@ packages/
   english/   @rosie/english — vocabulary (cards/quiz/spelling/weekly plan/mastery) + reading
                               + grammar (剑桥初级英语语法 116 单元，内容存 Supabase，CLI 提取)
   exams/     @rosie/exams   — 考一考：KET 内容/审核、练习模考、词汇补练与报告；API 由 web 承载
-  flipbook/  @rosie/flipbook— PDF flipbook reader (books with audio)
-  audio/     @rosie/audio   — audio_assets, collections/favorites, /audio page, admin audio
+  audio/     @rosie/audio   — collections/favorites, /audio and /setting/audio
   chinese/   @rosie/chinese — 语文：生字认读/会写、古诗背诵、周计划（一下 / 二上 / 二下）
   ai/        @rosie/ai — RAG 知识库 + Rosie Agent（/ai、ingest、STT）
   tasks/     @rosie/tasks — 课程表、排课与课前提醒
@@ -41,7 +40,7 @@ packages/
 
 **Dependency DAG (no cycles):** everything → `core`. `ui`→rewards; `player` is standalone;
 `math`→ui,rewards; `math-content`→math-kit,ui; `english`→player,ui,rewards; `chinese`→ui,rewards; `ai`→core,ui,player;
-`flipbook`→english,player; `audio`→flipbook, english,player; `exams`→core,ui,player. A package must never import another subject module outside this DAG, and
+`audio`→english,player; `exams`→core,ui,player. A package must never import another subject module outside this DAG, and
 `core`/`ui`/`rewards`/`player` never import a subject module.
 
 **Imports & routes:** routes stay in `apps/web/src/app/**` and import the packages. Most
@@ -53,9 +52,8 @@ plus a `paths` alias in BOTH `apps/web/tsconfig.json` and `packages/math/tsconfi
 `packages/math/AGENTS.md`). Inside a package, cross-file imports are **relative**. Packages are
 wired into the app via `transpilePackages` in `apps/web/next.config.ts`.
 
-**Media note:** the reading and flipbook pages build their own play queues via `@rosie/player`
-directly (连播 within their own scope, no ❤️favorites) so they don't depend on `@rosie/audio`;
-`@rosie/audio` aggregates reading/flipbook content one-way.
+**Media note:** the reading pages build their own play queues via `@rosie/player`
+directly. `@rosie/audio` consumes reading content one-way.
 
 **Before extracting the next module, read [`docs/bug-report.md`](docs/bug-report.md)**
 — the bugs/gotchas from this migration + a per-module extraction checklist. The most common
@@ -86,7 +84,7 @@ import + `@source` scan list, theme tokens (`@theme`, design-token `:root`), sha
 exposed as `animate-*` utilities, and cross-package animations. **Module-specific CSS (custom
 classes, module-scoped CSS vars, single-module keyframes) lives inside its own package** as a plain
 `.css` file imported once from within the package (e.g. `packages/english/src/english.css` via
-`index.ts`, `packages/flipbook/src/flipbook.css` via `FlipbookLayoutEffects`,
+`index.ts`,
 `packages/math/.../gong/gong.css` via `shared.tsx`). These plain CSS files are NOT Tailwind-processed
 — Tailwind utility classes used by the components are still generated from `globals.css`'s `@source`.
 
@@ -135,10 +133,10 @@ at `/admin/sync` through `POST /api/baidu/oauth/start`.
 Both flows use a ten-minute, single-use state whose hash binds the target and initiator. Configure
 `BAIDU_APP_KEY`, `BAIDU_SECRET_KEY`, `BAIDU_REDIRECT_URI` and the existing
 `SUPABASE_SERVICE_ROLE_KEY`. The state table and both credential tables are
-service-role-only, with no browser grants or RLS policies. New shared course media files belong on Baidu Netdisk. Supabase stores binding metadata. Existing Storage resources migrate incrementally. Legacy textbook narration maps keys such as
+service-role-only, with no browser grants or RLS policies. New shared course media files belong on Baidu Netdisk. Supabase stores binding metadata. Project file routing and the Storage cutover are documented in [docs/project-file-storage.md](docs/project-file-storage.md). Legacy textbook narration maps keys such as
 `5a-u3l1` to `/airosie/english/audio/5A/U3L1.mp3`. Authenticated audio-session POST establishes
 an HttpOnly cookie; each audio stream validates its Supabase session and supports Range requests,
-with public Storage fallback. Token refresh uses a database lease and compare-and-set persistence;
+with project narration fallback from Baidu. Token refresh uses a database lease and compare-and-set persistence;
 legacy shared credentials acquire their missing account identity on first use through Baidu
 identity verification and a version-guarded update. Math replay checks this at session creation.
 Ambiguous refresh failures require administrator reauthorization. Proxy audio is excluded from SW
@@ -259,8 +257,7 @@ successful server-side verification of the current user's parent PIN.
 `/setting/calc` manages named口算策略. A user may create multiple strategies, but at most one is
 enabled; that enabled row is the default used by normal口算 and direct entry from 今日计划.
 - `/admin/words` — word-library (vocabulary) CRUD: stage = 词库, per-row add/edit/delete, single add (with AI auto-fill), and batch add (xlsx upload + paste). Uses `useWordData`'s per-row mutations (`addWords`/`updateWord`/`deleteWord`/`deleteStage`/`renameStage`), NOT the destructive `upsertByStage`.
-- `/admin/word-images` — Pexels auto-match + match-score review / replace / upload for vocabulary illustrations (Storage bucket `word-images`).
-- `/admin/audio` — 独立媒体（`audio_assets`）增删改查 + 收藏夹侧栏（无 tab）。上传媒体会自动加入当前选中的可收藏收藏夹。底部为共享 `<PlayerDock>`。
+- `/admin/word-images` — Pexels auto-match + match-score review / replace / upload for vocabulary illustrations (Baidu project folder `word-images`).
 - `/admin/word-audit` — read-only data audit
 - `/admin/plans` — plan hub (math, English, Chinese roadmap plans)
 
@@ -277,8 +274,7 @@ module, **read that package's AGENTS.md** (scoped, up to date) instead of relyin
 | 数学   | `@rosie/math`     | `apps/web/src/app/math/**`                  | `packages/math/AGENTS.md`     |
 | 英语   | `@rosie/english`  | `apps/web/src/app/english/**`               | `packages/english/AGENTS.md`  |
 | 考试   | `@rosie/exams`    | `apps/web/src/app/exams/**`, `/admin/exams` | `packages/exams/AGENTS.md`    |
-| 绘本   | `@rosie/flipbook` | `apps/web/src/app/flipbook/**`              | `packages/flipbook/AGENTS.md` |
-| 音频   | `@rosie/audio`    | `apps/web/src/app/audio/**`, `/admin/audio` | `packages/audio/AGENTS.md`    |
+| 音频   | `@rosie/audio`    | `/audio`, `/setting/audio` | `packages/audio/AGENTS.md`    |
 
 Shared foundations: `@rosie/core` (Supabase, contexts, types, constants, utils), `@rosie/ui`,
 `@rosie/rewards` (stars/wallet/vouchers), `@rosie/player` (playback engine + `PlayerDock`).
@@ -293,12 +289,17 @@ the catalog RPCs. The new skill progress and source receipts are installed by th
 `shared_english_vocabulary` migrations. See [the migration and import guide](packages/english/SHARED-VOCABULARY.md).
 「我的超能力」at `/superpowers` offers a KET/PET/FCE reading vocabulary assessment.
 Its service-only, owner-scoped attempts and reviewed banks use the vocabulary assessment migration.
+During the assessment, the seen-words list shows each saved answer's English definition and result.
 Publication and calibration use the [assessment workflow](packages/english/SHARED-VOCABULARY.md#词汇量测评).
+
+The `/superpowers` reading assessment can retain a V1 fixed-bank answer sheet alongside
+a V2 frequency-band pilot. The English package owns selection and scoring, the web API
+owns owner-scoped persistence and pilot access. See [the pilot contract](packages/english/SHARED-VOCABULARY.md#v2-个人试测接入).
 
 ### 考一考
 
 `/admin/exams/images` provides a source-page crop task workspace. Temporary originals are
-admin-only in private Supabase Storage; finished crops automatically upload to shared Baidu
+admin-only in the Baidu project folder; finished crops upload to the exam media directory
 and bind to the draft's image slot with version checks and idempotent receipts. Deleting an
 authoring task cleans unused originals while preserving electronic questions, finished images
 and bindings. Cleanup protects published/current content and historical attempt references.
@@ -316,8 +317,7 @@ content/media revisions, register material-family exposure before disclosure, an
 answers, timing and operation receipts through service-only RPCs. Mock timeout freezes the
 last saved answers; listening uses the reviewed finite program with an exclusive player lease
 and recorded technical interruptions. PIN authorization opens only the current speaking
-Part script for ten minutes. Private recordings and manual assessment history remain
-owner-scoped; ungraded writing/speaking is pending, not zero. Optional reflection reasons
+Part script for ten minutes. Private recordings are stored in Baidu under `/airosie/project/record`. Playback and manual assessment history remain owner-scoped; ungraded writing/speaking is pending, not zero. Optional reflection reasons
 are stored separately and never inferred from skill tags or used to change scores.
 
 Vocabulary links use canonical `word_entries.id` plus validated snapshots. An app-layer
@@ -449,7 +449,7 @@ unless explicitly requested. See `.cursor/rules/session-store-data-fetch.mdc` an
 session state — never for persistent user data (exception: optional optimistic hydrate for large
 catalogs like vocab, reconciled via `refreshInBackground`). These keys live in `STORAGE_KEYS`
 (`@rosie/core` constants) — e.g. `MATH_SIDEBAR_COLLAPSED`, English/Chinese filter + selection keys,
-`WEEKLY_PLAN_LAST_*`, flipbook prefs, and documented session-intermediate exceptions like
+`WEEKLY_PLAN_LAST_*` and documented session-intermediate exceptions like
 `RESCUE_QUEUE` / `ADMIN_DRAFT_STAGES`. All persistent user configuration (including plan generation
 parameters) is stored in Supabase.
 

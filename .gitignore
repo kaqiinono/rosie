@@ -48,7 +48,8 @@ old-html/
 # Supabase CLI local link/cache metadata
 supabase/.temp/
 /output/
-/scripts/tmp/
+/scripts/tmp/*
+!/scripts/tmp/migrate-project-storage-to-baidu.mjs
 .vercel
 
 # Python bytecode cache (scripts)

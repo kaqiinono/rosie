@@ -95,3 +95,5 @@ probe again for a readable error. Closing or switching files cancels obsolete pr
 `LessonProblemRoutePage` accepts an exact real problem ID as well as the legacy positive numeric position. Resolve exact IDs first; an unknown nonnumeric ID must never fall back to a different question. Task entry presets use real IDs for stable navigation.
 
 Homework content may opt into `ProblemWorkspaceRuntimeValue.preview`; answer feedback stays local and answer submission, lesson rewards and wrong-list writes are skipped. Default routed detail behavior is unchanged. `useProblemVideoCatalog.retry` refreshes the shared published-binding cache and exposes loading/error state.
+
+Math media stores relative object keys and serves them through the Baidu project media API. The rich-text sanitizer and scratch image loader also resolve historical Supabase URLs.

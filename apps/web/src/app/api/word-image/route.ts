@@ -1,5 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { deleteProjectMedia, storeProjectMedia } from '@/lib/project-media'
 import { forbiddenResponse, requireAdminFromRequest } from '@/lib/api-auth'
 // Deliberately NOT importing from the `@rosie/english` barrel — that pulls in
 // `english.css` plus every client component in the package. Import the pure
@@ -22,6 +24,27 @@ function getAdminClient(): SupabaseClient | null {
   if (!url || !key) return null
   adminClient = createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } })
   return adminClient
+}
+
+const IMAGE_EXTENSIONS = new Map([
+  ['image/jpeg', 'jpg'], ['image/jpg', 'jpg'], ['image/png', 'png'],
+  ['image/webp', 'webp'], ['image/gif', 'gif'], ['image/avif', 'avif'],
+])
+
+function newImagePath(stage: string, unit: string, lesson: string, word: string, extension: string) {
+  return wordImageStoragePath(stage, unit, lesson, word).replace(/\.jpg$/, `-${randomUUID()}.${extension}`)
+}
+
+async function saveProjectWordImage(path: string, bytes: Uint8Array) {
+  try {
+    await storeProjectMedia(WORD_IMAGES_BUCKET, path, bytes)
+  } catch {
+    throw new WordImageError('upload_failed', 503)
+  }
+}
+
+async function removeProjectWordImage(path: string) {
+  await deleteProjectMedia(WORD_IMAGES_BUCKET, path).catch(() => undefined)
 }
 
 interface PexelsPhoto {
@@ -150,11 +173,8 @@ async function matchOne(admin: SupabaseClient, params: MatchParams): Promise<Mat
   const bytes = await imgResp.arrayBuffer()
 
   const position = await activeImagePosition(admin, stage, unit, lesson, word)
-  const path = wordImageStoragePath(stage, unit, lesson, word)
-  const { error: uploadError } = await admin.storage
-    .from(WORD_IMAGES_BUCKET)
-    .upload(path, bytes, { contentType: 'image/jpeg', upsert: true, cacheControl: '60' })
-  if (uploadError) throw new WordImageError(`upload_failed: ${uploadError.message}`, 500)
+  const path = newImagePath(stage, unit, lesson, word, 'jpg')
+  await saveProjectWordImage(path, new Uint8Array(bytes))
 
   const imagePexelsId = String(photo.id)
   try {
@@ -163,11 +183,8 @@ async function matchOne(admin: SupabaseClient, params: MatchParams): Promise<Mat
       image_source: 'pexels', image_pexels_id: imagePexelsId,
     })
   } catch (error) {
-    // A conflicting metadata write can still refer to an existing object at this path.
-    if (!position.image_path) {
-      const current = await activeImagePosition(admin, stage, unit, lesson, word).catch(() => null)
-      if (current && current.image_path !== path) await admin.storage.from(WORD_IMAGES_BUCKET).remove([path])
-    }
+    const current = await activeImagePosition(admin, stage, unit, lesson, word).catch(() => null)
+    if (current && current.image_path !== path) await removeProjectWordImage(path)
     throw error
   }
 
@@ -240,7 +257,8 @@ async function handleClear(
     image_source: null, image_pexels_id: null,
   })
   if (position.image_path) {
-    await admin.storage.from(WORD_IMAGES_BUCKET).remove([position.image_path])
+    const { count, error } = await admin.from('vocabulary_positions').select('id', { count: 'exact', head: true }).eq('image_path', position.image_path)
+    if (!error && count === 0) await removeProjectWordImage(position.image_path)
   }
 }
 
@@ -259,9 +277,8 @@ async function handleUpload(
 ): Promise<{ imagePath: string }> {
   const { stage, unit, lesson, word } = params
   const contentType = params.contentType || 'image/jpeg'
-  if (!contentType.startsWith('image/')) {
-    throw new WordImageError('invalid_content_type', 400)
-  }
+  const extension = IMAGE_EXTENSIONS.get(contentType.toLowerCase())
+  if (!extension) throw new WordImageError('invalid_content_type', 400)
 
   let bytes: Buffer
   try {
@@ -273,13 +290,8 @@ async function handleUpload(
   if (bytes.length > MAX_UPLOAD_BYTES) throw new WordImageError('file_too_large', 413)
 
   const position = await activeImagePosition(admin, stage, unit, lesson, word)
-  const path = wordImageStoragePath(stage, unit, lesson, word)
-  const { error: uploadError } = await admin.storage.from(WORD_IMAGES_BUCKET).upload(path, bytes, {
-    contentType,
-    upsert: true,
-    cacheControl: '60',
-  })
-  if (uploadError) throw new WordImageError(`upload_failed: ${uploadError.message}`, 500)
+  const path = newImagePath(stage, unit, lesson, word, extension)
+  await saveProjectWordImage(path, bytes)
 
   try {
     await saveImagePosition(admin, position, {
@@ -287,11 +299,8 @@ async function handleUpload(
       image_source: 'upload', image_pexels_id: null,
     })
   } catch (error) {
-    // A conflicting metadata write can still refer to an existing object at this path.
-    if (!position.image_path) {
-      const current = await activeImagePosition(admin, stage, unit, lesson, word).catch(() => null)
-      if (current && current.image_path !== path) await admin.storage.from(WORD_IMAGES_BUCKET).remove([path])
-    }
+    const current = await activeImagePosition(admin, stage, unit, lesson, word).catch(() => null)
+    if (current && current.image_path !== path) await removeProjectWordImage(path)
     throw error
   }
 

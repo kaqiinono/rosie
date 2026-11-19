@@ -21,6 +21,9 @@ registerRoute(
     url.pathname === '/api/vocabulary-assessment' ||
     url.pathname === '/api/exams' || url.pathname.startsWith('/api/exams/') ||
     url.pathname === '/api/admin/exams' || url.pathname.startsWith('/api/admin/exams/') ||
+    url.pathname.startsWith('/api/project-media/chinese-reading-recordings/') ||
+    url.pathname.startsWith('/api/project-media/english-story-recordings/') ||
+    url.pathname.startsWith('/api/project-media/exam-recordings/') ||
     url.pathname.startsWith('/api/baidu/sync/') || url.pathname === '/api/baidu/video/materials',
   new NetworkOnly(),
 )

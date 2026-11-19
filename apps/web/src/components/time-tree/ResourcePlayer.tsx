@@ -61,9 +61,10 @@ export function ResourcePlayer({ resource, close, onMediaReady, loop = false }: 
     const onPause = () => { clearTimer(); setBusy(false) }
     const onError = () => {
       authorized.current = false
-      const location = new URL(resource.url, window.location.origin)
+      const url = resourceHref(resource.url)
+      const location = new URL(url, window.location.origin)
       if (location.origin !== window.location.origin) { failed('媒体无法播放，请确认填写的是音视频直链。'); return }
-      void probeBaiduMedia(resource.url, controller.signal)
+      void probeBaiduMedia(url, controller.signal)
         .then((message) => failed(message || '媒体无法播放，请检查资源链接或重试。'))
         .catch(() => failed('媒体无法播放，请检查网络后重试。'))
     }

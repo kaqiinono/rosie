@@ -14,7 +14,6 @@ import { Button, IconButton } from '@rosie/ui/themes'
 const KIND_ICON: Record<AudioCollectionKind, string> = {
   favorites: '❤️',
   reading: '📖',
-  flipbook: '📚',
   playlist: '🎵',
 }
 
@@ -52,9 +51,9 @@ export default function AudioPageView({ user }: Props) {
         </Link>
         <h1 className="flex-1 text-center text-lg font-bold text-white">🎧 音频</h1>
         <Link
-          href="/admin/audio"
-          title="媒体管理"
-          aria-label="媒体管理"
+          href="/setting/audio"
+          title="收藏夹管理"
+          aria-label="收藏夹管理"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-orange-400/35 bg-orange-400/10 text-orange-300 transition-colors hover:bg-orange-400/15"
         >
           ⚙

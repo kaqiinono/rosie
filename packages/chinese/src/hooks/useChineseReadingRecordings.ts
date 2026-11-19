@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { createUserSessionStore, supabase } from '@rosie/core'
+import { createUserSessionStore, removeProjectMedia, signProjectMedia, supabase, uploadProjectMedia } from '@rosie/core'
 import {
   CHINESE_READING_RECORDINGS_BUCKET,
   buildRecordingStoragePath,
@@ -11,7 +11,7 @@ import {
   type RawRecordingRow,
 } from '../utils/chinese-reading-recording-helpers'
 
-const SIGNED_URL_TTL_SECONDS = 60 * 60
+const SIGNED_URL_TTL_SECONDS = 15 * 60
 const SIGNED_URL_REFRESH_MARGIN_MS = 5 * 60 * 1000
 
 type CachedSignedUrl = {
@@ -61,9 +61,7 @@ export function useChineseReadingRecordings(user: User | null) {
         mimeType: args.mimeType,
       })
 
-      const { error: storageErr } = await supabase.storage
-        .from(CHINESE_READING_RECORDINGS_BUCKET)
-        .upload(path, args.blob, { contentType: args.mimeType, upsert: false })
+      const { error: storageErr } = await uploadProjectMedia(CHINESE_READING_RECORDINGS_BUCKET, path, args.blob)
       if (storageErr) return { error: storageErr.message, recording: null }
 
       const { data: inserted, error: insertErr } = await supabase
@@ -81,7 +79,7 @@ export function useChineseReadingRecordings(user: User | null) {
         .single()
 
       if (insertErr || !inserted) {
-        await supabase.storage.from(CHINESE_READING_RECORDINGS_BUCKET).remove([path])
+        await removeProjectMedia(CHINESE_READING_RECORDINGS_BUCKET, path)
         return { error: insertErr?.message ?? '保存失败', recording: null }
       }
 
@@ -106,7 +104,7 @@ export function useChineseReadingRecordings(user: User | null) {
         .eq('user_id', user.id)
       if (dbErr) return { error: dbErr.message }
 
-      await supabase.storage.from(CHINESE_READING_RECORDINGS_BUCKET).remove([existing.storagePath])
+      await removeProjectMedia(CHINESE_READING_RECORDINGS_BUCKET, existing.storagePath)
       chineseReadingRecordingsStore.patchSessionData(user.id, (prev) =>
         prev.filter((r) => r.id !== id),
       )
@@ -116,6 +114,7 @@ export function useChineseReadingRecordings(user: User | null) {
   )
 
   const getSignedPlaybackUrl = useCallback((storagePath: string): Promise<string | null> => {
+    if (!user || !storagePath.startsWith(user.id + '/')) return Promise.resolve(null)
     const cached = signedPlaybackUrlCache.get(storagePath)
     if (cached && cached.expiresAt - Date.now() > SIGNED_URL_REFRESH_MARGIN_MS) {
       return Promise.resolve(cached.url)
@@ -124,16 +123,14 @@ export function useChineseReadingRecordings(user: User | null) {
     const pending = signedPlaybackUrlRequests.get(storagePath)
     if (pending) return pending
 
-    const request = supabase.storage
-      .from(CHINESE_READING_RECORDINGS_BUCKET)
-      .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS)
-      .then(({ data, error }) => {
-        if (error || !data?.signedUrl) return null
+    const request = signProjectMedia(CHINESE_READING_RECORDINGS_BUCKET, storagePath)
+      .then((url) => {
+        if (!url) return null
         signedPlaybackUrlCache.set(storagePath, {
-          url: data.signedUrl,
+          url,
           expiresAt: Date.now() + SIGNED_URL_TTL_SECONDS * 1000,
         })
-        return data.signedUrl
+        return url
       })
       .finally(() => {
         signedPlaybackUrlRequests.delete(storagePath)
@@ -141,7 +138,7 @@ export function useChineseReadingRecordings(user: User | null) {
 
     signedPlaybackUrlRequests.set(storagePath, request)
     return request
-  }, [])
+  }, [user])
 
   return { recordings, isLoading, uploadRecording, deleteRecording, getSignedPlaybackUrl }
 }

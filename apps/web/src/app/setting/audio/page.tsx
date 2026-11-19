@@ -5,5 +5,5 @@ import { AudioManagerPage } from '@rosie/audio'
 
 export default function AudioCollectionsSettingPage() {
   const { user } = useAuth()
-  return <AudioManagerPage user={user} scope="collections" />
+  return <AudioManagerPage user={user} />
 }

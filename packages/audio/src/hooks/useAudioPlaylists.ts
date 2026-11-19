@@ -72,7 +72,8 @@ function rowToItem(r: RawItem): AudioPlaylistItem {
 async function fetchAudioPlaylists(_userId: string): Promise<AudioPlaylistsData> {
   const [{ data: pRows }, { data: iRows }] = await Promise.all([
     supabase.from('audio_playlists').select('*').order('sort_order').order('created_at'),
-    supabase.from('audio_playlist_items').select('*').order('sort_order').order('created_at'),
+    supabase.from('audio_playlist_items').select('*').eq('item_type', 'reading').eq('storage_bucket', 'reading')
+      .order('sort_order').order('created_at'),
   ])
   const playlists = ((pRows ?? []) as RawPlaylist[]).map(rowToPlaylist)
   const itemsByPlaylist: Record<string, AudioPlaylistItem[]> = {}

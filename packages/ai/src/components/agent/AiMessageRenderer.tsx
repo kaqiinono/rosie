@@ -1,5 +1,6 @@
 'use client'
 
+import { migrateProjectMediaUrl } from '@rosie/core/project-media-url'
 import type { ReactNode } from 'react'
 import type { AgentAction, AgentBlock } from '../../types'
 import RosieAssistantAvatar from '../RosieAssistantAvatar'
@@ -13,6 +14,8 @@ function sanitizeNoteHtml(html: string): string {
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
     .replace(/javascript\s*:/gi, '')
+    .replace(/(\ssrc\s*=\s*)(["'])([^"']+)\2/gi, (_, attr: string, quote: string, src: string) =>
+      attr + quote + migrateProjectMediaUrl(src, 'math') + quote)
 }
 
 function LessonNotesCards({ notes }: { notes: Array<{ title: string | null; bodyHtml: string }> }) {
@@ -99,7 +102,7 @@ function MathSolutionBlock({ block }: { block: Extract<AgentBlock, { type: 'math
           variant="yellow"
           image={
             block.analysisImageUrl ? (
-              <AnalysisImage src={block.analysisImageUrl} alt={`${block.title}题解图`} />
+              <AnalysisImage src={migrateProjectMediaUrl(block.analysisImageUrl, 'math')} alt={`${block.title}题解图`} />
             ) : undefined
           }
         />
@@ -120,7 +123,7 @@ function MathSolutionBlock({ block }: { block: Extract<AgentBlock, { type: 'math
         variant="yellow"
         image={
           block.analysisImageUrl ? (
-            <AnalysisImage src={block.analysisImageUrl} alt={`${block.title}题解图`} />
+            <AnalysisImage src={migrateProjectMediaUrl(block.analysisImageUrl, 'math')} alt={`${block.title}题解图`} />
           ) : undefined
         }
       />

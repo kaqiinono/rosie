@@ -6,7 +6,7 @@ The English module — **vocabulary** (words) + **reading** (passages) + **gramm
 **Scope rule for agents:** to change English behavior you almost always only need files in this
 package. Read here first; reach into `@rosie/core` / `@rosie/ui` / `@rosie/player` / `@rosie/rewards`
 only for the shared primitives below. You should not need to read other subject modules (math, calc,
-audio, flipbook).
+audio).
 
 ## What's inside
 
@@ -53,12 +53,11 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   keys per user through `createUserSessionStore` and establishes/renews an HttpOnly audio session;
   the detail hook and reading-list queues use the same-origin `/api/baidu/audio/{passageKey}`
   stream only for discovered keys. The app-owned server proxy validates login on each request,
-  handles token refresh/Range and falls back to the original Storage MP3. Uploads still belong
-  to the reading bucket. Story narration retains its existing behavior.
+  handles token refresh/Range and falls back to the project narration referenced by `reading_passage_media`. Uploads go to the Baidu project directory. Story narration retains its existing behavior.
   `useBaiduReadingAudio` also exposes discovery errors for the reading pages. Native narration
   and listening failures use core's same-origin media probe to distinguish revoked shared
   authorization, missing authorization, uncertain renewal, and transient failures. The audio
-  proxy retains Storage fallback; a working fallback is never blocked by a Baidu error.
+  proxy uses the fallback project narration for a missing or unavailable legacy lesson file.
   Textbook detail narration uses `usePlaylistPlayer` + `PlayerDock` with `showProgress`, sharing
   the list player's pause/loop controls and adding seek support. Changing passages stops the old queue.
   Previous and Next in the listening drawer preserve the paused state. Clicking an inline
@@ -101,8 +100,8 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   audit morphology and add `wordForms` only for rule-external forms or `disableGenerated` cases.
   Story reading is continuous (no synthetic pagination). A learner explicitly bookmarks the first
   and last visible complete sentences; `story_reading_progress` restores the first sentence below
-  the sticky header. Personal microphone recordings use private bucket `english-story-recordings`
-  plus `reading_recordings`: recording is chapter-scoped, each chapter may own multiple independent
+  the sticky header. Personal microphone recordings use `/airosie/project/record/english-story-recordings`
+  in Baidu and `reading_recordings` for owner-scoped metadata: recording is chapter-scoped, each chapter may own multiple independent
   clips, and there is no whole-volume recorder. Clips are compressed with `@rosie/player` and never
   reuse public narration.
 - **Grammar (`grammar/`)** — 剑桥英语语法系列（essential/intermediate/advanced，按 book 维度分书；
@@ -162,17 +161,14 @@ it. Verified spelling, dictation and sense evidence uses owner-scoped shared ski
 Unknown legacy aggregate evidence stays available through its original course key.
 See [the migration and import guide](SHARED-VOCABULARY.md).
 
-`src/assessment/model.ts` owns the standalone reading vocabulary measurement used at
-`/superpowers`. Each bank has one countable sense per shared headword. A frozen attempt
-samples each level in blocks of 12, with optional diagnostic items tagged separately.
-Only main answers feed the ruler. Answers and the bank version are retained for the
-submitted Word Screen. The [assessment workflow](SHARED-VOCABULARY.md#词汇量测评)
-describes bank publication and trial calibration.
-
-The browser receives the current segment's remaining question prompts and advances
-locally. It retains only the pending sync journal in per-tab session storage. The
-account-scoped API commits consecutive answers with revision checks and operation
-receipts. Pausing and final submission follow outstanding saves.
+The reading assessment at `/superpowers` keeps V1 fixed-bank attempts in
+`src/assessment/model.ts`. The V2 pilot uses `frequency.ts` for a 4,000-headword
+reference estimate and `adaptive.ts` for versioned 12-question segments and the
+device-bound fallback. The API freezes issued questions, options, selection logs,
+checkpoints and answer receipts in the existing JSONB attempt. Keep the bank and
+oral holdout out of browser imports. The browser advances locally and clears its
+pending journal after acknowledgment. See the [assessment workflow](SHARED-VOCABULARY.md#v2-个人试测接入)
+for the migration, pilot access and replay export.
 
 ## PET vocabulary and practice
 
@@ -250,6 +246,8 @@ ExerciseView）。路由壳在 `apps/web/src/app/english/grammar/**`：`/english
 
 **页码标记**：三层——单元级 `book_pages`（DB 列）、Section/练习组级 `bookPage`（渲染 p.N 角标）、
 交叉引用保留原文页码。
+
+教材页与语法插图存放在百度网盘 `/airosie/project/grammar-pages`，数据库保留相对路径。
 
 **管理员表格编辑**：讲解区所有 `grammar_table` 对管理员显示「编辑表格」，可修改标题/表头/
 单元格、增删行列，并在弹窗中实时预览。显式合并区域存入 block 的 `merges`
@@ -336,7 +334,7 @@ add a path alias — Next compiles this package via `transpilePackages`.
 
 Routes stay in `apps/web/src/app/english/**` (cards/daily/practice/reading/weekly/grammar + layout)
 and import everything from the `@rosie/english` barrel. `reading-data` is **English-owned**; the
-audio and flipbook modules consume it from `@rosie/english`.
+the audio module consumes it from `@rosie/english`.
 
 ## Commands
 

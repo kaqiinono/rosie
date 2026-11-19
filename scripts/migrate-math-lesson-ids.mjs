@@ -5,7 +5,7 @@
  * 简单列（problem_id / lesson_id）优先用 docs/sql/math-lesson-id-migrate.sql。
  * 本脚本处理：
  *   - math_problem_notes.body_html 内嵌图片 URL
- *   - Supabase Storage math bucket 目录复制（--storage）
+ *   - 百度网盘 math 目录复制（--storage）
  *
  * 组卷、周计划、复习状态不迁移 — 迁移前用 docs/sql/math-lesson-id-delete-disposable.sql 清空。
  *
@@ -21,6 +21,8 @@ import { readFileSync, existsSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
+import { getProjectStorageAccount } from './lib/project-storage-account.mjs'
+import { downloadProjectObject, listProjectDirectoryPage, projectPath, putProjectObject } from '../apps/web/src/lib/baidu-project-transfer.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
@@ -237,64 +239,39 @@ async function migrateJson() {
   console.log(`math_problem_notes body_html: updated ${noteN} rows`)
 }
 
-async function listStoragePrefix(prefix) {
-  const { data, error } = await supabase.storage.from(MATH_BUCKET).list(prefix, { limit: 1000 })
-  if (error) throw error
-  return data ?? []
-}
-
 async function migrateStorageObjects() {
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('--storage requires SUPABASE_SERVICE_ROLE_KEY')
-    process.exit(1)
-  }
-
+  const { token } = await getProjectStorageAccount(process.env)
   const folders = ['analysis', 'figures', 'summaries', 'notes', 'drafts']
   let copied = 0
 
-  for (const { legacyId, lessonKey } of LESSON_MAP) {
-    for (const folder of folders) {
-      const oldPrefix = `${folder}/${legacyId}`
-      const newPrefix = `${folder}/${lessonKey}`
-
-      async function walk(prefix, destPrefix) {
-        const entries = await listStoragePrefix(prefix)
-        for (const entry of entries) {
-          const path = `${prefix}/${entry.name}`
-          const destPath = `${destPrefix}/${entry.name}`
-          if (entry.id === null) {
-            await walk(path, destPath)
-            continue
-          }
-          const { data: blob, error: dlErr } = await supabase.storage
-            .from(MATH_BUCKET)
-            .download(path)
-          if (dlErr) {
-            console.warn(`skip download ${path}:`, dlErr.message)
-            continue
-          }
-          const { error: upErr } = await supabase.storage
-            .from(MATH_BUCKET)
-            .upload(destPath, blob, { upsert: true })
-          if (upErr) {
-            console.warn(`skip upload ${destPath}:`, upErr.message)
-            continue
-          }
-          copied++
-          console.log(`copied ${path} → ${destPath}`)
+  async function walk(prefix, destPrefix) {
+    const directory = projectPath(MATH_BUCKET, prefix)
+    for (let start = 0; ; start += 1000) {
+      const entries = await listProjectDirectoryPage(token, directory, start)
+      for (const entry of entries) {
+        if (typeof entry.path !== 'string' || !entry.path.startsWith(directory + '/')) continue
+        const name = entry.path.slice(directory.length + 1)
+        if (!name || name.includes('/')) continue
+        const destination = destPrefix + '/' + name
+        if (entry.isdir === 1) {
+          await walk(prefix + '/' + name, destination)
+          continue
         }
+        const response = await downloadProjectObject(token, entry.path, undefined, String(entry.fs_id))
+        if (!response) throw Error('Could not read the original project file.')
+        await putProjectObject(token, projectPath(MATH_BUCKET, destination), new Uint8Array(await response.arrayBuffer()), { verify: true })
+        copied++
       }
-
-      try {
-        await walk(oldPrefix, newPrefix)
-      } catch (e) {
-        if (e?.message?.includes('not found')) continue
-        throw e
-      }
+      if (entries.length < 1000) return
     }
   }
 
-  console.log(`\nStorage: copied ${copied} objects (old paths kept for rollback)`)
+  for (const { legacyId, lessonKey } of LESSON_MAP) {
+    for (const folder of folders) {
+      await walk(`${folder}/${legacyId}`, `${folder}/${lessonKey}`)
+    }
+  }
+  console.log(`\nBaidu project storage: copied ${copied} objects`)
 }
 
 async function main() {

@@ -2,13 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '@rosie/core'
+import { projectMediaUrl, supabase } from '@rosie/core'
 import { useReadingPassageMedia } from '@rosie/english'
-import { useFlipbookBooks } from '@rosie/flipbook'
 import { useAudioPlaylists } from './useAudioPlaylists'
 import { readingPassages } from '@rosie/english'
 import { READING_AUDIO_BUCKET } from '@rosie/english'
-import { FLIPBOOK_BUCKET } from '@rosie/flipbook'
 import {
   trackKey,
   type AddPlaylistItemInput,
@@ -20,8 +18,7 @@ import {
 const FAVORITES_NAME = '我的最爱'
 
 function itemToTrack(item: AudioPlaylistItem): PlayerTrack {
-  const url = supabase.storage.from(item.storageBucket).getPublicUrl(item.storagePath).data
-    .publicUrl
+  const url = projectMediaUrl(READING_AUDIO_BUCKET, item.storagePath)
   return {
     url,
     label: item.label,
@@ -48,7 +45,6 @@ export type CollectionMembership = {
 
 export function useAudioCollections(user: User | null) {
   const reading = useReadingPassageMedia(user)
-  const flipbook = useFlipbookBooks(user)
   const playlists = useAudioPlaylists(user)
   const [favoriteId, setFavoriteId] = useState<string | null>(null)
   const creatingFavoriteRef = useRef(false)
@@ -104,27 +100,6 @@ export function useAudioCollections(user: User | null) {
       .filter((t): t is PlayerTrack => t !== null)
   }, [reading])
 
-  // flipbook 虚拟收藏夹
-  const flipbookTracks = useMemo<PlayerTrack[]>(() => {
-    return flipbook.books
-      .filter((b) => b.audioPath)
-      .map((b) => {
-        const path = b.audioPath as string
-        const url = supabase.storage.from(FLIPBOOK_BUCKET).getPublicUrl(path).data.publicUrl
-        const refLink = `/flipbook/${b.id}`
-        const source: AddPlaylistItemInput = {
-          itemType: 'flipbook',
-          mediaType: 'audio',
-          label: b.title,
-          storageBucket: FLIPBOOK_BUCKET,
-          storagePath: path,
-          refLink,
-          assetId: null,
-        }
-        return { url, label: b.title, refLink, mediaType: 'audio' as const, source }
-      })
-  }, [flipbook.books])
-
   const collections = useMemo<AudioCollection[]>(() => {
     const favItems = favoriteId ? playlists.itemsByPlaylist[favoriteId] ?? [] : []
     const presets: AudioCollection[] = [
@@ -144,14 +119,6 @@ export function useAudioCollections(user: User | null) {
         acceptsItems: false,
         tracks: readingTracks,
       },
-      {
-        id: 'flipbook',
-        name: '绘本',
-        kind: 'flipbook',
-        removable: false,
-        acceptsItems: false,
-        tracks: flipbookTracks,
-      },
     ]
     const userPls: AudioCollection[] = playlists.playlists
       .filter((p) => !p.isFavorite)
@@ -164,7 +131,7 @@ export function useAudioCollections(user: User | null) {
         tracks: (playlists.itemsByPlaylist[p.id] ?? []).map(itemToTrack),
       }))
     return [...presets, ...userPls]
-  }, [favoriteId, playlists.playlists, playlists.itemsByPlaylist, readingTracks, flipbookTracks])
+  }, [favoriteId, playlists.playlists, playlists.itemsByPlaylist, readingTracks])
 
   const favoriteKeySet = useMemo<Set<string>>(() => {
     if (!favoriteId) return new Set()
@@ -205,7 +172,7 @@ export function useAudioCollections(user: User | null) {
     [playlists.playlists, playlists.itemsByPlaylist],
   )
 
-  const isLoading = reading.isLoading || flipbook.isLoading
+  const isLoading = reading.isLoading
 
   return {
     collections,

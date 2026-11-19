@@ -28,6 +28,8 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { getProjectStorageAccount } from './lib/project-storage-account.mjs'
+import { projectPath, putProjectObject } from '../apps/web/src/lib/baidu-project-transfer.mjs'
 import { buildGrammarSearchText } from './grammar-search-text.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -1312,31 +1314,14 @@ async function processBackmatter(entry, opts, env) {
   }
 }
 
-// ── Storage upload ───────────────────────────────────────────────────────────
+// ── Baidu Netdisk upload ───────────────────────────────────────────────────────────
 
 const STORAGE_BUCKET = 'grammar-pages'
 
 async function uploadPageImage(imagePath, storagePath, env) {
-  const url = env.NEXT_PUBLIC_SUPABASE_URL
-  const key = env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) throw new Error('上传图片需要 NEXT_PUBLIC_SUPABASE_URL 与 SUPABASE_SERVICE_ROLE_KEY')
+  const { token } = await getProjectStorageAccount(env)
   const imageBuf = readFileSync(imagePath)
-  const response = await fetch(
-    `${url}/storage/v1/object/${STORAGE_BUCKET}/${storagePath}`,
-    {
-      method: 'POST',
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-        'Content-Type': 'image/png',
-        'x-upsert': 'true',
-      },
-      body: imageBuf,
-    },
-  )
-  if (!response.ok) {
-    throw new Error(`Storage 上传失败 ${storagePath}: ${response.status} ${await response.text()}`)
-  }
+  await putProjectObject(token, projectPath(STORAGE_BUCKET, storagePath), imageBuf, { overwrite: true, verify: true })
   console.log(`✓ 图片已上传: ${STORAGE_BUCKET}/${storagePath}`)
 }
 

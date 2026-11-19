@@ -9,7 +9,6 @@ const SOURCE_EXTENSIONS = new Set(['.css', '.js', '.jsx', '.ts', '.tsx'])
 const INTENTIONAL_DARK_SCOPES = new Set([
   'apps/web/src/app/calc/layout.tsx',
   'apps/web/src/app/admin/calc/layout.tsx',
-  'packages/flipbook/src/flipbook.css',
 ])
 
 const SYSTEM_DARK_PATTERN = /prefers-color-scheme\s*:\s*dark|matchMedia\([^\n]*prefers-color-scheme/i

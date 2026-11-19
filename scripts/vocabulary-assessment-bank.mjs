@@ -230,7 +230,10 @@ async function exportTrial(db, version, file) {
       item_role: answer.item_role,
       position: index + 1,
       sense_id: question.senseId,
-      level: question.level,
+      ...(row.state.modelVersion === 'frequency-v2-pilot-1'
+        ? { segment_id: question.segmentId, band: question.band, quartile: question.quartile,
+            item_id: question.senseId, operation_id: answer.operationId }
+        : { level: question.level }),
       decision: answer.decision,
       correct: answer.decision === 'answer' ? answer.optionIndex === question.correctIndex : null,
       choice_index: answer.optionIndex,
@@ -238,7 +241,18 @@ async function exportTrial(db, version, file) {
       elapsed_ms: answer.elapsedMs,
     }
   }))
-  await writeFile(file, JSON.stringify({ version, answers }, null, 2) + '\n', { flag: 'wx', mode: 0o600 })
+  const replay = version.startsWith('va2-') ? rows.map(({ id, state }) => ({
+    attempt_id: id, model: state.modelVersion, policy: state.policy, reference: state.referenceVersion,
+    excluded: state.excluded, checkpoints: state.checkpoints, answered: state.answers.length,
+    segments: state.segments.map(({ device: _device, ...log }) => ({
+      ...log,
+      questions: state.questions.slice(log.start, log.start + log.items.length).map(q => ({
+        item_id: q.senseId, word: q.word, context: q.context, part_of_speech: q.partOfSpeech,
+        options: q.options, correct_index: q.correctIndex,
+      })),
+    })),
+  })) : undefined
+  await writeFile(file, JSON.stringify({ version, answers, replay }, null, 2) + '\n', { flag: 'wx', mode: 0o600 })
   console.log(JSON.stringify({ attempts: rows.length, answers: answers.length }))
 }
 

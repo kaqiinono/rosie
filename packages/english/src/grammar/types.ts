@@ -1,3 +1,5 @@
+import { projectMediaUrl } from '@rosie/core/project-media-url'
+
 /**
  * Grammar module data contract — the "framework" side of content-driven rendering.
  *
@@ -65,11 +67,8 @@ export interface GrammarPageImage {
   crop?: GrammarPageCrop
 }
 
-/** 构造 Storage public URL（无需 Supabase client，仅拼 URL） */
-export function grammarPageImageUrl(path: string, supabaseUrl?: string): string {
-  const base = (supabaseUrl ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').replace(/\/$/, '')
-  if (!base) return ''
-  return `${base}/storage/v1/object/public/${GRAMMAR_PAGES_BUCKET}/${path}`
+export function grammarPageImageUrl(path: string): string {
+  return projectMediaUrl(GRAMMAR_PAGES_BUCKET, path)
 }
 
 // ── Lesson content blocks ─────────────────────────────────────────────────────

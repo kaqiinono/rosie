@@ -1,9 +1,8 @@
 // @rosie/audio — unified audio playback module: kid-facing listening page,
 // admin media manager, and the audio-collection hooks (favorites / playlists /
-// virtual reading + flipbook collections). Public API for apps/web routes.
+// virtual reading collection). Public API for apps/web routes.
 
 // Hooks
-export * from './hooks/useAudioAssets'
 export * from './hooks/useAudioCollections'
 export * from './hooks/useAudioPlaylists'
 

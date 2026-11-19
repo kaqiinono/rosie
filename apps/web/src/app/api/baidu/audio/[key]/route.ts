@@ -1,12 +1,13 @@
 import { baiduAuthErrorCode } from '@rosie/core'
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/api-auth'
+import { createAdminSupabase, getUserFromRequest } from '@/lib/api-auth'
 import {
   baiduReadingPath,
   BAIDU_AUDIO_COOKIE,
   fetchBaiduReadingAudio,
 } from '@/lib/baidu-reading-audio'
 
+import { fetchProjectMedia } from '@/lib/project-media'
 import { fetchEnglishAudio } from '@/lib/baidu-english-audio'
 
 export const runtime = 'nodejs'
@@ -52,26 +53,18 @@ export async function GET(req: NextRequest, context: { params: Promise<{ key: st
   } catch (error) {
     authError = baiduAuthErrorCode(error)
     if (asset !== null) return unavailable()
-    // Preserve Storage fallback; report authorization only if fallback also fails.
+    // Try project narration before reporting a legacy directory error.
   }
   if (!upstream && clip !== null)
     return authError ? unavailable() : failure('clip_unavailable', 503)
   if (!upstream) {
-    const origin = process.env.NEXT_PUBLIC_SUPABASE_URL
-    if (!origin) return unavailable()
-    const url = new URL(
-      `/storage/v1/object/public/reading/passages/${encodeURIComponent(key)}/narration.mp3`,
-      origin,
-    )
     try {
-      upstream = await fetch(url, {
-        headers: range
-          ? { Range: range, 'Accept-Encoding': 'identity' }
-          : { 'Accept-Encoding': 'identity' },
-        cache: 'no-store',
-        redirect: 'error',
-        signal: AbortSignal.any([req.signal, AbortSignal.timeout(120_000)]),
-      })
+      const { data, error } = await createAdminSupabase().from('reading_passage_media')
+        .select('audio_path').eq('passage_key', key).maybeSingle()
+      if (error) return unavailable()
+      if (!data?.audio_path) return unavailable(404)
+      upstream = await fetchProjectMedia('reading', data.audio_path, range, req.signal)
+      if (!upstream) return unavailable(404)
     } catch {
       return unavailable()
     }
