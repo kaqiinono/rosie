@@ -64,20 +64,20 @@ export function AssessmentRuler({ attempt, live = false, answered }: {
   const liveEstimate = live || pilot ? attempt.liveRange : null
   const range = live ? liveEstimate : attempt.range
   const comparison = live && mainAnswered > attempt.estimatedFrom ? attempt.range : previousRange
-  const firstRange = useRef<{ id: string; range: NonNullable<AttemptView['liveRange']>; explained: boolean } | null>(null)
-  const [explainAt, setExplainAt] = useState<number | null>(null)
-  useEffect(() => {
-    if (!pilot || !live || !liveEstimate) return
-    const first = firstRange.current
-    if (!first || first.id !== attempt.id) {
-      firstRange.current = { id: attempt.id, range: liveEstimate, explained: false }
-      setExplainAt(null)
-    } else if (!first.explained && (Math.abs(first.range.center - liveEstimate.center) >= 250 ||
-        liveEstimate.high - liveEstimate.low >= first.range.high - first.range.low + 250)) {
-      first.explained = true
-      setExplainAt(mainAnswered)
+  const [estimateHistory, setEstimateHistory] = useState<{
+    id: string
+    firstRange: NonNullable<AttemptView['liveRange']>
+    explainAt: number | null
+  } | null>(null)
+  const history = estimateHistory?.id === attempt.id ? estimateHistory : null
+  if (pilot && live && liveEstimate) {
+    if (!history) {
+      setEstimateHistory({ id: attempt.id, firstRange: liveEstimate, explainAt: null })
+    } else if (history.explainAt === null && (Math.abs(history.firstRange.center - liveEstimate.center) >= 250 ||
+        liveEstimate.high - liveEstimate.low >= history.firstRange.high - history.firstRange.low + 250)) {
+      setEstimateHistory({ ...history, explainAt: mainAnswered })
     }
-  }, [pilot, live, liveEstimate, attempt.id, mainAnswered])
+  }
   const scanning = pilot && !range && phase !== 'submitted' && mainAnswered < 12
   const shown = Math.min(12, answered ?? mainAnswered)
   const headline = pilot ? liveEstimate ? `你大约认识 ${number.format(liveEstimate.center)} 个英语单词`
@@ -136,7 +136,7 @@ export function AssessmentRuler({ attempt, live = false, answered }: {
         {live && (answered ?? attempt.answered) > attempt.answered && (
           <p className="text-text-secondary mt-1 text-xs">还有 {(answered ?? attempt.answered) - attempt.answered} 题待同步</p>
         )}
-        {pilot && live && explainAt === mainAnswered && (
+        {pilot && live && history?.explainAt === mainAnswered && (
           <p className="text-text-secondary mt-1 text-sm">多答几题，我们会更了解你的范围。</p>
         )}
         {pilot && attempt.edge && <p className="text-text-secondary mt-2 text-sm">

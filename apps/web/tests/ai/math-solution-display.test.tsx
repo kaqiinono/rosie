@@ -39,11 +39,6 @@ function supabaseWithImage(storagePath?: string): SupabaseClient {
   }
   return {
     from: () => query,
-    storage: {
-      from: () => ({
-        getPublicUrl: (path: string) => ({ data: { publicUrl: `https://assets.test/${path}` } }),
-      }),
-    },
   } as unknown as SupabaseClient
 }
 
@@ -69,7 +64,7 @@ describe('shared math solution display', () => {
       problemId: '2-4-L1',
       steps: ['公式', '计算'],
       finalAnswer: '甲是46，乙是29',
-      analysisImageUrl: 'https://assets.test/analysis/2-4/2-4-L1.png',
+      analysisImageUrl: '/api/project-media/math/analysis/2-4/2-4-L1.png',
     })
   })
 

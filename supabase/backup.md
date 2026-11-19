@@ -1,10 +1,14 @@
 # Rosie 数据库备份
 
-已在 [私有备份仓库](https://github.com/kaqiinono/rosie-supabase-backup) 发布工作流。
-当前等候生产备份账号授权，定时运行尚未开启。
+定时任务已在 [私有备份仓库](https://github.com/kaqiinono/rosie-supabase-backup) 启用。
+首份归档 `rosie-supabase-20261119T080930351Z-462a845c.tar.gz` 已于北京时间
+2026 年 11 月 19 日 16:14 通过百度网盘读回校验，大小 55,355,678 字节。
+独立下载也验证了归档和其中八个导出文件的 SHA-256。
+[首次成功运行](https://github.com/kaqiinono/rosie-supabase-backup/actions/runs/44485231977)
 
 GitHub Actions 工作流 `Supabase backup to Baidu` 每天北京时间 03:17 导出 Rosie 的
-Supabase 数据库，也支持手动运行。10:43 查找近 30 小时内通过上传校验的备份。
+Supabase 数据库。每天北京时间 10:43 查找近 30 小时内通过上传校验的备份。
+手动运行时选择 `backup` 导出或 `check` 巡检。
 工作流失败通知使用 GitHub Actions 的仓库通知。定时工作流依赖 GitHub 调度。
 
 百度网盘目标为 `/airosie/backup/supabase`。备份文件是未加密的
@@ -30,12 +34,11 @@ Supabase 数据库，也支持手动运行。10:43 查找近 30 小时内通过�
 
 每次备份使用 PostgreSQL 17 客户端做逻辑导出，额外保存迁移历史、受管理 schema 的结构参考、
 Vault 加密数据及各文件 SHA-256。备份脚本会从网盘读回归档核对 SHA-256，
-通过后写入同名 `.sha256` 回执，再清理超过 30 天且符合备份命名格式的文件。
+通过后写入同名 `.sha256` 回执，再清理超过 7 天且符合备份命名格式的文件。
 读取中断不会生成成功回执。Supabase Storage 当前没有对象，百度网盘原有媒体仍在其各自目录。
 
 ## 首次恢复验收
 
-在工作流页面手动运行一次，确认网盘出现归档及其 SHA-256 回执。
 下载后校验归档、解压，并按归档内 `manifest.json` 校验各部分。
 用一个独立的 Supabase 项目演练恢复，避免任何线上回调或定时任务在演练中启动：
 

@@ -55,8 +55,10 @@ function QuestionCard({
     openedAt.current = performance.now()
     heading.current?.focus({ preventScroll: true })
   }, [outgoing])
-  const answer = (decision: Decision, optionIndex?: number) => {
-    onAnswer?.(decision, optionIndex, openedAt.current === null ? undefined : performance.now() - openedAt.current)
+  function answer(clickedAt: number, decision: Decision, optionIndex?: number) {
+    const start = openedAt.current
+    const elapsedMs = start !== null && clickedAt >= start ? clickedAt - start : undefined
+    onAnswer?.(decision, optionIndex, elapsedMs)
   }
   return (
     <StickerCard as="section" size="lg" className="grid gap-4">
@@ -75,7 +77,7 @@ function QuestionCard({
             className="min-h-20 min-w-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-8)]">
             <Button type="button" lang="en" variant="ghost" color="gray" disabled={outgoing}
               className="m-0 h-auto justify-start px-3 py-3 text-left text-sm leading-snug whitespace-normal break-words sm:px-4 sm:text-base"
-              onClick={() => answer('answer', index)}>
+              onClick={event => answer(event.timeStamp, 'answer', index)}>
               {definition}
             </Button>
           </StickerCard>
@@ -83,9 +85,9 @@ function QuestionCard({
       </div>
       <div className="grid grid-cols-3 gap-2">
         <Button type="button" size="3" variant="soft" color="gray" disabled={outgoing} className="min-h-11 min-w-0 justify-center px-2"
-          onClick={() => answer('unknown')}>不认识</Button>
+          onClick={event => answer(event.timeStamp, 'unknown')}>不认识</Button>
         <Button type="button" size="3" variant="soft" color="gray" disabled={outgoing} className="min-h-11 min-w-0 justify-center px-2"
-          onClick={() => answer('unreadable')}>看不懂</Button>
+          onClick={event => answer(event.timeStamp, 'unreadable')}>看不懂</Button>
         <Button type="button" size="3" variant="soft" color="gray" disabled={outgoing} className="min-h-11 min-w-0 justify-center px-2"
           onClick={onPause}>暂停</Button>
       </div>

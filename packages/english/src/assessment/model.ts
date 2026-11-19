@@ -354,7 +354,7 @@ export function addDiagnostics(attempt: Attempt, bank: Bank, random: () => numbe
 
 type ReviewQuestion = Omit<Question, 'level'> & { segmentId?: string }
 
-function publicQuestion({ word, partOfSpeech, context, options }: ReviewQuestion): PublicQuestion {
+function publicQuestion({ word, partOfSpeech, context, options }: PublicQuestion): PublicQuestion {
   return { word, partOfSpeech, context, options }
 }
 

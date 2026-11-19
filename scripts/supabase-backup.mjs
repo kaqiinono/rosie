@@ -34,6 +34,19 @@ async function retry(task) {
   }
 }
 
+async function baiduStep(step, task) {
+  try {
+    return await retry(task)
+  } catch (error) {
+    const detail = /^baidu_[a-zA-Z0-9_-]+$/.test(error.message) ? error.message
+      : /^[A-Z][A-Z0-9_]+$/.test(error.cause?.code ?? '') ? error.cause.code
+        : error.name === 'TimeoutError' ? 'timeout'
+          : error.name === 'SyntaxError' ? 'invalid_response'
+            : error instanceof TypeError ? 'network_error' : 'unavailable'
+    throw Error(`backup_${step}_${detail}`)
+  }
+}
+
 async function archiveConfiguration() {
   let url
   try {
@@ -147,23 +160,25 @@ async function backup() {
   const directory = await mkdtemp(join(tmpdir(), 'rosie-supabase-backup-'))
   try {
     const bytes = await createArchive(directory, name, createdAt)
-    const account = await retry(() => getBackupBaiduAccount(env))
+    const account = await baiduStep('authorize', () => getBackupBaiduAccount(env))
     const { token } = account
     const target = `${destination}/${name}`
     const hash = sha256(bytes)
-    await retry(() => ensureProjectDirectory(token, destination))
-    await retry(() => putProjectObject(token, target, bytes, { verify: true }))
-    if ((await getBackupBaiduAccount(env)).generation !== account.generation) throw Error('backup_baidu_account_changed')
+    await baiduStep('directory', () => ensureProjectDirectory(token, destination))
+    console.log(`Uploading Baidu backup ${name} (${bytes.length} bytes)`)
+    await baiduStep('archive', () => putProjectObject(token, target, bytes, { verify: true }))
+    const current = await baiduStep('authorize', () => getBackupBaiduAccount(env))
+    if (current.generation !== account.generation) throw Error('backup_baidu_account_changed')
     const marker = new TextEncoder().encode(`${hash}  ${name}\n`)
-    await retry(() => putProjectObject(token, target + '.sha256', marker, { verify: true }))
+    await baiduStep('marker', () => putProjectObject(token, target + '.sha256', marker, { verify: true }))
     console.log(`Verified Baidu backup ${name} (${bytes.length} bytes, sha256 ${hash})`)
 
-    const cutoff = Date.now() - 30 * 86400_000
-    const expired = (await retry(() => listBackups(token))).filter(entry => entry.time < cutoff)
+    const cutoff = Date.now() - 7 * 86400_000
+    const expired = (await baiduStep('list', () => listBackups(token))).filter(entry => entry.time < cutoff)
     // Remove success markers before their archives; a stale marker must never imply recovery.
     expired.sort((a, b) => Number(b.marker) - Number(a.marker))
     for (const entry of expired) {
-      await retry(() => removeProjectObject(token, entry.path))
+      await baiduStep('retention', () => removeProjectObject(token, entry.path))
     }
     if (expired.length) console.log(`Removed ${expired.length} expired backup files and markers`)
   } finally {
@@ -172,8 +187,8 @@ async function backup() {
 }
 
 async function check() {
-  const { token } = await retry(() => getBackupBaiduAccount(env))
-  const backups = await retry(() => listBackups(token))
+  const { token } = await baiduStep('authorize', () => getBackupBaiduAccount(env))
+  const backups = await baiduStep('list', () => listBackups(token))
   const files = new Set(backups.filter(entry => !entry.marker).map(entry => entry.path))
   const stamps = backups.filter(entry => entry.marker && files.has(entry.path.slice(0, -'.sha256'.length)))
     .map(entry => entry.time)
