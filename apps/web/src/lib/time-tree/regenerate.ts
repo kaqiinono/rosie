@@ -1,11 +1,11 @@
 import type { Homework } from '@rosie/tasks'
 import { schedule } from './schedule'
-import type { TreeData, WorkStep } from './types'
+import { isExhaustedPendingStep, type TreeData, type WorkStep } from './types'
 
 export function regenerationTargets(tree: TreeData, from: string, through: string) {
   const groups = new Map<string, WorkStep[]>()
   for (const step of [...tree.steps, ...(tree.weekendExcludedSteps ?? [])]) {
-    if (step.crown) continue
+    if (step.crown || isExhaustedPendingStep(tree, step)) continue
     const group = groups.get(step.occurrence) ?? []
     group.push(step)
     groups.set(step.occurrence, group)

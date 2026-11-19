@@ -817,12 +817,18 @@ or track numbers are inferred from printed text.
 
 Paper preview links carry revision, section, Part and optional slot into `/admin/sync`.
 The media editor lists authored listening and training audio grouped by listening Part.
-It reads the selected authorized Baidu directory and its descendants. Batch matching stages
+「使用此目录」 immediately saves an existing authorized Baidu listening directory per draft.
+The directory has its own edit version. The editor reads
+that directory and its descendants. Batch matching stages
 unique authored track numbers or explicit filenames for single-track Parts, leaves ambiguous
 tracks for manual selection, and preserves existing bindings. The listening-only save validates
 every changed slot against current draft membership and commits across Parts using the existing
-CAS and immutable binding revisions. The root directory still covers the whole set.
-Question images continue through the separate image workspace.
+CAS and immutable binding revisions. Each new listening file retains the authorized bookmark
+it was matched under. Existing files can still resolve through the legacy binding directory.
+After saving a match, 「试听」 reads the track duration from media metadata. 「确认音轨」 stages
+the review and duration for the next binding save. No audio upload directory is created.
+Question images use the image workspace. The hosted database has
+`20261119121511_exam_listening_directory.sql` applied.
 
 The admin catalog displays the stored content type (真题, 模拟题 or 专项训练).
 Paper and training names remain editable in 管理试卷 through the draft save flow.

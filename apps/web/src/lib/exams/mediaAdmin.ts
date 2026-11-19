@@ -2,11 +2,11 @@ import 'server-only'
 
 import { isDeepStrictEqual } from 'node:util'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { ExamMediaEditor, ExamMediaSaveReceipt, ExamMediaSaveRequest } from '@rosie/exams'
+import type { ExamListeningDirectoryRequest, ExamMediaEditor, ExamMediaSaveReceipt, ExamMediaSaveRequest } from '@rosie/exams'
 import { getBaiduAccountContext } from '@/lib/baidu-token'
 import { readBaiduDirectoryPage } from '@/lib/baidu-directory-page'
 import { readBaiduFileMetadata } from '@/lib/baidu-media'
-import { ExamApiError, examIdentifier } from './http'
+import { ExamApiError, examIdentifier, readExamJsonBody } from './http'
 import { examListeningParts } from './listeningMedia'
 import { examMediaParts } from './mediaParts'
 import { examMediaMime, readExamMediaBinding, readExamMediaDraft, validExamMediaPath, withinExamDirectory, type StoredExamMediaFile } from './media'
@@ -15,6 +15,43 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 function record(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
 function uuid(value: unknown): value is string { return typeof value === 'string' && UUID.test(value) }
 function invalid(): never { throw new ExamApiError('exam_invalid_media_binding', 400) }
+
+async function readAuthorizedDirectory(db: SupabaseClient, command: ExamListeningDirectoryRequest | ExamMediaSaveRequest) {
+  const account = await getBaiduAccountContext()
+  if (account.generation !== command.accountGeneration) throw new ExamApiError('baidu_account_changed', 409)
+  const { data: root, error } = await db.from('baidu_sync_directories').select('path').eq('id', command.directoryId).eq('account_id', account.accountId).maybeSingle()
+  if (error) throw new ExamApiError('exam_media_unavailable', 503)
+  if (!root || typeof root.path !== 'string' || (command.mainPath !== root.path && !withinExamDirectory(command.mainPath, root.path))) invalid()
+  await readBaiduDirectoryPage(account.accessToken, command.mainPath, 0, 1)
+  return account
+}
+
+function mediaWriteError(message: string): never {
+  const allowed = ['exam_conflict', 'exam_not_editable', 'exam_not_found', 'exam_invalid_request', 'exam_invalid_media_binding', 'baidu_account_changed']
+  throw new ExamApiError(allowed.includes(message) ? message : 'exam_media_unavailable', message === 'exam_not_found' ? 404 : allowed.includes(message) ? 409 : 503)
+}
+
+export async function saveExamListeningDirectory(db: SupabaseClient, actorId: string, request: Request) {
+  const body = await readExamJsonBody(request)
+  const allowed = ['revisionId', 'expectedVersion', 'expectedDirectoryVersion', 'requestId', 'accountGeneration', 'directoryId', 'mainPath']
+  if (!record(body) || Object.keys(body).some(key => !allowed.includes(key)) || !uuid(body.expectedVersion)
+    || (body.expectedDirectoryVersion !== null && !uuid(body.expectedDirectoryVersion))
+    || !uuid(body.requestId) || !uuid(body.accountGeneration) || !uuid(body.directoryId) || !validExamMediaPath(body.mainPath)) invalid()
+  const command: ExamListeningDirectoryRequest = {
+    revisionId: examIdentifier(body.revisionId), expectedVersion: body.expectedVersion, requestId: body.requestId,
+    expectedDirectoryVersion: body.expectedDirectoryVersion,
+    accountGeneration: body.accountGeneration, directoryId: body.directoryId, mainPath: body.mainPath,
+  }
+  const account = await readAuthorizedDirectory(db, command)
+  const { data, error } = await db.rpc('save_exam_listening_directory', {
+    p_id: command.revisionId, p_expected_version: command.expectedVersion, p_request_id: command.requestId, p_actor: actorId,
+    p_expected_directory_version: command.expectedDirectoryVersion,
+    p_account: account.accountId, p_generation: account.generation, p_directory_id: command.directoryId, p_path: command.mainPath,
+  })
+  if (error) mediaWriteError(error.message)
+  if (!uuid(data)) throw new ExamApiError('exam_media_unavailable', 503)
+  return { listeningDirectoryVersion: data, listeningDirectory: { directory_id: command.directoryId, path: command.mainPath, generation: account.generation } }
+}
 
 export async function readExamMediaSaveRequest(request: Request): Promise<ExamMediaSaveRequest> {
   if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') throw new ExamApiError('exam_json_required', 415)
@@ -79,9 +116,25 @@ export async function readExamMediaEditor(db: SupabaseClient, revisionId: string
   const { draft, version, status } = await readExamMediaDraft(db, revisionId)
   if (status !== 'draft') throw new ExamApiError('exam_not_editable', 409)
   const bindingRevisionId = draft.content.mediaBindingRevisionId
-  const binding = bindingRevisionId ? await readExamMediaBinding(db, revisionId, bindingRevisionId) : null
-  const mainDirectory = binding ? { directory_id: binding.directory_id, path: binding.main_path, generation: binding.account_generation } : null
-  return { revisionId, testNumber: draft.contentSet.testNumber, version, bindingRevisionId, mainDirectory, parts: examMediaParts(draft), slots: [...draft.content.mediaSlots, ...draft.solutions.mediaSlots].map(slot => {
+  const [binding, directory] = await Promise.all([
+    bindingRevisionId ? readExamMediaBinding(db, revisionId, bindingRevisionId) : null,
+    db.from('exam_content_revisions').select('listening_directory').eq('id', revisionId).eq('version', version).maybeSingle(),
+  ])
+  if (directory.error) throw new ExamApiError('exam_media_unavailable', 503)
+  if (!directory.data) throw new ExamApiError('exam_conflict', 409)
+  const selected: unknown = directory.data.listening_directory
+  let listeningDirectory: ExamMediaEditor['listeningDirectory'] = null
+  let listeningDirectoryVersion: string | null = null
+  if (selected !== null) {
+    if (!record(selected) || !uuid(selected.directory_id) || !validExamMediaPath(selected.path) || !uuid(selected.generation) || !uuid(selected.request_id)) {
+      throw new ExamApiError('exam_media_unavailable', 503)
+    }
+    listeningDirectory = { directory_id: selected.directory_id, path: selected.path, generation: selected.generation }
+    listeningDirectoryVersion = selected.request_id
+  } else if (binding?.files.some(file => file.slot.purpose === 'exam_listening' || file.slot.purpose === 'training_audio')) {
+    listeningDirectory = { directory_id: binding.directory_id, path: binding.main_path, generation: binding.account_generation }
+  }
+  return { revisionId, testNumber: draft.contentSet.testNumber, version, bindingRevisionId, listeningDirectory, listeningDirectoryVersion, parts: examMediaParts(draft), slots: [...draft.content.mediaSlots, ...draft.solutions.mediaSlots].map(slot => {
     const file = binding?.files.find(item => item.slot_id === slot.id && isDeepStrictEqual(item.slot, slot))
     return { ...slot, binding: file ? { fileId: file.file_id, name: file.path.slice(file.path.lastIndexOf('/') + 1), size: file.size, reviewed: file.reviewed, durationMs: file.duration_ms } : null }
   }) }
@@ -107,14 +160,13 @@ export async function saveExamMediaBindings(db: SupabaseClient, actorId: string,
     const changed = [...command.picks.map(item => item.slotId), ...(command.updates ?? []).map(item => item.slotId), ...(command.removeSlotIds ?? [])]
     if (changed.some(id => !allowed.has(id))) invalid()
   }
-  const account = await getBaiduAccountContext()
-  if (account.generation !== command.accountGeneration) throw new ExamApiError('baidu_account_changed', 409)
-  const { data: root, error } = await db.from('baidu_sync_directories').select('path').eq('id', command.directoryId).eq('account_id', account.accountId).maybeSingle()
-  if (error) throw new ExamApiError('exam_media_unavailable', 503)
-  if (!root || typeof root.path !== 'string' || (command.mainPath !== root.path && !withinExamDirectory(command.mainPath, root.path))) invalid()
-  await readBaiduDirectoryPage(account.accessToken, command.mainPath, 0, 1)
+  const account = await readAuthorizedDirectory(db, command)
   // Read the caller's previous immutable version, not a newer competing edit.
   const previous = command.expectedBindingRevisionId ? await readExamMediaBinding(db, command.revisionId, command.expectedBindingRevisionId) : null
+  const listening = command.scope === 'listening'
+  const usePreviousRoot = listening && previous?.account_id === account.accountId && previous.account_generation === account.generation
+  const directoryId = usePreviousRoot ? previous.directory_id : command.directoryId
+  const mainPath = usePreviousRoot ? previous.main_path : command.mainPath
   const files = new Map<string, StoredExamMediaFile>()
   for (const file of previous?.files ?? []) {
     if (isDeepStrictEqual(file.slot, slots.get(file.slot_id))) files.set(file.slot_id, file)
@@ -149,10 +201,11 @@ export async function saveExamMediaBindings(db: SupabaseClient, actorId: string,
     const info = await inspect(pick.fileId)
     if (info.path !== pick.path) throw new ExamApiError('exam_media_binding_changed', 409)
     files.set(slot.id, { slot_id: slot.id, slot, file_id: info.id, path: info.path, size: info.size,
+      ...(listening ? { directory_id: command.directoryId } : {}),
       md5: info.md5, modified_at: info.modifiedAt, reviewed: pick.reviewed, duration_ms: pick.durationMs ?? null })
   }
   for (const file of files.values()) {
-    if (!withinExamDirectory(file.path, command.mainPath)) throw new ExamApiError('exam_invalid_media_binding', 409)
+    if (!file.directory_id && !withinExamDirectory(file.path, mainPath)) throw new ExamApiError('exam_invalid_media_binding', 409)
     const info = await inspect(file.file_id)
     if (info.path !== file.path || info.size !== file.size || info.md5 !== file.md5 || info.modifiedAt !== file.modified_at) {
       throw new ExamApiError('exam_media_binding_changed', 409)
@@ -166,14 +219,11 @@ export async function saveExamMediaBindings(db: SupabaseClient, actorId: string,
   const { data, error: saveError } = await db.rpc(cropLease ? 'finish_exam_image_crop' : 'save_exam_media_bindings', {
     p_id: command.revisionId, p_expected_version: command.expectedVersion, p_expected_binding: command.expectedBindingRevisionId,
     p_request_id: command.requestId, p_actor: actorId, p_account: account.accountId, p_generation: account.generation,
-    p_directory_id: command.directoryId, p_main_path: command.mainPath,
+    p_directory_id: directoryId, p_main_path: mainPath,
     p_files: [...files.values()].sort((left, right) => left.slot_id < right.slot_id ? -1 : left.slot_id > right.slot_id ? 1 : 0),
     ...(cropLease ? { p_lease: cropLease } : {}),
   })
-  if (saveError) {
-    const allowed = ['exam_conflict', 'exam_not_editable', 'exam_not_found', 'exam_invalid_request', 'exam_invalid_media_binding', 'baidu_account_changed']
-    throw new ExamApiError(allowed.includes(saveError.message) ? saveError.message : 'exam_media_unavailable', saveError.message === 'exam_not_found' ? 404 : allowed.includes(saveError.message) ? 409 : 503)
-  }
+  if (saveError) mediaWriteError(saveError.message)
   if (!record(data) || data.revisionId !== command.revisionId || !uuid(data.version) || !uuid(data.bindingRevisionId)) throw new ExamApiError('exam_media_unavailable', 503)
   return { revisionId: command.revisionId, version: data.version, bindingRevisionId: data.bindingRevisionId }
 }

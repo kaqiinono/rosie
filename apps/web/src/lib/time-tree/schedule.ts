@@ -1,6 +1,6 @@
 import { homeworkPeriod as period, type Homework } from '@rosie/tasks'
 import { flowersForMinutes } from '@/components/tree-demo/garden/model'
-import { dayOf, shift, type TreeData, type WorkStep } from './types'
+import { dayOf, isExhaustedPendingStep, PRACTICE_SCHEDULE_VERSION, shift, type TreeData, type WorkStep } from './types'
 import { planMathQuestions } from './mathQuestions'
 import { bindPractice, calendarPractice } from './practice'
 import { weeklyHomeworkStart } from './flowers'
@@ -30,6 +30,7 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
     const day = peers.map(step => step.scheduled).sort()[0]
     const pending = peers.filter(step => !step.end && !step.skipped && !step.settled)
     for (const step of pending) {
+      if (step.scheduled < tree.today && (!step.planned || step.planned < tree.today) && isExhaustedPendingStep(tree, step)) continue
       // The next session inherits the exact same work, even after template edits.
       if (step.flowers && (step.start || step.flowers.availableFrom || template.subject === 'life')) continue
       const index = Number(step.id.split('/').at(-1))
@@ -37,6 +38,7 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
       step.notes = template.notes
       step.subject = template.subject
       step.priority = template.priority
+      step.practiceBindingKey = binding?.progression ? undefined : binding?.key
       step.practiceEntryName = binding?.name
       if (weeklyHomeworkStart(step) && usesWeeklyHomework(template)) step.minutes = template.estimated_minutes
       // A stable binding keeps its authored date snapshot, including after manual moves.
@@ -168,6 +170,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     syncWeeklyHomework(tree, templates)
     syncFlowerSessions(tree, templates)
     syncHomeworkContent(tree, templates)
+    tree.practiceScheduleVersion = PRACTICE_SCHEDULE_VERSION
   }
   for (const step of tree.steps) {
     if (!fillCurrentWindow && !step.skipped && !step.end && !step.start && !step.planned && step.scheduled) step.planned = step.scheduled
@@ -183,13 +186,18 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   }
   const load = new Map<string, number>()
   for (const s of tree.steps)
-    if (!s.skipped && s.planned) load.set(s.planned, (load.get(s.planned) ?? 0) + s.stages.length)
+    if (!s.skipped && s.planned && !isExhaustedPendingStep(tree, s)) load.set(s.planned, (load.get(s.planned) ?? 0) + s.stages.length)
   const active = templates
     .filter((t) => t.enabled)
     .sort((a, b) => a.priority.localeCompare(b.priority) || a.id.localeCompare(b.id))
   for (const t of active.sort(
     (a, b) => Number(b.cycle === 'daily') - Number(a.cycle === 'daily'),
   )) {
+    const binding = t.practice_binding
+    if (binding && !binding.progression && tree.practiceProgress?.[binding.key]?.exhausted) continue
+    const segmented = usesFlowerSessions(t)
+    const mathCanRefill = t.subject === 'math' && !segmented && binding?.progression?.enabled && binding.progression.mode !== 'homework' &&
+      binding.rows.some(row => row.values.problemId)
     const first = dayOf(t.created_at) > tree.firstDay ? dayOf(t.created_at) : tree.firstDay
     for (let day = from; day <= through; day = shift(day, 1)) {
       if (t.subject === 'life' && (day !== tree.today || tree.steps.some(s =>
@@ -200,8 +208,10 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       if (usesWeeklyHomework(t)) {
         const occurrence = weeklyOccurrence(t.id, p.start)
         if (existing.has(occurrence) || day !== [p.start, first, from].sort().at(-1)) continue
+        const step = createWeeklyHomework(t, p.start, p.end, day)
+        if (isExhaustedPendingStep(tree, step)) continue
         existing.add(occurrence)
-        tree.steps.push(createWeeklyHomework(t, p.start, p.end, day))
+        tree.steps.push(step)
         continue
       }
       const offset = diff(day, p.start)
@@ -211,9 +221,9 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       const windowEnd = shift(p.start, Math.floor(((ordinal + 1) * p.span) / p.count) - 1)
       const occurrence = [t.id, t.cycle, p.start, ordinal].join('/')
       if (existing.has(occurrence)) continue
+      const practice = binding?.progression ? calendarPractice(binding, day, occurrence) : undefined
+      if (practice?.exhausted && !mathCanRefill) continue
       existing.add(occurrence)
-      const practice = t.practice_binding?.progression ? calendarPractice(t.practice_binding, day, occurrence) : undefined
-      const segmented = usesFlowerSessions(t)
       const parts =
         !segmented && t.subject !== 'life' && t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
       parts.forEach((minutes, index) => {
@@ -231,13 +241,14 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
           }
         }
         if (segmented) planned = day
-        if (planned) load.set(planned, (load.get(planned) ?? 0) + flowers)
+        if (planned && !practice?.exhausted) load.set(planned, (load.get(planned) ?? 0) + flowers)
         const step: WorkStep = {
           ...(segmented ? { flowers: { collected: 0, elapsedMs: 0, complete: false } } : {}),
           ...(practice ? { practice: structuredClone(practice) } : {}),
           id: occurrence + '/' + index,
           occurrence,
-          practiceEntryName: t.practice_binding?.name,
+          practiceBindingKey: binding?.progression ? undefined : binding?.key,
+          practiceEntryName: binding?.name,
           name: parts.length === 1 ? t.name : t.name + '（' + (index + 1) + '/2）',
           notes: t.notes,
           subject: t.subject,

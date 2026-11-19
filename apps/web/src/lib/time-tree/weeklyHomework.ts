@@ -36,6 +36,7 @@ export function createWeeklyHomework(template: Homework, start: string, end: str
     stages: [],
     audit: [],
     flowers: { collected: 0, elapsedMs: 0, complete: false },
+    practiceBindingKey: binding?.progression ? undefined : binding?.key,
     practiceEntryName: binding?.name,
     practice: binding?.progression ? calendarPractice(binding, start, occurrence) : undefined,
   }

@@ -83,3 +83,4 @@ migrations, content import/publication, media binding and runtime acceptance rem
 work; this package does not apply migrations or publish content.
 
 `PlayerDock` accepts opt-in `density="compact"` and `onClose` for homework panels. Compact mode retains the same media ref and seek events; closing stops playback before notifying the parent. Default layouts remain unchanged.
+Compact callers can pass `playLoading` to show loading on the play button and `fallbackLabel` to display the media title before the queue is ready.

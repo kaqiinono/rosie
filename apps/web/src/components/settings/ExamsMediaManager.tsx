@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import type { ExamMediaEditor, ExamMediaSaveReceipt, ExamMediaSaveRequest } from '@rosie/exams'
+import type { ExamListeningDirectoryRequest, ExamMediaEditor, ExamMediaSaveReceipt, ExamMediaSaveRequest } from '@rosie/exams'
 import { AppDialog, LoadingOverlay, StickerCard } from '@rosie/ui'
-import { Badge, Box, Button, Checkbox, Flex, Grid, Heading, Text, TextField } from '@rosie/ui/themes'
+import { Badge, Box, Button, Flex, Grid, Heading, Text } from '@rosie/ui/themes'
 import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
 import type { ExamDraftListItem, ExamPage } from '@/lib/exams/contracts'
 import { examListeningParts, isExamAudioFile, matchExamListeningAudio } from '@/lib/exams/listeningMedia'
@@ -16,6 +16,7 @@ import { EnglishFileList, useEnglishFileInventory } from './EnglishAudioFiles'
 type Props = { userId: string; paths: SyncDirectoryList }
 type Pick = ExamMediaSaveRequest['picks'][number]
 type Update = NonNullable<ExamMediaSaveRequest['updates']>[number]
+type DirectoryReceipt = { listeningDirectoryVersion: string; listeningDirectory: NonNullable<ExamMediaEditor['listeningDirectory']> }
 
 function subscribeExamMediaLocation() {
   return () => undefined
@@ -47,11 +48,9 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
   const [saved, setSaved] = useState(initial)
   const parts = examListeningParts(saved.parts, saved.slots)
   const slots = [...new Map(parts.flatMap(part => part.slots.map(slot => [slot.id, slot] as const))).values()]
-  const [main, setMain] = useState<SyncChosenDirectory | null>(() => {
-    const directory = initial.mainDirectory
-    return directory && directory.generation === paths.generation && paths.directories.some(root => root.id === directory.directory_id)
-      ? directory : null
-  })
+  const directory = saved.listeningDirectory
+  const main = directory && directory.generation === paths.generation && paths.directories.some(root => root.id === directory.directory_id)
+    ? directory : null
   const [choosing, setChoosing] = useState(!main)
   const [target, setTarget] = useState(() => slots.find(slot => slot.id === initialSlot)?.id
     ?? parts.find(part => initialPart === `${part.sectionId}:${part.partNumber}`)?.slots[0]?.id ?? '')
@@ -59,12 +58,14 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
   const [updates, setUpdates] = useState<Record<string, Update>>({})
   const [removed, setRemoved] = useState<string[]>([])
   const [message, setMessage] = useState('')
+  const [directoryMessage, setDirectoryMessage] = useState<{ text: string; error?: boolean } | null>(null)
   const [matchMessage, setMatchMessage] = useState('')
   const [operation, setOperation] = useState('')
-  const [preview, setPreview] = useState<{ slotId: string; name: string } | null>(null)
+  const [preview, setPreview] = useState<{ slotId: string; name: string; durationMs: number | null } | null>(null)
   const pending = useRef<AbortController | null>(null)
   const fileHeading = useRef<HTMLHeadingElement>(null)
   const retry = useRef<{ key: string; requestId: string } | null>(null)
+  const directoryRetry = useRef<{ key: string; requestId: string } | null>(null)
   const { confirm, dialog } = useSyncConfirmation()
   const inventory = useEnglishFileInventory(userId, paths.generation, slots.length ? main : null)
   useEffect(() => () => pending.current?.abort(), [])
@@ -74,6 +75,33 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
   const active = slots.find(slot => slot.id === target) ?? unmatched[0]
   const invalidPick = main && Object.values(picks).some(pick => !pick.path.startsWith(directoryPrefix(main.path)))
   const url = '/api/baidu/sync/exams?' + new URLSearchParams({ revisionId: saved.revisionId })
+  async function saveDirectory(value: SyncChosenDirectory) {
+    if (pending.current) return
+    const payload: Omit<ExamListeningDirectoryRequest, 'requestId'> = {
+      revisionId: saved.revisionId, expectedVersion: saved.version, accountGeneration: paths.generation,
+      expectedDirectoryVersion: saved.listeningDirectoryVersion,
+      directoryId: value.directory_id, mainPath: value.path,
+    }
+    const key = JSON.stringify(payload)
+    if (directoryRetry.current?.key !== key) directoryRetry.current = { key, requestId: crypto.randomUUID() }
+    const controller = new AbortController()
+    pending.current = controller
+    setOperation('directory'); setDirectoryMessage(null); setMessage(''); setMatchMessage('')
+    try {
+      const receipt = await examSyncRequest<DirectoryReceipt>(userId, '/api/baidu/sync/exams', {
+        method: 'POST', body: { ...payload, requestId: directoryRetry.current.requestId }, signal: controller.signal,
+      })
+      if (!controller.signal.aborted) {
+        const next = { ...saved, ...receipt }
+        setSaved(next); replace(next); setChoosing(false); directoryRetry.current = null
+        setDirectoryMessage({ text: '听力目录已保存。' })
+      }
+    } catch (error) {
+      if (!controller.signal.aborted) setDirectoryMessage({ text: error instanceof Error ? error.message : '请重试。', error: true })
+    } finally {
+      if (pending.current === controller) { pending.current = null; if (!controller.signal.aborted) setOperation('') }
+    }
+  }
   function autoMatch() {
     if (!inventory.ready || busy) return
     const additions = matchExamListeningAudio(parts, saved.testNumber, inventory.files, picks, removed)
@@ -90,21 +118,6 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
     setTarget('')
     setMatchMessage('')
     setMessage('')
-  }
-  function update(slotId: string, patch: Partial<Update>) {
-    const slot = saved.slots.find(item => item.id === slotId)
-    if (!slot) return
-    if (picks[slotId]) setPicks(current => ({ ...current, [slotId]: { ...current[slotId], ...patch } }))
-    else setUpdates(current => ({
-      ...current,
-      [slotId]: {
-        ...current[slotId],
-        ...patch,
-        slotId,
-        reviewed: patch.reviewed ?? current[slotId]?.reviewed ?? slot.binding?.reviewed ?? false,
-        durationMs: patch.durationMs !== undefined ? patch.durationMs : (current[slotId]?.durationMs ?? slot.binding?.durationMs ?? null),
-      },
-    }))
   }
   async function save() {
     if (!main || pending.current || !dirty || invalidPick) return
@@ -123,7 +136,7 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
       const next = await examSyncRequest<ExamMediaEditor>(userId, url, { signal: controller.signal })
       if (!controller.signal.aborted) {
         setSaved(next); replace(next); setPicks({}); setUpdates({}); setRemoved([]); retry.current = null; setPreview(null)
-        setMessage('听力绑定已保存。请试听新音轨并保存核对结果，再审核内容版本。')
+        setMessage(payload.picks.length ? '听力绑定已保存。新音轨可在试听时确认。' : '听力绑定已保存。')
       }
     } catch (error) {
       if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : '保存失败，请重试。')
@@ -138,22 +151,35 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
     setOperation('preview'); setMessage('')
     try {
       await examSyncRequest(userId, '/api/exams/media/session', { method: 'POST', signal: controller.signal })
-      if (!controller.signal.aborted) setPreview({ slotId: slot.id, name: slot.binding.name })
+      if (!controller.signal.aborted) setPreview({ slotId: slot.id, name: slot.binding.name, durationMs: null })
     } catch (error) {
       if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : '预览暂不可用。')
     } finally { if (pending.current === controller) { pending.current = null; if (!controller.signal.aborted) setOperation('') } }
+  }
+  const previewSlot = preview && slots.find(slot => slot.id === preview.slotId)
+  const segmentOutOfRange = Boolean(previewSlot?.segment && preview?.durationMs && previewSlot.segment.endMs > preview.durationMs)
+  function confirmPreview() {
+    if (!previewSlot?.binding || !preview?.durationMs || segmentOutOfRange || message) return
+    const slotId = previewSlot.id
+    const durationMs = previewSlot.purpose === 'exam_listening' ? preview.durationMs : previewSlot.binding.durationMs
+    setUpdates(current => ({ ...current, [slotId]: { slotId, reviewed: true, durationMs } }))
+    setPreview(null)
+    setMessage('已确认音轨，请保存听力绑定。')
   }
   const previewUrl = preview ? '/api/exams/media?' + new URLSearchParams({ revisionId: saved.revisionId, slotId: preview.slotId }) : ''
   if (!parts.length) return <Text size="2" color="gray">此草稿没有需要绑定的听力音轨。</Text>
   return <Flex direction="column" gap="3" data-sync-dirty={dirty} data-sync-saving={busy}>
     <StickerCard elevation="flat">
       <Flex direction="column" gap="2">
-        <Heading as="h3" size="3">本套资源主目录</Heading>
+        <Heading as="h3" size="3">听力音频目录</Heading>
         {main && <Text size="2" className="break-all">{main.path}</Text>}
         {choosing ? <DirectoryChooser userId={userId} paths={paths} initial={main} disabled={busy}
-          choose={value => { setMain(value); setChoosing(false); setMatchMessage(''); setMessage('') }} cancel={main ? () => setChoosing(false) : undefined} />
-          : <Button variant="soft" disabled={busy} onClick={() => setChoosing(true)}>更换主目录</Button>}
-        <Text size="2" color="gray">保存前请选择包含本套已绑定文件的授权目录。</Text>
+          choose={value => void saveDirectory(value)} cancel={main ? () => { setChoosing(false); setDirectoryMessage(null) } : undefined} />
+          : <Button variant="soft" disabled={busy} onClick={() => { setChoosing(true); setDirectoryMessage(null) }}>更换听力目录</Button>}
+        {operation === 'directory' && <SyncPending>正在保存听力目录…</SyncPending>}
+        {directoryMessage && <Text size="2" color={directoryMessage.error ? 'red' : undefined} role={directoryMessage.error ? 'alert' : 'status'}>
+          {directoryMessage.error ? `未能确认目录已保存。${directoryMessage.text}` : directoryMessage.text}
+        </Text>}
       </Flex>
     </StickerCard>
     <Grid columns={{ initial: '1', sm: '2' }} gap="3" align="start">
@@ -172,10 +198,8 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
             {part.slots.map(slot => {
               const removedSlot = removed.includes(slot.id)
               const pick = picks[slot.id]
-              const change = updates[slot.id]
               const name = pick?.path.split('/').pop() ?? slot.binding?.name
-              const reviewed = pick?.reviewed ?? change?.reviewed ?? slot.binding?.reviewed ?? false
-              const duration = pick ? pick.durationMs ?? null : change ? change.durationMs : slot.binding?.durationMs ?? null
+              const matchLabel = name ? '重新匹配' : '匹配'
               return <StickerCard key={slot.id} tone="paper" elevation="flat" radius="md" size="sm">
                 <Flex direction="column" gap="2">
                   <Flex gap="2" wrap="wrap">
@@ -186,9 +210,9 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
                   {slot.segment && <Text size="2" color="gray">片段：{slot.segment.startMs / 1000}–{slot.segment.endMs / 1000} 秒</Text>}
                   <Flex gap="2" wrap="wrap">
                     <Button size="1" variant={active?.id === slot.id ? 'solid' : 'soft'} disabled={busy || !main}
-                      aria-label={`${name ? '换绑' : '选文件'} · ${part.label} · ${slot.sourceTrackLabel ?? '音轨'}`}
+                      aria-label={`${matchLabel} · ${part.label} · ${slot.sourceTrackLabel ?? '音轨'}`}
                       aria-pressed={active?.id === slot.id} onClick={() => { setTarget(slot.id); fileHeading.current?.focus() }}>
-                      {name ? '换绑' : '选文件'}
+                      {matchLabel}
                     </Button>
                     <Button size="1" variant="soft" disabled={busy || !slot.binding || Boolean(pick) || removedSlot} onClick={() => void showPreview(slot)}>试听</Button>
                     {(slot.binding || pick) && <Button size="1" variant="soft" color="gray" disabled={busy} onClick={() => {
@@ -198,17 +222,6 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
                       setRemoved(current => removedSlot ? current.filter(id => id !== slot.id) : slot.binding ? [...current, slot.id] : current)
                     }}>{removedSlot ? '撤销解绑' : slot.binding ? '解绑' : '撤销匹配'}</Button>}
                   </Flex>
-                  {!removedSlot && (slot.binding || pick) && <>
-                    <Text as="label" size="2"><Flex gap="2" align="center"><Checkbox checked={reviewed} disabled={busy || Boolean(pick)} onCheckedChange={value => update(slot.id, { reviewed: value === true })} />已核对文件内容与可见范围</Flex></Text>
-                    {slot.purpose === 'exam_listening' && <Flex direction="column" gap="1">
-                      <Text as="label" size="2" htmlFor={`exam-duration-${part.partNumber}-${slot.id}`}>整轨时长（秒）</Text>
-                      <TextField.Root id={`exam-duration-${part.partNumber}-${slot.id}`} type="number" min="0.001" max="86400" step="0.001" value={duration === null ? '' : duration / 1000}
-                        disabled={busy} onChange={event => {
-                          const milliseconds = event.target.value === '' ? null : Math.round(Number(event.target.value) * 1000)
-                          if (milliseconds === null || (Number.isSafeInteger(milliseconds) && milliseconds > 0 && milliseconds <= 86_400_000)) update(slot.id, { durationMs: milliseconds })
-                        }} />
-                    </Flex>}
-                  </>}
                 </Flex>
               </StickerCard>
             })}
@@ -223,19 +236,27 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
             <EnglishFileList key={JSON.stringify(main)} main={main}
               inventory={{ ...inventory, files: inventory.files.filter(file => file.fileId && isExamAudioFile(file.name)) }}
               disabled={busy || !active} choose={bindFile} />
-          </> : <Text size="2" color="gray">选择授权主目录后读取音频。</Text>}
+          </> : <Text size="2" color="gray">选择听力目录后读取音频。</Text>}
         </Flex>
       </StickerCard>
     </Grid>
-    {invalidPick && <Text size="2" color="red" role="alert">有待保存音轨位于主目录外，请重新匹配或撤销。</Text>}
+    {invalidPick && <Text size="2" color="red" role="alert">有待保存音轨位于当前听力目录外，请重新匹配或撤销。</Text>}
     <Flex gap="2" wrap="wrap">
       <Button loading={operation === 'save'} disabled={busy || !dirty || !main || Boolean(invalidPick)} onClick={() => void save()}>保存本卷听力绑定</Button>
       <Button variant="soft" disabled={busy} onClick={() => { if (dirty) confirm('放弃尚未保存的资源修改并重新读取？', reload); else reload() }}>重新读取</Button>
     </Flex>
     {message && !preview && <Text size="2" role="status">{message}</Text>}
     <AppDialog open={Boolean(preview)} onOpenChange={open => { if (!open) { setPreview(null); setMessage('') } }} title="试听音轨" description={preview?.name} size="preview">
-      {preview && <audio controls preload="metadata" src={previewUrl} className="w-full" onError={() => setMessage('试听失败，请检查共享授权、文件位置和绑定。')} />}
-      {message && <Text size="2" color="red" role="alert">{message}</Text>}
+      {preview && <Flex direction="column" gap="2">
+        <audio controls preload="metadata" src={previewUrl} className="w-full" onDurationChange={event => {
+          const milliseconds = Math.round(event.currentTarget.duration * 1000)
+          const durationMs = Number.isSafeInteger(milliseconds) && milliseconds > 0 && milliseconds <= 86_400_000 ? milliseconds : null
+          setPreview(current => current && { ...current, durationMs })
+        }} onError={() => setMessage('试听失败，请检查共享授权、文件位置和绑定。')} />
+        {message && <Text size="2" color="red" role="alert">{message}</Text>}
+        {segmentOutOfRange && <Text size="2" color="red" role="alert">此音轨短于试卷配置的片段，请核对绑定。</Text>}
+        <Flex justify="end"><Button disabled={!preview.durationMs || segmentOutOfRange || Boolean(message)} onClick={confirmPreview}>确认音轨</Button></Flex>
+      </Flex>}
     </AppDialog>
     {dialog}
   </Flex>

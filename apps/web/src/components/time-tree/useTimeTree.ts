@@ -1,15 +1,16 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createUserSessionStore, invalidateSessionStore, supabase, useAuth } from '@rosie/core'
 import { placeTodayBubbles } from '@/lib/time-tree/engine'
-import { shift, WEEKLY_SCHEDULE_VERSION, type Snapshot, type TreeAction, type TreeData } from '@/lib/time-tree/types'
+import { applyRowChanges, type RowReceipt } from '@/lib/time-tree/rowChanges'
+import { isExhaustedPendingStep, PRACTICE_SCHEDULE_VERSION, shift, WEEKLY_SCHEDULE_VERSION, type Snapshot, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
 const POLL_INTERVAL_MS = 45_000
 const MAX_RETRY_DELAY_MS = 180_000
 
 class TimeTreeRequestError extends Error {
-  constructor(message: string, readonly status?: number) {
+  constructor(message: string, readonly status?: number, readonly code?: string) {
     super(message)
   }
 }
@@ -45,6 +46,12 @@ function deferPolling(polling: PollingState) {
 
 type RequestOptions = { revision?: number; cached?: Snapshot; background?: boolean }
 
+async function readWindow<T = Snapshot>(token: string, query = ''): Promise<T> {
+  const response = await fetch('/api/time-tree' + query, { headers: { Authorization: 'Bearer ' + token }, cache: 'no-store' })
+  if (!response.ok) throw new TimeTreeRequestError('读取生命树失败，请重试。', response.status)
+  return response.json()
+}
+
 async function fetchSnapshot(
   userId: string,
   action: TreeAction,
@@ -52,7 +59,7 @@ async function fetchSnapshot(
 ): Promise<Snapshot> {
   const { data } = await supabase.auth.getSession()
   if (!data.session || data.session.user.id !== userId) throw new TimeTreeRequestError('请重新登录。')
-  const response = await fetch('/api/time-tree', {
+  const options: RequestInit = {
     method: 'POST',
     cache: 'no-store',
     headers: {
@@ -61,22 +68,33 @@ async function fetchSnapshot(
     },
     body: JSON.stringify({
       ...action,
+      protocol: 2,
+      operationId: crypto.randomUUID(),
       revision,
       background,
       knownRevision: cached?.revision,
       knownHomeworkRevision: cached?.homeworkRevision,
       knownDay: cached?.tree.today,
     }),
-  })
+  }
+  const response = await fetch('/api/time-tree', options).catch(() => fetch('/api/time-tree', options))
   const serverTime = Date.parse(response.headers.get('X-Tree-Time') ?? '')
   const clockOffsetMs = Number.isFinite(serverTime) ? serverTime - Date.now() : 0
   if (response.status === 204 && cached) return { ...cached, clockOffsetMs }
   if (!response.ok) {
     const result = await response.json().catch(() => null)
-    throw new TimeTreeRequestError(result?.error || '读取失败，请重试。', response.status)
+    throw new TimeTreeRequestError(result?.error || '读取失败，请重试。', response.status, result?.code)
   }
-  const result: Snapshot = await response.json()
-  return { ...result, clockOffsetMs }
+  const result: Snapshot | RowReceipt = await response.json()
+  if ('tree' in result) return { ...result, clockOffsetMs }
+  const latest = store.getSessionData(userId)
+  if (latest && latest.revision >= result.revision) return { ...latest, clockOffsetMs }
+  if (latest && latest.revision === result.baseRevision && result.delta &&
+    (!result.delta.state.today || result.delta.state.today === latest.tree.today) &&
+    result.delta.stepFields?.some(patch => !latest.tree.steps.some(step => step.id === patch.id)) !== true)
+    return { ...latest, clockOffsetMs, revision: result.revision, tree: applyRowChanges(latest.tree, result.delta),
+      historyMinutes: { ...latest.historyMinutes, ...result.delta.historyMinutes } }
+  return { ...await readWindow(data.session.access_token), clockOffsetMs }
 }
 
 async function request(userId: string, action: TreeAction, options: RequestOptions = {}): Promise<Snapshot> {
@@ -108,7 +126,8 @@ const store = createUserSessionStore<Snapshot | null>('time_tree', {
   empty: null,
   async fetch(id): Promise<Snapshot> {
     const cached = store.getSessionData(id) ?? undefined
-    const currentSchedule = cached?.tree.weeklyScheduleVersion === WEEKLY_SCHEDULE_VERSION
+    const currentSchedule = cached?.tree.weeklyScheduleVersion === WEEKLY_SCHEDULE_VERSION &&
+      cached.tree.practiceScheduleVersion === PRACTICE_SCHEDULE_VERSION
     const incoming = await request(id, { kind: 'sync' }, { cached: currentSchedule ? cached : undefined, background: true })
     const current = store.getSessionData(id)
     return current && current.revision > incoming.revision ? current : incoming
@@ -147,6 +166,11 @@ function subscribeToPolling(userId: string) {
   }
 }
 
+function visibleHomeworkTree(tree: TreeData): TreeData {
+  const steps = tree.steps.filter(step => !isExhaustedPendingStep(tree, step))
+  return steps.length === tree.steps.length ? tree : { ...tree, steps }
+}
+
 export function useTimeTree() {
   const { user, loading } = useAuth()
   const { data, error: loadError, isLoading } = store.useSessionData(user)
@@ -154,10 +178,13 @@ export function useTimeTree() {
   const id = user?.id
   const lock = useRef(false)
   const queue = useRef<Promise<void>>(Promise.resolve())
+  const lastExclusive = useRef(queue.current)
   const queuedCount = useRef(0)
   const [pending, setPending] = useState<{ owner: string; revision: number; tree: TreeData } | null>(null)
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState('')
+  const [actionError, setActionError] = useState<Error | null>(null)
+  const currentTree = pending && pending.owner === id && pending.revision === data?.revision ? pending.tree : data?.tree ?? null
+  const tree = useMemo(() => currentTree ? visibleHomeworkTree(currentTree) : null, [currentTree])
   useEffect(() => {
     if (id) return subscribeToPolling(id)
   }, [id])
@@ -169,8 +196,11 @@ export function useTimeTree() {
     lock.current = true
     setBusy(true)
     // Each queued interaction reads the latest committed revision when it starts.
-    const result = queue.current.then(() => execute(action, expectedRevision))
-    queue.current = result.then(() => undefined, () => undefined)
+    const barrier = action.kind === 'pop' ? lastExclusive.current : queue.current
+    const result = barrier.then(() => execute(action, expectedRevision))
+    const finished = result.then(() => undefined, () => undefined)
+    if (action.kind === 'pop') queue.current = Promise.all([queue.current, finished]).then(() => undefined)
+    else lastExclusive.current = queue.current = finished
     return result.finally(() => {
       queuedCount.current -= 1
       if (queuedCount.current === 0) {
@@ -181,7 +211,7 @@ export function useTimeTree() {
   }
   async function execute(action: TreeAction, expectedRevision?: number) {
     if (!id) return null
-    setMessage('')
+    setActionError(null)
     try {
       // finish 后再 pop 时，组件还没重渲染，闭包里的 revision 已过期。
       const revision = expectedRevision ?? store.getSessionData(id)?.revision ?? data?.revision
@@ -189,7 +219,7 @@ export function useTimeTree() {
       if (saved && (action.kind === 'start' || action.kind === 'move' || action.kind === 'nextDay')) {
         const tree = { ...saved.tree, steps: saved.tree.steps.map(step => ({ ...step })) }
         const step = tree.steps.find(item => item.id === action.id)
-        if (step && !step.start && !step.end) {
+        if (step && !step.start && !step.end && !isExhaustedPendingStep(tree, step)) {
           if (action.kind === 'start') {
             step.start = new Date(Date.now() + (saved.clockOffsetMs ?? 0)).toISOString()
           } else {
@@ -210,9 +240,9 @@ export function useTimeTree() {
         invalidateSessionStore('draw_wheel_entries')
         invalidateSessionStore('draw_workshop')
       }
-      return next.tree
+      return visibleHomeworkTree(next.tree)
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : '保存失败，请重试。')
+      setActionError(e instanceof Error ? e : new Error('保存失败，请重试。'))
       setPending(null)
       if (!(e instanceof TimeTreeRequestError && e.status === 503))
         await store.refreshInBackground(id).catch(() => {})
@@ -222,16 +252,86 @@ export function useTimeTree() {
     }
   }
   return {
-    tree: pending && pending.owner === id && pending.revision === data?.revision ? pending.tree : data?.tree ?? null,
+    tree,
     revision: data?.revision,
+    historyMinutes: data?.historyMinutes,
     clockOffsetMs: data?.clockOffsetMs ?? 0,
     user,
     busy,
     run,
-    message: message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : '') ||
+    message: actionError?.message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : '') ||
       (data?.syncDeferred ? '已显示上次保存的生命树，稍后自动同步。' : ''),
+    messageCode: actionError instanceof TimeTreeRequestError ? actionError.code : undefined,
     error,
     isLoading: loading || isLoading,
   }
 }
 export type TreeController = ReturnType<typeof useTimeTree>
+
+type HistoryPage = { revision: number; steps: TreeData['steps']; spends: NonNullable<TreeData['tomatoSpends']> }
+const historyPages = new Map<string, Promise<HistoryPage>>()
+
+function historyPage(owner: string, revision: number, days: string[]) {
+  const key = [owner, revision, ...days].join('|')
+  const cached = historyPages.get(key)
+  if (cached) return cached
+  const pending = supabase.auth.getSession().then(({ data }) => {
+    if (!data.session || data.session.user.id !== owner) throw new Error('请重新登录。')
+    return readWindow<HistoryPage>(data.session.access_token, '?days=' + days.join(','))
+  }).catch(error => {
+    historyPages.delete(key)
+    throw error
+  })
+  historyPages.set(key, pending)
+  if (historyPages.size > 16) historyPages.delete(historyPages.keys().next().value!)
+  return pending
+}
+
+export function treeDates(from: string, through: string) {
+  const days: string[] = []
+  for (let day = from; day <= through; day = shift(day, 1)) days.push(day)
+  return days
+}
+
+export function useTreeHistory(api: TreeController, days: string[]): TreeController {
+  const today = api.tree?.today
+  const from = today && shift(today, -6)
+  const through = today && shift(today, 6)
+  const dates = [...new Set(days.filter(day => from && through && (day < from || day > through)))].sort().join(',')
+  const owner = api.user?.id
+  const revision = api.revision
+  const key = [owner, revision, dates].join('|')
+  const [result, setResult] = useState<{ key: string; pages?: HistoryPage[]; message?: string }>()
+  useEffect(() => {
+    if (!dates || !owner || revision === undefined) return
+    let active = true
+    const list = dates.split(',')
+    const requests = []
+    for (let i = 0; i < list.length; i += 62) requests.push(historyPage(owner, revision, list.slice(i, i + 62)))
+    void Promise.all(requests).then(async pages => {
+      if (!active) return
+      if (pages.some(page => page.revision !== revision)) {
+        await store.refreshInBackground(owner)
+        if (store.getSessionData(owner)?.revision === revision) throw new Error('进度正在同步，请重新打开日期。')
+        return
+      }
+      setResult({ key, pages })
+    }).catch(error => {
+      if (active) setResult({ key, message: error instanceof Error ? error.message : '历史记录读取失败。' })
+    })
+    return () => { active = false }
+  }, [dates, key, owner, revision])
+  const tree = useMemo(() => {
+    if (!dates || !api.tree) return api.tree
+    if (result?.key !== key || !result.pages) return null
+    const steps = new Map(api.tree.steps.map(step => [step.id, step]))
+    const spends = new Map((api.tree.tomatoSpends ?? []).map(spend => [spend.id, spend]))
+    for (const page of result.pages) {
+      for (const step of page.steps) if (!steps.has(step.id)) steps.set(step.id, step)
+      for (const spend of page.spends) spends.set(spend.id, spend)
+    }
+    return visibleHomeworkTree({ ...api.tree, steps: [...steps.values()], tomatoSpends: [...spends.values()] })
+  }, [dates, key, result, api.tree])
+  const message = result?.key === key && result.message || api.message
+  return { ...api, tree, message, isLoading: api.isLoading || Boolean(api.tree && !tree && !message) }
+}

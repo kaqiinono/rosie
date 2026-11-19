@@ -42,7 +42,7 @@ export async function saveExamImageCrop(db: SupabaseClient, actorId: string, com
   const root = process.env.BAIDU_EXAMS_UPLOAD_ROOT?.replace(/\/$/, '') || '/airosie/exams'
   if (!validExamMediaPath(root) || root === '/') throw new ExamApiError('exam_image_directory_invalid', 503)
   const folder = createHash('sha256').update(command.revisionId).digest('hex').slice(0, 20)
-  const destination: Destination = previous
+  const destination: Destination = previous?.files.some(file => !file.directory_id)
     ? { accountId: account.accountId, generation: account.generation, mainPath: previous.main_path, directoryId: previous.directory_id }
     : { accountId: account.accountId, generation: account.generation, mainPath: `${root}/${folder}`, directoryId: null }
   const lease = randomUUID()

@@ -21,9 +21,17 @@ export interface ExamMediaEditor {
   testNumber: number
   version: string
   bindingRevisionId: string | null
-  mainDirectory: { directory_id: string; path: string; generation: string } | null
+  listeningDirectory: ExamListeningDirectory | null
+  listeningDirectoryVersion: string | null
   parts: readonly { sectionId: string; partNumber: number; label: string; slotIds: readonly string[] }[]
   slots: readonly (MediaSlot & { binding: { fileId: string; name: string; size: number; reviewed: boolean; durationMs: number | null } | null })[]
+}
+
+export interface ExamListeningDirectory { directory_id: string; path: string; generation: string }
+
+export type ExamListeningDirectoryRequest = Pick<ExamMediaSaveRequest,
+  'revisionId' | 'expectedVersion' | 'requestId' | 'accountGeneration' | 'directoryId' | 'mainPath'> & {
+  expectedDirectoryVersion: string | null
 }
 
 export interface ExamMediaSaveRequest {

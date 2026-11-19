@@ -8,7 +8,7 @@ import { LearningIcon, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
 import { clock, dayOf, elapsed, shift, timing, type WorkStep } from '@/lib/time-tree/types'
 import { bubbleSubject } from '@/components/tree-demo/garden/model'
-import { useTimeTree } from './useTimeTree'
+import { treeDates, useTimeTree, useTreeHistory } from './useTimeTree'
 import { StepPanel, TreeWait } from './StepPanel'
 
 interface DayTotals {
@@ -95,10 +95,16 @@ function journalDays(steps: WorkStep[]) {
 }
 
 export default function HomeworkJournal({ calendar = false }: { calendar?: boolean }) {
-  const api = useTimeTree()
+  const scene = useTimeTree()
   const [selected, select] = useState<string | null>(null)
   const [period, setPeriod] = useState<'week' | 'month'>('week')
   const [id, setId] = useState<string | null>(null)
+  const date = selected ?? scene.tree?.today ?? dayOf(new Date())
+  const weekday = new Date(date + 'T12:00Z').getUTCDay()
+  const from = period === 'week' ? shift(date, -(weekday + 6) % 7) : date.slice(0, 7) + '-01'
+  const until = period === 'week' ? shift(from, 7) : shift(from, 32).slice(0, 7) + '-01'
+  const days = treeDates(from, shift(until, -1))
+  const api = useTreeHistory(scene, days)
   const records = api.tree?.steps
   const byDay = useMemo(() => journalDays(records ?? []), [records])
   if (!api.tree)
@@ -108,12 +114,6 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
       </section>
     )
   const tree = api.tree
-  const date = selected ?? tree.today
-  const weekday = new Date(date + 'T12:00Z').getUTCDay()
-  const from = period === 'week' ? shift(date, -(weekday + 6) % 7) : date.slice(0, 7) + '-01'
-  const until = period === 'week' ? shift(from, 7) : shift(from, 32).slice(0, 7) + '-01'
-  const days: string[] = []
-  for (let d = from; d < until; d = shift(d, 1)) days.push(d)
   const summary = emptyTotals()
   for (const day of days) {
     const counts = byDay.get(day)

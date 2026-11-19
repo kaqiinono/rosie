@@ -25,6 +25,8 @@ type Props = {
   /** Inline playback stays in document flow, including its queue and video. */
   placement?: 'floating' | 'inline'
   density?: 'normal' | 'compact'
+  playLoading?: boolean
+  fallbackLabel?: string
   onClose?: () => void
 }
 
@@ -42,6 +44,8 @@ export default function PlayerDock({
   appearance = 'default',
   placement = 'floating',
   density = 'normal',
+  playLoading = false,
+  fallbackLabel,
   onClose,
 }: Props) {
   const [videoMinimized, setVideoMinimized] = useState(false)
@@ -149,13 +153,17 @@ export default function PlayerDock({
       {/* 底部停靠条（队列空时不显示；上面的媒体元素始终挂载，保证首次播放可控制） */}
       {density === 'compact' && <section aria-label="媒体播放器" className="w-full rounded-2xl border-2 border-amber-700 bg-amber-100 px-3 py-2 text-amber-950">
         <div className="flex items-center justify-between gap-2">
-          <span className="min-w-0 truncate text-sm font-bold">{current?.label ?? '正在准备播放…'}</span>
+          <span className="min-w-0 truncate text-sm font-bold">{current?.label ?? fallbackLabel ?? '正在准备播放…'}</span>
           {/* native-ok: player cannot depend on ui */}
           <button type="button" aria-label="关闭播放器" className="min-h-11 min-w-11 rounded-full text-xl" onClick={() => { stop(); onClose?.() }}>×</button>
         </div>
         <div className="flex items-center gap-2">
           {/* native-ok: player cannot depend on ui */}
-          <button type="button" aria-label={live ? '暂停' : '播放'} disabled={!current} onClick={togglePause} className="min-h-11 min-w-11 rounded-full bg-amber-300">{live ? 'Ⅱ' : '▶'}</button>
+          <button type="button" aria-label={playLoading ? '媒体加载中' : live ? '暂停' : '播放'}
+            aria-busy={playLoading || undefined} disabled={!current || playLoading} onClick={togglePause}
+            className="grid min-h-11 min-w-11 place-items-center rounded-full bg-amber-300">
+            {playLoading ? <span aria-hidden="true" className="size-4 rounded-full border-2 border-current border-r-transparent motion-safe:animate-spin" /> : live ? 'Ⅱ' : '▶'}
+          </button>
           {/* native-ok: player cannot depend on ui */}
           <input type="range" aria-label="播放进度" className="min-w-0 flex-1 accent-amber-700" min={0} max={duration || 1} step={0.1} value={Math.min(position, duration || 1)} disabled={!duration} onChange={event => { if (audioRef.current) audioRef.current.currentTime = Number(event.target.value) }} />
           <span className="text-xs tabular-nums">{formatPlaybackTime(position)} / {formatPlaybackTime(duration)}</span>

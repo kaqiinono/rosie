@@ -28,6 +28,7 @@ import DailyRainbowReward from './DailyRainbowReward'
 import HomeworkContentPanel from './HomeworkContentPanel'
 import HomeworkTomatoTimer from './HomeworkTomatoTimer'
 import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
+import styles from './StepPanel.module.css'
 import { finishAndPop } from './finishStep'
 import type { TreeController } from './useTimeTree'
 
@@ -382,37 +383,35 @@ export function StepPanel({
               </IconButton>
             </Flex>
           ) : (
-          <Flex align="center" justify="between" gap="3">
-            <Flex align="center" gap="3" minWidth="0">
-              {subjectIcon}
-              <Flex direction="column" gap="1" minWidth="0">
-                <Flex align="center" gap="2" wrap="wrap" minWidth="0">
-                  <Heading as="h2" size="5" className="break-words max-w-full">{step.name}</Heading>
-                  <Badge variant="soft" radius="full" aria-label={`优先级 ${step.priority}`} color={isMustDo(step.priority) ? 'pink' : 'gray'}>
-                    {step.priority}
-                  </Badge>
-                </Flex>
-                {scheduleSummary && <Text size="2" color="gray">{scheduleSummary}</Text>}
-                {reward && (
-                  <Flex align="center" gap="1" wrap="wrap">
-                    <Badge size="3" variant="soft" radius="full" color="pink" className="tabular-nums"
-                      aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.flowers} 朵花`}>
-                      <span aria-hidden="true">🌸</span> {reward.flowers}
-                    </Badge>
-                    <Badge size="3" variant="soft" radius="full" color="amber" className="tabular-nums"
-                      aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.sun} 阳光`}>
-                      <span aria-hidden="true">☀️</span> {reward.sun}
-                    </Badge>
-                    <Badge size="3" variant="soft" radius="full" color="blue" className="tabular-nums"
-                      aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.water} 水滴`}>
-                      <span aria-hidden="true">💧</span> {reward.water}
-                    </Badge>
-                  </Flex>
-                )}
-                {step.end && <Text size="2" color="gray">{kidTime(step, now)}</Text>}
+          <div className={styles.taskHeader} data-rewards={reward ? true : undefined}>
+            <div className={styles.taskIcon}>{subjectIcon}</div>
+            <Flex direction="column" gap="1" className={styles.taskDetails}>
+              <Flex align="center" gap="2" wrap="wrap" minWidth="0">
+                <Heading as="h2" size="5" className="wrap-anywhere max-w-full">{step.name}</Heading>
+                <Badge variant="soft" radius="full" aria-label={`优先级 ${step.priority}`} color={isMustDo(step.priority) ? 'pink' : 'gray'}>
+                  {step.priority}
+                </Badge>
               </Flex>
+              {scheduleSummary && <Text size="2" color="gray">{scheduleSummary}</Text>}
+              {step.end && <Text size="2" color="gray">{kidTime(step, now)}</Text>}
             </Flex>
-            <Flex align="center" gap="2" flexShrink="0">
+            {reward && (
+              <Flex align="center" gap="1" wrap="nowrap" className={styles.taskRewards}>
+                <Badge size={{ initial: '1', xs: '3' }} variant="soft" radius="full" color="pink" className="tabular-nums"
+                  aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.flowers} 朵花`}>
+                  <span aria-hidden="true">🌸</span> {reward.flowers}
+                </Badge>
+                <Badge size={{ initial: '1', xs: '3' }} variant="soft" radius="full" color="amber" className="tabular-nums"
+                  aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.sun} 阳光`}>
+                  <span aria-hidden="true">☀️</span> {reward.sun}
+                </Badge>
+                <Badge size={{ initial: '1', xs: '3' }} variant="soft" radius="full" color="blue" className="tabular-nums"
+                  aria-label={`${step.end ? '已获得' : '预计获得'} ${reward.water} 水滴`}>
+                  <span aria-hidden="true">💧</span> {reward.water}
+                </Badge>
+              </Flex>
+            )}
+            <Flex align="center" gap="2" className={styles.taskTiming}>
               <StatTile
                 size="sm"
                 tone={timeTone}
@@ -420,12 +419,13 @@ export function StepPanel({
                 value={timeValue}
                 unit={timeUnit}
                 hint={step.planned ? <span className="tabular-nums">📅 {step.planned}</span> : undefined}
+                className={styles.taskDuration}
               />
               <IconButton variant="soft" color="gray" aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing} onClick={close}>
                 <span aria-hidden="true">×</span>
               </IconButton>
             </Flex>
-          </Flex>
+          </div>
           )}
           {note && (
             <StickerCard tone="paper" size="sm" elevation="flat" radius="md" className="w-full">

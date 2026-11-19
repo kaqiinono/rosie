@@ -21,7 +21,7 @@ import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
 import DailyRainbowReward from './DailyRainbowReward'
 import DayTasksDialog from './DayTasksDialog'
-import { useTimeTree } from './useTimeTree'
+import { treeDates, useTimeTree, useTreeHistory } from './useTimeTree'
 import { MinimizeTimeTreeButton } from './TimeTreeLauncher'
 import '@/components/tree-demo/garden/garden.css'
 
@@ -198,11 +198,17 @@ export default function LiveTree() {
   const desktop = useSyncExternalStore(subscribeStatusLayout, inlineStatus, serverStatus)
   const [taskDays, setTaskDays] = useState<string[] | null>(null)
   const [dialog, show] = useState<'' | 'wilt' | 'later' | 'diary' | 'box' | 'wish' | 'flower' | 'fruitList' | 'tomato'>('')
+  const [diaryPage, setDiaryPage] = useState(0)
+  const diaryThrough = tree && shift(tree.today, -30 * diaryPage)
+  const diaryFrom = diaryThrough && shift(diaryThrough, -29)
+  const history = useTreeHistory(api, dialog === 'diary' && diaryFrom && diaryThrough
+    ? treeDates(diaryFrom, diaryThrough) : taskDays ?? [])
   const [rainbowAt, setRainbowAt] = useState<{ id: string; x: number; y: number } | null>(null)
   const [floats, setFloats] = useState<{ id: number; x: number; y: number; text: string; color: string }[]>([])
   const [itemId, setItem] = useState('')
   const [pin, setPin] = useState('')
   const [notice, notify] = useState('')
+  const sceneNotice = (api.messageCode === 'stale_revision' ? '' : api.message) || notice
   const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
   const [showRainbowDetails, setShowRainbowDetails] = useState(false)
   const [savingBubble, setSavingBubble] = useState<string | null>(null)
@@ -241,6 +247,7 @@ export default function LiveTree() {
       if (step.end) minutes.completed += estimated
       byDay.set(step.planned, minutes)
     }
+    for (const [day, minutes] of Object.entries(api.historyMinutes ?? {})) byDay.set(day, minutes)
     return buildRegions(state, true, previousRegions.current).map((region) => {
       if (region.dateKey) {
         return { ...region, plannedMinutes: byDay.get(region.dateKey) ?? { completed: 0, total: 0 } }
@@ -248,7 +255,7 @@ export default function LiveTree() {
       const total = region.mergedKeys.reduce((sum, day) => sum + (byDay.get(day)?.total ?? 0), 0)
       return { ...region, plannedMinutes: { completed: 0, total } }
     })
-  }, [state, tree])
+  }, [state, tree, api.historyMinutes])
   useEffect(() => { previousRegions.current = regions }, [regions])
   const ready = !!tree
   useEffect(() => {
@@ -371,7 +378,7 @@ export default function LiveTree() {
       states[bud.id] = 'ready'
     }
   }
-  const step = tree.steps.find((s) => s.id === stepId)
+  const step = (history.tree ?? tree).steps.find((s) => s.id === stepId)
   const flower = tree.steps.find((s) => s.id === itemId.split('#')[0])
   const lastWish = tree.exchanges.at(-1)
   const nextWish = lastWish && shift(lastWish, 7)
@@ -890,17 +897,22 @@ export default function LiveTree() {
           </div>
         </div>
       )}
-      {(api.message || notice) && (
+      {sceneNotice && (
         <div
           role="status"
           className="pointer-events-none absolute inset-x-0 top-20 z-30 flex justify-center"
         >
-          <StickerCard size="sm">{api.message || notice}</StickerCard>
+          <StickerCard size="sm">{sceneNotice}</StickerCard>
         </div>
       )}
-      {taskDays && !step && !rewardStep && (
+      {(taskDays || dialog === 'diary') && !history.tree && (
+        <AppDialog open title={taskDays ? '日期作业' : '成长日记'} onOpenChange={open => {
+          if (!open) { setTaskDays(null); show('') }
+        }}><TreeWait api={history} /></AppDialog>
+      )}
+      {taskDays && history.tree && !step && !rewardStep && (
         <DayTasksDialog
-          tree={tree}
+          tree={history.tree}
           days={taskDays}
           busy={busy}
           message={api.message}
@@ -913,7 +925,7 @@ export default function LiveTree() {
       {step && (
         <StepPanel
           key={step.id}
-          api={api}
+          api={history}
           step={step}
           select={setStep}
           close={() => setStep(null)}
@@ -961,7 +973,12 @@ export default function LiveTree() {
           </Flex>
         )}
       </AppDialog>
-      {dialog === 'diary' && <DiaryDialog tree={tree} rings={state.rings} onClose={close} />}
+      {dialog === 'diary' && history.tree && diaryFrom && diaryThrough && (
+        <DiaryDialog tree={history.tree} rings={state.rings} onClose={() => { setDiaryPage(0); close() }}
+          period={{ from: diaryFrom, through: diaryThrough,
+            older: diaryFrom > tree.firstDay ? () => setDiaryPage(diaryPage + 1) : undefined,
+            newer: diaryPage ? () => setDiaryPage(diaryPage - 1) : undefined }} />
+      )}
       <AppDialog
         open={!!dialog && dialog !== 'diary'}
         closeDisabled={busy && dialog !== 'wilt' && dialog !== 'later' && dialog !== 'diary'}

@@ -8,7 +8,7 @@ const messages: Record<string, string> = {
   unauthorized: '登录已过期，请重新登录。', forbidden: '仅管理员可管理考试资源。',
   exam_conflict: '此版本已被修改，请重新读取后核对。', exam_not_editable: '只有草稿可以修改资源绑定。',
   baidu_account_changed: '共享账号已变化，请刷新授权路径后重新选择文件。',
-  exam_invalid_media_binding: '请核对主目录、文件类型和所选资源。',
+  exam_invalid_media_binding: '请核对授权目录、文件类型和所选资源。',
   exam_media_binding_changed: '文件或绑定已变化，请刷新后重新选择。',
   exam_media_scope_conflict: '此文件混有其他可见范围，请预先裁剪成独立文件。',
   exam_media_file_missing: '文件已移动、删除或缺少可核对的元数据。',

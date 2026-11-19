@@ -1,7 +1,7 @@
 import { baiduAuthErrorCode } from '@rosie/core'
 import { createAdminSupabase } from '@/lib/api-auth'
 import { authorizeExamRequest, ExamApiError, examFailure, examIdentifier, examJson, examPageRequest } from '@/lib/exams/http'
-import { readExamMediaEditor, readExamMediaSaveRequest, saveExamMediaBindings } from '@/lib/exams/mediaAdmin'
+import { readExamMediaEditor, readExamMediaSaveRequest, saveExamListeningDirectory, saveExamMediaBindings } from '@/lib/exams/mediaAdmin'
 import { listExamDrafts } from '@/lib/exams/repository'
 
 export const runtime = 'nodejs'
@@ -28,5 +28,12 @@ export async function PUT(request: Request) {
     const actor = await authorizeExamRequest(request, true)
     const command = await readExamMediaSaveRequest(request)
     return examJson(await saveExamMediaBindings(createAdminSupabase(), actor.id, command))
+  } catch (error) { return failure(error) }
+}
+
+export async function POST(request: Request) {
+  try {
+    const actor = await authorizeExamRequest(request, true)
+    return examJson(await saveExamListeningDirectory(createAdminSupabase(), actor.id, request))
   } catch (error) { return failure(error) }
 }

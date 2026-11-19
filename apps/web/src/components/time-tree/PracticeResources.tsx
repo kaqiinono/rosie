@@ -11,10 +11,12 @@ import SentenceRowPreview from '../task-entries/SentenceRowPreview'
 import ReadingPreviewDrawer from '../task-entries/ReadingPreviewDrawer'
 import { resourceHref, type PracticeEntryRow, type PracticeResource } from '@rosie/tasks'
 
-export default function PracticeResources({ row, detailPassage, actions, activeHomeworkId }: {
+export default function PracticeResources({ row, detailPassage, actions, afterActions, singleLineActions = false, activeHomeworkId }: {
   row: PracticeEntryRow
   detailPassage?: ReadingPassage
   actions?: ReactNode
+  afterActions?: ReactNode
+  singleLineActions?: boolean
   activeHomeworkId?: string
 }) {
   const openPractice = useHomeworkPracticeNavigation(activeHomeworkId)
@@ -40,8 +42,10 @@ export default function PracticeResources({ row, detailPassage, actions, activeH
         {block.translation && <p className="whitespace-pre-wrap break-words text-sm text-text-secondary">{block.translation}</p>}
       </Flex>
     </StickerCard>)}
-    <Flex gap="2" wrap="wrap">
-      {resources.map((resource) => <Button key={resource.id} variant="soft" aria-label={`${resource.type === 'link' ? '打开' : '播放'}${resource.label}`} onClick={() => {
+    <Flex gap={singleLineActions ? '1' : '2'} wrap={singleLineActions ? 'nowrap' : 'wrap'} align="center"
+      className={singleLineActions ? '-mx-1 min-w-0 overflow-x-auto p-1 [&>button]:shrink-0 [&>button]:whitespace-nowrap' : undefined}>
+      {resources.map((resource) => <Button key={resource.id} variant="soft" size={singleLineActions ? { initial: '1', xs: '2' } : undefined}
+        aria-label={`${resource.type === 'link' ? '打开' : '播放'}${resource.label}`} onClick={() => {
         setError('')
         try {
           const href = resourceHref(resource.url)
@@ -54,6 +58,7 @@ export default function PracticeResources({ row, detailPassage, actions, activeH
       </Button>}
       {actions}
     </Flex>
+    {afterActions}
     {row.resourceStatus === 'error' && <Text size="2" color="gray">{row.resourceError || '部分资源尚未读取成功，可在作业内容管理中刷新关联资源。'}</Text>}
     {error && <Text role="alert" color="red">{error}</Text>}
     {fullPassage && <ReadingPreviewDrawer passageKey={fullPassage.key} open={readingOpen} onClose={() => setReadingOpen(false)} />}

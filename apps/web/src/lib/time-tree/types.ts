@@ -2,6 +2,7 @@ import type { PracticeProgress, StepPractice } from './practice'
 import type { Apple, CoreSubject, SubjectKey } from '@/components/tree-demo/garden/model'
 
 export const WEEKLY_SCHEDULE_VERSION = 1
+export const PRACTICE_SCHEDULE_VERSION = 1
 
 /** Cumulative snapshot at the end of the previous or current daily session. */
 export interface FlowerProgress {
@@ -18,6 +19,7 @@ export interface WorkStep {
   crown?: true
   flowers?: FlowerProgress
   practice?: StepPractice | null
+  practiceBindingKey?: string
   practiceEntryName?: string
   id: string
   occurrence: string
@@ -76,6 +78,7 @@ export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4 }
 
 export interface TreeData {
   weeklyScheduleVersion?: number
+  practiceScheduleVersion?: number
   mathQuestionProgress?: Record<string, { firstId: string; throughDay: string; completed: string[] }>
   practiceProgress?: Record<string, PracticeProgress>
   today: string
@@ -108,6 +111,15 @@ export interface TreeData {
   boxReady: boolean
   lastBox: string | null
   prize: { name: string; ticket: string; source?: 'tomato' } | null
+}
+
+export function isExhaustedPendingStep(tree: Pick<TreeData, 'practiceProgress'>, step: WorkStep): boolean {
+  const exhausted = step.practice === undefined
+    ? step.practiceBindingKey && tree.practiceProgress?.[step.practiceBindingKey]?.exhausted
+    : step.practice?.exhausted
+  return exhausted === true && step.subject !== 'life' && !step.start && !step.end && !step.skipped && !step.settled &&
+    !step.audit.length && !step.practice?.questions && !step.flowers?.availableFrom && !step.flowers?.collected &&
+    !step.flowers?.elapsedMs && !step.flowers?.answered?.length && !step.stages.some(stage => stage > 0)
 }
 
 export type ActionKind =
@@ -158,6 +170,7 @@ export interface TreeAction {
   pin?: string
 }
 export interface Snapshot {
+  historyMinutes?: Record<string, { completed: number; total: number }>
   clockOffsetMs?: number
   revision: number
   /** Template revision sampled by the full sync that produced this snapshot. */

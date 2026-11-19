@@ -1,0 +1,53 @@
+.taskHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'icon details timing';
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.taskHeader[data-rewards] {
+  grid-template-areas: 'icon details timing' 'icon rewards timing';
+}
+
+.taskIcon {
+  grid-area: icon;
+  display: flex;
+}
+
+.taskDetails {
+  grid-area: details;
+  min-width: 0;
+}
+
+.taskHeader[data-rewards] .taskDetails {
+  align-self: end;
+}
+
+.taskRewards {
+  grid-area: rewards;
+  align-self: start;
+  justify-self: start;
+}
+
+.taskTiming {
+  grid-area: timing;
+}
+
+@media (width < 420px) {
+  .taskHeader {
+    column-gap: var(--space-2);
+  }
+
+  .taskHeader[data-rewards] {
+    grid-template-areas: 'icon details timing' 'rewards rewards rewards';
+  }
+
+  .taskHeader[data-rewards] .taskDetails {
+    align-self: center;
+  }
+
+  .taskDuration {
+    padding-inline: var(--space-2);
+  }
+}

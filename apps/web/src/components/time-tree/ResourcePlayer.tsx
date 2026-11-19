@@ -110,7 +110,6 @@ export function ResourcePlayer({ resource, close, onMediaReady, loop = false }: 
     }
   }, [resource, attempt, audioRef, stop, playWhenReady])
   return <Flex direction="column" gap="2">
-    {busy && <Text size="2" role="status">正在准备播放…</Text>}
     {error && <Flex direction="column" gap="2"><Text role="alert" color="red">{error}</Text><Button variant="soft" onClick={() => {
       if (!authorized.current) { retry((n) => n + 1); return }
       setError(''); setBusy(true)
@@ -120,7 +119,8 @@ export function ResourcePlayer({ resource, close, onMediaReady, loop = false }: 
       void playWhenReady({ url: resourceHref(resource.url), label: resource.label, mediaType: resource.type === 'video' ? 'video' : 'audio', source: null, refLink: null })
         .catch(() => { if (playTimeout.current) clearTimeout(playTimeout.current); setBusy(false); setError('播放失败，请检查链接后重试。') })
     }}>重试播放</Button></Flex>}
-    <PlayerDock player={player} appearance="quiet" placement="inline" density="compact" onClose={close} showProgress />
+    <PlayerDock player={player} appearance="quiet" placement="inline" density="compact"
+      playLoading={busy} fallbackLabel={resource.label} onClose={close} showProgress />
   </Flex>
 }
 

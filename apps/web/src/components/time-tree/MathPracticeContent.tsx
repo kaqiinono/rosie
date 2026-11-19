@@ -27,20 +27,24 @@ export default function MathPracticeContent({ row, actions, onCorrect, expanded 
   }, [row, bound])
   const Provider = lesson?.Provider
   const Detail = lesson?.ProblemDetail
+  const replayError = catalog.status === 'error' || catalog.status === 'signed-out'
+  const replayNotice = catalog.status === 'error' ? '课堂回放读取失败，请重试。'
+    : catalog.status === 'signed-out' ? '请重新登录后读取课堂回放。'
+    : catalog.status === 'unsynced' ? '本课尚未发布回放绑定。'
+    : catalog.status === 'ready' && !bound ? '这道题暂无绑定的课堂回放。'
+    : catalog.status === 'unknown' ? '无法识别本课的回放目录。' : null
+  const showLookup = !bound && catalog.status !== 'signed-out' && catalog.status !== 'unknown'
   return <Flex direction="column" gap="3">
     {item && Provider && Detail ? <ProblemWorkspaceRuntimeProvider value={onCorrect ? { ...localRuntime, onCorrect: () => onCorrect(row.values.problemId) } : localRuntime}>
       <ExternalProblemActions><Provider><Detail problem={item.problem} mode="inline" /></Provider></ExternalProblemActions>
     </ProblemWorkspaceRuntimeProvider> : <Text color="gray">未找到对应题目，请进入详情页查看。</Text>}
-    {catalog.status === 'loading' && <Text role="status">正在读取课堂回放…</Text>}
-    {catalog.status === 'error' && <Text role="alert" color="red">课堂回放读取失败，请重试。</Text>}
-    {catalog.status === 'signed-out' && <Text color="red">请重新登录后读取课堂回放。</Text>}
-    {catalog.status === 'unsynced' && <Text color="gray">本课尚未发布回放绑定。</Text>}
-    {catalog.status === 'ready' && !bound && <Text color="gray">这道题暂无绑定的课堂回放。</Text>}
-    {catalog.status === 'unknown' && <Text color="gray">无法识别本课的回放目录。</Text>}
-    {expanded && <PracticeResources row={mediaRow} />}
-    <Flex gap="2" wrap="wrap" align="center">
-      <Button variant="soft" disabled={catalog.status === 'loading' || !user} onClick={() => void catalog.retry()}>重试读取回放</Button>
+    {expanded && <PracticeResources row={mediaRow} singleLineActions actions={<>
+      {showLookup && <Button type="button" variant="soft" size={{ initial: '1', xs: '2' }}
+        loading={catalog.status === 'loading'} onClick={() => void catalog.retry()}>
+        重试读取回放
+      </Button>}
       {actions}
-    </Flex>
+    </>} afterActions={replayNotice && <Text size="2" role={replayError ? 'alert' : undefined}
+      color={replayError ? 'red' : 'gray'}>{replayNotice}</Text>} />}
   </Flex>
 }

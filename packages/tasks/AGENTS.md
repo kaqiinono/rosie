@@ -31,6 +31,9 @@ Unpopped life instances expire at Shanghai midnight without rewards or diary ent
 never enter wilted work or historical buds. Disable/delete removes their unfinished instances
 on sync. Completed records and their flowers/fruits/rewards remain. Academic rules are unchanged.
 The homework tab and /today/calendar share the execution records via /api/time-tree.
+The protocol-2 release loads weekly/monthly history by Beijing calendar date and includes
+the other steps of each matching occurrence. Edits return the changed rows and account
+fields. Storage migration and coordinated rollback are documented in `tree.md`.
 Completing today's final non-life, non-skipped task grants one daily rainbow reward atomically
 with the garden commit. `time-tree/harvest.ts` settles today's academic flowers early and upgrades
 the last academic apple (guarantees one rainbow if below the fruit threshold). `dailyRainbowDay`

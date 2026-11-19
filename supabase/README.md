@@ -114,6 +114,11 @@ dry-run and push ran from an isolated directory with only applied history plus
 20261018040000 remains unapplied. Receipt: `output/exams/rendering-upgrade/handwriting-migration-receipt.json`.
 The demo route is preserved. Application build/tests and browser acceptance were not run.
 
+`20261119121511_exam_listening_directory.sql` was applied to the hosted project on
+2026-11-19 via the connected migration API. Read-back confirmed the draft directory column,
+foreign keys for audio bookmarks, RLS on the private references table, and service-role
+execution of `save_exam_listening_directory`.
+
 ## Lucky wheel workshop
 
 `20261114122234_draw_wheel_workshop.sql` was applied via the connected Supabase

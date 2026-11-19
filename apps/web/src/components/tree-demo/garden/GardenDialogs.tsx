@@ -367,7 +367,10 @@ function DiaryTrend({ trend, metric }: { trend: ReturnType<typeof growthDiary>['
   )
 }
 
-export function DiaryDialog({ tree, rings, onClose }: { tree: TreeData; rings: number; onClose: () => void }) {
+export function DiaryDialog({ tree, rings, onClose, period }: {
+  tree: TreeData; rings: number; onClose: () => void
+  period?: { from: string; through: string; older?: () => void; newer?: () => void }
+}) {
   const [tomatoOnly, setTomatoOnly] = useState(false)
   const { trend, today, streak, earned, entries } = useMemo(() => growthDiary(tree), [tree])
   const totalPops = (tree.diary ?? []).filter(entry => entry.icon === '🌸' || entry.icon === '🍂').length
@@ -375,6 +378,7 @@ export function DiaryDialog({ tree, rings, onClose }: { tree: TreeData; rings: n
   for (const entry of entries) {
     if (tomatoOnly && entry.tomatoChange === undefined) continue
     const date = dayOf(entry.t)
+    if (period && (date < period.from || date > period.through)) continue
     const group = groups.get(date) ?? []
     group.push(entry)
     groups.set(date, group)
@@ -415,6 +419,13 @@ export function DiaryDialog({ tree, rings, onClose }: { tree: TreeData; rings: n
             </SegmentedControl.Root>
           </Flex>
           <div className="mt-3 flex flex-col gap-3 md:min-h-0 md:flex-1 md:overflow-y-auto md:pr-1">
+            {period && (
+              <Flex gap="2" align="center" justify="between" wrap="wrap">
+                <Button size="1" variant="ghost" disabled={!period.newer} onClick={period.newer}>较新记录</Button>
+                <Text size="1" color="gray">{period.from} 至 {period.through}</Text>
+                <Button size="1" variant="ghost" disabled={!period.older} onClick={period.older}>更早记录</Button>
+              </Flex>
+            )}
             {groups.size === 0 && (
               <Text size="2" color="gray">{tomatoOnly ? '做完计时作业，就会在这里记下收获。' : '完成作业后，这里会记录成长足迹。'}</Text>
             )}

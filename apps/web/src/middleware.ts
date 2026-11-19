@@ -28,6 +28,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const ip = clientIpFromHeaders(request.headers)
+  const started = pathname === '/api/time-tree' ? performance.now() : undefined
   const identity = `${ip}:${pathname}`
   const policy = getRateLimitPolicy(pathname)
   const distributed = await isDistributedRateLimited({ identity, pathname, policy })
@@ -40,7 +41,9 @@ export async function middleware(request: NextRequest) {
     )
   }
 
-  return NextResponse.next()
+  const response = NextResponse.next()
+  if (started !== undefined) response.headers.set('X-Tree-Rate-Limit-Ms', String(Math.round(performance.now() - started)))
+  return response
 }
 
 export const config = {

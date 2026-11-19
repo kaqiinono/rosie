@@ -52,7 +52,16 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
     : undefined
   const reading = Boolean(lessonPassage || row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
   if (calc) return <EmbeddedCalcStartPanel disabled={disabled} />
-  const detailButton = href && !calc && !reading ? <Button variant="soft" disabled={disabled} onClick={() => openPractice(entryHref(href, {}))}>进入详情页</Button> : null
+  const hasInlineContent = math || reading || !!row?.resources?.length || row?.resourceStatus === 'error' ||
+    row?.values.requiresRecite === 'true' || (row?.values.contentType === 'chinese-course' && row.values.requiresRecite === 'unknown') ||
+    row?.content?.some(block => block.text.trim() || block.translation?.trim())
+  if (href && !hasInlineContent && !controls) return <Button type="button" size="3" variant="soft" disabled={disabled}
+    className="min-h-11 w-full" onClick={() => openPractice(entryHref(href, {}))}>
+    <span className="wrap-anywhere min-w-0 whitespace-normal">{title}</span>
+    <span className="shrink-0" aria-hidden="true"><ArrowIcon size={16} /></span>
+  </Button>
+  const detailButton = href && !reading ? <Button type="button" variant="soft" disabled={disabled}
+    size={math ? { initial: '1', xs: '2' } : undefined} onClick={() => openPractice(entryHref(href, {}))}>进入详情页</Button> : null
   return <StickerCard size="none" tone={compact ? 'paper' : 'white'} elevation="flat" radius="md" className="min-w-0">
     <Button type="button" variant="ghost" color="gray" aria-expanded={expanded} aria-controls={detailId}
       style={{ boxSizing: 'border-box', width: '100%', height: 'auto', minHeight: 44, margin: 0, padding: 12, borderRadius: 'inherit', outlineOffset: -2, justifyContent: 'space-between', whiteSpace: 'normal', textAlign: 'left' }}
@@ -66,14 +75,14 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
       </span>
     </Button>
     <div id={detailId} hidden={!expanded} inert={disabled || undefined} className="px-3 pb-3">
-      {math && row && opened ? <MathPracticeContent onCorrect={onCorrect} row={row} actions={detailButton} expanded={expanded} /> : expanded && (
+      {math && row && opened ? <MathPracticeContent onCorrect={onCorrect} row={row} actions={<>{detailButton}{controls}</>} expanded={expanded} /> : expanded && (
         <Flex direction="column" gap="3">
           {row && <PracticeResources row={row} detailPassage={lessonPassage} actions={detailButton} activeHomeworkId={activeHomeworkId} />}
           {adaptive && <Text size="2">打开后直接进入这次自适应练习。</Text>}
           {!row && detailButton && <Flex gap="2" wrap="wrap" align="center">{detailButton}</Flex>}
         </Flex>
       )}
-      {controls}
+      {!math && controls && <Flex gap="2" wrap="wrap" mt="3">{controls}</Flex>}
     </div>
   </StickerCard>
 }
@@ -110,14 +119,14 @@ export default function HomeworkContentPanel({ name, row, href, items, exhausted
             const done = !!rowId && completedRows?.includes(rowId)
             const ordinal = entries.length > 1 ? `第 ${index + 1} 项 · ` : ''
             const controls = onEdit && rowId && item.row?.values.problemId && (
-              <Flex gap="2" wrap="wrap" mt="3">
-                <Button variant="soft" color="green" aria-pressed={!!done} disabled={disabled}
+              <>
+                <Button variant="soft" size={{ initial: '1', xs: '2' }} color="green" aria-pressed={!!done} disabled={disabled}
                   onClick={() => void onEdit(done ? 'undo' : 'complete', rowId)}>
                   {done ? '已完成，撤销标记' : '纸上已完成'}
                 </Button>
-                {!done && addedRows?.includes(rowId) && <Button variant="soft" color="red" disabled={disabled}
+                {!done && addedRows?.includes(rowId) && <Button variant="soft" size={{ initial: '1', xs: '2' }} color="red" disabled={disabled}
                   onClick={() => void onEdit('remove', rowId)}>删除加题</Button>}
-              </Flex>
+              </>
             )
             return <PracticeItemCard controls={controls}
               onCorrect={onEdit && rowId ? async () => { if (!done) await onEdit('complete', rowId) } : onCorrect} key={key} {...item} disabled={disabled}

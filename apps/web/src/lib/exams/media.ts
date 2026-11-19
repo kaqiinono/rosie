@@ -17,6 +17,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 export interface StoredExamMediaFile {
   slot_id: string
   slot: MediaSlot
+  directory_id?: string
   file_id: string
   path: string
   size: number
@@ -92,27 +93,38 @@ export async function readExamMediaBinding(db: SupabaseClient, revisionId: strin
   const seen = new Set<string>()
   const files = (row.files as unknown[]).map(value => {
     const file = object(value)
+    const slot = object(file.slot)
     if (typeof file.slot_id !== 'string' || seen.has(file.slot_id) || typeof file.file_id !== 'string' || !/^[1-9]\d{0,19}$/.test(file.file_id)
-      || !validExamMediaPath(file.path) || !withinExamDirectory(file.path, row.main_path as string)
+      || !validExamMediaPath(file.path)
+      || (file.directory_id === undefined ? !withinExamDirectory(file.path, row.main_path as string)
+        : typeof file.directory_id !== 'string' || !UUID.test(file.directory_id)
+          || (slot.purpose !== 'exam_listening' && slot.purpose !== 'training_audio'))
       || typeof file.size !== 'number' || !Number.isSafeInteger(file.size) || file.size <= 0 || typeof file.reviewed !== 'boolean'
       || (file.md5 !== null && (typeof file.md5 !== 'string' || !/^[0-9a-f]{32}$/.test(file.md5)))
       || (file.modified_at !== null && (typeof file.modified_at !== 'number' || !Number.isSafeInteger(file.modified_at) || file.modified_at <= 0))
       || (file.duration_ms !== null && (typeof file.duration_ms !== 'number' || !Number.isSafeInteger(file.duration_ms) || file.duration_ms <= 0 || file.duration_ms > 86_400_000))
       || (file.md5 === null && file.modified_at === null)) throw new ExamApiError('exam_media_unavailable', 503)
     seen.add(file.slot_id)
-    object(file.slot)
     return file as unknown as StoredExamMediaFile
   })
   return { id: bindingId, content_revision_id: revisionId, account_id: row.account_id,
     account_generation: row.account_generation, directory_id: row.directory_id, main_path: row.main_path, files }
 }
 
-async function bindingAccount(db: SupabaseClient, binding: StoredExamMediaBinding) {
+async function bindingAccount(db: SupabaseClient, binding: StoredExamMediaBinding, files: readonly StoredExamMediaFile[]) {
   const account = await getBaiduAccountContext()
   if (account.accountId !== binding.account_id || account.generation !== binding.account_generation) throw new ExamApiError('baidu_account_changed', 409)
-  const { data, error } = await db.from('baidu_sync_directories').select('path').eq('id', binding.directory_id).eq('account_id', account.accountId).maybeSingle()
+  const ids = [...new Set(files.map(file => file.directory_id ?? binding.directory_id))]
+  if (!ids.length) return account
+  const { data, error } = await db.from('baidu_sync_directories').select('id,path').eq('account_id', account.accountId).in('id', ids)
   if (error) throw new ExamApiError('exam_media_unavailable', 503)
-  if (!data || typeof data.path !== 'string' || (binding.main_path !== data.path && !withinExamDirectory(binding.main_path, data.path))) {
+  const roots = new Map(data.map(root => [root.id, root.path]))
+  if (files.some(file => {
+    const root = roots.get(file.directory_id ?? binding.directory_id)
+    if (typeof root !== 'string') return true
+    return file.directory_id ? !withinExamDirectory(file.path, root)
+      : binding.main_path !== root && !withinExamDirectory(binding.main_path, root)
+  })) {
     throw new ExamApiError('exam_media_binding_changed', 409, [{
       path: '$.content.mediaBindingRevisionId', code: 'exam_media_directory_changed',
       message: '考试资源主目录已失效。请联系管理员在同步管理中重新选择授权目录。',
@@ -142,7 +154,8 @@ export async function verifyExamMediaForPublication(db: SupabaseClient, draft: E
   if (!bindingId) return undefined
   const binding = await readExamMediaBinding(db, draft.content.id, bindingId)
   listeningDuration(draft, binding)
-  const account = await bindingAccount(db, binding)
+  const slotIds = new Set(slots.map(slot => slot.id))
+  const account = await bindingAccount(db, binding, binding.files.filter(file => slotIds.has(file.slot_id)))
   const checked = new Set<string>()
   const verifiedSlotIds: string[] = []
   for (const slot of slots) {
@@ -219,7 +232,8 @@ export async function verifyExamMediaForAttempt(
     if (!slots.length) return { listeningDurationMs: null }
     if (draft.content.mediaBindingRevisionId !== bindingId) throw new ExamApiError('exam_media_binding_changed', 409)
     const binding = await abortableMediaRead(() => readExamMediaBinding(db, draft.content.id, bindingId), signal)
-    const account = await abortableMediaRead(() => bindingAccount(db, binding), signal)
+    const slotIds = new Set(slots.map(slot => slot.id))
+    const account = await abortableMediaRead(() => bindingAccount(db, binding, binding.files.filter(file => slotIds.has(file.slot_id))), signal)
     const checked = new Set<string>()
     for (const slot of slots) {
       signal?.throwIfAborted()
@@ -287,7 +301,7 @@ export async function fetchExamBoundMedia(grant: ExamMediaGrant, range: string |
   if (grant.audience !== 'admin' && binding.files.some(sibling => sibling.file_id === file.file_id && sibling.slot.audience !== grant.audience)) {
     throw new ExamApiError('exam_media_scope_conflict', 403)
   }
-  const account = await bindingAccount(db, binding)
+  const account = await bindingAccount(db, binding, [file])
   const { response, mime } = await streamFile(file, account.accessToken, range, signal)
   const current = await getBaiduAccountContext()
   if (current.accountId !== account.accountId || current.generation !== account.generation) {

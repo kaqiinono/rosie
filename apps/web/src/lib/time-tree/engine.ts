@@ -14,6 +14,7 @@ import {
   canGrowWithSun,
   dayOf,
   defaultRules,
+  isExhaustedPendingStep,
   isMustDo,
   shift,
   type TreeAction,
@@ -75,27 +76,32 @@ function markDoneToday(tree: TreeData): void {
 
 function awardGoal(tree: TreeData, at: string): void {
   if (tree.goalAwardedOn === tree.today) return
-  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority) && !weeklyHomeworkStart(s))
+  const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority) &&
+    !weeklyHomeworkStart(s) && !isExhaustedPendingStep(tree, s))
   if (!must.length || must.some((s) => !s.end)) return
   tree.water += GOAL_WATER
   tree.goalAwardedOn = tree.today
   remember(tree, '🎯', '今天要做的都完成啦，奖励水滴 +2', at)
 }
 
-function onCompleted(tree: TreeData, step: WorkStep, at: string): void {
-  const makeup = !!step.planned && step.planned < tree.today
-  remember(tree, makeup ? '🍂' : '🌸', `${step.flowers && !step.flowers.complete ? '本次收工' : makeup ? '补做完成' : '做完了'}「${step.name}」`, at)
-  markDoneToday(tree)
+export function awardCompletedDay(tree: TreeData, step: WorkStep, at: string): void {
   awardGoal(tree, at)
   if (awardDailyRainbow(tree, step)) {
     remember(tree, '🌈', '今天的学习任务全部完成！最后一颗苹果变成彩虹果，自选一种学科宝石。', at)
   }
 }
 
+function onCompleted(tree: TreeData, step: WorkStep, at: string): void {
+  const makeup = !!step.planned && step.planned < tree.today
+  remember(tree, makeup ? '🍂' : '🌸', `${step.flowers && !step.flowers.complete ? '本次收工' : makeup ? '补做完成' : '做完了'}「${step.name}」`, at)
+  markDoneToday(tree)
+  awardCompletedDay(tree, step, at)
+}
+
 /** 今天还没做完的，以及正在做的，全部飞成泡泡。过期还没开始的留在枯萎箱。 */
 export function placeTodayBubbles(tree: TreeData): void {
   const visible = tree.steps.filter((s) => {
-    if (s.skipped) return false
+    if (s.skipped || isExhaustedPendingStep(tree, s)) return false
     if (s.start && !s.end) return true
     if (s.end && !s.popped && dayOf(s.end) === tree.today) return true
     if (s.planned !== tree.today) return false
@@ -335,6 +341,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   requireState(s, '找不到这项作业，请刷新。')
   if (s.skipped && kind === 'skip') return
   requireState(!s.skipped, '本次作业不用做。')
+  requireState(!isExhaustedPendingStep(tree, s), '这项作业的练习内容已用完，请在作业设置中选择新的开始项。')
   if (s.flowers) {
     requireState(!['completeUntimed', 'finish'].includes(kind), '请在花朵旁完成本次作业。')
     if (!s.end && s.flowers.availableFrom && s.flowers.availableFrom > day)

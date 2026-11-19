@@ -309,8 +309,9 @@ See `docs/exams-image-workbench.md` for configuration, applied migrations and ma
 submitted-scope review, parent/admin assessment, independent vocabulary review and reports.
 The web app owns every route and server adapter. `/exams/ket` links to practice, ongoing
 attempts and `/exams/reports`; `/admin/exams` manages draft/review/publication, and
-`/admin/exams/attempts` requires an explicit target user. `/admin/sync` has an on-demand
-exam media panel. All private APIs use no-store responses and SW NetworkOnly rules.
+`/admin/exams/attempts` requires an explicit target user. The `/admin/sync` exam panel saves
+the draft's authorized Baidu listening directory on selection. Audio matching and review save
+through the versioned binding workflow. All private APIs use no-store responses and SW NetworkOnly rules.
 
 Draft and publication edits use version checks and server audit records. Attempts freeze
 content/media revisions, register material-family exposure before disclosure, and persist
@@ -370,6 +371,12 @@ Migration `20261114122234_draw_wheel_workshop` is applied to the hosted database
 `packages/rewards/AGENTS.md` and `docs/draw-wheel.md` for contracts and manual acceptance.
 
 ### Life tree
+
+The row-storage release of `/api/time-tree` requires migration `20261119121651_time_tree_row_storage`
+and protocol 2 together. Bubbles use owner-scoped step rows, practice cursors use binding rows,
+and fruit, diary and tomato spending use individual object rows. The scene and dated history use
+separate projections. Commands return idempotent deltas. See the cutover, rollback and latency
+acceptance instructions in [tree.md](tree.md#生命树分行存储与切换).
 
 Weekly academic assignments use one occurrence per configured week. Estimated minutes are the total weekly goal, and homework-based course progression groups the configured batches in that occurrence. Users choose when and how often to save progress. Normal sync consolidates open current/future weekly work and carries forward flowers already earned. Biweekly and three-weekly academic assignments still use per-occurrence flower collection. A versioned garden commit stores each session and its rewards. See `tree.md` and `packages/tasks/AGENTS.md`.
 
