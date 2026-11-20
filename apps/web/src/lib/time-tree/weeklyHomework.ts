@@ -33,9 +33,9 @@ export function createWeeklyHomework(template: Homework, start: string, end: str
     returned: null,
     sun: 0,
     water: 0,
-    stages: [],
+    stages: template.estimated_minutes === 0 ? [0] : [],
     audit: [],
-    flowers: { collected: 0, elapsedMs: 0, complete: false },
+    ...(template.estimated_minutes > 0 ? { flowers: { collected: 0, elapsedMs: 0, complete: false } } : {}),
     practiceBindingKey: binding?.progression ? undefined : binding?.key,
     practiceEntryName: binding?.name,
     practice: binding?.progression ? calendarPractice(binding, start, occurrence) : undefined,
@@ -94,7 +94,10 @@ export function syncWeeklyHomework(tree: TreeData, templates: Homework[]) {
       pending.find(step => step.planned && step.planned !== step.scheduled)
     const available = [start, tree.today, tree.firstDay, dayOf(template.created_at)].sort().at(-1)!
     if (available > end) continue
-    const week = createWeeklyHomework(template, start, end, available)
+    const receipts = peers.filter(step => step.end)
+    const minutes = template.estimated_minutes || (receipts.length || base?.start || base?.flowers?.availableFrom
+      ? Math.max(...peers.map(step => step.minutes)) : 0)
+    const week = createWeeklyHomework({ ...template, estimated_minutes: minutes }, start, end, available)
     if (base) {
       week.id = base.id
       week.planned = base.planned ?? available
@@ -104,7 +107,6 @@ export function syncWeeklyHomework(tree: TreeData, templates: Homework[]) {
     }
     week.planNote = [...new Set(pending.map(step => step.planNote).filter(Boolean))].join('\n') || undefined
     week.practice = mergeWeekPractice(week, peers, base, template)
-    const receipts = peers.filter(step => step.end)
     const collected = receipts.reduce((total, step) => total + step.stages.length, 0)
     const elapsedMs = receipts.reduce((total, step) =>
       total + (step.start ? Math.max(0, Date.parse(step.end!) - Date.parse(step.start)) : 0), 0)
@@ -116,7 +118,7 @@ export function syncWeeklyHomework(tree: TreeData, templates: Homework[]) {
         if (completed.has(row.id) && row.values.problemId) answered.add(row.values.problemId)
       }
     }
-    week.flowers = {
+    if (week.flowers) week.flowers = {
       collected: Math.min(collected, Math.ceil(week.minutes / MINUTES_PER_FLOWER)),
       elapsedMs,
       complete: false,

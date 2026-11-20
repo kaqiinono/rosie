@@ -10,8 +10,62 @@ const diff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)
 const weekday = (day: string) => new Date(day + 'T12:00Z').getUTCDay()
 const isWeekend = (day: string) => weekday(day) === 0 || weekday(day) === 6
 
+function isMultiweekCycle(cycle: string): boolean {
+  return cycle === 'biweekly' || cycle === 'three_weekly'
+}
+
 function usesFlowerSessions(template: Homework): boolean {
-  return template.subject !== 'life' && ['biweekly', 'three_weekly'].includes(template.cycle)
+  return template.subject !== 'life' && template.estimated_minutes > 0 && isMultiweekCycle(template.cycle)
+}
+
+function homeworkParts(minutes: number, segmented: boolean) {
+  return minutes > 60 && !segmented ? [60, minutes - 60] : [minutes]
+}
+
+/** Apply changes to and from zero only before any part of the occurrence starts. */
+function syncUntimedHomework(tree: TreeData, templates: Homework[]) {
+  const byId = new Map(templates.filter(template => template.subject !== 'life').map(template => [template.id, template]))
+  const sync = (steps: WorkStep[]) => {
+    const groups = new Map<string, WorkStep[]>()
+    for (const step of steps) {
+      const group = groups.get(step.occurrence) ?? []
+      group.push(step)
+      groups.set(step.occurrence, group)
+    }
+    const removed = new Set<string>()
+    const added: WorkStep[] = []
+    for (const [occurrence, peers] of groups) {
+      const [templateId, cycle] = occurrence.split('/')
+      const template = byId.get(templateId)
+      if (!template || peers.some(step => step.start || step.end || step.skipped || step.settled ||
+        step.audit.length || step.flowers?.availableFrom)) continue
+      const untimed = template.estimated_minutes === 0
+      if (untimed === (peers[0].minutes === 0)) continue
+      const [first, ...rest] = peers.sort((a, b) => a.id.localeCompare(b.id))
+      const segmented = !untimed && (!!weeklyHomeworkStart(first) || isMultiweekCycle(cycle))
+      const parts = homeworkParts(template.estimated_minutes, segmented)
+      first.planNote = [...new Set(peers.map(step => step.planNote).filter(Boolean))].join('\n') || undefined
+      first.minutes = parts[0]
+      first.name = parts.length === 1 ? template.name : `${template.name}（1/2）`
+      first.stages = segmented ? [] : Array.from({ length: flowersForMinutes(template.subject, first.minutes) }, () => 0)
+      if (segmented) first.flowers = { collected: 0, elapsedMs: 0, complete: false }
+      else delete first.flowers
+      for (const peer of rest) removed.add(peer.id)
+      if (parts.length === 2) {
+        const second = structuredClone(first)
+        second.id = occurrence + '/1'
+        second.name = `${template.name}（2/2）`
+        second.minutes = parts[1]
+        second.stages = Array.from({ length: flowersForMinutes(template.subject, second.minutes) }, () => 0)
+        second.slot = null
+        delete second.planNote
+        added.push(second)
+      }
+    }
+    return removed.size || added.length ? [...steps.filter(step => !removed.has(step.id)), ...added] : steps
+  }
+  tree.steps = sync(tree.steps)
+  if (tree.weekendExcludedSteps) tree.weekendExcludedSteps = sync(tree.weekendExcludedSteps)
 }
 
 /** Content follows template edits until completion; execution and placement stay intact. */
@@ -40,7 +94,8 @@ function syncHomeworkContent(tree: TreeData, templates: Homework[]) {
       step.priority = template.priority
       step.practiceBindingKey = binding?.progression ? undefined : binding?.key
       step.practiceEntryName = binding?.name
-      if (weeklyHomeworkStart(step) && usesWeeklyHomework(template)) step.minutes = template.estimated_minutes
+      if (step.minutes > 0 && template.estimated_minutes > 0 && weeklyHomeworkStart(step) && usesWeeklyHomework(template))
+        step.minutes = template.estimated_minutes
       // A stable binding keeps its authored date snapshot, including after manual moves.
       if (binding && step.practice?.key === binding.key) continue
       const previous = step.practice && tree.practiceProgress?.[step.practice.key]
@@ -168,6 +223,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   if (!fillCurrentWindow) {
     syncWeekendTasks(tree, templates)
     syncWeeklyHomework(tree, templates)
+    syncUntimedHomework(tree, templates)
     syncFlowerSessions(tree, templates)
     syncHomeworkContent(tree, templates)
     tree.practiceScheduleVersion = PRACTICE_SCHEDULE_VERSION
@@ -224,8 +280,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
       const practice = binding?.progression ? calendarPractice(binding, day, occurrence) : undefined
       if (practice?.exhausted && !mathCanRefill) continue
       existing.add(occurrence)
-      const parts =
-        !segmented && t.subject !== 'life' && t.estimated_minutes > 60 ? [60, t.estimated_minutes - 60] : [t.estimated_minutes]
+      const parts = homeworkParts(t.estimated_minutes, segmented)
       parts.forEach((minutes, index) => {
         const flowers =
           t.subject === 'life' && index < parts.length - 1
@@ -240,7 +295,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
             lowestLoad = used
           }
         }
-        if (segmented) planned = day
+        if (isMultiweekCycle(t.cycle)) planned = day
         if (planned && !practice?.exhausted) load.set(planned, (load.get(planned) ?? 0) + flowers)
         const step: WorkStep = {
           ...(segmented ? { flowers: { collected: 0, elapsedMs: 0, complete: false } } : {}),
@@ -275,9 +330,11 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
   for (const template of templates) planMathQuestions(tree, template)
   // A missed daily session stays a single pending bubble until the deadline.
   for (const step of tree.steps) {
-    if (!step.flowers || step.start || step.end || step.skipped || !step.planned) continue
+    const cycle = step.occurrence.split('/')[1]
+    const flexible = step.flowers || weeklyHomeworkStart(step) || (step.minutes === 0 && isMultiweekCycle(cycle))
+    if (!flexible || step.start || step.end || step.skipped || !step.planned) continue
     if (step.planned < tree.today && tree.today <= step.deadline) step.planned = tree.today
-    if (step.flowers.availableFrom && step.flowers.availableFrom > step.deadline &&
+    if (step.flowers?.availableFrom && step.flowers.availableFrom > step.deadline &&
         step.planned === step.flowers.availableFrom && tree.today >= step.planned) step.planned = step.deadline
   }
 }

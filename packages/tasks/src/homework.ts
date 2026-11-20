@@ -125,10 +125,10 @@ export function validateHomework(input: HomeworkInput): string {
   if (input.name.trim().length > 120) return '作业名称最多 120 个字。'
   if (
     !Number.isInteger(input.estimated_minutes) ||
-    input.estimated_minutes < 1 ||
+    input.estimated_minutes < 0 ||
     input.estimated_minutes > MAX_HOMEWORK_MINUTES
   ) {
-    return `预计耗时应为 1–${MAX_HOMEWORK_MINUTES} 分钟。`
+    return `预计耗时应为 0–${MAX_HOMEWORK_MINUTES} 分钟。`
   }
   if (input.notes.length > 2000) return '备注最多 2000 个字。'
   if (input.cycle === 'daily') return ''

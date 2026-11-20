@@ -1,20 +1,16 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@rosie/core'
 import { changePool, entriesStore, poolLabels, wheelStore, type PoolEntry, type PoolKind } from './drawPools'
-
-type TreeToggle = (props: { checked: boolean; disabled: boolean; name: string; onChange: (value: boolean) => void }) => ReactNode
 
 function PoolEditor({
   userId,
   kind,
   entries,
-  renderTreeToggle,
 }: {
   userId: string
   kind: PoolKind
-  renderTreeToggle?: TreeToggle
   entries: PoolEntry[]
 }) {
   const [name, setName] = useState('')
@@ -43,25 +39,12 @@ function PoolEditor({
     }
   }
 
-  async function allowInTree(entry: PoolEntry, enabled: boolean) {
-    setBusy(true)
-    setError('')
-    try {
-      await changePool('reward', enabled ? 'tree_on' : 'tree_off', { p_id: entry.id })
-      entriesStore.patchSessionData(userId, rows => rows.map(row => row.id === entry.id ? { ...row, tree_eligible: enabled } : row))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '保存失败，请重试。')
-    } finally {
-      setBusy(false)
-    }
-  }
-
   return (
     <section className="border-kid-line bg-surface shadow-sticker-sm rounded-3xl border-2 p-5">
       <h2 className="text-lg font-black">{label}池</h2>
       <p className="text-text-secondary mt-1 text-sm">
         {kind === 'reward'
-          ? '与转盘、生命树共用；兑现后保留，开启“抽后移出”则停用。'
+          ? '启用的奖励自动用于转盘和生命树盲盒。开启「抽后移出」后，抽中的奖励会停用。'
           : '按转盘权重随机抽取；默认可重复，开启“抽后移出”则停用。'}
       </p>
       <form
@@ -99,7 +82,6 @@ function PoolEditor({
         {entries.map((entry) => (
           <li key={entry.id} className="flex items-center justify-between gap-4 py-2">
             <span className="break-all">{entry.name}{entry.enabled === false ? "（已停用，可在转盘点亮）" : ""}</span>
-            {kind === 'reward' && renderTreeToggle?.({ checked: !!entry.tree_eligible, disabled: busy, name: entry.name, onChange: value => void allowInTree(entry, value) })}
             {/* native-ok: 该包不能依赖 @rosie/ui */}
             <button
               disabled={busy}
@@ -116,7 +98,7 @@ function PoolEditor({
   )
 }
 
-export function DrawPoolManager({ renderTreeToggle }: { renderTreeToggle?: TreeToggle }) {
+export function DrawPoolManager() {
   const { user } = useAuth()
   const { data, isLoading, error } = entriesStore.useSessionData(user)
   if (!user || isLoading) return <p>正在读取奖惩池…</p>
@@ -137,7 +119,6 @@ export function DrawPoolManager({ renderTreeToggle }: { renderTreeToggle?: TreeT
         <PoolEditor
           key={user.id + kind}
           kind={kind}
-          renderTreeToggle={renderTreeToggle}
           userId={user.id}
           entries={data.filter((row) => row.kind === kind)}
         />

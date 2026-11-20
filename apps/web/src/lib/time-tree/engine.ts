@@ -15,7 +15,9 @@ import {
   dayOf,
   defaultRules,
   isExhaustedPendingStep,
+  isInstantHomework,
   isMustDo,
+  lifeWishThreshold,
   shift,
   type TreeAction,
   type TreeData,
@@ -265,7 +267,9 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         .every(price => Number.isSafeInteger(price) && price > 0),
       '番茄兑换价格须为大于 0 的整数。',
     )
-    tree.upcoming = { day: shift(day, 1), rules: { ...r, tomatoPrices: prices } }
+    const wishLife = r.wishLife === undefined ? lifeWishThreshold(tree.upcoming?.rules ?? tree.rules) : r.wishLife
+    requireState(Number.isSafeInteger(wishLife) && wishLife > 0, '绿松石兑换门槛须为正整数。')
+    tree.upcoming = { day: shift(day, 1), rules: { ...r, wishLife, tomatoPrices: prices } }
     return
   }
   if (kind === 'exchange') {
@@ -275,9 +279,12 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       CORE_SUBJECTS.every((k) => tree.stones[k] >= tree.rules.wish),
       '三色宝石还没攒齐。',
     )
+    const wishLife = lifeWishThreshold(tree.rules)
+    requireState(tree.stones.life >= wishLife, `还差 ${wishLife - tree.stones.life} 颗绿松石。`)
     CORE_SUBJECTS.forEach((k) => {
       tree.stones[k] -= tree.rules.wish
     })
+    tree.stones.life -= wishLife
     tree.exchanges.push(day)
     return
   }
@@ -294,10 +301,12 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   }
   if (kind === 'openTomatoBox') {
     requireState(!tree.prize, '请先收下上一次抽中的奖励。')
+    requireState(!tree.boxReady, '请先使用普通盲盒机会。')
     walletForTomatoPurchase(tree, action.tomatoPrice ?? defaultTomatoPrices.box, tomatoPrices(tree.rules).box)
     return
   }
   if (kind === 'openBox') {
+    requireState(!tree.prize, '请先收下上一次抽中的奖励。')
     requireState(tree.boxReady, '还没有待开启的盲盒。')
     return
   }
@@ -378,6 +387,9 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       return
     }
   }
+  const instant = isInstantHomework(s)
+  if (instant && !s.end)
+    requireState(kind !== 'start' && kind !== 'record', '0 分钟作业点击泡泡即可完成。')
   switch (kind) {
     case 'skip': {
       requireState(!s.start && !s.end, '只有未开始的作业可以标记为「不用做」。')
@@ -391,14 +403,25 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       awardGoal(tree, now)
       break
     }
+    case 'pop':
     case 'completeUntimed':
-      if (s.end) return
+      if (s.end) {
+        if (kind === 'pop') {
+          s.popped = true
+          s.slot = null
+          fill(tree)
+        }
+        return
+      }
+      if (kind === 'pop') requireState(instant, '请先记录完成时间。')
+      if (instant) requireState(s.planned, '请先安排作业日期。')
       requireState(!s.start, '正在计时，请使用「完成了」。')
       s.end = day
       Object.assign(s, completionReward(tree, s, day, false))
       tree.sun += s.sun
       tree.water += s.water
-      s.popped = s.slot === null
+      s.popped = instant || s.slot === null
+      if (s.popped) s.slot = null
       onCompleted(tree, s, now)
       break
     case 'preparePractice':
@@ -414,6 +437,12 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       fill(tree)
       break
     }
+    case 'stop':
+      if (!s.start || s.end) return
+      requireState(s.start === action.start, '这项作业已重新开始，请查看最新计时后再停止。')
+      s.start = null
+      fill(tree)
+      break
     case 'finish':
       finish(tree, s, now)
       if (action.popOnFinish === true) {
@@ -452,12 +481,6 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       roll(tree, day)
       break
     }
-    case 'pop':
-      requireState(s.end, '请先记录完成时间。')
-      s.popped = true
-      s.slot = null
-      fill(tree)
-      break
     case 'return':
     case 'move':
     case 'nextDay': {

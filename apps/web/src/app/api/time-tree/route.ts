@@ -9,7 +9,7 @@ import { schedule } from '@/lib/time-tree/schedule'
 import { regenerateHomework, regenerationTargets } from '@/lib/time-tree/regenerate'
 import { tomatoPrices } from '@/lib/time-tree/rewards'
 import { hasRowChanges, rowChanges } from '@/lib/time-tree/rowChanges'
-import { dayOf, shift, PRACTICE_SCHEDULE_VERSION, WEEKLY_SCHEDULE_VERSION, type TreeAction, type TreeData } from '@/lib/time-tree/types'
+import { dayOf, isInstantHomework, shift, PRACTICE_SCHEDULE_VERSION, WEEKLY_SCHEDULE_VERSION, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 
 export const dynamic = 'force-dynamic'
 const authOptions = { attempts: 2, timeoutMs: 5_000 }
@@ -33,6 +33,11 @@ export async function GET(req: Request) {
   const today = dayOf(new Date())
   const db = createAdminSupabase()
   const authAt = performance.now()
+  if (params.get('box') === 'wheel') {
+    const { data, error } = await db.rpc('read_time_tree_box_wheel', { p_user: user.id })
+    if (error || !data) return failure('奖励转盘暂时无法读取。', 503)
+    return NextResponse.json(data, { headers: { 'Cache-Control': 'private, no-store' } })
+  }
   const days = params.get('days')?.split(',')
   if (days && (days.length > 62 || !days.every(validDate))) return failure('请选择有效的日期范围。', 400)
   const { data, error } = days
@@ -89,6 +94,17 @@ export async function POST(req: Request) {
       if (fast.error) throw fast.error
       if (fast.data) return reply(fast.data)
     }
+    if (input.kind === 'addCrown') {
+      if (typeof input.name !== 'string' || !input.name.trim() || input.name.trim().length > 120)
+        return failure('请输入 1 到 120 个字的小目标。', 400)
+      if (typeof input.id !== 'string' || !/^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i.test(input.id))
+        return failure('无效的泡泡编号。', 400)
+      const fast = await db.rpc('add_time_tree_crown', { p_user: user.id, p_id: input.id, p_day: input.day ?? null,
+        p_name: input.name, p_operation: input.operationId })
+      if (fast.error?.message === 'crown_day_changed') return failure('只能给今天添加皇冠泡泡。', 409)
+      if (fast.error) throw fast.error
+      if (fast.data) return reply(fast.data)
+    }
     if (['settings', 'record', 'exchange'].includes(input.kind)) {
       if (!isValidParentPin(input.pin)) return failure('请输入六位家长密码。', 403)
       const { data, error } = await db
@@ -124,7 +140,7 @@ export async function POST(req: Request) {
       const { saved, schedule: scheduleNeeded, homeworkRevision, targetVersion } = read.data
       const revision = Number(saved?.revision ?? 0)
       const independent = input.kind === 'pop' || input.kind === 'pick' || (
-        ['start','finish','completeUntimed','return','move','nextDay','saveNotes','preparePractice','water',
+        ['start','stop','finish','completeUntimed','return','move','nextDay','saveNotes','preparePractice','water',
           'collectFlowers','editMathQuestion','answerHomeworkQuestion','skip'].includes(input.kind) &&
         targetVersion != null && Number.isSafeInteger(input.revision) && input.revision! <= revision && targetVersion <= input.revision!)
       if (input.kind !== 'sync' && !independent && revision !== input.revision)
@@ -160,9 +176,10 @@ export async function POST(req: Request) {
       }
       const step = tree.steps.find((s) => s.id === input.id)
       const editingQuestions = input.kind === 'editMathQuestion'
-      const settling = !step?.end && !step?.skipped && ['finish', 'completeUntimed', 'collectFlowers', 'record', 'skip'].includes(input.kind)
+      const instantPop = input.kind === 'pop' && step && isInstantHomework(step)
+      const settling = !step?.end && !step?.skipped && (instantPop || ['finish', 'completeUntimed', 'collectFlowers', 'record', 'skip'].includes(input.kind))
       const needsBinding = step && step.practice === undefined && step.subject !== 'life' && !step.end &&
-        (editingQuestions || ['preparePractice', 'start', 'completeUntimed', 'collectFlowers', 'record'].includes(input.kind))
+        (instantPop || editingQuestions || ['preparePractice', 'start', 'completeUntimed', 'collectFlowers', 'record'].includes(input.kind))
       let template: Homework | null = null
       const needsCatalog = (editingQuestions && input.questionEdit === 'append') || (settling && step && hasMathQuestions(step))
       if (step && (needsBinding || needsCatalog)) {

@@ -19,7 +19,7 @@ import {
   type MasteryLevel,
 } from '@rosie/core'
 import SpeakButton from '../words/SpeakButton'
-import { Button, IconButton } from '@rosie/ui/themes'
+import { Badge, Button, IconButton } from '@rosie/ui/themes'
 
 export interface WordSourceContext {
   title: string
@@ -35,6 +35,7 @@ interface WordPopupProps {
   sourceContext?: WordSourceContext
   mastery: WordMasteryInfo | undefined
   showMastery?: boolean
+  cefrLevel?: string
   onEntryChange?: (entry: WordEntry) => void
   onClose: () => void
 }
@@ -84,6 +85,7 @@ export default function WordPopup({
   sourceContext,
   mastery,
   showMastery = true,
+  cefrLevel,
   onEntryChange,
   onClose,
 }: WordPopupProps) {
@@ -185,12 +187,18 @@ export default function WordPopup({
 
         <div className="space-y-3 px-5 pb-5">
           <div className="flex flex-wrap gap-2 text-[11px] font-bold">
-            <span className="rounded-full bg-sky-50 px-2.5 py-1 text-sky-700 ring-1 ring-sky-200">
-              所属词库 · {entry.stage ?? '未分级'}
-            </span>
-            <span className="ring-kid-line rounded-full bg-slate-50 px-2.5 py-1 text-slate-600 ring-1">
-              {entry.unit} · {entry.lesson}
-            </span>
+            {cefrLevel ? (
+              <Badge variant="soft" radius="full" color="sky">CEFR · {cefrLevel}</Badge>
+            ) : (
+              <>
+                <span className="rounded-full bg-sky-50 px-2.5 py-1 text-sky-700 ring-1 ring-sky-200">
+                  所属词库 · {entry.stage ?? '未分级'}
+                </span>
+                <span className="ring-kid-line rounded-full bg-slate-50 px-2.5 py-1 text-slate-600 ring-1">
+                  {entry.unit} · {entry.lesson}
+                </span>
+              </>
+            )}
             {passage?.stage === 'story' && (
               <span className="rounded-full bg-amber-50 px-2.5 py-1 text-amber-800 ring-1 ring-amber-200">
                 故事来源 · {passage.unit} · {passage.title}

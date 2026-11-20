@@ -144,7 +144,16 @@ Progression mode, quantity and grouped snapshots use existing JSON fields and ne
 The unrelated historical `20261018040000_fold_calc_report_into_settlement.sql` remains pending.
 No application build or tests were run.
 
+`20261119140300_task_homework_zero_minutes.sql` was applied to the hosted project on
+2026-11-19 via the connected migration API. Read-back confirmed the migration version and
+the validated `task_homework_estimated_minutes_check` constraint allowing 0–120 minutes.
+
 ## Life-tree tomato wallet and diary
+
+`20261120012236_time_tree_shared_reward_wheel.sql` was applied to the hosted project on
+2026-11-20. The life-tree box draw uses the shared enabled reward pool and stores the
+frozen wheel in the prize receipt. Read-back confirmed the migration and service-only
+execution of `read_time_tree_box_wheel`, including an empty pool response.
 
 Applied in order via the connected migration API to `yvukypevtqblhjdhkatb` on
 2026-11-18 (Asia/Shanghai). Local filenames match the remote history:

@@ -1,13 +1,15 @@
 'use client'
 
 import { useLayoutEffect, useRef, useState } from 'react'
-import Bubbles, { type BubblesProps } from '@/components/tree-demo/garden/Bubbles'
+import Bubbles, { isGroundBubble, type BubblesProps } from '@/components/tree-demo/garden/Bubbles'
 
 type Box = { left: number; top: number; right: number; bottom: number; ellipse?: boolean }
-type BubbleSpec = { id: string; minutes: number }
+type Point = { x: number; y: number }
+type BubbleSpec = { id: string; minutes: number; nearGround: boolean }
 type Placement = { id: string; x: number; y: number; size: number; clearance: number }
 type BubbleLayout = { placements: Placement[]; sizes: Record<string, number> }
 const DURATION_TIERS = [5, 10, 15, 20, 25, 30, 40, 60, 90, 120]
+const SMALL_BUBBLE_DIAMETER = 64
 const CLEARANCE = 26 // Floating motion and the outer hold-to-finish ring.
 const SWAY_TOLERANCE = 6 // A small obstacle movement should not relocate an existing bubble.
 
@@ -45,16 +47,17 @@ function clearanceAt(x: number, y: number, width: number, height: number, obstac
   return { clearance, leafDistance }
 }
 
-function placeBubbles(width: number, height: number, viewport: number, obstacles: Box[], specs: BubbleSpec[], previous: BubbleLayout | null): BubbleLayout {
+function placeBubbles(width: number, height: number, viewport: number, ground: Point, obstacles: Box[], specs: BubbleSpec[], previous: BubbleLayout | null): BubbleLayout {
   const placements: Placement[] = []
   const sizes: Record<string, number> = {}
   const prior = new Map(previous?.placements.map(placement => [placement.id, placement] as const))
-  const unplaced: { id: string; size: number; prior?: Placement }[] = []
-  for (const { id, minutes } of specs) {
-    const size = bubbleDiameter(minutes, viewport)
+  const unplaced: { id: string; size: number; nearGround: boolean; prior?: Placement }[] = []
+  const groundY = Math.min(ground.y, height - SMALL_BUBBLE_DIAMETER / 2 - CLEARANCE)
+  for (const { id, minutes, nearGround } of specs) {
+    const size = nearGround ? SMALL_BUBBLE_DIAMETER : bubbleDiameter(minutes, viewport)
     sizes[id] = size
     const anchor = prior.get(id)
-    if (anchor) {
+    if (anchor && (!nearGround || Math.abs(anchor.y - groundY) <= size * 2)) {
       const { x, y } = anchor
       const { clearance } = clearanceAt(x, y, width, height, obstacles)
       const minimum = Math.min(size / 2, anchor.clearance) - SWAY_TOLERANCE
@@ -63,7 +66,7 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
         continue
       }
     }
-    unplaced.push({ id, size, prior: anchor })
+    unplaced.push({ id, size, nearGround, prior: anchor })
   }
   if (!unplaced.length) return { placements, sizes }
 
@@ -78,12 +81,12 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
       if (clearance > CLEARANCE) candidates.push({ x, y, clearance, leafDistance })
     }
   }
-  for (const { id, size, prior: anchor } of unplaced) {
+  for (const { id, size, nearGround, prior: anchor } of unplaced) {
     const radius = size / 2 + CLEARANCE
     const seed = Array.from(id).reduce((value, char) => (value * 31 + char.charCodeAt(0)) | 0, 0)
     // Stable per-task variation: timers/re-renders must not reshuffle the scene.
     const randomHeight = Math.sin(seed * 0.73) * 43758.5453
-    const preferredY = radius + (randomHeight - Math.floor(randomHeight)) * size * 0.75
+    const preferredY = nearGround ? groundY : radius + (randomHeight - Math.floor(randomHeight)) * size * 0.75
     const safe = candidates.filter(point => point.clearance >= radius)
     // Keep full-size bubbles during constrained/transient measurements. The
     // fallback maximizes clearance rather than silently dropping a task.
@@ -104,19 +107,18 @@ function placeBubbles(width: number, height: number, viewport: number, obstacles
       const noise = (Math.sin(seed + point.x * 0.047 + point.y * 0.063) + 1) * 16
       const edgeGap = Number.isFinite(point.leafDistance) ? Math.abs(point.leafDistance - radius) : 0
       const movement = anchor ? Math.hypot(point.x - anchor.x, point.y - anchor.y) : 0
-      // Fill the upper contour first, then descend around the day-leaf perimeter.
-      // No grid anchors and no change to the tree's geometry or available space.
-      const value = point.y * 0.25 + Math.abs(point.y - preferredY) * 0.9 +
-        Math.abs(point.x - centerX) * 0.45 +
-        edgeGap * 0.15 + overlap * 0.65 + alignment * 1.2 + movement * 0.45 + noise +
+      const position = nearGround
+        ? Math.abs(point.y - preferredY) * 2 + Math.abs(point.x - ground.x) * 0.55
+        : point.y * 0.25 + Math.abs(point.y - preferredY) * 0.9 + Math.abs(point.x - centerX) * 0.45 + edgeGap * 0.15
+      const value = position + overlap * 0.65 + alignment * 1.2 + movement * 0.45 + noise +
         Math.max(0, radius - point.clearance) * 1000
       if (value < score) {
         best = { id, x: point.x, y: point.y, size, clearance: point.clearance }
         score = value
       }
     }
-    const x = width / 2
-    const y = Math.min(radius, height / 2)
+    const x = nearGround ? ground.x : width / 2
+    const y = nearGround ? Math.max(height / 2, groundY) : Math.min(radius, height / 2)
     placements.push(best ?? { id, x, y, size, clearance: clearanceAt(x, y, width, height, obstacles).clearance })
   }
   return { placements, sizes }
@@ -128,7 +130,7 @@ export default function ScatteredBubbles(props: BubblesProps) {
   // Only layout inputs trigger measurement; timer updates do not move bubbles.
   const signature = JSON.stringify([...props.bubbles]
     .sort((a, b) => (props.slots[a.id] ?? 0) - (props.slots[b.id] ?? 0))
-    .map(({ id, minutes }) => ({ id, minutes })))
+    .map(bud => ({ id: bud.id, minutes: bud.minutes, nearGround: isGroundBubble(bud) })))
   useLayoutEffect(() => {
     const element = area.current
     const scene = element?.closest<HTMLElement>('.tg-scene')
@@ -141,6 +143,10 @@ export default function ScatteredBubbles(props: BubblesProps) {
         const header = scene.querySelector('header')?.getBoundingClientRect()
         if (header) scene.style.setProperty('--tg-header-height', `${header.bottom - scene.getBoundingClientRect().top + 8}px`)
         const bounds = element.getBoundingClientRect()
+        const groundRect = scene.querySelector('[data-tree-ground]')?.getBoundingClientRect()
+        const ground = groundRect && groundRect.width > 0
+          ? { x: groundRect.left + groundRect.width / 2 - bounds.left, y: groundRect.bottom - bounds.top }
+          : { x: bounds.width / 2, y: bounds.height }
         const obstacles = Array.from(scene.querySelectorAll('[data-tree-obstacle]')).flatMap((node) => {
           const rect = node.getBoundingClientRect()
           if (!rect.width || !rect.height) return []
@@ -149,7 +155,7 @@ export default function ScatteredBubbles(props: BubblesProps) {
             top: rect.top - bounds.top - 12, bottom: rect.bottom - bounds.top + 12, ellipse: node.getAttribute('data-tree-obstacle') === 'day-region' }]
         })
         const viewport = window.innerWidth
-        setLayout(previous => placeBubbles(bounds.width, bounds.height, viewport, obstacles, specs, previous))
+        setLayout(previous => placeBubbles(bounds.width, bounds.height, viewport, ground, obstacles, specs, previous))
       })
     }
     const observer = new ResizeObserver(measure)

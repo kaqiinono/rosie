@@ -404,7 +404,7 @@ navigation and releases it at completion, countdown expiry or outside the tree a
 share the account's versioned Supabase garden via `POST /api/time-tree`. The route derives the
 owner and timestamps on the server, snapshots homework occurrences, and atomically commits
 timing, rewards and blind-box reservations. Completion always grants uncapped base sunlight and water;
-early timed completion doubles both, with a reward dialog highlighting the bonus. API responses
+early timed completion doubles both. The life tree shows a three-second reward toast at the top. API responses
 provide server time for client countdown calibration. The life tree places a separate tomato card
 beside the homework drawer. Homework starts five-minute rounds. Timed completion records one tomato
 per planned round and doubles the total for early completion. Flexible flower assignments record

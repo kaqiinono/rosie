@@ -2,7 +2,7 @@
 
 The timetable lives at `/tasks/timetable`. Load courses, recurrence rules, exceptions, calendars and display preferences through the owner-scoped core session store. Course and rule edits, archives and semester copies use atomic owner-checked RPCs. Compute occurrences and in-page reminders from current schedules. Use forward migrations for schema changes.
 
-Homework management lives at `/tasks/homework` as the 「作业」 tab beside 课程表/日程/课程 (tab list in `components/taskSections.ts`; the other three switch inside `/tasks/timetable`, which also accepts `?section=agenda|courses`). `useHomeworkData` reads/writes `task_homework` (owner RLS) through the `task_homework` session store and patches the cache after each write. Fields: name, subject (chinese/math/english/life), cycle (daily/weekly/biweekly/three_weekly/monthly/custom), times_per_week (weekly/custom, default 1), start/end weekday (weekly) or start/end date (custom), times_per_cycle (positive count for biweekly/three_weekly/monthly, default 1), estimated_minutes (1–120), notes, enabled. Biweekly and three-weekly periods span 14 and 21 days from start_date. Monthly periods use calendar months. Validation in `homework.ts` mirrors the table's check constraints.
+Homework management lives at `/tasks/homework` as the 「作业」 tab beside 课程表/日程/课程 (tab list in `components/taskSections.ts`; the other three switch inside `/tasks/timetable`, which also accepts `?section=agenda|courses`). `useHomeworkData` reads/writes `task_homework` (owner RLS) through the `task_homework` session store and patches the cache after each write. Fields: name, subject (chinese/math/english/life), cycle (daily/weekly/biweekly/three_weekly/monthly/custom), times_per_week (weekly/custom, default 1), start/end weekday (weekly) or start/end date (custom), times_per_cycle (positive count for biweekly/three_weekly/monthly, default 1), estimated_minutes (0–120), notes, enabled. Biweekly and three-weekly periods span 14 and 21 days from start_date. Monthly periods use calendar months. Validation in `homework.ts` mirrors the table's check constraints.
 Homework priority ranges from P0 (highest) to P4. Existing and new homework default to P2. The homework list shows higher priorities first and keeps the newest entries first within each priority.
 
 Daily homework has an `include_weekends` switch beside its cycle selector. New definitions default
@@ -20,9 +20,11 @@ The production life tree at /time-tree generates owner-scoped occurrences from t
 Homework cards expose a preview through the web-provided callback. Web reuses
 `HomeworkContentPanel` from the bubble detail panel, using the earliest unfinished occurrence
 snapshot or a read-only template/cursor preview when no occurrence exists.
+Hosted migration `20261119140300_task_homework_zero_minutes.sql` allows a zero estimate. A zero-minute academic
+occurrence pops on click and completes with one flower and the base rewards. Moving between zero and
+a positive estimate updates occurrences that have never started, including any split steps.
 Life editing hides duration and practice-entry fields and saves a null practice binding.
-The legacy table's required 1–120 minute field is retained for storage compatibility only;
-life execution normalizes minutes to zero, and list/date totals exclude life durations.
+Life execution normalizes the stored estimate to zero, and list/date totals exclude life durations.
 Life templates are daily persistent switches: while enabled, generate one current-day bubble,
 including weekends, irrespective of the template's academic recurrence window or duration.
 They never split, start a timer or bind practice. A pop atomically completes and grants ordinary
@@ -50,8 +52,8 @@ reading templates. Hosted migration `20261117190930_time_tree_sync_revisions` bu
 template insert, update and delete, with a service-only RPC for the metadata check.
 Normal sync updates unfinished (including running and overdue) steps' name, subject, priority,
 instructions and changed practice binding. Completed/skipped/settled steps stay unchanged.
-Timing, estimated minutes, stages, placement, deadlines and occurrence notes stay intact
-except for the untouched periodic-occurrence upgrade described below.
+Timing, estimated minutes, stages, placement, deadlines and occurrence notes follow the existing snapshots,
+with duration changes for zero-minute transitions and periodic upgrades described in this guide.
 Changing bindings releases obsolete legacy reservations without advancing them; completed split
 parts keep their original content while unfinished parts receive the new content.
 Both execution views expose 重新生成作业. The default inclusive range is today through today + 6;

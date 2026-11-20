@@ -6,12 +6,13 @@ import { describeSchedule, useHomeworkData } from '@rosie/tasks'
 import { previewPractice } from '@/lib/time-tree/practicePreview'
 import { AppDialog, LoadingOverlay, Moon, StickerCard, StatTile, Timer, X, type StatTileTone } from '@rosie/ui'
 import { Avatar, Badge, Button, Flex, Grid, Heading, IconButton, Text, TextField } from '@rosie/ui/themes'
-import { flowerQuestionProgress, MINUTES_PER_FLOWER, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
+import { flowerQuestionProgress, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
 import { homeworkTomatoProgress } from '@/lib/time-tree/rewards'
 import {
   clock,
   dayOf,
   elapsed,
+  isInstantHomework,
   isMustDo,
   shift,
   timing,
@@ -24,7 +25,6 @@ import BubbleTaskIcon from '@/components/tree-demo/garden/BubbleTaskIcon'
 import { kidNote, kidReward, kidTime } from './kidStepCopy'
 import { HomeworkNotesDialog } from './HomeworkNotesDialog'
 import FlowerCollection from './FlowerCollection'
-import DailyRainbowReward from './DailyRainbowReward'
 import HomeworkContentPanel from './HomeworkContentPanel'
 import HomeworkTomatoTimer from './HomeworkTomatoTimer'
 import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
@@ -88,7 +88,7 @@ export function StepPanel({
   step: WorkStep
   close: () => void
   select: (id: string) => void
-  onFinished?: (step: WorkStep, tree: TreeData, bloom: boolean) => void
+  onFinished: (step: WorkStep, tree: TreeData, bloom: boolean) => void
   onFinishBubble?: (step: WorkStep) => void
   homework?: boolean
 }) {
@@ -103,14 +103,16 @@ export function StepPanel({
   const [move, setMove] = useState(false)
   const [manual, setManual] = useState(false)
   const [pin, setPin] = useState('')
-  const [receipt, setReceipt] = useState<WorkStep | null>(null)
   const [finishing, setFinishing] = useState(false)
+  const [stopping, setStopping] = useState(false)
   const [start, setStart] = useState(step.start ? dayOf(step.start) + 'T' + clock(step.start) : '')
   const [end, setEnd] = useState('')
   const mounted = useRef(true)
   const finishingRef = useRef(false)
   const running = tree.steps.find((s) => s.start && !s.end)
+  const finishBlocked = api.busy && api.startingStepId !== step.id
   const overdue = !!step.planned && step.planned < tree.today
+  const instant = !step.start && isInstantHomework(step)
   useEffect(() => {
     mounted.current = true
     return () => {
@@ -123,7 +125,7 @@ export function StepPanel({
     return () => clearInterval(t)
   }, [step.start, step.end])
   async function finishNow() {
-    if (api.busy || finishingRef.current) return
+    if (finishBlocked || finishingRef.current) return
     if (onFinishBubble && step.slot !== null) {
       onFinishBubble(step)
       return
@@ -136,13 +138,20 @@ export function StepPanel({
       if (mounted.current) setFinishing(false)
       return
     }
-    onFinished?.(outcome.step, outcome.tree, outcome.bloom)
-    if (mounted.current && outcome.step.dailyRainbow && !onFinished) {
-      setReceipt(outcome.step)
-      setFinishing(false)
-      return
-    }
+    onFinished(outcome.step, outcome.tree, outcome.bloom)
     if (mounted.current) close()
+  }
+  async function stopNow() {
+    if (!step.start || step.end || finishBlocked || finishingRef.current) return
+    finishingRef.current = true
+    setStopping(true)
+    try {
+      const result = await api.run({ kind: 'stop', id: step.id, start: step.start })
+      if (result && mounted.current) close()
+    } finally {
+      finishingRef.current = false
+      if (mounted.current) setStopping(false)
+    }
   }
   async function submit(action: TreeAction) {
     if (action.kind === 'finish') {
@@ -157,14 +166,10 @@ export function StepPanel({
     }
     const result = await api.run({ ...action, id: step.id })
     if (!result) return
-    if (action.kind === 'completeUntimed' || action.kind === 'record') {
+    if ((instant && action.kind === 'pop') || action.kind === 'completeUntimed' || action.kind === 'record') {
       const saved = result.steps.find(item => item.id === step.id)
       if (saved?.end) {
-        onFinished?.(saved, result, false)
-        if (mounted.current && saved.dailyRainbow && !onFinished) {
-          setReceipt(saved)
-          return
-        }
+        onFinished(saved, result, action.kind === 'pop' && step.slot !== null)
       }
     }
     if (mounted.current && action.kind !== 'start') close()
@@ -177,8 +182,8 @@ export function StepPanel({
       const result = await api.run({ kind: 'collectFlowers', id: step.id, flowerSelection: selection })
       const saved = result?.steps.find(item => item.id === step.id)
       if (result && saved?.end && mounted.current) {
-        if (!saved.dailyRainbow || !onFinished) setReceipt(saved)
-        onFinished?.(saved, result, step.slot !== null)
+        onFinished(saved, result, step.slot !== null)
+        close()
       }
     } finally {
       finishingRef.current = false
@@ -186,19 +191,6 @@ export function StepPanel({
     }
   }
   const weekStart = weeklyHomeworkStart(step)
-  if (receipt) return <AppDialog open title={receipt.dailyRainbow ? '全部完成，收获彩虹果！' : receipt.flowers?.complete ? weekStart ? '本周作业做完啦' : '整份做完啦' : '本次已收工'}
-    onOpenChange={open => { if (!open) close() }}>
-    <Flex direction="column" gap="3" align="center" role="status">
-      {receipt.dailyRainbow && <DailyRainbowReward />}
-      {weekStart && receipt.flowers && (
-        <Text>本周已完成 {Math.min(receipt.flowers.collected * MINUTES_PER_FLOWER, receipt.minutes)} / {receipt.minutes} 分钟</Text>
-      )}
-      <Text size="6" weight="bold" className="motion-safe:animate-star-pop">+{receipt.stages.length} 花朵</Text>
-      <Text>☀️ +{receipt.sun}　💧 +{receipt.water}</Text>
-      {receipt.tomatoes && <Text weight="bold">🍅 收获 {receipt.tomatoes} 颗番茄</Text>}
-      <Button onClick={close}>知道了</Button>
-    </Flex>
-  </AppDialog>
   if (editingNote) {
     return <HomeworkNotesDialog step={step} api={api} close={() => setEditingNote(false)} />
   }
@@ -209,7 +201,7 @@ export function StepPanel({
     new URLSearchParams(href.split('?')[1]).get('mode') === 'daily')
   // Older daily calc tasks may have only the homework name and no practice binding.
   const namedCalc = step.name.trim() === '每日口算' && !content && !step.practiceEntryName && !template?.practice_binding
-  const dailyCalc = step.subject === 'math' && !step.end && !step.skipped && (calcLink || namedCalc)
+  const dailyCalc = !instant && step.subject === 'math' && !step.end && !step.skipped && (calcLink || namedCalc)
   const calcDisabled = !step.planned || waitingForTomorrow || api.busy || finishing || !!(running && running.id !== step.id)
   async function startCalc() {
     if (calcDisabled) return false
@@ -231,6 +223,12 @@ export function StepPanel({
   )
   const showCompletionFooter = step.subject !== 'life' && !step.skipped &&
     ((!step.end && !!step.start) || finishing) && !manual
+  const stopButton = step.start && !step.end && (
+    <Button size="3" variant="soft" color="gray" disabled={finishBlocked || finishing} loading={stopping}
+      onClick={() => void stopNow()}>
+      停止
+    </Button>
+  )
   const flowerReadOnly = !!step.end || !!step.skipped || waitingForTomorrow
   const completionFooter = step.flowers && !manual ? (
     <div className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
@@ -239,6 +237,7 @@ export function StepPanel({
         <FlowerCollection step={step} now={now}
           busy={api.busy || finishing} readOnly={flowerReadOnly || awaitingPractice}
           questions={flowerQuestionProgress(step, content)} save={collect} />
+        {stopButton && <Flex justify="end">{stopButton}</Flex>}
         {waitingForTomorrow && <Text size="2" align="center">今天已收工，明天继续</Text>}
         {api.message && <Text color="red" role="alert">{api.message}</Text>}
       </Flex>
@@ -251,12 +250,10 @@ export function StepPanel({
         {finishing ? '正在开花…' : kidTime(step, now)}
       </Text>
       <Flex gap="2" wrap="wrap" justify="center">
-        <Button size="3" color="green" disabled={api.busy} loading={finishing} onClick={() => void finishNow()}>
+        <Button size="3" color="green" disabled={finishBlocked || finishing || stopping} loading={finishing} onClick={() => void finishNow()}>
           {step.slot !== null ? '🫧 做完啦，戳破它！' : '🌸 做完啦！'}
         </Button>
-        <Button size="3" variant="soft" color="gray" disabled={finishing} onClick={close}>
-          收起，继续计时
-        </Button>
+        {stopButton}
       </Flex>
       {api.message && <Text color="red" align="center" size="2" role="alert">{api.message}</Text>}
     </Flex>
@@ -349,7 +346,7 @@ export function StepPanel({
         onOpenChange={(v) => {
           if (!v) close()
         }}
-        closeDisabled={finishing}
+        closeDisabled={finishing || stopping}
         footer={completionFooter}
       >
         <Flex direction="column" gap={step.flowers ? { initial: '3', xs: '4' } : '3'}
@@ -378,7 +375,7 @@ export function StepPanel({
                 {scheduleSummary && <Text as="p" size="2" color="gray" className="w-full">{scheduleSummary}</Text>}
               </div>
               <IconButton variant="soft" color="gray" className="shrink-0"
-                aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing} onClick={close}>
+                aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing || stopping} onClick={close}>
                 <X size={18} aria-hidden="true" />
               </IconButton>
             </Flex>
@@ -421,7 +418,7 @@ export function StepPanel({
                 hint={step.planned ? <span className="tabular-nums">📅 {step.planned}</span> : undefined}
                 className={styles.taskDuration}
               />
-              <IconButton variant="soft" color="gray" aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing} onClick={close}>
+              <IconButton variant="soft" color="gray" aria-label={step.start && !step.end ? '收起，继续计时' : '关闭'} disabled={finishing || stopping} onClick={close}>
                 <span aria-hidden="true">×</span>
               </IconButton>
             </Flex>
@@ -440,7 +437,12 @@ export function StepPanel({
               <Button size="3" color="pink" onClick={close}>
                 {step.skipped ? '👋 下次再来' : '🎉 太好啦'}
               </Button>
-            ) : step.start || finishing ? null : other ? (
+            ) : step.start || finishing ? null : instant ? (
+              <Button size="3" color="green" disabled={!step.planned || api.busy} loading={api.busy}
+                onClick={() => void submit({ kind: 'pop' })}>
+                🌼 戳破泡泡
+              </Button>
+            ) : other ? (
               <Button size="3" color="amber" onClick={() => select(other.id)}>
                 👉 先回去做完那个
               </Button>
@@ -493,7 +495,7 @@ export function StepPanel({
       }}
       description={`${SUBJECTS[step.subject].label} · ${(weekStart || template?.estimated_minutes === step.minutes) && scheduleSummary
         ? scheduleSummary : `预计 ${step.minutes} 分钟`}`}
-      closeDisabled={finishing}
+      closeDisabled={finishing || stopping}
       footer={completionFooter}
     >
       <Flex direction="column" gap="3">
@@ -575,7 +577,7 @@ export function StepPanel({
           </>
         ) : step.start || finishing ? null : (
           <>
-            {running ? (
+            {instant ? null : running ? (
               <Button onClick={() => select(running.id)}>返回正在做的作业</Button>
             ) : dailyCalc || awaitingPractice ? null : (
               <Button
@@ -590,10 +592,10 @@ export function StepPanel({
               {!step.flowers && <Button
                 variant="soft"
                 color="green"
-                disabled={api.busy}
-                onClick={() => void submit({ kind: 'completeUntimed' })}
+                disabled={api.busy || (instant && !step.planned)}
+                onClick={() => void submit({ kind: instant ? 'pop' : 'completeUntimed' })}
               >
-                直接完成
+                {instant ? '戳破泡泡' : '直接完成'}
               </Button>}
               <Button
                 variant="soft"
@@ -628,7 +630,7 @@ export function StepPanel({
           </>
         )}
         {(step.skipped || step.end || step.start) && !manual && !finishing && noteButton}
-        {homework && !manual && !step.skipped && !step.end && (
+        {homework && !instant && !manual && !step.skipped && !step.end && (
           <Button variant="ghost" onClick={() => setManual(true)}>
             家长补录
           </Button>

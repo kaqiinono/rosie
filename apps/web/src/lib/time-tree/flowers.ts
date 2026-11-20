@@ -15,7 +15,7 @@ export function dayPlanMinutes(step: WorkStep) {
 }
 
 export function isWeeklyPartialReceipt(step: WorkStep) {
-  return !!weeklyHomeworkStart(step) && !!step.end && !step.flowers?.complete
+  return !!weeklyHomeworkStart(step) && !!step.end && !!step.flowers && !step.flowers.complete
 }
 
 export function flowerQuestionProgress(step: WorkStep,

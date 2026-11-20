@@ -4,7 +4,7 @@ import { createUserSessionStore, invalidateSessionStore, supabase } from '@rosie
 
 export type PoolKind = 'reward' | 'penalty'
 export const poolLabels = { reward: '奖励', penalty: '惩罚' }
-export interface PoolEntry { id: string; name: string; kind: PoolKind; tree_eligible?: boolean; enabled?: boolean }
+export interface PoolEntry { id: string; name: string; kind: PoolKind; enabled?: boolean }
 export interface DrawResult extends PoolEntry { ticket: string }
 
 export interface WheelEntry extends PoolEntry {
@@ -31,13 +31,13 @@ export const entriesStore = createUserSessionStore<PoolEntry[]>('draw_pool_entri
   empty: [],
   async fetch(userId) {
     const { data, error } = await supabase.from('draw_pool_entries')
-      .select('id,name,kind,tree_eligible,enabled').eq('user_id', userId).order('name')
+      .select('id,name,kind,enabled').eq('user_id', userId).order('name')
     if (error) throw error
     return data as PoolEntry[]
   },
 })
 
-export async function changePool(kind: PoolKind, action: 'add' | 'delete' | 'draw' | 'accept' | 'tree_on' | 'tree_off', args: { p_name?: string; p_id?: string } = {}) {
+export async function changePool(kind: PoolKind, action: 'add' | 'delete' | 'draw' | 'accept', args: { p_name?: string; p_id?: string } = {}) {
   const { data, error } = await supabase.rpc('change_draw_pool', { p_kind: kind, p_action: action, ...args })
   if (error) {
     if (error.code === '23505') throw new Error('池中已有这个名称。')

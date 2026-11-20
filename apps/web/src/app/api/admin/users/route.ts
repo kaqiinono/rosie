@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server'
-import { createAdminSupabase, forbiddenResponse, requireAdminFromRequest } from '@/lib/api-auth'
+import { createAdminSupabase, forbiddenResponse, isAdminRequestUser, lookupUserFromRequest, unauthorizedResponse } from '@/lib/api-auth'
 import { isValidManagedEmail, isValidManagedUserId, selfMutationError } from '@/lib/user-admin'
 import { hashParentPin, isValidParentPin } from '@/lib/parent-pin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+async function authorizeUserManagement(req: Request) {
+  const { user, unreachable } = await lookupUserFromRequest(req)
+  if (unreachable) return NextResponse.json({ error: 'auth_unavailable' }, { status: 503 })
+  if (!user) return unauthorizedResponse()
+  if (!isAdminRequestUser(user)) return forbiddenResponse()
+  return user
+}
 
 function errorResponse(error: unknown) {
   const message = error instanceof Error ? error.message : 'user_admin_error'
@@ -12,8 +20,8 @@ function errorResponse(error: unknown) {
 }
 
 export async function GET(req: Request) {
-  const actor = await requireAdminFromRequest(req)
-  if (!actor) return forbiddenResponse()
+  const actor = await authorizeUserManagement(req)
+  if (actor instanceof Response) return actor
 
   const url = new URL(req.url)
   const page = Math.max(1, Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1)
@@ -57,8 +65,8 @@ export async function GET(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  const actor = await requireAdminFromRequest(req)
-  if (!actor) return forbiddenResponse()
+  const actor = await authorizeUserManagement(req)
+  if (actor instanceof Response) return actor
 
   let body: Record<string, unknown>
   try {
@@ -161,8 +169,8 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const actor = await requireAdminFromRequest(req)
-  if (!actor) return forbiddenResponse()
+  const actor = await authorizeUserManagement(req)
+  if (actor instanceof Response) return actor
 
   const userId = new URL(req.url).searchParams.get('id')
   if (!isValidManagedUserId(userId)) {

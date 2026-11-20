@@ -1,5 +1,13 @@
 import { dayOf, type Rules, type TomatoPrices, type TreeData, type WorkStep } from './types'
 
+export function blindBoxChances(tree: TreeData) {
+  const wallet = tomatoWallet(tree)
+  const price = tomatoPrices(tree.rules).box
+  const ordinary = tree.boxReady && (!tree.prize || tree.prize.source === 'tomato') ? 1 : 0
+  const paid = Math.max(0, Math.floor((wallet.earned - wallet.spent) / price))
+  return { ordinary, paid, total: ordinary + paid, price }
+}
+
 const TOMATO_ROUND_MS = 5 * 60_000
 export const defaultTomatoPrices: TomatoPrices = { gems: { chinese: 10, math: 10, english: 10 }, box: 100 }
 

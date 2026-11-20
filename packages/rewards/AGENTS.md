@@ -33,8 +33,8 @@ the catalog item. The latest 80 non-cleared results are shown, matching the supp
 History snapshots survive rename/delete/reset; clearing archives history without erasing
 operation receipts. Pending life-tree results can only be redeemed in the tree.
 
-The parent marks rewards tree_eligible in /setting/draw-pools. The tree reserves enabled,
-tree-eligible entries using the same reward pool lock and weights. Reservation prevents
+Enabled and available rewards automatically appear in the life-tree box wheel.
+The tree freezes the candidate wheel and reserves its result using the shared reward pool lock and weights. Reservation prevents
 workshop drawing/editing/deletion/reset. noRepeatMode disables the selected tree reward
 at reservation; acceptance releases tree_ticket, retains the entry and stamps history.
 The legacy change_draw_pool signature and GET /api/draw-wheel remain compatible; old

@@ -38,9 +38,9 @@ jobs:
       - name: Export, upload, and verify
         run: node scripts/supabase-backup.mjs backup
         env:
-          SUPABASE_BACKUP_POOLER_URL: ${{ vars.SUPABASE_BACKUP_POOLER_URL }}
-          SUPABASE_BACKUP_DB_PASSWORD: ${{ secrets.SUPABASE_BACKUP_DB_PASSWORD }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_BACKUP_POOLER_URL: ${{ vars.SUPABASE_TOKYO_BACKUP_POOLER_URL }}
+          SUPABASE_BACKUP_DB_PASSWORD: ${{ secrets.SUPABASE_TOKYO_BACKUP_DB_PASSWORD }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_TOKYO_SERVICE_ROLE_KEY }}
           BAIDU_APP_KEY: ${{ secrets.BAIDU_APP_KEY }}
           BAIDU_SECRET_KEY: ${{ secrets.BAIDU_SECRET_KEY }}
 
@@ -58,6 +58,6 @@ jobs:
       - name: Check for a recent verified copy
         run: node scripts/supabase-backup.mjs check
         env:
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_TOKYO_SERVICE_ROLE_KEY }}
           BAIDU_APP_KEY: ${{ secrets.BAIDU_APP_KEY }}
           BAIDU_SECRET_KEY: ${{ secrets.BAIDU_SECRET_KEY }}

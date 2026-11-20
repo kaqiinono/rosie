@@ -4,12 +4,21 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/14',
+    title: '枚举法进阶',
+    description: '先分类，再按顺序枚举，用有序分堆、无序分堆和按面值分类解决计数问题。',
+    icon: '🔢',
+    lectureNum: '第 14 讲',
+    tags: ['分类枚举', '有序与无序分堆', '10 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/2/13',
     title: '抽屉原理初步与植树问题',
     description: '分类枚举与最不利原则，结合树数、间隔数和两端情况解决植树及楼梯问题。',
     icon: '🌳',
     lectureNum: '第 13 讲',
-    tags: ['抽屉原理', '植树与间隔', '52 道互动题'],
+    tags: ['抽屉原理', '植树与间隔', '56 道互动题'],
     variant: 'amber',
   },
   {

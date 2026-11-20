@@ -11,7 +11,7 @@ import {
   ensureProjectDirectory, listProjectDirectoryPage, putProjectObject, removeProjectObject, sha256,
 } from '../apps/web/src/lib/baidu-project-transfer.mjs'
 
-const project = 'yvukypevtqblhjdhkatb'
+const project = 'ypiapdlbtwbvtpnwlvbx'
 const destination = '/airosie/backup/supabase'
 const root = resolve(import.meta.dirname, '..')
 const localEnv = await readFile(resolve(root, 'apps/web/.env.local'), 'utf8').catch(error => {

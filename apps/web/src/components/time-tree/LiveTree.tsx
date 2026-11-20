@@ -10,16 +10,18 @@ import type { BubbleState } from '@/components/tree-demo/garden/Bubbles'
 import ScatteredBubbles from './ScatteredBubbles'
 import StonePanel, { Gem } from '@/components/tree-demo/garden/StonePanel'
 import { buildRegions, todayCenter, type Region } from '@/components/tree-demo/garden/layout'
-import { bubbleSubject, CORE_SUBJECTS, CROWN_BUBBLE_BURST_COLOR, SUBJECTS, type Apple, type Bud, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
+import { bubbleSubject, CORE_SUBJECTS, CROWN_BUBBLE_BURST_COLOR, SUBJECTS, type Apple, type CoreSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { GardenFx } from '@/components/tree-demo/garden/fx'
-import { SUN_MAGIC_COST, canGrowWithSun, dayOf, isMustDo, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { SUN_MAGIC_COST, canGrowWithSun, dayOf, isInstantHomework, isMustDo, lifeWishThreshold, shift, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
 import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
-import { isEarly, tomatoPrices, tomatoWallet } from '@/lib/time-tree/rewards'
+import { blindBoxChances, isEarly, tomatoPrices, tomatoWallet } from '@/lib/time-tree/rewards'
 import { dayPlanMinutes, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
-import { sceneBud, sceneState } from './sceneState'
+import { sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
+import { useFlowerRewardToast } from './useFlowerRewardToast'
 import DailyRainbowReward from './DailyRainbowReward'
+import BlindBoxDrawer from './BlindBoxDrawer'
 import DayTasksDialog from './DayTasksDialog'
 import { treeDates, useTimeTree, useTreeHistory } from './useTimeTree'
 import { MinimizeTimeTreeButton } from './TimeTreeLauncher'
@@ -34,15 +36,8 @@ function bump(el: HTMLElement | null): void {
 
 const PILE_COLOR = { chinese: 'red', math: 'amber', english: 'blue' } as const
 
-type SavingLifeBubble = { bud: Bud; slot: number; ownerId: string | undefined }
-
 function isCoreSubject(color: SubjectKey): color is CoreSubject {
   return color === 'chinese' || color === 'math' || color === 'english'
-}
-
-function doneNotice(step: Pick<WorkStep, 'name' | 'sun' | 'water' | 'tomatoes'>): string {
-  const reward = step.sun || step.water ? ` · ☀️ +${step.sun} · 💧 +${step.water}` : ''
-  return `🌸 ${step.name}完成啦！${reward}${step.tomatoes ? ` · 🍅 +${step.tomatoes}` : ''}`
 }
 
 function TomatoExchangeRow({ icon, title, cost, children }: {
@@ -191,6 +186,7 @@ function GroupedSteps({
 
 export default function LiveTree() {
   const api = useTimeTree()
+  const flowerReward = useFlowerRewardToast('top')
   const [casting, setCasting] = useState(false)
   const { tree, busy, run } = api
   const [stepId, setStep] = useState<string | null>(null)
@@ -208,11 +204,10 @@ export default function LiveTree() {
   const [itemId, setItem] = useState('')
   const [pin, setPin] = useState('')
   const [notice, notify] = useState('')
-  const sceneNotice = (api.messageCode === 'stale_revision' ? '' : api.message) || notice
+  const sceneNotice = notice || (api.messageCode === 'stale_revision' ? '' : api.message)
   const [rewardStep, setRewardStep] = useState<WorkStep | null>(null)
-  const [showRainbowDetails, setShowRainbowDetails] = useState(false)
   const [savingBubble, setSavingBubble] = useState<string | null>(null)
-  const [savingLifeBubbles, setSavingLifeBubbles] = useState<ReadonlyMap<string, SavingLifeBubble>>(() => new Map())
+  const [burstIds, setBurstIds] = useState<ReadonlySet<string>>(() => new Set())
   const completingBubble = useRef(false)
   const bloomTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [skyNow, setSkyNow] = useState(Date.now)
@@ -364,27 +359,18 @@ export default function LiveTree() {
     ]),
   )
   const bubbles = state.buds.filter(bud => states[bud.id])
-  const bubbleSlots = { ...state.bubbleSlots }
   const savingIds = new Set(savingBubble ? [savingBubble] : [])
   const hiddenTreeItems = new Set(hidden)
-  for (const { bud, slot, ownerId } of savingLifeBubbles.values()) {
-    if (ownerId !== api.user?.id || bud.dateKey !== tree.today) continue
-    savingIds.add(bud.id)
-    hiddenTreeItems.add(`${bud.id}#0`)
-    // Keep the saving bubble drawable until its own burst, even after the commit removes its slot.
-    if (!states[bud.id]) {
-      bubbles.push(bud)
-      bubbleSlots[bud.id] = slot
-      states[bud.id] = 'ready'
-    }
-  }
+  for (const id of burstIds) hiddenTreeItems.add(id)
   const step = (history.tree ?? tree).steps.find((s) => s.id === stepId)
   const flower = tree.steps.find((s) => s.id === itemId.split('#')[0])
   const lastWish = tree.exchanges.at(-1)
   const nextWish = lastWish && shift(lastWish, 7)
+  const lifeThreshold = lifeWishThreshold(tree.rules)
   const canExchange =
     (!nextWish || tree.today >= nextWish) &&
-    CORE_SUBJECTS.every((k) => tree.stones[k] >= tree.rules.wish)
+    CORE_SUBJECTS.every((k) => tree.stones[k] >= tree.rules.wish) &&
+    tree.stones.life >= lifeThreshold
   const close = () => {
     show('')
     setPin('')
@@ -393,6 +379,7 @@ export default function LiveTree() {
   const wallet = tomatoWallet(tree)
   const tomatoBalance = wallet.earned - wallet.spent
   const prices = tomatoPrices(tree.rules)
+  const boxChances = blindBoxChances(tree).total
   const tomatoControl = (
     <Button size="1" color="tomato" variant="soft" aria-label={`番茄兑换，可用 ${tomatoBalance} 颗`}
       onClick={() => {
@@ -457,12 +444,29 @@ export default function LiveTree() {
       () => bump(target),
     )
   }
+  function burstAt(step: WorkStep, point: { x: number; y: number } | null) {
+    const effects = fx.current
+    if (point && effects && !effects.prefersReducedMotion())
+      effects.burst(point.x, point.y, step.crown ? CROWN_BUBBLE_BURST_COLOR : SUBJECTS[step.subject].color)
+  }
+  function beginPop(step: WorkStep) {
+    const origin = bubbleCenter(step.id)
+    popping.current.add(step.id)
+    setBurstIds(new Set(popping.current))
+    burstAt(step, origin)
+    return origin
+  }
+  function endPop(id: string) {
+    popping.current.delete(id)
+    setBurstIds(new Set(popping.current))
+  }
   function sow(
     step: WorkStep,
     treeData: TreeData,
     rewards: boolean,
     origin: { x: number; y: number } | null = null,
     onBloomed?: () => void,
+    alreadyBurst = false,
   ) {
     const from = bubbleCenter(step.id) ?? origin
     const ids = step.settled ? [] : step.stages.map((_, index) => `${step.id}#${index}`)
@@ -476,7 +480,7 @@ export default function LiveTree() {
     }
     const reduced = effects.prefersReducedMotion()
     if (!reduced) {
-      effects.burst(from.x, from.y, step.crown ? CROWN_BUBBLE_BURST_COLOR : SUBJECTS[step.subject].color)
+      if (!alreadyBurst) burstAt(step, from)
       if (rewards && step.sun > 0) flyCount(from, sunRef.current, '#ffd54a', 0)
       if (rewards && step.water > 0) flyCount(from, waterRef.current, '#74c0fc', 12)
       if (ids.length) {
@@ -513,57 +517,37 @@ export default function LiveTree() {
   async function clickBubble(id: string) {
     const s = air.find((x) => x.id === id)
     if (!s) return
-    if (s.subject !== 'life' && !s.end) {
+    if (s.subject !== 'life' && !s.end && (s.start || !isInstantHomework(s))) {
       setStep(id)
       return
     }
-    if (s.subject !== 'life' && (busy || completingBubble.current)) return
-    if (s?.subject !== 'life' && s?.end) {
+    if (s.subject !== 'life' && s.end) {
       await completeRunning(id)
       return
     }
-    if (s?.subject === 'life' && !s.end) {
-      if (popping.current.has(id)) return
-      popping.current.add(id)
-      const origin = bubbleCenter(id)
-      const failureNotice = '暂时无法确认这颗泡泡已开花，请查看后再试。'
-      const snapshot = { bud: sceneBud(s, today), slot: s.slot ?? 0, ownerId: api.user?.id }
-      setSavingLifeBubbles(previous => new Map(previous).set(id, snapshot))
-      try {
-        const result = await run({ kind: 'pop', id })
-        const done = result?.steps.find(item => item.id === id)
-        if (!result || !done?.end || !done.popped) {
-          notify(failureNotice)
-          return
-        }
-        sow(done, result, false, origin)
-        notify(doneNotice(done))
-      } catch {
-        notify(failureNotice)
-      } finally {
-        popping.current.delete(id)
-        setSavingLifeBubbles(previous => {
-          const next = new Map(previous)
-          next.delete(id)
-          return next
-        })
+    if (popping.current.has(id)) return
+    const origin = beginPop(s)
+    try {
+      const result = await run({ kind: 'pop', id })
+      const done = result?.steps.find(item => item.id === id)
+      if (!result || !done?.end || !done.popped) {
+        notify('暂时无法确认这颗泡泡已开花，请查看后再试。')
+        return
       }
-      return
+      sow(done, result, isInstantHomework(s), origin, undefined, true)
+      flowerReward.showReward(done)
+    } finally {
+      endPop(id)
     }
-    const origin = bubbleCenter(id)
-    const result = await run({ kind: 'pop', id })
-    if (!result) return
-    sow(result.steps.find((item) => item.id === id) ?? s, result, false, origin)
-    notify('🌸 ' + s.name + '完成啦！')
   }
   async function completeRunning(id: string) {
-    if (busy || completingBubble.current) return
+    if ((busy && api.startingStepId !== id) || completingBubble.current) return
     const step = air.find((item) => item.id === id)
     if (!step || (!step.start && !step.end)) return
     if (step.flowers && !step.end) { setStep(id); return }
     completingBubble.current = true
     setSavingBubble(id)
-    const origin = bubbleCenter(id)
+    const origin = beginPop(step)
     const release = () => {
       completingBubble.current = false
       setSavingBubble(null)
@@ -579,17 +563,14 @@ export default function LiveTree() {
         release()
         return
       }
-      const showReward = () => {
-        release()
-        notify(doneNotice(outcome.step))
-        setShowRainbowDetails(false)
-        setRewardStep(outcome.step)
-      }
-      if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin, showReward)
-      else showReward()
+      flowerReward.showReward(outcome.step)
+      if (outcome.bloom) sow(outcome.step, outcome.tree, true, origin, release, true)
+      else release()
     } catch {
       release()
       notify('操作未完成，请查看泡泡状态后重试。')
+    } finally {
+      endPop(id)
     }
   }
   function scenePoint(clientX: number, clientY: number): { x: number; y: number } {
@@ -746,23 +727,22 @@ export default function LiveTree() {
       </div>
         <ScatteredBubbles
           bubbles={bubbles}
-          slots={bubbleSlots}
+          slots={state.bubbleSlots}
           states={states}
           clockOffsetMs={api.clockOffsetMs}
           startedAt={Object.fromEntries(
             air.filter((s) => s.start && !s.end).map((s) => [s.id, s.start!]),
           )}
           onOpen={(id) => void clickBubble(id)}
-          onHoldFinish={busy || savingBubble ? undefined : (id) => void completeRunning(id)}
+          onHoldFinish={(busy && !api.startingStepId) || savingBubble ? undefined : (id) => void completeRunning(id)}
           savingIds={savingIds}
-          hiddenIds={hidden}
+          hiddenIds={hiddenTreeItems}
         />
       <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
         <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
           <StickerCard asChild interactive size="sm" tone="paper" elevation="sm">
             <Link href="/">← 首页</Link>
           </StickerCard>
-          <span className="tg-logo">🌳 生命树</span>
         </Flex>
         <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
         {!desktop && tomatoControl}
@@ -785,41 +765,39 @@ export default function LiveTree() {
       </header>
       <aside ref={rail} data-tree-obstacle className="tg-stone-rail" aria-label="宝石与工具">
         <StonePanel
-          bottomOnMobile
           state={state}
           thresholds={tree.rules}
-          canExchange={canExchange && !busy}
+          lifeThreshold={lifeThreshold}
+          canExchange={canExchange}
+          busy={busy}
           onExchange={() => show('wish')}
+          onWishHint={message => notify(message ?? (nextWish ? `下次可在 ${nextWish} 兑换心愿。` : '稍后可兑换心愿。'))}
           mobileActions={
-            <>
-              <Button color="violet" variant="soft" onClick={() => show('box')}>
-                🎁 {tree.boxReady ? '开盲盒' : '盲盒'}
+            tree.apples.length > 0 && (
+              <Button variant="soft" onClick={() => show('fruitList')}>
+                🍎 摘果子 {tree.apples.length}
               </Button>
-              {tree.apples.length > 0 && (
-                <Button variant="soft" onClick={() => show('fruitList')}>
-                  🍎 摘果子 {tree.apples.length}
-                </Button>
-              )}
-            </>
+            )
           }
           registerPile={(key, el) => {
             piles.current[key] = el
           }}
         />
-        <StickerCard size="sm" tone="paper" className="tg-rail-tools mt-2">
+        <StickerCard size="sm" tone="paper" className="tg-rail-tools md:mt-2">
           <Flex direction="column" gap="2">
             {nextWish && nextWish > tree.today && (
               <Text size="1" className="max-md:hidden">
                 下次心愿 {nextWish}
               </Text>
             )}
-            <Button color="violet" variant="soft" onClick={() => show('box')}>
-              🎁 {tree.boxReady ? '打开盲盒' : '我的盲盒'}
+            <Button color="violet" variant="soft" aria-label={`我的盲盒${boxChances ? `，还能抽 ${boxChances} 次` : ''}`}
+              onClick={() => show('box')}>
+              🎁 我的盲盒
+              {boxChances > 0 && <Badge color="violet" radius="full" aria-hidden="true">+{boxChances}</Badge>}
             </Button>
             {dailyRainbowStep && (
               <Button color="violet" variant="soft" onClick={() => {
                 setRewardStep(dailyRainbowStep)
-                setShowRainbowDetails(true)
               }}>🌈 查看彩虹果奖励</Button>
             )}
             <Text size="1" className="max-md:hidden">
@@ -897,7 +875,8 @@ export default function LiveTree() {
           </div>
         </div>
       )}
-      {sceneNotice && (
+      {flowerReward.toast}
+      {sceneNotice && (notice || !flowerReward.toast) && (
         <div
           role="status"
           className="pointer-events-none absolute inset-x-0 top-20 z-30 flex justify-center"
@@ -929,33 +908,18 @@ export default function LiveTree() {
           step={step}
           select={setStep}
           close={() => setStep(null)}
+          onFinished={(finished, snapshot, bloom) => {
+            if (bloom) sow(finished, snapshot, true)
+            flowerReward.showReward(finished)
+          }}
           onFinishBubble={(current) => {
-            if (busy || completingBubble.current) return
+            if ((busy && api.startingStepId !== current.id) || completingBubble.current) return
             setStep(null)
             void completeRunning(current.id)
           }}
-          onFinished={(finished, snapshot, bloom) => {
-            if (finished.dailyRainbow) {
-              if (bloom) sow(finished, snapshot, true)
-              setStep(null)
-              setTaskDays(null)
-              setShowRainbowDetails(false)
-              setRewardStep(finished)
-            notify(finished.tomatoes
-              ? `🌈 今日作业全部完成，彩虹果已长成！🍅 收获 ${finished.tomatoes} 颗番茄`
-              : '🌈 今天的学习任务全部完成，彩虹果已经长在树上啦！')
-              return
-            }
-            if (finished.flowers) {
-              if (bloom) sow(finished, snapshot, true)
-              return
-            }
-            notify(doneNotice(finished))
-            setRewardStep(finished)
-          }}
         />
       )}
-      <AppDialog open={!!rewardStep && (!rewardStep.dailyRainbow || showRainbowDetails)} title={rewardStep?.dailyRainbow ? '全部完成，收获彩虹果！' : rewardStep && isEarly(rewardStep) ? '提前完成，奖励翻倍！' : '完成啦，坚持就有收获！'} onOpenChange={(open) => { if (!open) { setRewardStep(null); setShowRainbowDetails(false) } }}>
+      <AppDialog open={!!rewardStep} title="全部完成，收获彩虹果！" onOpenChange={open => { if (!open) setRewardStep(null) }}>
         {rewardStep && (
           <Flex direction="column" gap="4" align="center" p="4">
             {rewardStep.dailyRainbow && <DailyRainbowReward />}
@@ -979,8 +943,9 @@ export default function LiveTree() {
             older: diaryFrom > tree.firstDay ? () => setDiaryPage(diaryPage + 1) : undefined,
             newer: diaryPage ? () => setDiaryPage(diaryPage - 1) : undefined }} />
       )}
+      {dialog === 'box' && <BlindBoxDrawer api={api} close={close} />}
       <AppDialog
-        open={!!dialog && dialog !== 'diary'}
+        open={!!dialog && dialog !== 'diary' && dialog !== 'box'}
         closeDisabled={busy && dialog !== 'wilt' && dialog !== 'later' && dialog !== 'diary'}
         onOpenChange={(open) => {
           if (!open) close()
@@ -1026,7 +991,7 @@ export default function LiveTree() {
           )}
           {dialog === 'wish' && (
             <>
-              <Text>红、黄、蓝各用 {tree.rules.wish} 颗，换一份约好的心愿。</Text>
+              <Text>红、黄、蓝宝石各用 {tree.rules.wish} 颗，再用 {lifeThreshold} 颗绿松石，换一份约好的心愿。</Text>
               <TextField.Root
                 type="password"
                 aria-label="家长密码"
@@ -1037,7 +1002,7 @@ export default function LiveTree() {
               />
               <Button
                 loading={busy}
-                disabled={pin.length !== 6}
+                disabled={pin.length !== 6 || !canExchange}
                 onClick={async () => {
                   if (await run({ kind: 'exchange', pin })) {
                     close()
@@ -1101,7 +1066,7 @@ export default function LiveTree() {
                     const price = prices.gems[color]
                     return (
                       <TomatoExchangeRow key={color} title={SUBJECTS[color].stone} cost={price}
-                        icon={<Gem color={SUBJECTS[color].color} deep={SUBJECTS[color].deep} glow={false} />}>
+                        icon={<Gem color={SUBJECTS[color].color} deep={SUBJECTS[color].deep} />}>
                         <Button type="button" color="amber" variant="solid" size="3" className="min-h-11 min-w-18 shrink-0"
                           aria-label={`用 ${price} 颗番茄兑换 ${SUBJECTS[color].stone}`}
                           disabled={busy || tomatoBalance < price}
@@ -1117,63 +1082,16 @@ export default function LiveTree() {
                     )
                   })}
                   <TomatoExchangeRow icon="🎁" title="番茄盲盒" cost={prices.box}>
-                    {tree.prize ? (
-                      <Button type="button" color="amber" size="3" className="min-h-11 min-w-18 shrink-0"
-                        aria-label="查看待领取奖品" disabled={busy} onClick={() => show('box')}>领奖</Button>
-                    ) : (
-                      <Button type="button" color="amber" variant="solid" size="3" className="min-h-11 min-w-18 shrink-0"
-                        loading={busy} disabled={tomatoBalance < prices.box} onClick={async () => {
-                          notify('')
-                          const next = await run({ kind: 'openTomatoBox', tomatoPrice: prices.box })
-                          if (next?.prize) show('box')
-                          else if (next) notify('奖池暂时没有可抽奖品，番茄余额未变。')
-                        }}>
-                        抽一次
-                      </Button>
-                    )}
+                    <Button type="button" color="amber" size="3" className="min-h-11 min-w-18 shrink-0"
+                      disabled={busy || (!tree.prize && boxChances === 0)} onClick={() => show('box')}>
+                      {tree.prize ? '领奖' : '我的盲盒'}
+                    </Button>
                   </TomatoExchangeRow>
                 </ul>
               </Theme>
               {notice && <Text size="2" role="status">{notice}</Text>}
             </>
           )}
-          {dialog === 'box' &&
-            (tree.prize ? (
-              <>
-                <Text weight="bold">🎁 {tree.prize.name}</Text>
-                <Button
-                  loading={busy}
-                  onClick={async () => {
-                    if (await run({ kind: 'acceptBox', id: tree.prize!.ticket })) {
-                      close()
-                      notify('已收下奖励')
-                    }
-                  }}
-                >
-                  接受奖励
-                </Button>
-              </>
-            ) : tree.boxReady ? (
-              <>
-                <Button
-                  loading={busy}
-                  onClick={async () => {
-                    const t = await run({ kind: 'openBox' })
-                    if (t && !t.prize) notify('盲盒待补充，可到奖惩管理勾选小奖励。')
-                  }}
-                >
-                  打开我的盲盒
-                </Button>
-                <Button asChild variant="soft">
-                  <Link href="/setting/draw-pools">去奖惩管理补充</Link>
-                </Button>
-                {notice && <Text>{notice}</Text>}
-              </>
-            ) : (
-              <Text>
-                摘下彩虹果可获得盲盒机会。{tree.lastBox && '下次最早 ' + shift(tree.lastBox, 7)}
-              </Text>
-            ))}
           {api.message && (
             <Text role="alert" color="red">
               {api.message}

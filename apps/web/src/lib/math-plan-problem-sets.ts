@@ -27,6 +27,7 @@ import { PROBLEMS as G2Lesson6PROBLEMS } from '@rosie/math-content/utils/g2/less
 import { PROBLEMS as G2Lesson7PROBLEMS } from '@rosie/math-content/utils/g2/lesson7-data'
 import { PROBLEMS as G2Lesson12PROBLEMS } from '@rosie/math-content/utils/g2/lesson12-data'
 import { PROBLEMS as G2Lesson13PROBLEMS } from '@rosie/math-content/utils/g2/lesson13-data'
+import { PROBLEMS as G2Lesson14PROBLEMS } from '@rosie/math-content/utils/g2/lesson14-data'
 import type { ProblemSet } from '@rosie/core'
 
 export const MATH_PLAN_PROBLEM_SETS: Record<string, ProblemSet> = {
@@ -59,4 +60,5 @@ export const MATH_PLAN_PROBLEM_SETS: Record<string, ProblemSet> = {
   '2-7': G2Lesson7PROBLEMS,
   '2-12': G2Lesson12PROBLEMS,
   '2-13': G2Lesson13PROBLEMS,
+  '2-14': G2Lesson14PROBLEMS,
 }

@@ -1,10 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { PageAccountRow } from '@rosie/ui'
-import { Button } from '@rosie/ui/themes'
+import { ArrowIcon, LearningIcon, PageAccountRow, StickerCard } from '@rosie/ui'
+import { Badge, Button } from '@rosie/ui/themes'
 import Link from 'next/link'
 import { storySeries } from '../../utils/story-data'
+
+const seriesIcons: Partial<Record<string, string>> = {
+  'magic-tree-house': '🏡',
+  'roald-dahl': '🍫',
+}
 
 export default function StoryShelf() {
   const [language, setLanguage] = useState<'all' | 'zh' | 'en'>('all')
@@ -26,16 +31,28 @@ export default function StoryShelf() {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {seriesList.map((series) => (
           <li key={series.slug}>
-            <Link
-              href={`/stories/${series.slug}`}
-              className="shadow-sticker-sm hover:shadow-sticker block rounded-3xl bg-orange-50 p-6 no-underline ring-1 ring-amber-200 transition hover:-translate-y-1"
-            >
-              <div className="mb-5 text-5xl">🏡</div>
-              <h2 className="font-fredoka text-2xl font-black text-slate-900">{series.title}</h2>
-              <p className="mt-1 text-sm font-bold text-amber-700">{series.author}</p>
-              <p className="mt-3 text-sm leading-relaxed text-slate-600">{series.description}</p>
-              <p className="mt-4 text-xs font-bold text-slate-500">{series.volumes.length} 辑</p>
-            </Link>
+            <StickerCard asChild interactive tone="accent" size="lg" elevation="sm" className="flex h-full flex-col">
+              <Link href={`/stories/${series.slug}`}>
+                <div lang={series.language}>
+                  <div className="flex items-center gap-3">
+                    <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center text-3xl leading-none">
+                      {seriesIcons[series.slug] ?? <LearningIcon name="focus" size={32} />}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <h2 className="font-fredoka text-lg leading-tight font-black text-text-primary">{series.title}</h2>
+                      <p className="mt-1 text-sm font-bold text-amber-700">{series.author}</p>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-text-secondary">{series.description}</p>
+                </div>
+                <div className="mt-auto pt-3">
+                  <Badge variant="soft" radius="full" color="amber">
+                    {series.volumes.length} 辑
+                    <span aria-hidden="true"><ArrowIcon size={12} /></span>
+                  </Badge>
+                </div>
+              </Link>
+            </StickerCard>
           </li>
         ))}
       </ul>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import { LearningIcon } from '@rosie/ui'
 import { useAuth, useBaiduMediaError } from '@rosie/core'
@@ -9,7 +10,13 @@ import { useBaiduReadingAudio } from '../../hooks/useBaiduReadingAudio'
 import { lessonAudioUrl } from '../../utils/reading-audio-types'
 import type { StoryChapter } from '../../utils/story-types'
 
-function NarrationTrack({ src, timeline, label }: { src: string; timeline: string; label: string }) {
+function NarrationError({ host, message }: { host: HTMLDivElement | null; message: string }) {
+  return host && createPortal(<p role="alert" className="text-sm font-bold text-rose-700">{message}</p>, host)
+}
+
+function NarrationTrack({ src, timeline, label, errorHost, beforePlayback }: {
+  src: string; timeline: string; label: string; errorHost: HTMLDivElement | null; beforePlayback: () => void
+}) {
   const player = usePlaylistPlayer()
   const { audioRef } = player
   const button = useRef<HTMLButtonElement>(null)
@@ -57,6 +64,7 @@ function NarrationTrack({ src, timeline, label }: { src: string; timeline: strin
     <Button ref={button} type="button" variant="soft" highContrast color="orange"
       loading={loading} aria-pressed={playing} aria-label={playing ? '暂停朗读' : '播放朗读'}
       onClick={async () => {
+        beforePlayback()
         if (activeTrack && player.isPlaying) {
           player.togglePause()
           return
@@ -65,8 +73,8 @@ function NarrationTrack({ src, timeline, label }: { src: string; timeline: strin
         setFailed(false)
         try {
           await player.playWhenReady({ url: src, label, refLink: window.location.pathname, mediaType: 'audio', source: null })
-        } catch {
-          setFailed(true)
+        } catch (error) {
+          if (!(error instanceof DOMException && error.name === 'AbortError')) setFailed(true)
         } finally {
           setLoading(false)
         }
@@ -75,12 +83,12 @@ function NarrationTrack({ src, timeline, label }: { src: string; timeline: strin
       {playing ? '暂停朗读' : '朗读'}
     </Button>
     <PlayerDock player={player} theme="light" showProgress />
-    {playbackError || failed ? <span role="alert">{playbackError || '音频播放失败，请检查网盘绑定。'}</span>
+    {playbackError || failed ? <NarrationError host={errorHost} message={playbackError || '音频播放失败，请检查网盘绑定。'} />
       : noTiming && <span className="text-xs">此音频暂无逐句时间表</span>}
   </>
 }
 
-export default function StoryNarration({ series, volume, chapters, full }: {
+export function useStoryNarration({ series, volume, chapters, full }: {
   series: string; volume: string; chapters: StoryChapter[]; full: boolean
 }) {
   const { user } = useAuth()
@@ -89,19 +97,37 @@ export default function StoryNarration({ series, volume, chapters, full }: {
   const choices = [
     ...(full ? [{ slot: 'narration', file: 'full', label: '整本朗读' }] : []),
     ...chapters.map(ch => ({ slot: 'chapter:' + ch.key, file: ch.key, label: `第 ${ch.number} 辑 · ${ch.title}` })),
-  ].filter(item => hasAudio(key + '#' + item.slot))
+  ].filter(item => hasAudio(key + '#' + item.slot)).map(item => ({
+    slot: item.slot,
+    label: item.label,
+    src: lessonAudioUrl(key, item.slot),
+    timeline: `/story-timings/${series}/${volume}/${item.file}.vtt`,
+  }))
   const [selected, setSelected] = useState('')
   const current = choices.find(item => item.slot === selected) ?? choices[0]
-  if (!current) return <span role="status" className="text-sm">
-    {isLoading ? '正在读取朗读音频…' : error || '暂无已绑定的朗读音频'}
-  </span>
+  return { choices, current, setSelected, isLoading, error }
+}
+
+export default function StoryNarration({ narration, errorHost, beforePlayback }: {
+  narration: ReturnType<typeof useStoryNarration>; errorHost: HTMLDivElement | null; beforePlayback: () => void
+}) {
+  const { choices, current, setSelected, isLoading, error } = narration
+  if (!current) {
+    if (!isLoading && error) return <NarrationError host={errorHost} message={error} />
+    return <span role="status" className="text-sm">
+      {isLoading ? '正在读取朗读音频…' : '暂无已绑定的朗读音频'}
+    </span>
+  }
   return <>
-    {choices.length > 1 && <Select.Root value={current.slot} onValueChange={setSelected}>
+    {choices.length > 1 && <Select.Root value={current.slot} onValueChange={(slot) => {
+      beforePlayback()
+      setSelected(slot)
+    }}>
       <Select.Trigger aria-label="选择朗读音频" />
       <Select.Content>{choices.map(item =>
         <Select.Item key={item.slot} value={item.slot}>{item.label}</Select.Item>)}</Select.Content>
     </Select.Root>}
-    <NarrationTrack key={current.slot} label={current.label} src={lessonAudioUrl(key, current.slot)}
-      timeline={`/story-timings/${series}/${volume}/${current.file}.vtt`} />
+    <NarrationTrack key={current.src} label={current.label} src={current.src} errorHost={errorHost}
+      timeline={current.timeline} beforePlayback={beforePlayback} />
   </>
 }

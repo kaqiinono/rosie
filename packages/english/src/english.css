@@ -266,7 +266,7 @@ html.en-printing .en-no-print {
   visibility: hidden !important;
 }
 
-[data-story-sentence][data-story-speaking] {
+[data-story-sentence]:is([data-story-speaking], [data-story-preview]) {
   background-color: #fde68a;
   color: #422006;
   border-radius: 0.25rem;

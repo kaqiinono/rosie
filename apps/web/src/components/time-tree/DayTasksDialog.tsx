@@ -77,6 +77,7 @@ function cheer(done: number, total: number): string {
 export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, onAdd, busy, message }: Props) {
   const homework = useHomeworkData()
   const [goal, setGoal] = useState('')
+  const [goalAdded, setGoalAdded] = useState(false)
   const submission = useRef<{ day: string; name: string; id: string } | null>(null)
   async function addGoal(day: string) {
     const name = goal.trim()
@@ -86,6 +87,7 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
     if (await onAdd(day, name, submission.current.id)) {
       submission.current = null
       setGoal('')
+      setGoalAdded(true)
     }
   }
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -139,12 +141,18 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                       value={goal}
                       maxLength={120}
                       disabled={busy}
-                      onChange={event => setGoal(event.target.value)}
+                      onChange={event => {
+                        setGoalAdded(false)
+                        setGoal(event.target.value)
+                      }}
                     >
                       <TextField.Slot aria-hidden="true"><LearningIcon name="crown" /></TextField.Slot>
                     </TextField.Root>
                     <Button type="submit" color="pink" disabled={busy || !goal.trim()}>添加</Button>
                   </form>
+                )}
+                {single && day === tree.today && goalAdded && !message && (
+                  <Text size="2" color="green" role="status">添加成功</Text>
                 )}
                 {message && single && <Text size="2" color="red" role="alert">{message}</Text>}
                 {steps.length > 0 ? (

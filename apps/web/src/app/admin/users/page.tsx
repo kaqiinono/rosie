@@ -26,7 +26,9 @@ interface UsersResponse {
 type EditMode = 'profile' | 'password' | 'parentPin' | null
 
 const ERROR_MESSAGES: Record<string, string> = {
-  forbidden: '没有管理员权限，请重新登录后再试。',
+  unauthorized: '登录已失效，请重新登录。',
+  forbidden: '当前账户没有用户管理权限。',
+  auth_unavailable: '暂时无法验证登录状态，请稍后重试。',
   invalid_email: '邮箱格式不正确。',
   invalid_password: '密码必须为 8–128 位。',
   cannot_demote_self: '不能取消自己的管理员权限。',
@@ -169,7 +171,7 @@ export default function UsersAdminPage() {
         className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center"
       >
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-bold text-slate-800">共 {data?.total ?? 0} 个账户</div>
+          {data && <div className="text-sm font-bold text-slate-800">共 {data.total} 个账户</div>}
           <div className="mt-0.5 text-xs text-slate-500">
             修改管理员角色后，目标用户需重新登录才能刷新权限。
           </div>
@@ -317,7 +319,7 @@ export default function UsersAdminPage() {
               </div>
             </StickerCard>
           ))}
-          {users.length === 0 && (
+          {data && users.length === 0 && (
             <div className="py-16 text-center text-sm text-slate-500">没有匹配的用户</div>
           )}
         </div>

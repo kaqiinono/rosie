@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type RefObject, type ReactNode } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState, type RefObject, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '../../utils/reading-data'
 import { readingSegments } from '../../utils/listening-clips'
@@ -33,6 +33,7 @@ interface PassageViewProps {
   /** Reading mode — drives capsule styling intensity.
    *  'learn' = full color capsule. 'focus' = subtle bold + tint, no bg. */
   mode?: 'learn' | 'focus'
+  cefrLevel?: string
   /** Optional render slot injected at the end of each paragraph (e.g. recall quiz). */
   renderParagraphFooter?: (paragraphIndex: number) => ReactNode
   /** Optional sentence anchors for continuous Story reading/bookmarks. */
@@ -41,6 +42,7 @@ interface PassageViewProps {
   renderClipButton?: (cue: string) => ReactNode
   narrationRef?: RefObject<HTMLVideoElement | null>
   sentenceGroups?: StorySentence[][]
+  renderStorySentenceControl?: (sentence: StorySentence) => ReactNode
 }
 
 const LEVEL_CLASS: Record<MasteryLevel, string> = {
@@ -98,12 +100,14 @@ export default function PassageView({
   recallOutcomes,
   recallCounts,
   mode = 'learn',
+  cefrLevel,
   renderParagraphFooter,
   listeningTarget,
   listeningCollapsed = false,
   renderClipButton,
   narrationRef,
   sentenceGroups,
+  renderStorySentenceControl,
 }: PassageViewProps) {
   const listeningHighlight = listeningCollapsed
     ? 'box-decoration-clone rounded-sm bg-[#fde68a]'
@@ -285,7 +289,7 @@ export default function PassageView({
               setSelectedMatch(wordFormMatch)
             }}
             className={`relative inline cursor-pointer rounded-md px-1 py-0.5 font-bold transition-colors ${levelClass[level]} ${lessonEmphasisClass} ${outcomeClass}`}
-            title={`${isCurrentLesson ? '本课重点词' : `来自 ${source} 词库`} · 点击查看词卡`}
+            title={`${cefrLevel ? `CEFR ${cefrLevel}` : isCurrentLesson ? '本课重点词' : `来自 ${source} 词库`} · 点击查看词卡`}
           >
             {matched}
             {isCurrentLesson && mode === 'focus' && (
@@ -375,17 +379,20 @@ export default function PassageView({
             <p className="break-words">
               {sentenceGroups?.[i]
                 ? sentenceGroups[i].map((sentence) => (
-                    <span
-                      key={sentence.id}
-                      id={sentence.id}
-                      data-chapter-key={passage.lesson}
-                      data-story-sentence
-                      data-sentence-index={sentence.index}
-                      data-sentence-text={sentence.text}
-                      className="scroll-mt-48 md:scroll-mt-36"
-                    >
-                      {renderParagraph(sentence.text, i * 1000 + sentence.index)}{' '}
-                    </span>
+                    <Fragment key={sentence.id}>
+                      <span
+                        id={sentence.id}
+                        data-chapter-key={passage.lesson}
+                        data-story-sentence
+                        data-story-preview={listeningTarget === sentence.id ? '' : undefined}
+                        data-sentence-index={sentence.index}
+                        data-sentence-text={sentence.text}
+                        className="scroll-mt-48 md:scroll-mt-36"
+                      >
+                        {renderParagraph(sentence.text, i * 1000 + sentence.index)}
+                      </span>
+                      {renderStorySentenceControl?.(sentence)}{' '}
+                    </Fragment>
                   ))
                 : renderTextbookParagraph(p, i)}
             </p>
@@ -400,6 +407,8 @@ export default function PassageView({
         entries={lessonWords}
         passage={passage}
         mastery={selected ? masteryMap[wordKey(selected)] : undefined}
+        cefrLevel={cefrLevel}
+        showMastery={!cefrLevel}
         onEntryChange={(entry) => {
           setSelected(entry)
           setSelectedMatch(null)

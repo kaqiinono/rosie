@@ -61,6 +61,10 @@ export type BubblesProps = {
 
 type BubbleStyle = CSSProperties & Record<'--tg-size' | '--tg-tint' | '--tg-dur' | '--tg-delay' | '--tg-drift-x' | '--tg-drift-y', string>
 
+export function isGroundBubble(bud: Pick<Bud, 'subject' | 'crown'>) {
+  return bud.subject === 'life' || !!bud.crown
+}
+
 type HoldGesture = {
   id: string
   pointerId: number
@@ -386,7 +390,8 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
           ? countdownDisplay(Math.max(0, now - startedMs), bud.minutes)
           : null
         const stateLabel = countdown ? `${countdown.caption} ${countdown.time}` : status ? bubbleStates[status].label : ''
-        const label = bud.crown ? '点一下完成' : status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
+        const small = !!positions && isGroundBubble(bud)
+        const label = small || bud.crown ? '点一下完成' : status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
         const holdable = !disabled && status === 'running' && !!onHoldFinish
         const hint = saving ? '，正在开花，请稍候' : holdable ? '，按住开花，点一下查看' : status === 'running' ? '，点击查看详情' : ''
         const style: BubbleStyle = {
@@ -474,7 +479,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
                 {!bud.crown && (
                   <BubbleTaskIcon subject={bud.subject} className="tg-bubble-subject-icon" />
                 )}
-                <span className="mt-0.5 line-clamp-2 block text-[calc(var(--tg-size)*0.13)] font-extrabold leading-tight text-[#4a3728]">
+                <span className={`mt-0.5 line-clamp-2 block font-extrabold leading-tight text-[#4a3728] ${small ? 'text-xs' : 'text-[calc(var(--tg-size)*0.13)]'}`}>
                   {countdown && bud.overdue ? '补做 · ' : ''}{bud.name}
                 </span>
                 {saving ? (
@@ -492,7 +497,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
                       <strong className="tabular-nums">{countdown.time}</strong>
                     </span>
                   </Badge>
-                ) : (
+                ) : !small && (
                   <span className="block text-[calc(var(--tg-size)*0.1)] leading-none tracking-wider">{label || '🌸'.repeat(n)}</span>
                 )}
               </span>

@@ -10,6 +10,7 @@ import { clock, dayOf, elapsed, shift, timing, type WorkStep } from '@/lib/time-
 import { bubbleSubject } from '@/components/tree-demo/garden/model'
 import { treeDates, useTimeTree, useTreeHistory } from './useTimeTree'
 import { StepPanel, TreeWait } from './StepPanel'
+import { useFlowerRewardToast } from './useFlowerRewardToast'
 
 interface DayTotals {
   plan: number
@@ -56,8 +57,9 @@ function journalDays(steps: WorkStep[]) {
   }
   for (const parts of groups.values()) {
     const flowers = parts.find(part => part.flowers)?.flowers
+    const week = weeklyHomeworkStart(parts[0])
     const finished = flowers ? parts.some(part => part.flowers?.complete) : parts.every(part => part.end)
-    if (weeklyHomeworkStart(parts[0])) {
+    if (week) {
       const current = parts.find(part => !isWeeklyPartialReceipt(part))
       if (current?.planned) {
         entry(current.planned).plan++
@@ -75,7 +77,7 @@ function journalDays(steps: WorkStep[]) {
       .filter((d): d is string => !!d)
       .sort()
       .at(-1)
-    if (planned && !flowers) {
+    if (planned && !flowers && !week) {
       entry(planned).plan++
       if (finished) entry(planned).done++
     }
@@ -96,6 +98,7 @@ function journalDays(steps: WorkStep[]) {
 
 export default function HomeworkJournal({ calendar = false }: { calendar?: boolean }) {
   const scene = useTimeTree()
+  const flowerReward = useFlowerRewardToast()
   const [selected, select] = useState<string | null>(null)
   const [period, setPeriod] = useState<'week' | 'month'>('week')
   const [id, setId] = useState<string | null>(null)
@@ -154,6 +157,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
   }
   return (
     <StickerCard as="section" className="my-3">
+      {flowerReward.toast}
       <Flex direction="column" gap="3">
         <Flex gap="2" align="center" wrap="wrap">
           <Text as="div" size="5" weight="bold">
@@ -280,6 +284,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             step={step}
             select={setId}
             close={() => setId(null)}
+            onFinished={finished => flowerReward.showReward(finished)}
             homework
           />
         )}

@@ -1,6 +1,8 @@
 // Visual renderer adapted from the supplied lucky-wheel.html. No auth or persistent local data.
 import { REWARD_PALETTE, PUNISHMENT_PALETTE, PRESET_POOL, EMOJI_CHOICES, KEYWORD_EMOJIS } from './presets.js?v=2';
 import { request, confirmAction, signal } from './bridge.js?v=1';
+const treeEmbed = new URLSearchParams(window.location.search).get('mode') === 'tree';
+if (treeEmbed) document.body.dataset.embed = 'tree';
 let state = { mode:'reward', soundOn:true, voiceOn:false, mysteryMode:false, noRepeatMode:false, rewards:[], punishments:[], history:[] };
 let revision = 0;
 let busy = false;
@@ -1154,6 +1156,7 @@ async function launchSpin(power = 0) {
     playLaunchWhoosh(power);
     setMascotDialogue(state.mode === 'reward' ? '呼呼呼！大奖正在飞速转动中，会停在哪一格呢？🎉' : '哇哈哈！捣蛋转盘起飞啦！😜', 'spin');
   } catch (error) {
+    if (treeEmbed && spinReceipt) signal('spin-finished', { ticket: spinReceipt.id });
     animationItems = null;
     spinReceipt = null;
     spinSnapshot = null;
@@ -1175,6 +1178,12 @@ function onSpinFinished() {
   launchConfetti(rect.left+rect.width/2, rect.top+rect.height/2, 130);
   setMascotDialogue(isReward ? `哇塞！！恭喜抽中【${receipt.emoji} ${receipt.text}】！🌟` : `哈哈哈！！抽中【${receipt.emoji} ${receipt.text}】！勇敢挑战吧！😜`, 'win');
   speakText(`${isReward ? '恭喜抽中奖励' : '抽中趣味惩罚'}：${receipt.text}`);
+  if (treeEmbed) {
+    spinReceipt = null;
+    spinSnapshot = null;
+    signal('spin-finished', { ticket: receipt.id });
+    return;
+  }
   modalBadge.textContent = isReward ? '🎁 幸运奖励大爆发！' : '😜 欢乐挑战降临！';
   modalEmoji.textContent = receipt.emoji;
   modalTitle.textContent = receipt.text;

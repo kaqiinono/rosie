@@ -90,9 +90,11 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   The top-level bilingual 故事会 shelf at /stories groups series by language (en/zh).
   Register collections in utils/story-data.ts as series → volume → chapter. Readers remember
   source selections per account on this device (initially empty). Only the load button fetches
-  selected stages; each PassageView receives words actually found in that chapter
-  so card navigation stays chapter-local. Word cards show both word-library and story-chapter source;
-  reviewed out-of-library aids remain chapter-local glossary entries.
+  selected stages. The independent CEFR mode reads only verified senses for the selected exact
+  level from the shared vocabulary catalog; it does not infer levels from stage memberships or
+  disambiguate meanings in context. Switching modes preserves both selections. Each PassageView
+  receives only words found in that chapter; cards show the level or library and the story source.
+  The chapter glossary remains accessible in CEFR mode, even when a term also matches the level.
   Reading word matching is centralized in `utils/word-forms.ts`: safe regular forms are generated
   at runtime, while `word_entries.word_forms` stores only explicit exceptions as categorized arrays
   (`past`, `pastParticiple`, `plural`, `thirdPerson`, etc.). All highlighting, focus navigation,
@@ -381,7 +383,12 @@ unmounts the reader and stops its audio without discarding the entry editor.
 ### Story narration
 
 English story chapter/full readers use the bound Baidu chapter or narration asset and native
-WebVTT metadata tracks. From the repo root, run
+WebVTT metadata tracks. 单句试听 loads the selected recording's VTT on demand and shows an
+inline control only for timed sentences. 多选 checks all timed sentences between two endpoints
+and continuously plays from the earliest start to the latest end, retaining the range for replay.
+Untimed gaps are not selectable endpoints but are part of the continuous recording. Both modes
+reuse the bound stream in a finite playback program;
+starting normal narration or closing sentence mode stops the preview. From the repo root, run
 `python3 scripts/align-story-audio.py` to process Charlie's numbered recordings from
 `~/rosie/Charlie and the Chocolate Factory` in chapter order. The leading number maps to
 the catalog chapter number; unnumbered files are ignored. Override the folder with

@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 import type { ProblemDifficulty } from '@rosie/core'
@@ -46,6 +47,7 @@ function SectionListPage({ section }: { section: SectionKey }) {
   const total = list.length
   const label = lessonDisplayLabelFromRegistry(entry.lessonKey, true)
   const sectionPath = `${basePath}/${section}`
+  const pretestLink = section === 'pretest' ? module.pretestLink : undefined
 
   const practicePool = useMemo((): PracticeQueueItem[] => {
     return list.map((problem, idx) => ({
@@ -152,6 +154,15 @@ function SectionListPage({ section }: { section: SectionKey }) {
           </div>
         )}
       </div>
+      {pretestLink && (
+        <div className="mb-4">
+          <Button asChild variant="soft">
+            <Link href={`${basePath}/lesson/${pretestLink.problemId}`}>
+              {pretestLink.label}
+            </Link>
+          </Button>
+        </div>
+      )}
       <LessonProblemList
         problems={list}
         practiceCount={practiceCount}

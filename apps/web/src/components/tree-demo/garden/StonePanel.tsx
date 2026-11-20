@@ -1,9 +1,8 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import clsx from 'clsx'
 import { StickerCard } from '@rosie/ui'
-import { Badge, Button, Progress, Text } from '@rosie/ui/themes'
+import { Button, Progress, Text } from '@rosie/ui/themes'
 import {
   CORE_SUBJECTS,
   SUBJECTS,
@@ -15,26 +14,25 @@ import {
 type Props = {
   state: GardenState
   thresholds?: Record<CoreSubject, number>
+  lifeThreshold: number
   canExchange: boolean
+  busy: boolean
   onExchange: () => void
-  /** 面板在手机上放在屏幕底部（横向铺满）时，三堆石头改为一行三列 */
-  bottomOnMobile?: boolean
-  /** 仅手机底部布局显示：并入「绿松石 / 换心愿」那一行的额外操作按钮，省去单独的卡片 */
+  onWishHint: (message: string | null) => void
+  /** 仅手机底部布局显示的额外操作按钮。 */
   mobileActions?: ReactNode
   registerPile: (key: SubjectKey, el: HTMLElement | null) => void
 }
 
-const PROGRESS_COLOR: Record<CoreSubject, 'red' | 'amber' | 'blue'> = {
-  chinese: 'red',
-  math: 'amber',
-  english: 'blue',
-}
+const STONES: SubjectKey[] = [...CORE_SUBJECTS, 'life']
+const PROGRESS_COLORS = { chinese: 'red', math: 'amber', english: 'blue', life: 'green' } as const
+const STONE_LIST = new Intl.ListFormat('zh-CN', { type: 'conjunction' })
 
-export function Gem({ color, deep, glow }: { color: string; deep: string; glow: boolean }) {
+export function Gem({ color, deep }: { color: string; deep: string }) {
   return (
     <svg
       viewBox="0 0 32 32"
-      className={`size-8 shrink-0 ${glow ? 'tg-gem-glow' : ''}`}
+      className="size-8 shrink-0"
       aria-hidden="true"
     >
       <path
@@ -64,84 +62,86 @@ export function Gem({ color, deep, glow }: { color: string; deep: string; glow: 
   )
 }
 
-/** 树旁的石头坞：三堆石头各带进度，三堆都够 N 颗才能换心愿；绿松石只收藏 */
 export default function StonePanel({
   state,
   thresholds,
+  lifeThreshold,
   canExchange,
+  busy,
   onExchange,
-  bottomOnMobile = false,
+  onWishHint,
   mobileActions,
   registerPile,
 }: Props) {
   const { stones, settings, remainder } = state
+  const progress = STONES.map(key => {
+    const target = key === 'life' ? lifeThreshold : settings.n
+    const count = stones[key]
+    return { key, target, count, missing: Math.max(0, target - count) }
+  })
+  const totalMissing = progress.reduce((total, item) => total + item.missing, 0)
   return (
-    <StickerCard tone="paper" size="sm" elevation="md" radius="md" className="w-full">
-      <div className={clsx('grid gap-2 sm:gap-3', bottomOnMobile && 'max-md:grid-cols-3')}>
-        {CORE_SUBJECTS.map((key) => {
+    <StickerCard tone="paper" size="sm" elevation="md" radius="md" className="@container flex w-full flex-col">
+      <div className="grid grid-cols-2 gap-x-2 gap-y-3 @min-[28rem]:grid-cols-4">
+        {progress.map(({ key, count, target, missing }) => {
           const meta = SUBJECTS[key]
-          const count = stones[key]
-          const enough = count >= settings.n
-          const toNext = (thresholds?.[key] ?? settings.k) - remainder[key]
+          const nextFruit = key === 'life'
+            ? '习惯养成得绿苹果'
+            : `再开 ${(thresholds?.[key] ?? settings.k) - remainder[key]} 朵花结苹果`
           return (
             <div
               key={key}
               ref={(el) => registerPile(key, el)}
               className="flex min-w-0 flex-col gap-1"
-              title={`再开 ${toNext} 朵${meta.label}花，结下一个苹果`}
+              title={nextFruit}
             >
               <div className="flex flex-wrap items-center gap-1.5">
-                <Gem color={meta.color} deep={meta.deep} glow={enough} />
+                <Gem color={meta.color} deep={meta.deep} />
                 <div className="min-w-10 flex-1">
                   <Text as="div" size="1" color="gray" weight="bold" truncate>
                     {meta.stone}
                   </Text>
                   <Text as="div" size="3" weight="bold">
-                    {count} / {settings.n}
+                    {count} / {target}
                   </Text>
                 </div>
-                {enough && (
-                  <Badge color="green" variant="soft" radius="full" className="max-sm:hidden">
-                    够啦
-                  </Badge>
-                )}
               </div>
               <Progress
-                value={Math.min(count, settings.n)}
-                max={settings.n}
-                color={PROGRESS_COLOR[key]}
+                aria-label={`${meta.stone}兑换进度`}
+                value={Math.min(count, target)}
+                max={target}
+                color={PROGRESS_COLORS[key]}
                 size="2"
+                className="tg-stone-progress flex-none"
+                data-stone-progress={missing === 0 ? 'full' : missing === 1 ? 'near' : undefined}
               />
-              <Text as="div" size="1" color="gray" className="max-sm:hidden">
-                再开 {toNext} 朵花结苹果
+              <Text as="div" size="1" color="gray" className="truncate max-sm:hidden">
+                {nextFruit}
               </Text>
             </div>
           )
         })}
       </div>
-      <div
-        className={clsx(
-          'mt-3 flex flex-col items-start gap-2',
-          bottomOnMobile && 'max-md:mt-2 max-md:flex-row max-md:flex-wrap max-md:items-center',
-        )}
-      >
-        <div
-          ref={(el) => registerPile('life', el)}
-          className={clsx('flex items-center gap-2', bottomOnMobile && 'max-md:mr-auto')}
-          title="绿松石只收藏，不参与兑换"
-        >
-          <Gem color={SUBJECTS.life.color} deep={SUBJECTS.life.deep} glow={false} />
-          <Text size="2" weight="bold">
-            绿松石 {stones.life}
-          </Text>
-        </div>
-        <Text size="1" color="gray" className="min-w-0 max-sm:hidden">
-          红、黄、蓝都够 {settings.n} 颗才能换 · 已兑换 {state.exchanges} 次
-        </Text>
-        <Button size="2" disabled={!canExchange} onClick={onExchange}>
-          🎁 换心愿
+      <div className="mt-auto flex flex-col gap-2 pt-3">
+        {mobileActions && <div className="flex flex-wrap gap-2 md:hidden">{mobileActions}</div>}
+        <Button size="3" color={canExchange ? 'amber' : 'gray'} variant={canExchange ? 'solid' : 'soft'}
+          data-wish-ready={canExchange || undefined} className="tg-wish-button min-h-11 w-full whitespace-normal text-center"
+          disabled={busy} onClick={event => {
+            if (canExchange) { onExchange(); return }
+            const button = event.currentTarget
+            button.classList.remove('tg-wish-hint')
+            void button.offsetWidth
+            button.classList.add('tg-wish-hint')
+            const remaining = progress.filter(item => item.missing > 0)
+              .map(({ key, missing }) => `${missing} 颗${SUBJECTS[key].stone}`)
+            onWishHint(remaining.length ? `还差 ${STONE_LIST.format(remaining)}哦！` : null)
+          }}>
+          {canExchange ? (
+            <span><span aria-hidden="true">🎉</span> 宝石已集齐！立即换心愿</span>
+          ) : (
+            <span>{totalMissing > 0 ? `还差 ${totalMissing} 颗宝石，去集齐换心愿` : '查看下次兑换时间'} <span aria-hidden="true">›</span></span>
+          )}
         </Button>
-        {mobileActions && <div className="contents md:hidden">{mobileActions}</div>}
       </div>
     </StickerCard>
   )

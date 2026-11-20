@@ -1,17 +1,21 @@
 # Rosie 数据库备份
 
 定时任务已在 [私有备份仓库](https://github.com/kaqiinono/rosie-supabase-backup) 启用。
-首份归档 `rosie-supabase-20261119T080930351Z-462a845c.tar.gz` 已于北京时间
+首尔首份归档 `rosie-supabase-20261119T080930351Z-462a845c.tar.gz` 已于北京时间
 2026 年 11 月 19 日 16:14 通过百度网盘读回校验，大小 55,355,678 字节。
 独立下载也验证了归档和其中八个导出文件的 SHA-256。
 [首次成功运行](https://github.com/kaqiinono/rosie-supabase-backup/actions/runs/44485231977)
 
-GitHub Actions 工作流 `Supabase backup to Baidu` 每天北京时间 03:17 导出 Rosie 的
-Supabase 数据库。每天北京时间 10:43 查找近 30 小时内通过上传校验的备份。
+东京首份归档 `rosie-supabase-20261120T043116244Z-39538ad0.tar.gz` 已于北京时间
+2026 年 11 月 20 日 12:34 通过百度网盘读回 SHA-256 校验，大小 55,180,962 字节。
+[东京首次成功运行](https://github.com/kaqiinono/rosie-supabase-backup/actions/runs/44674939234)
+
+GitHub Actions 工作流 `Supabase backup to Baidu` 每天北京时间 03:17 导出 `rosie-tokyo` 的
+Supabase 数据库。原首尔项目已停止定时导出。每天北京时间 10:43 查找近 30 小时内通过上传校验的备份。
 手动运行时选择 `backup` 导出或 `check` 巡检。
 工作流失败通知使用 GitHub Actions 的仓库通知。定时工作流依赖 GitHub 调度。
 
-百度网盘目标为 `/airosie/backup/supabase`。备份文件是未加密的
+东京和已有的首尔归档共用百度网盘目录 `/airosie/backup/supabase`，沿用同一文件名格式及 7 天保留规则。备份文件是未加密的
 `rosie-supabase-<UTC 时间>-<随机后缀>.tar.gz`，包含儿童学习记录、账户数据和服务端授权数据。
 仅将该文件夹留在有权限的百度网盘账号内。工作流不发布数据库文件为 Actions Artifact。
 临时备份目录在运行结束后移除。
@@ -22,9 +26,9 @@ Supabase 数据库。每天北京时间 10:43 查找近 30 小时内通过上传
 
 | 类型 | 名称 | 值 |
 | --- | --- | --- |
-| Variable | `SUPABASE_BACKUP_POOLER_URL` | Supavisor Session pooler 的无密码 URL，端口 5432，用户名格式为 `rosie_backup.<项目引用>` |
-| Secret | `SUPABASE_BACKUP_DB_PASSWORD` | 专用数据库导出账号密码 |
-| Secret | `SUPABASE_SERVICE_ROLE_KEY` | Rosie 项目的 Supabase 服务端密钥 |
+| Variable | `SUPABASE_TOKYO_BACKUP_POOLER_URL` | Supavisor Session pooler 的无密码 URL，端口 5432，用户名格式为 `rosie_backup.<项目引用>` |
+| Secret | `SUPABASE_TOKYO_BACKUP_DB_PASSWORD` | 专用数据库导出账号密码 |
+| Secret | `SUPABASE_TOKYO_SERVICE_ROLE_KEY` | `rosie-tokyo` 项目的 Supabase 服务端密钥 |
 | Secret | `BAIDU_APP_KEY`、`BAIDU_SECRET_KEY` | Rosie 共享百度网盘应用的服务端凭据 |
 
 凭据配置完成后，将仓库变量 `ROSIE_BACKUPS_ENABLED` 设为 `true`，再在默认分支启用备份。备份任务通过现有共享百度授权访问目标目录，

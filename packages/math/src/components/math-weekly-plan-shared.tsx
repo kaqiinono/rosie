@@ -303,6 +303,16 @@ export const MATH_PLAN_LESSONS = [
     desc: '抽屉原理·最不利原则·植树间隔',
   },
   {
+    id: '2-14',
+    label: '第14讲 · 枚举法进阶',
+    short: '枚举法进阶',
+    emoji: '🔢',
+    color: 'rgba(20,184,166,1)',
+    bg: 'rgba(20,184,166,.08)',
+    border: 'rgba(20,184,166,.3)',
+    desc: '分类枚举·有序与无序分堆·硬币枚举',
+  },
+  {
     id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',

@@ -5,7 +5,7 @@ import { PageShell, StickerCard } from '@rosie/ui'
 import { Button, Flex, Text, TextField } from '@rosie/ui/themes'
 import { CORE_SUBJECTS, SUBJECTS } from '@/components/tree-demo/garden/model'
 import { tomatoPrices } from '@/lib/time-tree/rewards'
-import { defaultRules, type Rules } from '@/lib/time-tree/types'
+import { lifeWishThreshold, type Rules } from '@/lib/time-tree/types'
 import { TreeWait } from './StepPanel'
 import { useTimeTree, type TreeController } from './useTimeTree'
 
@@ -32,21 +32,21 @@ function TomatoPriceField({ label, current, value, onChange }: {
 }
 
 function Form({ api, initial }: { api: TreeController; initial: Rules }) {
-  const [rules, setRules] = useState(() => ({ ...initial, tomatoPrices: tomatoPrices(initial) }))
+  const [rules, setRules] = useState(() => ({ ...initial, wishLife: lifeWishThreshold(initial), tomatoPrices: tomatoPrices(initial) }))
   const [pin, setPin] = useState('')
   const [notice, setNotice] = useState('')
   const labels = {
     chinese: '语文每果花数',
     math: '数学每果花数',
     english: '英语每果花数',
-    wish: '兑换所需每色石头',
+    wish: '心愿所需红、黄、蓝宝石（每色）',
   }
   const currentPrices = tomatoPrices(api.tree!.rules)
   return (
     <StickerCard>
       <Flex direction="column" gap="3">
         <Text>修改从明天起生效，已结的果实与余花保留。</Text>
-        {(Object.keys(defaultRules) as (keyof typeof labels)[]).map((k) => (
+        {(Object.keys(labels) as (keyof typeof labels)[]).map((k) => (
           <label key={k}>
             {labels[k]} · 当前 {api.tree!.rules[k]}
             <TextField.Root
@@ -58,6 +58,18 @@ function Form({ api, initial }: { api: TreeController; initial: Rules }) {
             />
           </label>
         ))}
+        <label>
+          心愿所需绿松石 · 当前 {lifeWishThreshold(api.tree!.rules)} 颗
+          <TextField.Root
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={Number.MAX_SAFE_INTEGER}
+            step={1}
+            value={rules.wishLife || ''}
+            onChange={event => setRules(previous => ({ ...previous, wishLife: Number(event.target.value) }))}
+          />
+        </label>
         <fieldset>
           <Text asChild size="3" weight="bold"><legend>番茄兑换</legend></Text>
           <Flex direction="column" gap="2" mt="2">

@@ -86,10 +86,9 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
   const nextDates = describeNextHomeworkDates(draft)
   const input: HomeworkInput = {
     ...draft,
-    // The legacy table requires 1–120; life execution ignores this stored field.
     estimated_minutes: draft.subject === 'life'
       ? homework?.estimated_minutes ?? EMPTY_HOMEWORK.estimated_minutes
-      : minutes.trim() === '' ? 0 : Number(minutes),
+      : minutes.trim() === '' ? Number.NaN : Number(minutes),
     practice_binding: draft.subject === 'life' ? null : draft.practice_binding,
   }
   const patch = (next: Partial<HomeworkInput>) => {
@@ -359,14 +358,14 @@ export default function HomeworkEditor({ homework, onSave, onClose }: Props) {
                   {minutesLabel}
                   <Text size="1" color="gray" weight="regular">
                     {' '}
-                    分钟，最多 {MAX_HOMEWORK_MINUTES}
+                    0–{MAX_HOMEWORK_MINUTES} 分钟，填 0 可点击气泡直接完成
                   </Text>
                 </Text>
                 <TextField.Root
                   aria-label={`${minutesLabel}（分钟）`}
                   type="number"
                   inputMode="numeric"
-                  min={1}
+                  min={0}
                   max={MAX_HOMEWORK_MINUTES}
                   step={1}
                   required

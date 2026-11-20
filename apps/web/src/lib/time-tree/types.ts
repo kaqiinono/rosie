@@ -47,6 +47,10 @@ export interface WorkStep {
   audit: { at: string; previousStart: string | null; previousEnd: string | null }[]
 }
 
+export function isInstantHomework(step: WorkStep): boolean {
+  return step.subject !== 'life' && step.minutes === 0 && !step.flowers
+}
+
 /** P0、P1 是今天要做，计入今日目标。P2 及以后可以挪到下一天。 */
 export function isMustDo(priority: string): boolean {
   return priority === 'P0' || priority === 'P1'
@@ -72,9 +76,25 @@ export interface Rules {
   math: number
   english: number
   wish: number
+  wishLife?: number
   tomatoPrices?: TomatoPrices
 }
-export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4 }
+const DEFAULT_WISH_LIFE = 20
+export const defaultRules: Rules = { chinese: 7, math: 4, english: 3, wish: 4, wishLife: DEFAULT_WISH_LIFE }
+
+export function lifeWishThreshold(rules: Rules): number {
+  return rules.wishLife ?? DEFAULT_WISH_LIFE
+}
+
+export interface BoxWheelItem {
+  id: string
+  text: string
+  emoji: string
+  color: string
+  kind: 'reward'
+  weight: number
+  enabled: true
+}
 
 export interface TreeData {
   weeklyScheduleVersion?: number
@@ -110,7 +130,12 @@ export interface TreeData {
   exchanges: string[]
   boxReady: boolean
   lastBox: string | null
-  prize: { name: string; ticket: string; source?: 'tomato' } | null
+  prize: {
+    name: string
+    ticket: string
+    source?: 'tomato'
+    wheel?: { entryId: string; emoji: string; pct: number; items: BoxWheelItem[] }
+  } | null
 }
 
 export function isExhaustedPendingStep(tree: Pick<TreeData, 'practiceProgress'>, step: WorkStep): boolean {
@@ -129,6 +154,7 @@ export type ActionKind =
   | 'preparePractice'
   | 'school'
   | 'start'
+  | 'stop'
   | 'collectFlowers'
   | 'editMathQuestion'
   | 'answerHomeworkQuestion'

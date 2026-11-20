@@ -3,9 +3,9 @@ import type { StorySeries } from './story-types'
 export const roaldDahl: StorySeries = {
   language: 'en',
   slug: 'roald-dahl',
-  title: 'Roald Dahl 故事集',
+  title: 'Roald Dahl Collection',
   author: 'Roald Dahl',
-  description: 'Stories by Roald Dahl.',
+  description: 'Step inside Willy Wonka’s chocolate factory, where a golden ticket opens the door to a world of sweet surprises.',
   volumes: [
     {
       slug: 'charlie-and-the-chocolate-factory',

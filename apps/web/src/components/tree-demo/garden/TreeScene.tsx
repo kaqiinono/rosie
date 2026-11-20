@@ -380,7 +380,7 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
     >
       <Defs />
 
-      <ellipse cx="320" cy={GROUND_Y + 4} rx="230" ry="20" fill="url(#tg-ground)" />
+      <ellipse data-tree-ground="" cx="320" cy={GROUND_Y + 4} rx="230" ry="20" fill="url(#tg-ground)" />
 
       <g className="tg-tree-sway">
         {/* 后层树冠 */}

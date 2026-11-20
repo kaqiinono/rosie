@@ -75,7 +75,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   {
     pattern: ['stories', '[seriesSlug]'],
     label: '{seriesSlug}',
-    labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House', 'roald-dahl': 'Roald Dahl 故事集' } },
+    labelMap: { seriesSlug: { 'magic-tree-house': 'Magic Tree House', 'roald-dahl': 'Roald Dahl Collection' } },
   },
   {
     pattern: ['stories', '[seriesSlug]', '[volumeSlug]'],

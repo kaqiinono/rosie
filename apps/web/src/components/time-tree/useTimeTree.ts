@@ -180,16 +180,32 @@ export function useTimeTree() {
   const queue = useRef<Promise<void>>(Promise.resolve())
   const lastExclusive = useRef(queue.current)
   const queuedCount = useRef(0)
+  const startRequest = useRef<{ owner: string; stepId: string; result: Promise<TreeData | null> } | null>(null)
+  const [starting, setStarting] = useState<{ owner: string; stepId: string; at: string } | null>(null)
   const [pending, setPending] = useState<{ owner: string; revision: number; tree: TreeData } | null>(null)
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<Error | null>(null)
   const currentTree = pending && pending.owner === id && pending.revision === data?.revision ? pending.tree : data?.tree ?? null
-  const tree = useMemo(() => currentTree ? visibleHomeworkTree(currentTree) : null, [currentTree])
+  const startingStepId = starting && starting.owner === id ? starting.stepId : null
+  const tree = useMemo(() => {
+    if (!currentTree) return null
+    const visible = visibleHomeworkTree(currentTree)
+    if (!starting || !startingStepId) return visible
+    const target = visible.steps.find(step => step.id === startingStepId)
+    if (!target?.planned || target.start || target.end || target.skipped ||
+      visible.steps.some(step => step.start && !step.end)) return visible
+    const preview = { ...visible, steps: visible.steps.map(step => step.id === target.id
+      ? { ...step, start: starting.at, returned: null } : { ...step }) }
+    placeTodayBubbles(preview)
+    return preview
+  }, [currentTree, starting, startingStepId])
   useEffect(() => {
     if (id) return subscribeToPolling(id)
   }, [id])
   function run(action: TreeAction, expectedRevision?: number): Promise<TreeData | null> {
-    if (!id || (lock.current && action.kind !== 'pick' && action.kind !== 'pop')) {
+    const start = startRequest.current
+    const followsStart = (action.kind === 'finish' || action.kind === 'stop') && start && start.owner === id && start.stepId === action.id
+    if (!id || (lock.current && !followsStart && action.kind !== 'pick' && action.kind !== 'pop')) {
       return Promise.resolve(null)
     }
     queuedCount.current += 1
@@ -197,11 +213,27 @@ export function useTimeTree() {
     setBusy(true)
     // Each queued interaction reads the latest committed revision when it starts.
     const barrier = action.kind === 'pop' ? lastExclusive.current : queue.current
-    const result = barrier.then(() => execute(action, expectedRevision))
+    const result = barrier.then(async () => {
+      if (followsStart) {
+        const confirmed = (await start.result)?.steps.find(step => step.id === action.id)
+        if (!confirmed?.start || confirmed.end || confirmed.skipped) return null
+        if (action.kind === 'stop') return execute({ ...action, start: confirmed.start }, expectedRevision)
+      }
+      return execute(action, expectedRevision)
+    })
+    if (followsStart) startRequest.current = null // Queue at most one finish or stop behind this start.
+    if (action.kind === 'start' && action.id) {
+      startRequest.current = { owner: id, stepId: action.id, result }
+      setStarting({ owner: id, stepId: action.id, at: new Date(Date.now() + (data?.clockOffsetMs ?? 0)).toISOString() })
+    }
     const finished = result.then(() => undefined, () => undefined)
     if (action.kind === 'pop') queue.current = Promise.all([queue.current, finished]).then(() => undefined)
     else lastExclusive.current = queue.current = finished
     return result.finally(() => {
+      if (action.kind === 'start') {
+        if (startRequest.current?.result === result) startRequest.current = null
+        setStarting(null)
+      }
       queuedCount.current -= 1
       if (queuedCount.current === 0) {
         lock.current = false
@@ -216,17 +248,13 @@ export function useTimeTree() {
       // finish 后再 pop 时，组件还没重渲染，闭包里的 revision 已过期。
       const revision = expectedRevision ?? store.getSessionData(id)?.revision ?? data?.revision
       const saved = store.getSessionData(id)
-      if (saved && (action.kind === 'start' || action.kind === 'move' || action.kind === 'nextDay')) {
+      if (saved && (action.kind === 'move' || action.kind === 'nextDay')) {
         const tree = { ...saved.tree, steps: saved.tree.steps.map(step => ({ ...step })) }
         const step = tree.steps.find(item => item.id === action.id)
         if (step && !step.start && !step.end && !isExhaustedPendingStep(tree, step)) {
-          if (action.kind === 'start') {
-            step.start = new Date(Date.now() + (saved.clockOffsetMs ?? 0)).toISOString()
-          } else {
-            const base = step.planned && step.planned > tree.today ? step.planned : tree.today
-            step.planned = action.kind === 'nextDay' ? shift(base, 1) : action.day ?? step.planned
-            step.slot = null
-          }
+          const base = step.planned && step.planned > tree.today ? step.planned : tree.today
+          step.planned = action.kind === 'nextDay' ? shift(base, 1) : action.day ?? step.planned
+          step.slot = null
           step.returned = null
           placeTodayBubbles(tree)
           setPending({ owner: id, revision: saved.revision, tree })
@@ -242,6 +270,7 @@ export function useTimeTree() {
       }
       return visibleHomeworkTree(next.tree)
     } catch (e) {
+      if (action.kind === 'start') setStarting(null)
       setActionError(e instanceof Error ? e : new Error('保存失败，请重试。'))
       setPending(null)
       if (!(e instanceof TimeTreeRequestError && e.status === 503))
@@ -253,6 +282,7 @@ export function useTimeTree() {
   }
   return {
     tree,
+    startingStepId,
     revision: data?.revision,
     historyMinutes: data?.historyMinutes,
     clockOffsetMs: data?.clockOffsetMs ?? 0,

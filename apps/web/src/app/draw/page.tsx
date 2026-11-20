@@ -122,7 +122,7 @@ function Workshop({ user }: { user: NonNullable<ReturnType<typeof useAuth>['user
         key={generation}
         ref={frame}
         title="星愿奇趣大转盘"
-        src="/draw-wheel/index.html?v=2"
+        src="/draw-wheel/index.html?v=3"
         className="block h-full w-full border-0"
         style={{ visibility: ready ? 'visible' : 'hidden' }}
         allow="autoplay"
