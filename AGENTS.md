@@ -378,7 +378,14 @@ and fruit, diary and tomato spending use individual object rows. The scene and d
 separate projections. Commands return idempotent deltas. See the cutover, rollback and latency
 acceptance instructions in [tree.md](tree.md#生命树分行存储与切换).
 
+The first scene, polling, history and retry read saved data. Supabase Cron dispatches daily
+Beijing-date rollover, flower settlement and pending homework changes to the authenticated
+maintenance endpoint. Template saves also request an owner-scoped sync. See the migration and
+Vault configuration in [tree.md](tree.md#凌晨结算与排期更新).
+
 Weekly academic assignments use one occurrence per configured week. Estimated minutes are the total weekly goal, and homework-based course progression groups the configured batches in that occurrence. Users choose when and how often to save progress. Normal sync consolidates open current/future weekly work and carries forward flowers already earned. Biweekly and three-weekly academic assignments still use per-occurrence flower collection. A versioned garden commit stores each session and its rewards. See `tree.md` and `packages/tasks/AGENTS.md`.
+
+Biweekly and three-weekly academic assignments share one bubble per cycle, keep each occurrence's availability date, and leave their progress in dated history at expiry without entering the wilt bin. The cycle projections require migration `20261120153920_time_tree_multiweek_cycle_bubbles`, applied to `rosie-tokyo`.
 
 Daily homework supports an owner-saved `include_weekends` option, defaulting off for new definitions
 and remaining on for existing definitions. Migration `20261115104319_task_homework_include_weekends.sql`

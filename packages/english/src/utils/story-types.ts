@@ -6,6 +6,7 @@ export interface StoryChapter {
   title: string
   paragraphs: string[]
   glossary: GlossaryWord[]
+  castPrefaceParagraphs?: number
 }
 
 export interface StoryVolume {

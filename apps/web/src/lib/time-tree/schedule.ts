@@ -5,14 +5,11 @@ import { planMathQuestions } from './mathQuestions'
 import { bindPractice, calendarPractice } from './practice'
 import { weeklyHomeworkStart } from './flowers'
 import { createWeeklyHomework, syncWeeklyHomework, usesWeeklyHomework, weeklyOccurrence } from './weeklyHomework'
+import { homeworkCycleKey, isMultiweekCycle } from './cycleHomework'
 
 const diff = (a: string, b: string) => Math.round((Date.parse(a) - Date.parse(b)) / 86400000)
 const weekday = (day: string) => new Date(day + 'T12:00Z').getUTCDay()
 const isWeekend = (day: string) => weekday(day) === 0 || weekday(day) === 6
-
-function isMultiweekCycle(cycle: string): boolean {
-  return cycle === 'biweekly' || cycle === 'three_weekly'
-}
 
 function usesFlowerSessions(template: Homework): boolean {
   return template.subject !== 'life' && template.estimated_minutes > 0 && isMultiweekCycle(template.cycle)
@@ -235,6 +232,11 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     ...tree.steps,
     ...(fillCurrentWindow ? tree.weekendExcludedSteps ?? [] : []),
   ].map((s) => s.occurrence))
+  const cycleTargets = new Map<string, number>()
+  for (const step of tree.steps) {
+    const key = homeworkCycleKey(step)
+    if (key && step.cycleTarget) cycleTargets.set(`${key}/${step.deadline}`, step.cycleTarget)
+  }
   // Legacy receipts continue to occupy their week even when there is no remaining task to consolidate.
   for (const occurrence of [...existing]) {
     const [id, cycle, start] = occurrence.split('/')
@@ -252,10 +254,12 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     const binding = t.practice_binding
     if (binding && !binding.progression && tree.practiceProgress?.[binding.key]?.exhausted) continue
     const segmented = usesFlowerSessions(t)
+    const currentWindow = isMultiweekCycle(t.cycle) ? period(t, tree.today) : null
+    const scheduleThrough = !fillCurrentWindow && currentWindow && currentWindow.end > through ? currentWindow.end : through
     const mathCanRefill = t.subject === 'math' && !segmented && binding?.progression?.enabled && binding.progression.mode !== 'homework' &&
       binding.rows.some(row => row.values.problemId)
     const first = dayOf(t.created_at) > tree.firstDay ? dayOf(t.created_at) : tree.firstDay
-    for (let day = from; day <= through; day = shift(day, 1)) {
+    for (let day = from; day <= scheduleThrough; day = shift(day, 1)) {
       if (t.subject === 'life' && (day !== tree.today || tree.steps.some(s =>
         s.occurrence.startsWith(t.id + '/') && s.scheduled === day && s.end))) continue
       if (day < first) continue
@@ -270,11 +274,12 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
         tree.steps.push(step)
         continue
       }
+      const count = cycleTargets.get(`${t.id}/${t.cycle}/${p.start}/${p.end}`) ?? p.count
       const offset = diff(day, p.start)
-      const ordinal = Math.ceil(((offset + 1) * p.count) / p.span) - 1
-      const windowStart = shift(p.start, Math.floor((ordinal * p.span) / p.count))
+      const ordinal = Math.ceil(((offset + 1) * count) / p.span) - 1
+      const windowStart = shift(p.start, Math.floor((ordinal * p.span) / count))
       if (day !== windowStart && day !== first && !(fillCurrentWindow && day === from)) continue
-      const windowEnd = shift(p.start, Math.floor(((ordinal + 1) * p.span) / p.count) - 1)
+      const windowEnd = shift(p.start, Math.floor(((ordinal + 1) * p.span) / count) - 1)
       const occurrence = [t.id, t.cycle, p.start, ordinal].join('/')
       if (existing.has(occurrence)) continue
       const practice = binding?.progression ? calendarPractice(binding, day, occurrence) : undefined
@@ -299,6 +304,7 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
         if (planned && !practice?.exhausted) load.set(planned, (load.get(planned) ?? 0) + flowers)
         const step: WorkStep = {
           ...(segmented ? { flowers: { collected: 0, elapsedMs: 0, complete: false } } : {}),
+          ...(isMultiweekCycle(t.cycle) ? { cycleTarget: count } : {}),
           ...(practice ? { practice: structuredClone(practice) } : {}),
           id: occurrence + '/' + index,
           occurrence,
@@ -328,9 +334,16 @@ export function schedule(tree: TreeData, templates: Homework[], from: string, th
     }
   }
   for (const template of templates) planMathQuestions(tree, template)
-  // A missed daily session stays a single pending bubble until the deadline.
+  const multiweekTemplates = new Map(active.filter(t => isMultiweekCycle(t.cycle)).map(t => [t.id, t]))
+  // A missed session remains available until the deadline.
   for (const step of tree.steps) {
-    const cycle = step.occurrence.split('/')[1]
+    const [templateId, cycle, start] = step.occurrence.split('/')
+    const template = multiweekTemplates.get(templateId)
+    if (!step.cycleTarget && step.deadline >= tree.today && homeworkCycleKey(step) && template?.cycle === cycle) {
+      const window = period(template, start)
+      if (window && window.start === start && window.end === step.deadline)
+        step.cycleTarget = cycleTargets.get(`${templateId}/${cycle}/${start}/${step.deadline}`) ?? window.count
+    }
     const flexible = step.flowers || weeklyHomeworkStart(step) || (step.minutes === 0 && isMultiweekCycle(cycle))
     if (!flexible || step.start || step.end || step.skipped || !step.planned) continue
     if (step.planned < tree.today && tree.today <= step.deadline) step.planned = tree.today

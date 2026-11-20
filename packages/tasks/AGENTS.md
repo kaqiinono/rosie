@@ -43,13 +43,11 @@ and the triggering step's `dailyRainbow` flag prevent repeat rewards; settled fl
 counted again at midnight. Partial flower sessions do not qualify as whole-task completion.
 Shared StepPanel and the life tree highlight the reward. Existing twelve-apple and blind-box
 cooldown rules remain. No migration or historical backfill; see `tree.md` for manual acceptance.
-Saving a homework template patches its list and awaits an owner-scoped refresh of the registered
-`time_tree` session store, including when its view is unmounted or initially loading. A failed
-derived refresh does not repeat the successful insert; its error remains on the tree store.
-Background sync returns `204` with server time when the cached garden revision, homework template
-revision and Shanghai date still match. A full sync returns the template revision sampled before
-reading templates. Hosted migration `20261117190930_time_tree_sync_revisions` bumps that revision on
-template insert, update and delete, with a service-only RPC for the metadata check.
+Saving, disabling or deleting a homework template patches its list and requests an owner-scoped
+execution sync, even if the tree has not opened. The loaded `time_tree` store then refreshes through
+the read-only scene endpoint. A successful template write remains saved if execution sync fails.
+Migration `20261117190930_time_tree_sync_revisions` bumps the template revision on each write so
+the scheduled job can pick up pending changes. Sync records the revision sampled before reading templates.
 Normal sync updates unfinished (including running and overdue) steps' name, subject, priority,
 instructions and changed practice binding. Completed/skipped/settled steps stay unchanged.
 Timing, estimated minutes, stages, placement, deadlines and occurrence notes follow the existing snapshots,

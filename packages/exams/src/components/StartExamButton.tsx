@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { Button, Flex, Text } from '@rosie/ui/themes'
@@ -8,8 +8,8 @@ import { examRequest, examErrorMessage, ExamRequestError } from '../client/examA
 import type { ExamAttemptView } from '../types/attempts'
 import { attemptListStore } from '../client/learningCatalog'
 
-type Props = { revisionId: string; mode: 'practice' | 'mock'; groupId?: string; wordReviewBatchId?: string }
-export function StartExamButton({ revisionId, mode, groupId, wordReviewBatchId }: Props) {
+type Props = { revisionId: string; mode: 'practice' | 'mock'; groupId?: string; wordReviewBatchId?: string; secondaryAction?: ReactNode }
+export function StartExamButton({ revisionId, mode, groupId, wordReviewBatchId, secondaryAction }: Props) {
   const { user } = useAuth()
   const router = useRouter()
   const [busy, setBusy] = useState(false)
@@ -30,6 +30,10 @@ export function StartExamButton({ revisionId, mode, groupId, wordReviewBatchId }
       if (failure instanceof ExamRequestError && failure.status >= 400 && failure.status < 500 && failure.status !== 429) pending.current = null
     } finally { lock.current = false; setBusy(false) }
   }
-  return <Flex direction="column" gap="2" align="start"><Button size="3" loading={busy} onClick={() => void start()}>{pending.current ? '重试开始' : mode === 'mock' ? '开始模考' : '练习这个题组'}</Button>
+  return <Flex direction="column" gap="2" align="start">
+    <Flex align="center" gap="2" wrap="nowrap">
+      <Button size="3" loading={busy} onClick={() => void start()}>{pending.current ? '重试开始' : mode === 'mock' ? '开始模考' : '练习这个题组'}</Button>
+      {secondaryAction}
+    </Flex>
     {error ? <Text as="p" size="2" color="red" role="alert">{examErrorMessage(error)}</Text> : null}</Flex>
 }

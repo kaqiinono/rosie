@@ -79,8 +79,10 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback }: {
           setLoading(false)
         }
       }}>
-      <LearningIcon name={playing ? 'pause' : 'readAloud'} />
-      {playing ? '暂停朗读' : '朗读'}
+      <span className="inline-flex items-center gap-1">
+        <LearningIcon name={playing ? 'pause' : 'readAloud'} />
+        {playing ? '暂停朗读' : '朗读'}
+      </span>
     </Button>
     <PlayerDock player={player} theme="light" showProgress />
     {playbackError || failed ? <NarrationError host={errorHost} message={playbackError || '音频播放失败，请检查网盘绑定。'} />

@@ -52,10 +52,16 @@ export function KetExamsPage() {
           {catalog.data.items.filter(item => item.kind !== 'training_unit').map(item => <StickerCard key={item.revisionId} as="article" size="lg"><Flex direction="column" gap="3">
             <Flex gap="3" wrap="wrap"><Text size="4" weight="bold">{item.title}</Text><Badge variant="soft" radius="full">{item.purpose === 'reserved' ? '保留测评' : '日常训练'}</Badge></Flex>
             <Text as="p" size="2" color="gray">每科目明确开始后计时，提交后查看解答。开始前会检查所需资源。</Text>
-            <StartExamButton revisionId={item.revisionId} mode="mock" />
-            {item.purpose === 'training' && <Flex direction="column" gap="2"><Flex><Button size="3" variant="soft" asChild>
-              <Link href={`/exams/ket/practice?revisionId=${encodeURIComponent(item.revisionId)}`}>按卷逐组练习</Link>
-            </Button></Flex><Text as="p" size="2" color="gray">不限时，选择完整题组逐组开始、逐组提交。</Text></Flex>}
+            <StartExamButton
+              revisionId={item.revisionId}
+              mode="mock"
+              secondaryAction={item.purpose === 'training' && (
+                <Button size="3" variant="soft" asChild>
+                  <Link href={`/exams/ket/practice?revisionId=${encodeURIComponent(item.revisionId)}`}>按卷逐组练习</Link>
+                </Button>
+              )}
+            />
+            {item.purpose === 'training' && <Text as="p" size="2" color="gray">不限时，选择完整题组逐组开始、逐组提交。</Text>}
           </Flex></StickerCard>)}
           {catalog.data.hasMore && <Text size="2" color="gray">当前显示最近 100 个内容版本。</Text>}
         </>}

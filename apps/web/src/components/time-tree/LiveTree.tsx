@@ -16,6 +16,7 @@ import { SUN_MAGIC_COST, canGrowWithSun, dayOf, isInstantHomework, isMustDo, lif
 import { DiaryDialog } from '@/components/tree-demo/garden/GardenDialogs'
 import { blindBoxChances, isEarly, tomatoPrices, tomatoWallet } from '@/lib/time-tree/rewards'
 import { dayPlanMinutes, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
+import { cycleAvailableFrom, cycleBubbleIds, cycleHomeworkProgress, homeworkCycleKey } from '@/lib/time-tree/cycleHomework'
 import { sceneState } from './sceneState'
 import { finishAndPop } from './finishStep'
 import { StepPanel, TreeWait } from './StepPanel'
@@ -339,11 +340,13 @@ export default function LiveTree() {
         <TreeWait api={api} />
       </main>
     )
-  const air = tree.steps.filter((s) => s.slot !== null)
+  const cycles = cycleHomeworkProgress(tree.steps)
+  const cycleIds = cycleBubbleIds(tree, cycles)
+  const air = tree.steps.filter((s) => s.slot !== null && (!homeworkCycleKey(s) || cycleIds.has(s.id)))
   const today = tree.today
   const must = tree.steps.filter((s) => s.planned === tree.today && !s.skipped && isMustDo(s.priority) && !weeklyHomeworkStart(s))
   const mustDone = must.filter((s) => s.end).length
-  const wilted = tree.steps.filter((s) => s.subject !== 'life' && !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
+  const wilted = tree.steps.filter((s) => !homeworkCycleKey(s) && s.subject !== 'life' && !s.skipped && !s.end && !!s.planned && s.planned < tree.today)
   const horizon = shift(tree.today, 6)
   const laterSteps = tree.steps.filter((s) => !s.skipped && !s.end && !!s.planned && s.planned > horizon)
   const states: Record<string, BubbleState> = Object.fromEntries(
@@ -353,12 +356,22 @@ export default function LiveTree() {
         ? 'done'
         : s.start
           ? 'running'
-          : s.planned && s.planned < tree.today
+          : !homeworkCycleKey(s) && s.planned && s.planned < tree.today
             ? 'overdue'
             : 'ready',
     ]),
   )
-  const bubbles = state.buds.filter(bud => states[bud.id])
+  const airById = new Map(air.map(step => [step.id, step]))
+  const bubbles = state.buds.flatMap(bud => {
+    const step = airById.get(bud.id)
+    if (!step) return []
+    const key = homeworkCycleKey(step)
+    const progress = key && cycles.get(key)
+    if (!progress) return [bud]
+    const next = !step.start && !step.end && cycleAvailableFrom(step)
+    const date = next && next > today && next <= step.deadline ? ` · ${next.slice(5).replace('-', '/')} 可做` : ''
+    return [{ ...bud, cycleLabel: `${progress.done}/${progress.total} 次${date}` }]
+  })
   const savingIds = new Set(savingBubble ? [savingBubble] : [])
   const hiddenTreeItems = new Set(hidden)
   for (const id of burstIds) hiddenTreeItems.add(id)
@@ -517,7 +530,8 @@ export default function LiveTree() {
   async function clickBubble(id: string) {
     const s = air.find((x) => x.id === id)
     if (!s) return
-    if (s.subject !== 'life' && !s.end && (s.start || !isInstantHomework(s))) {
+    if (s.subject !== 'life' && !s.end && (s.start || !isInstantHomework(s) ||
+      (homeworkCycleKey(s) && cycleAvailableFrom(s) > today))) {
       setStep(id)
       return
     }

@@ -1,8 +1,10 @@
 import type { TreeData } from '@/lib/time-tree/types'
 import { dayOf } from '@/lib/time-tree/types'
+import { homeworkCycleKey } from '@/lib/time-tree/cycleHomework'
 import type { GardenState, Bud, Flower } from '@/components/tree-demo/garden/model'
 
 export function sceneBud(s: TreeData['steps'][number], today: string): Bud {
+  const cycle = homeworkCycleKey(s)
   return {
     id: s.id,
     crown: s.crown,
@@ -10,8 +12,8 @@ export function sceneBud(s: TreeData['steps'][number], today: string): Bud {
     subject: s.subject,
     minutes: s.minutes,
     dateKey: s.planned,
-    makeupDate: s.subject !== 'life' && s.scheduled < today ? s.scheduled : undefined,
-    overdue: !!s.planned && s.planned < today,
+    makeupDate: !cycle && s.subject !== 'life' && s.scheduled < today ? s.scheduled : undefined,
+    overdue: !cycle && !!s.planned && s.planned < today,
   }
 }
 

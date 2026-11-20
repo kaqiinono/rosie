@@ -9,7 +9,7 @@ import { useStageIndex } from '../../hooks/useWordData'
 import { useStoryReadingProgress } from '../../hooks/useStoryReadingProgress'
 import { useStorySentencePreview } from '../../hooks/useStorySentencePreview'
 import type { ReadingPassage } from '../../utils/reading-data'
-import { buildEntryMatchRegex, resolveMatchedWord } from '../../utils/reading-data'
+import { buildEntryMatchRegex, buildGlossaryRegex, resolveGlossaryMatch, resolveMatchedWord } from '../../utils/reading-data'
 import type { StoryChapter, StoryVolume } from '../../utils/story-types'
 import { splitStorySentences, storyContentKey } from '../../utils/story-types'
 import type { VocabularyLevel } from '../../utils/vocabulary-assessment'
@@ -19,7 +19,7 @@ import GlossaryPanel from './GlossaryPanel'
 import StoryNarration, { useStoryNarration } from './StoryNarration'
 import StoryRecorder from './StoryRecorder'
 import { Button, Checkbox, IconButton, Popover, SegmentedControl } from '@rosie/ui/themes'
-import { LearningIcon, StickerCard } from '@rosie/ui'
+import { Check, LearningIcon, StickerCard } from '@rosie/ui'
 
 type Props = {
   seriesSlug: string
@@ -100,21 +100,24 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
   const { user } = useAuth()
   const narration = useStoryNarration({ series: seriesSlug, volume: volume.slug, chapters, full: viewMode === 'volume' })
   const [sentencePreview, setSentencePreview] = useState(false)
+  const [glossaryChapterKey, setGlossaryChapterKey] = useState<string | null>(null)
+  const [glossaryAudioId, setGlossaryAudioId] = useState<string | null>(null)
   const [multiSelect, setMultiSelect] = useState(false)
   const [sentenceSelection, setSentenceSelection] = useState<SentenceSelection | null>(null)
-  const preview = useStorySentencePreview(sentencePreview ? narration.current : undefined)
+  const preview = useStorySentencePreview(sentencePreview || glossaryChapterKey !== null ? narration.current : undefined)
   const previewSource = narration.current?.src
   const selection = sentenceSelection?.source === previewSource ? sentenceSelection : null
   const selectingSentences = sentencePreview && multiSelect
   const { stages, error: stageError, isLoading: loadingStages } = useStageIndex(user)
   const { selected, words: sourceWords, toggle, load, status } = useStoryWordSources(user?.id)
   const [filterMode, setFilterMode] = useState<'cefr' | 'library'>('library')
-  const [cefrLevel, setCefrLevel] = useState<VocabularyLevel | null>(null)
-  const { words: cefrWords, status: cefrStatus, retry: retryCefr } = useStoryCefrWords(user?.id, cefrLevel)
+  const [cefrLevels, setCefrLevels] = useState<VocabularyLevel[]>([])
+  const { words: cefrWords, cefrLabels, status: cefrStatus, retry: retryCefr } = useStoryCefrWords(user?.id, cefrLevels)
   const byLevel = filterMode === 'cefr'
+  const cefrFilterLabel = cefrLevels.length > 1 ? `CEFR · ${cefrLevels.length} 级`
+    : cefrLevels.length === 1 ? `CEFR ${cefrLevels[0]}` : '等级'
   const vocab = byLevel ? cefrWords : sourceWords
   const { progress, saveProgress } = useStoryReadingProgress(user, volume.slug)
-  const [glossary, setGlossary] = useState<ReadingPassage['glossary']>([])
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
   const [recordChapter, setRecordChapter] = useState<StoryChapter | null>(null)
   const [recordBusy, setRecordBusy] = useState(false)
@@ -144,6 +147,38 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
       })),
     [chapters, volume, byForm, matcher],
   )
+  const glossaryChapter = prepared.find(({ chapter }) => chapter.key === glossaryChapterKey)
+  const glossarySentenceIds = useMemo(() => {
+    const ids = new Map<string, string>()
+    const cues = preview.cues
+    if (!glossaryChapter || !cues?.size) return ids
+    const timedSentences = glossaryChapter.sentences.flat().filter((sentence) => cues.has(sentence.id))
+    for (const entry of glossaryChapter.chapter.glossary) {
+      const entries = [entry]
+      const matcher = buildGlossaryRegex(entries)
+      if (!matcher) continue
+      const sentence = timedSentences.find(({ text }) =>
+        text.match(matcher)?.some((match) => resolveGlossaryMatch(match, entries)),
+      )
+      if (sentence) ids.set(entry.word, sentence.id)
+    }
+    return ids
+  }, [glossaryChapter, preview.cues])
+
+  function stopGlossaryAudio() {
+    preview.stop()
+    setGlossaryAudioId(null)
+  }
+
+  function toggleGlossaryAudio(sentenceId: string) {
+    if (glossaryAudioId === sentenceId && preview.playing) {
+      stopGlossaryAudio()
+      return
+    }
+    window.speechSynthesis?.cancel()
+    setGlossaryAudioId(sentenceId)
+    void preview.play([sentenceId])
+  }
   const timedSentenceIds = useMemo(() => {
     const cues = preview.cues
     if (!selectingSentences || !cues?.size) return []
@@ -208,9 +243,7 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
     if (!result.error) window.setTimeout(() => setBookmarkState('idle'), 1800)
   }, [saveProgress, viewMode])
 
-  const hasGlossary = prepared.some(({ chapter, passage }) =>
-    (byLevel ? chapter.glossary : passage.glossary)?.length,
-  )
+  const hasGlossary = chapters.some((chapter) => chapter.glossary.length > 0)
 
   const currentChapter = useCallback(() => {
     const visibleChapterKey = visibleSentences()[0]?.chapterKey
@@ -280,14 +313,17 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
           <Button variant="soft" highContrast color="amber" disabled={recordBusy}
             aria-expanded={!!recordChapter}
             onClick={() => setRecordChapter(recordChapter ? null : currentChapter()?.chapter ?? null)}>
-            🎙 录制
+            <span className="inline-flex items-center gap-1">
+              <LearningIcon name="record" size={16} />
+              录制
+            </span>
           </Button>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
           <Popover.Root>
             <Popover.Trigger>
               <Button variant="soft" highContrast color="gray">
-                {byLevel ? (cefrLevel ? `CEFR ${cefrLevel}` : '等级') : '词库'} ▾
+                {byLevel ? cefrFilterLabel : '词库'} ▾
               </Button>
             </Popover.Trigger>
             <Popover.Content align="end" sideOffset={8} aria-label="单词高亮筛选"
@@ -304,24 +340,25 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
                 <SegmentedControl.Item value="library">按词库</SegmentedControl.Item>
               </SegmentedControl.Root>
               {byLevel ? (
-                <fieldset className="grid gap-3">
+                <fieldset className="grid grid-cols-3 gap-3">
                   <legend className="mb-2 font-bold">CEFR 等级</legend>
-                  <SegmentedControl.Root
-                    aria-label="CEFR 等级"
-                    value={cefrLevel ?? ''}
-                    onValueChange={(value) => setCefrLevel(STORY_CEFR_LEVELS.find((level) => level === value) ?? null)}
-                  >
-                    {STORY_CEFR_LEVELS.map((level) => (
-                      <SegmentedControl.Item key={level} value={level}>{level}</SegmentedControl.Item>
-                    ))}
-                  </SegmentedControl.Root>
-                  <p role="status" className="text-sm text-text-secondary">
+                  {STORY_CEFR_LEVELS.map((level) => (
+                    <label key={level} className="flex cursor-pointer items-center gap-1.5">
+                      <Checkbox checked={cefrLevels.includes(level)} onCheckedChange={() => {
+                        setCefrLevels((current) => current.includes(level)
+                          ? current.filter((item) => item !== level)
+                          : [...current, level])
+                      }} />
+                      {level}
+                    </label>
+                  ))}
+                  <p role="status" className="col-span-3 text-sm text-text-secondary">
                     {cefrStatus === 'loading' ? '正在加载等级词汇…'
                       : cefrStatus === 'error' ? '等级词汇加载失败。'
-                      : cefrStatus === 'loaded' && !prepared.some(({ chapterWords }) => chapterWords.length) ? '当前正文没有匹配该等级的词汇。'
-                      : '按已审核的 CEFR 等级高亮匹配词形。'}
+                      : cefrStatus === 'loaded' && !prepared.some(({ chapterWords }) => chapterWords.length) ? '当前正文没有匹配所选等级的词汇。'
+                      : '可勾选多个等级，高亮匹配的已审核词汇。'}
                   </p>
-                  {cefrStatus === 'error' && <Button variant="soft" onClick={retryCefr}>重试</Button>}
+                  {cefrStatus === 'error' && <Button className="col-span-3" variant="soft" onClick={retryCefr}>重试</Button>}
                 </fieldset>
               ) : (
                 <fieldset className="grid grid-cols-2 gap-3">
@@ -348,14 +385,17 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             <Button
               type="button"
               onClick={() => {
-                const current = currentChapter()
-                setGlossary((byLevel ? current?.chapter.glossary : current?.passage.glossary) ?? [])
+                const chapter = currentChapter()?.chapter
+                if (chapter?.glossary.length) setGlossaryChapterKey(chapter.key)
               }}
               variant="soft"
               color="gray"
               size="2"
             >
-              📒 本章难点词
+              <span className="inline-flex items-center gap-1">
+                <LearningIcon name="focus" size={16} />
+                本章难点词
+              </span>
             </Button>
           )}
           <Button
@@ -369,11 +409,12 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             color="amber"
             size="2"
           >
-            {bookmarkState === 'saving'
-              ? '保存中…'
-              : bookmarkState === 'saved'
-                ? '✓ 已标记'
-                : '🔖 书签'}
+            {bookmarkState === 'saving' ? '保存中…' : (
+              <span className="inline-flex items-center gap-1">
+                {bookmarkState === 'saved' ? <Check aria-hidden size={16} /> : <LearningIcon name="bookmark" size={16} />}
+                {bookmarkState === 'saved' ? '已标记' : '书签'}
+              </span>
+            )}
           </Button>
         </div>
         {selectingSentences && narration.current && (
@@ -429,9 +470,20 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
       </StickerCard>
 
       <GlossaryPanel
-        open={Boolean(glossary)}
-        onClose={() => setGlossary([])}
-        glossary={glossary ?? []}
+        open={Boolean(glossaryChapter?.chapter.glossary.length)}
+        onClose={() => {
+          if (glossaryAudioId) stopGlossaryAudio()
+          setGlossaryChapterKey(null)
+        }}
+        glossary={glossaryChapter?.chapter.glossary ?? []}
+        originalAudio={{
+          sentenceIds: glossarySentenceIds,
+          activeId: glossaryAudioId ? preview.activeId : null,
+          error: preview.timingError ? '原句时间轴加载失败，请重新打开难点词。'
+            : glossaryAudioId ? preview.playbackError : '',
+          onToggle: toggleGlossaryAudio,
+          onStop: stopGlossaryAudio,
+        }}
       />
 
       {prepared.map(({ chapter, passage, sentences, chapterWords }) => (
@@ -444,47 +496,42 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
           key={chapter.key}
           id={chapter.key}
         >
-          <header className="bg-orange-50 p-5 sm:px-7">
-            <p className="text-xs font-extrabold tracking-wider text-amber-700">第 {chapter.number} 章</p>
-            <h1 className="font-fredoka mt-1 text-2xl font-black text-slate-900">{chapter.title}</h1>
-          </header>
-          <div className="border-t border-amber-100 p-5 sm:p-7">
-            <PassageView
-              passage={passage}
-              lessonWords={chapterWords}
-              masteryMap={{}}
-              sentenceGroups={sentences}
-              mode={readingMode}
-              cefrLevel={byLevel ? cefrLevel ?? undefined : undefined}
-              listeningTarget={preview.activeId ?? undefined}
-              renderStorySentenceControl={preview.cues?.size ? (sentence) => {
-                if (!preview.cues?.has(sentence.id)) return null
-                if (selectingSentences) {
-                  return (
-                    <span className="relative inline-block size-0 align-baseline">
-                      <label className="absolute bottom-3 left-0 z-10 grid size-6 -translate-x-1/4 place-items-center">
-                        <Checkbox color="orange" size="1" checked={selectedSentences.has(sentence.id)}
-                          aria-label={`选择第 ${sentence.index} 句`} disabled={preview.playing}
-                          onCheckedChange={() => selectSentence(sentence.id)} />
-                      </label>
-                    </span>
-                  )
-                }
-                const active = preview.activeId === sentence.id
-                const label = active ? `停止试听第 ${sentence.index} 句` : `试听第 ${sentence.index} 句`
+          <PassageView
+            passage={passage}
+            lessonWords={chapterWords}
+            masteryMap={{}}
+            storyChapter={chapter}
+            sentenceGroups={sentences}
+            mode={readingMode}
+            cefrLabels={byLevel ? cefrLabels : undefined}
+            listeningTarget={preview.activeId ?? undefined}
+            renderStorySentenceControl={sentencePreview && preview.cues?.size ? (sentence) => {
+              if (!preview.cues?.has(sentence.id)) return null
+              if (selectingSentences) {
                 return (
-                  <IconButton type="button" size="2" radius="full" color="orange"
-                    variant={active ? 'solid' : 'soft'} className="mx-1 align-middle"
-                    aria-label={label} title={label} onClick={() => {
-                      if (active) preview.stop()
-                      else void preview.play([sentence.id])
-                    }}>
-                    <LearningIcon name={active ? 'pause' : 'listen'} size={16} />
-                  </IconButton>
+                  <span className="relative inline-block size-0 align-baseline">
+                    <label className="absolute bottom-3 left-0 z-10 grid size-6 -translate-x-1/4 place-items-center">
+                      <Checkbox color="orange" size="1" checked={selectedSentences.has(sentence.id)}
+                        aria-label={`选择第 ${sentence.index} 句`} disabled={preview.playing}
+                        onCheckedChange={() => selectSentence(sentence.id)} />
+                    </label>
+                  </span>
                 )
-              } : undefined}
-            />
-          </div>
+              }
+              const active = preview.activeId === sentence.id
+              const label = active ? `停止试听第 ${sentence.index} 句` : `试听第 ${sentence.index} 句`
+              return (
+                <IconButton type="button" size="2" radius="full" color="orange"
+                  variant={active ? 'solid' : 'soft'} className="mx-1 align-middle"
+                  aria-label={label} title={label} onClick={() => {
+                    if (active) preview.stop()
+                    else void preview.play([sentence.id])
+                  }}>
+                  <LearningIcon name={active ? 'pause' : 'listen'} size={16} />
+                </IconButton>
+              )
+            } : undefined}
+          />
         </StickerCard>
       ))}
     </div>

@@ -39,7 +39,7 @@ export default function HomeworkCardPreview({ homework, onClose }: {
             exhausted={content?.exhausted}
             loading={api.isLoading}
             error={api.error ? api.message : undefined}
-            onRetry={() => void api.run({ kind: 'sync' })}
+            onRetry={api.retry}
           />
         )}
         {notes && <Text className="whitespace-pre-wrap break-words">{notes}</Text>}

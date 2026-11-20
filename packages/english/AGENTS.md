@@ -91,10 +91,16 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   Register collections in utils/story-data.ts as series → volume → chapter. Readers remember
   source selections per account on this device (initially empty). Only the load button fetches
   selected stages. The independent CEFR mode reads only verified senses for the selected exact
-  level from the shared vocabulary catalog; it does not infer levels from stage memberships or
+  levels from the shared vocabulary catalog; it does not infer levels from stage memberships or
   disambiguate meanings in context. Switching modes preserves both selections. Each PassageView
   receives only words found in that chapter; cards show the level or library and the story source.
-  The chapter glossary remains accessible in CEFR mode, even when a term also matches the level.
+  The chapter glossary panel shows the full authored glossary independently of the active word
+  filter, in switchable card and compact list views with pronunciation and authored IPA.
+  For a timed glossary match, its headphone action plays the first matching sentence from the
+  selected story recording. The separate word pronunciation action still uses speech synthesis.
+  Charlie chapter 1 uses `castPrefaceParagraphs` to separate the cast list and move the following
+  spoken heading into the visible chapter header. Keep sentence text and order stable when
+  reflowing paragraphs so the narration cues and saved bookmarks still resolve.
   Reading word matching is centralized in `utils/word-forms.ts`: safe regular forms are generated
   at runtime, while `word_entries.word_forms` stores only explicit exceptions as categorized arrays
   (`past`, `pastParticiple`, `plural`, `thirdPerson`, etc.). All highlighting, focus navigation,

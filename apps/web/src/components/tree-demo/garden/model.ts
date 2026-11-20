@@ -59,6 +59,7 @@ export function bubbleSubject(task: { subject: SubjectKey; crown?: true }) {
 
 export interface Bud {
   crown?: true
+  cycleLabel?: string
   id: string
   /** 补做标识使用原任务日期，改期后仍保留。 */
   makeupDate?: string

@@ -7,6 +7,7 @@ import { AppDialog, ChevronDown, LearningIcon, StatTile, StickerCard, type Learn
 import { Badge, Button, Flex, Text, TextField } from '@rosie/ui/themes'
 import { bubbleSubject, type SubjectKey } from '@/components/tree-demo/garden/model'
 import { dayOf, timing, type TreeData, type WorkStep } from '@/lib/time-tree/types'
+import { cycleAvailableFrom, cycleHomeworkProgress, homeworkCycleKey, isClosedHomeworkCycle } from '@/lib/time-tree/cycleHomework'
 import { previewPractice } from '@/lib/time-tree/practicePreview'
 import TaskLearningContent from './TaskLearningContent'
 
@@ -44,7 +45,7 @@ function dayTitle(day: string): string {
 function dayMood(day: string, today: string): { icon: string; line: string } {
   if (day === today) return { icon: '☀️', line: '今天的小事都在这儿，做完一朵花就开啦。' }
   if (day > today) return { icon: '🌱', line: '这一天还没到。想先做，也可以偷偷开始。' }
-  return { icon: '🍃', line: '这一天已经过去啦。没做完的，现在补上也算数。' }
+  return { icon: '🍃', line: '在这里查看那天的任务和完成记录。' }
 }
 
 function taskMood(step: WorkStep, today: string): { label: string; color: 'gray' | 'green' | 'amber' | 'orange' | 'blue' } {
@@ -52,6 +53,9 @@ function taskMood(step: WorkStep, today: string): { label: string; color: 'gray'
   if (step.end && step.flowers) return { label: step.flowers.complete ? '整份做完' : '本次已收工', color: 'green' }
   if (step.end) return { label: '做完啦', color: 'green' }
   if (step.start) return { label: '正在做呀', color: 'amber' }
+  if (isClosedHomeworkCycle(step, today)) return { label: '周期已结束', color: 'gray' }
+  if (homeworkCycleKey(step) && cycleAvailableFrom(step) > today) return { label: '等待排期', color: 'gray' }
+  if (homeworkCycleKey(step)) return { label: '等你开始', color: 'blue' }
   if (!step.planned) return { label: '先放着', color: 'gray' }
   return step.planned < today ? { label: '可以补做', color: 'orange' } : { label: '等你开始', color: 'blue' }
 }
@@ -61,6 +65,8 @@ function taskAction(step: WorkStep, day: string, today: string): string {
   if (step.crown) return '戳破完成'
   if (step.flowers?.availableFrom && step.flowers.availableFrom > today) return '查看进度'
   if (step.start) return '接着做'
+  if (isClosedHomeworkCycle(step, today)) return '看看记录'
+  if (homeworkCycleKey(step)) return cycleAvailableFrom(step) > today ? '查看进度' : '开始吧'
   if (!step.planned) return '选一天'
   if (day < today) return '补上它'
   if (day > today) return '先做做看'
@@ -102,6 +108,7 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
     finally { setRefreshing(false) }
   }
   const dates = [...days].sort()
+  const cycles = cycleHomeworkProgress(tree.steps)
   const single = dates.length === 1 ? dayMood(dates[0], tree.today) : null
   return (
     <AppDialog
@@ -119,6 +126,7 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
           const doneMinutes = completed.reduce((sum, step) => sum + dayPlanMinutes(step), 0)
           const totalMinutes = required.reduce((sum, step) => sum + dayPlanMinutes(step), 0)
           const finished = required.length > 0 && completed.length === required.length
+          const endedCycles = [...cycles.entries()].filter(([, item]) => item.step.deadline === day && day < tree.today)
           const mood = dates.length > 1 ? dayMood(day, tree.today) : null
           return (
             <section key={day} aria-label={`${dayTitle(day)} 的任务`}>
@@ -155,6 +163,12 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                   <Text size="2" color="green" role="status">添加成功</Text>
                 )}
                 {message && single && <Text size="2" color="red" role="alert">{message}</Text>}
+                {endedCycles.map(([key, { step, done, total }]) => (
+                  <StickerCard key={key} tone="paper" size="sm" elevation="flat" radius="md">
+                    <Text weight="bold">{step.name}</Text>
+                    <Text as="p" size="2" color="gray">周期已结束 · 本周期完成 {done}/{total} 次</Text>
+                  </StickerCard>
+                ))}
                 {steps.length > 0 ? (
                   <>
                     <div className="grid grid-cols-2 gap-2">
@@ -174,13 +188,14 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                         hint="已完成任务 / 全部任务"
                       />
                     </div>
-                    <Text size="2">{cheer(completed.length, required.length)}</Text>
+                    <Text size="2">{endedCycles.length > 0 && required.every(step => step.end || isClosedHomeworkCycle(step, tree.today))
+                      ? '当天的任务记录在下面。' : cheer(completed.length, required.length)}</Text>
                   </>
-                ) : (
+                ) : endedCycles.length === 0 ? (
                   <StickerCard tone="info" size="sm" elevation="flat" radius="md">
                     <Text size="3" weight="bold">这一天还是空的，树叶在晒太阳。</Text>
                   </StickerCard>
-                )}
+                ) : null}
                 {steps.map((step) => {
                   const subject = bubbleSubject(step)
                   const done = !!step.end || !!step.skipped
@@ -190,6 +205,8 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                   const contentLoading = needsTemplate && (homework.isLoading || refreshing)
                   const contentError = needsTemplate && (!!homework.error || refreshError)
                   const questions = flowerQuestionProgress(step)
+                  const cycle = homeworkCycleKey(step)
+                  const progress = cycle && cycles.get(cycle)
                   const badge = taskMood(step, tree.today)
                   const action = taskAction(step, day, tree.today)
                   return (
@@ -218,6 +235,7 @@ export default function DayTasksDialog({ tree, days, onClose, onSelect, onPop, o
                       </Button>
                       {expanded && <Flex direction="column" gap="3" className="px-3 pb-3">
                         <Text size="2" color="gray">{subject.label}{step.flowers && ` · 🌸 ${step.flowers.collected} 朵`}{questions && ` · ${questions.done}/${questions.total}`}</Text>
+                        {progress && <Text size="2" color="gray">本周期完成 {progress.done}/{progress.total} 次</Text>}
                         {step.end && <Text size="2" color="gray">完成于 {dayOf(step.end)} · {timing(step)}</Text>}
                         <TaskLearningContent step={step} content={content} loading={contentLoading} error={contentError} />
                         {contentError && <Button variant="soft" loading={refreshing} onClick={() => void retryContents()}>再翻开一次</Button>}

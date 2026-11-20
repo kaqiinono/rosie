@@ -1,6 +1,7 @@
 import { WEEKLY_HOMEWORK_ORDINAL } from '@rosie/tasks'
 import type { StepPractice } from './practice'
 import { dayOf, shift, type WorkStep } from './types'
+import { homeworkCycleKey } from './cycleHomework'
 
 export const MINUTES_PER_FLOWER = 10
 
@@ -44,7 +45,8 @@ export function flowerBudget(step: WorkStep, now: number) {
 export function nextFlowerSession(step: WorkStep, today: string, sessionNumber: number): WorkStep {
   const weekly = !!weeklyHomeworkStart(step)
   const day = shift(dayOf(step.end!), weekly ? 0 : 1)
-  const planned = weekly ? (today > step.deadline ? step.deadline : today) : day
+  const planned = weekly ? (today > step.deadline ? step.deadline : today)
+    : homeworkCycleKey(step) && day > step.deadline ? step.deadline : day
   const next = structuredClone(step)
   return {
     ...next, id: step.occurrence + '/session-' + day + (weekly ? '-' + sessionNumber : ''),

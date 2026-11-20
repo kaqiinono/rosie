@@ -8,6 +8,7 @@ import {
   tomatoWallet,
 } from './rewards'
 import { awardDailyRainbow, harvestSteps } from './harvest'
+import { cycleAvailableFrom, cycleBubbleIds, homeworkCycleKey, isClosedHomeworkCycle } from './cycleHomework'
 import { CORE_SUBJECTS } from '@/components/tree-demo/garden/model'
 import {
   SUN_MAGIC_COST,
@@ -102,8 +103,15 @@ function onCompleted(tree: TreeData, step: WorkStep, at: string): void {
 
 /** 今天还没做完的，以及正在做的，全部飞成泡泡。过期还没开始的留在枯萎箱。 */
 export function placeTodayBubbles(tree: TreeData): void {
+  const cycleIds = cycleBubbleIds(tree)
+  const previousCycleSlots = new Map<string, number>()
+  for (const step of tree.steps) {
+    const key = homeworkCycleKey(step)
+    if (key && step.slot !== null) previousCycleSlots.set(key, step.slot)
+  }
   const visible = tree.steps.filter((s) => {
     if (s.skipped || isExhaustedPendingStep(tree, s)) return false
+    if (homeworkCycleKey(s)) return cycleIds.has(s.id)
     if (s.start && !s.end) return true
     if (s.end && !s.popped && dayOf(s.end) === tree.today) return true
     if (s.planned !== tree.today) return false
@@ -115,6 +123,14 @@ export function placeTodayBubbles(tree: TreeData): void {
   for (const step of visible) {
     if (step.slot !== null && !used.has(step.slot)) used.add(step.slot)
     else step.slot = null
+  }
+  for (const step of visible) {
+    const key = homeworkCycleKey(step)
+    const prior = key && previousCycleSlots.get(key)
+    if (step.slot === null && typeof prior === 'number' && !used.has(prior)) {
+      step.slot = prior
+      used.add(prior)
+    }
   }
   let slot = 0
   const ordered = [...visible].sort(
@@ -143,6 +159,9 @@ export function roll(tree: TreeData, today: string) {
   }
   tree.steps = tree.steps.filter(retain)
   tree.weekendExcludedSteps = tree.weekendExcludedSteps?.filter(retain)
+  for (const step of tree.steps) {
+    if (!step.start && !step.end && isClosedHomeworkCycle(step, today)) expired.add(step.occurrence)
+  }
   for (const progress of Object.values(tree.practiceProgress ?? {})) {
     if (progress.activeOccurrence && expired.has(progress.activeOccurrence)) progress.activeOccurrence = null
   }
@@ -153,7 +172,7 @@ export function roll(tree: TreeData, today: string) {
   }
   if (today > tree.today) {
     tree.afterSchool = false
-    for (const s of tree.steps) if (!s.start || s.end) s.slot = null
+    for (const s of tree.steps) if ((!s.start || s.end) && !homeworkCycleKey(s)) s.slot = null
     tree.today = today
   }
   const due = tree.steps.filter((s) => s.end && !s.settled && dayOf(s.end) < today)
@@ -193,7 +212,7 @@ function collectFlowers(tree: TreeData, step: WorkStep, action: TreeAction, end:
   step.end = step.start ? end : dayOf(end)
   step.stages = Array.from({ length: added }, () => 0)
   step.popped = true
-  step.slot = null
+  if (!homeworkCycleKey(step)) step.slot = null
   step.sun = added
   step.water = added ? completionReward(tree, step, dayOf(end), false).water : 0
   if (complete && step.start && step.minutes > 0 && action.kind === 'collectFlowers') {
@@ -351,6 +370,14 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
   if (s.skipped && kind === 'skip') return
   requireState(!s.skipped, '本次作业不用做。')
   requireState(!isExhaustedPendingStep(tree, s), '这项作业的练习内容已用完，请在作业设置中选择新的开始项。')
+  if (homeworkCycleKey(s) && !s.end) {
+    const canFinishRunning = s.start && ['stop', 'finish', 'collectFlowers', 'answerHomeworkQuestion'].includes(kind)
+    requireState(!isClosedHomeworkCycle(s, day) || canFinishRunning, '这个周期已结束。')
+    if (!s.start && ['start', 'preparePractice', 'pop', 'completeUntimed', 'collectFlowers'].includes(kind))
+      requireState(!!s.planned && cycleAvailableFrom(s) <= day, `下次 ${cycleAvailableFrom(s).slice(5).replace('-', '/')} 可做。`)
+    if (kind === 'record' && action.start && !Number.isNaN(Date.parse(action.start)))
+      requireState(dayOf(action.start) >= s.scheduled, '补录时间须在本次作业的原排期或以后。')
+  }
   if (s.flowers) {
     requireState(!['completeUntimed', 'finish'].includes(kind), '请在花朵旁完成本次作业。')
     if (!s.end && s.flowers.availableFrom && s.flowers.availableFrom > day)
@@ -408,7 +435,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       if (s.end) {
         if (kind === 'pop') {
           s.popped = true
-          s.slot = null
+          if (!homeworkCycleKey(s)) s.slot = null
           fill(tree)
         }
         return
@@ -421,7 +448,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       tree.sun += s.sun
       tree.water += s.water
       s.popped = instant || s.slot === null
-      if (s.popped) s.slot = null
+      if (s.popped && !homeworkCycleKey(s)) s.slot = null
       onCompleted(tree, s, now)
       break
     case 'preparePractice':
@@ -447,7 +474,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       finish(tree, s, now)
       if (action.popOnFinish === true) {
         s.popped = true
-        s.slot = null
+        if (!homeworkCycleKey(s)) s.slot = null
         fill(tree)
       }
       break
@@ -493,6 +520,8 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         requireState(target && /^\d{4}-\d{2}-\d{2}$/.test(target) && target >= day, '请选择今天或以后的日期。')
         s.planned = target
       }
+      if (homeworkCycleKey(s) && s.planned)
+        requireState(s.planned >= s.scheduled && s.planned <= s.deadline, '请选择原排期到周期截止日之间的日期。')
       s.returned = kind === 'return' ? day : null
       s.slot = null
       fill(tree)

@@ -30,8 +30,21 @@ function payload(input: HomeworkInput): HomeworkInput {
 }
 
 async function syncExecution(userId: string) {
-  // Refresh the registered cache even when its page is unmounted. Failures stay
-  // on that store; the successful template write must not be retried as an insert.
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user.id !== userId) return
+    await fetch('/api/time-tree', {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ kind: 'sync', protocol: 2, operationId: crypto.randomUUID(), returnScene: false }),
+    })
+  } catch {
+    // The template write is complete. The scheduled job can retry its saved revision.
+  }
   await refreshSessionStore('time_tree', userId).catch(() => undefined)
 }
 

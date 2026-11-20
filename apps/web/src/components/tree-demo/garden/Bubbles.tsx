@@ -391,7 +391,8 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
           : null
         const stateLabel = countdown ? `${countdown.caption} ${countdown.time}` : status ? bubbleStates[status].label : ''
         const small = !!positions && isGroundBubble(bud)
-        const label = small || bud.crown ? '点一下完成' : status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
+        const label = small || bud.crown ? '点一下完成' : bud.cycleLabel && status === 'ready' ? bud.cycleLabel
+          : status === 'running' && bud.overdue ? stateLabel + ' · 补做' : stateLabel
         const holdable = !disabled && status === 'running' && !!onHoldFinish
         const hint = saving ? '，正在开花，请稍候' : holdable ? '，按住开花，点一下查看' : status === 'running' ? '，点击查看详情' : ''
         const style: BubbleStyle = {
@@ -417,7 +418,7 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
               data-holding={holdingId === bud.id ? 'true' : undefined}
               aria-label={`${meta.label}：${bud.name}，${n} 朵花 ${label}${
                 Number.isFinite(startedMs) ? `，预计 ${bud.minutes} 分钟` : ''
-              }${bud.makeupDate ? `，补做，原任务日期 ${bud.makeupDate}` : ''}${hint}`}
+              }${bud.cycleLabel && status !== 'ready' ? `，${bud.cycleLabel}` : ''}${bud.makeupDate ? `，补做，原任务日期 ${bud.makeupDate}` : ''}${hint}`}
               className="tg-bubble"
               style={style}
               onClick={disabled ? undefined : event => {
@@ -482,6 +483,9 @@ export default function Bubbles({ bubbles, slots, states, startedAt, clockOffset
                 <span className={`mt-0.5 line-clamp-2 block font-extrabold leading-tight text-[#4a3728] ${small ? 'text-xs' : 'text-[calc(var(--tg-size)*0.13)]'}`}>
                   {countdown && bud.overdue ? '补做 · ' : ''}{bud.name}
                 </span>
+                {bud.cycleLabel && countdown && !saving && (
+                  <span className="block text-[calc(var(--tg-size)*0.1)] leading-none">{bud.cycleLabel}</span>
+                )}
                 {saving ? (
                   <Badge color="amber" radius="full" mt="1" role="status">正在开花…</Badge>
                 ) : countdown ? (

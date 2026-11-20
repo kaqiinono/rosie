@@ -2,7 +2,7 @@ import type { PracticeProgress, StepPractice } from './practice'
 import type { Apple, CoreSubject, SubjectKey } from '@/components/tree-demo/garden/model'
 
 export const WEEKLY_SCHEDULE_VERSION = 1
-export const PRACTICE_SCHEDULE_VERSION = 1
+export const PRACTICE_SCHEDULE_VERSION = 2
 
 /** Cumulative snapshot at the end of the previous or current daily session. */
 export interface FlowerProgress {
@@ -17,6 +17,8 @@ export interface WorkStep {
   /** This completion earned the day's all-academic-work rainbow. */
   dailyRainbow?: true
   crown?: true
+  /** Number of whole occurrences planned for this multiweek period. */
+  cycleTarget?: number
   flowers?: FlowerProgress
   practice?: StepPractice | null
   practiceBindingKey?: string

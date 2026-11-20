@@ -7,24 +7,27 @@ import type { VocabularyLevel } from '../utils/vocabulary-assessment'
 export const STORY_CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const satisfies readonly VocabularyLevel[]
 
 const PAGE_SIZE = 500
-const EMPTY_WORDS: WordEntry[] = []
+
+type LevelWords = { words: WordEntry[]; cefrLabels: ReadonlyMap<string, string> }
+const EMPTY_LEVEL_WORDS: LevelWords = { words: [], cefrLabels: new Map() }
 
 type SenseRow = {
   id: string
   headword_id: string
+  cefr: VocabularyLevel
   headword: { spelling: string }
   written: { definitionEn?: unknown; definitionZh?: unknown }
 }
 
-async function fetchLevelWords(level: VocabularyLevel, signal: AbortSignal): Promise<WordEntry[]> {
-  const entries = new Map<string, { word: string; english: Set<string>; chinese: Set<string> }>()
+async function fetchLevelWords(levels: readonly VocabularyLevel[], signal: AbortSignal): Promise<LevelWords> {
+  const entries = new Map<string, { word: string; levels: Set<VocabularyLevel>; english: Set<string>; chinese: Set<string> }>()
   let after: string | undefined
 
   while (!signal.aborted) {
     const query = supabase.from('vocabulary_senses')
-      .select('id,headword_id,written,headword:vocabulary_headwords!inner(spelling)')
+      .select('id,headword_id,cefr,written,headword:vocabulary_headwords!inner(spelling)')
       .eq('verified', true)
-      .eq('cefr', level)
+      .in('cefr', levels)
       .order('id')
       .limit(PAGE_SIZE)
     if (after) query.gt('id', after)
@@ -35,10 +38,12 @@ async function fetchLevelWords(level: VocabularyLevel, signal: AbortSignal): Pro
     for (const sense of data) {
       const entry = entries.get(sense.headword_id) ?? {
         word: sense.headword.spelling,
+        levels: new Set<VocabularyLevel>(),
         english: new Set<string>(),
         chinese: new Set<string>(),
       }
       const { definitionEn, definitionZh } = sense.written
+      entry.levels.add(sense.cefr)
       if (typeof definitionEn === 'string' && definitionEn.trim()) entry.english.add(definitionEn.trim())
       if (typeof definitionZh === 'string' && definitionZh.trim()) entry.chinese.add(definitionZh.trim())
       entries.set(sense.headword_id, entry)
@@ -48,44 +53,50 @@ async function fetchLevelWords(level: VocabularyLevel, signal: AbortSignal): Pro
     after = data[data.length - 1].id
   }
 
-  return Array.from(entries, ([headwordId, entry]) => ({
-    headwordId,
-    word: entry.word,
-    unit: 'CEFR',
-    lesson: level,
-    explanation: [...entry.english].join(' / '),
-    chineseDef: [...entry.chinese].join(' / ') || undefined,
-  }))
+  const cefrLabels = new Map<string, string>()
+  const words = Array.from(entries, ([headwordId, entry]) => {
+    const label = STORY_CEFR_LEVELS.filter((level) => entry.levels.has(level)).join(' / ')
+    cefrLabels.set(headwordId, label)
+    return {
+      headwordId,
+      word: entry.word,
+      unit: 'CEFR',
+      lesson: label,
+      explanation: [...entry.english].join(' / '),
+      chineseDef: [...entry.chinese].join(' / ') || undefined,
+    }
+  })
+  return { words, cefrLabels }
 }
 
 type Result = {
   userId: string
-  level: VocabularyLevel
+  levels: readonly VocabularyLevel[]
   attempt: number
-  words: WordEntry[]
+  data: LevelWords
   status: 'loaded' | 'error'
 }
 
-export function useStoryCefrWords(userId: string | undefined, level: VocabularyLevel | null) {
+export function useStoryCefrWords(userId: string | undefined, levels: readonly VocabularyLevel[]) {
   const [attempt, setAttempt] = useState(0)
   const [result, setResult] = useState<Result | null>(null)
 
   useEffect(() => {
-    if (!userId || !level) return
+    if (!userId || !levels.length) return
     const controller = new AbortController()
-    const request = { userId, level, attempt }
-    void fetchLevelWords(level, controller.signal).then(
-      (words) => {
-        if (!controller.signal.aborted) setResult({ ...request, words, status: 'loaded' })
+    const request = { userId, levels, attempt }
+    void fetchLevelWords(levels, controller.signal).then(
+      (data) => {
+        if (!controller.signal.aborted) setResult({ ...request, data, status: 'loaded' })
       },
       () => {
-        if (!controller.signal.aborted) setResult({ ...request, words: EMPTY_WORDS, status: 'error' })
+        if (!controller.signal.aborted) setResult({ ...request, data: EMPTY_LEVEL_WORDS, status: 'error' })
       },
     )
     return () => controller.abort()
-  }, [userId, level, attempt])
+  }, [userId, levels, attempt])
 
-  const current = result?.userId === userId && result?.level === level && result?.attempt === attempt ? result : null
-  const status = current?.status ?? (userId && level ? 'loading' : 'idle')
-  return { words: current?.words ?? EMPTY_WORDS, status, retry: () => setAttempt((value) => value + 1) }
+  const current = result?.userId === userId && result?.levels === levels && result?.attempt === attempt ? result : null
+  const status = current?.status ?? (userId && levels.length ? 'loading' : 'idle')
+  return { ...(current?.data ?? EMPTY_LEVEL_WORDS), status, retry: () => setAttempt((value) => value + 1) }
 }

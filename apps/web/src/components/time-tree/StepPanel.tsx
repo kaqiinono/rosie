@@ -7,6 +7,7 @@ import { previewPractice } from '@/lib/time-tree/practicePreview'
 import { AppDialog, LoadingOverlay, Moon, StickerCard, StatTile, Timer, X, type StatTileTone } from '@rosie/ui'
 import { Avatar, Badge, Button, Flex, Grid, Heading, IconButton, Text, TextField } from '@rosie/ui/themes'
 import { flowerQuestionProgress, weeklyHomeworkStart } from '@/lib/time-tree/flowers'
+import { cycleAvailableFrom, cycleHomeworkProgress, homeworkCycleKey, isClosedHomeworkCycle } from '@/lib/time-tree/cycleHomework'
 import { homeworkTomatoProgress } from '@/lib/time-tree/rewards'
 import {
   clock,
@@ -66,7 +67,7 @@ export function TreeWait({ api }: { api: TreeController }) {
               {api.message}
             </Text>
           ) : null}
-          <Button loading={api.busy} onClick={() => void api.run({ kind: 'sync' })}>
+          <Button loading={api.busy} onClick={api.retry}>
             重试
           </Button>
         </Flex>
@@ -111,7 +112,9 @@ export function StepPanel({
   const finishingRef = useRef(false)
   const running = tree.steps.find((s) => s.start && !s.end)
   const finishBlocked = api.busy && api.startingStepId !== step.id
-  const overdue = !!step.planned && step.planned < tree.today
+  const cycle = homeworkCycleKey(step)
+  const overdue = !cycle && !!step.planned && step.planned < tree.today
+  const canMoveNext = !cycle || shift(step.planned && step.planned > tree.today ? step.planned : tree.today, 1) <= step.deadline
   const instant = !step.start && isInstantHomework(step)
   useEffect(() => {
     mounted.current = true
@@ -259,6 +262,24 @@ export function StepPanel({
     </Flex>
   ) : undefined
   const taskIcon = <BubbleTaskIcon subject={step.subject} crown={step.crown} />
+  const cycleClosed = isClosedHomeworkCycle(step, tree.today)
+  const cycleNext = cycle ? cycleAvailableFrom(step) : null
+  if (cycle && cycleNext && !step.start && !step.end && !step.skipped && (cycleClosed || cycleNext > tree.today)) {
+    const progress = cycleHomeworkProgress(tree.steps).get(cycle)
+    const status = cycleClosed ? '这个周期已结束。' : cycleNext > step.deadline
+      ? '今天已收工，本周期即将结束。' : `下次 ${cycleNext.slice(5).replace('-', '/')} 可做。`
+    return (
+      <AppDialog open title={step.name} icon={taskIcon} onOpenChange={open => { if (!open) close() }}>
+        <Flex direction="column" gap="3">
+          {progress && <Text>本周期已完成 {progress.done}/{progress.total} 次</Text>}
+          <Text>{status}</Text>
+          {step.notes && <Text>{step.notes}</Text>}
+          {step.planNote && <Text>本次备注：{step.planNote}</Text>}
+          <Button onClick={close}>知道了</Button>
+        </Flex>
+      </AppDialog>
+    )
+  }
   if (step.subject === 'life') {
     return (
       <AppDialog open title={step.name} icon={taskIcon} onOpenChange={open => { if (!open) close() }}>
@@ -465,7 +486,7 @@ export function StepPanel({
                   size="3"
                   variant="soft"
                   color="violet"
-                  disabled={api.busy}
+                  disabled={api.busy || !canMoveNext}
                   onClick={() => void submit(overdue ? { kind: 'move', day: tree.today } : { kind: 'nextDay' })}
                 >
                   {step.flowers && !overdue
@@ -608,14 +629,14 @@ export function StepPanel({
               <Button variant="soft" disabled={api.busy} onClick={() => setMove(!move)}>
                 改日期
               </Button>
-              <Button variant="soft" disabled={api.busy} onClick={() => void submit(overdue ? { kind: 'move', day: tree.today } : { kind: 'nextDay' })}>
+              <Button variant="soft" disabled={api.busy || !canMoveNext} onClick={() => void submit(overdue ? { kind: 'move', day: tree.today } : { kind: 'nextDay' })}>
                 {overdue ? '挪到今天' : '挪到下一天'}
               </Button>
               {noteButton}
             </Grid>
             {move && (
               <Flex gap="2" wrap="wrap">
-                {Array.from({ length: 7 }, (_, i) => shift(tree.today, i)).map((day) => (
+                {Array.from({ length: 7 }, (_, i) => shift(tree.today, i)).filter(day => !cycle || (day >= step.scheduled && day <= step.deadline)).map((day) => (
                   <Button
                     key={day}
                     disabled={api.busy}
@@ -630,7 +651,7 @@ export function StepPanel({
           </>
         )}
         {(step.skipped || step.end || step.start) && !manual && !finishing && noteButton}
-        {homework && !instant && !manual && !step.skipped && !step.end && (
+        {homework && !instant && !manual && !step.skipped && !step.end && !cycleClosed && (
           <Button variant="ghost" onClick={() => setManual(true)}>
             家长补录
           </Button>

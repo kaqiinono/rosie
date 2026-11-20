@@ -3,6 +3,7 @@ import type { Homework } from '@rosie/tasks'
 import { createAdminSupabase, lookupUserFromClaims, lookupUserFromRequest } from '@/lib/api-auth'
 import { isValidParentPin, verifyParentPin } from '@/lib/parent-pin'
 import { act, awardCompletedDay, newTree, placeTodayBubbles, roll, TreeConflict } from '@/lib/time-tree/engine'
+import { loadHomeworkTemplates } from '@/lib/time-tree/maintenance'
 import { bindPractice, settlePractice } from '@/lib/time-tree/practice'
 import { editMathQuestion, hasMathQuestions, settleMathQuestions } from '@/lib/time-tree/mathQuestions'
 import { schedule } from '@/lib/time-tree/schedule'
@@ -10,6 +11,7 @@ import { regenerateHomework, regenerationTargets } from '@/lib/time-tree/regener
 import { tomatoPrices } from '@/lib/time-tree/rewards'
 import { hasRowChanges, rowChanges } from '@/lib/time-tree/rowChanges'
 import { dayOf, isInstantHomework, shift, PRACTICE_SCHEDULE_VERSION, WEEKLY_SCHEDULE_VERSION, type TreeAction, type TreeData } from '@/lib/time-tree/types'
+import { isClosedHomeworkCycle, isMultiweekCycle } from '@/lib/time-tree/cycleHomework'
 
 export const dynamic = 'force-dynamic'
 const authOptions = { attempts: 2, timeoutMs: 5_000 }
@@ -26,29 +28,41 @@ function validDate(value: unknown): value is string {
 
 export async function GET(req: Request) {
   const started = performance.now()
-  const { user, unreachable } = await lookupUserFromRequest(req, authOptions)
-  if (unreachable) return failure(authUnavailable, 503)
-  if (!user) return failure('请先登录。', 401)
   const params = new URL(req.url).searchParams
+  const wheel = params.get('box') === 'wheel'
+  const verify = wheel ? lookupUserFromRequest : lookupUserFromClaims
+  const { user, unreachable, reason } = await verify(req, authOptions)
+  if (unreachable) {
+    console.warn('[time-tree-auth]', { action: 'read', stage: 'identity', reason })
+    return failure(authUnavailable, 503)
+  }
+  if (!user) return failure('请先登录。', 401)
   const today = dayOf(new Date())
   const db = createAdminSupabase()
   const authAt = performance.now()
-  if (params.get('box') === 'wheel') {
+  if (wheel) {
     const { data, error } = await db.rpc('read_time_tree_box_wheel', { p_user: user.id })
     if (error || !data) return failure('奖励转盘暂时无法读取。', 503)
     return NextResponse.json(data, { headers: { 'Cache-Control': 'private, no-store' } })
   }
   const days = params.get('days')?.split(',')
   if (days && (days.length > 62 || !days.every(validDate))) return failure('请选择有效的日期范围。', 400)
+  const headers = () => ({ 'X-Tree-Time': new Date().toISOString(), 'Cache-Control': 'private, no-store',
+    'Server-Timing': `auth;dur=${Math.round(authAt - started)}, tree;dur=${Math.round(performance.now() - authAt)}` })
+  const knownRevision = params.get('knownRevision')
+  if (!days && knownRevision && /^\d{1,16}$/.test(knownRevision) && params.get('knownDay') === today) {
+    const { data: known } = await db.from('time_tree_accounts').select('revision')
+      .eq('user_id', user.id).eq('revision', knownRevision).eq('state->>today', today).maybeSingle()
+    if (known) return new NextResponse(null, { status: 204, headers: headers() })
+  }
   const { data, error } = days
     ? await db.rpc('read_time_tree_history', { p_user: user.id, p_days: days })
     : await db.rpc('read_time_tree_scene', { p_user: user.id, p_today: today })
-  if (error || !data) return failure('生命树暂时无法读取。', 503)
-  return NextResponse.json(days ? data : { revision: data.revision, tree: data.tree,
-    historyMinutes: data.historyMinutes, homeworkRevision: data.appliedHomework }, {
-    headers: { 'X-Tree-Time': new Date().toISOString(), 'Cache-Control': 'private, no-store',
-      'Server-Timing': `auth;dur=${Math.round(authAt - started)}, tree;dur=${Math.round(performance.now() - authAt)}` },
-  })
+  if (error) return failure('生命树暂时无法读取。', 503)
+  if (days) return NextResponse.json(data ?? { revision: 0, steps: [], spends: [] }, { headers: headers() })
+  return NextResponse.json({ revision: data?.revision ?? 0, tree: data?.tree ?? newTree(today),
+    historyMinutes: data?.historyMinutes, homeworkRevision: data?.appliedHomework,
+    syncDeferred: Boolean(data?.tree && data.tree.today !== today) }, { headers: headers() })
 }
 
 export async function POST(req: Request) {
@@ -60,6 +74,7 @@ export async function POST(req: Request) {
       knownRevision?: number
       knownHomeworkRevision?: string
       knownDay?: string
+      returnScene?: boolean
       protocol?: number
       operationId?: string
     })
@@ -89,7 +104,8 @@ export async function POST(req: Request) {
         'kind','id','name','day','notes','start','end','flowerSelection','questionEdit','rowId','problemId',
         'popOnFinish','regenerate','color','rules','tomatoPrice',
       ].includes(key)))
-    if (input.kind === 'pop' && typeof input.id === 'string') {
+    // Popping a cycle task also hands the bubble over to the next occurrence.
+    if (input.kind === 'pop' && typeof input.id === 'string' && !isMultiweekCycle(input.id.split('/')[1])) {
       const fast = await db.rpc('pop_time_tree_step', { p_user: user.id, p_id: input.id, p_operation: input.operationId })
       if (fast.error) throw fast.error
       if (fast.data) return reply(fast.data)
@@ -157,19 +173,7 @@ export async function POST(req: Request) {
       }
       roll(tree, today)
       if (input.kind === 'school' || scheduleNeeded || input.kind === 'regenerate') {
-        const templates: Homework[] = []
-        for (let offset = 0; ; offset += 500) {
-          const page = await db
-            .from('task_homework')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('enabled', true)
-            .order('id')
-            .range(offset, offset + 499)
-          if (page.error) throw page.error
-          templates.push(...(page.data as Homework[]))
-          if (page.data.length < 500) break
-        }
+        const templates = await loadHomeworkTemplates(db, user.id)
         if (input.kind === 'regenerate' && input.regenerate)
           regenerateHomework(tree, templates, input.regenerate.from, input.regenerate.through)
         else schedule(tree, templates, previousDay, shift(today, 6))
@@ -194,6 +198,7 @@ export async function POST(req: Request) {
       }
       if (editingQuestions) {
         if (!step) throw new TreeConflict('找不到这份作业，请刷新。')
+        if (isClosedHomeworkCycle(step, today)) throw new TreeConflict('这个周期已结束。')
         editMathQuestion(tree, step, template?.practice_binding ?? undefined, input)
       } else if (input.kind !== 'regenerate') act(tree, input, now)
       if (step && settling) {
@@ -206,7 +211,8 @@ export async function POST(req: Request) {
       placeTodayBubbles(tree)
       const delta = rowChanges(original, tree)
       if (input.kind === 'sync' && !scheduleNeeded && original && !hasRowChanges(delta))
-        return reply({ revision, tree, homeworkRevision, historyMinutes: read.data.historyMinutes })
+        return input.returnScene === false ? reply(null, 204) :
+          reply({ revision, tree, homeworkRevision, historyMinutes: read.data.historyMinutes })
       // Sync can also persist newly scheduled work or a day rollover.
       if (needsOnlineCheck) {
         const online = await lookupUserFromRequest(req, authOptions)
@@ -226,6 +232,7 @@ export async function POST(req: Request) {
       })
       if (!error) {
         if (input.kind !== 'sync') return reply(data)
+        if (input.returnScene === false) return reply(null, 204)
         const scene = await db.rpc('read_time_tree_scene', { p_user: user.id, p_today: today })
         if (scene.error) throw scene.error
         return reply({ revision: scene.data.revision, tree: scene.data.tree, historyMinutes: scene.data.historyMinutes,

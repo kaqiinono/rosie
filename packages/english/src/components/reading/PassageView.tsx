@@ -4,7 +4,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type RefObject, type Re
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '../../utils/reading-data'
 import { readingSegments } from '../../utils/listening-clips'
-import type { StorySentence } from '../../utils/story-types'
+import type { StoryChapter, StorySentence } from '../../utils/story-types'
 import {
   buildEntryMatchRegex,
   buildEntryRegex,
@@ -33,7 +33,7 @@ interface PassageViewProps {
   /** Reading mode — drives capsule styling intensity.
    *  'learn' = full color capsule. 'focus' = subtle bold + tint, no bg. */
   mode?: 'learn' | 'focus'
-  cefrLevel?: string
+  cefrLabels?: ReadonlyMap<string, string>
   /** Optional render slot injected at the end of each paragraph (e.g. recall quiz). */
   renderParagraphFooter?: (paragraphIndex: number) => ReactNode
   /** Optional sentence anchors for continuous Story reading/bookmarks. */
@@ -42,6 +42,7 @@ interface PassageViewProps {
   renderClipButton?: (cue: string) => ReactNode
   narrationRef?: RefObject<HTMLVideoElement | null>
   sentenceGroups?: StorySentence[][]
+  storyChapter?: Pick<StoryChapter, 'number' | 'title' | 'castPrefaceParagraphs'>
   renderStorySentenceControl?: (sentence: StorySentence) => ReactNode
 }
 
@@ -100,13 +101,14 @@ export default function PassageView({
   recallOutcomes,
   recallCounts,
   mode = 'learn',
-  cefrLevel,
+  cefrLabels,
   renderParagraphFooter,
   listeningTarget,
   listeningCollapsed = false,
   renderClipButton,
   narrationRef,
   sentenceGroups,
+  storyChapter,
   renderStorySentenceControl,
 }: PassageViewProps) {
   const listeningHighlight = listeningCollapsed
@@ -114,6 +116,7 @@ export default function PassageView({
     : 'box-decoration-clone rounded-sm bg-amber-50'
   const levelClass = mode === 'focus' ? LEVEL_CLASS_FOCUS : LEVEL_CLASS
   const [selected, setSelected] = useState<WordEntry | null>(null)
+  const selectedCefrLevel = selected?.headwordId ? cefrLabels?.get(selected.headwordId) : undefined
   const [selectedMatch, setSelectedMatch] = useState<WordFormMatch | null>(null)
   const [glossarySelected, setGlossarySelected] = useState<GlossaryWord | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -274,6 +277,7 @@ export default function PassageView({
               : ''
         const recalls = recallCounts?.[wordKey(entry)] ?? 0
         const source = entry.stage?.trim() || '未分级'
+        const cefrLevel = entry.headwordId ? cefrLabels?.get(entry.headwordId) : undefined
         const isCurrentLesson =
           entry.stage === passage.stage &&
           entry.unit === passage.unit &&
@@ -346,6 +350,29 @@ export default function PassageView({
     })
   }
 
+  const renderStorySentence = (sentence: StorySentence, paragraphIndex: number, displayText?: string) => (
+    <Fragment key={sentence.id}>
+      <span
+        id={sentence.id}
+        data-chapter-key={passage.lesson}
+        data-story-sentence
+        data-story-preview={listeningTarget === sentence.id ? '' : undefined}
+        data-sentence-index={sentence.index}
+        data-sentence-text={sentence.text}
+        className="scroll-mt-48 md:scroll-mt-36"
+      >
+        {displayText ?? renderParagraph(sentence.text, paragraphIndex * 1000 + sentence.index)}
+      </span>
+      {renderStorySentenceControl?.(sentence)}{' '}
+    </Fragment>
+  )
+
+  const prefaceCount = storyChapter?.castPrefaceParagraphs ?? 0
+  const castPreface = sentenceGroups?.slice(0, prefaceCount) ?? []
+  const bodyOffset = castPreface.length ? prefaceCount + 1 : 0
+  const [spokenNumber, spokenTitle] = bodyOffset ? sentenceGroups?.[prefaceCount] ?? [] : []
+  const chapterNumber = storyChapter ? `第 ${storyChapter.number} 章` : ''
+
   return (
     <div ref={containerRef} className="font-nunito">
       {!sentenceGroups && sourceStages.length > 1 && (
@@ -362,8 +389,31 @@ export default function PassageView({
           ))}
         </div>
       )}
-      <article className="space-y-7 text-[20px] leading-[1.9] text-gray-800 sm:text-[22px] sm:leading-[2]">
-        {passage.paragraphs.map((p, i) => (
+      {castPreface.length > 0 && (
+        <section aria-label="主要人物" className="px-5 py-4 text-base leading-7 text-text-secondary sm:px-7">
+          <h2 className="font-bold text-text-primary">主要人物</h2>
+          <p>{castPreface[0].map((sentence) => renderStorySentence(sentence, 0))}</p>
+          <ul className="mt-1 list-disc pl-5">
+            {castPreface.slice(1).map((group, index) => (
+              <li key={group[0]?.id ?? index}>{group.map((sentence) => renderStorySentence(sentence, index + 1))}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {storyChapter && (
+        <header className="bg-orange-50 p-5 sm:px-7">
+          <p className="text-xs font-extrabold tracking-wider text-amber-700">
+            {spokenNumber ? renderStorySentence(spokenNumber, prefaceCount, chapterNumber) : chapterNumber}
+          </p>
+          <h1 className="font-fredoka mt-1 text-2xl font-black text-slate-900">
+            {spokenTitle ? renderStorySentence(spokenTitle, prefaceCount, storyChapter.title) : storyChapter.title}
+          </h1>
+        </header>
+      )}
+      <article className={`text-[20px] leading-[1.9] text-gray-800 sm:text-[22px] sm:leading-[2] ${
+        bodyOffset ? 'space-y-4' : 'space-y-7'
+      } ${storyChapter ? 'border-t border-amber-100 p-5 sm:p-7' : ''}`}>
+        {passage.paragraphs.map((p, i) => i < bodyOffset ? null : (
           <div key={i}>
             {passage.paragraphTitles?.[i] && (
               <h2 className="font-fredoka text-app-blue-dark mb-2 text-base font-black tracking-wide sm:text-lg">
@@ -378,22 +428,7 @@ export default function PassageView({
             )}
             <p className="break-words">
               {sentenceGroups?.[i]
-                ? sentenceGroups[i].map((sentence) => (
-                    <Fragment key={sentence.id}>
-                      <span
-                        id={sentence.id}
-                        data-chapter-key={passage.lesson}
-                        data-story-sentence
-                        data-story-preview={listeningTarget === sentence.id ? '' : undefined}
-                        data-sentence-index={sentence.index}
-                        data-sentence-text={sentence.text}
-                        className="scroll-mt-48 md:scroll-mt-36"
-                      >
-                        {renderParagraph(sentence.text, i * 1000 + sentence.index)}
-                      </span>
-                      {renderStorySentenceControl?.(sentence)}{' '}
-                    </Fragment>
-                  ))
+                ? sentenceGroups[i].map((sentence) => renderStorySentence(sentence, i))
                 : renderTextbookParagraph(p, i)}
             </p>
             {renderParagraphFooter && <div className="mt-4">{renderParagraphFooter(i)}</div>}
@@ -407,8 +442,8 @@ export default function PassageView({
         entries={lessonWords}
         passage={passage}
         mastery={selected ? masteryMap[wordKey(selected)] : undefined}
-        cefrLevel={cefrLevel}
-        showMastery={!cefrLevel}
+        cefrLevel={selectedCefrLevel}
+        showMastery={!selectedCefrLevel}
         onEntryChange={(entry) => {
           setSelected(entry)
           setSelectedMatch(null)
