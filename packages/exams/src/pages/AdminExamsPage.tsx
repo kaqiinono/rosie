@@ -21,7 +21,7 @@ function isCatalogStatus(value: string): value is AdminExamItem['status'] {
 
 export function AdminExamsPage() {
   const { user } = useAuth()
-  const [status, setStatus] = useState<AdminExamItem['status']>('draft')
+  const [status, setStatus] = useState<AdminExamItem['status']>('published')
   const [page, setPage] = useState(1)
   const [refreshing, setRefreshing] = useState(false)
   const [refreshError, setRefreshError] = useState<unknown>(null)
@@ -63,7 +63,7 @@ export function AdminExamsPage() {
         <div className="relative flex min-h-[calc(100dvh-16rem)] flex-col gap-4">
           <LoadingOverlay appearance="quiet" visible={isLoading} placement="content" />
           {!isLoading && !error && data.items.length === 0 ? (
-            <StickerCard as="section" size="lg"><Text as="p">{status === 'draft' ? '还没有草稿。导入内容包后，可在这里对照来源编辑和审核。' : `还没有${STATUSES[status]}的内容。`}</Text></StickerCard>
+            <StickerCard as="section" size="lg"><Text as="p">{status === 'draft' ? '还没有草稿。导入内容包后，可在这里对照来源编辑试卷。' : `还没有${STATUSES[status]}的内容。`}</Text></StickerCard>
           ) : null}
           {!isLoading && data.items.map(item => (
             <StickerCard key={item.revisionId} as="article" size="lg">
@@ -72,11 +72,11 @@ export function AdminExamsPage() {
                   <Text as="p" size="4" weight="bold">{item.title}</Text>
                   <Flex gap="2" wrap="wrap">
                     <Badge variant="soft" radius="full" color={item.kind === 'official_paper' ? 'green' : item.kind === 'mock_paper' ? 'blue' : 'gray'}>{KINDS[item.kind]}</Badge>
-                    <Badge variant="soft" radius="full">{STATUSES[item.status]} · 第 {item.revision} 版</Badge>
+                    <Badge variant="soft" radius="full">{STATUSES[item.status]}</Badge>
                   </Flex>
                 </Flex>
                 <Text as="p" size="2" color="gray">{item.source.title} · {item.purpose === 'reserved' ? '保留测评' : '日常训练'}</Text>
-                <Flex><Button asChild size="3" variant="soft"><Link href={`/admin/exams/${encodeURIComponent(item.revisionId)}`}>{item.status === 'draft' ? '编辑与审核' : '查看发布状态'}</Link></Button></Flex>
+                <Flex><Button asChild size="3" variant="soft"><Link href={`/admin/exams/${encodeURIComponent(item.revisionId)}`}>{item.status === 'withdrawn' ? '查看下架试卷' : '编辑试卷'}</Link></Button></Flex>
               </Flex>
             </StickerCard>
           ))}

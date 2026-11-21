@@ -100,6 +100,7 @@ export default function PlayerDock({
     <>
       {/* 媒体元素始终挂载；inline 视频留在文档流，纯音频仅隐藏画面。 */}
       <div
+        inert={!showVideoOverlay}
         className={inline
           ? clsx('relative mx-auto w-full max-w-2xl overflow-hidden rounded-2xl bg-black', !showVideoOverlay && 'hidden')
           : 'fixed z-40 overflow-hidden rounded-2xl bg-black transition-all duration-300'}

@@ -1,0 +1,12 @@
+{
+  "chapters": {
+    "prologue": [
+      {
+        "file": "part-01",
+        "startMs": 29530,
+        "endMs": 181600,
+        "partial": true
+      }
+    ]
+  }
+}

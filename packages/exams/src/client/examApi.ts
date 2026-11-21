@@ -21,11 +21,11 @@ export class ExamRequestError extends Error {
 }
 
 /** Never keep tokens in module state, URLs or persisted drafts. */
-export async function examRequest<T>(userId: string, path: string, init: RequestInit = {}): Promise<T> {
+export async function examRequest<T>(userId: string, path: string, init: RequestInit = {}, timeoutMs = 30_000): Promise<T> {
   const { data } = await supabase.auth.getSession()
   if (!data.session || data.session.user.id !== userId) throw new ExamRequestError('unauthorized', 401)
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 30_000)
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
   const abort = () => controller.abort()
   init.signal?.addEventListener('abort', abort, { once: true })
   try {

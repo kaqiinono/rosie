@@ -4,16 +4,18 @@ import { useState } from 'react'
 import { ArrowIcon, LearningIcon, PageAccountRow, StickerCard } from '@rosie/ui'
 import { Badge, Button } from '@rosie/ui/themes'
 import Link from 'next/link'
-import { storySeries } from '../../utils/story-data'
+import type { StorySeries } from '../../utils/story-types'
+
+type ShelfSeries = Omit<StorySeries, 'volumes'> & { volumeCount: number }
 
 const seriesIcons: Partial<Record<string, string>> = {
   'magic-tree-house': '🏡',
   'roald-dahl': '🍫',
 }
 
-export default function StoryShelf() {
+export default function StoryShelf({ entries }: { entries: ShelfSeries[] }) {
   const [language, setLanguage] = useState<'all' | 'zh' | 'en'>('all')
-  const seriesList = storySeries.filter((series) => language === 'all' || series.language === language)
+  const seriesList = entries.filter((series) => language === 'all' || series.language === language)
   return (
     <main className="font-nunito relative z-[1] mx-auto w-full max-w-[1280px] px-3 pt-6 pb-24 md:px-4">
       <div className="mb-5">
@@ -40,14 +42,16 @@ export default function StoryShelf() {
                     </span>
                     <div className="min-w-0 flex-1">
                       <h2 className="font-fredoka text-lg leading-tight font-black text-text-primary">{series.title}</h2>
-                      <p className="mt-1 text-sm font-bold text-amber-700">{series.author}</p>
+                      <p className="mt-1 text-sm font-bold text-amber-700">
+                        {series.seasonNumber && `Season ${series.seasonNumber} · `}{series.author}
+                      </p>
                     </div>
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-text-secondary">{series.description}</p>
                 </div>
                 <div className="mt-auto pt-3">
                   <Badge variant="soft" radius="full" color="amber">
-                    {series.volumes.length} 辑
+                    {series.volumeCount} {series.seasonNumber ? '本' : '辑'}
                     <span aria-hidden="true"><ArrowIcon size={12} /></span>
                   </Badge>
                 </div>

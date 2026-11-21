@@ -6,18 +6,19 @@ import { useAuth } from '@rosie/core'
 import { PageAccountRow } from '@rosie/ui'
 import { useStoryReadingProgress } from '../../hooks/useStoryReadingProgress'
 import { useStoryRecordings } from '../../hooks/useStoryRecordings'
-import type { StorySeries, StoryVolume } from '../../utils/story-types'
-import { storyContentKey } from '../../utils/story-types'
+import type { StoryChapter, StorySeries, StoryVolumeSummary } from '../../utils/story-types'
+import { hasSeparateStoryChapterNumber, storyContentKey } from '../../utils/story-types'
 import { Button } from '@rosie/ui/themes'
 
 export default function StoryVolumeView({
   series,
   volume,
 }: {
-  series: StorySeries
-  volume: StoryVolume
+  series: Pick<StorySeries, 'slug' | 'title' | 'seasonNumber'>
+  volume: StoryVolumeSummary & { chapters: Pick<StoryChapter, 'key' | 'title' | 'number'>[] }
 }) {
   const { user } = useAuth()
+  const guide = volume.kind === 'guide'
   const { progress, clearProgress } = useStoryReadingProgress(user, volume.slug)
   const { recordingsFor } = useStoryRecordings(user)
   const recordedClips = volume.chapters.reduce(
@@ -37,7 +38,7 @@ export default function StoryVolumeView({
       </PageAccountRow>
       <header className="mt-4 rounded-3xl bg-orange-50 p-6 ring-1 ring-amber-200">
         <p className="text-xs font-extrabold tracking-wider text-amber-600 uppercase">
-          第 {volume.number} 辑
+          {series.seasonNumber ? `第 ${series.seasonNumber} 季 · 第 ${volume.number} 册` : guide ? '特别版指南' : `第 ${volume.number} 辑`}
         </p>
         <h1 className="font-fredoka mt-1 text-3xl font-black text-slate-900">{volume.title}</h1>
         <p className="mt-3 text-slate-600">{volume.description}</p>
@@ -46,14 +47,16 @@ export default function StoryVolumeView({
             href={`/stories/${series.slug}/${volume.slug}/full`}
             className="rounded-full bg-amber-600 px-4 py-2 text-sm font-bold text-white no-underline"
           >
-            阅读整辑
+            {guide ? '阅读整册' : '阅读整辑'}
           </Link>
           {resumeChapter && (
             <Link
               href={`/stories/${series.slug}/${volume.slug}/${resumeChapter.key}`}
               className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white no-underline"
             >
-              继续阅读 · 第 {resumeChapter.number} 章
+              继续阅读 · {hasSeparateStoryChapterNumber(resumeChapter)
+                ? `第 ${resumeChapter.number} ${guide ? '节' : '章'}`
+                : resumeChapter.title}
             </Link>
           )}
           {progress && (
@@ -86,14 +89,16 @@ export default function StoryVolumeView({
                     : 'ring-kid-line bg-white hover:ring-amber-300',
                 )}
               >
-                <span
-                  className={clsx(
-                    'font-fredoka flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-black',
-                    isReading ? 'bg-emerald-500 text-white' : 'bg-amber-100 text-amber-800',
-                  )}
-                >
-                  {chapter.number}
-                </span>
+                {hasSeparateStoryChapterNumber(chapter) && (
+                  <span
+                    className={clsx(
+                      'font-fredoka flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-black',
+                      isReading ? 'bg-emerald-500 text-white' : 'bg-amber-100 text-amber-800',
+                    )}
+                  >
+                    {chapter.number}
+                  </span>
+                )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold text-slate-900" title={chapter.title}>
                     {chapter.title}

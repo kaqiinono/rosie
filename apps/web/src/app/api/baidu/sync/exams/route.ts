@@ -2,7 +2,7 @@ import { baiduAuthErrorCode } from '@rosie/core'
 import { createAdminSupabase } from '@/lib/api-auth'
 import { authorizeExamRequest, ExamApiError, examFailure, examIdentifier, examJson, examPageRequest } from '@/lib/exams/http'
 import { readExamMediaEditor, readExamMediaSaveRequest, saveExamListeningDirectory, saveExamMediaBindings } from '@/lib/exams/mediaAdmin'
-import { listExamDrafts } from '@/lib/exams/repository'
+import { listExamMediaRevisions } from '@/lib/exams/repository'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   try {
     await authorizeExamRequest(request, true)
     const params = new URL(request.url).searchParams
-    if (!params.has('revisionId')) return examJson(await listExamDrafts(createAdminSupabase(), examPageRequest(request)))
+    if (!params.has('revisionId')) return examJson(await listExamMediaRevisions(createAdminSupabase(), examPageRequest(request)))
     if ([...params.keys()].some(key => key !== 'revisionId') || params.getAll('revisionId').length !== 1) throw new ExamApiError('exam_invalid_request', 400)
     return examJson(await readExamMediaEditor(createAdminSupabase(), examIdentifier(params.get('revisionId'))))
   } catch (error) { return failure(error) }

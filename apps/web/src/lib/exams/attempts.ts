@@ -7,6 +7,7 @@ import { validateExamDraft, type ExamDraftInput } from '@rosie/exams/validation'
 import { ExamApiError, examIdentifier, readExamJsonBody } from './http'
 import { applyExamOperation, newExamAttempt, selectedGroups, type AttemptOperation, type AttemptCommand } from './attemptEngine'
 import { verifyExamMediaForAttempt } from './media'
+import { followSupersededExamRevision } from './repository'
 
 export interface AttemptEnvelope { handwritingAvailable?: boolean; annotationPersistence?: boolean; attempt: ExamAttemptRecord; draft: ExamDraftInput; serverNow: string }
 export interface AttemptWriteCommand extends AttemptCommand { requestId: string; expectedVersion: string }
@@ -100,14 +101,23 @@ export async function createExamAttempt(db: SupabaseClient, userId: string, body
   const requestId = attemptUuid(body.requestId)
   const wordReviewBatchId = body.wordReviewBatchId === undefined ? undefined : attemptUuid(body.wordReviewBatchId)
   if (wordReviewBatchId && body.mode !== 'practice') throw new ExamApiError('exam_invalid_mode', 400)
-  const revisionId = examIdentifier(body.contentRevisionId)
+  const requestedRevisionId = examIdentifier(body.contentRevisionId)
   const groupId = body.mode === 'practice' ? examIdentifier(body.groupId) : undefined
   const hash = attemptCommandHash({ userId, operation: 'create', body })
   const previous = await priorAttemptCommand(db, userId, requestId, hash)
   if (previous) return readAttemptEnvelope(db, userId, previous)
-  const { data, error } = await db.rpc('read_exam_publication', { p_id: revisionId })
-  if (error) attemptStorageError(error)
-  const publication = object(data)
+  let revisionId = requestedRevisionId
+  const requested = await db.rpc('read_exam_publication', { p_id: revisionId })
+  if (requested.error) attemptStorageError(requested.error)
+  let publication = object(requested.data)
+  if (publication.status === 'withdrawn') {
+    revisionId = await followSupersededExamRevision(db, revisionId)
+    if (revisionId !== requestedRevisionId) {
+      const current = await db.rpc('read_exam_publication', { p_id: revisionId })
+      if (current.error) attemptStorageError(current.error)
+      publication = object(current.data)
+    }
+  }
   if (publication.status !== 'published') throw new ExamApiError('exam_content_unavailable', 409)
   const stored = object(publication.draft)
   const validation = validateExamDraft({ ...stored, content: { ...object(stored.content), status: 'draft' } })
@@ -115,6 +125,7 @@ export async function createExamAttempt(db: SupabaseClient, userId: string, body
   const draft = validation.value
   if (draft.content.mediaBindingRevisionId) await verifyExamMediaForAttempt(db, draft, draft.content.mediaBindingRevisionId)
   else if (draft.content.mediaSlots.some(slot => slot.required)) throw new ExamApiError('exam_playback_unavailable', 409)
+  if (groupId && !draft.content.groups.some(group => group.id === groupId)) throw new ExamApiError('exam_content_unavailable', 409)
   const state = newExamAttempt(draft, body.mode, groupId, new Date().toISOString())
   const created = await db.rpc(wordReviewBatchId ? 'create_exam_transfer_attempt' : 'create_exam_attempt', { p_user: userId, p_request_id: requestId, p_content_revision_id: revisionId,
     p_state: state, p_command_hash: hash, ...(wordReviewBatchId ? { p_batch_id: wordReviewBatchId } : {}) })

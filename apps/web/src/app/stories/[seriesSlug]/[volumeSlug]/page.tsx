@@ -11,5 +11,9 @@ export default async function StoryVolumePage({
   if (!series) notFound()
   const volume = findStoryVolume(series, volumeSlug)
   if (!volume) notFound()
-  return <StoryVolumeView series={series} volume={volume} />
+  const { chapters, ...summary } = volume
+  return <StoryVolumeView
+    series={{ slug: series.slug, title: series.title, seasonNumber: series.seasonNumber }}
+    volume={{ ...summary, chapters: chapters.map(({ key, number, title }) => ({ key, number, title })) }}
+  />
 }

@@ -5,6 +5,7 @@ import { KET_SCHOOLS_2020_TEMPLATE } from '@rosie/exams'
 import type { ExamContentRevision, ExamContentSet, ExamPracticeGroup, ExamPracticeOptions, ExamPracticePage,
   ExamTemplate, Question, VocabularyLink } from '@rosie/exams'
 import { ExamApiError, examIdentifier } from './http'
+import { followSupersededExamRevision } from './repository'
 import { attemptStorageError } from './attempts'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -33,7 +34,8 @@ export async function listPracticeGroups(db: SupabaseClient, userId: string, req
   if (!/^[1-9][0-9]*$/.test(pageText) || !Number.isSafeInteger(page) || page > 10000) throw new ExamApiError('exam_invalid_pagination', 400)
   const part = params.get('partNumber')
   if (part !== null && (!/^[1-9][0-9]*$/.test(part) || !Number.isSafeInteger(Number(part)) || Number(part) > 100)) throw new ExamApiError('exam_invalid_request', 400)
-  const filters = { revisionId: optionalId(params, 'revisionId'), sectionId: optionalId(params, 'sectionId'), partNumber: part ? Number(part) : null,
+  const requestedRevisionId = optionalId(params, 'revisionId')
+  const filters = { revisionId: requestedRevisionId ? await followSupersededExamRevision(db, requestedRevisionId) : null, sectionId: optionalId(params, 'sectionId'), partNumber: part ? Number(part) : null,
     domain: optionalId(params, 'domain'), questionType: optionalId(params, 'questionType'), knowledgePoint: optionalId(params, 'knowledgePoint'),
     wordEntryId: optionalUuid(params, 'wordEntryId') }
   if ((filters.domain && !Object.hasOwn(DOMAINS, filters.domain))
@@ -109,7 +111,7 @@ export async function listPracticeGroups(db: SupabaseClient, userId: string, req
   // Multiple question filters must match the same actual question.
   for (const candidate of candidates) {
     const { item, links } = candidate
-    maps.revisions.set(item.revisionId, item.title)
+    maps.revisions.set(item.revisionId === filters.revisionId ? requestedRevisionId ?? item.revisionId : item.revisionId, item.title)
     if (filters.revisionId && item.revisionId !== filters.revisionId) continue
     maps.sections.set(item.sectionId, item.sectionLabel)
     if (filters.sectionId && item.sectionId !== filters.sectionId) continue

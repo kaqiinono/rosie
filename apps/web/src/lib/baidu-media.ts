@@ -134,6 +134,27 @@ function safeDownloadUrl(value: string): URL {
   return url
 }
 
+/** Only expose Baidu's signed image preview, scoped to the exact file we requested. */
+export async function getBaiduImagePreview(path: string): Promise<string | null> {
+  const account = await getBaiduAccountContext()
+  const files = await listBaiduDirectory(path.slice(0, path.lastIndexOf('/')), account)
+  const entry = files.find(file => file.path === path)
+  if (!entry) return null
+  const metadata = await baiduJson('/rest/2.0/xpan/multimedia', {
+    method: 'filemetas', fsids: `[${entry.fs_id}]`, thumb: '1', dlink: '0',
+  }, account.accessToken)
+  const info = Array.isArray(metadata.list) ? metadata.list[0] : null
+  if (!info || info.path !== path || info.isdir === 1 || exactBaiduId(info.fs_id) !== entry.fs_id) return null
+  const preview = info.thumbs?.url3
+  if (typeof preview !== 'string') return null
+  const url = new URL(preview)
+  if (url.protocol !== 'https:' || !/^thumbnail\d+\.baidupcs\.com$/.test(url.hostname) ||
+      url.port || url.username || url.password || url.hash || !url.pathname.startsWith('/thumbnail/') ||
+      !url.searchParams.get('sign') || decodeURIComponent(url.href).includes(account.accessToken) ||
+      [...url.searchParams.keys()].some(key => /^(?:access_token|refresh_token)$/i.test(key))) return null
+  return url.href
+}
+
 /** Never forward the browser's cookies/Authorization or expose a Baidu Location header. */
 export async function fetchBaiduMedia(
   path: string,

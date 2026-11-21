@@ -8,6 +8,14 @@ never import English, Audio or AI. Internal imports are relative. The public bar
 pages, template metadata and **types only** for content/solutions. Pure runtime validators
 have a separate `@rosie/exams/validation` entry point so server code does not load UI exports.
 
+First publication checks the saved paper against its template, checks required answers and
+resource bindings, and probes required Baidu media. No manual review record is required.
+Published papers can be edited directly. Saving replaces the student catalog entry atomically
+with a new revision. Active and historical attempts retain their original content, answers
+and media. Listening matches and legacy unconfirmed tracks collect duration during save;
+successful saves to a published paper apply to the next attempt. The workflow requires
+`20261121173749_exam_live_edits.sql`.
+
 ## Current scope
 
 `/admin/exams/images` is the real image-task workspace: a draft/slot list, authenticated
@@ -43,7 +51,7 @@ The current source implements the student catalog and complete-group practice at
 `/exams/ket` and `/exams/ket/practice`, owner-bound attempts at `/exams/attempts/[id]`,
 submitted-scope review at `/exams/attempts/[id]/review`, vocabulary review at
 `/exams/review-words/[batchId]`, and 14/28-day reports at `/exams/reports`.
-`/admin/exams` and `/admin/exams/[id]` manage content, review and publication;
+`/admin/exams` and `/admin/exams/[id]` manage content and publication;
 `/admin/exams/attempts` requires an explicit user selection for manual assessment.
 The root AuthGuard and existing AdminGuard protect pages; every server route independently
 verifies the authenticated user and required role. Private data uses server projections,
@@ -344,7 +352,7 @@ Vitest files `apps/web/tests/exams-{content-validation,api-access,repository}.te
 written but not executed; their mocks do not prove database transaction/concurrency behavior.
 Manually verify anonymous/non-admin denial, metadata-only catalog output, missing-storage errors,
 sample draft creation/read, identical-request replay, stale-version conflicts, atomic answer
-replacement and refusal to edit published content in a suitable test environment. For cache
+replacement, published saves, and preservation of active attempts in a suitable test environment. For cache
 behavior use the project's production preview mode and hard-reload to activate the new worker.
 
 ## Local bundle and import CLI
@@ -466,31 +474,24 @@ stale lock. Test definitions for source-map and extraction are written, never ex
 by this task. Four release-candidate bundles subsequently passed the import preview and
 were saved as drafts; the two extraction samples remain unimported. Nothing is published.
 
-## Management and review
+## Management and publication
 
-`/admin/exams` lists real draft/published/withdrawn versions via the administrator catalog;
-`/admin/exams/[id]` edits imported drafts, solutions, classifications and vocabulary links.
-The complete JSON editor covers fields beyond the structured form. Exported edits include
-private solutions and must remain private. Save errors preserve inputs and unknown outcomes
-retain the exact request for retry. Lists use per-user session stores.
+The administrator edits saved papers, solutions, classifications and vocabulary links in
+`/admin/exams/[id]`. The JSON editor covers fields beyond the structured form. Exported edits
+include private solutions and stay private. Save errors preserve inputs and the exact request
+for retry. Lists use per-user session stores.
 
-Review approvals remain a separate server-authored audit bound to the draft UUID version;
-editing invalidates prior approvals. They are optional reminders. Publishing a saved draft
-does not require exam/explanations review, rubric approval, material families, vocabulary
-snapshots or live media verification. Client JSON still cannot submit an approved review.
-Publish, withdraw and reopen are explicit admin operations with CAS and persistent
-idempotency. Reopen returns a published or withdrawn revision to an editable draft on the
-same version. One content set still has at most one published revision. Withdrawal prevents
-new attempts while retaining the revision and its learning records.
+Drafts enter the student catalog through explicit publication. The server validates the
+saved content and required answers, vocabulary snapshots and media. The database rechecks
+the version and binding before switching the catalog. The review endpoints remain available
+for audit history. Published content and media edits save through versioned commands and
+switch the catalog in the same transaction. Prior attempts retain their content and bindings.
+Withdrawal stops new attempts and preserves history. Reopening a withdrawn paper creates a
+new draft if an attempt references the withdrawn revision.
 
-Review routes under `/api/admin/exams/[id]` use GET/POST `reviews`, POST `publish` and
-POST `withdraw`. Review input is `{expectedVersion,requestId,scope,decision,reason?}`;
-transition input is `{expectedVersion,requestId}`. Scope is exam/explanations/rubric.
-Draft JSON cannot promote reviews. A current approved server review does not erase explicit
-blocked fields or missing authored content. Publication checks every review-bearing path;
-a capped readiness report cannot silently hide blockers. Formal exam groups must reference
-material families. Rubric approval does not invent a missing numeric range. Withdrawal
-prevents new attempts while retaining immutable revisions and authorized historical review.
+`publish`, `withdraw` and `reopen` accept `{expectedVersion,requestId}` and record receipts.
+Live saves record durable receipts tied to the submitted version and payload. Stale writes
+receive a conflict. New student attempts can follow a replaced catalog link to the live paper.
 
 ## Frozen media and authorization
 
@@ -498,10 +499,10 @@ The on-demand `/admin/sync` exam panel uses GET/PUT `/api/baidu/sync/exams`. Ser
 under `apps/web/src/lib/exams/{media,mediaAdmin}.ts` reuses the shared Baidu OAuth account,
 directory bookmarks and Range proxy. `exam_media_binding_revisions` freezes account identity
 and generation, directory, file ID/path/size/fingerprint, exact slot snapshot, reviewed state
-and actual duration. Bindings are immutable; saving a replacement rotates the draft edit
-version and invalidates earlier content reviews. Runtime checks reject moved/replaced files
-and changed shared-account generation. No file paths, Baidu tokens or dlinks enter student
-responses. New picks must be previewed and explicitly reviewed by the administrator.
+and actual duration. Bindings are immutable. Saving a replacement on a published paper
+switches the student catalog. Runtime checks reject moved or replaced files and changed
+shared-account generation. Student responses omit file paths, Baidu tokens and dlinks.
+Listening saves read track metadata and validate the requested segments automatically.
 
 The same file may serve multiple slots/segments, but a Range response exposes the complete
 file. Client segment boundaries are never authorization boundaries. All same-file slots and
@@ -817,16 +818,16 @@ or track numbers are inferred from printed text.
 
 Paper preview links carry revision, section, Part and optional slot into `/admin/sync`.
 The media editor lists authored listening and training audio grouped by listening Part.
-「使用此目录」 immediately saves an existing authorized Baidu listening directory per draft.
+「使用此目录」 immediately saves an existing authorized Baidu listening directory for the selected paper.
 The directory has its own edit version. The editor reads
 that directory and its descendants. Batch matching stages
 unique authored track numbers or explicit filenames for single-track Parts, leaves ambiguous
 tracks for manual selection, and preserves existing bindings. The listening-only save validates
-every changed slot against current draft membership and commits across Parts using the existing
+every changed slot against current paper membership and commits across Parts using the existing
 CAS and immutable binding revisions. Each new listening file retains the authorized bookmark
 it was matched under. Existing files can still resolve through the legacy binding directory.
-After saving a match, 「试听」 reads the track duration from media metadata. 「确认音轨」 stages
-the review and duration for the next binding save. No audio upload directory is created.
+Saving matches reads track duration and verifies that the files are reachable.
+「试听」 remains available for optional playback.
 Question images use the image workspace. The hosted database has
 `20261119121511_exam_listening_directory.sql` applied.
 

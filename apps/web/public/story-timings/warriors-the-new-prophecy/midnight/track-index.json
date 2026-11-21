@@ -1,0 +1,123 @@
+{
+  "chapters": {
+    "prologue": [
+      {
+        "file": "prologue",
+        "startMs": 0,
+        "endMs": 585900
+      }
+    ],
+    "ch01": [
+      {
+        "file": "ch01",
+        "startMs": 0,
+        "endMs": 1750204
+      }
+    ],
+    "ch02": [
+      {
+        "file": "ch02",
+        "startMs": 0,
+        "endMs": 1356852
+      }
+    ],
+    "ch03": [
+      {
+        "file": "ch03",
+        "startMs": 0,
+        "endMs": 1803562
+      }
+    ],
+    "ch04": [
+      {
+        "file": "ch04",
+        "startMs": 0,
+        "endMs": 1131494
+      }
+    ],
+    "ch05": [
+      {
+        "file": "ch05",
+        "startMs": 0,
+        "endMs": 1173133
+      }
+    ],
+    "ch06": [
+      {
+        "file": "ch06",
+        "startMs": 0,
+        "endMs": 1491947
+      }
+    ],
+    "ch07": [
+      {
+        "file": "ch07",
+        "startMs": 0,
+        "endMs": 1249071
+      }
+    ],
+    "ch08": [
+      {
+        "file": "ch08",
+        "startMs": 0,
+        "endMs": 704522
+      }
+    ],
+    "ch09": [
+      {
+        "file": "ch09",
+        "startMs": 0,
+        "endMs": 1012532
+      }
+    ],
+    "ch10": [
+      {
+        "file": "ch10",
+        "startMs": 0,
+        "endMs": 1068973
+      }
+    ],
+    "ch11": [
+      {
+        "file": "ch11",
+        "startMs": 0,
+        "endMs": 796578
+      }
+    ],
+    "ch12": [
+      {
+        "file": "ch12",
+        "startMs": 0,
+        "endMs": 651677
+      }
+    ],
+    "ch13": [
+      {
+        "file": "ch13",
+        "startMs": 0,
+        "endMs": 937770
+      }
+    ],
+    "ch14": [
+      {
+        "file": "ch14",
+        "startMs": 0,
+        "endMs": 1080738
+      }
+    ],
+    "ch15": [
+      {
+        "file": "ch15",
+        "startMs": 0,
+        "endMs": 1401564
+      }
+    ],
+    "ch16": [
+      {
+        "file": "ch16",
+        "startMs": 0,
+        "endMs": 559334
+      }
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@rosie/core'
-import { AppDialog, LoadingOverlay, StickerCard } from '@rosie/ui'
+import { AppDialog, Gift, LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Button, Flex, Text } from '@rosie/ui/themes'
 import { blindBoxChances } from '@/lib/time-tree/rewards'
 import type { BoxWheelItem, TreeData } from '@/lib/time-tree/types'
@@ -171,13 +171,15 @@ export default function BlindBoxDrawer({ api, close }: { api: TreeController; cl
   }
 
   return (
-    <AppDialog open title="我的盲盒" presentation="bottom-drawer" compactBottomDrawer closeDisabled={api.busy}
+    <AppDialog open title="盲盒" presentation="bottom-drawer" compactBottomDrawer closeDisabled={api.busy}
       onOpenChange={open => { if (!open) close() }}>
       <Flex direction="column" gap="3" pb="2">
         {prize && !spinning ? (
           <StickerCard tone="accent" size="md" className="text-center">
             <Flex direction="column" gap="3" align="center">
-              <Text size="5" weight="bold">{prize.wheel?.emoji ?? '🎁'} {prize.name}</Text>
+              <Text size="5" weight="bold">
+                {prize.wheel?.emoji ?? <Gift aria-hidden="true" size={20} className="inline-block align-middle" />} {prize.name}
+              </Text>
               <Button loading={api.busy} onClick={async () => {
                 if (await api.run({ kind: 'acceptBox', id: prize.ticket })) setReceived(true)
               }}>收下奖励</Button>

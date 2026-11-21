@@ -31,7 +31,7 @@ function version(value: unknown): string {
 
 function storageFailure(error: { code?: string; message?: string }): never {
   const statuses: Record<string, number> = {
-    exam_invalid_draft: 400, exam_not_found: 404, exam_conflict: 409, exam_not_editable: 409,
+    exam_invalid_draft: 400, exam_not_found: 404, exam_conflict: 409, exam_not_editable: 409, exam_invalid_media_binding: 409,
   }
   if (error.message && Object.hasOwn(statuses, error.message)) {
     throw new ExamApiError(error.message, statuses[error.message])
@@ -65,21 +65,34 @@ export function projectExamCatalogItem(value: unknown): ExamCatalogItem {
   }
 }
 
-async function listRows(db: SupabaseClient, page: ExamPageRequest, status: 'draft' | 'published' | 'withdrawn', admin = false) {
+async function listRows(db: SupabaseClient, page: ExamPageRequest, status: 'draft' | 'published' | 'withdrawn' | 'editable', admin = false) {
   const start = (page.page - 1) * page.pageSize
   const columns = status === 'draft' || admin ? `${CATALOG_COLUMNS},version,created_at,updated_at` : CATALOG_COLUMNS
-  const { data, error } = await db.from('exam_content_revisions')
-    .select(columns).eq('status', status)
-    .order('created_at', { ascending: false }).order('id', { ascending: true })
+  const query = db.from('exam_content_revisions').select(columns)
+  if (status === 'editable') query.in('status', ['draft', 'published']).order('status', { ascending: false })
+  else query.eq('status', status)
+  if (status === 'withdrawn') query.is('superseded_by', null)
+  const { data, error } = await query.order('created_at', { ascending: false }).order('id', { ascending: true })
     .range(start, start + page.pageSize)
   if (error) storageFailure(error)
   if (!Array.isArray(data)) throw new ExamApiError('exam_unavailable', 503)
   const rows = data.map((row: unknown) => {
     const result = object(row)
-    if (result.status !== status) throw new ExamApiError('exam_unavailable', 503)
+    if (status === 'editable' ? result.status !== 'draft' && result.status !== 'published' : result.status !== status) throw new ExamApiError('exam_unavailable', 503)
     return result
   })
   return { rows: rows.slice(0, page.pageSize), hasMore: rows.length > page.pageSize }
+}
+
+export async function followSupersededExamRevision(db: SupabaseClient, id: string): Promise<string> {
+  const { data: revision, error } = await db.from('exam_content_revisions')
+    .select('content_set_id,superseded_by').eq('id', id).maybeSingle()
+  if (error) storageFailure(error)
+  if (!revision?.superseded_by) return id
+  const { data: current, error: currentError } = await db.from('exam_content_revisions')
+    .select('id').eq('content_set_id', revision.content_set_id).eq('status', 'published').maybeSingle()
+  if (currentError) storageFailure(currentError)
+  return current?.id ?? id
 }
 
 export async function listExamCatalog(db: SupabaseClient, page: ExamPageRequest): Promise<ExamPage<ExamCatalogItem>> {
@@ -103,14 +116,25 @@ export async function listExamDrafts(db: SupabaseClient, page: ExamPageRequest):
   return { items, ...page, hasMore: result.hasMore }
 }
 
-export async function readExamDraft(db: SupabaseClient, id: string): Promise<ExamDraftRecord> {
-  const { data, error } = await db.rpc('read_exam_draft', { p_id: id })
+export async function listExamMediaRevisions(db: SupabaseClient, page: ExamPageRequest) {
+  const result = await listRows(db, page, 'editable', true)
+  const items: ExamAdminListItem[] = result.rows.map(row => ({ ...projectExamCatalogItem(row),
+    status: row.status === 'published' ? 'published' : 'draft', version: version(row.version),
+    createdAt: string(row.created_at), updatedAt: string(row.updated_at) }))
+  return { items, ...page, hasMore: result.hasMore }
+}
+
+export async function readExamDraft(db: SupabaseClient, id: string, live = false): Promise<ExamDraftRecord> {
+  const { data, error } = await db.rpc(live ? 'read_exam_editable_revision' : 'read_exam_draft', { p_id: id })
   if (error) storageFailure(error)
+  if (data === null) throw new ExamApiError('exam_not_found', 404)
   const row = object(data)
+  const status = live ? row.status : 'draft'
+  if (status !== 'draft' && status !== 'published' && status !== 'withdrawn') throw new ExamApiError('exam_unavailable', 503)
   const result = validateExamDraft(row.draft)
   if (!result.ok || result.value.content.id !== id) throw new ExamApiError('exam_unavailable', 503)
   return {
-    draft: result.value, version: version(row.version),
+    draft: result.value, status, supersededBy: live && row.supersededBy !== null ? string(row.supersededBy) : null, version: version(row.version),
     createdAt: string(row.createdAt), updatedAt: string(row.updatedAt),
   }
 }
@@ -141,10 +165,10 @@ async function verifyVocabularyReferences(db: SupabaseClient, draft: ExamDraftIn
 export async function saveExamDraft(
   db: SupabaseClient,
   draft: ExamDraftInput,
-  command: { actorId: string; requestId: string; expectedVersion: string | null },
+  command: { actorId: string; requestId: string; expectedVersion: string | null; live?: boolean },
 ): Promise<ExamDraftReceipt> {
   await verifyVocabularyReferences(db, draft)
-  const { data, error } = await db.rpc('save_exam_draft', {
+  const { data, error } = await db.rpc(command.live && command.expectedVersion !== null ? 'save_exam_edited_revision' : 'save_exam_draft', {
     p_actor: command.actorId,
     p_request_id: command.requestId,
     p_expected_version: command.expectedVersion,
@@ -154,13 +178,16 @@ export async function saveExamDraft(
   })
   if (error) storageFailure(error)
   const row = object(data)
-  if (row.id !== draft.content.id || row.contentSetId !== draft.contentSet.id ||
-      row.revision !== draft.content.revision || row.status !== 'draft') {
+  if (row.contentSetId !== draft.contentSet.id || (
+    row.status === 'published'
+      ? !command.live || command.expectedVersion === null || row.id === draft.content.id || positiveInteger(row.revision) <= draft.content.revision
+      : row.status !== 'draft' || row.id !== draft.content.id || row.revision !== draft.content.revision
+  )) {
     throw new ExamApiError('exam_unavailable', 503)
   }
   return {
     id: string(row.id), contentSetId: string(row.contentSetId), revision: positiveInteger(row.revision),
-    version: version(row.version), status: 'draft',
+    version: version(row.version), status: row.status === 'published' ? 'published' : 'draft',
     createdAt: string(row.createdAt), updatedAt: string(row.updatedAt),
   }
 }

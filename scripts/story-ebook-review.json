@@ -1,0 +1,256 @@
+{
+  "03": {
+    "24": {"opening": ["Jo’s", "Bo’s"], "replace": [["Bo.“This", "Bo. “This"]]}
+  },
+  "04": {
+    "65": {"opening": ["The hydra aimed all four heads at Drake The", "The hydra aimed all four heads at Drake. The"]}
+  },
+  "05": {
+    "16": {"opening": ["“Yes. of course.", "“Yes, of course."]},
+    "34": {"opening": ["everything", "Everything"]},
+    "82": {"opening": ["oot-toot", "Toot-toot"]}
+  },
+  "06": {
+    "32": {"opening": ["→ II six", "All six"]},
+    "34": {
+      "paragraphs": [
+        [0.224, "INSIDE THESE WALLS ARE SIX SECRET ROOMS."],
+        [0.254, "IN EACH ROOM IS A CLUE TO UNWIND."],
+        [0.294, "CHOOSE ONE DRAGON TO SOLVE EACH PUZZLE,"],
+        [0.324, "THEN LEAVE DRAGON AND MASTER BEHIND."],
+        [0.354, "THINK WITH CARE BEFORE EACH CHOICE IS MADE,"],
+        [0.384, "OR FOREVER YOU MAY BE CONFINED."],
+        [0.414, "WHEN ONE DRAGON AND MASTER REMAIN,"],
+        [0.454, "THEN AT LAST THE PRIME STONE THEY WILL FIND."],
+        [0.59, "“I just realized something odd,” said Bo. “The rhyme calls for six dragons. But this pyramid is called the Pyramid of the Seven Dragons …”"],
+        [0.75, "“And why does it say we’ll be confined?” Petra asked. “Does that mean we’ll be trapped inside this pyramid?”"],
+        [0.88, "“It sure sounds that way,” said Rori."]
+      ]
+    },
+    "38": {"opening": ["“don’t see a door any where", "“I don’t see a door anywhere"]},
+    "78": {"replace": [["pyramid -and", "pyramid — and"]]}
+  },
+  "07": {
+    "31": {"opening": ["“-ow", "“How"]},
+    "49": {"opening": ["“ome,", "“Come,"]},
+    "57": {"opening": ["a rackle!", "Crackle!"]},
+    "79": {"opening": ["oom!", "Boom!"]}
+  },
+  "08": {
+    "15": {"opening": ["“We can’t plan a silly paradel”", "“We can’t plan a silly parade!”"]},
+    "44": {"opening": ["ko glared", "Eko glared"]},
+    "49": {"opening": ["Criffith", "Griffith"]},
+    "58": {"opening": ["• Drake", "Drake"]},
+    "72": {"opening": ["“have made", "“I have made"]},
+    "76": {"opening": ["Liego", "Diego"]},
+    "83": {
+      "paragraphs": [
+        [0.08, "When the party was over, all of the Dragon Masters went to their rooms. Drake fell asleep right away. He dreamed of feasting and dancing …"],
+        [0.24, "Rori."],
+        [0.28, "Worm’s voice echoed in his head."],
+        [0.32, "Rori."],
+        [0.36, "Drake woke up. He jumped out of bed. He ran to the room that Rori shared with Ana. Ana was asleep, but Rori wasn’t in her bed. There was a note. Drake picked it up."]
+      ],
+      "append": [
+        [0.54, "Dear Ana, Drake, Bo, and Petra,"],
+        [0.59, "I had to help Eko. Griffith and the King should not punish her for trying to help the dragons. And it is not fair to take Neru away from his Dragon Master. Neru should be with Eko."],
+        [0.72, "You all took Griffith’s side against me. But Eko thinks I’m brave. I heard her say so. Together, we will free dragons around the world."],
+        [0.81, "I am not coming back, but don’t worry about me — Vulcan told me he will stay with me and help me. We will take care of each other."],
+        [0.89, "Rori"]
+      ]
+    },
+    "87": {"opening": ["“ko did", "“Eko did"]}
+  },
+  "09": {
+    "30": {"opening": ["oon", "Soon"]},
+    "37": {"opening": ["n the morning", "In the morning"]},
+    "45": {"opening": ["rost", "Frost"]},
+    "52": {"opening": ["“ho has", "“Who has"]},
+    "62": {"opening": ["* Before", "Before"]},
+    "72": {"opening": ["ulda", "Hulda"]}
+  },
+  "10": {
+    "6": {"opening": ["“There is the Rainbow Dragon?", "“Where is the Rainbow Dragon?"]},
+    "12": {"opening": ["“e’ve", "“We’ve"]},
+    "29": {"opening": ["“Ina, wake", "“Ana, wake"]},
+    "46": {"opening": ["bi put", "Obi put"]},
+    "53": {"opening": ["Drake ran to the giane web", "Drake ran to the giant web"]}
+  },
+  "11": {
+    "1": {"opening": ["Criffith", "Griffith"]},
+    "6": {"opening": ["“long, long", "“A long, long"]},
+    "18": {"opening": ["few minutes", "A few minutes"]},
+    "54": {"opening": ["rgent’s", "Argent’s"]},
+    "65": {"opening": ["orm’s", "Worm’s"]},
+    "71": {"opening": ["argent turned", "Argent turned"]},
+    "76": {"opening": ["“Valdred", "“Maldred"]}
+  },
+  "12": {
+    "1": {"opening": ["an an underground", "In an underground"]},
+    "35": {"opening": ["Laldred’s", "Maldred’s"]},
+    "45": {"opening": ["few minutes", "A few minutes"]},
+    "56": {"opening": ["“Lou can’t feed us to the Nagal”", "“You can’t feed us to the Naga!”"]},
+    "79": {"opening": ["“Laldred", "“Maldred"]}
+  },
+  "13": {
+    "1": {"opening": ["lash!", "Flash!"]},
+    "7": {"opening": ["“ow much", "“How much"]},
+    "12": {"opening": ["“ow that", "“Now that"]},
+    "23": {"opening": ["“Wry are Drugon Masters", "“Why are Dragon Masters"]},
+    "33": {"opening": ["“Lt’s", "“It’s"]},
+    "40": {"opening": ["“Worm, has Maldred really scolen", "“Worm, has Maldred really stolen"]},
+    "46": {"opening": ["ri and Zelda", "Uri and Zelda"]},
+    "52": {"opening": ["“aga,", "“Naga,"]},
+    "58": {"opening": ["ean crashed", "Jean crashed"]},
+    "64": {"opening": ["“reave", "“Leave"]},
+    "70": {"opening": ["wirls", "Swirls"]}
+  },
+  "14": {
+    "12": {"opening": ["Then the light faded,", "When the light faded,"]},
+    "22": {"opening": ["think these fairies", "I think these fairies"]},
+    "33": {"opening": ["“ou tricked", "“You tricked"]},
+    "44": {"opening": ["“ongratulations", "“Congratulations"]},
+    "64": {"opening": ["“can’t let", "“I can’t let"]},
+    "79": {"opening": ["lowly,", "Slowly,"]}
+  },
+  "15": {
+    "1": {"opening": ["“vat up, Worm", "“Eat up, Worm"]},
+    "65": {"opening": ["“Let off of me!", "“Get off of me!"]},
+    "84": {"opening": ["ko hugged", "Eko hugged"]}
+  },
+  "16": {
+    "1": {"opening": ["right purple", "Bright purple"]},
+    "8": {
+      "paragraphs": [
+        [0.60, "“I asked the gazing ball to alert me of any unusual wizard activity,” Griffith explained. He waved his hand over the glass ball. “It must have spotted something.”"],
+        [0.76, "Eko, Rori, Ana, and Bo raced into the workshop."],
+        [0.83, "“We heard a loud boom!” Bo cried."],
+        [0.88, "“What’s going on?” Ana asked."]
+      ]
+    },
+    "22": {"opening": ["Remus, followed", "Sono and Tessa moved quickly through Remus, followed"]},
+    "29": {"opening": ["“Worm, get Grifth out of there”", "“Worm, get Griffith out of there!”"]},
+    "53": {"opening": ["“Vry is it", "“Why is it"]},
+    "63": {"opening": ["“hat’s the statue", "“That’s the statue"]},
+    "71": {"opening": ["Then the dust cleared,", "When the dust cleared,"]},
+    "79": {"opening": ["Letra steered", "Petra steered"]}
+  },
+  "17": {
+    "20": {"opening": ["“Xe must", "“We must"]},
+    "44": {"opening": ["hoosh!", "Whoosh!"]},
+    "49": {"opening": ["“tand back", "“Stand back"]},
+    "58": {"opening": ["“Tood work", "“Good work"]},
+    "64": {"opening": ["haka stomped", "Shaka stomped"]},
+    "73": {"opening": ["haka roared", "Shaka roared"]},
+    "85": {"opening": ["ulda and Drake", "Hulda and Drake"]}
+  },
+  "18": {
+    "10": {"opening": ["*Drake threw both arms around warmis neck.", "Drake threw both arms around Worm’s neck."]},
+    "16": {"opening": ["econds later,", "Seconds later,"]},
+    "26": {"opening": ["orm’s green", "Worm’s green"]},
+    "45": {"opening": ["“There are we going", "“Where are we going"]},
+    "52": {"opening": ["peli pressed", "Opeli pressed"]},
+    "58": {"opening": ["hot, bubbling", "Hot, bubbling"]},
+    "70": {"opening": ["peli sang", "Opeli sang"]},
+    "75": {"opening": ["peli walked", "Opeli walked"]},
+    "79": {"opening": ["“Low will you", "“How will you"]}
+  },
+  "19": {
+    "18": {"opening": ["“will find", "“I will find"]},
+    "38": {
+      "paragraphs": [
+        [0.61, "A red-headed wizard stepped out of the portal."],
+        [0.69, "“Astrid!” Drake yelled."],
+        [0.73, "“Tani, attack!” Manawa cried."],
+        [0.77, "Drake spun around. “No!” he yelled. “Astrid can steal dragon powers!”"],
+        [0.85, "Manawa frowned as he held up a hand to stop Tani."]
+      ]
+    },
+    "63": {"opening": ["“That power is", "“What power is"]},
+    "75": {
+      "paragraphs": [
+        [0.60, "Shu’s blue cloud floated through the air. Her healing mist rained down on the three black stones."],
+        [0.72, "I hope this works! Drake thought."],
+        [0.76, "The black slowly faded from the stones. Within seconds, the stones returned to their original green."]
+      ]
+    },
+    "84": {"opening": ["“'h no!", "“Oh no!"]}
+  },
+  "20": {
+    "1": {"opening": ["flash of green light", "A flash of green light"]},
+    "41": {"opening": ["Zriffith", "Griffith"]},
+    "76": {"opening": ["“o!”", "“No!”"]},
+    "81": {"opening": ["strid floated", "Astrid floated"]},
+    "85": {"opening": ["wo gray", "Two gray"]}
+  },
+  "21": {
+    "8": {"opening": ["ildroot", "Wildroot"]},
+    "15": {"opening": ["oving pictures", "Moving pictures"]},
+    "26": {"opening": ["“ur dragons", "“Our dragons"]},
+    "34": {"opening": ["skar began", "Oskar began"]},
+    "66": {"opening": ["haking in fear, the Plower Dragons", "Shaking in fear, the Flower Dragons"]},
+    "79": {"opening": ["“ather!", "“Father!"]}
+  },
+  "22": {
+    "7": {"opening": ["“s Diego", "“Is Diego"]},
+    "12": {"opening": ["marlos’s", "Carlos’s"]},
+    "20": {"opening": ["Drake warched the last fig", "Drake watched the last fig"]},
+    "36": {"opening": ["had landed", "Drake blinked in the bright sunlight. They had landed"]},
+    "40": {"opening": ["al ran after Fig", "Val ran after Fig"]},
+    "53": {"opening": ["ig made", "Fig made"]},
+    "59": {"opening": ["ana and Fig", "Tana and Fig"]},
+    "71": {"opening": ["V orm transported", "Worm transported"]},
+    "77": {"opening": ["oof!", "Poof!"]}
+  },
+  "23": {
+    "5": {"opening": ["“That brings you", "“What brings you"]},
+    "14": {"opening": ["“sould other", "“Could other"]},
+    "21": {"opening": ["“ean and I", "“Jean and I"]},
+    "28": {"opening": ["“ell us", "“Tell us"]},
+    "33": {"opening": ["shaya the Shadow", "Chaya the Shadow"]},
+    "51": {"opening": ["as the wizard’s", "As the wizard’s"]},
+    "73": {"opening": ["shaya reared", "Chaya reared"]},
+    "81": {"opening": ["ean’s eyes", "Jean’s eyes"]}
+  },
+  "24": {
+    "1": {"opening": ["t was early", "It was early"]},
+    "18": {"opening": ["“Ve came", "“We came"]},
+    "34": {"opening": ["everyone watched", "Everyone watched"]},
+    "45": {
+      "paragraphs": [
+        [0.23, "The Dragon Masters studied the three paths in front of them."],
+        [0.31, "Rune’s Dragon Stone glowed, and then Lysa shone her light on the walls. Carved words became visible."],
+        [0.55, "DAY CAN SOMETIMES LOOK LIKE NIGHT."],
+        [0.58, "A BABY BIRD WILL ONE DAY TAKE FLIGHT."],
+        [0.62, "SOMETHING SMALL CAN HAVE GREAT MIGHT."],
+        [0.65, "BUT WHAT IS WRONG WILL NEVER BE ____."],
+        [0.88, "“The last word must be ‘right’!” Drake said."]
+      ]
+    },
+    "50": {"opening": ["ith the key", "With the key"]},
+    "76": {
+      "paragraphs": [
+        [0.08, "Drake looked at Rune and motioned to the box. Rune stepped up to the box and tried to open it, but the lid did not move. He frowned."],
+        [0.23, "Rune says: It will not open."],
+        [0.27, "Then Rune’s eyes widened. He pointed to the top of the box, where a rhyme was carved."],
+        [0.42, "IF YOU CAME HERE ALONE, THERE IS NO HELP FOR THEE."],
+        [0.46, "THE BOX WILL OPEN ONLY FOR A CIRCLE OF THREE."],
+        [0.72, "The boys grinned at one another. They knew what the rhyme meant."],
+        [0.80, "Drake, Darma, and Rune formed a circle around the floating box. Then they held hands."]
+      ]
+    }
+  },
+  "00": {
+    "1": {
+      "paragraphs": [
+        [0.13, "To the Dragon Master Reading This Book,"],
+        [0.19, "I am Griffith, the royal wizard to King Roland the Bold. I train the Dragon Masters who live in his castle."],
+        [0.33, "Over the years, I have learned many things about Dragon Masters and dragons. I have studied magical creatures and fantastic places around the world. I also know secrets about many important wizards. I thought it was a good idea to put all of this knowledge into a book."],
+        [0.56, "I may be a great wizard, but I am not a great writer. I turned to my friend Tracey of the West for help with this project. She is a teller of tales, and she agreed to turn my notes into a guidebook. Some of my other friends have contributed to this book, too."],
+        [0.79, "Read on! Soon you will become the best Dragon Master you can hope to be!"],
+        [0.86, "Yours in magic,"],
+        [0.91, "Griffith of the Green Fields"]
+      ]
+    }
+  }
+}

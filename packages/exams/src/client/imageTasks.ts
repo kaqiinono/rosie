@@ -9,7 +9,7 @@ export const imageCatalogStore = createUserSessionStore<{ items: AdminExamItem[]
   empty: { items: [] }, fetch: async userId => {
     const items: AdminExamItem[] = []
     for (let page = 1; page <= 100; page++) {
-      const data = await examRequest<{ items: AdminExamItem[]; hasMore: boolean }>(userId, `/api/admin/exams/catalog?status=draft&page=${page}&pageSize=100`)
+      const data = await examRequest<{ items: AdminExamItem[]; hasMore: boolean }>(userId, `/api/admin/exams/images/workspace?page=${page}&pageSize=100`)
       items.push(...data.items)
       if (!data.hasMore) return { items }
     }

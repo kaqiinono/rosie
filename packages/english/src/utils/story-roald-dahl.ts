@@ -1,3 +1,13 @@
+import charlieAndTheGreatGlassElevator from './story-roald-dahl-volumes/02-charlie-and-the-great-glass-elevator.json'
+import dannyTheChampionOfTheWorld from './story-roald-dahl-volumes/03-danny-the-champion-of-the-world.json'
+import fantasticMrFox from './story-roald-dahl-volumes/04-fantastic-mr-fox.json'
+import georgesMarvellousMedicine from './story-roald-dahl-volumes/05-georges-marvellous-medicine.json'
+import jamesAndTheGiantPeach from './story-roald-dahl-volumes/06-james-and-the-giant-peach.json'
+import matilda from './story-roald-dahl-volumes/07-matilda.json'
+import revoltingRhymes from './story-roald-dahl-volumes/08-revolting-rhymes.json'
+import theMagicFinger from './story-roald-dahl-volumes/09-the-magic-finger.json'
+import theTwits from './story-roald-dahl-volumes/10-the-twits.json'
+import theWitches from './story-roald-dahl-volumes/11-the-witches.json'
 import type { StorySeries } from './story-types'
 
 export const roaldDahl: StorySeries = {
@@ -108,6 +118,12 @@ export const roaldDahl: StorySeries = {
             "'Listen,' said Grandpa Joe, 'and I'll tell you.'",
           ],
           glossary: [
+            { word: "shrivelled", ipa: "/ˈʃrɪv.əld/", meaningCn: "adj. 干瘪皱缩的", meaningEn: "dried up and wrinkled", category: '故事难点词' },
+            { word: "prune", ipa: "/pruːn/", meaningCn: "n. 西梅干", meaningEn: "a dried plum", category: '故事难点词' },
+            { word: "huddle", ipa: "/ˈhʌd.əl/", meaningCn: "v. 挤在一起；蜷缩在一起取暖", meaningEn: "to crowd close together, often for warmth", category: '故事难点词' },
+            { word: "doze", ipa: "/dəʊz/", meaningCn: "v. 打盹", meaningEn: "to sleep lightly for a short time", category: '故事难点词' },
+            { word: "icebox", ipa: "/ˈaɪs.bɒks/", meaningCn: "n. 冰箱；原指靠冰块降温的箱子", meaningEn: "a cold box used to keep food cool", category: '故事难点词' },
+            { word: "absurd", ipa: "/əbˈsɜːd/", meaningCn: "adj. 荒唐的；难以置信的", meaningEn: "so unreasonable that it seems ridiculous", category: '故事难点词' },
           ],
         },
         {
@@ -146,6 +162,12 @@ export const roaldDahl: StorySeries = {
             "'That's right,' said Grandpa Joe, 'I'll tell you the rest of it tomorrow evening.'",
           ],
           glossary: [
+            { word: "colossal", ipa: "/kəˈlɒs.əl/", meaningCn: "adj. 极大的", meaningEn: "extremely large", category: '故事难点词' },
+            { word: "cement", ipa: "/sɪˈment/", meaningCn: "n. 水泥；用于黏合砖块的材料", meaningEn: "a material used to hold bricks together", category: '故事难点词' },
+            { word: "staircase", ipa: "/ˈsteə.keɪs/", meaningCn: "n. 楼梯；一整段楼梯", meaningEn: "a set of stairs inside a building", category: '故事难点词' },
+            { word: "nibble", ipa: "/ˈnɪb.əl/", meaningCn: "v. 一小口一小口地咬", meaningEn: "to take very small bites", category: '故事难点词' },
+            { word: "streaming in and out", ipa: "/ˈstriː.mɪŋ ɪn ənd aʊt/", meaningCn: "络绎不绝地进出", meaningEn: "moving in and out in a steady flow", category: '故事难点词' },
+            { word: "leg-pulling", ipa: "/ˈleɡˌpʊl.ɪŋ/", meaningCn: "n. 开玩笑；故意逗人", meaningEn: "playfully making someone believe something untrue", category: '故事难点词' },
           ],
         },
         {
@@ -183,6 +205,12 @@ export const roaldDahl: StorySeries = {
             "WONKA FACTORY TO BE OPENED AT LAST TO LUCKY FEW",
           ],
           glossary: [
+            { word: "jealous", ipa: "/ˈdʒel.əs/", meaningCn: "adj. 嫉妒的；眼红别人的成就", meaningEn: "unhappy because someone else has something you want", category: '故事难点词' },
+            { word: "spy", ipa: "/spaɪ/", meaningCn: "n. 间谍；暗中刺探秘密的人", meaningEn: "a person sent to find out other people's secrets", category: '故事难点词' },
+            { word: "recipe", ipa: "/ˈres.ɪ.pi/", meaningCn: "n. 配方；文中指糖果的秘密做法", meaningEn: "instructions for making food", category: '故事难点词' },
+            { word: "gobble", ipa: "/ˈɡɒb.əl/", meaningCn: "v. 狼吞虎咽", meaningEn: "to eat very quickly", category: '故事难点词' },
+            { word: "whirring", ipa: "/ˈwɜː.rɪŋ/", meaningCn: "嗡嗡作响；机器转动的声音", meaningEn: "making a fast, low sound like a running motor", category: '故事难点词' },
+            { word: "headline", ipa: "/ˈhed.laɪn/", meaningCn: "n. 新闻标题；报纸上的醒目大标题", meaningEn: "the title printed above a news story", category: '故事难点词' },
           ],
         },
         {
@@ -206,7 +234,13 @@ export const roaldDahl: StorySeries = {
             "'I'm afraid that simply isn't true,' said Grandpa George. 'The kids who are going to find the Golden Tickets are the ones who can afford to buy bars of chocolate every day. Our Charlie gets only one a year. There isn't a hope.'",
           ],
           glossary: [
-            { word: "confectionery", meaningCn: "糖果制品；糖果行业", meaningEn: "sweets or the business of making them", category: '故事难点词' },
+            { word: "smoothing out", ipa: "/ˌsmuː.ðɪŋ ˈaʊt/", meaningCn: "把……抚平；文中指展平报纸", meaningEn: "making something flat by removing folds", category: '故事难点词' },
+            { word: "genius", ipa: "/ˈdʒiː.ni.əs/", meaningCn: "n. 天才；在某方面特别有才能的人", meaningEn: "someone who has exceptional skill or intelligence", category: '故事难点词' },
+            { word: "mind you", ipa: "/ˈmaɪnd juː/", meaningCn: "注意哦；提醒对方留意后面的话", meaningEn: "used to draw attention to an important point", category: '故事难点词' },
+            { word: "wrapping paper", ipa: "/ˈræp.ɪŋ ˌpeɪ.pə/", meaningCn: "n. 包装纸；文中指包巧克力的纸", meaningEn: "paper used to cover or wrap something", category: '故事难点词' },
+            { word: "watch out for", ipa: "/wɒtʃ ˈaʊt fə/", meaningCn: "留意；特别注意找某样东西", meaningEn: "to look carefully for something that may appear", category: '故事难点词' },
+            { word: "afford", ipa: "/əˈfɔːd/", meaningCn: "v. 买得起；有足够的钱买", meaningEn: "to have enough money to pay for something", category: '故事难点词' },
+            { word: "confectionery", ipa: "/kənˈfek.ʃən.ər.i/", meaningCn: "糖果制品；糖果行业", meaningEn: "sweets or the business of making them", category: '故事难点词' },
           ],
         },
         {
@@ -234,6 +268,13 @@ export const roaldDahl: StorySeries = {
             "'Bring it in here when you get it,' Grandpa Joe said. 'Then we can all watch you taking off the wrapper.'",
           ],
           glossary: [
+            { word: "flabby", ipa: "/ˈflæb.i/", meaningCn: "adj. 松软下垂的；不结实的", meaningEn: "soft and loose rather than firm", category: '故事难点词' },
+            { word: "bulge", ipa: "/bʌldʒ/", meaningCn: "v. 鼓起；凸出来", meaningEn: "to stick out in a rounded shape", category: '故事难点词' },
+            { word: "dough", ipa: "/dəʊ/", meaningCn: "n. 面团", meaningEn: "a thick mixture of flour and liquid before baking", category: '故事难点词' },
+            { word: "hooligan", ipa: "/ˈhuː.lɪ.ɡən/", meaningCn: "n. 滋事者；行为粗暴的人", meaningEn: "a person who behaves violently or causes trouble", category: '故事难点词' },
+            { word: "nourishment", ipa: "/ˈnʌr.ɪʃ.mənt/", meaningCn: "n. 营养；维持健康所需的食物", meaningEn: "food that helps the body grow and stay strong", category: '故事难点词' },
+            { word: "repulsive", ipa: "/rɪˈpʌl.sɪv/", meaningCn: "adj. 令人反感的", meaningEn: "so unpleasant that it makes you want to turn away", category: '故事难点词' },
+            { word: "grinning from ear to ear", ipa: "/ˈɡrɪn.ɪŋ frəm ˌɪə tu ˈɪə/", meaningCn: "笑得合不拢嘴", meaningEn: "smiling very widely", category: '故事难点词' },
           ],
         },
         {
@@ -274,6 +315,12 @@ export const roaldDahl: StorySeries = {
             "'It's time to go to school, my darling,' Mrs Bucket said, putting an arm around Charlie's skinny shoulders. 'Come on, or you'll be late.'",
           ],
           glossary: [
+            { word: "wrapper", ipa: "/ˈræp.ə/", meaningCn: "n. 包装纸；文中指糖纸", meaningEn: "a piece of paper or plastic covering something", category: '故事难点词' },
+            { word: "propped", ipa: "/prɒpt/", meaningCn: "v. 支撑；文中指用枕头撑起身体", meaningEn: "supported something or someone to keep them upright", category: '故事难点词' },
+            { word: "back and forth", ipa: "/ˌbæk ən ˈfɔːθ/", meaningCn: "来来回回地", meaningEn: "first in one direction and then in the opposite direction", category: '故事难点词' },
+            { word: "crackly", ipa: "/ˈkræk.li/", meaningCn: "adj. 噼啪作响的；文中形容糖纸的响声", meaningEn: "making several small, sharp noises", category: '故事难点词' },
+            { word: "intently", ipa: "/ɪnˈtent.li/", meaningCn: "adv. 专注地；目不转睛地", meaningEn: "with all your attention fixed on something", category: '故事难点词' },
+            { word: "skinny", ipa: "/ˈskɪn.i/", meaningCn: "adj. 很瘦的", meaningEn: "very thin", category: '故事难点词' },
           ],
         },
         {
@@ -303,6 +350,12 @@ export const roaldDahl: StorySeries = {
             "'Quite so,' sniffed Grandma Georgina. 'And just as sure as I'll be having cabbage soup for supper tomorrow, that ticket'll go to some nasty little beast who doesn't deserve it!'",
           ],
           glossary: [
+            { word: "household", ipa: "/ˈhaʊs.həʊld/", meaningCn: "n. 一家人；同住一处的人", meaningEn: "the people who live together in one home", category: '故事难点词' },
+            { word: "flashbulb", ipa: "/ˈflæʃ.bʌlb/", meaningCn: "n. 闪光灯泡；给拍照提供瞬间亮光", meaningEn: "a bulb that produces a brief bright light for a photograph", category: '故事难点词' },
+            { word: "at arm's length", ipa: "/ət ˌɑːmz ˈleŋθ/", meaningCn: "手臂伸直那么远；文中指伸直胳膊挥舞", meaningEn: "at the distance reached by a straight arm", category: '故事难点词' },
+            { word: "ferociously", ipa: "/fəˈrəʊ.ʃəs.li/", meaningCn: "adv. 凶猛地；文中指使劲嚼", meaningEn: "with great force or intensity", category: '故事难点词' },
+            { word: "safekeeping", ipa: "/ˈseɪfˌkiː.pɪŋ/", meaningCn: "n. 妥善保管", meaningEn: "the act of keeping something safe", category: '故事难点词' },
+            { word: "glued to", ipa: "/ˈɡluːd tuː/", meaningCn: "紧盯着；视线像粘在屏幕上", meaningEn: "unable or unwilling to stop looking at something", category: '故事难点词' },
           ],
         },
         {
@@ -339,7 +392,13 @@ export const roaldDahl: StorySeries = {
             "'Nothing,' said Grandpa Joe. 'You go on back to sleep.'",
           ],
           glossary: [
-            { word: "hoard", meaningCn: "积存；储藏", meaningEn: "to collect and store things for later", category: '故事难点词' },
+            { word: "beckon", ipa: "/ˈbek.ən/", meaningCn: "v. 招手示意过来", meaningEn: "to make a sign with your hand for someone to come nearer", category: '故事难点词' },
+            { word: "sly", ipa: "/slaɪ/", meaningCn: "adj. 狡黠的；像藏着一个小秘密", meaningEn: "showing that you know something you are not telling", category: '故事难点词' },
+            { word: "rummage", ipa: "/ˈrʌm.ɪdʒ/", meaningCn: "v. 翻找", meaningEn: "to search by moving things around", category: '故事难点词' },
+            { word: "sixpence", ipa: "/ˈsɪks.pəns/", meaningCn: "n. 六便士硬币；英国旧币", meaningEn: "an old British coin worth six pennies", category: '故事难点词' },
+            { word: "fling", ipa: "/flɪŋ/", meaningCn: "n. 一次尝试；这里指再碰碰运气", meaningEn: "a brief try at something done for fun or excitement", category: '故事难点词' },
+            { word: "peals of laughter", ipa: "/ˌpiːlz əv ˈlɑːf.tə/", meaningCn: "一阵阵响亮的笑声", meaningEn: "repeated bursts of loud laughter", category: '故事难点词' },
+            { word: "hoard", ipa: "/hɔːd/", meaningCn: "n. 私藏的一笔钱；文中指爷爷攒下的零钱", meaningEn: "a supply of money or other things that someone has secretly saved", category: '故事难点词' },
           ],
         },
         {
@@ -376,6 +435,13 @@ export const roaldDahl: StorySeries = {
             "Automatically, Charlie turned and began moving towards the nearest shop. It was only ten paces away . . . it was a newspaper and stationery shop, the kind that sells almost everything, including sweets and cigars . . . and what he would do, he whispered quickly to himself . . . he would buy one luscious bar of chocolate and eat it all up, every bit of it, right then and there . . . and the rest of the money he would take straight back home and give to his mother.",
           ],
           glossary: [
+            { word: "flake", ipa: "/fleɪk/", meaningCn: "n. 薄片；文中指雪花", meaningEn: "a small, thin piece, such as a snowflake", category: '故事难点词' },
+            { word: "gale", ipa: "/ɡeɪl/", meaningCn: "n. 大风；强风", meaningEn: "a very strong wind", category: '故事难点词' },
+            { word: "appetite", ipa: "/ˈæp.ə.taɪt/", meaningCn: "n. 食欲；想吃东西的欲望", meaningEn: "the desire to eat food", category: '故事难点词' },
+            { word: "went bust", ipa: "/went ˈbʌst/", meaningCn: "破产倒闭了", meaningEn: "ran out of money and had to close", category: '故事难点词' },
+            { word: "exhaustion", ipa: "/ɪɡˈzɔːs.tʃən/", meaningCn: "n. 精疲力竭", meaningEn: "a state of being extremely tired", category: '故事难点词' },
+            { word: "stationery", ipa: "/ˈsteɪ.ʃən.ər.i/", meaningCn: "n. 文具；纸笔等用品", meaningEn: "paper, pens and other materials used for writing", category: '故事难点词' },
+            { word: "luscious", ipa: "/ˈlʌʃ.əs/", meaningCn: "adj. 美味诱人的", meaningEn: "very pleasant to taste", category: '故事难点词' },
           ],
         },
         {
@@ -411,6 +477,12 @@ export const roaldDahl: StorySeries = {
             "'Thank you,' Charlie said, and off he went, running through the snow as fast as his legs would go. And as he flew past Mr Willy Wonka's factory, he turned and waved at it and sang out, 'I'll be seeing you! I'll be seeing you soon!' And five minutes later he arrived at his own home.",
           ],
           glossary: [
+            { word: "damp", ipa: "/dæmp/", meaningCn: "adj. 微湿的；文中指被雪弄湿的硬币", meaningEn: "slightly wet", category: '故事难点词' },
+            { word: "cram", ipa: "/kræm/", meaningCn: "v. 塞满；把大口食物塞进嘴里", meaningEn: "to push a large amount into a small space", category: '故事难点词' },
+            { word: "blissful", ipa: "/ˈblɪs.fəl/", meaningCn: "adj. 无比快乐的", meaningEn: "full of complete happiness", category: '故事难点词' },
+            { word: "wolfing", ipa: "/ˈwʊl.fɪŋ/", meaningCn: "狼吞虎咽地吃；wolf 的进行式", meaningEn: "eating something very quickly and hungrily", category: '故事难点词' },
+            { word: "have a fit", ipa: "/hæv ə ˈfɪt/", meaningCn: "激动得快失控；这里是夸张说法", meaningEn: "to react with very strong emotion", category: '故事难点词' },
+            { word: "awfully", ipa: "/ˈɔː.fəl.i/", meaningCn: "adv. 非常；这里用来加强语气", meaningEn: "very; used to make an adjective stronger", category: '故事难点词' },
           ],
         },
         {
@@ -454,6 +526,14 @@ export const roaldDahl: StorySeries = {
             "At that point, there came a loud knock on the front door. Mr Bucket went to open it, and the next moment, swarms of newspapermen and photographers were pouring into the house. They had tracked down the finder of the fifth Golden Ticket, and now they all wanted to get the full story for the front pages of the morning papers. For several hours, there was complete pandemonium in the little house, and it must have been nearly midnight before Mr Bucket was able to get rid of them so that Charlie could go to bed.",
           ],
           glossary: [
+            { word: "hurricane", ipa: "/ˈhʌr.ɪ.kən/", meaningCn: "n. 飓风；文中形容查理冲进来的速度", meaningEn: "a very powerful storm with strong winds", category: '故事难点词' },
+            { word: "clatter", ipa: "/ˈklæt.ə/", meaningCn: "n. 哗啦声；硬物相碰发出的响声", meaningEn: "a series of loud sounds made by hard things hitting each other", category: '故事难点词' },
+            { word: "pulling our legs", ipa: "/ˌpʊl.ɪŋ aʊə ˈleɡz/", meaningCn: "逗我们；说笑话让我们信以为真", meaningEn: "teasing us by saying something that is not true", category: '故事难点词' },
+            { word: "verdict", ipa: "/ˈvɜː.dɪkt/", meaningCn: "n. 判断、结论；文中指爷爷看完票后的结论", meaningEn: "a decision after looking at the facts", category: '故事难点词' },
+            { word: "in store for", ipa: "/ɪn ˈstɔː fə/", meaningCn: "在等着……；即将发生在……身上", meaningEn: "waiting to happen to someone", category: '故事难点词' },
+            { word: "morsel", ipa: "/ˈmɔː.səl/", meaningCn: "n. 一小口食物", meaningEn: "a small piece of food", category: '故事难点词' },
+            { word: "mischief", ipa: "/ˈmɪs.tʃɪf/", meaningCn: "n. 淘气惹出的麻烦", meaningEn: "trouble caused by playful or naughty behaviour", category: '故事难点词' },
+            { word: "pandemonium", ipa: "/ˌpæn.dəˈməʊ.ni.əm/", meaningCn: "n. 嘈杂混乱的场面", meaningEn: "a situation full of noise and confusion", category: '故事难点词' },
           ],
         },
         {
@@ -495,6 +575,13 @@ export const roaldDahl: StorySeries = {
             "And so it was!",
           ],
           glossary: [
+            { word: "shield", ipa: "/ʃiːld/", meaningCn: "v. 遮挡、保护；文中指警察挡住人群", meaningEn: "to protect someone by standing or placing something in the way", category: '故事难点词' },
+            { word: "out of hand", ipa: "/ˌaʊt əv ˈhænd/", meaningCn: "失去控制", meaningEn: "no longer able to be controlled", category: '故事难点词' },
+            { word: "glimpse", ipa: "/ɡlɪmps/", meaningCn: "n. 匆匆一瞥", meaningEn: "a quick look at someone or something", category: '故事难点词' },
+            { word: "fiend", ipa: "/fiːnd/", meaningCn: "n. ……迷；文中指特别迷电视的人", meaningEn: "a person who is extremely keen on something", category: '故事难点词' },
+            { word: "unwrap", ipa: "/ʌnˈræp/", meaningCn: "v. 拆开包装", meaningEn: "to remove the wrapping from something", category: '故事难点词' },
+            { word: "creaking", ipa: "/ˈkriː.kɪŋ/", meaningCn: "n. 嘎吱声；文中指门开启时的声音", meaningEn: "the long sound a door or floor can make when it moves", category: '故事难点词' },
+            { word: "hinge", ipa: "/hɪndʒ/", meaningCn: "n. 铰链；连接门与门框的转动部件", meaningEn: "a joint that lets a door swing open and shut", category: '故事难点词' },
           ],
         },
         {
@@ -552,6 +639,13 @@ export const roaldDahl: StorySeries = {
             "THE CHOCOLATE ROOM",
           ],
           glossary: [
+            { word: "tail coat", ipa: "/ˈteɪl ˌkəʊt/", meaningCn: "n. 燕尾服；后摆较长的礼服", meaningEn: "a formal coat with long tails at the back", category: '故事难点词' },
+            { word: "velvet", ipa: "/ˈvel.vɪt/", meaningCn: "n. 天鹅绒；柔软的绒面布", meaningEn: "soft cloth with a short, thick surface", category: '故事难点词' },
+            { word: "cane", ipa: "/keɪn/", meaningCn: "n. 手杖", meaningEn: "a stick held in the hand for walking", category: '故事难点词' },
+            { word: "goatee", ipa: "/ɡəʊˈtiː/", meaningCn: "n. 山羊胡；下巴上的一小撮胡子", meaningEn: "a small beard on the chin", category: '故事难点词' },
+            { word: "alight with", ipa: "/əˈlaɪt wɪð/", meaningCn: "因……而容光焕发；文中指脸上洋溢着笑意", meaningEn: "looking bright because of a strong feeling", category: '故事难点词' },
+            { word: "jerky", ipa: "/ˈdʒɜː.ki/", meaningCn: "adj. 一顿一顿的；动作突然、不连贯的", meaningEn: "moving in short, sudden starts", category: '故事难点词' },
+            { word: "slope", ipa: "/sləʊp/", meaningCn: "v. 倾斜；文中指通道斜着向下", meaningEn: "to rise or fall at an angle", category: '故事难点词' },
           ],
         },
         {
@@ -593,6 +687,12 @@ export const roaldDahl: StorySeries = {
             "'Of course they're real people,' Mr Wonka answered. 'They're Oompa-Loompas.'",
           ],
           glossary: [
+            { word: "nerve centre", ipa: "/ˈnɜːv ˌsen.tə/", meaningCn: "n. 核心枢纽；文中指全工厂最关键的地方", meaningEn: "the place from which important operations are controlled", category: '故事难点词' },
+            { word: "abide", ipa: "/əˈbaɪd/", meaningCn: "v. 忍受；can't abide 指一点儿也受不了", meaningEn: "to tolerate something, often used after can't", category: '故事难点词' },
+            { word: "meadow", ipa: "/ˈmed.əʊ/", meaningCn: "n. 草地；一片长满草的地", meaningEn: "an open area of land covered with grass", category: '故事难点词' },
+            { word: "gallon", ipa: "/ˈɡæl.ən/", meaningCn: "n. 加仑；计量液体容量的单位", meaningEn: "a unit used to measure liquid", category: '故事难点词' },
+            { word: "minty", ipa: "/ˈmɪn.ti/", meaningCn: "adj. 有薄荷味的", meaningEn: "tasting or smelling of mint", category: '故事难点词' },
+            { word: "peals of laughter", ipa: "/ˌpiːlz əv ˈlɑːf.tə/", meaningCn: "一阵阵响亮的笑声", meaningEn: "repeated bursts of loud laughter", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
           ],
         },
@@ -618,12 +718,19 @@ export const roaldDahl: StorySeries = {
             "'Augustus!' shouted Mrs Gloop. 'Augustus, sweetheart, I don't think you had better do that.' Augustus Gloop, as you might have guessed, had quietly sneaked down to the edge of the river, and he was now kneeling on the riverbank, scooping hot melted chocolate into his mouth as fast as he could.",
           ],
           glossary: [
+            { word: "infested", ipa: "/ɪnˈfes.tɪd/", meaningCn: "adj. 到处都是有害生物的；文中指丛林里到处有猛兽", meaningEn: "full of unwanted or dangerous animals or insects", category: '故事难点词' },
+            { word: "gallop", ipa: "/ˈɡæl.əp/", meaningCn: "v. 飞奔；像马一样快速奔跑", meaningEn: "to run very fast, as a horse does", category: '故事难点词' },
+            { word: "caterpillar", ipa: "/ˈkæt.ə.pɪl.ə/", meaningCn: "n. 毛毛虫；蝴蝶或蛾的幼虫", meaningEn: "the long, soft young form of a butterfly or moth", category: '故事难点词' },
+            { word: "revolting", ipa: "/rɪˈvəʊl.tɪŋ/", meaningCn: "adj. 令人作呕的", meaningEn: "making you feel disgusted", category: '故事难点词' },
+            { word: "gorge", ipa: "/ɡɔːdʒ/", meaningCn: "v. 大吃特吃；吃到非常饱", meaningEn: "to eat a very large amount of food", category: '故事难点词' },
+            { word: "whoop", ipa: "/wuːp/", meaningCn: "n. 欢呼声", meaningEn: "a loud shout of excitement or joy", category: '故事难点词' },
+            { word: "scoop", ipa: "/skuːp/", meaningCn: "v. 舀起、捧起；文中指用手舀巧克力", meaningEn: "to lift something with a curved hand or tool", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
             { word: "Loompaland", meaningCn: "伦帕国", meaningEn: "the homeland of the Oompa-Loompas", category: '故事难点词' },
             { word: "whangdoodles", meaningCn: "旺杜怪兽", meaningEn: "imaginary dangerous creatures from Loompaland", category: '故事难点词' },
             { word: "snozzwangers", meaningCn: "斯诺兹怪兽", meaningEn: "imaginary beasts from Loompaland", category: '故事难点词' },
             { word: "hornswogglers", meaningCn: "长角怪兽", meaningEn: "imaginary animals from Loompaland", category: '故事难点词' },
-            { word: "cacao", meaningCn: "可可", meaningEn: "the tree whose seeds are used to make chocolate", category: '故事难点词' },
+            { word: "cacao", ipa: "/kəˈkaʊ/", meaningCn: "可可", meaningEn: "the tree whose seeds are used to make chocolate", category: '故事难点词' },
           ],
         },
         {
@@ -752,8 +859,14 @@ export const roaldDahl: StorySeries = {
             "'Of course they're joking,' answered Grandpa Joe. 'They must be joking. At least, I hope they're joking. Don't you?'",
           ],
           glossary: [
+            { word: "waggle", ipa: "/ˈwæɡ.əl/", meaningCn: "v. 来回摇动；文中指摇手杖", meaningEn: "to move something quickly from side to side", category: '故事难点词' },
+            { word: "full length", ipa: "/ˌfʊl ˈleŋθ/", meaningCn: "整个身子伸直；文中指伸直身体趴着", meaningEn: "with the body stretched out as far as it can go", category: '故事难点词' },
+            { word: "lapping up", ipa: "/ˌlæp.ɪŋ ˈʌp/", meaningCn: "用舌头舔着喝；像小狗喝水一样", meaningEn: "drinking by drawing liquid in with the tongue", category: '故事难点词' },
+            { word: "shriek", ipa: "/ʃriːk/", meaningCn: "v. 尖叫", meaningEn: "to give a high, loud cry", category: '故事难点词' },
+            { word: "unutterably", ipa: "/ʌnˈʌt.ər.ə.bli/", meaningCn: "adv. 难以言表地；程度高得说不出来", meaningEn: "so extremely that it is hard to put into words", category: '故事难点词' },
+            { word: "vile", ipa: "/vaɪl/", meaningCn: "adj. 令人厌恶的", meaningEn: "very unpleasant or disgusting", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
-            { word: "nincompoop", meaningCn: "傻瓜", meaningEn: "a silly person", category: '故事难点词' },
+            { word: "nincompoop", ipa: "/ˈnɪŋ.kəm.puːp/", meaningCn: "傻瓜", meaningEn: "a silly person", category: '故事难点词' },
           ],
         },
         {
@@ -819,8 +932,15 @@ export const roaldDahl: StorySeries = {
             "'You're one yourself!' said Mr Wonka. 'There's no time for arguing! Press on, press on!' But five seconds later, when a bright red door came into sight ahead, he suddenly waved his gold-topped cane in the air and shouted, 'Stop the boat!'",
           ],
           glossary: [
+            { word: "glistening", ipa: "/ˈɡlɪs.ən.ɪŋ/", meaningCn: "闪亮的；像表面湿润一样反光", meaningEn: "shining softly as if wet", category: '故事难点词' },
+            { word: "oar", ipa: "/ɔː/", meaningCn: "n. 船桨", meaningEn: "a long pole with a flat end for rowing a boat", category: '故事难点词' },
+            { word: "yacht", ipa: "/jɒt/", meaningCn: "n. 游艇", meaningEn: "a boat used for pleasure", category: '故事难点词' },
+            { word: "hollowing out", ipa: "/ˌhɒl.əʊ.ɪŋ ˈaʊt/", meaningCn: "把内部挖空", meaningEn: "removing the inside of something to leave a space", category: '故事难点词' },
+            { word: "speck", ipa: "/spek/", meaningCn: "n. 极小的一点；文中指一点亮光", meaningEn: "a very small spot or amount", category: '故事难点词' },
+            { word: "rocketing", ipa: "/ˈrɒk.ɪ.tɪŋ/", meaningCn: "飞速前进；文中形容船像火箭一样快", meaningEn: "moving extremely fast", category: '故事难点词' },
+            { word: "furious pace", ipa: "/ˌfjʊə.ri.əs ˈpeɪs/", meaningCn: "飞快的速度", meaningEn: "an extremely fast speed", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
-            { word: "cacao", meaningCn: "可可", meaningEn: "the tree whose seeds are used to make chocolate", category: '故事难点词' },
+            { word: "cacao", ipa: "/kəˈkaʊ/", meaningCn: "可可", meaningEn: "the tree whose seeds are used to make chocolate", category: '故事难点词' },
           ],
         },
         {
@@ -847,9 +967,14 @@ export const roaldDahl: StorySeries = {
             "'Don't argue, my dear child, please don't argue!' cried Mr Wonka. 'It's such a waste of precious time! Now, over here, if you will all step this way, I will show you something that I am terrifically proud of. Oh, do be careful! Don't knock anything over! Stand back!'",
           ],
           glossary: [
+            { word: "jammed", ipa: "/dʒæmd/", meaningCn: "v. 猛地插入；文中指把桨用力插进河里", meaningEn: "pushed something into a place with force", category: '故事难点词' },
+            { word: "simmer", ipa: "/ˈsɪm.ə/", meaningCn: "v. 用小火煮；保持微微冒泡", meaningEn: "to cook just below boiling", category: '故事难点词' },
+            { word: "gigantic", ipa: "/dʒaɪˈɡæn.tɪk/", meaningCn: "adj. 极其巨大的", meaningEn: "extremely big", category: '故事难点词' },
+            { word: "saucepan", ipa: "/ˈsɔːs.pən/", meaningCn: "n. 有柄的深锅", meaningEn: "a deep cooking pan with a handle", category: '故事难点词' },
+            { word: "everlasting", ipa: "/ˌev.əˈlɑː.stɪŋ/", meaningCn: "adj. 永不结束的；文中形容糖一直化不完", meaningEn: "lasting forever or for a very long time", category: '故事难点词' },
+            { word: "precious", ipa: "/ˈpreʃ.əs/", meaningCn: "adj. 宝贵的；文中指不想浪费的时间", meaningEn: "very valuable and not to be wasted", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
-            { word: "gobstopper", meaningCn: "大颗硬糖", meaningEn: "a large hard sweet that takes a long time to dissolve", category: '故事难点词' },
-            { word: "gobstoppers", meaningCn: "大颗硬糖", meaningEn: "large hard sweets that dissolve slowly", category: '故事难点词' },
+            { word: "gobstopper", ipa: "/ˈɡɒbˌstɒp.ə/", meaningCn: "大颗硬糖", meaningEn: "a large hard sweet that takes a long time to dissolve", category: '故事难点词' },
           ],
         },
         {
@@ -868,6 +993,13 @@ export const roaldDahl: StorySeries = {
             "'Right you are!' cried Mr Wonka, slapping Violet hard on the back. 'It's a stick of gum! It's a stick of the most amazing and fabulous and sensational gum in the world!'",
           ],
           glossary: [
+            { word: "gleaming", ipa: "/ˈɡliː.mɪŋ/", meaningCn: "闪闪发光的", meaningEn: "shining brightly from a smooth surface", category: '故事难点词' },
+            { word: "sprout", ipa: "/spraʊt/", meaningCn: "v. 冒出；文中形容玻璃管从机器顶部伸出来", meaningEn: "to begin to grow or stick out from something", category: '故事难点词' },
+            { word: "suspended", ipa: "/səˈspen.dɪd/", meaningCn: "adj. 悬挂着的", meaningEn: "hanging from above", category: '故事难点词' },
+            { word: "rumbling", ipa: "/ˈrʌm.blɪŋ/", meaningCn: "n. 隆隆声；低沉连续的响动", meaningEn: "a continuous low, rolling sound", category: '故事难点词' },
+            { word: "sloshing", ipa: "/ˈslɒʃ.ɪŋ/", meaningCn: "液体哗啦啦地晃荡或涌出", meaningEn: "moving noisily as liquid splashes around", category: '故事难点词' },
+            { word: "froth", ipa: "/frɒθ/", meaningCn: "v. 起泡；表面冒出许多泡沫", meaningEn: "to form a mass of small bubbles", category: '故事难点词' },
+            { word: "groan", ipa: "/ɡrəʊn/", meaningCn: "n. 低沉的呻吟声；文中形容机器发出的响声", meaningEn: "a long, low sound", category: '故事难点词' },
           ],
         },
         {
@@ -996,6 +1128,12 @@ export const roaldDahl: StorySeries = {
             "We hope she does. We can't be sure.'",
           ],
           glossary: [
+            { word: "fascinating", ipa: "/ˈfæs.ɪ.neɪ.tɪŋ/", meaningCn: "adj. 非常吸引人的", meaningEn: "so interesting that you want to know more", category: '故事难点词' },
+            { word: "groceries", ipa: "/ˈɡrəʊ.sər.iz/", meaningCn: "n. 食品杂货；日常买来做饭吃的东西", meaningEn: "food and other everyday things bought at a shop", category: '故事难点词' },
+            { word: "screech", ipa: "/skriːtʃ/", meaningCn: "v. 发出刺耳的尖叫", meaningEn: "to let out a very loud, high cry", category: '故事难点词' },
+            { word: "came to pass", ipa: "/ˌkeɪm tə ˈpɑːs/", meaningCn: "发生了；较旧的说法", meaningEn: "happened; an old-fashioned expression", category: '故事难点词' },
+            { word: "sanatorium", ipa: "/ˌsæn.əˈtɔː.ri.əm/", meaningCn: "n. 疗养院；供长期患病的人休养的地方", meaningEn: "a place where people recover from a long illness", category: '故事难点词' },
+            { word: "provided", ipa: "/prəˈvaɪ.dɪd/", meaningCn: "conj. 条件是；只要", meaningEn: "only if a particular condition is met", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
           ],
         },
@@ -1039,6 +1177,13 @@ export const roaldDahl: StorySeries = {
             "'Wait!' cried Mr Wonka, skidding suddenly to a halt. 'I am very proud of my square sweets that look round. Let's take a peek.'",
           ],
           glossary: [
+            { word: "scuttle", ipa: "/ˈskʌt.əl/", meaningCn: "v. 碎步快跑；文中指旺卡匆匆跑过房间", meaningEn: "to run quickly with short steps", category: '故事难点词' },
+            { word: "perched", ipa: "/pɜːtʃt/", meaningCn: "adj. 架在高处的；文中指帽子搁在头顶上", meaningEn: "resting on top of something", category: '故事难点词' },
+            { word: "lickable", ipa: "/ˈlɪk.ə.bəl/", meaningCn: "adj. 可以舔的；文中指能舔出味道的墙纸", meaningEn: "able to be licked", category: '故事难点词' },
+            { word: "out of sight", ipa: "/ˌaʊt əv ˈsaɪt/", meaningCn: "看不见了；离开视线范围", meaningEn: "no longer able to be seen", category: '故事难点词' },
+            { word: "burp", ipa: "/bɜːp/", meaningCn: "v. 打嗝；把胃里的气吐出来", meaningEn: "to let gas escape noisily through your mouth", category: '故事难点词' },
+            { word: "skidding", ipa: "/ˈskɪd.ɪŋ/", meaningCn: "打滑；文中指跑得太快，滑着停下", meaningEn: "sliding when trying to stop or turn", category: '故事难点词' },
+            { word: "to a halt", ipa: "/tu ə ˈhɔːlt/", meaningCn: "停下来；不再继续移动", meaningEn: "to a complete stop", category: '故事难点词' },
           ],
         },
         {
@@ -1075,6 +1220,13 @@ export const roaldDahl: StorySeries = {
             "'Never you mind,' said Mr Wonka. 'You just wait and see.'",
           ],
           glossary: [
+            { word: "lump", ipa: "/lʌmp/", meaningCn: "n. 块；文中指一块方糖", meaningEn: "a solid piece of something", category: '故事难点词' },
+            { word: "flung", ipa: "/flʌŋ/", meaningCn: "v. 猛地甩；fling 的过去式，文中指猛地打开门", meaningEn: "threw or moved something with a sudden force", category: '故事难点词' },
+            { word: "triumphantly", ipa: "/traɪˈʌm.fənt.li/", meaningCn: "adv. 得意洋洋地；因为证明自己对而高兴", meaningEn: "with pride and joy after winning or being proved right", category: '故事难点词' },
+            { word: "butterscotch", ipa: "/ˈbʌt.ə.skɒtʃ/", meaningCn: "n. 奶油糖；用黄油和糖制成的甜食或调味", meaningEn: "a sweet flavour made with butter and sugar", category: '故事难点词' },
+            { word: "banisters", ipa: "/ˈbæn.ɪ.stəz/", meaningCn: "n. 楼梯扶手；楼梯旁用来扶握的栏杆", meaningEn: "the railing you hold when using stairs", category: '故事难点词' },
+            { word: "out of breath", ipa: "/ˌaʊt əv ˈbreθ/", meaningCn: "上气不接下气", meaningEn: "breathing hard after physical effort", category: '故事难点词' },
+            { word: "rhinoceros", ipa: "/raɪˈnɒs.ər.əs/", meaningCn: "n. 犀牛", meaningEn: "a large animal with thick skin and one or two horns on its nose", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
           ],
         },
@@ -1202,10 +1354,17 @@ export const roaldDahl: StorySeries = {
             "Into the rubbish chute as well.'",
           ],
           glossary: [
+            { word: "catch your breath", ipa: "/ˌkætʃ jə ˈbreθ/", meaningCn: "缓一口气；恢复正常呼吸", meaningEn: "to breathe normally again after being out of breath", category: '故事难点词' },
+            { word: "peek", ipa: "/piːk/", meaningCn: "n. 偷看一眼；迅速瞧一眼", meaningEn: "a quick look, often through a small opening", category: '故事难点词' },
+            { word: "mound", ipa: "/maʊnd/", meaningCn: "n. 小堆；文中指堆起来的核桃", meaningEn: "a raised pile of something", category: '故事难点词' },
+            { word: "shelling", ipa: "/ˈʃel.ɪŋ/", meaningCn: "剥壳；文中指剥核桃壳", meaningEn: "removing the hard outer covering of nuts", category: '故事难点词' },
+            { word: "furnace", ipa: "/ˈfɜː.nɪs/", meaningCn: "n. 炉子；能产生高温的大炉", meaningEn: "a large enclosed device that produces intense heat", category: '故事难点词' },
+            { word: "descend", ipa: "/dɪˈsend/", meaningCn: "v. 下落；往较低处去", meaningEn: "to move down to a lower place", category: '故事难点词' },
+            { word: "culprit", ipa: "/ˈkʌl.prɪt/", meaningCn: "n. 造成问题的人；文中指应对维露卡的行为负责的人", meaningEn: "a person responsible for something that went wrong", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
-            { word: "cacao", meaningCn: "可可", meaningEn: "the tree whose seeds are used to make chocolate", category: '故事难点词' },
-            { word: "incinerator", meaningCn: "焚烧炉", meaningEn: "a furnace used to burn waste", category: '故事难点词' },
-            { word: "rubbish chute", meaningCn: "垃圾滑槽", meaningEn: "a passage down which waste slides", category: '故事难点词' },
+            { word: "cacao", ipa: "/kəˈkaʊ/", meaningCn: "可可", meaningEn: "the tree whose seeds are used to make chocolate", category: '故事难点词' },
+            { word: "incinerator", ipa: "/ɪnˈsɪn.ə.reɪ.tə/", meaningCn: "焚烧炉", meaningEn: "a furnace used to burn waste", category: '故事难点词' },
+            { word: "rubbish chute", ipa: "/ˈrʌb.ɪʃ ʃuːt/", meaningCn: "垃圾滑槽", meaningEn: "a passage down which waste slides", category: '故事难点词' },
           ],
         },
         {
@@ -1273,8 +1432,14 @@ export const roaldDahl: StorySeries = {
             "'Never again!' gasped Mrs Teavee. And then the doors of the lift slid open and Mr Wonka said, 'Just a minute now! Listen to me! I want everybody to be very careful in this room. There is dangerous stuff around in here and you must not tamper with it.'",
           ],
           glossary: [
+            { word: "wriggle", ipa: "/ˈrɪɡ.əl/", meaningCn: "v. 扭动；来回摆动", meaningEn: "to twist and move from side to side", category: '故事难点词' },
+            { word: "strap", ipa: "/stræp/", meaningCn: "n. 带子；文中指电梯顶部用手抓的吊带", meaningEn: "a narrow strip used for holding or fastening", category: '故事难点词' },
+            { word: "flung off their feet", ipa: "/ˌflʌŋ ɒf ðeə ˈfiːt/", meaningCn: "被甩得站不稳、摔倒", meaningEn: "thrown so suddenly that they fell over", category: '故事难点词' },
+            { word: "roller coaster", ipa: "/ˈrəʊ.lə ˌkəʊ.stə/", meaningCn: "n. 过山车", meaningEn: "a ride that moves quickly up and down a steep track", category: '故事难点词' },
+            { word: "hurtle", ipa: "/ˈhɜː.təl/", meaningCn: "v. 疾驰；非常快地冲过去", meaningEn: "to move very fast, often in an uncontrolled way", category: '故事难点词' },
+            { word: "tamper with", ipa: "/ˈtæm.pə wɪð/", meaningCn: "乱动、擅自拨弄", meaningEn: "to touch or change something you should leave alone", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
-            { word: "luminous", meaningCn: "发光的", meaningEn: "giving off light", category: '故事难点词' },
+            { word: "luminous", ipa: "/ˈluː.mɪ.nəs/", meaningCn: "发光的", meaningEn: "giving off light", category: '故事难点词' },
           ],
         },
         {
@@ -1315,6 +1480,13 @@ export const roaldDahl: StorySeries = {
             "'Terrific!' cried Grandpa Joe. 'It will change the world!'",
           ],
           glossary: [
+            { word: "dazzlingly", ipa: "/ˈdæz.əl.ɪŋ.li/", meaningCn: "adv. 耀眼地；亮得令人睁不开眼", meaningEn: "so brightly that it is hard to look", category: '故事难点词' },
+            { word: "bathed", ipa: "/beɪðd/", meaningCn: "v. 笼罩；文中指蓝白色的光照满房间", meaningEn: "covered completely in light", category: '故事难点词' },
+            { word: "cluster", ipa: "/ˈklʌs.tə/", meaningCn: "v. 聚在一起；文中指围在机器旁", meaningEn: "to gather close together in a group", category: '故事难点词' },
+            { word: "knob", ipa: "/nɒb/", meaningCn: "n. 旋钮；机器上用来转动或调节的零件", meaningEn: "a round part that you turn to control something", category: '故事难点词' },
+            { word: "miraculously", ipa: "/mɪˈræk.jə.ləs.li/", meaningCn: "adv. 不可思议地；像奇迹一样地", meaningEn: "in a surprising way that seems like a miracle", category: '故事难点词' },
+            { word: "commercial", ipa: "/kəˈmɜː.ʃəl/", meaningCn: "n. 商业广告；文中指电视广告", meaningEn: "an advertisement shown on television or heard on the radio", category: '故事难点词' },
+            { word: "whizzing", ipa: "/ˈwɪz.ɪŋ/", meaningCn: "嗖嗖飞过；文中指碎片飞速穿过空气", meaningEn: "moving very quickly, often with a rushing sound", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
           ],
         },
@@ -1499,6 +1671,13 @@ export const roaldDahl: StorySeries = {
             "But if we can't — it serves him right.'",
           ],
           glossary: [
+            { word: "shaving", ipa: "/ˈʃeɪ.vɪŋ/", meaningCn: "n. 刨屑；文中指削铅笔留下的薄木屑", meaningEn: "a thin piece cut from the surface of wood or another material", category: '故事难点词' },
+            { word: "pencil sharpener", ipa: "/ˈpen.səl ˌʃɑː.pən.ə/", meaningCn: "n. 卷笔刀", meaningEn: "a tool that makes the point of a pencil sharp", category: '故事难点词' },
+            { word: "to and fro", ipa: "/ˌtuː ən ˈfrəʊ/", meaningCn: "来来回回地", meaningEn: "backwards and forwards", category: '故事难点词' },
+            { word: "palm", ipa: "/pɑːm/", meaningCn: "n. 手掌；手心", meaningEn: "the inside surface of your hand", category: '故事难点词' },
+            { word: "the foggiest idea", ipa: "/ðə ˌfɒɡ.i.əst aɪˈdɪə/", meaningCn: "一点头绪；常与否定连用，表示完全不知道", meaningEn: "the slightest idea, usually used in a negative phrase", category: '故事难点词' },
+            { word: "nauseating", ipa: "/ˈnɔː.zi.eɪ.tɪŋ/", meaningCn: "adj. 令人恶心的", meaningEn: "making you feel as if you might be sick", category: '故事难点词' },
+            { word: "foul", ipa: "/faʊl/", meaningCn: "adj. 很难闻或令人讨厌的；诗中指让人厌恶", meaningEn: "extremely unpleasant or disgusting", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
           ],
         },
@@ -1537,6 +1716,12 @@ export const roaldDahl: StorySeries = {
             "'Sugar power!' said Mr Wonka. 'One million sugar power! Oh, look,' he cried, pointing down, 'there go the other children! They're returning home!'",
           ],
           glossary: [
+            { word: "exploded with excitement", ipa: "/ɪkˌspləʊ.dɪd wɪð ɪkˈsaɪt.mənt/", meaningCn: "兴奋得一下子叫了起来；比喻突然表现出极大的兴奋", meaningEn: "suddenly showed an enormous amount of excitement", category: '故事难点词' },
+            { word: "speed things up", ipa: "/ˌspiːd θɪŋz ˈʌp/", meaningCn: "加快进度；让事情更快发生", meaningEn: "to make things happen more quickly", category: '故事难点词' },
+            { word: "tempted", ipa: "/ˈtemp.tɪd/", meaningCn: "adj. 心动的；很想试一试", meaningEn: "feeling a strong desire to do something", category: '故事难点词' },
+            { word: "mid-air", ipa: "/ˌmɪdˈeə/", meaningCn: "n. 半空中；离地悬在空中", meaningEn: "the space above the ground", category: '故事难点词' },
+            { word: "hover", ipa: "/ˈhɒv.ə/", meaningCn: "v. 悬停；在空中停在同一位置", meaningEn: "to stay in one place in the air", category: '故事难点词' },
+            { word: "postcard", ipa: "/ˈpəʊst.kɑːd/", meaningCn: "n. 明信片；能不装信封寄出的卡片", meaningEn: "a card, often with a picture, sent without an envelope", category: '故事难点词' },
           ],
         },
         {
@@ -1563,6 +1748,12 @@ export const roaldDahl: StorySeries = {
             "'Nonsense,' said Mr Wonka, 'he's very lucky. Every basketball team in the country will be trying to get him. But now,' he added, 'it is time we left these four silly children. I have something very important to talk to you about, my dear Charlie.' Mr Wonka pressed another button, and the lift swung upwards into the sky.",
           ],
           glossary: [
+            { word: "covered vans", ipa: "/ˌkʌv.əd ˈvænz/", meaningCn: "有顶棚的货车", meaningEn: "vehicles for carrying goods in an enclosed space", category: '故事难点词' },
+            { word: "lifetime's supply", ipa: "/ˌlaɪf.taɪmz səˈplaɪ/", meaningCn: "足够用一辈子的量", meaningEn: "enough of something to last a person's whole life", category: '故事难点词' },
+            { word: "truckload", ipa: "/ˈtrʌk.ləʊd/", meaningCn: "n. 一卡车的量", meaningEn: "the amount of goods one truck can carry", category: '故事难点词' },
+            { word: "to the brim", ipa: "/tə ðə ˈbrɪm/", meaningCn: "装到边缘；满得不能再装了", meaningEn: "filled as high as the top edge", category: '故事难点词' },
+            { word: "de-juice", ipa: "/ˌdiːˈdʒuːs/", meaningCn: "去掉果汁；文中是从维奥莉特身上挤出果汁", meaningEn: "to remove the juice from something", category: '故事难点词' },
+            { word: "rubbish", ipa: "/ˈrʌb.ɪʃ/", meaningCn: "n. 垃圾；丢掉的废物", meaningEn: "things that have been thrown away", category: '故事难点词' },
           ],
         },
         {
@@ -1621,10 +1812,26 @@ export const roaldDahl: StorySeries = {
             "'Anything to eat?' cried Charlie laughing. 'Oh, you just wait and see!'",
           ],
           glossary: [
+            { word: "gaze", ipa: "/ɡeɪz/", meaningCn: "v. 凝视；文中指久久向下望", meaningEn: "to look at something for a long time", category: '故事难点词' },
+            { word: "broadly", ipa: "/ˈbrɔːd.li/", meaningCn: "adv. 大大地；smiling broadly 指笑得很灿烂", meaningEn: "widely; used here for a big smile", category: '故事难点词' },
+            { word: "gasp", ipa: "/ɡɑːsp/", meaningCn: "v. 倒吸一口气；惊讶得说话时喘气", meaningEn: "to take a sudden breath, often in surprise", category: '故事难点词' },
+            { word: "take over", ipa: "/ˌteɪk ˈəʊ.və/", meaningCn: "接手；接替别人管理工厂", meaningEn: "to replace someone and take control of what they did", category: '故事难点词' },
+            { word: "sensible", ipa: "/ˈsen.sə.bəl/", meaningCn: "adj. 明事理的；能做出合理判断的", meaningEn: "able to think and make good decisions", category: '故事难点词' },
+            { word: "stammer", ipa: "/ˈstæm.ə/", meaningCn: "v. 结结巴巴地说", meaningEn: "to speak with sudden pauses or repeated sounds", category: '故事难点词' },
             { word: "Oompa-Loompas", meaningCn: "奥姆帕－伦帕人", meaningEn: "the people from Loompaland who work in the factory", category: '故事难点词' },
           ],
         },
       ],
     },
+    charlieAndTheGreatGlassElevator,
+    dannyTheChampionOfTheWorld,
+    fantasticMrFox,
+    georgesMarvellousMedicine,
+    jamesAndTheGiantPeach,
+    matilda,
+    revoltingRhymes,
+    theMagicFinger,
+    theTwits,
+    theWitches,
   ],
 }

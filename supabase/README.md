@@ -119,6 +119,13 @@ The demo route is preserved. Application build/tests and browser acceptance were
 foreign keys for audio bookmarks, RLS on the private references table, and service-role
 execution of `save_exam_listening_directory`.
 
+
+`20261121173749_exam_live_edits.sql` was applied to `rosie-tokyo` on 2026-11-22
+(Asia/Shanghai) through the Supabase migration API. Read-back confirmed the
+publication guard, the private receipt table with RLS, and service-only exam
+RPC access. Test 1 revision 2 remains a draft with its five existing listening
+bindings. The administrator saves the bindings and publishes the paper separately.
+
 ## Lucky wheel workshop
 
 `20261114122234_draw_wheel_workshop.sql` was applied via the connected Supabase

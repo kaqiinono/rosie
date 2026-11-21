@@ -1,10 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from 'react'
-import { AppDialog, LearningIcon, PocketMenuButton, StickerCard, Sun } from '@rosie/ui'
-import { Badge, Button, Flex, Popover, Text, TextField, Theme } from '@rosie/ui/themes'
+import Image from 'next/image'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from 'react'
+import { useLocalStorage } from '@rosie/core'
+import { AppDialog, Gift, LearningIcon, StickerCard, Sun } from '@rosie/ui'
+import { Badge, Button, Flex, IconButton, Text, TextField, Theme } from '@rosie/ui/themes'
 import TreeScene, { type ItemKind, type TreeSceneHandle } from '@/components/tree-demo/garden/TreeScene'
+import WiltBin from '@/components/tree-demo/garden/WiltBin'
 import Sky, { daypartOf } from '@/components/tree-demo/garden/Sky'
 import type { BubbleState } from '@/components/tree-demo/garden/Bubbles'
 import ScatteredBubbles from './ScatteredBubbles'
@@ -75,15 +78,13 @@ interface StatusContentProps {
   sun: number
   water: number
   laterCount: number
-  vertical: boolean
   sunRef: RefObject<HTMLSpanElement | null>
   waterRef: RefObject<HTMLSpanElement | null>
-  tomatoControl?: ReactNode
+  tomatoControl: ReactNode
   onDiary: () => void
   onLater: () => void
 }
 
-/** 顶部进度与入口区。桌面内联展示，移动端收进「菜单」浮层，两处共用同一份结构。 */
 function TreeStatusContent({
   mustCount,
   mustDone,
@@ -91,7 +92,6 @@ function TreeStatusContent({
   sun,
   water,
   laterCount,
-  vertical,
   sunRef,
   waterRef,
   tomatoControl,
@@ -99,7 +99,7 @@ function TreeStatusContent({
   onLater,
 }: StatusContentProps) {
   return (
-    <Flex gap="2" direction={vertical ? 'column' : 'row'} align={vertical ? 'stretch' : 'center'} wrap={vertical ? 'nowrap' : 'wrap'}>
+    <Flex gap="2" align="center" wrap="wrap" className="whitespace-nowrap">
       <Badge color="pink" variant="soft" radius="full">
         {mustCount ? `🎯 ${mustDone}/${mustCount}` : '🎯 没有必做'}
       </Badge>
@@ -191,8 +191,9 @@ export default function LiveTree() {
   const [casting, setCasting] = useState(false)
   const { tree, busy, run } = api
   const [stepId, setStep] = useState<string | null>(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const desktop = useSyncExternalStore(subscribeStatusLayout, inlineStatus, serverStatus)
+  const [packedPreference, setPackedPreference] = useLocalStorage<boolean | null>('rosie:time-tree:panels-packed', null)
+  const panelsPacked = packedPreference ?? !desktop
   const [taskDays, setTaskDays] = useState<string[] | null>(null)
   const [dialog, show] = useState<'' | 'wilt' | 'later' | 'diary' | 'box' | 'wish' | 'flower' | 'fruitList' | 'tomato'>('')
   const [diaryPage, setDiaryPage] = useState(0)
@@ -221,7 +222,8 @@ export default function LiveTree() {
   const treeRef = useRef<TreeSceneHandle>(null)
   const sunRef = useRef<HTMLSpanElement>(null)
   const waterRef = useRef<HTMLSpanElement>(null)
-  const menuRef = useRef<HTMLButtonElement>(null)
+  const chestRef = useRef<HTMLButtonElement>(null)
+  const packing = useRef<Animation[] | null>(null)
   const piles = useRef<Partial<Record<SubjectKey, HTMLElement | null>>>({})
   const picking = useRef(new Set<string>())
   const popping = useRef(new Set<string>())
@@ -254,6 +256,11 @@ export default function LiveTree() {
   }, [state, tree, api.historyMinutes])
   useEffect(() => { previousRegions.current = regions }, [regions])
   const ready = !!tree
+  // Keep the final keyframes until React hides the panels, then release them before paint.
+  useLayoutEffect(() => () => {
+    packing.current?.forEach(animation => animation.cancel())
+    packing.current = null
+  }, [panelsPacked, ready])
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
     const update = () => {
@@ -388,7 +395,6 @@ export default function LiveTree() {
     show('')
     setPin('')
   }
-  const closeMenu = () => setMobileMenuOpen(false)
   const wallet = tomatoWallet(tree)
   const tomatoBalance = wallet.earned - wallet.spent
   const prices = tomatoPrices(tree.rules)
@@ -396,7 +402,6 @@ export default function LiveTree() {
   const tomatoControl = (
     <Button size="1" color="tomato" variant="soft" aria-label={`番茄兑换，可用 ${tomatoBalance} 颗`}
       onClick={() => {
-        closeMenu()
         notify('')
         show('tomato')
       }}>
@@ -404,27 +409,58 @@ export default function LiveTree() {
     </Button>
   )
   const status = (
-    <TreeStatusContent
-      mustCount={must.length}
-      mustDone={mustDone}
-      streak={tree.streak ?? 0}
-      sun={tree.sun}
-      water={tree.water}
-      laterCount={laterSteps.length}
-      vertical={!desktop}
-      sunRef={sunRef}
-      waterRef={waterRef}
-      tomatoControl={desktop ? tomatoControl : undefined}
-      onDiary={() => {
-        closeMenu()
-        show('diary')
-      }}
-      onLater={() => {
-        closeMenu()
-        show('later')
-      }}
-    />
+    <StickerCard id="tree-status-panel" hidden={panelsPacked} className="tg-status-panel" size="sm" tone="paper">
+      <TreeStatusContent
+        mustCount={must.length}
+        mustDone={mustDone}
+        streak={tree.streak ?? 0}
+        sun={tree.sun}
+        water={tree.water}
+        laterCount={laterSteps.length}
+        sunRef={sunRef}
+        waterRef={waterRef}
+        tomatoControl={tomatoControl}
+        onDiary={() => show('diary')}
+        onLater={() => show('later')}
+      />
+    </StickerCard>
   )
+
+  async function togglePanels() {
+    if (packing.current) return
+    const chest = chestRef.current
+    if (panelsPacked) {
+      setPackedPreference(false)
+      return
+    }
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (!chest || typeof chest.animate !== 'function' || reduceMotion.matches) {
+      setPackedPreference(true)
+      return
+    }
+    const target = chest.getBoundingClientRect()
+    const panels = scene.current?.querySelectorAll<HTMLElement>('header .tg-status-panel, .tg-stone-rail')
+    const animations = Array.from(panels ?? [], panel => {
+      const rect = panel.getBoundingClientRect()
+      const dx = target.left + target.width / 2 - rect.left - rect.width / 2
+      const dy = target.top + target.height / 2 - rect.top - rect.height / 2
+      return panel.animate([
+        { transform: 'none', opacity: 1 },
+        { transform: `translate(${dx}px, ${dy}px) scale(0.05)`, opacity: 0 },
+      ], { duration: 260, easing: 'ease-in-out', fill: 'forwards' })
+    })
+    packing.current = animations
+    const finish = () => animations.forEach(animation => animation.finish())
+    window.addEventListener('resize', finish, { once: true })
+    reduceMotion.addEventListener('change', finish, { once: true })
+    try {
+      await Promise.allSettled(animations.map(animation => animation.finished))
+      if (packing.current === animations) setPackedPreference(true)
+    } finally {
+      window.removeEventListener('resize', finish)
+      reduceMotion.removeEventListener('change', finish)
+    }
+  }
 
   function bubbleCenter(id: string): { x: number; y: number } | null {
     const el = scene.current?.querySelector<HTMLElement>(`[data-bubble-id="${id}"]`)
@@ -442,8 +478,7 @@ export default function LiveTree() {
     setFresh((prev) => ({ ...prev, [id]: 'born' }))
   }
   function flyCount(from: { x: number; y: number }, el: HTMLElement | null, color: string, dy: number) {
-    // 移动端菜单收起时 ☀️/💧 徽章未挂载，改用「菜单」按钮作为落点，保持奖励动效。
-    const target = el ?? menuRef.current
+    const target = el?.getClientRects().length ? el : chestRef.current
     if (!target || !fx.current) return
     const box = target.getBoundingClientRect()
     fx.current.orb(
@@ -642,7 +677,8 @@ export default function LiveTree() {
       return next
     })
     const meta = SUBJECTS[color]
-    const pile = piles.current[color] ?? null
+    const gem = piles.current[color]
+    const pile = gem?.getClientRects().length ? gem : chestRef.current
     const box = pile?.getBoundingClientRect()
     const to = box
       ? { x: box.left + box.width / 2, y: box.top + box.height / 2 }
@@ -709,7 +745,7 @@ export default function LiveTree() {
   let magicLabel = '让花长大'
   if (casting) magicLabel = '施法中…'
   else if (busy) magicLabel = '正在保存…'
-  else if (!hasFlowers) magicLabel = '暂无可催开的花'
+  else if (!hasFlowers) magicLabel = '没花了'
   else if (tree.sun < SUN_MAGIC_COST) magicLabel = `还差 ${SUN_MAGIC_COST - tree.sun} 个阳光`
 
   return (
@@ -717,6 +753,7 @@ export default function LiveTree() {
       ref={scene}
       className="tg-scene tg-scene--responsive-rail z-40"
       data-daypart={daypartOf(hour)}
+      data-panels-packed={panelsPacked}
       onPointerDownCapture={(event) => {
         if (!rainbowAt) return
         const node = event.target
@@ -734,8 +771,6 @@ export default function LiveTree() {
           fresh={fresh}
           hidden={hiddenTreeItems}
           onItem={openItem}
-          onParked={() => show('wilt')}
-          bin={{ title: '枯萎箱', count: wilted.length }}
           onRegion={(region) => setTaskDays(region.dateKey ? [region.dateKey] : region.mergedKeys)}
         />
       </div>
@@ -752,32 +787,19 @@ export default function LiveTree() {
           savingIds={savingIds}
           hiddenIds={hiddenTreeItems}
         />
-      <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex flex-wrap items-center justify-between gap-2 p-3">
+      <header className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-2 whitespace-nowrap p-3">
         <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
           <StickerCard asChild interactive size="sm" tone="paper" elevation="sm">
             <Link href="/">← 首页</Link>
           </StickerCard>
         </Flex>
-        <Flex data-tree-obstacle className="pointer-events-auto" gap="2" align="center">
-        {!desktop && tomatoControl}
-        {desktop ? (
-          <StickerCard data-tree-obstacle className="pointer-events-auto" size="sm" tone="paper">
-            {status}
-          </StickerCard>
-        ) : (
-          <Popover.Root open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <Popover.Trigger>
-              <PocketMenuButton ref={menuRef} data-tree-obstacle className="pointer-events-auto" aria-label="小口袋菜单" />
-            </Popover.Trigger>
-            <Popover.Content side="bottom" align="end" sideOffset={8} size="2" className="tg-status-pop">
-              {status}
-            </Popover.Content>
-          </Popover.Root>
-        )}
+        <Flex data-tree-obstacle className="pointer-events-auto min-w-0" gap="2" align="center">
+          {desktop && status}
           <MinimizeTimeTreeButton disabled={busy} />
         </Flex>
       </header>
-      <aside ref={rail} data-tree-obstacle className="tg-stone-rail" aria-label="宝石与工具">
+      <aside id="tree-side-panels" ref={rail} hidden={panelsPacked} data-tree-obstacle className="tg-stone-rail" aria-label="生命树面板">
+        {!desktop && status}
         <StonePanel
           state={state}
           thresholds={tree.rules}
@@ -804,9 +826,9 @@ export default function LiveTree() {
                 下次心愿 {nextWish}
               </Text>
             )}
-            <Button color="violet" variant="soft" aria-label={`我的盲盒${boxChances ? `，还能抽 ${boxChances} 次` : ''}`}
+            <Button color="violet" variant="soft" className="whitespace-nowrap" aria-label={`盲盒${boxChances ? `，还能抽 ${boxChances} 次` : ''}`}
               onClick={() => show('box')}>
-              🎁 我的盲盒
+              <Gift aria-hidden="true" size={18} className="shrink-0" /> 盲盒
               {boxChances > 0 && <Badge color="violet" radius="full" aria-hidden="true">+{boxChances}</Badge>}
             </Button>
             {dailyRainbowStep && (
@@ -846,11 +868,52 @@ export default function LiveTree() {
               </span>
             </Button>
             <Button asChild variant="soft">
-              <Link href="/tasks/homework">作业管理</Link>
+              <Link href="/tasks/homework">作业</Link>
             </Button>
           </Flex>
         </StickerCard>
       </aside>
+      <div
+        className="pointer-events-none flex items-end justify-between"
+        style={{
+          position: 'fixed',
+          left: 'calc(0.5rem + env(safe-area-inset-left, 0px))',
+          right: 'var(--tg-panel-right, calc(0.5rem + env(safe-area-inset-right, 0px)))',
+          bottom: 'var(--tg-panel-bottom, calc(0.5rem + env(safe-area-inset-bottom, 0px)))',
+          zIndex: 35,
+        }}
+      >
+        <IconButton
+          data-tree-obstacle
+          type="button"
+          variant="ghost"
+          color="green"
+          className="tg-box-button pointer-events-auto"
+          aria-label={`枯萎箱，${wilted.length} 件`}
+          title="枯萎箱"
+          onClick={() => show('wilt')}
+        >
+          <WiltBin count={wilted.length} />
+        </IconButton>
+        <IconButton
+          data-tree-obstacle
+          ref={chestRef}
+          type="button"
+          variant="ghost"
+          color="amber"
+          className="tg-box-button tg-chest-button pointer-events-auto"
+          aria-controls="tree-status-panel tree-side-panels"
+          aria-expanded={!panelsPacked}
+          aria-label={panelsPacked ? '打开宝箱，展开所有面板' : '收起所有面板到宝箱'}
+          title={panelsPacked ? '展开所有面板' : '收起所有面板'}
+          onClick={togglePanels}
+        >
+          <Image src="/icons/time-tree-chest.webp" alt="" width={288} height={180}
+            hidden={!panelsPacked} loading="eager" draggable={false} unoptimized className="h-auto w-full" />
+          <Image src="/icons/time-tree-chest-open.webp" alt="" width={288} height={251}
+            hidden={panelsPacked} loading="eager" draggable={false} unoptimized className="h-auto w-full" />
+        </IconButton>
+      </div>
       <canvas
         ref={canvas}
         aria-hidden="true"
@@ -970,7 +1033,7 @@ export default function LiveTree() {
             wilt: '枯萎箱',
             later: '更后面的作业',
             diary: '成长日记',
-            box: '🎁 我的盲盒',
+            box: '盲盒',
             tomato: '🍅 番茄兑换',
             wish: '兑换心愿',
             flower: flower?.name,
@@ -1095,10 +1158,10 @@ export default function LiveTree() {
                       </TomatoExchangeRow>
                     )
                   })}
-                  <TomatoExchangeRow icon="🎁" title="番茄盲盒" cost={prices.box}>
+                  <TomatoExchangeRow icon={<Gift aria-hidden="true" size={24} />} title="番茄盲盒" cost={prices.box}>
                     <Button type="button" color="amber" size="3" className="min-h-11 min-w-18 shrink-0"
                       disabled={busy || (!tree.prize && boxChances === 0)} onClick={() => show('box')}>
-                      {tree.prize ? '领奖' : '我的盲盒'}
+                      {tree.prize ? '领奖' : '盲盒'}
                     </Button>
                   </TomatoExchangeRow>
                 </ul>

@@ -1,11 +1,13 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { usePlaybackProgram } from '@rosie/player'
+import { usePlaybackProgram, type PlaybackProgramStep } from '@rosie/player'
 
 type Bounds = { startMs: number; endMs: number }
-type Timings = { url: string; cues: Map<string, Bounds>; failed: boolean }
-type PlaybackRange = { timeline: string; cues: (Bounds & { id: string })[] }
+type Source = { src: string; timeline: string }
+type LocatedCue = Bounds & { id: string; src: string }
+type Timings = { sources: readonly Source[]; cues: Map<string, LocatedCue[]>; failed: boolean }
+type PlaybackRange = { timings: Timings; cues: LocatedCue[] }
 
 function timestampMs(value: string) {
   const [hours, minutes, seconds] = value.split(':').map(Number)
@@ -26,8 +28,7 @@ function readCues(text: string) {
   return cues
 }
 
-export function useStorySentencePreview(source: { src: string; timeline: string } | undefined) {
-  const { src, timeline } = source ?? {}
+export function useStorySentencePreview(sources: readonly Source[] | undefined) {
   const [timings, setTimings] = useState<Timings | null>(null)
   const [range, setRange] = useState<PlaybackRange | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -41,25 +42,34 @@ export function useStorySentencePreview(source: { src: string; timeline: string 
   const { audioRef, start, dispose } = usePlaybackProgram(fail, complete)
 
   useEffect(() => {
-    if (!timeline) return
+    if (!sources?.length) return
     const controller = new AbortController()
     void (async () => {
-      try {
-        const response = await fetch(timeline, { signal: controller.signal })
-        if (!response.ok && response.status !== 404) throw new Error('Story timing unavailable')
-        const cues = response.ok ? readCues(await response.text()) : new Map<string, Bounds>()
-        if (!controller.signal.aborted) setTimings({ url: timeline, cues, failed: false })
-      } catch {
-        if (!controller.signal.aborted) setTimings({ url: timeline, cues: new Map(), failed: true })
+      const tracks = await Promise.allSettled(sources.map(async source => {
+        const response = await fetch(source.timeline, { signal: controller.signal })
+        if (response.status === 404) return []
+        if (!response.ok) throw new Error('Story timing unavailable')
+        return Array.from(readCues(await response.text()), ([id, bounds]) => ({ ...bounds, id, src: source.src }))
+      }))
+      if (controller.signal.aborted) return
+      const cues = new Map<string, LocatedCue[]>()
+      for (const track of tracks) {
+        if (track.status !== 'fulfilled') continue
+        for (const cue of track.value) {
+          const fragments = cues.get(cue.id)
+          if (fragments) fragments.push(cue)
+          else cues.set(cue.id, [cue])
+        }
       }
+      setTimings({ sources, cues, failed: tracks.some(track => track.status === 'rejected') })
     })()
     return () => controller.abort()
-  }, [timeline])
+  }, [sources])
 
   useEffect(() => () => {
     attempt.current += 1
     dispose()
-  }, [src, timeline, dispose])
+  }, [sources, dispose])
 
   const stop = useCallback(() => {
     attempt.current += 1
@@ -68,38 +78,44 @@ export function useStorySentencePreview(source: { src: string; timeline: string 
     setPlaybackError('')
   }, [dispose])
 
-  const current = timeline && timings?.url === timeline ? timings : null
-  const playing = range !== null && range.timeline === timeline
+  const current = timings && timings.sources === sources ? timings : null
+  const playing = range !== null && range.timings === current
 
   function syncPlayback() {
     const media = audioRef.current
     if (!playing || !range || range.cues.length < 2 || !media || media.seeking) return
     const positionMs = media.currentTime * 1000
-    const cue = range.cues.find(({ startMs, endMs }) => positionMs >= startMs && positionMs < endMs)
+    const src = media.getAttribute('src')
+    const cue = range.cues.find(cue => cue.src === src && positionMs >= cue.startMs && positionMs < cue.endMs)
     setActiveId(cue?.id ?? null)
   }
 
   async function play(sentenceIds: readonly string[]) {
-    if (!current || !src || !timeline) return
-    const cues = sentenceIds.flatMap((id) => {
-      const bounds = current.cues.get(id)
-      return bounds ? [{ id, ...bounds }] : []
-    }).sort((left, right) => left.startMs - right.startMs)
+    if (!current) return
+    const cues = sentenceIds.flatMap(id => current.cues.get(id) ?? [])
     const first = cues[0]
     if (!first) return
-    const startMs = first.startMs
-    const endMs = cues.reduce((latest, cue) => Math.max(latest, cue.endMs), first.endMs)
+    const steps: PlaybackProgramStep[] = []
+    for (const cue of cues) {
+      const last = steps.at(-1)
+      if (last && last.url === cue.src) {
+        last.startMs = Math.min(last.startMs, cue.startMs)
+        last.endMs = Math.max(last.endMs, cue.endMs)
+      } else {
+        steps.push({ id: cue.id, label: cue.id, url: cue.src, startMs: cue.startMs, endMs: cue.endMs, repeatCount: 1, waitAfterMs: 0 })
+      }
+    }
     const request = ++attempt.current
     setPlaybackError('')
-    setRange({ timeline, cues })
+    setRange({ timings: current, cues })
     setActiveId(first.id)
     try {
-      await start([{ id: first.id, url: src, label: first.id, startMs, endMs, repeatCount: 1, waitAfterMs: 0 }])
+      await start(steps)
     } catch {
       if (attempt.current === request) fail()
     }
   }
 
-  return { audioRef, cues: current?.cues, loading: Boolean(timeline && !current),
+  return { audioRef, cues: current?.cues, loading: Boolean(sources?.length && !current),
     timingError: Boolean(current?.failed), playing, activeId: playing ? activeId : null, playbackError, play, stop, syncPlayback }
 }

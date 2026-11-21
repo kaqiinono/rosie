@@ -15,20 +15,24 @@ export default function StoryChapterView({
   const previous = volume.chapters[index - 1]
   const next = volume.chapters[index + 1]
   const base = `/stories/${series.slug}/${volume.slug}`
+  const guide = volume.kind === 'guide'
   return (
     <main className="font-nunito relative z-[1] mx-auto max-w-4xl px-4 py-6 pb-24">
       <nav className="mb-4 flex flex-wrap items-center gap-2 text-sm font-bold">
         <Link href={base} className="text-amber-700">
-          ← 章节目录
+          ← {guide ? '分节目录' : '章节目录'}
         </Link>
         <Link
           href={`${base}/full`}
           className="ml-auto rounded-full bg-white px-3 py-1.5 text-amber-700 ring-1 ring-amber-200"
         >
-          阅读整辑
+          {guide ? '阅读整册' : '阅读整辑'}
         </Link>
       </nav>
-      <StoryReader seriesSlug={series.slug} volume={volume} chapters={[chapter]} viewMode="chapter" />
+      <StoryReader
+        seriesSlug={series.slug} volume={{ slug: volume.slug, title: volume.title, kind: volume.kind, originalAudioFiles: volume.originalAudioFiles }}
+        chapters={[chapter]} viewMode="chapter"
+      />
       <nav className="mt-8 flex justify-between gap-3">
         {previous ? (
           <Link
@@ -52,7 +56,7 @@ export default function StoryChapterView({
             href={base}
             className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white"
           >
-            完成本辑
+            {guide ? '完成阅读' : '完成本辑'}
           </Link>
         )}
       </nav>

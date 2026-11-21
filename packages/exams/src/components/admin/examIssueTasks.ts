@@ -33,7 +33,7 @@ const MESSAGES: Record<string, string> = {
   part_missing: '试卷还有部分未添加题组，请按考试模板补齐。',
   media_binding_missing: '整份内容尚未保存媒体绑定，请先绑定所需图片和音频。',
   media_availability_unverified: '资源尚未确认可用，请核对文件绑定、授权和审核状态。',
-  publication_media_unverified: '资源尚未确认可用，请核对文件绑定、授权和审核状态。',
+  publication_media_unverified: '请绑定可读的文件并保存。音频还需要能读取有效时长。',
   playback_unconfigured: '请设置并确认音频播放次数、停顿时间及原音频是否已包含重复。',
   listening_media_missing: '请添加听力音频及完整播放程序。',
   publication_review_required: '当前版本还没有审核记录。这不影响发布，需要时可以再核对。',

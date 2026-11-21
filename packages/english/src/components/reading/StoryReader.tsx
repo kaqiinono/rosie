@@ -11,7 +11,7 @@ import { useStorySentencePreview } from '../../hooks/useStorySentencePreview'
 import type { ReadingPassage } from '../../utils/reading-data'
 import { buildEntryMatchRegex, buildGlossaryRegex, resolveGlossaryMatch, resolveMatchedWord } from '../../utils/reading-data'
 import type { StoryChapter, StoryVolume } from '../../utils/story-types'
-import { splitStorySentences, storyContentKey } from '../../utils/story-types'
+import { hasSeparateStoryChapterNumber, splitStorySentences, storyContentKey } from '../../utils/story-types'
 import type { VocabularyLevel } from '../../utils/vocabulary-assessment'
 import { getWordFormCandidates } from '../../utils/word-forms'
 import PassageView from './PassageView'
@@ -23,7 +23,7 @@ import { Check, LearningIcon, StickerCard } from '@rosie/ui'
 
 type Props = {
   seriesSlug: string
-  volume: StoryVolume
+  volume: Pick<StoryVolume, 'slug' | 'title' | 'kind' | 'originalAudioFiles'>
   chapters: StoryChapter[]
   viewMode: 'chapter' | 'volume'
 }
@@ -55,7 +55,7 @@ function visibleSentences(): VisibleSentence[] {
 }
 
 function storyPassage(
-  volume: StoryVolume,
+  volume: Pick<StoryVolume, 'slug' | 'title'>,
   chapter: StoryChapter,
   vocabRegex: RegExp | null,
 ): ReadingPassage {
@@ -98,13 +98,14 @@ export default function StoryReader(props: Props) {
 
 function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
   const { user } = useAuth()
-  const narration = useStoryNarration({ series: seriesSlug, volume: volume.slug, chapters, full: viewMode === 'volume' })
+  const sectionUnit = volume.kind === 'guide' ? '节' : '章'
+  const narration = useStoryNarration({ series: seriesSlug, volume, chapters, full: viewMode === 'volume' })
   const [sentencePreview, setSentencePreview] = useState(false)
   const [glossaryChapterKey, setGlossaryChapterKey] = useState<string | null>(null)
   const [glossaryAudioId, setGlossaryAudioId] = useState<string | null>(null)
   const [multiSelect, setMultiSelect] = useState(false)
   const [sentenceSelection, setSentenceSelection] = useState<SentenceSelection | null>(null)
-  const preview = useStorySentencePreview(sentencePreview || glossaryChapterKey !== null ? narration.current : undefined)
+  const preview = useStorySentencePreview(sentencePreview || glossaryChapterKey !== null ? narration.previewTracks : undefined)
   const previewSource = narration.current?.src
   const selection = sentenceSelection?.source === previewSource ? sentenceSelection : null
   const selectingSentences = sentencePreview && multiSelect
@@ -287,7 +288,7 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
         </SegmentedControl.Root>
         <div className="flex flex-wrap items-center gap-2">
           <StoryNarration narration={narration} errorHost={narrationErrorHost} beforePlayback={preview.stop} />
-          {narration.current && (
+          {narration.previewTracks.length > 0 && (
             <Button
               type="button"
               variant={sentencePreview ? 'solid' : 'soft'}
@@ -301,7 +302,7 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
               单句试听
             </Button>
           )}
-          {sentencePreview && narration.current && (
+          {sentencePreview && narration.previewTracks.length > 0 && (
             <Button type="button" color="orange" variant={multiSelect ? 'solid' : 'soft'}
               aria-pressed={multiSelect} onClick={() => {
                 preview.stop()
@@ -394,7 +395,7 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             >
               <span className="inline-flex items-center gap-1">
                 <LearningIcon name="focus" size={16} />
-                本章难点词
+                难点词
               </span>
             </Button>
           )}
@@ -417,7 +418,7 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             )}
           </Button>
         </div>
-        {selectingSentences && narration.current && (
+        {selectingSentences && narration.previewTracks.length > 0 && (
           <div role="group" aria-label="多句试听" className="flex w-full flex-wrap items-center gap-2">
             <Button type="button" color="orange" disabled={!preview.playing && !selectedSentenceIds.length}
               onClick={() => {
@@ -445,7 +446,9 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
               scope="chapter"
               title={`${volume.title} — ${recordChapter.title}`}
               downloadName={`${volume.title.replace(/\s+/g, '-')}-${String(recordChapter.number).padStart(2, '0')}-${recordChapter.title.replace(/\s+/g, '-')}.mp3`}
-              heading={<strong>第 {recordChapter.number} 章 · {recordChapter.title}</strong>}
+              heading={<strong>{hasSeparateStoryChapterNumber(recordChapter)
+                ? `第 ${recordChapter.number} ${sectionUnit} · ${recordChapter.title}`
+                : recordChapter.title}</strong>}
               onBusyChange={setRecordBusy}
             />
           </div>
@@ -501,6 +504,7 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             lessonWords={chapterWords}
             masteryMap={{}}
             storyChapter={chapter}
+            storySectionUnit={sectionUnit}
             sentenceGroups={sentences}
             mode={readingMode}
             cefrLabels={byLevel ? cefrLabels : undefined}

@@ -13,7 +13,7 @@ export async function reviewExamImageTask(db: SupabaseClient, actorId: string, c
   revisionId: string; slotId: string; imageKey: string; expectedReviewVersion: string | null; status: 'pending' | 'approved' | 'flagged'
 }) {
   const { draft, status } = await readExamMediaDraft(db, command.revisionId)
-  if (status !== 'draft') throw new ExamApiError('exam_not_editable', 409)
+  if (status !== 'draft' && status !== 'published') throw new ExamApiError('exam_not_editable', 409)
   const slot = draft.content.mediaSlots.find(item => item.id === command.slotId && item.purpose === 'question_image')
   const binding = draft.content.mediaBindingRevisionId ? await readExamMediaBinding(db, command.revisionId, draft.content.mediaBindingRevisionId) : null
   const file = binding?.files.find(item => item.slot_id === command.slotId && isDeepStrictEqual(item.slot, slot))

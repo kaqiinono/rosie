@@ -98,9 +98,25 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   filter, in switchable card and compact list views with pronunciation and authored IPA.
   For a timed glossary match, its headphone action plays the first matching sentence from the
   selected story recording. The separate word pronunciation action still uses speech synthesis.
+  A chapter can list verbatim `unbrokenSentences` to keep a continuous call or nested quotation
+  together during sentence selection and playback. Regenerate the chapter VTT when its splits change.
   Charlie chapter 1 uses `castPrefaceParagraphs` to separate the cast list and move the following
   spoken heading into the visible chapter header. Keep sentence text and order stable when
   reflowing paragraphs so the narration cues and saved bookmarks still resolve.
+  Illustrated chapters use `illustrations` with zero-based `afterParagraph` anchors (`-1` before
+  the chapter heading). Use `stories/<series>/<volume>/<filename>` in chapter data. Dragon Masters
+  stores its WebPs under `/airosie/english/story/dragon-masters/pics/<volume>/`, including revised
+  crops named `chNN-pNN-review-<index>-<10-hex-digest>.webp`. Other series use
+  `/airosie/project/reading/stories/<series>/<volume>/`. Standard files are named `chNN-pNN.webp`
+  (the second illustration on a page uses `-b`). The reader loads them
+  near the viewport via the signed-in project media endpoint. For `secret-of-the-water-dragon` only,
+  the reader accepts a temporary Baidu thumbnail URL and loads it directly. The service worker skips
+  thumbnail caching. Missing or failed previews fall back to the authenticated, no-store original.
+  Place a spread shared by two chapters at the end of the first chapter. Reference the same file
+  before the second chapter heading with `chapterOnly: true` so whole-volume reading shows it once.
+  Mark a reference book with `kind: 'guide'` to group it under 特别版指南 and label its sections 节.
+  Pass shelf and contents metadata to client components. Pass the chapter body only to the
+  reader that needs it.
   Reading word matching is centralized in `utils/word-forms.ts`: safe regular forms are generated
   at runtime, while `word_entries.word_forms` stores only explicit exceptions as categorized arrays
   (`past`, `pastParticiple`, `plural`, `thirdPerson`, etc.). All highlighting, focus navigation,
@@ -123,6 +139,18 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   `reading-audio-types`, weekly-plan payload/progress/report builders, `word-enrich`, `speak`.
   New Story PDFs are normalized with `scripts/import-story-pdf.mjs`; always review the generated
   text against rendered pages and populate only genuinely difficult unmatched glossary terms.
+  The Dragon Masters ebook importer keeps a separate work directory outside the repository.
+  Extract with `scripts/import-story-ebook.py --source <ebooks> --work <work> <volumes...>`.
+  Run `scripts/lib/story-ebook-ocr.swift` with the extracted volume directories on macOS.
+  `scripts/prepare-story-ebook.py --work <work> <volumes...>` assembles paragraphs and crops figures.
+  Use `--text-only` to revise transcription without changing verified artwork.
+  `scripts/publish-story-ebook.py --work <work> <volumes...>` prepares the draft and media plan.
+  Upload the planned files with `scripts/upload-story-ebook-art.mjs --work <work> <volumes...>`
+  using the existing shared Baidu account configuration. It resumes from the per-volume
+  read-back receipts and rejects a conflicting file at the same path. Run the publisher with
+  `--edits scripts/story-ebook-review.json`, `--glossary scripts/story-ebook-glossary.txt`,
+  a reviewed vocabulary snapshot through `--dictionary`, and `--target` after reviewing the text.
+  Publication requires a matching SHA-256 receipt for each referenced illustration.
 - **词性回填** — `pnpm word-pos:backfill` 只读取未填 `part_of_speech` 的词条，导出高置信候选与待审核清单；默认绝不写库。确认 overrides JSON 后才以 `--apply --overrides <path>` 写入，且只写人工确认项。
 - **Adaptive word plan (`utils/adaptivePlan*` + `components/words/AdaptivePlan*`)** — task-oriented
   Leitner 5-box plan (spec `docs/superpowers/specs/2026-07-09-adaptive-word-plan-design.md`, gitignored).
@@ -387,6 +415,27 @@ sentence previews offer 查看全文 and stop their local audio before opening i
 unmounts the reader and stops its audio without discarding the entry editor.
 
 ### Story narration
+
+Store shared story narration under the series directory in `/airosie/english/story/`.
+Dragon Masters uses `dragon-masters/<NN - Book Title>/` with the book title, chapter number
+and chapter title in each MP3 filename. When copying recordings, verify the audio matches,
+then bind each original slot to the copy's exact path and Baidu file ID.
+
+Chapter readers prefer the bound chapter recording. They can also play the original
+whole-book recording using `full.vtt`, whose cues use the original file's absolute
+timeline. A chapter's optional `fullNarrationRange` limits ordinary narration to its
+interval in that file. Sentence preview always seeks on the original audio URL.
+The Warriors shelf registers eight seasons with six volumes each in source order in
+`src/utils/story-warriors.ts`. Each volume's `originalAudioFiles` lists the actual MP3
+filenames under `/airosie/english/story/warriors/<numbered-season>/<book-slug>/`.
+Upload the local `output/warriors/baidu-upload/warriors` folder manually. In the
+English Story tab of `/admin/sync`, choose the book's directory to match those filenames.
+Whole-book and chapter recordings retain their existing slots. Multipart recordings
+use `track:part-XX` and a corresponding `part-XX.vtt` on each original file's timeline.
+A book's `track-index.json` maps chapter keys to measured file ranges in milliseconds.
+A range marked `partial` covers only the portion located so far. Sentence selections
+spanning two original files play those ranges in order. The local import writes per-book
+alignment coverage, including untimed sentence IDs, under `output/warriors/audio-timings`.
 
 English story chapter/full readers use the bound Baidu chapter or narration asset and native
 WebVTT metadata tracks. 单句试听 loads the selected recording's VTT on demand and shows an

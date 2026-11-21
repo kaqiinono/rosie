@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useAuth } from '@rosie/core'
 import { LoadingOverlay, PageShell, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
-import { attemptListStore, examCatalogStore } from '../client/learningCatalog'
+import { attemptListStore, examCatalogStore, useRefreshExamCatalog } from '../client/learningCatalog'
 import { examErrorMessage } from '../client/examApi'
 import { StartExamButton } from '../components/StartExamButton'
 import { wordReviewListStore } from '../vocabulary/client'
@@ -13,6 +13,7 @@ import { wordReviewListStore } from '../vocabulary/client'
 export function KetExamsPage() {
   const { user } = useAuth()
   const catalog = examCatalogStore.useSessionData(user)
+  useRefreshExamCatalog(user?.id, examCatalogStore)
   const attempts = attemptListStore.useSessionData(user)
   const wordReviews = wordReviewListStore.useSessionData(user)
   const [refreshing, setRefreshing] = useState(false)
@@ -48,7 +49,7 @@ export function KetExamsPage() {
             </Flex><Button size="3" variant="soft" asChild><Link href={`/exams/review-words/${encodeURIComponent(item.id)}`}>{item.status === 'active' ? '继续补练' : '打开待补练词'}</Link></Button></Flex>)}
             {wordReviews.data.items.length === 50 && <Text size="2" color="gray">任务来自最近 50 个补练批次。</Text>}
           </Flex></StickerCard>}
-          {catalog.data.items.length === 0 && <StickerCard size="lg"><Text as="p">试卷正在准备中。审核并发布后，这里会显示可以开始的内容。</Text></StickerCard>}
+          {catalog.data.items.length === 0 && <StickerCard size="lg"><Text as="p">试卷正在准备中。发布后，这里会显示可以开始的内容。</Text></StickerCard>}
           {catalog.data.items.filter(item => item.kind !== 'training_unit').map(item => <StickerCard key={item.revisionId} as="article" size="lg"><Flex direction="column" gap="3">
             <Flex gap="3" wrap="wrap"><Text size="4" weight="bold">{item.title}</Text><Badge variant="soft" radius="full">{item.purpose === 'reserved' ? '保留测评' : '日常训练'}</Badge></Flex>
             <Text as="p" size="2" color="gray">每科目明确开始后计时，提交后查看解答。开始前会检查所需资源。</Text>
@@ -63,7 +64,7 @@ export function KetExamsPage() {
             />
             {item.purpose === 'training' && <Text as="p" size="2" color="gray">不限时，选择完整题组逐组开始、逐组提交。</Text>}
           </Flex></StickerCard>)}
-          {catalog.data.hasMore && <Text size="2" color="gray">当前显示最近 100 个内容版本。</Text>}
+          {catalog.data.hasMore && <Text size="2" color="gray">当前显示最近 100 份试卷。</Text>}
         </>}
       </div>
     </Flex>

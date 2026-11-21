@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { PlayerDock, usePlaylistPlayer } from '@rosie/player'
 import { LearningIcon } from '@rosie/ui'
@@ -8,7 +8,8 @@ import { useAuth, useBaiduMediaError } from '@rosie/core'
 import { Button, Select } from '@rosie/ui/themes'
 import { useBaiduReadingAudio } from '../../hooks/useBaiduReadingAudio'
 import { lessonAudioUrl } from '../../utils/reading-audio-types'
-import type { StoryChapter } from '../../utils/story-types'
+import type { StoryChapter, StoryVolume } from '../../utils/story-types'
+import { storyNarrationTracks } from '../../utils/story-narration-tracks'
 
 function NarrationError({ host, message }: { host: HTMLDivElement | null; message: string }) {
   return host && createPortal(<p role="alert" className="text-sm font-bold text-rose-700">{message}</p>, host)
@@ -90,24 +91,65 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback }: {
   </>
 }
 
+type TrackRange = { file: string; startMs: number; endMs: number; partial?: boolean }
+
 export function useStoryNarration({ series, volume, chapters, full }: {
-  series: string; volume: string; chapters: StoryChapter[]; full: boolean
+  series: string; volume: Pick<StoryVolume, 'slug' | 'originalAudioFiles'>; chapters: StoryChapter[]; full: boolean
 }) {
   const { user } = useAuth()
   const { hasAudio, error, isLoading } = useBaiduReadingAudio(user)
-  const key = `story:${series}:${volume}`
-  const choices = [
-    ...(full ? [{ slot: 'narration', file: 'full', label: '整本朗读' }] : []),
-    ...chapters.map(ch => ({ slot: 'chapter:' + ch.key, file: ch.key, label: `第 ${ch.number} 辑 · ${ch.title}` })),
-  ].filter(item => hasAudio(key + '#' + item.slot)).map(item => ({
-    slot: item.slot,
-    label: item.label,
-    src: lessonAudioUrl(key, item.slot),
-    timeline: `/story-timings/${series}/${volume}/${item.file}.vtt`,
-  }))
+  const key = `story:${series}:${volume.slug}`
+  const base = `/story-timings/${series}/${volume.slug}`
+  const chapter = !full && chapters.length === 1 ? chapters[0] : undefined
+  const [index, setIndex] = useState<{ base: string; chapters: Record<string, TrackRange[]> } | null>(null)
+  const needsIndex = Boolean(chapter && !chapter.fullNarrationRange && volume.originalAudioFiles?.some(
+    filename => filename === `${volume.slug}.mp3` || filename.startsWith('part-'),
+  ))
+  useEffect(() => {
+    if (!needsIndex) return
+    const controller = new AbortController()
+    void fetch(`${base}/track-index.json`, { signal: controller.signal }).then(async response => {
+      if (!response.ok) return
+      const body = await response.json()
+      if (body?.chapters && !controller.signal.aborted) setIndex({ base, chapters: body.chapters })
+    }).catch(() => {})
+    return () => controller.abort()
+  }, [base, needsIndex])
+  const choices = useMemo(() => {
+    const ranges = chapter && index?.base === base ? index.chapters[chapter.key] : undefined
+    const tracks = storyNarrationTracks(volume, chapters)
+    // A dedicated chapter recording is the first choice on a chapter page.
+    if (chapter) tracks.sort((a, b) => Number(b.slot.startsWith('chapter:')) - Number(a.slot.startsWith('chapter:')))
+    return tracks.flatMap(item => {
+      if (!hasAudio(key + '#' + item.slot)) return []
+      if (chapter && (item.file === 'title' || item.file === 'credits')) return []
+      const indexed = ranges?.find(entry => entry.file === item.file)
+      const range = indexed ?? (item.file === 'full' ? chapter?.fullNarrationRange : undefined)
+      if (ranges?.length && item.file.startsWith('part-') && !range) return []
+      const src = lessonAudioUrl(key, item.slot)
+      const label = indexed?.partial ? `本章已定位片段 · ${item.label}`
+        : range && item.file === 'full' ? '本章朗读（整本录音）' : item.label
+      return [{
+        slot: item.slot,
+        label,
+        src,
+        playbackUrl: range && range.endMs > range.startMs ? `${src}#t=${range.startMs / 1000},${range.endMs / 1000}` : src,
+        timeline: `${base}/${item.file}.vtt`,
+      }]
+    })
+  }, [base, chapter, chapters, hasAudio, index, key, volume])
   const [selected, setSelected] = useState('')
-  const current = choices.find(item => item.slot === selected) ?? choices[0]
-  return { choices, current, setSelected, isLoading, error }
+  const current = choices.find(item => item.slot === selected)
+    ?? choices.find(item => item.slot !== 'track:title' && item.slot !== 'track:credits') ?? choices[0]
+  const previewTracks = useMemo(() => {
+    if (!current || current.slot === 'track:title' || current.slot === 'track:credits') return []
+    if (current.slot.startsWith('track:part-')) return choices.filter(item => item.slot.startsWith('track:part-'))
+    if (full && volume.originalAudioFiles && current.slot.startsWith('chapter:')) {
+      return choices.filter(item => item.slot.startsWith('chapter:'))
+    }
+    return [current]
+  }, [choices, current, full, volume.originalAudioFiles])
+  return { choices, current, previewTracks, setSelected, isLoading, error }
 }
 
 export default function StoryNarration({ narration, errorHost, beforePlayback }: {
@@ -129,7 +171,7 @@ export default function StoryNarration({ narration, errorHost, beforePlayback }:
       <Select.Content>{choices.map(item =>
         <Select.Item key={item.slot} value={item.slot}>{item.label}</Select.Item>)}</Select.Content>
     </Select.Root>}
-    <NarrationTrack key={current.src} label={current.label} src={current.src} errorHost={errorHost}
+    <NarrationTrack key={current.playbackUrl} label={current.label} src={current.playbackUrl} errorHost={errorHost}
       timeline={current.timeline} beforePlayback={beforePlayback} />
   </>
 }

@@ -137,7 +137,7 @@ function fingerprint(file: StoredExamMediaFile): BaiduFileFingerprint {
   return { size: file.size, md5: file.md5, modifiedAt: file.modified_at }
 }
 
-async function streamFile(file: StoredExamMediaFile, token: string, range: string | null, signal: AbortSignal) {
+export async function streamExamMediaFile(file: StoredExamMediaFile, token: string, range: string | null, signal: AbortSignal) {
   const directory = file.path.slice(0, file.path.lastIndexOf('/')) || '/'
   const mime = examMediaMime(file.slot, file.path)
   if (!mime) throw new ExamApiError('exam_invalid_media_binding', 409)
@@ -153,28 +153,35 @@ export async function verifyExamMediaForPublication(db: SupabaseClient, draft: E
   const bindingId = draft.content.mediaBindingRevisionId
   if (!bindingId) return undefined
   const binding = await readExamMediaBinding(db, draft.content.id, bindingId)
-  listeningDuration(draft, binding)
   const slotIds = new Set(slots.map(slot => slot.id))
   const account = await bindingAccount(db, binding, binding.files.filter(file => slotIds.has(file.slot_id)))
-  const checked = new Set<string>()
+  const checks = new Map<string, Promise<boolean>>()
   const verifiedSlotIds: string[] = []
-  for (const slot of slots) {
+  const verify = async (slot: MediaSlot) => {
     const file = binding.files.find(entry => entry.slot_id === slot.id)
-    if (!file?.reviewed || !isDeepStrictEqual(file.slot, slot)) continue
-    if (binding.files.some(sibling => sibling.file_id === file.file_id && sibling.slot.audience !== slot.audience)) {
-      throw new ExamApiError('exam_media_scope_conflict', 409)
-    }
+    if (!file?.reviewed || !isDeepStrictEqual(file.slot, slot)) return
+    if (binding.files.some(sibling => sibling.file_id === file.file_id && sibling.slot.audience !== slot.audience)) return
+    if (slot.purpose === 'exam_listening' && (!file.duration_ms || (slot.segment && slot.segment.endMs > file.duration_ms))) return
     const fileKey = JSON.stringify([file.file_id, file.path, file.size, file.md5, file.modified_at])
-    if (!checked.has(fileKey)) {
-      const { response } = await streamFile(file, account.accessToken, 'bytes=0-0', AbortSignal.timeout(15_000))
-      await response.body?.cancel()
-      if (![200, 206].includes(response.status)) throw new ExamApiError('exam_media_file_missing', 409)
-      checked.add(fileKey)
+    let check = checks.get(fileKey)
+    if (!check) {
+      check = (async () => {
+        try {
+          const { response } = await streamExamMediaFile(file, account.accessToken, 'bytes=0-0', AbortSignal.timeout(15_000))
+          await response.body?.cancel()
+          return response.status === 200 || response.status === 206
+        } catch { return false }
+      })()
+      checks.set(fileKey, check)
     }
-    verifiedSlotIds.push(slot.id)
+    if (await check) verifiedSlotIds.push(slot.id)
+  }
+  for (let offset = 0; offset < slots.length; offset += 5) {
+    await Promise.all(slots.slice(offset, offset + 5).map(verify))
   }
   const current = await getBaiduAccountContext()
   if (current.accountId !== account.accountId || current.generation !== account.generation) throw new ExamApiError('baidu_account_changed', 409)
+  if (slots.every(slot => slot.purpose !== 'exam_listening' || verifiedSlotIds.includes(slot.id))) listeningDuration(draft, binding)
   return { bindingRevisionId: bindingId, verifiedSlotIds, checkedAt: new Date().toISOString() }
 }
 
@@ -245,7 +252,7 @@ export async function verifyExamMediaForAttempt(
       if (!checked.has(key)) {
         const timeout = AbortSignal.timeout(15_000)
         try {
-          const { response } = await streamFile(file, account.accessToken, 'bytes=0-0', signal ? AbortSignal.any([signal, timeout]) : timeout)
+          const { response } = await streamExamMediaFile(file, account.accessToken, 'bytes=0-0', signal ? AbortSignal.any([signal, timeout]) : timeout)
           await response.body?.cancel()
           if (![200, 206].includes(response.status)) throw new ExamApiError('exam_media_file_missing', 409)
         } catch (error) {
@@ -287,7 +294,6 @@ async function abortableMediaRead<T>(read: () => Promise<T>, signal?: AbortSigna
 
 export async function fetchExamBoundMedia(grant: ExamMediaGrant, range: string | null, signal: AbortSignal, db: SupabaseClient): Promise<Response> {
   if (grant.wholeFileAllowed !== true) throw new ExamApiError('forbidden', 403)
-  if (range && !/^bytes=(?:\d+-\d*|-\d+)$/.test(range)) throw new ExamApiError('invalid_range', 416)
   const { draft } = await readExamMediaDraft(db, grant.contentRevisionId)
   if (draft.content.mediaBindingRevisionId !== grant.mediaBindingRevisionId) throw new ExamApiError('exam_media_binding_changed', 409)
   const slot = [...draft.content.mediaSlots, ...draft.solutions.mediaSlots].find(item => item.id === grant.slotId)
@@ -302,7 +308,15 @@ export async function fetchExamBoundMedia(grant: ExamMediaGrant, range: string |
     throw new ExamApiError('exam_media_scope_conflict', 403)
   }
   const account = await bindingAccount(db, binding, [file])
-  const { response, mime } = await streamFile(file, account.accessToken, range, signal)
+  return serveExamMediaFile(file, account, range, signal)
+}
+
+export async function serveExamMediaFile(
+  file: StoredExamMediaFile, account: Awaited<ReturnType<typeof getBaiduAccountContext>>,
+  range: string | null, signal: AbortSignal,
+): Promise<Response> {
+  if (range && !/^bytes=(?:\d+-\d*|-\d+)$/.test(range)) throw new ExamApiError('invalid_range', 416)
+  const { response, mime } = await streamExamMediaFile(file, account.accessToken, range, signal)
   const current = await getBaiduAccountContext()
   if (current.accountId !== account.accountId || current.generation !== account.generation) {
     await response.body?.cancel()

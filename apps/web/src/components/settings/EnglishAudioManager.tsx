@@ -118,12 +118,12 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
           <Text size="2" color="gray">全部条目均已匹配。</Text>
         )}
         <Box maxHeight="55vh" overflowY="auto" pr="4" style={{ scrollbarGutter: 'stable' }}>
-          {[isStory ? '整本音频' : '课级音频', isStory ? '分辑音频' : '单个单词音频', '逐句听记音频', '已移除条目的旧绑定'].map((groupLabel, group) => {
+          {[isStory ? '整本音频' : '课级音频', isStory ? '章节和原始音轨' : '单个单词音频', '逐句听记音频', '已移除条目的旧绑定'].map((groupLabel, group) => {
             const rows = saved.slots.filter(s => {
               if (onlyUnmatched && (s.unbindOnly || picks[s.slot])) return false
               if (s.unbindOnly) return group === 3
               if (s.slot.startsWith('clip:')) return group === 2
-              if (s.slot.startsWith('chapter:') || s.slot.startsWith('word:')) return group === 1
+              if (s.slot.startsWith('chapter:') || s.slot.startsWith('track:') || s.slot.startsWith('word:')) return group === 1
               return group === 0
             })
             if (!rows.length) return null

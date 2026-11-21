@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { createUserSessionStore } from '@rosie/core'
 import type { ExamCatalogEntry, ExamPracticePage } from '../types/catalog'
 import type { ExamAttemptListItem } from '../types/attempts'
@@ -25,4 +26,16 @@ export function practiceCatalogStore(query: string) {
     stores.set(query, store)
   }
   return store
+}
+
+export function useRefreshExamCatalog(userId: string | undefined, store: { refreshInBackground: (userId: string) => Promise<void> }) {
+  useEffect(() => {
+    if (!userId) return
+    const refresh = () => {
+      if (document.visibilityState === 'visible') void store.refreshInBackground(userId).catch(() => undefined)
+    }
+    refresh()
+    document.addEventListener('visibilitychange', refresh)
+    return () => document.removeEventListener('visibilitychange', refresh)
+  }, [store, userId])
 }

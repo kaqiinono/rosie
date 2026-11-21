@@ -1,10 +1,18 @@
 import { resolveExamTemplate } from '../templates/examTemplates'
 import type { ContentProvenance, ContentReview } from '../types/content'
 import type { Explanation, Solution } from '../types/solutions'
-import { issue, type ExamDraftInput, type ValidationIssue } from './contracts'
+import { issue as addIssue, type ExamDraftInput, type ValidationIssue } from './contracts'
+
+const publicationChecks = new Set([
+  'unknown_template', 'groups_missing', 'material_empty', 'questions_missing', 'ambiguous_pool_labels',
+  'answer_missing', 'section_coverage_incomplete', 'part_missing', 'playback_unconfigured', 'listening_media_missing',
+])
 
 /** Authoring gaps only. Empty lists do not authorize publication, media access or an exam. */
-export function describeExamDraftReadiness(draft: ExamDraftInput): { exam: ValidationIssue[]; explanations: ValidationIssue[] } {
+export function describeExamDraftReadiness(draft: ExamDraftInput, publication = false): { exam: ValidationIssue[]; explanations: ValidationIssue[] } {
+  function issue(issues: ValidationIssue[], path: string, code: string, message: string) {
+    if (!publication || publicationChecks.has(code)) addIssue(issues, path, code, message)
+  }
   const exam: ValidationIssue[] = []
   const explanations: ValidationIssue[] = []
   const { content, solutions, contentSet } = draft
@@ -57,7 +65,7 @@ export function describeExamDraftReadiness(draft: ExamDraftInput): { exam: Valid
       provenance(question.provenance, `${questionPath}.provenance`, exam)
       review(question.classification.review, `${questionPath}.classification.review`, exam)
       const solution = solutionMap.get(question.id)
-      if (!solution || !hasAnswer(solution)) issue(exam, questionPath, 'answer_missing', 'Question still needs its authored answer or manual review guidance.')
+      if ((!publication || question.scoring.kind !== 'example') && (!solution || !hasAnswer(solution))) issue(exam, questionPath, 'answer_missing', 'Question still needs its authored answer or manual review guidance.')
       if (!solution || (solution.answerType !== 'writing' && !hasExplanation(solution))) issue(explanations, questionPath, 'explanation_missing', 'Question still needs reviewed explanation content.')
       if (solution && ['single_choice', 'multiple_choice', 'gap_fill', 'matching'].includes(solution.answerType) && !solution.evidence.length) issue(explanations, questionPath, 'evidence_missing', 'Objective explanation needs source-referenced supporting evidence.')
       if (question.answerType === 'writing') {

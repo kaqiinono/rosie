@@ -4,7 +4,8 @@ import { Fragment, useEffect, useMemo, useRef, useState, type RefObject, type Re
 import type { WordEntry, WordMasteryMap } from '@rosie/core'
 import type { GlossaryWord, ReadingPassage } from '../../utils/reading-data'
 import { readingSegments } from '../../utils/listening-clips'
-import type { StoryChapter, StorySentence } from '../../utils/story-types'
+import type { StoryChapter, StoryIllustration, StorySentence } from '../../utils/story-types'
+import { hasSeparateStoryChapterNumber } from '../../utils/story-types'
 import {
   buildEntryMatchRegex,
   buildEntryRegex,
@@ -17,6 +18,7 @@ import { wordKey } from '../../utils/english-helpers'
 import { getWordMasteryLevel, type MasteryLevel } from '@rosie/core'
 import WordPopup from './WordPopup'
 import GlossaryPopup from './GlossaryPopup'
+import StoryIllustrationFigure from './StoryIllustrationFigure'
 
 interface PassageViewProps {
   passage: ReadingPassage
@@ -42,7 +44,8 @@ interface PassageViewProps {
   renderClipButton?: (cue: string) => ReactNode
   narrationRef?: RefObject<HTMLVideoElement | null>
   sentenceGroups?: StorySentence[][]
-  storyChapter?: Pick<StoryChapter, 'number' | 'title' | 'castPrefaceParagraphs'>
+  storyChapter?: Pick<StoryChapter, 'key' | 'number' | 'title' | 'castPrefaceParagraphs' | 'illustrations'>
+  storySectionUnit?: '章' | '节'
   renderStorySentenceControl?: (sentence: StorySentence) => ReactNode
 }
 
@@ -109,6 +112,7 @@ export default function PassageView({
   narrationRef,
   sentenceGroups,
   storyChapter,
+  storySectionUnit = '章',
   renderStorySentenceControl,
 }: PassageViewProps) {
   const listeningHighlight = listeningCollapsed
@@ -371,7 +375,18 @@ export default function PassageView({
   const castPreface = sentenceGroups?.slice(0, prefaceCount) ?? []
   const bodyOffset = castPreface.length ? prefaceCount + 1 : 0
   const [spokenNumber, spokenTitle] = bodyOffset ? sentenceGroups?.[prefaceCount] ?? [] : []
-  const chapterNumber = storyChapter ? `第 ${storyChapter.number} 章` : ''
+  const chapterNumber = storyChapter && hasSeparateStoryChapterNumber(storyChapter)
+    ? `第 ${storyChapter.number} ${storySectionUnit}`
+    : ''
+  const illustrationsByParagraph = new Map<number, StoryIllustration[]>()
+  for (const illustration of storyChapter?.illustrations ?? []) {
+    const group = illustrationsByParagraph.get(illustration.afterParagraph)
+    if (group) group.push(illustration)
+    else illustrationsByParagraph.set(illustration.afterParagraph, [illustration])
+  }
+  const renderIllustrations = (index: number) => illustrationsByParagraph.get(index)?.map((illustration) => (
+    <StoryIllustrationFigure key={illustration.path} illustration={illustration} />
+  ))
 
   return (
     <div ref={containerRef} className="font-nunito">
@@ -400,11 +415,16 @@ export default function PassageView({
           </ul>
         </section>
       )}
+      {illustrationsByParagraph.has(-1) && (
+        <div className="space-y-4 p-5 sm:p-7">{renderIllustrations(-1)}</div>
+      )}
       {storyChapter && (
         <header className="bg-orange-50 p-5 sm:px-7">
-          <p className="text-xs font-extrabold tracking-wider text-amber-700">
-            {spokenNumber ? renderStorySentence(spokenNumber, prefaceCount, chapterNumber) : chapterNumber}
-          </p>
+          {chapterNumber && (
+            <p className="text-xs font-extrabold tracking-wider text-amber-700">
+              {spokenNumber ? renderStorySentence(spokenNumber, prefaceCount, chapterNumber) : chapterNumber}
+            </p>
+          )}
           <h1 className="font-fredoka mt-1 text-2xl font-black text-slate-900">
             {spokenTitle ? renderStorySentence(spokenTitle, prefaceCount, storyChapter.title) : storyChapter.title}
           </h1>
@@ -414,25 +434,28 @@ export default function PassageView({
         bodyOffset ? 'space-y-4' : 'space-y-7'
       } ${storyChapter ? 'border-t border-amber-100 p-5 sm:p-7' : ''}`}>
         {passage.paragraphs.map((p, i) => i < bodyOffset ? null : (
-          <div key={i}>
-            {passage.paragraphTitles?.[i] && (
-              <h2 className="font-fredoka text-app-blue-dark mb-2 text-base font-black tracking-wide sm:text-lg">
-                <span
-                  data-narration-cue={`heading-${i}`}
-                  className={listeningTarget === `heading-${i}` ? listeningHighlight : undefined}
-                >
-                  {passage.paragraphTitles[i]}
-                </span>
-                {renderClipButton?.(`heading-${i}`)}
-              </h2>
-            )}
-            <p className="break-words">
-              {sentenceGroups?.[i]
-                ? sentenceGroups[i].map((sentence) => renderStorySentence(sentence, i))
-                : renderTextbookParagraph(p, i)}
-            </p>
-            {renderParagraphFooter && <div className="mt-4">{renderParagraphFooter(i)}</div>}
-          </div>
+          <Fragment key={i}>
+            <div>
+              {passage.paragraphTitles?.[i] && (
+                <h2 className="font-fredoka text-app-blue-dark mb-2 text-base font-black tracking-wide sm:text-lg">
+                  <span
+                    data-narration-cue={`heading-${i}`}
+                    className={listeningTarget === `heading-${i}` ? listeningHighlight : undefined}
+                  >
+                    {passage.paragraphTitles[i]}
+                  </span>
+                  {renderClipButton?.(`heading-${i}`)}
+                </h2>
+              )}
+              <p className="break-words">
+                {sentenceGroups?.[i]
+                  ? sentenceGroups[i].map((sentence) => renderStorySentence(sentence, i))
+                  : renderTextbookParagraph(p, i)}
+              </p>
+              {renderParagraphFooter && <div className="mt-4">{renderParagraphFooter(i)}</div>}
+            </div>
+            {renderIllustrations(i)}
+          </Fragment>
         ))}
       </article>
 

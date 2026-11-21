@@ -39,7 +39,7 @@ const audioKeysStore = createUserSessionStore<string[]>('baidu_reading_audio_key
       return keys.filter(
         (key): key is string =>
           typeof key === 'string' && (/^[a-z0-9]+-u[1-9]\d*l[1-9]\d*(?:#.+)?$/.test(key) ||
-            /^story:[a-z0-9-]+:[a-z0-9-]+#(?:narration|chapter:[a-z0-9-]+)$/.test(key)),
+            /^story:[a-z0-9-]+:[a-z0-9-]+#(?:narration|chapter:[a-z0-9-]+|track:(?:part-\d+|title|credits))$/.test(key)),
       )
     } finally {
       window.removeEventListener('rosie-reading-audio-signout', abort)

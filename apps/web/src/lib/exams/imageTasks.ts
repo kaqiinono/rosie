@@ -1,14 +1,14 @@
 import 'server-only'
 import { isDeepStrictEqual } from 'node:util'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { ExamImageTask, ExamImageWorkspace, MaterialBlock } from '@rosie/exams'
+import type { ExamImageCropCommand, ExamImageTask, ExamImageWorkspace, MaterialBlock } from '@rosie/exams'
 import { ExamApiError } from './http'
 import { readExamMediaBinding, readExamMediaDraft } from './media'
 import { imageReviewKey } from './imageReview'
 
 export async function readExamImageContext(db: SupabaseClient, revisionId: string, slotId: string) {
   const record = await readExamMediaDraft(db, revisionId)
-  if (record.status !== 'draft') throw new ExamApiError('exam_not_editable', 409)
+  if (record.status !== 'draft' && record.status !== 'published') throw new ExamApiError('exam_not_editable', 409)
   const state = await db.from('exam_image_task_states').select('retired').eq('content_revision_id', revisionId).eq('slot_id', slotId).maybeSingle()
   if (state.error) throw new ExamApiError('exam_image_storage_unavailable', 503)
   if (state.data?.retired) throw new ExamApiError('exam_image_task_removed', 409)
@@ -20,12 +20,20 @@ export async function readExamImageContext(db: SupabaseClient, revisionId: strin
 
 export async function readExamImageWorkspace(db: SupabaseClient, revisionId: string): Promise<ExamImageWorkspace> {
   const { draft, version, status } = await readExamMediaDraft(db, revisionId)
-  if (status !== 'draft') throw new ExamApiError('exam_not_editable', 409)
+  if (status !== 'draft' && status !== 'published') throw new ExamApiError('exam_not_editable', 409)
   const bindingId = draft.content.mediaBindingRevisionId
   const binding = bindingId ? await readExamMediaBinding(db, revisionId, bindingId) : null
-  const { data: jobs, error } = await db.from('exam_image_crop_jobs').select('slot_id,command,uploaded_file,receipt')
-    .eq('content_revision_id', revisionId).order('updated_at', { ascending: false }).limit(2000)
-  if (error) throw new ExamApiError('exam_image_storage_unavailable', 503)
+  const jobs: { slot_id: string; command: ExamImageCropCommand; uploaded_file: { id: string } | null }[] = []
+  if (binding) {
+    const imageFileIds = [...new Set(binding.files.filter(file => file.slot.purpose === 'question_image').map(file => file.file_id))]
+    for (let offset = 0; offset < imageFileIds.length; offset += 100) {
+      const result = await db.from('exam_image_crop_jobs').select('slot_id,command,uploaded_file')
+        .eq('destination->>accountId', binding.account_id).in('uploaded_file->>id', imageFileIds.slice(offset, offset + 100))
+        .not('receipt', 'is', null).order('updated_at', { ascending: false })
+      if (result.error) throw new ExamApiError('exam_image_storage_unavailable', 503)
+      jobs.push(...(result.data ?? []))
+    }
+  }
   const states = await db.from('exam_image_task_states').select('slot_id,retired').eq('content_revision_id', revisionId)
   if (states.error) throw new ExamApiError('exam_image_storage_unavailable', 503)
   const reviews = await db.from('exam_image_task_reviews').select('slot_id,status,file_snapshot,version').eq('content_revision_id', revisionId)
@@ -50,7 +58,7 @@ export async function readExamImageWorkspace(db: SupabaseClient, revisionId: str
     const source = slot.provenance.sources[0] ?? null
     const asset = sources.data?.find(item => item.source_id === source?.sourceId && item.pdf_page === source?.pdfPage && item.state === 'ready')
     const file = binding?.files.find(item => item.slot_id === slot.id && isDeepStrictEqual(item.slot, slot))
-    const job = jobs?.find(item => item.slot_id === slot.id && item.receipt && item.uploaded_file?.id === file?.file_id)
+    const job = jobs?.find(item => item.slot_id === slot.id && item.uploaded_file?.id === file?.file_id)
     const retired = states.data?.some(item => item.slot_id === slot.id && item.retired) ?? false
     const review = reviews.data?.find(item => item.slot_id === slot.id)
     const reviewStatus = file && review && isDeepStrictEqual(review.file_snapshot, file)

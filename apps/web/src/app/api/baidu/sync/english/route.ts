@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { lessonAudioMime } from '@rosie/english/utils/reading-audio-types'
 import { storySeries } from '@rosie/english/utils/story-data'
+import { storyNarrationTracks } from '@rosie/english/utils/story-narration-tracks'
 import { readingPassages } from '@rosie/english/utils/reading-data'
 import { listeningClipsFor } from '@rosie/english/utils/listening-clips'
 import { BAIDU_AUTH_MESSAGES, baiduAuthErrorCode } from '@rosie/core'
@@ -18,7 +19,7 @@ const storyBooks = storySeries.filter(series => series.language === 'en').flatMa
     unitTitle: series.title,
     lesson: String(volume.number),
     title: volume.title,
-    chapters: volume.chapters,
+    slots: storyNarrationTracks(volume, volume.chapters),
   })),
 )
 
@@ -58,10 +59,7 @@ async function manage(request: Request) {
         .eq('account_id', account.accountId).eq('lesson_key', key ?? '').returns<PublishedLesson[]>().maybeSingle(),
     ])
     if (words.error || lesson.error) return fail('读取本课资源失败，请检查数据库迁移及连接。', 503)
-    const slots: LessonAudioEditor['slots'] = book ? [
-      { slot: 'narration', label: '整本完整音频' },
-      ...book.chapters.map(chapter => ({ slot: 'chapter:' + chapter.key, chapter: { number: chapter.number, title: chapter.title }, label: `第 ${chapter.number} 辑 · ${chapter.title}` })),
-    ] : [
+    const slots: LessonAudioEditor['slots'] = book ? [...book.slots] : [
       { slot: 'words', label: '全部单词音频' }, { slot: 'narration', label: '课文完整音频' }, { slot: 'recitation', label: '背诵音频' },
       ...words.data.map(({ word }) => ({ slot: 'word:' + word.trim().toLowerCase(), label: word })),
       ...(passage ? listeningClipsFor(passage) : []).map(clip => ({ slot: 'clip:' + clip.target, label: clip.english })),

@@ -308,10 +308,11 @@ See `docs/exams-image-workbench.md` for configuration, applied migrations and ma
 `@rosie/exams` owns versioned KET content, complete-group practice, mock attempts,
 submitted-scope review, parent/admin assessment, independent vocabulary review and reports.
 The web app owns every route and server adapter. `/exams/ket` links to practice, ongoing
-attempts and `/exams/reports`; `/admin/exams` manages draft/review/publication, and
-`/admin/exams/attempts` requires an explicit target user. The `/admin/sync` exam panel saves
-the draft's authorized Baidu listening directory on selection. Audio matching and review save
-through the versioned binding workflow. All private APIs use no-store responses and SW NetworkOnly rules.
+attempts and `/exams/reports`; `/admin/exams` manages exam content and publication, and
+`/admin/exams/attempts` requires an explicit target user. First publication checks required
+questions, answers and media. Published edits and media saves switch the student catalog
+atomically. The `/admin/sync` exam panel saves the authorized Baidu listening directory on selection
+and reads audio duration when saving matches. All private APIs use no-store responses and SW NetworkOnly rules.
 
 Draft and publication edits use version checks and server audit records. Attempts freeze
 content/media revisions, register material-family exposure before disclosure, and persist

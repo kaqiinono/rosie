@@ -29,10 +29,7 @@ type Props = {
   /** 种子还在飞的花，先不画 */
   hidden: ReadonlySet<string>
   onItem: (kind: ItemKind, id: string, rect: DOMRect) => void
-  onParked: () => void
   onRegion?: (region: Region) => void
-  /** 树旁箱子。不传时仍是原型里的「先不做」。 */
-  bin?: { title: string; count: number }
 }
 
 const PETAL: Record<SubjectKey, { light: string; deep: string }> = {
@@ -300,13 +297,11 @@ const FILL_PUFFS: [number, number, number, number][] = [
 ]
 
 const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
-  { state, regions, fresh, hidden, onItem, onParked, onRegion, bin },
+  { state, regions, fresh, hidden, onItem, onRegion },
   ref,
 ) {
   const svgRef = useRef<SVGSVGElement>(null)
   const crownRef = useRef<SVGEllipseElement>(null)
-  const parked = bin?.count ?? state.buds.filter((b) => b.dateKey === null).length
-  const binTitle = bin?.title ?? '先不做'
 
   useImperativeHandle(ref, () => ({
     toClient(x, y) {
@@ -528,43 +523,6 @@ const TreeScene = forwardRef<TreeSceneHandle, Props>(function TreeScene(
         {regions.map((r) => (
           <RegionLabel key={`label-${r.key}`} region={r} onOpen={onRegion ? () => onRegion(r) : undefined} />
         ))}
-      </g>
-
-      {/* 「先不做」收纳箱 */}
-      <g
-        className="tg-item"
-        role="button"
-        tabIndex={0}
-        aria-label={`${binTitle}，${parked} 件`}
-        transform="translate(28 488)"
-        data-tree-obstacle
-        onClick={onParked}
-        onKeyDown={(e: KeyboardEvent<SVGGElement>) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            onParked()
-          }
-        }}
-      >
-        <rect className="tg-focus" x="-6" y="-8" width="124" height="76" rx="15" fill="transparent" stroke="transparent" />
-        <g className="tg-item-body">
-          <path d="M2 17 L12 3 Q13 1 17 1 H95 Q99 1 100 3 L110 17Z" fill="#659688" stroke="#43776b" strokeWidth="2.5" />
-          <path d="M23 19 L21 0 Q21 -3 24 -3 L45 -5 Q48 -5 48 -2 L51 19Z" fill="#ffe59b" stroke="#c2994f" strokeWidth="2" />
-          <path d="M4 17 H108 L103 52 Q102 60 94 60 H18 Q10 60 9 52Z" fill="#a6ddc5" stroke="#43776b" strokeWidth="2.5" />
-          <rect x="1" y="13" width="110" height="9" rx="4" fill="#d3eedc" stroke="#43776b" strokeWidth="2.5" />
-          <rect x="18" y="26" width="76" height="28" rx="8" fill="#fff0df" />
-          <text x="56" y="47" textAnchor="middle" fontSize="20" fontWeight="700" fill="#99345a">
-            {binTitle}
-          </text>
-          {parked > 0 && (
-            <g>
-              <rect x="88" y="-8" width={16 + String(parked).length * 8} height="22" rx="11" fill="#99345a" stroke="#fff0df" strokeWidth="2" />
-              <text x={96 + String(parked).length * 4} y="7" textAnchor="middle" fontSize="12" fontWeight="700" fill="#fff">
-                {parked}
-              </text>
-            </g>
-          )}
-        </g>
       </g>
     </svg>
   )

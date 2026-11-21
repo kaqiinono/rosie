@@ -490,10 +490,40 @@
     top: 25%;
   }
 }
-/* 手机：宝石面板沉到底部横排，右侧不再占位，把整块宽度和高度尽量让给树。
-   由 LiveTree 写入 --tg-dock-h（底部按钮坞高）与 --tg-rail-h（宝石条高）。 */
 .tg-scene--responsive-rail {
+  --tg-panel-right: calc(0.5rem + env(safe-area-inset-right, 0px));
+  --tg-panel-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  --tg-box-height: clamp(46px, 7.8vw, 66px);
+  /* Both chest images are 288px wide. Reserve the raised lid's height in either state. */
+  --tg-chest-height: calc(var(--tg-box-height) * 251 / 180);
+  --tg-rail-bottom: calc(var(--tg-panel-bottom) + var(--tg-chest-height) + 0.5rem);
+  --tg-stage-top: var(--tg-header-height, 4.5rem);
+  --tg-stage-right: calc(var(--tg-rail-width) + var(--tg-panel-right) + 0.25rem);
   --tg-tree-bottom: 0.5rem;
+}
+.tg-scene .tg-box-button {
+  box-sizing: border-box;
+  width: calc(var(--tg-box-height) * 1.7);
+  height: var(--tg-box-height);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+.tg-scene .tg-chest-button {
+  width: calc(var(--tg-box-height) * 1.6);
+  height: var(--tg-chest-height);
+  align-items: flex-end;
+}
+.tg-status-panel :is(.rt-BaseButton, .rt-Badge) {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.tg-scene--responsive-rail :is(.tg-stone-rail, .tg-status-panel)[hidden] {
+  display: none;
+}
+.tg-scene--responsive-rail[data-panels-packed='true'] {
+  --tg-stage-right: 0px;
+  --tg-tree-bottom: var(--tg-panel-bottom);
 }
 .tg-scene--responsive-rail .tg-bubble-area--scattered {
   /* Use all open sky, including the gap between the two header groups.
@@ -504,9 +534,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  bottom: 0.5rem;
+  bottom: var(--tg-rail-bottom);
+  right: var(--tg-panel-right);
+  max-height: calc(100% - var(--tg-stage-top) - var(--tg-rail-bottom));
 }
-/* Desktop panels retain their original appearance. */
 .tg-scene--responsive-rail .tg-stone-rail > * {
   flex-shrink: 0;
   min-width: 0;
@@ -514,25 +545,19 @@
 @media (width < 48rem) {
   .tg-scene--responsive-rail {
     --tg-stage-right: 0px;
-    --tg-stage-top: var(--tg-header-height, 5rem);
-    --tg-tree-bottom: calc(var(--tg-rail-h, 0px) + 1rem + env(safe-area-inset-bottom, 0px));
+    --tg-tree-bottom: calc(var(--tg-rail-h, 0px) + var(--tg-rail-bottom) + 0.5rem);
   }
   .tg-scene--responsive-rail .tg-stone-rail {
-    inset: auto 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    inset: auto var(--tg-panel-right) var(--tg-rail-bottom) calc(0.5rem + env(safe-area-inset-left, 0px));
     width: auto;
     margin-block: 0;
-    max-height: 42dvh;
-    overflow-y: auto;
+    max-height: min(50dvh, calc(100% - var(--tg-stage-top) - var(--tg-rail-bottom)));
     align-items: stretch;
     display: grid;
     grid-template-columns: minmax(0, 1fr) max-content;
   }
-  .tg-scene--responsive-rail .tg-rail-tools {
-    align-self: stretch;
-    min-width: 10rem;
-    max-width: 100%;
-    flex-direction: column;
-    flex-wrap: nowrap;
+  .tg-stone-rail .tg-status-panel {
+    grid-column: 1 / -1;
   }
   .tg-scene--responsive-rail .tg-rail-tools .rt-BaseButton {
     white-space: nowrap;
@@ -542,10 +567,13 @@
   .tg-scene--responsive-rail .tg-stone-rail {
     grid-template-columns: minmax(0, 1fr);
   }
-  .tg-scene--responsive-rail .tg-rail-tools {
+  .tg-rail-tools > .rt-Flex {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    align-items: center;
+  }
+  .tg-rail-tools > .rt-Flex > .rt-BaseButton {
+    flex: 1 0 auto;
   }
 }
 .tg-scene--rail-bottom {
@@ -886,13 +914,6 @@
     transform: scale(1);
   }
 }
-/* 菜单浮层挂在 .tg-scene 外的 portal 上，需重新提供场景动效变量，否则 .tg-bump 的 animation 简写失效。
-   层级由 Radix Themes 自己管理，开合动画沿用库自带。 */
-.tg-status-pop {
-  --tg-spring: var(--ease-spring);
-  width: min(12rem, calc(100vw - 1.5rem));
-  max-width: calc(100vw - 1.5rem);
-}
 .tg-bump {
   animation: tg-bump 0.45s var(--tg-spring);
 }
@@ -980,8 +1001,7 @@
   .tg-bubble-bead,
   .tg-born,
   .tg-toast,
-  .tg-rainbow-pick,
-  .tg-status-pop {
+  .tg-rainbow-pick {
     animation: none !important;
   }
 }

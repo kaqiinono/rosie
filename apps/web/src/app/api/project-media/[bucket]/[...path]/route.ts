@@ -1,10 +1,11 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
-import { createAdminSupabase, isAdminRequestUser, lookupUserFromRequest } from '@/lib/api-auth'
+import { createAdminSupabase, isAdminRequestUser, lookupUserFromClaims, lookupUserFromRequest } from '@/lib/api-auth'
 import { ExamApiError } from '@/lib/exams/http'
 import { getExamRecordingUploadSize } from '@/lib/exams/recordings'
 import { getBaiduAccountContext } from '@/lib/baidu-token'
+import { getBaiduImagePreview } from '@/lib/baidu-media'
 import {
-  downloadProjectObject, finishProjectUpload, PART_BYTES, partHash, projectPath, startProjectUpload, uploadProjectPart,
+  downloadProjectObject, finishProjectUpload, isStoryIllustrationName, PART_BYTES, partHash, projectPath, startProjectUpload, uploadProjectPart,
 } from '@/lib/baidu-project-transfer.mjs'
 import { deleteProjectMedia, fetchProjectMedia, storeProjectMedia } from '@/lib/project-media'
 
@@ -35,10 +36,17 @@ async function fileFromContext(context: Context) {
   if (!segments.length || segments.some(segment => segment.includes('/'))) return null
   const path = segments.join('/')
   const ext = path.split('.').pop()?.toLowerCase() ?? ''
-  const types = Object.hasOwn(personalRecordingTables, bucket) || bucket === 'reading' ? audioTypes : imageTypes
+  const storyIllustration = bucket === 'reading' && segments[0] === 'stories'
+  if (storyIllustration) {
+    const [, series, volume, name] = segments
+    if (segments.length !== 4 || !/^[a-z0-9-]+$/.test(series) || !/^[a-z0-9-]+$/.test(volume) ||
+      !isStoryIllustrationName(series, name)) return null
+  }
+  const audio = Object.hasOwn(personalRecordingTables, bucket) || (bucket === 'reading' && !storyIllustration)
+  const types = audio ? audioTypes : imageTypes
   const mime = bucket === examRecordings ? 'application/octet-stream' : Object.hasOwn(types, ext) ? types[ext] : undefined
   if (!mime || !['math', 'grammar-pages', 'word-images', 'reading', chineseRecordings, englishRecordings, examRecordings].includes(bucket)) return null
-  try { return { bucket, path, mime, segments, target: projectPath(bucket, path) } }
+  try { return { bucket, path, mime, segments, storyIllustration, target: projectPath(bucket, path) } }
   catch { return null }
 }
 
@@ -62,6 +70,15 @@ export async function GET(request: Request, context: Context) {
   if (!file || file.bucket === examRecordings) return error(404, '文件不存在')
   const params = new URL(request.url).searchParams
   const privateFile = Object.hasOwn(personalRecordingTables, file.bucket)
+  if (file.storyIllustration) {
+    const { user, unreachable } = await lookupUserFromClaims(request)
+    if (!user) return error(unreachable ? 503 : 401, unreachable ? '登录验证暂时不可用' : '请先登录')
+    if (file.path.startsWith('stories/dragon-masters/secret-of-the-water-dragon/') &&
+        request.headers.get('accept')?.includes('application/json') && !request.headers.has('range')) {
+      const url = await getBaiduImagePreview(file.target).catch(() => null)
+      if (url) return Response.json({ url }, { headers: { ...privateHeaders, Vary: 'Accept' } })
+    }
+  }
   if (privateFile) {
     const expiry = Number(params.get('expires'))
     if (!Number.isSafeInteger(expiry) || expiry <= Date.now() ||
@@ -74,7 +91,7 @@ export async function GET(request: Request, context: Context) {
     const upstream = await fetchProjectMedia(file.bucket, file.path, range, request.signal)
     if (!upstream) return error(404, '文件不存在')
     const headers = new Headers({
-      ...(privateFile ? privateHeaders : { 'Cache-Control': 'public, max-age=60' }),
+      ...(privateFile || file.storyIllustration ? privateHeaders : { 'Cache-Control': 'public, max-age=60' }),
       'Content-Type': file.mime, 'X-Content-Type-Options': 'nosniff',
     })
     for (const key of ['content-length', 'content-range', 'accept-ranges']) {

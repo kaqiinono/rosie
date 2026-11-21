@@ -11,8 +11,11 @@ const vocabulary = /单词|词汇|\b(?:words|vocab|vocabulary)\b/
 const recitation = /背诵|\b(?:recite|recitation)\b/
 const narration = /课文|原文|朗读|\b(?:narration|passage|reading|text)\b/
 
-function storyTargets(stem: string, book: string, slots: LessonAudioEditor['slots']) {
-  const name = normalize(stem)
+function storyTargets(filename: string, book: string, slots: LessonAudioEditor['slots']) {
+  if (slots.some(row => row.filename)) {
+    return slots.filter(row => row.filename === filename).map(row => row.slot)
+  }
+  const name = normalize(filename.replace(/\.[^.]+$/, ''))
   if (name === book) return ['narration']
   const part = name.startsWith(book + ' ') ? name.slice(book.length + 1) : name
   if (/^(?:full(?: book| audiobook)?|complete(?: audiobook)?|整本(?:朗读|音频)?|全本|完整版|整本完整音频)$/.test(part))
@@ -45,7 +48,7 @@ export function matchEnglishAudio(
     const stem = file.name.normalize('NFKC').replace(/\.[^.]+$/, '')
     const pick = { directory_id: main.directory_id, file_id: file.fileId, path: directoryPrefix(file.directory) + file.name }
     if (storyBook) {
-      for (const slot of storyTargets(stem, storyBook, active)) {
+      for (const slot of storyTargets(file.name, storyBook, active)) {
         const group = candidates.get(slot) ?? []
         group.push(pick)
         candidates.set(slot, group)

@@ -1,0 +1,1717 @@
+{
+  "slug": "chill-of-the-ice-dragon",
+  "number": 9,
+  "title": "Chill of the Ice Dragon",
+  "description": "Mina asks the Dragon Masters for help against an Ice Giant in the Far North.",
+  "chapters": [
+    {
+      "key": "ch01",
+      "number": 1,
+      "title": "Mina from the Far North",
+      "paragraphs": [
+        "“My name is Mina, and I need your help.”",
+        "One of the king’s guards had brought the girl down to the Dragon Caves. Drake stared at Mina in surprise. So did the other Dragon Masters — Bo, Ana, and Petra. So did Griffith the wizard.",
+        "Nobody said anything at first. Everyone was still in shock. They had just learned that Rori, one of the Dragon Masters, had run away with her Fire Dragon, Vulcan!",
+        "So much had happened since yesterday. That is when a Dragon Master named Eko attacked the castle with her Thunder Dragon, Neru. Eko and Neru were captured. King Roland demanded that Griffith banish Eko. He wanted to keep Neru at the castle.",
+        "But Rori thought that taking away Eko’s dragon was mean. So she helped Eko escape with Neru, and she and Vulcan left with them.",
+        "Then Mina arrived.",
+        "Simon the guard coughed. “I’ll be going now” he said.",
+        "Everyone looked at Mina. She had long, blond hair. She wore a brown tunic and furry boots. An ax was tucked into her belt. And a green stone glittered on a cord around her neck.",
+        "“Are you a Dragon Master?” Drake asked. He pointed at the stone. It was a Dragon Stone, just like the one he and the other Dragon Masters wore.",
+        "“Yes,” she replied. “I am a Dragon Master from the Far North Lands. I train at the fortress of King Lars and Queen Sigrid.”",
+        "“You must train with the wizard Hulda,” Griffith said. “She is very powerful.”",
+        "Mina nodded. “Yes, but not powerful enough to stop the Ice Giant.”",
+        "Petra’s eyes got wide. “Ice Giant?”",
+        "“Vasty is his name,” Mina replied. “Many ages ago, he attacked our kingdom with his magic. The kingdom was ruled by a different king then. That king’s wizard put a spell on Vasty and trapped him in a tomb of ice. But the giant is awake now, and he wants revenge.”",
+        "“Why would the Ice Giant try to hurt this king?” Ana asked. “He’s not the one who trapped Vasty in ice.”",
+        "Mina’s blue eyes looked serious. “All Vasty knows is anger. So he used his magic to turn the fortress into ice. Everyone inside was frozen with it.”",
+        "“Hulda could not stop him?” Griffith asked.",
+        "Mina shook her head. “She tried, but her magic was no match for the Ice Giant’s. I tried to stop Vasty with my Ice Dragon, Frost. But Frost’s ice powers had no effect on the Ice Giant. I escaped, but Frost didn’t.” Her voice sounded sad.",
+        "“What can we do to help?” Bo asked.",
+        "“Hulda once showed me all of you in her gazing ball,” Mina said. “I saw your Fire Dragon. Legends say that only a Fire Dragon can defeat an Ice Giant.”",
+        "Drake looked at the others. A Fire Dragon?",
+        "“I have bad news,” Drake told Mina. “Our Fire Dragon is gone. He and his Dragon Master have run away!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p01.webp",
+          "alt": "《Mina from the Far North》原书插图（第 1 页）",
+          "width": 820,
+          "height": 599
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p02-review-1-c2e7648007.webp",
+          "alt": "回想艾科和雷龙进攻城堡（第 2 页）",
+          "width": 727,
+          "height": 518
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p02-review-2-c03e9d376d.webp",
+          "alt": "回想罗丽帮助艾科离开（第 2 页）",
+          "width": 714,
+          "height": 480
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p03.webp",
+          "alt": "《Mina from the Far North》原书插图（第 3 页）",
+          "width": 534,
+          "height": 438
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p04.webp",
+          "alt": "《Mina from the Far North》原书插图（第 4 页）",
+          "width": 820,
+          "height": 725
+        },
+        {
+          "afterParagraph": 14,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p05.webp",
+          "alt": "《Mina from the Far North》原书插图（第 5 页）",
+          "width": 820,
+          "height": 656
+        },
+        {
+          "afterParagraph": 17,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p06.webp",
+          "alt": "《Mina from the Far North》原书插图（第 6 页）",
+          "width": 714,
+          "height": 570
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch01-p07.webp",
+          "alt": "《Mina from the Far North》原书插图（第 7 页）",
+          "width": 678,
+          "height": 582
+        }
+      ],
+      "glossary": [
+        {
+          "word": "gazing ball",
+          "ipa": "/ˈɡeɪ.zɪŋ bɔːl/",
+          "meaningCn": "观景球；巫师用来看远处情景的玻璃球",
+          "meaningEn": "a magical glass ball used to see distant places"
+        },
+        {
+          "word": "cord",
+          "ipa": "/kɔːrd/",
+          "meaningCn": "细绳；文中用来挂龙之石",
+          "meaningEn": "a piece of thick string"
+        },
+        {
+          "word": "tunic",
+          "ipa": "/ˈtuː.nɪk/",
+          "meaningCn": "宽松的短袍",
+          "meaningEn": "a loose piece of clothing that reaches the hips or knees"
+        },
+        {
+          "word": "glittered",
+          "ipa": "/ˈɡlɪt̬.ɚd/",
+          "meaningCn": "闪闪发光",
+          "meaningEn": "shone with many small flashes of light"
+        },
+        {
+          "word": "tucked",
+          "ipa": "/tʌkt/",
+          "meaningCn": "塞进；文中指把龙之石藏进衣服里",
+          "meaningEn": "slipped something into a place where it was held or hidden"
+        },
+        {
+          "word": "fortress",
+          "ipa": "/ˈfɔːr.trəs/",
+          "meaningCn": "堡垒；可防御进攻的大型建筑",
+          "meaningEn": "a heavily protected building used for defense"
+        }
+      ]
+    },
+    {
+      "key": "ch02",
+      "number": 2,
+      "title": "Finding Rori",
+      "paragraphs": [
+        "“What do you mean, they’ve run away?” Mina asked. “What kind of Dragon Master leaves her wizard?”",
+        "“Her name is Rori,” Drake explained. “And, well … she doesn’t like being told what to do.",
+        "Mina folded her arms across her chest. “Do you know where Rori went?”",
+        "“She left with a powerful Dragon Master named Eko,” Griffith explained. “Eko’s Thunder Dragon can create portals that allow Eko to travel far very quickly. Rori and Vulcan could be anywhere.”",
+        "“So you will not look for them?” Mina asked “We were about to discuss that,” Griffith replied. “Our king will be angry when he sees that two of his dragons and a Dragon Master are gone.”",
+        "“Good! Then let’s find them!” Mina said.",
+        "Griffith shook his head. “It will not be easy. We tried using magic to find Eko once before, and we could not.”",
+        "Mina frowned. “If you can’t help me, I will find some other way to save my people,” she said. She started to walk away.",
+        "Suddenly, Drake remembered something. “Mina, stop!” he cried. “I think I know where to find them.”",
+        "Everyone looked at Drake.",
+        "“When Diego, Carlos, and I were on an island looking for Eko,” he continued, “a thunderstorm hit us. That could have been Eko using Neru’s powers to scare us away. We should go back to that island.”",
+        "“That is an excellent idea, Drake!” Griffith said. “Ana — you and Kepri should go with Drake and Worm. You are Rori’s best friend. She may listen to you.”",
+        "Ana nodded. “Of course,” she said. Then she ran to put a saddle on her Sun Dragon.",
+        "“Petra and Bo will stay behind with me and Mina,” Griffith added. “We will learn more about Ice Giants.”",
+        "“I am going to the island,” Mina said. “This Fire Dragon may be my only hope.”",
+        "Griffith nodded. “If you insist.”",
+        "Mina turned to Drake. “How do we get there?” she asked.",
+        "Drake put one hand on Worm, his big, brown Earth Dragon.",
+        "“Just touch Worm,” Drake said.",
+        "Ana and Kepri came out of the dragon’s cave. Mina touched Worm. Ana put one hand on Worm and one hand on Kepri.",
+        "“Good luck!” Bo said.",
+        "“Worm, take us to the last island we went to,” Drake said.",
+        "Worm’s body started to glow. Green light filled the room. It got brighter and brighter.",
+        "Then Worm, and everyone touching him, disappeared."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch02-p01.webp",
+          "alt": "《Finding Rori》原书插图（第 8 页）",
+          "width": 820,
+          "height": 622
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch02-p02.webp",
+          "alt": "《Finding Rori》原书插图（第 9 页）",
+          "width": 270,
+          "height": 510
+        },
+        {
+          "afterParagraph": 8,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch02-p03.webp",
+          "alt": "《Finding Rori》原书插图（第 10 页）",
+          "width": 678,
+          "height": 426
+        },
+        {
+          "afterParagraph": 11,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch02-p04.webp",
+          "alt": "《Finding Rori》原书插图（第 11 页）",
+          "width": 654,
+          "height": 462
+        },
+        {
+          "afterParagraph": 15,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch02-p05.webp",
+          "alt": "《Finding Rori》原书插图（第 12 页）",
+          "width": 820,
+          "height": 680
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch02-p06.webp",
+          "alt": "《Finding Rori》原书插图（第 13 页）",
+          "width": 820,
+          "height": 703
+        }
+      ],
+      "glossary": [
+        {
+          "word": "portals",
+          "ipa": "/ˈpɔːr.t̬əlz/",
+          "meaningCn": "多个魔法传送门",
+          "meaningEn": "magical doorways to other places"
+        },
+        {
+          "word": "saddle",
+          "ipa": "/ˈsæd.əl/",
+          "meaningCn": "鞍；固定在龙背上供骑乘的座具",
+          "meaningEn": "a seat fastened to an animal’s back for riding"
+        },
+        {
+          "word": "discuss",
+          "ipa": "/dɪˈskʌs/",
+          "meaningCn": "讨论；商量",
+          "meaningEn": "to talk about something with somebody, especially in order to decide something"
+        },
+        {
+          "word": "insist",
+          "ipa": "/ɪnˈsɪst/",
+          "meaningCn": "坚持；坚决要求",
+          "meaningEn": "To say firmly that something is true or must happen."
+        },
+        {
+          "word": "thunderstorm",
+          "ipa": "/ˈθʌndəstɔːm/",
+          "meaningCn": "雷暴雨",
+          "meaningEn": "A storm with thunder, lightning, and heavy rain."
+        },
+        {
+          "word": "anywhere",
+          "ipa": "/ˈeniweə/",
+          "meaningCn": "在任何地方；到任何地方",
+          "meaningEn": "in, at or to any place"
+        }
+      ]
+    },
+    {
+      "key": "ch03",
+      "number": 3,
+      "title": "Attack Them!",
+      "paragraphs": [
+        "The Dragon Masters, Worm, and Kepri appeared on a green, leafy island. The trees had long, skinny trunks.",
+        "“This big, brown Worm brought us here?” Mina asked. Her eyes were wide. “What kind of dragon is he?”",
+        "“He is an Earth Dragon. He has amazing mind powers,” Drake replied, smiling.",
+        "Then they heard a noise.",
+        "Rooooaaaaaar.",
+        "“That sounds like Eko’s Thunder Dragon!” Ana cried. “It came from over there!”",
+        "Ana jumped on Kepri and they flew toward the sound. Drake and Mina ran through the tall trees. Worm swiftly slithered behind them.",
+        "They soon reached a group of houses made of tree branches and big leaves. A shield of rippling purple energy surrounded the whole place.",
+        "“That looks like Neru’s powers!” Drake cried “Kepri, do you think your brightest sunlight can break through that energy field?” Ana asked.",
+        "A beam of bright sunlight streamed from Kepri’s mouth. It hit the purple shield. The energy started to flicker.",
+        "Pop! The shield disappeared. Kepri flew forward.",
+        "Rooooaaaar! A purple dragon rose up from behind one of the houses. A woman with dark hair rode on his back.",
+        "“Eko!” Drake called out. “We are not here for you. We came to talk to Rori.”",
+        "As he said this, a red-haired girl and her big, red dragon stepped out from behind one of the other houses.",
+        "“Rori!” Ana cried happily.",
+        "“Rori has nothing to say to you,” Eko replied.",
+        "Rori’s eyes flashed. “Eko, these are my friends. Can’t we just talk to them?”",
+        "“We can’t trust them, Rori,” Eko warned. “Neru, attack!”",
+        "Neru began to glow with energy. But before the purple dragon could attack, green beams of light shot from Worm’s eyes! They zapped Neru, sending him jolting backward.",
+        "Whoa! I’ve never seen Worm do that before! Drake thought.",
+        "Eko fell from her dragon’s back.",
+        "“Rori, make Vulcan attack that dragon!” Eko yelled, jumping to her feet.",
+        "Worm’s whole body was glowing green now. The green energy surrounded Neru, trapping him.",
+        "“They’re hurting Neru!” Eko said. “See, Rori? You cannot trust them!”",
+        "“Worm is not hurting Nero. And you attacked us for no reason!” Drake said. “See, Rori? Eko is the one you shouldn’t trust!”",
+        "“Rori, do not listen to them,” Eko said. “They’re just trying to turn you against me. Attack them!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch03-p01.webp",
+          "alt": "《Attack Them!》原书插图（第 14 页）",
+          "width": 820,
+          "height": 622
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch03-p02.webp",
+          "alt": "《Attack Them!》原书插图（第 15 页）",
+          "width": 306,
+          "height": 402
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch03-p03.webp",
+          "alt": "《Attack Them!》原书插图（第 16 页）",
+          "width": 762,
+          "height": 606
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch03-p04.webp",
+          "alt": "《Attack Them!》原书插图（第 17 页）",
+          "width": 820,
+          "height": 596
+        },
+        {
+          "afterParagraph": 21,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch03-p05.webp",
+          "alt": "《Attack Them!》原书插图（第 18 页）",
+          "width": 820,
+          "height": 459
+        },
+        {
+          "afterParagraph": 25,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch03-p06.webp",
+          "alt": "《Attack Them!》原书插图（第 19 页）",
+          "width": 820,
+          "height": 598
+        }
+      ],
+      "glossary": [
+        {
+          "word": "flicker",
+          "ipa": "/ˈflɪk.ɚ/",
+          "meaningCn": "忽明忽暗地闪烁",
+          "meaningEn": "to keep changing from bright to dim"
+        },
+        {
+          "word": "slithered",
+          "ipa": "/ˈslɪð.ɚd/",
+          "meaningCn": "像蛇一样贴地滑行",
+          "meaningEn": "slid along the ground in a curved movement"
+        },
+        {
+          "word": "happily",
+          "ipa": "/ˈhæpɪli/",
+          "meaningCn": "高兴地；快乐地",
+          "meaningEn": "In a happy or pleased way."
+        },
+        {
+          "word": "reason",
+          "ipa": "/ˈriːzən/",
+          "meaningCn": "原因；理由",
+          "meaningEn": "A fact or explanation showing why something happens."
+        },
+        {
+          "word": "nothing",
+          "ipa": "/ˈnʌθɪŋ/",
+          "meaningCn": "没有什么；没有任何东西",
+          "meaningEn": "not anything"
+        },
+        {
+          "word": "listen",
+          "ipa": "/ˈlɪsən/",
+          "meaningCn": "听；倾听",
+          "meaningEn": "To pay attention to sounds or what someone says."
+        }
+      ]
+    },
+    {
+      "key": "ch04",
+      "number": 4,
+      "title": "Rori’s Decision",
+      "paragraphs": [
+        "Rori put her hands on her hips and looked at Eko.",
+        "“Are you going to tell me what to do, just like Griffith?” Rori asked Eko’s dark eyes flared. “I am nothing like that old wizard!” she said. Then she turned her back to Rori.",
+        "Ana ran up to Rori and hugged her. “Please, Rori, come back with us,” she pleaded. “We need you and Vulcan to help us save Mina’s kingdom.”",
+        "“Who’s Mina?” Rori asked, and then she noticed the new girl. “Did Griffith replace me already?”",
+        "“I am Mina, from the Far North Lands,” Mina replied. “I traveled to Bracken because my people need the help of a Fire Dragon.”",
+        "“Why do you need Vulcan’s help?” Rori asked. “Is this some sort of trick to get me to come back?”",
+        "“There is no trick. An Ice Giant named Vasty has frozen our fortress and everyone inside it,” Mina answered. “Only a Fire Dragon can defeat him.”",
+        "Rori frowned, thinking.",
+        "“The decision is yours, Rori, and nobody else’s,” Ana promised.",
+        "Rori nodded and turned to Eko. “I am going with my friends. But I will be back.”",
+        "Eko glared at Rori. She did not say anything.",
+        "The other Dragon Masters touched Worm. Ana touched Kepri. Rori and Vulcan walked up and touched both dragons.",
+        "Worm let go of Neru.",
+        "Then he quickly transported them back to the Training Room in King Roland’s castle.",
+        "Bo and Petra ran out of the classroom.",
+        "“You’re back!” Bo said happily.",
+        "“Not for long,” Rori said. “I am just here to help this girl.”",
+        "“Mina, from the Far North Lands,” Mina said Rori rolled her eyes. “Yeah, I got that part.”",
+        "Petra patted Vulcan’s neck. “It’s good to see you again, too, Vulcan,” she said.",
+        "Griffith walked up to them, smiling.",
+        "Rori held up one hand. “Don’t look so happy,” she said. “I’m not staying.”",
+        "“I hope you will stay, Rori,” Griffith said. “I know I was being harder on you than on some of the others. That is only because I know that you can be one of the best Dragon Masters ever.”",
+        "Rori looked surprised. “Yeah, um, well, thanks,” she said. “But I’m still going back to Eko when this is over.”",
+        "Mina marched between the two of them. “I am sorry to interrupt your drama,” she said, looking at Rori, “but my kingdom needs saving. Are you going to help me, or not?”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch04-p01.webp",
+          "alt": "《Rori’s Decision》原书插图（第 20 页）",
+          "width": 786,
+          "height": 546
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch04-p02.webp",
+          "alt": "《Rori’s Decision》原书插图（第 21 页）",
+          "width": 726,
+          "height": 366
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch04-p03.webp",
+          "alt": "《Rori’s Decision》原书插图（第 22 页）",
+          "width": 402,
+          "height": 282
+        },
+        {
+          "afterParagraph": 15,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch04-p04.webp",
+          "alt": "《Rori’s Decision》原书插图（第 23 页）",
+          "width": 594,
+          "height": 474
+        },
+        {
+          "afterParagraph": 20,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch04-p05.webp",
+          "alt": "《Rori’s Decision》原书插图（第 24 页）",
+          "width": 354,
+          "height": 594
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "glared",
+          "ipa": "/ɡlerd/",
+          "meaningCn": "怒视",
+          "meaningEn": "looked angrily at someone"
+        },
+        {
+          "word": "fortress",
+          "ipa": "/ˈfɔːr.trəs/",
+          "meaningCn": "堡垒；可防御进攻的大型建筑",
+          "meaningEn": "a heavily protected building used for defense"
+        },
+        {
+          "word": "transported",
+          "ipa": "/trænˈspɔːr.tɪd/",
+          "meaningCn": "转移；文中指用魔法瞬间移到别处",
+          "meaningEn": "carried someone or something to another place"
+        },
+        {
+          "word": "interrupt",
+          "ipa": "/ˌɪntəˈrʌpt/",
+          "meaningCn": "打断；中断",
+          "meaningEn": "To stop someone speaking or stop an activity briefly."
+        },
+        {
+          "word": "decision",
+          "ipa": "/dɪˈsɪʒən/",
+          "meaningCn": "决定",
+          "meaningEn": "a choice made after thinking about something"
+        }
+      ]
+    },
+    {
+      "key": "ch05",
+      "number": 5,
+      "title": "Time for a Plan",
+      "paragraphs": [
+        "“I said I was going to help you defeat Vasty,” Rori snapped. “Are you ordering me around now, too, Mina?”",
+        "“Vasty sounds nasty,” Bo joked, giving a small smile. Both girls glared at him.",
+        "“He is more than just nasty,” Mina said. “He is evil. His heart is made of ice.”",
+        "“Vulcan’s flames can melt ice, no problem,” Rori said. “My dragon is very powerful.”",
+        "Mina glared at Rori. “And so is Vasty.”",
+        "Griffith motioned for the Dragon Masters to follow him into the classroom.",
+        "“We will help you, Mina,” the wizard said. “But first, we need a plan!”",
+        "Griffith pointed to a large map on the table.",
+        "“Petra found this map of the Far North Lands,” the wizard said. “Mina, can you show us where the fortress is?”",
+        "Mina studied the map. She pointed. “Here.”",
+        "Bo’s eyes got wide. “Your kingdom is very far away. How’d you get here without your dragon?”",
+        "“I walked,” Mina said. “Sometimes I rode on a passing wagon. I took a ship across the water. It took a very long time.”",
+        "Drake looked at Mina’s thick boots. They were caked with dirt from her long walk.",
+        "She’s brave, Drake thought. And tough. I don’t know if I could have come that far all by myself!",
+        "“We can use Worm to get back to your kingdom quickly,” Drake said.",
+        "“Good, we must hurry,” Mina said.",
+        "“We should all bring our dragons,” Ana said to Mina. “They can help Vulcan. Shu has water powers. Zera, the four-headed dragon, has poison powers. And you’ve seen what Kepri can do.”",
+        "“But Vulcan is the one who gets to melt the giant, right?” Rori asked. Her eyes were shining with excitement.",
+        "“Yes,” Mina replied. “I just hope your dragon is as strong as you say.”",
+        "“I can prove it!” Rori said. “Let’s go to the caves. I’ll ask Vulcan to make a fireball so big …”",
+        "“Rori!” Griffith interrupted her. Then he lowered his voice. “You are right. It is a good idea for us to train the dragons today, but we must do it properly. Let’s take them outside to the Valley of Clouds.”",
+        "Rori ran toward the Dragon Caves. She stopped and motioned to Mina.",
+        "“Come on!” she said. “I’ll show you what Vulcan can do.”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch05-p01.webp",
+          "alt": "《Time for a Plan》原书插图（第 25 页）",
+          "width": 820,
+          "height": 449
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch05-p02.webp",
+          "alt": "《Time for a Plan》原书插图（第 26 页）",
+          "width": 820,
+          "height": 527
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch05-p03.webp",
+          "alt": "《Time for a Plan》原书插图（第 27 页）",
+          "width": 654,
+          "height": 402
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch05-p04.webp",
+          "alt": "《Time for a Plan》原书插图（第 28 页）",
+          "width": 618,
+          "height": 678
+        },
+        {
+          "afterParagraph": 22,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch05-p05.webp",
+          "alt": "《Time for a Plan》原书插图（第 29 页）",
+          "width": 666,
+          "height": 390
+        }
+      ],
+      "glossary": [
+        {
+          "word": "fireball",
+          "ipa": "/ˈfaɪr.bɔːl/",
+          "meaningCn": "火球；龙喷出的团状火焰",
+          "meaningEn": "a ball of flame"
+        },
+        {
+          "word": "glared",
+          "ipa": "/ɡlerd/",
+          "meaningCn": "怒视",
+          "meaningEn": "looked angrily at someone"
+        },
+        {
+          "word": "flames",
+          "ipa": "/fleɪmz/",
+          "meaningCn": "火焰",
+          "meaningEn": "the bright, hot part of a fire that you can see"
+        },
+        {
+          "word": "snapped",
+          "ipa": "/snæpt/",
+          "meaningCn": "没好气地说",
+          "meaningEn": "spoke in a quick, angry way"
+        },
+        {
+          "word": "fortress",
+          "ipa": "/ˈfɔːr.trəs/",
+          "meaningCn": "堡垒；可防御进攻的大型建筑",
+          "meaningEn": "a heavily protected building used for defense"
+        },
+        {
+          "word": "properly",
+          "ipa": "/ˈprɒpəli/",
+          "meaningCn": "正确地；正常地；适当地",
+          "meaningEn": "correctly or in the expected way"
+        }
+      ]
+    },
+    {
+      "key": "ch06",
+      "number": 6,
+      "title": "Before the Big Battle",
+      "paragraphs": [
+        "Soon they were all outside in the Valley of Clouds — a big, green stretch of land hidden behind the castle. There were mountains on one side, and a forest on the other.",
+        "It was the perfect place for training dragons.",
+        "“Vulcan, fireball!” Rori cried.",
+        "Vulcan flew across the valley. Powerful flames streamed from his mouth. Then they burned out against the blue sky.",
+        "In another part of the sky, Ana was flying with Kepri. The white dragon zoomed across the valley like a streak of light.",
+        "Down below, Bo’s Water Dragon, Shu, was shooting blasts of water at some bushes. They perked up when the water hit them.",
+        "Petra was training with her poison dragon, Zera. The hydra was spraying poison mist from each of her four mouths. The mist hit rocks in the mountainside. The rocks slowly started to dissolvel",
+        "Drake led Griffith over to Worm.",
+        "“On the island, Worm used a new power,” he told the wizard. “He shot energy beams from his eyes. They knocked Neru over!”",
+        "“Very interesting.” Griffith said. Then he pointed at a group of rocks. Blue magic sizzled from his finger.",
+        "The rocks floated up one by one, making a tall tower of rocks.",
+        "“Worm, can you show me what you did?” Griffith asked Worm nodded. He shot green beams from his eyes. Zap! They knocked down the tower.",
+        "“Excellent!” Griffith cheered.",
+        "Rori flew past on Vulcan. “That’s nothing! Vulcan could knock down a tower of big, giant boulders if he wanted to!” she cried.",
+        "After the Dragon Masters finished training, Griffith called to them. “It will be dark soon. Let’s go eat,” he said. “We will leave for the Far North Lands in the morning.”",
+        "“Why must we wait?” Mina asked, tapping her boot on the ground.",
+        "“If Vasty is as powerful as you say, everyone must be well rested when you face him,” Griffith replied. Then he walked off.",
+        "Mina turned to Rori. “I think I understand your problem with this wizard,” she said, shaking her head.",
+        "Rori nodded “Yeah.. he’s always giving orders.”",
+        "They all walked back to the castle. Drake stepped next to Rori.",
+        "“Thanks for coming back,” he said.",
+        "She shrugged. “Yeah, well …”",
+        "“I know, it’s not for good,” Drake said. “But I hope you’ll stay. We all want you to come back. And I’m sorry if I hurt your feelings before you left.”",
+        "Rori stopped. She looked at Drake. “Thank you,” she said, and she almost smiled.",
+        "Then she ran ahead to walk with Ana.",
+        "After the Dragon Masters put the dragons in their caves, they ate dinner in the dining room.",
+        "Drake could not believe how much Mina ate. She ate almost a whole chicken by herself! Plus potatoes, carrots, bread, and cheese.",
+        "She must have been hungry after her long trip, Drake realized. But she never complained once.",
+        "Then it hit him. Mina was tough. But she and her dragon and wizard couldn’t defeat Vasty.",
+        "He must be one big, bad Ice Giant! Drake thought."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p01.webp",
+          "alt": "《Before the Big Battle》原书插图（第 30 页）",
+          "width": 820,
+          "height": 585
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p02-review-1-4edb7ebf8a.webp",
+          "alt": "瓦肯在山谷上空喷火（第 31 页）",
+          "width": 960,
+          "height": 455
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p02-review-2-b5d1265f91.webp",
+          "alt": "安娜骑着凯普里掠过山谷（第 31 页）",
+          "width": 960,
+          "height": 450
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p03-review-1-eb77518dd6.webp",
+          "alt": "舒用水柱浇灌灌木（第 32 页）",
+          "width": 960,
+          "height": 481
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p03-review-2-a5df786535.webp",
+          "alt": "泽拉用毒雾溶化岩石（第 32 页）",
+          "width": 960,
+          "height": 426
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p04.webp",
+          "alt": "《Before the Big Battle》原书插图（第 33 页）",
+          "width": 618,
+          "height": 582
+        },
+        {
+          "afterParagraph": 17,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p05.webp",
+          "alt": "《Before the Big Battle》原书插图（第 34 页）",
+          "width": 378,
+          "height": 438
+        },
+        {
+          "afterParagraph": 23,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p06.webp",
+          "alt": "《Before the Big Battle》原书插图（第 35 页）",
+          "width": 450,
+          "height": 462
+        },
+        {
+          "afterParagraph": 25,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch06-p07.webp",
+          "alt": "《Before the Big Battle》原书插图（第 36 页）",
+          "width": 630,
+          "height": 390
+        }
+      ],
+      "glossary": [
+        {
+          "word": "shrugged",
+          "ipa": "/ʃrʌɡd/",
+          "meaningCn": "耸了耸肩",
+          "meaningEn": "lifted and lowered the shoulders briefly"
+        },
+        {
+          "word": "sizzled",
+          "ipa": "/ˈsɪz.əld/",
+          "meaningCn": "发出嘶嘶声",
+          "meaningEn": "made a hissing sound when the water hit the fire"
+        },
+        {
+          "word": "fireball",
+          "ipa": "/ˈfaɪr.bɔːl/",
+          "meaningCn": "火球；龙喷出的团状火焰",
+          "meaningEn": "a ball of flame"
+        },
+        {
+          "word": "flames",
+          "ipa": "/fleɪmz/",
+          "meaningCn": "火焰",
+          "meaningEn": "the bright, hot part of a fire that you can see"
+        },
+        {
+          "word": "hydra",
+          "ipa": "/ˈhaɪ.drə/",
+          "meaningCn": "多头怪；故事中指有四个头的龙",
+          "meaningEn": "a large creature with several heads"
+        },
+        {
+          "word": "chicken",
+          "ipa": "/ˈtʃɪkɪn/",
+          "meaningCn": "鸡；鸡肉",
+          "meaningEn": "A bird kept for eggs and meat, or its meat."
+        }
+      ]
+    },
+    {
+      "key": "ch07",
+      "number": 7,
+      "title": "Inside the Ice Fortress",
+      "paragraphs": [
+        "In the morning, Griffith met the Dragon Masters in the Dragon Caves. He gave them each a warm, furry coat.",
+        "“I used magic to make these,” he said. “It is cold in the Far North Lands. You will need the extra layer.”",
+        "Then the Dragon Masters saddled their dragons.",
+        "Everyone touched Worm. Rori, Bo, Ana, and Petra kept one hand on their dragons.",
+        "“I must stay here to watch over the castle,” Griffith said. “Be strong, all of you. Work together and you will not fail.”",
+        "Drake nodded. “We will,” he promised. Then he looked at Worm. “Worm, take us to Mina’s fortress in the Far North Lands!”",
+        "Drake’s stomach flip-flopped as Worm transported them. Suddenly, he felt a blast of cold air on his face.",
+        "They had arrived in the Far North Lands. Snow covered the ground as far as they could see.",
+        "A glittering fortress rose above them. It looked like it was made of ice!",
+        "Rori, Bo, Ana, and Petra climbed onto their dragons.",
+        "“The fortress is underneath all that ice,” Mina said. “We must melt the ice so we can enter.”",
+        "Petra shivered. “It’s so cold here,” she said, holding her hands to her chest.",
+        "“Don’t worry,” Rori said. “Vulcan’s about to warm things up. Vulcan, get us inside!”",
+        "Vulcan stomped up to the fortress’s big front door. Whoosh! He shot out a fireball.",
+        "The ice melted, revealing a wood door behind it. Vulcan’s fire was so hot it burned a hole right through the door!",
+        "Rori grinned at Mina. “See how easy that was?” she said. “Vulcan and I can handle your Ice Giant.”",
+        "The Fire Dragon pushed open the door with his head, and everyone followed Rori and Vulcan inside.",
+        "They stepped into a great hall. Drake looked around, his eyes wide. There were people in the room, but they were in blocks of ice. He saw a king and queen on a throne.",
+        "A wizard was frozen with her arm raised, like she was about to do magic.",
+        "The Dragon Masters climbed off their dragons and walked around, looking at the frozen people.",
+        "“Where is the Ice Giant?” Bo asked.",
+        "“I do not see him,” Mina replied.",
+        "“Great! Let’s melt everybody and get out of here,” Rori said. “Vulcan -” “No!” Mina yelled. “You cannot melt these people with fire. It could burn them, just like it burned the door.”",
+        "Rori frowned.",
+        "“I think Kepri’s sunlight can safely melt the ice,” Ana suggested.",
+        "Mina nodded. “Yes, try that. Please start with Hulda,” she said, pointing to the wizard. “We may need her help to battle Vasty.”",
+        "Kepri flew over to Hulda and aimed a beam of sunlight at the block of ice surrounding her. The ice slowly began to melt.",
+        "Drake looked over at Mina. Her eyes were scanning the fortress.",
+        "“It is too quiet,” she said. “Vasty must be planning something.”",
+        "“Maybe he left …” Drake suggested.",
+        "Roooooaaaaar!",
+        "A dragon swooped down the big staircase in the center of the hall. His shimmering scales had a light blue sheen — just like ice on a pond, Drake thought.",
+        "“Frost!” Mina yelled."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p01.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 37 页）",
+          "width": 820,
+          "height": 553
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p02.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 38 页）",
+          "width": 762,
+          "height": 402
+        },
+        {
+          "afterParagraph": 8,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p03.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 39 页）",
+          "width": 690,
+          "height": 450
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p04.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 40 页）",
+          "width": 654,
+          "height": 438
+        },
+        {
+          "afterParagraph": 17,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p05.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 41 页）",
+          "width": 702,
+          "height": 582
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p06.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 42 页）",
+          "width": 820,
+          "height": 761
+        },
+        {
+          "afterParagraph": 22,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p07.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 43 页）",
+          "width": 820,
+          "height": 819
+        },
+        {
+          "afterParagraph": 26,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch07-p08.webp",
+          "alt": "《Inside the Ice Fortress》原书插图（第 44 页）",
+          "width": 654,
+          "height": 330
+        }
+      ],
+      "glossary": [
+        {
+          "word": "swooped down",
+          "ipa": "/swuːpt daʊn/",
+          "meaningCn": "从空中急速俯冲",
+          "meaningEn": "flew down quickly from above"
+        },
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "revealing",
+          "ipa": "/rɪˈviː.lɪŋ/",
+          "meaningCn": "显露出原来藏着的门洞",
+          "meaningEn": "making something hidden visible"
+        },
+        {
+          "word": "fireball",
+          "ipa": "/ˈfaɪr.bɔːl/",
+          "meaningCn": "火球；龙喷出的团状火焰",
+          "meaningEn": "a ball of flame"
+        },
+        {
+          "word": "shivered",
+          "ipa": "/ˈʃɪv.ɚd/",
+          "meaningCn": "打了个寒颤",
+          "meaningEn": "shook a little because of fear or cold"
+        },
+        {
+          "word": "throne",
+          "ipa": "/θroʊn/",
+          "meaningCn": "王座",
+          "meaningEn": "the special seat of a king or queen"
+        },
+        {
+          "word": "whoosh",
+          "ipa": "/wʊʃ/",
+          "meaningCn": "呼的一声",
+          "meaningEn": "the sound of something moving quickly through the air"
+        },
+        {
+          "word": "swooped",
+          "ipa": "/swuːpt/",
+          "meaningCn": "从空中快速俯冲下来",
+          "meaningEn": "flew down quickly from above"
+        }
+      ]
+    },
+    {
+      "key": "ch08",
+      "number": 8,
+      "title": "Frost’s Deep Freeze!",
+      "paragraphs": [
+        "Frost ignored Mina. The Ice Dragon opened his mouth and aimed a blast of freezing, sparkling air at Rori and Vulcan.",
+        "“Vulcan, stop him!” Rori yelled.",
+        "Vulcan charged at Frost, getting ready to hit him with a fireball.",
+        "But the freezing air hit Vulcan first. It trapped the Fire Dragon in a block of ice!",
+        "“Frost, what are you doing?” Mina yelled at her dragon. “Why won’t you listen to me?”",
+        "The dragon swung his big head around to face her. Drake noticed a crystal hanging from a chain around the dragon’s neck. The crystal gleamed with an eerie blue light.",
+        "Mina saw it, too. She turned to the others.",
+        "“That crystal is filled with Vasty’s magic,” she said. “He’s controlling Frost!”",
+        "“We must get the crystal off him,” Bo said. “Shu, blast that crystal off his neck!”",
+        "Bo’s dragon shot a powerful stream of water at Frost. Before it could reach him, the Ice Dragon hit it with his freezing breath. It turned the water stream into ice.",
+        "Then the ice shattered like glass. Pieces scattered across the floor.",
+        "Whoosh! Frost aimed another freezing blast at Shu, trapping her in a block of ice.",
+        "“Shu, no!” Bo cried.",
+        "Petra marched forward. “Everyone, stand back,” she said. “Zera, use your poison mist to melt that crystal!”",
+        "The hydra aimed all four of her heads at Frost. She shot green poison mist from each mouth. It floated toward Frost.",
+        "Frost hit the mist with a freezing blast. Each poison droplet turned into a green snowflake and fell to the floor. Then the blast hit Zera. She was trapped in a block of ice.",
+        "“Zera!” Petra yelled.",
+        "Drake felt nervous. Kepris sunlight powers might work against Frost. But she is busy defrosting the wizard. It’s all up to Worm.",
+        "“Worm, can you get the crystal from Frost?” Drake asked.",
+        "Worm began to glow green. He closed his eyes. The eerie blue glow in the crystal slowly faded.",
+        "The Ice Dragon looked at Mina.",
+        "“Worm is using his powers to break the connection that Frost has with the giant!” Drake said.",
+        "Mina looked down at her Dragon Stone. It was faintly glowing green.",
+        "“Frost! We’re connecting!” she cried happily. As she ran toward her dragon, a loud sound rocked the great hall. The floor shook.",
+        "Thump! Thump! Thump!",
+        "The Dragon Masters all looked in the direction of the sound. Kepri stopped melting Hulda and turned her head. A giant — twice as tall as any of the dragons -stomped into the great hall. He had a big, bushy white beard. His eyes glittered like blue jewels. White fur trimmed his clothing and boots. He held a long staff topped with a glowing ice-blue crystal.",
+        "Mina pulled out her ax.",
+        "vuul “It’s Vasty!” she yelled. “Frost, stop him!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p01.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 45 页）",
+          "width": 820,
+          "height": 619
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p02.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 46 页）",
+          "width": 678,
+          "height": 486
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p03.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 47 页）",
+          "width": 666,
+          "height": 342
+        },
+        {
+          "afterParagraph": 17,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p04.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 48 页）",
+          "width": 450,
+          "height": 498
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p05.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 49 页）",
+          "width": 750,
+          "height": 702
+        },
+        {
+          "afterParagraph": 25,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p06.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 50 页）",
+          "width": 318,
+          "height": 486
+        },
+        {
+          "afterParagraph": 26,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch08-p07.webp",
+          "alt": "《Frost’s Deep Freeze!》原书插图（第 51 页）",
+          "width": 742,
+          "height": 940
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "bushy",
+          "ipa": "/ˈbʊʃ.i/",
+          "meaningCn": "浓密的；文中形容胡须",
+          "meaningEn": "thick with a lot of hair"
+        },
+        {
+          "word": "fireball",
+          "ipa": "/ˈfaɪr.bɔːl/",
+          "meaningCn": "火球；龙喷出的团状火焰",
+          "meaningEn": "a ball of flame"
+        },
+        {
+          "word": "glittered",
+          "ipa": "/ˈɡlɪt̬.ɚd/",
+          "meaningCn": "闪闪发光",
+          "meaningEn": "shone with many small flashes of light"
+        },
+        {
+          "word": "whoosh",
+          "ipa": "/wʊʃ/",
+          "meaningCn": "呼的一声",
+          "meaningEn": "the sound of something moving quickly through the air"
+        },
+        {
+          "word": "stomped",
+          "ipa": "/stɑːmpt/",
+          "meaningCn": "脚步沉重地走",
+          "meaningEn": "walked with heavy, loud steps"
+        },
+        {
+          "word": "faded",
+          "ipa": "/ˈfeɪ.dɪd/",
+          "meaningCn": "慢慢变弱直至消失",
+          "meaningEn": "became gradually less bright"
+        },
+        {
+          "word": "hydra",
+          "ipa": "/ˈhaɪ.drə/",
+          "meaningCn": "多头怪；故事中指有四个头的龙",
+          "meaningEn": "a large creature with several heads"
+        }
+      ]
+    },
+    {
+      "key": "ch09",
+      "number": 9,
+      "title": "Wizard vs. Giant",
+      "paragraphs": [
+        "“Who has broken my connection to Frost?” the giant asked in a booming voice.",
+        "He saw Worm’s glowing green body and frowned. Then he pointed his staff at the crystal around Frost’s neck.",
+        "An icy streak shot from the blue crystal on the end of his staff. It zapped Frost’s crystal.",
+        "The glow in Mina’s Dragon Stone faded. Now Frost was back under Vasty’s control.",
+        "Vasty pointed at Worm. “Frost, stop the brown dragon!” he shouted. “I will take care of the attackers.”",
+        "“We’re not attackers!” Mina called up to the giant. “We are here to save my kingdom! The kingdom you stole!”",
+        "The giant’s blue eyes flashed. “Long before humans were here, Ice Giants ruled this land. I am taking back what is mine!”",
+        "Frost let out a loud roar. Rooooooaaar! He turned on Worm. An icy blast shot from his mouth.",
+        "Worm transported! The Ice Dragon’s blast hit the floor.",
+        "Smart thinking, Worm! Drake thought.",
+        "Suddenly, Worm appeared again. This time, he was behind Frost. The Ice Dragon quickly turned to face Worm. Green energy beams shot from Worm’s eyes, aimed at the crystal. But Frost was fast. He shot his icy breath at Worm.",
+        "Worm swiftly disappeared before the ice-cold breath could hit him.",
+        "This made the giant even angrier. Vasty pointed his staff at Drake.",
+        "“Your dragon can’t save you, tiny human!” he boomed.",
+        "“Maybe he can’t, but I can!” a voice yelled.",
+        "Drake gasped as Hulda marched up to Vasty. Kepri had finally unfrozen the wizard! Her blue robes were trimmed with fur. Her white hair was coiled in braids on top of her head.",
+        "Hulda held out both arms, and yellow magic shot from her fingertips like lightning bolts. They zapped the giant and he cried out.",
+        "Angry, Vasty pointed his staff at Hulda. A blast of magic shot from the crystal. Hulda dodged out of the way as it zoomed toward her.",
+        "So much was happening that Drake didn’t know where to look. Kepri was trying to defrost Vulcan. Hulda and Vasty hit each other with powerful waves of magic. Frost kept trying to attack Worm, and Worm kept disappearing.",
+        "The Ice Dragon began to paw at the floor.",
+        "Then Vasty trapped Hulda in a magic beam. She floated right off the floor! It looked like he was about to send her flying across the room.",
+        "Hulda’s magic isn’t powerful enough! We have to help her, Drake thought. But how?",
+        "Mina ran to Frost. She jumped onto the Ice Dragon’s back. He began to thrash. But Mina held on tightly.",
+        "“Mina, get down! You’ll get hurt!” Drake yelled."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p01.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 52 页）",
+          "width": 820,
+          "height": 726
+        },
+        {
+          "afterParagraph": 2,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p02.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 53 页）",
+          "width": 702,
+          "height": 402
+        },
+        {
+          "afterParagraph": 10,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p03.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 54 页）",
+          "width": 820,
+          "height": 540
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p04.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 55 页）",
+          "width": 366,
+          "height": 594
+        },
+        {
+          "afterParagraph": 18,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p05.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 56 页）",
+          "width": 647,
+          "height": 940
+        },
+        {
+          "afterParagraph": 18,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p06.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 57 页）",
+          "width": 734,
+          "height": 940
+        },
+        {
+          "afterParagraph": 23,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch09-p07.webp",
+          "alt": "《Wizard vs. Giant》原书插图（第 58 页）",
+          "width": 668,
+          "height": 940
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "faded",
+          "ipa": "/ˈfeɪ.dɪd/",
+          "meaningCn": "慢慢变弱直至消失",
+          "meaningEn": "became gradually less bright"
+        },
+        {
+          "word": "gasped",
+          "ipa": "/ɡæspt/",
+          "meaningCn": "惊得猛吸一口气",
+          "meaningEn": "took a sudden, sharp breath in surprise"
+        },
+        {
+          "word": "transported",
+          "ipa": "/trænˈspɔːr.tɪd/",
+          "meaningCn": "转移；文中指用魔法瞬间移到别处",
+          "meaningEn": "carried someone or something to another place"
+        },
+        {
+          "word": "broken",
+          "ipa": "/ˈbrəʊkən/",
+          "meaningCn": "坏了的；破损的",
+          "meaningEn": "Damaged and no longer working or in one piece."
+        },
+        {
+          "word": "finally",
+          "ipa": "/ˈfaɪnəli/",
+          "meaningCn": "最后；终于",
+          "meaningEn": "At the end or after a long time."
+        }
+      ]
+    },
+    {
+      "key": "ch10",
+      "number": 10,
+      "title": "Smash!",
+      "paragraphs": [
+        "Mina kept climbing up Frost’s back, up to the dragon’s neck. She reached for the blue crystal. Frost flew up and thrashed.",
+        "Thud! Mina was thrown to the floor. But she got right back on her feet. She jumped back onto Frost.",
+        "Drake looked at Frost. The Ice Dragon was trying to throw Mina off again.",
+        "“Worm, can you help Mina?” Drake yelled.",
+        "Worm’s body glowed green as he closed his eyes. The blue glow started to fade from Frost’s crystal.",
+        "Frost stopped thrashing. Quickly, Mina reached up and yanked the chain off Frost’s neck!",
+        "Then she jumped off the dragon. She put the crystal on the ground. She raised her ax.",
+        "Smash! The crystal shattered into pieces. Vasty’s head spun around at the sound. He dropped his magical hold on Hulda. The wizard fell to the floor.",
+        "Mina jumped onto Frost’s back and patted his neck.",
+        "“Good to have you back,” she said.",
+        "Frost nuzzled his head against her arm.",
+        "Vasty stomped toward them. “Get away from my dragon!” he yelled. “An Ice Giant like me is the only fitting master for an Ice Dragon.”",
+        "Mina’s eyes narrowed. “Never!” she cried. “Frost, attack!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch10-p01.webp",
+          "alt": "《Smash!》原书插图（第 59 页）",
+          "width": 820,
+          "height": 657
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch10-p02.webp",
+          "alt": "《Smash!》原书插图（第 60 页）",
+          "width": 618,
+          "height": 390
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch10-p03.webp",
+          "alt": "《Smash!》原书插图（第 61 页）",
+          "width": 820,
+          "height": 633
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "thud",
+          "ipa": "/θʌd/",
+          "meaningCn": "咚的一声；沉闷的撞击声",
+          "meaningEn": "a dull, heavy sound when something hits a surface"
+        },
+        {
+          "word": "thrashed",
+          "ipa": "/θræʃt/",
+          "meaningCn": "猛烈地来回甩动",
+          "meaningEn": "moved wildly back and forth"
+        },
+        {
+          "word": "nuzzled",
+          "ipa": "/ˈnʌz.əld/",
+          "meaningCn": "用口鼻轻轻蹭",
+          "meaningEn": "rubbed gently against someone with the nose"
+        },
+        {
+          "word": "stomped",
+          "ipa": "/stɑːmpt/",
+          "meaningCn": "脚步沉重地走",
+          "meaningEn": "walked with heavy, loud steps"
+        },
+        {
+          "word": "climbing",
+          "ipa": "/ˈklaɪmɪŋ/",
+          "meaningCn": "攀登",
+          "meaningEn": "The sport of climbing mountains or rocks."
+        }
+      ]
+    },
+    {
+      "key": "ch11",
+      "number": 11,
+      "title": "The Power of the Giant",
+      "paragraphs": [
+        "Before Frost could make a move, Vasty slammed his big, icy fist on the floor. The whole fortress shook. It knocked Drake off his feet.",
+        "Then Hulda spoke. “Vasty, leave this place,” she said. “You cannot fight all of us.”",
+        "The Ice Giant laughed. “Yo! Ho! Ho! You could not defeat me before. You shall not defeat me now!” he said.",
+        "He pointed his staff at Hulda.",
+        "But Frost zoomed forward, with Mina on his back.",
+        "“Frost, now!” Mina cried.",
+        "Frost shot his icy breath at the staff, knocking it out of Vasty’s hands. Hulda blasted magic from her fingertips. The giant staggered backward.",
+        "Worm’s eyes closed as his body glowed green. The staff floated up off the floor and then flew into the wall, shattering.",
+        "Vasty laughed again. “Yo! Ho! I am still powerful — even without my staff!” He slammed his fists into the floor, and ice began to spread everywhere.",
+        "Worm and Frost went skidding backward. Drake and the others stumbled, trying not to fall down. Then a loud sound filled the hall. Roooaaarrr! Vulcan was free! Kepri had finally finished melting the ice around the Fire Dragon.",
+        "Vulcan was angry. He started to wildly shoot flames. Orange fire hit the walls. It hit the ceiling.",
+        "“Rori, you’ve got to control him!” Drake yelled Rori ran toward Vulcan. One of his flames almost hit her! But she dodged it and kept running. Then she jumped onto his back.",
+        "“Vulcan, focus! We need you to melt that giant!” she yelled.",
+        "Vasty spun around. He growled. He clapped his hands together and an ice ball appeared between them.",
+        "He hurled the ice ball at Vulcan.",
+        "It hit Vulcan. He tumbled backward, but he wasn’t frozen.",
+        "Only a Fire Dragon can stop Vasty, Drake thought. That’s what Mina had said. But is Vulcan powerful enough to do it alone?",
+        "Drake closed his eyes. He wanted to send a message to Worm — but not out loud. He didn’t want Vasty to hear. His Dragon Stone glowed as he thought the words in his head.",
+        "Worm, can you use your powers to get Vasty to stop moving?",
+        "Worm nodded. His body began to glow.",
+        "Vulcan flew toward the giant again. Vasty clapped his hands together, getting ready to blast the dragon once more.",
+        "Suddenly, Worm’s green energy zapped the giant. Vasty froze in place. He couldn’t move.",
+        "“Good work, Worm!” Drake cheered “Vulcan, now!” Rori cried",
+        "An enormous fireball shot from Vulcan’s mouth.",
+        "Vulcan’s fireball hit the Ice Giant. Vasty began to shrink … and shrink …and shrink. A puddle of water pooled at his feet.",
+        "“He’s melting!”) Mina cried.",
+        "Worm broke his hold on Vasty. Now the giant was no taller than Drake’s knee.",
+        "And he was angry. “You have not won!” he yelled, but his voice was tiny now. “I will use my magic! I will grow! I will come back larger than before!”",
+        "“Thank you for shrinking him, Vulcan,” Mina said. “Now, Frost, get rid of this little pipsqueak!”",
+        "Frost breathed. A swirling tunnel of ice appeared in the air. The tunnel sucked up the tiny giant.",
+        "“N0000000000!” Vasty cried.",
+        "Then the tunnel disappeared, and so did the Ice Giant."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p01.webp",
+          "alt": "《The Power of the Giant》原书插图（第 62 页）",
+          "width": 820,
+          "height": 599
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p02.webp",
+          "alt": "《The Power of the Giant》原书插图（第 63 页）",
+          "width": 738,
+          "height": 546
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p03.webp",
+          "alt": "《The Power of the Giant》原书插图（第 64 页）",
+          "width": 417,
+          "height": 558
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p04.webp",
+          "alt": "《The Power of the Giant》原书插图（第 65 页）",
+          "width": 678,
+          "height": 474
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p05.webp",
+          "alt": "《The Power of the Giant》原书插图（第 66 页）",
+          "width": 820,
+          "height": 599
+        },
+        {
+          "afterParagraph": 20,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p06.webp",
+          "alt": "《The Power of the Giant》原书插图（第 67 页）",
+          "width": 426,
+          "height": 906
+        },
+        {
+          "afterParagraph": 23,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p07.webp",
+          "alt": "《The Power of the Giant》原书插图（第 68 页）",
+          "width": 647,
+          "height": 940
+        },
+        {
+          "afterParagraph": 23,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p08.webp",
+          "alt": "《The Power of the Giant》原书插图（第 69 页）",
+          "width": 647,
+          "height": 940
+        },
+        {
+          "afterParagraph": 27,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p09.webp",
+          "alt": "《The Power of the Giant》原书插图（第 70 页）",
+          "width": 462,
+          "height": 753
+        },
+        {
+          "afterParagraph": 30,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch11-p10.webp",
+          "alt": "《The Power of the Giant》原书插图（第 71 页）",
+          "width": 820,
+          "height": 888
+        }
+      ],
+      "glossary": [
+        {
+          "word": "once more",
+          "ipa": "/wʌns mɔːr/",
+          "meaningCn": "又一次",
+          "meaningEn": "one more time"
+        },
+        {
+          "word": "staggered",
+          "ipa": "/ˈstæɡ.ɚd/",
+          "meaningCn": "踉跄地走，步子不稳",
+          "meaningEn": "moved unsteadily as if about to fall"
+        },
+        {
+          "word": "stumbled",
+          "ipa": "/ˈstʌm.bəld/",
+          "meaningCn": "绊了一下，走得不稳",
+          "meaningEn": "tripped or almost fell while walking"
+        },
+        {
+          "word": "fireball",
+          "ipa": "/ˈfaɪr.bɔːl/",
+          "meaningCn": "火球；龙喷出的团状火焰",
+          "meaningEn": "a ball of flame"
+        },
+        {
+          "word": "tumbled",
+          "ipa": "/ˈtʌm.bəld/",
+          "meaningCn": "失去平衡后摔下去",
+          "meaningEn": "fell suddenly and without control"
+        },
+        {
+          "word": "flames",
+          "ipa": "/fleɪmz/",
+          "meaningCn": "火焰",
+          "meaningEn": "the bright, hot part of a fire that you can see"
+        },
+        {
+          "word": "froze",
+          "ipa": "/froʊz/",
+          "meaningCn": "突然僵住不动",
+          "meaningEn": "suddenly stopped moving"
+        },
+        {
+          "word": "fortress",
+          "ipa": "/ˈfɔːr.trəs/",
+          "meaningCn": "堡垒；可防御进攻的大型建筑",
+          "meaningEn": "a heavily protected building used for defense"
+        }
+      ]
+    },
+    {
+      "key": "ch12",
+      "number": 12,
+      "title": "Fire and Ice",
+      "paragraphs": [
+        "Hulda stood in the center of the great hall. She raised her arms above her head. Yellow magic shot from her fingertips. The ice melted off Shu and Zera. It melted off all the people in the fortress. It melted off the floors and the walls.",
+        "The ice did not melt into big, watery puddles. It just disappeared.",
+        "The unfrozen people gazed around the hall, confused. Drake thought they looked like people waking from sleep. The king and queen called Hulda over to them.",
+        "“My wizard, what has happened?” the king asked. “The Ice Giant — is he gone? And where did all these dragons come from?”",
+        "Hulda smiled. “I will let Mina explain,” she said. “It was she who rescued us.”",
+        "Mina bowed. “King Lars. Queen Sigrid. I did not rescue you alone,” she began. “These are Dragon Masters from the Kingdom of Bracken. I traveled there to seek their help. Together, we defeated Vasty.”",
+        "King Lars raised an eyebrow. He reminded Drake of King Roland. But King Lars had a white beard, not a red one. And this king’s robes were brown and furry.",
+        "“How good of King Roland to send his best Dragon Masters to help me,” King Lars said. Drake looked at his friends. King Roland did not even know they were there!",
+        "Rori bowed to King Lars, and said, “King Roland is happy to help you, Your Majesty.”",
+        "Drake knew this was a lie. But a smart lie, he thought.",
+        "“I shall not forget this kindness,” King Lars said.",
+        "Queen Sigrid smiled at them. “Please, stay and let us celebrate this victory with a great feast!”",
+        "Bo’s stomach rumbled at the word feast. But the Dragon Masters knew they couldn’t stay.",
+        "“That would be very nice, Your Majesty, but we must get back to Bracken right away,” Drake said.",
+        "King Lars nodded. “Very well.”",
+        "The Dragon Masters climbed onto their dragons.",
+        "Rori turned to Mina. “You were right. Vasty was tough to beat!”",
+        "Mina smiled. “And your Vulcan is very powerful. Almost as powerful as Frost.”",
+        "Drake turned to Mina. “It was nice meeting you,” he said.",
+        "Mina shook his hand. She squeezed it hard. “I will never forget you,” she said.",
+        "She looked up at the others on their dragons. “I will not forget any of you. And if you ever need my help, you will have it.”",
+        "Drake nodded. “Thank you,” he said. He looked at his friends. “Everybody, touch Worm.”",
+        "The Dragon Masters obeyed. Then Drake touched Worm’s neck.",
+        "“Worm, take us home!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch12-p01.webp",
+          "alt": "《Fire and Ice》原书插图（第 72 页）",
+          "width": 820,
+          "height": 634
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch12-p02.webp",
+          "alt": "《Fire and Ice》原书插图（第 73 页）",
+          "width": 750,
+          "height": 534
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch12-p03.webp",
+          "alt": "《Fire and Ice》原书插图（第 74 页）",
+          "width": 726,
+          "height": 510
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch12-p04.webp",
+          "alt": "《Fire and Ice》原书插图（第 75 页）",
+          "width": 330,
+          "height": 330
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch12-p05.webp",
+          "alt": "《Fire and Ice》原书插图（第 76 页）",
+          "width": 366,
+          "height": 438
+        }
+      ],
+      "glossary": [
+        {
+          "word": "Your Majesty",
+          "ipa": "/jɚ ˈmædʒ.ə.sti/",
+          "meaningCn": "陛下；对国王或女王的称呼",
+          "meaningEn": "a formal way to address a king or queen"
+        },
+        {
+          "word": "fortress",
+          "ipa": "/ˈfɔːr.trəs/",
+          "meaningCn": "堡垒；可防御进攻的大型建筑",
+          "meaningEn": "a heavily protected building used for defense"
+        },
+        {
+          "word": "celebrate",
+          "ipa": "/ˈseləbreɪt/",
+          "meaningCn": "庆祝",
+          "meaningEn": "to do something enjoyable to mark an important event"
+        },
+        {
+          "word": "meeting",
+          "ipa": "/ˈmiːtɪŋ/",
+          "meaningCn": "会议",
+          "meaningEn": "An occasion when people come together to discuss something."
+        },
+        {
+          "word": "forget",
+          "ipa": "/fəˈɡet/",
+          "meaningCn": "忘记",
+          "meaningEn": "To fail to remember something."
+        },
+        {
+          "word": "explain",
+          "ipa": "/ɪkˈspleɪn/",
+          "meaningCn": "解释；说明",
+          "meaningEn": "To make something clear or easy to understand."
+        }
+      ]
+    },
+    {
+      "key": "ch13",
+      "number": 13,
+      "title": "An Angry King",
+      "paragraphs": [
+        "Moments later, they were all back in the Training Room. Griffith came out of his workshop to greet them.",
+        "“You are back! Is everyone all right?” he asked.",
+        "“We’re all fine,” Drake replied.",
+        "“Shu and Zera and Vulcan got frozen, but they are better,” Bo added “And we defeated the Ice Giant!” Rori said. “Vulcan melted him into a teeny tiny giant.”",
+        "“And then Mina’s dragon blasted him into a swirling ice tunnel,” Ana said. Petra nodded. “It was amazing!”",
+        "Griffith clapped his hands. “Wonderfull” he said. “You must need to warm up after your adventure. Let’s go to the Valley of Clouds.”",
+        "They spent the afternoon outside in the sunny valley. Griffith used his magic to make a picnic lunch appear. Everyone sat down to eat.",
+        "“This is very good,” Bo said, munching an apple.",
+        "“All of this food is good,” Rori said, grabbing a chicken leg.",
+        "“On the island, Eko only eats fish and weird, pink fruit,” Rori added. Sheshuddered.",
+        "Drake looked at Rori. “You don’t have to go back there,” he said.",
+        "“You really don’t!” Ana added. “Please say you’ll stay.”",
+        "Rori did not answer right away. Then, just as she opened her mouth, King Roland marched into the valley. Two guards walked behind him.",
+        "“Oh no,” Rori whispered.",
+        "Drake suddenly felt worried. By now, King Roland probably knew that Neru, the Thunder Dragon, was missing. If he found out Rori had helped Eko and Neru escape, he would be very angry.",
+        "“Wizard!” the king said in his loud voice.",
+        "Griffith stood up.",
+        "“I see you have obeyed me and banished the prisoner, Eko,” the king continued. “But where is the Thunder Dragon?”",
+        "Rori looked down at her lap.",
+        "“Your Majesty,” Griffith said, bowing. “I am sorry to report that Eko has not been banished. She escaped, and she took her Thunder Dragon with her. It is my fault. I did not use enough magic to keep her here.”",
+        "King Roland didn’t say anything right away. Then his face started to get red. It got redder than his bushy beard. Redder than Vulcan.",
+        "“You have failed me for the last time!” he yelled. “I will get a new wizard!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch13-p01.webp",
+          "alt": "《An Angry King》原书插图（第 77 页）",
+          "width": 820,
+          "height": 726
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch13-p02.webp",
+          "alt": "《An Angry King》原书插图（第 78 页）",
+          "width": 546,
+          "height": 366
+        },
+        {
+          "afterParagraph": 8,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch13-p03.webp",
+          "alt": "《An Angry King》原书插图（第 79 页）",
+          "width": 820,
+          "height": 608
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch13-p04.webp",
+          "alt": "《An Angry King》原书插图（第 80 页）",
+          "width": 820,
+          "height": 666
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch13-p05.webp",
+          "alt": "《An Angry King》原书插图（第 81 页）",
+          "width": 331,
+          "height": 702
+        },
+        {
+          "afterParagraph": 21,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch13-p06.webp",
+          "alt": "《An Angry King》原书插图（第 82 页）",
+          "width": 702,
+          "height": 702
+        }
+      ],
+      "glossary": [
+        {
+          "word": "Your Majesty",
+          "ipa": "/jɚ ˈmædʒ.ə.sti/",
+          "meaningCn": "陛下；对国王或女王的称呼",
+          "meaningEn": "a formal way to address a king or queen"
+        },
+        {
+          "word": "prisoner",
+          "ipa": "/ˈprɪz.ən.ɚ/",
+          "meaningCn": "被囚禁的人；文中指沃姆被抓住关起来",
+          "meaningEn": "someone who has been captured and is kept from leaving"
+        },
+        {
+          "word": "bushy",
+          "ipa": "/ˈbʊʃ.i/",
+          "meaningCn": "浓密的；文中形容胡须",
+          "meaningEn": "thick with a lot of hair"
+        },
+        {
+          "word": "workshop",
+          "ipa": "/ˈwɝːk.ʃɑːp/",
+          "meaningCn": "工作室；文中是巫师做实验或配药的地方",
+          "meaningEn": "a room where someone makes things or does practical work"
+        },
+        {
+          "word": "afternoon",
+          "ipa": "/ˌɑːftəˈnuːn/",
+          "meaningCn": "下午",
+          "meaningEn": "The part of the day from noon to evening."
+        },
+        {
+          "word": "chicken",
+          "ipa": "/ˈtʃɪkɪn/",
+          "meaningCn": "鸡；鸡肉",
+          "meaningEn": "A bird kept for eggs and meat, or its meat."
+        }
+      ]
+    },
+    {
+      "key": "ch14",
+      "number": 14,
+      "title": "You’re It!",
+      "paragraphs": [
+        "Rori stood up. Drake knew what she was going to do. She was going to tell the truth and take the blame to save Griffith.",
+        "But Rori didn’t have to. At that moment, something fell from the sky and landed at King Roland’s feet.",
+        "“What is that?” King Roland asked. One of the guards picked up a rolled-up sheet of paper. A circle of melted wax sealed the scroll closed.",
+        "The guard handed the paper to King Roland. The king looked at the seal.",
+        "“The seal of King Lars?” he said. He unrolled the scroll, then read it out loud.",
+        "King Roland,",
+        "I must give you thanks for sending your Dragon Masters and dragons to help my kingdom. Your wizard has trained them well. My wizard, Hulda, tells me that Griffith is the finest in the world. Should your kingdom ever need help, my kingdom will be there for you.",
+        "—King Lars",
+        "King Roland was quiet for a minute. Drake and the Dragon Masters held their breath. Will King Roland be angry that we went to the Far North Lands without his permission? Drake worried.",
+        "The king spoke slowly. “I’m not sure what you did, Wizard,” he said. “But King Lars rules a very large and powerful kingdom. He is a good friend to have. For now, you may remain here.”",
+        "Griffith smiled as King Roland marched out of the valley.",
+        "“Hooray!” Ana cheered.",
+        "“But how did that message get here?” Bo asked.",
+        "Drake looked up. He saw Frost fly out from behind a cloud, with Mina on his back. Mina waved. Drake and the other Dragon Masters waved back.",
+        "Ana looked at Rori. “This has been a good day. The only thing that would make it better is if you would stay.”",
+        "“Please?” Drake asked.",
+        "“Yes, please?” Bo added.",
+        "“Please?” asked Petra and Griffith at the same time.",
+        "“Well, since you said please …” Rori smiled. “I didn’t really like that island anyway. Too hot. And too many yucky fish.”",
+        "Ana hugged her friend. “Oh, Rori, I’m so glad you’re back!”",
+        "Rori frowned. “But I need to tell Eko. It wouldn’t be fair if I just never returned.”",
+        "“You could write a letter if you’d like,” Griffith said. “I will use magic to get it to her.”",
+        "Rori nodded. “Thank you.”",
+        "“We’re not a team without you, Rori,” Drake said. 'It took all of us to save Mina’s kingdom. Who knows what our next big adventure will be?”",
+        "“Maybe we will meet more Dragon Masters,” Bo said “And new dragons,” Ana added.",
+        "Petra shivered. “I hope we won’t meet any more giants.”",
+        "“Well, I know something we can do until our next adventure,” Rori said.",
+        "“What’s that?” Drake asked.",
+        "Rori grinned and touched Drake’s arm. “Tag! You’re it!”",
+        "She ran off. Drake jumped up and chased after her.",
+        "Maybe tomorrow, there would be another wizard to battle. Oranother kingdom to save.",
+        "But not today."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p01.webp",
+          "alt": "《You’re It!》原书插图（第 83 页）",
+          "width": 820,
+          "height": 773
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p02-review-1-1fabd1a7e4.webp",
+          "alt": "守卫递来的卷轴（第 84 页）",
+          "width": 410,
+          "height": 384
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p02-review-2-6b04ea974a.webp",
+          "alt": "拉尔斯国王写给罗兰国王的信（第 84 页）",
+          "width": 960,
+          "height": 613
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p03.webp",
+          "alt": "《You’re It!》原书插图（第 85 页）",
+          "width": 786,
+          "height": 618
+        },
+        {
+          "afterParagraph": 11,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p04.webp",
+          "alt": "《You’re It!》原书插图（第 86 页）",
+          "width": 820,
+          "height": 807
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p05.webp",
+          "alt": "《You’re It!》原书插图（第 87 页）",
+          "width": 666,
+          "height": 522
+        },
+        {
+          "afterParagraph": 18,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p06.webp",
+          "alt": "《You’re It!》原书插图（第 88 页）",
+          "width": 820,
+          "height": 738
+        },
+        {
+          "afterParagraph": 22,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p07.webp",
+          "alt": "《You’re It!》原书插图（第 89 页）",
+          "width": 820,
+          "height": 669
+        },
+        {
+          "afterParagraph": 31,
+          "path": "stories/dragon-masters/chill-of-the-ice-dragon/ch14-p08.webp",
+          "alt": "《You’re It!》原书插图（第 90 页）",
+          "width": 820,
+          "height": 621
+        }
+      ],
+      "glossary": [
+        {
+          "word": "for now",
+          "ipa": "/fɚ naʊ/",
+          "meaningCn": "暂时，目前",
+          "meaningEn": "for the present time"
+        },
+        {
+          "word": "rolled-up",
+          "ipa": "/ˌroʊld ˈʌp/",
+          "meaningCn": "卷起来的；文中指卷成筒的信纸",
+          "meaningEn": "rolled into a tube"
+        },
+        {
+          "word": "shivered",
+          "ipa": "/ˈʃɪv.ɚd/",
+          "meaningCn": "打了个寒颤",
+          "meaningEn": "shook a little because of fear or cold"
+        },
+        {
+          "word": "remain",
+          "ipa": "/rɪˈmeɪn/",
+          "meaningCn": "留下；保持；仍然是",
+          "meaningEn": "To stay in the same place or condition."
+        },
+        {
+          "word": "permission",
+          "ipa": "/pəˈmɪʃən/",
+          "meaningCn": "许可；允许",
+          "meaningEn": "approval that allows someone to do something"
+        },
+        {
+          "word": "anyway",
+          "ipa": "/ˈeniweɪ/",
+          "meaningCn": "尽管如此；无论如何",
+          "meaningEn": "despite that; in any case"
+        }
+      ]
+    }
+  ]
+}

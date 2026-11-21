@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '@rosie/core'
 import { FormSelect, LoadingOverlay, PageShell, StickerCard } from '@rosie/ui'
 import { Badge, Button, Checkbox, Flex, Text } from '@rosie/ui/themes'
-import { practiceCatalogStore } from '../client/learningCatalog'
+import { practiceCatalogStore, useRefreshExamCatalog } from '../client/learningCatalog'
 import { examErrorMessage } from '../client/examApi'
 import { StartExamButton } from '../components/StartExamButton'
 import type { ExamPracticeOptions } from '../types/catalog'
@@ -36,6 +36,7 @@ export function KetPracticePage({ wordReviewBatchId, revisionId }: { wordReviewB
   }, [filters, unseen, page, wordReviewBatchId])
   const store = useMemo(() => practiceCatalogStore(query), [query])
   const { data, isLoading, error } = store.useSessionData(user)
+  useRefreshExamCatalog(user?.id, store)
   const hasFilters = unseen || Object.values(filters).some(Boolean)
   const setFilter = (key: FilterKey, value: string) => {
     setFilters(previous => {

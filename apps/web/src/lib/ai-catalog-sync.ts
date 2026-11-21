@@ -4,6 +4,7 @@ import { upsertKnowledgeDocument, stripHtml, updateKnowledgeSyncState } from '@r
 import type { LinkManifestEntry } from '@rosie/ai'
 import { readingPassages } from '@rosie/english/utils/reading-data'
 import { storySeries } from '@rosie/english/utils/story-data'
+import { hasSeparateStoryChapterNumber } from '@rosie/english/utils/story-types'
 import {
   getBookLessonPassages,
   getBookPoems,
@@ -110,14 +111,18 @@ async function ingestStoryChapters(
   for (const { series, volume, chapter } of chaptersForLanguage(language)) {
     const sourceRef = `${subject}:story:${series.slug}:${volume.slug}:${chapter.key}`
     const href = `/stories/${series.slug}/${volume.slug}/${chapter.key}`
-    const title = `${volume.title} — Chapter ${chapter.number}: ${chapter.title}`
+    const sectionTitle = hasSeparateStoryChapterNumber(chapter)
+      ? `${volume.kind === 'guide' ? 'Section' : 'Chapter'} ${chapter.number}: ${chapter.title}`
+      : chapter.title
+    const bookLabel = volume.kind === 'guide' ? '特别版指南' : `第 ${volume.number} 辑`
+    const title = `${volume.title} — ${sectionTitle}`
     await ingestOne(
       {
         subject,
         sourceType: 'catalog_sync',
         sourceRef,
         title,
-        content: [`系列: ${series.title}`, `第 ${volume.number} 辑: ${volume.title}`, `Chapter ${chapter.number}: ${chapter.title}`, ...chapter.paragraphs].join('\n\n'),
+        content: [`系列: ${series.title}`, `${bookLabel}: ${volume.title}`, sectionTitle, ...chapter.paragraphs].join('\n\n'),
         metadata: {
           sourceRef,
           title,

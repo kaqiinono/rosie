@@ -1,0 +1,1707 @@
+{
+  "slug": "dawn-of-the-light-dragon",
+  "number": 24,
+  "title": "Dawn of the Light Dragon",
+  "description": "A new quest takes the Dragon Masters to a crystal castle in search of a Light Dragon.",
+  "chapters": [
+    {
+      "key": "ch01",
+      "number": 1,
+      "title": "A New Quest",
+      "paragraphs": [
+        "It was early morning in the Kingdom of Bracken, but it looked like night. A strange, dark shadow had spread across the sky.",
+        "The day before, Dragon Masters Drake and Jean had traveled to Sindhu. There, they had learned what was causing the sky-shadow.",
+        "Chaya, a Shadow Dragon, had eaten a seed that cursed him. The seed allowed Chaya to absorb any magic being used by wizards around the world, filling him with powerful, evil energy. Now he was using that magic to create the sky-shadow.",
+        "Chaya’s power and the sky-shadow were both growing by the minute. Soon, the whole world would be in shadow.",
+        "A wizard had told Drake and Jean that their only hope to stop Chaya was to find a Star Dragon. Then a scroll revealed that a Light Dragon was needed to summon a Star Dragon.",
+        "Drake and Jean stood in the Dragon Masters' classroom, staring at a map with Dragon Masters Bo and Darma. They all listened to Griffith, the wizard “These are the Picland Islands,” Griffith said, pointing. The map showed a group of islands floating in the sea. “Drake and Darma, you should find a Light Dragon there.”",
+        "Drake studied the map. “What do we know about this place?” he asked.",
+        "Jean held up a book. “This book that Rori and Ana found says Light Dragons live on the Picland Islands because the sun shines day and night during some parts of the year.”",
+        "“And a Light Dragon will help us summon a Star Dragon, right?” Bo asked.",
+        "“Yes,” Griffith replied.",
+        "“Do we know how the Star Dragon will help us stop the Shadow Dragon?” Darma asked.",
+        "Jean shook her head. “No, the scroll doesn’t explain that. But the Star Dragon must be very powerful. It will not be easy to stop this super-charged Shadow Dragon.”",
+        "Drake shivered, remembering the glowing, red eyes of Chaya and his Dragon Master, Aruna. Drake and Jean had tried asking them to stop making the sky-shadow. But the seed’s evil powers were too strong.",
+        "“Have you had enough rest, Drake and Darma?” Griffith asked. “This could be a challenging mission.”",
+        "The two boys looked at each other, and grinned.",
+        "“We’re ready!” Drake replied."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p01.webp",
+          "alt": "《A New Quest》原书插图（第 1 页）",
+          "width": 756,
+          "height": 789
+        },
+        {
+          "afterParagraph": 1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p02-review-1-4ff3007dd1.webp",
+          "alt": "回顾查亚吃下种子一幕（第 2 页）",
+          "width": 628,
+          "height": 263
+        },
+        {
+          "afterParagraph": 2,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p02-review-2-778cd728d4.webp",
+          "alt": "页底分别描绘受诅咒的种子与受到影响的影龙（第 2 页）",
+          "width": 711,
+          "height": 395
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p03.webp",
+          "alt": "《A New Quest》原书插图（第 3 页）",
+          "width": 642,
+          "height": 642
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p04.webp",
+          "alt": "《A New Quest》原书插图（第 4 页）",
+          "width": 756,
+          "height": 603
+        },
+        {
+          "afterParagraph": 10,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p05.webp",
+          "alt": "《A New Quest》原书插图（第 5 页）",
+          "width": 756,
+          "height": 603
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch01-p06.webp",
+          "alt": "《A New Quest》原书插图（第 6 页）",
+          "width": 390,
+          "height": 570
+        }
+      ],
+      "glossary": [
+        {
+          "word": "shivered",
+          "ipa": "/ˈʃɪv.ɚd/",
+          "meaningCn": "打了个寒颤",
+          "meaningEn": "shook a little because of fear or cold"
+        },
+        {
+          "word": "challenging",
+          "ipa": "/ˈtʃælɪndʒɪŋ/",
+          "meaningCn": "有挑战性的",
+          "meaningEn": "Difficult in a way that tests your ability."
+        },
+        {
+          "word": "during",
+          "ipa": "/ˈdjʊərɪŋ/",
+          "meaningCn": "在……期间",
+          "meaningEn": "at some time in, or throughout, a period"
+        },
+        {
+          "word": "explain",
+          "ipa": "/ɪkˈspleɪn/",
+          "meaningCn": "解释；说明",
+          "meaningEn": "To make something clear or easy to understand."
+        },
+        {
+          "word": "minute",
+          "ipa": "/ˈmɪnɪt/",
+          "meaningCn": "分钟",
+          "meaningEn": "A period of 60 seconds."
+        },
+        {
+          "word": "morning",
+          "ipa": "/ˈmɔːnɪŋ/",
+          "meaningCn": "上午",
+          "meaningEn": "The part of the day from midnight to noon."
+        }
+      ]
+    },
+    {
+      "key": "ch02",
+      "number": 2,
+      "title": "The Crystal Castle",
+      "paragraphs": [
+        "Drake packed a bag with items for the mission. First, he made sure he had the gold disc that Darma had given him. Darma had said Drake would need it but didn’t say why.",
+        "Darma can be very mysterious sometimes, Drake thought.",
+        "Second, Drake packed the book about Light Dragons.",
+        "Third, Drake grabbed the map of the Picland Islands.",
+        "Drake and Darma studied the map as they walked into the Dragon Caves.",
+        "“Do we know which island the Light Dragons live on?” Darma asked.",
+        "“No.” Drake said. “But Worm has a knack for transporting us close to the dragon we’re looking for.”",
+        "Darma nodded. “Worm is very good at sensing dragon energy.”",
+        "The two boys reached the caves. Drake put a hand on Worm, and Darma put one hand on Worm and the other on his Gold Dragon, Hema.",
+        "Every Dragon Master wore a piece of the green Dragon Stone that allowed them to connect with their dragon. The stone around Drake’s neck glowed.",
+        "“Worm, take us to the Picland Islands!” Drake cried Worm’s body glowed with green light. The light flashed, and Drake’s stomach flip-flopped as they transported.",
+        "When they arrived, Drake noticed the blue sky overhead. The rising sun streaked the sky with orange.",
+        "“Whew!” Drake said. “The shadow hasn’t reached here yet.”",
+        "Darma closed his eyes. “The sun feels good on my skin.”",
+        "Drake looked around. He could see a jagged coastline hugging the sparkling blue ocean. The air smelled of salt.",
+        "Drake heard Worm’s voice in his head. I can sense something very powerful over the hill.",
+        "“This way,” Drake told Darma.",
+        "As they walked up the hill, a low rumbling sound rose behind them. The boys and their dragons turned around A herd of horses galloped across the land-but they didn’t look like any horses Drake had seen before. They were smaller than most horses. Some had long, reddish-brown hair, and others were the color of butter.",
+        "The boys looked at each other in wonder, then kept climbing.",
+        "As they reached the hilltop, a stunning sight greeted them. A small castle made of clear crystals overlooked the ocean. The sun’s rays hit it, and the light reflected off in a dazzling display.",
+        "“This castle shines even brighter than Hema’s gold temple,” Darma remarked.",
+        "“Something tells me we’ve found where the Light Dragon lives!” Drake said."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch02-p01.webp",
+          "alt": "《The Crystal Castle》原书插图（第 7 页）",
+          "width": 753,
+          "height": 474
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch02-p02.webp",
+          "alt": "《The Crystal Castle》原书插图（第 8 页）",
+          "width": 642,
+          "height": 510
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch02-p03.webp",
+          "alt": "《The Crystal Castle》原书插图（第 9 页）",
+          "width": 594,
+          "height": 378
+        },
+        {
+          "afterParagraph": 11,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch02-p04.webp",
+          "alt": "《The Crystal Castle》原书插图（第 10 页）",
+          "width": 756,
+          "height": 510
+        },
+        {
+          "afterParagraph": 17,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch02-p05.webp",
+          "alt": "《The Crystal Castle》原书插图（第 11 页）",
+          "width": 630,
+          "height": 426
+        },
+        {
+          "afterParagraph": 21,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch02-p06.webp",
+          "alt": "《The Crystal Castle》原书插图（第 12 页）",
+          "width": 756,
+          "height": 687
+        }
+      ],
+      "glossary": [
+        {
+          "word": "streaked",
+          "ipa": "/striːkt/",
+          "meaningCn": "飞快地掠过",
+          "meaningEn": "moved extremely fast in a particular direction"
+        },
+        {
+          "word": "transported",
+          "ipa": "/trænˈspɔːr.tɪd/",
+          "meaningCn": "转移；文中指用魔法瞬间移到别处",
+          "meaningEn": "carried someone or something to another place"
+        },
+        {
+          "word": "butter",
+          "ipa": "/ˈbʌtər/",
+          "meaningCn": "黄油",
+          "meaningEn": "A yellow fat made from cream, used on bread."
+        },
+        {
+          "word": "climbing",
+          "ipa": "/ˈklaɪmɪŋ/",
+          "meaningCn": "攀登",
+          "meaningEn": "The sport of climbing mountains or rocks."
+        },
+        {
+          "word": "wonder",
+          "ipa": "/ˈwʌndə(r)/",
+          "meaningCn": "想知道；琢磨",
+          "meaningEn": "To think about something because you want to know more about it."
+        },
+        {
+          "word": "sometimes",
+          "ipa": "/ˈsʌmtaɪmz/",
+          "meaningCn": "有时",
+          "meaningEn": "on some occasions, but not always"
+        }
+      ]
+    },
+    {
+      "key": "ch03",
+      "number": 3,
+      "title": "Rune and Lysa",
+      "paragraphs": [
+        "Drake and Darma shielded their eyes from the bright light of the crystal castle. As they approached the entrance, Drake heard Worm’s voice in his head.",
+        "There is definitely a dragon in here. I can sense her.",
+        "“Let’s introduce ourselves,” Drake said.",
+        "The glittering doors were partly open. They entered and stepped into a large room. While the walls and floor were gleaming crystal, the room was filled with ordinary-looking wooden furniture: a table and chairs, a cozy bed, and a bookcase filled with books, toys, and seashells.",
+        "A dragon was lying on a comfy-looking rug, with a boy curled up inside her tail. The boy was moving the pieces of a small wooden cube.",
+        "That looks like a puzzle cube, Drake thought.",
+        "The dragon had white, shimmering scales. A symbol made of curved lines in the center of her chest softly glowed with rainbow light.",
+        "The dragon raised her head when she saw the visitors, and her eyes grew wide.",
+        "The boy’s Dragon Stone glowed, and then he looked over and saw the visitors, too. He put down the cube, and his long, red braid swayed as he jumped to his feet. The dragon stood, too, stretching her gleaming white wings.",
+        "Drake spoke up. “Hello, I’m Drake, and this is Darma. We’ve come because we need help from you and your Light Dragon.”",
+        "The boy moved his hands and fingers, making shapes in the air.",
+        "Drake looked at Darma. “Is he trying to tell us something?”",
+        "“He is using sign language,” Darma replied. “Back home, the monks use sign language to communicate when they practice being silent.”",
+        "“Do you know sign language, then?” Drake asked his friend “I learned some signs from the monks,” Darma replied. “But sign language is different in different places. I do not understand these signs.”",
+        "The boy was tapping his foot impatiently as Drake and Darma talked.",
+        "I wish I knew this Dragon Master’s language, Drake thought.",
+        "Then Drake had an idea. He closed his eyes. Worm, please introduce us to this dragon.",
+        "After about a minute, Drake heard Worm’s reply in his mind.",
+        "The Light Dragon’s name is Lysa. She and her Dragon Master Rune want to know why we are here!"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch03-p01.webp",
+          "alt": "《Rune and Lysa》原书插图（第 13 页）",
+          "width": 756,
+          "height": 693
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch03-p02.webp",
+          "alt": "《Rune and Lysa》原书插图（第 14 页）",
+          "width": 756,
+          "height": 699
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch03-p03.webp",
+          "alt": "《Rune and Lysa》原书插图（第 15 页）",
+          "width": 756,
+          "height": 723
+        },
+        {
+          "afterParagraph": 10,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch03-p04.webp",
+          "alt": "《Rune and Lysa》原书插图（第 16 页）",
+          "width": 534,
+          "height": 294
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch03-p05.webp",
+          "alt": "《Rune and Lysa》原书插图（第 17 页）",
+          "width": 378,
+          "height": 450
+        }
+      ],
+      "glossary": [
+        {
+          "word": "scales",
+          "ipa": "/skeɪlz/",
+          "meaningCn": "龙身上的鳞片",
+          "meaningEn": "small flat plates that cover a dragon’s skin"
+        },
+        {
+          "word": "bookcase",
+          "ipa": "/ˈbʊkkeɪs/",
+          "meaningCn": "书柜；书架",
+          "meaningEn": "A piece of furniture with shelves for holding books."
+        },
+        {
+          "word": "ourselves",
+          "ipa": "/aʊəˈselvz/",
+          "meaningCn": "我们自己；我们亲自",
+          "meaningEn": "used when we is both the subject and object, or for emphasis"
+        },
+        {
+          "word": "partly",
+          "ipa": "/ˈpɑːtli/",
+          "meaningCn": "部分地；在一定程度上",
+          "meaningEn": "to some degree, but not completely"
+        },
+        {
+          "word": "furniture",
+          "ipa": "/ˈfɜːnɪtʃə/",
+          "meaningCn": "家具",
+          "meaningEn": "objects that can be moved, such as tables, chairs and beds, that are put into a house or an office to make it suitable for living or working in"
+        },
+        {
+          "word": "puzzle",
+          "ipa": "/ˈpʌzəl/",
+          "meaningCn": "谜题；智力游戏",
+          "meaningEn": "A game or problem that requires thought to solve."
+        }
+      ]
+    },
+    {
+      "key": "ch04",
+      "number": 4,
+      "title": "The Secret",
+      "paragraphs": [
+        "“We came here to seek your help,” Drake said, and Worm communicated the message to the Light Dragon.",
+        "Rune’s Dragon Stone glowed, and he put a hand on Lysa’s neck.",
+        "Soon Drake heard Worm in his head.",
+        "Rune is communicating with me and Hema through Lysa, Worm told Drake. Rune says: I’m Deat and I communicate using my hands, not my voice. But Lysa and I understand each other’s thoughts. Because you two do not know sign language, we will communicate using our dragons.",
+        "Drake smiled at Rune, and the boy smiled back. Then Drake explained the plan to Darma.",
+        "“That is a good solution,” Darma agreed.",
+        "Drake turned to Worm and Hema. “Darma and I will count on you two to translate everything we say.”",
+        "He looked at Rune next. “Lysa looks like an amazing dragon,” he said, his Dragon Stone glowing.",
+        "Worm communicated with Lysa.",
+        "Soon Rune’s Dragon Stone glowed, and he nodded as Lysa relayed the words to him.",
+        "Then Worm passed a message to Drake.",
+        "Rune says: Lysa is amazing. I was very lucky to be chosen as her Dragon Master. I think it is because Lysa guards many mysteries, and l am good at solving puzzles.",
+        "The three boys continued their conversation. Drake and Darma quickly got used to the flow ot messages.",
+        "Worm and I communicate using our thoughts all the time, Drake thought. Until Darma and I learn how to sign, we all will use this method for communicating with one another.",
+        "“We are here on a mission,” Drake continued. “A Shadow Dragon has become evil and is spreading a sky-shadow across the world. To stop the Shadow Dragon, we need a Star Dragon. But how we summon one is a mystery. A scroll told us that we need the help of a Light Dragon. And a book said we would find you here.”",
+        "Drake gave the book about Light Dragons to Rune.",
+        "Rune flipped through the pages. He stopped on a picture of a maze with moss-covered stone walls.",
+        "“Is that where Lysa will summon the Star Dragon?” Darma asked, his Dragon Stone glowing.",
+        "Rune shook his head. His Dragon Stone glowed.",
+        "Then Worm shared Rune’s response.",
+        "No, the labyrinth holds the secret to summoning a Star Dragon.",
+        "“Can you tell us the secret?” Drake asked.",
+        "Rune says: A Star Dragon is very powerful. It would be dangerous if the wrong person summoned one. So, with your permission, Lysa will perform the Light of Truth on you both. We need to make sure you are not lying about your mission.",
+        "“We will do it,” Darma said. “We have nothing to hide.”",
+        "Rune motioned for the boys to stand and face Lysa. The symbol on the Light Dragon’s chest glowed brightly with rainbow light. The colorful light reminded Drake of when sunlight hit a waterfall, and he could see all the different colors inside the light beam.",
+        "Then the rainbow light surrounded Drake and Darma. The colors swirled and formed a word: SPEAK.",
+        "Drake felt strange, like something magical was pulling the words right out of him. Both boys began to speak at the same time.",
+        "“We must stop the Shadow Dragon!” Drake cried “Plants will die and people will starve!” Darma said “A Star Dragon is our only hope of saving the world!” Drake finished."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p01.webp",
+          "alt": "《The Secret》原书插图（第 18 页）",
+          "width": 654,
+          "height": 405
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p02.webp",
+          "alt": "《The Secret》原书插图（第 19 页）",
+          "width": 378,
+          "height": 294
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p03.webp",
+          "alt": "《The Secret》原书插图（第 20 页）",
+          "width": 693,
+          "height": 882
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p04.webp",
+          "alt": "《The Secret》原书插图（第 21 页）",
+          "width": 681,
+          "height": 834
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p05-review-1-dfbcac4a75.webp",
+          "alt": "《The Secret》原书插图（第 22 页）",
+          "width": 756,
+          "height": 443
+        },
+        {
+          "afterParagraph": 17,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p06.webp",
+          "alt": "《The Secret》原书插图（第 23 页）",
+          "width": 366,
+          "height": 354
+        },
+        {
+          "afterParagraph": 25,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p07.webp",
+          "alt": "《The Secret》原书插图（第 24 页）",
+          "width": 753,
+          "height": 639
+        },
+        {
+          "afterParagraph": 27,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch04-p08.webp",
+          "alt": "《The Secret》原书插图（第 25 页）",
+          "width": 756,
+          "height": 639
+        }
+      ],
+      "glossary": [
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "swirled",
+          "ipa": "/swɝːld/",
+          "meaningCn": "打着旋儿飞",
+          "meaningEn": "moved round and round in the air"
+        },
+        {
+          "word": "conversation",
+          "ipa": "/ˌkɒnvəˈseɪʃən/",
+          "meaningCn": "交谈；谈话",
+          "meaningEn": "A talk between two or more people."
+        },
+        {
+          "word": "translate",
+          "ipa": "/trænsˈleɪt/",
+          "meaningCn": "翻译",
+          "meaningEn": "To express words from one language in another language."
+        },
+        {
+          "word": "method",
+          "ipa": "/ˈmeθəd/",
+          "meaningCn": "方法；方式",
+          "meaningEn": "a particular way of doing something"
+        },
+        {
+          "word": "mystery",
+          "ipa": "/ˈmɪstəri/",
+          "meaningCn": "谜；神秘的事物",
+          "meaningEn": "something that is difficult to understand or to explain"
+        }
+      ]
+    },
+    {
+      "key": "ch05",
+      "number": 5,
+      "title": "The Labyrinth",
+      "paragraphs": [
+        "The Light of Truth swirled. The colors formed a sentence: YOU SPEAK THE TRUTH.",
+        "The light faded from Lysa’s chest.",
+        "Rune grinned at Drake and Darma. A moment later, Drake heard Worm.",
+        "Rune says: The secret of the labyrinth is that it holds a Star Flute in its maze of walls. With a Star Flute, you can summon the Star Dragon. But traveling through the maze will not be easy. It is full of traps and creatures that guard it.",
+        "“Will you come into the labyrinth with us?” Drake asked Rune.",
+        "Rune says: Yes. Lysa and l want to help you. I am good at solving puzzles. And we will need Lysa’s light to reach the flute. But you will only have until dawn to find the flute. If you fail, the maze will never let the four of you in again.",
+        "Darma nodded. “Then we will not fail,” he said simply.",
+        "Drake headed for the castle doors. “Let’s enter the labyrinth!”",
+        "Rune shook his head.",
+        "Rune says: The labyrinth doors will open at sunset.",
+        "Then Rune pointed at Worm and Hema.",
+        "Rune asks: While we are waiting, can you tell me about your dragons? Lysa is the only dragon I have ever seen — until now.",
+        "Drake grinned. “We can show you. Worm, lift me up!”",
+        "Worm’s body glowed green, and a green light began to shine around Drake. Slowly, Worm lifted Drake into the air, using the powers of his mind.",
+        "Rune’s eyes got wide.",
+        "Darma followed Drake’s lead. “Hema, fetch me a book!” he instructed.",
+        "Gold light flashed, and Hema transformed into a gold, fluffy dog. Hema bounded across the castle, grabbed a book from the shelf, and brought it to Rune.",
+        "The boy smiled and raised his hand with his thumb, index, and middle fingers facing upward. Then he snapped twice and pointed at Hema.",
+        "“That must be the sign for dog!” Darma cried, and he repeated it as Hema transformed back into a dragon.",
+        "Drake copied the boys. “This is a fun language,” he remarked. Then he pointed at Worm. “What is the sign for ‘dragon’?” His Dragon Stone glowed.",
+        "Rune put his right hand in front of his mouth, with his palm down and his fingers forward. Then he wiggled his fingers and moved his hand forward.",
+        "“Oh, it’s like when Vulcan breathes fire!” Drake cried «Dragon He and Darma both tried it.",
+        "“I don’t think I’m wiggling my fingers right,” Drake said “It takes practice,” Darma told him. “The monks were patient when they taught me their sign language.”",
+        "“Rune, can you teach us more signs while we’re waiting for the sun to set?” Drake asked.",
+        "Rune grinned, and the dragons shared his reply.",
+        "I will teach you signs we can use in the maze!"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch05-p01.webp",
+          "alt": "《The Labyrinth》原书插图（第 26 页）",
+          "width": 690,
+          "height": 510
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch05-p02.webp",
+          "alt": "《The Labyrinth》原书插图（第 27 页）",
+          "width": 258,
+          "height": 378
+        },
+        {
+          "afterParagraph": 14,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch05-p03.webp",
+          "alt": "《The Labyrinth》原书插图（第 28 页）",
+          "width": 606,
+          "height": 570
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch05-p04.webp",
+          "alt": "《The Labyrinth》原书插图（第 29 页）",
+          "width": 618,
+          "height": 342
+        },
+        {
+          "afterParagraph": 21,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch05-p05.webp",
+          "alt": "《The Labyrinth》原书插图（第 30 页）",
+          "width": 510,
+          "height": 282
+        }
+      ],
+      "glossary": [
+        {
+          "word": "shelf",
+          "ipa": "/ʃelf/",
+          "meaningCn": "搁架",
+          "meaningEn": "a flat surface fixed to a wall or cabinet for holding things"
+        },
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "snapped",
+          "ipa": "/snæpt/",
+          "meaningCn": "没好气地说",
+          "meaningEn": "spoke in a quick, angry way"
+        },
+        {
+          "word": "swirled",
+          "ipa": "/swɝːld/",
+          "meaningCn": "打着旋儿飞",
+          "meaningEn": "moved round and round in the air"
+        },
+        {
+          "word": "faded",
+          "ipa": "/ˈfeɪ.dɪd/",
+          "meaningCn": "慢慢变弱直至消失",
+          "meaningEn": "became gradually less bright"
+        },
+        {
+          "word": "sentence",
+          "ipa": "/ˈsentəns/",
+          "meaningCn": "句子",
+          "meaningEn": "A group of words expressing a complete idea."
+        }
+      ]
+    },
+    {
+      "key": "ch06",
+      "number": 6,
+      "title": "Learning From Rune",
+      "paragraphs": [
+        "Drake and Darma spent the next few hours learning from Rune.",
+        "Rune made a fist with his right hand and bent his wrist down and back up to sign “yes.”",
+        "He tapped his right thumb against the two first fingers of his right hand to sign “no.”",
+        "Rune held his left hand in front of his chest, with his palm flat and elbow out. Then he moved his right fist in a circle around his left hand to sign “danger.”",
+        "Then Rune made fists with both hands and raised both thumbs. Holding his left hand slightly higher than the right, he moved both fists up and toward the left. Then he pointed at his chest with the index finger on his right hand to complete the sign: “follow me.”",
+        "“Rune, how did you learn this language?” Drake asked.",
+        "Rune says: My parents are both Deaf, and I was born Deaf. They have been communicating with me in sign language since I was born. So it came to me naturally.",
+        "The boys practiced together. Drake and Darma made the signs over and over, and Rune smiled whenever they got them right.",
+        "When the sun began to set, Rune led the way along a grassy path to the labyrinth. The outside wall of the maze was shaped like a big circle.",
+        "As they got closer, Drake saw that the stone wall was much taller than any of the dragons. The entrance to the labyrinth was a round door carved with a pattern of spirals.",
+        "The last rays of orange sunlight disappeared behind the green hills.",
+        "Drake got goosebumps on his arms. The door is about to open! he thought. I hope we can find the Star Flute before sunrise!"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch06-p01.webp",
+          "alt": "《Learning From Rune》原书插图（第 31 页）",
+          "width": 666,
+          "height": 393
+        },
+        {
+          "afterParagraph": 2,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch06-p01-review-1-747263da7c.webp",
+          "alt": "鲁恩演示 No 的手语（第 31 页）",
+          "width": 299,
+          "height": 233
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch06-p02-review-1-5d0d87afa3.webp",
+          "alt": "鲁恩演示 Danger 的手语（第 32 页）",
+          "width": 273,
+          "height": 329
+        },
+        {
+          "afterParagraph": 4,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch06-p02-review-2-d505441fb8.webp",
+          "alt": "鲁恩演示 Follow Me 的手语（第 32 页）",
+          "width": 340,
+          "height": 273
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch06-p03.webp",
+          "alt": "《Learning From Rune》原书插图（第 33 页）",
+          "width": 582,
+          "height": 282
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "carved",
+          "ipa": "/kɑːrvd/",
+          "meaningCn": "雕刻着",
+          "meaningEn": "cut into a hard surface to make a design"
+        },
+        {
+          "word": "slightly",
+          "ipa": "/ˈslaɪtli/",
+          "meaningCn": "稍微；略微",
+          "meaningEn": "a little"
+        },
+        {
+          "word": "sunrise",
+          "ipa": "/ˈsʌnraɪz/",
+          "meaningCn": "日出",
+          "meaningEn": "The time when the sun first appears in the morning."
+        },
+        {
+          "word": "whenever",
+          "ipa": "/wenˈevə/",
+          "meaningCn": "无论何时；每当",
+          "meaningEn": "At any time that, or every time that."
+        }
+      ]
+    },
+    {
+      "key": "ch07",
+      "number": 7,
+      "title": "Lost!",
+      "paragraphs": [
+        "Everyone watched as the labyrinth door slowly slid open by itself.",
+        "Follow me, Rune signed, and they all stepped through the doorway. A soft light shone from Lysa’s chest. It revealed pathways on either side of the entrance.",
+        "Rune and Lysa began to move forward Drake ran in front of Rune.",
+        "“I have an idea!” he said as his Dragon Stone glowed. “Can Worm just transport us to the end of the maze? Or can Lysa fly there?”",
+        "No, Rune signed Then Darma spoke up. “There is strong magical energy in this maze. Watch. Hema, try to fly out of here!”",
+        "Hema transformed into a small, golden bird and flew up toward the top of the nearest wall. Hema bounced against some invisible force, and plummeted a few feet before landing on Darma’s shoulder.",
+        "I cannot transport while I am here, Worm told Drake. That usually is the case when I am in a magical space.",
+        "Drake turned to see a large, black crow on the path to the right.",
+        "“Wait, how did that bird get in here?” he asked.",
+        "Rune says: The crow is one of the creatures that guard the labyrinth and protect the flute.",
+        "Hema stayed perched on Darma’s shoulder and they all headed right, where they had seen the crow. They walked and walked. But soon they found themselves back at the entrance!",
+        "“This doesn’t make sense,” Drake muttered.",
+        "Rune made the shape of an “L” with his left index finger and thumb, and then moved his hand to the left in a quick motion.",
+        "Left, he signed.",
+        "They followed Rune to the path on the left.",
+        "Again, they walked and walked … right back to the entrance!",
+        "“Both paths led us in a circle,” Darma remarked.",
+        "Then Lysa shone her light on a spot on the inner wall. Rune walked over for a closer look.",
+        "Rune says: Look! These markings might show us how to get out of this loop!"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch07-p01.webp",
+          "alt": "《Lost!》原书插图（第 34 页）",
+          "width": 756,
+          "height": 561
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch07-p02.webp",
+          "alt": "《Lost!》原书插图（第 35 页）",
+          "width": 606,
+          "height": 414
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch07-p03.webp",
+          "alt": "《Lost!》原书插图（第 36 页）",
+          "width": 558,
+          "height": 354
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch07-p04.webp",
+          "alt": "《Lost!》原书插图（第 37 页）",
+          "width": 630,
+          "height": 654
+        },
+        {
+          "afterParagraph": 18,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch07-p05.webp",
+          "alt": "《Lost!》原书插图（第 38 页）",
+          "width": 647,
+          "height": 940
+        }
+      ],
+      "glossary": [
+        {
+          "word": "labyrinth door",
+          "ipa": "/ˈlæb.ə.rɪnθ dɔːr/",
+          "meaningCn": "通往迷宫的门",
+          "meaningEn": "the entrance door to the maze"
+        },
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "itself",
+          "ipa": "/ɪtˈself/",
+          "meaningCn": "它自己",
+          "meaningEn": "Used to refer back to a thing or animal already mentioned."
+        },
+        {
+          "word": "themselves",
+          "ipa": "/ðəmˈselvz/",
+          "meaningCn": "他们自己；她们自己；它们自己",
+          "meaningEn": "used when they is both the subject and object, or for emphasis"
+        },
+        {
+          "word": "entrance",
+          "ipa": "/ˈentrəns/",
+          "meaningCn": "入口",
+          "meaningEn": "The door or opening used to go into a building."
+        },
+        {
+          "word": "usually",
+          "ipa": "/ˈjuːʒuəli/",
+          "meaningCn": "通常；平常",
+          "meaningEn": "in most situations or on most occasions"
+        }
+      ]
+    },
+    {
+      "key": "ch08",
+      "number": 8,
+      "title": "A Code and a Challenge",
+      "paragraphs": [
+        "The Dragon Masters studied the markings on the maze wall. There were pictures of simple objects and animals, like a tree and an owl.",
+        "Rune says: See how these pictures repeat? I think they might be some kind of code.",
+        "“Tree, house … blob?” Drake said.",
+        "Rune says: That shape is what the main island looks like from the sky. I have seen it when riding on Lysa.",
+        "“Tree, house, island, sun,” Drake said. “Then there’s a new line …”",
+        "“The way the pictures are grouped together makes them look almost like words,” Darma pointed out.",
+        "Rune says: Perhaps each picture represents a letter of the alphabet. What if the tree is I, and the house is H, and so on?",
+        "Drake tried Rune’s solution. “T-H-I-S spells This,” he began, working it out. “This. Is. A. Door. This is a door!”",
+        "Yes! Yes! Yes! Rune signed.",
+        "Drake frowned. “But this is a wall, not a door.”",
+        "“Anything can be a door,” Darma said, and he pushed on the stone wall.",
+        "There was a groaning sound as a chunk of the wall moved aside.",
+        "“We did it!” Drake cheered.",
+        "They walked through the secret doorway onto a new path with walls on either side. They moved forward until the path came to a sudden stop. A huge crack in the land split the path in half. To keep going, they’d have to get across the gap.",
+        "Drake looked down. The crack was very, very deep. And the gap was too far to jump across, and even too far for Worm to stretch across.",
+        "Rune says: The path is too narrow for Lysa to spread her wings and fly us across.",
+        "Drake nodded and studied the rocky gap.",
+        "Rocks … he thought, and then he looked at Worm. He’d seen his dragon break rocks into pieces with the power of his mind. Maybe …",
+        "“Can you use your powers to build a bridge out of rocks?” Drake asked.",
+        "Worm smiled. That sounds like fun.",
+        "The Earth Dragon began to glow. A green light swept from the top of Worm’s head to the end of his tail.",
+        "A rumbling sound came from the bottom of the gap. The ground underneath their feet shook. Then … seven stone pillars rose from the depths of the gap. They stopped when they reached the top, making a stone pathway across the deep hole in the earth.",
+        "Rune stared at Worm, wide-eyed.",
+        "Drake patted his dragon’s neck. “Great job, Worm.”",
+        "“Excellent!” Darma cheered, and he stepped across the pathway.",
+        "Rune, Lysa, Drake, and Worm followed.",
+        "They hadn’t gone far when the maze branched into three different directions.",
+        "“Which way should we go?” Drake asked."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch08-p01.webp",
+          "alt": "《A Code and a Challenge》原书插图（第 39 页）",
+          "width": 756,
+          "height": 573
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch08-p02.webp",
+          "alt": "《A Code and a Challenge》原书插图（第 40 页）",
+          "width": 318,
+          "height": 330
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch08-p03.webp",
+          "alt": "《A Code and a Challenge》原书插图（第 41 页）",
+          "width": 546,
+          "height": 426
+        },
+        {
+          "afterParagraph": 20,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch08-p04.webp",
+          "alt": "《A Code and a Challenge》原书插图（第 42 页）",
+          "width": 756,
+          "height": 663
+        },
+        {
+          "afterParagraph": 22,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch08-p05.webp",
+          "alt": "《A Code and a Challenge》原书插图（第 43 页）",
+          "width": 756,
+          "height": 663
+        },
+        {
+          "afterParagraph": 26,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch08-p06.webp",
+          "alt": "《A Code and a Challenge》原书插图（第 44 页）",
+          "width": 654,
+          "height": 546
+        }
+      ],
+      "glossary": [
+        {
+          "word": "alphabet",
+          "ipa": "/ˈæl.fə.bet/",
+          "meaningCn": "字母表",
+          "meaningEn": "the set of letters used to write a language"
+        },
+        {
+          "word": "narrow",
+          "ipa": "/ˈnærəʊ/",
+          "meaningCn": "狭窄的",
+          "meaningEn": "measuring a short distance from one side to the other, especially in relation to length"
+        },
+        {
+          "word": "repeat",
+          "ipa": "/rɪˈpiːt/",
+          "meaningCn": "重复",
+          "meaningEn": "to say or do something again"
+        },
+        {
+          "word": "sudden",
+          "ipa": "/ˈsʌdən/",
+          "meaningCn": "突然的",
+          "meaningEn": "happening quickly and unexpectedly"
+        },
+        {
+          "word": "bridge",
+          "ipa": "/brɪdʒ/",
+          "meaningCn": "桥",
+          "meaningEn": "a structure that is built over a road, railway, river, etc. so that people, vehicles, etc. can cross from one side to the other"
+        },
+        {
+          "word": "solution",
+          "ipa": "/səˈluːʃən/",
+          "meaningCn": "解决办法；答案",
+          "meaningEn": "an answer to a problem"
+        }
+      ]
+    },
+    {
+      "key": "ch09",
+      "number": 9,
+      "title": "A Puzzling Box",
+      "paragraphs": [
+        "The Dragon Masters studied the three paths in front of them.",
+        "Rune’s Dragon Stone glowed, and then Lysa shone her light on the walls. Carved words became visible.",
+        "DAY CAN SOMETIMES LOOK LIKE NIGHT.",
+        "A BABY BIRD WILL ONE DAY TAKE FLIGHT.",
+        "SOMETHING SMALL CAN HAVE GREAT MIGHT.",
+        "BUT WHAT IS WRONG WILL NEVER BE ____.",
+        "“The last word must be ‘right’!” Drake said.",
+        "“Yes, but why is that word missing?” Darma wondered Hema relayed Darma’s question to Lysa, and the dragons gave Rune’s answer to the boys.",
+        "I think I know! The word “right” has two meanings. We should go right, not left. Right Drake grinned. “I think Rune is right.”",
+        "Darma signed to Rune. Yes!",
+        "They all headed down the path until they came to a dead end at a large, wooden door. Rune pulled at the handle, but it wouldn’t open.",
+        "Then Drake spotted something. To the right of the door was a stone pedestal topped with a wooden box.",
+        "“I wonder if this box holds a key to the door?” he asked. He picked up the box and shook it. “Something is rattling inside. But how do we open it?”",
+        "The box was made of slats of wood with lines carved in them. Rune took the box from Drake.",
+        "Rune says: It’s a puzzle box, like the ones l have in the castle! If you arrange the slats just the right way, the box will open.",
+        "Rune started to push the slats with his hands, and they moved! He moved them several times, then he frowned. The box was not opening.",
+        "“Perhaps when all the slats are arranged correctly, those carved lines form a picture,” Darma suggested.",
+        "Drake studied the lines, and the way they curved. He started to recognize some shapes. A tail … an ear …",
+        "Dragon! Drake signed to Rune and Darma.",
+        "Rune looked at the box again and his eyes lit up. He moved the slats until the lines joined together to show a dragon on the box. Then one slat popped open!",
+        "Grinning, Rune shook the box and a brass key slid out.",
+        "“We did it!” Drake cheered, holding up the key. “Look at these prongs. Don’t they look like dragon’s teeth?”",
+        "Ca-caw!",
+        "Suddenly, a crow swooped down. It plucked the key out of Drake’s hands and flew away!"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch09-p01.webp",
+          "alt": "《A Puzzling Box》原书插图（第 45 页）",
+          "width": 210,
+          "height": 222
+        },
+        {
+          "afterParagraph": 1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch09-p01-review-1-8baeeddc21.webp",
+          "alt": "莱莎照亮石墙，露出刻在墙上的四行谜语（第 45 页）",
+          "width": 679,
+          "height": 499
+        },
+        {
+          "afterParagraph": 8,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch09-p02.webp",
+          "alt": "《A Puzzling Box》原书插图（第 46 页）",
+          "width": 618,
+          "height": 654
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch09-p03.webp",
+          "alt": "《A Puzzling Box》原书插图（第 47 页）",
+          "width": 294,
+          "height": 342
+        },
+        {
+          "afterParagraph": 18,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch09-p04.webp",
+          "alt": "《A Puzzling Box》原书插图（第 48 页）",
+          "width": 606,
+          "height": 450
+        },
+        {
+          "afterParagraph": 23,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch09-p05.webp",
+          "alt": "《A Puzzling Box》原书插图（第 49 页）",
+          "width": 690,
+          "height": 630
+        }
+      ],
+      "glossary": [
+        {
+          "word": "carved words",
+          "ipa": "/kɑːrvd wɝːdz/",
+          "meaningCn": "雕刻在物体表面的字",
+          "meaningEn": "words cut into a solid surface"
+        },
+        {
+          "word": "swooped down",
+          "ipa": "/swuːpt daʊn/",
+          "meaningCn": "从空中急速俯冲",
+          "meaningEn": "flew down quickly from above"
+        },
+        {
+          "word": "swooped",
+          "ipa": "/swuːpt/",
+          "meaningCn": "从空中快速俯冲下来",
+          "meaningEn": "flew down quickly from above"
+        },
+        {
+          "word": "carved",
+          "ipa": "/kɑːrvd/",
+          "meaningCn": "雕刻着",
+          "meaningEn": "cut into a hard surface to make a design"
+        },
+        {
+          "word": "flight",
+          "ipa": "/flaɪt/",
+          "meaningCn": "航班",
+          "meaningEn": "A journey by plane."
+        },
+        {
+          "word": "puzzle",
+          "ipa": "/ˈpʌzəl/",
+          "meaningCn": "谜题；智力游戏",
+          "meaningEn": "A game or problem that requires thought to solve."
+        }
+      ]
+    },
+    {
+      "key": "ch10",
+      "number": 10,
+      "title": "The Five Crystals",
+      "paragraphs": [
+        "With the key in its beak, the crow flew up and sat on top of the wall.",
+        "“Hema, get that key!” Darma cried.",
+        "Hema flew off Darma’s shoulder and chased the crow but bumped into the magical barrier. The crow disappeared over the wall.",
+        "Hema transformed back into a dragon.",
+        "Rune frowned.",
+        "Darma put a hand on Rune’s shoulder. “Do not worry,” he said. “I have an idea!”",
+        "Darma turned to Drake. “Drake, where is the piece of gold that I gave you?”",
+        "Puzzled, Drake took the gold disc from his bag. “Right here.”",
+        "“You got a good look at the key. Hold the gold in your hand, and picture the key,” Darma instructed. “Close your eyes.”",
+        "Drake closed his eyes.",
+        "The prongs of the key looked like dragon’s teeth, he thought, and a picture formed in his mind.",
+        "He felt the gold disc move. He opened his eyes. The disc had turned into the key!",
+        "“Well done, Drake!” Darma said Drake tried the key in the lock. The door handle turned, and he pushed the door open. When he took out the key, it transformed back into a gold disc.",
+        "Rune says: That was amazing!",
+        "“This is a very useful magical object,” Drake remarked, putting it back in his bag. “Thanks, Darma.”",
+        "They all went through the doorway, and the door slammed shut behind them.",
+        "They had entered a dark, dirt tunnel. This new pathway sloped down. As they walked, Drake had a feeling they were heading deep underground.",
+        "The tunnel opened up into a room with stone walls and a ceiling overhead. In the center stood five large crystals. Each one was as tall as Griffith the wizard.",
+        "“Is there a way out of this place?” Drake wondered.",
+        "Rune stepped into the center of the circle of crystals. The others followed him. Then he pointed to the crystals. Each one had the same, flower-like symbol carved on it.",
+        "That reminds me of the symbol on Lysa’s chest and on the labyrinth door, Drake thought.",
+        "The boys studied the crystals, and they all noticed something at the same time. The symbols were not exactly the same. On one crystal, there was a dot inside one of the flower-petal shapes. On another crystal, two of the petal shapes had a dot inside them …",
+        "“There is a number pattern on the crystals!” Drake cried.",
+        "“Maybe we need to touch the crystals in number order, to make something happen,” Darma suggested.",
+        "He touched the crystal with one dot first. Then he touched the one with two dots, then three dots, until he touched the fifth crystal.",
+        "Nothing happened.",
+        "Rune says: These crystals remind me of the crystal castle. Rather than touching them, l think Lysa should try shining her light on them.",
+        "His Dragon Stone glowed, and the symbols on Lysa’s chest glowed, too. The dragon shot a beam of light from her chest, and it hit the crystal with one dot. The whole pillar lit up!",
+        "“Go, Lysa!” Drake cheered.",
+        "One by one, Lysa lit up the crystals. The boys shielded their eyes as the light in the underground room got brighter and brighter.",
+        "Now all five crystals shone brightly. Looking up, Drake saw that the lights made a star shape on the ceiling Drake felt movement under his feet. The circle-shaped floor began to rise!"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p01.webp",
+          "alt": "《The Five Crystals》原书插图（第 50 页）",
+          "width": 756,
+          "height": 513
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p02.webp",
+          "alt": "《The Five Crystals》原书插图（第 51 页）",
+          "width": 690,
+          "height": 642
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p03.webp",
+          "alt": "《The Five Crystals》原书插图（第 52 页）",
+          "width": 654,
+          "height": 606
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p04.webp",
+          "alt": "《The Five Crystals》原书插图（第 53 页）",
+          "width": 318,
+          "height": 234
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p05.webp",
+          "alt": "《The Five Crystals》原书插图（第 54 页）",
+          "width": 756,
+          "height": 705
+        },
+        {
+          "afterParagraph": 18,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p06.webp",
+          "alt": "《The Five Crystals》原书插图（第 55 页）",
+          "width": 756,
+          "height": 726
+        },
+        {
+          "afterParagraph": 24,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p07.webp",
+          "alt": "《The Five Crystals》原书插图（第 56 页）",
+          "width": 522,
+          "height": 366
+        },
+        {
+          "afterParagraph": 27,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p08.webp",
+          "alt": "《The Five Crystals》原书插图（第 57 页）",
+          "width": 726,
+          "height": 546
+        },
+        {
+          "afterParagraph": 30,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch10-p09.webp",
+          "alt": "《The Five Crystals》原书插图（第 58 页）",
+          "width": 678,
+          "height": 570
+        }
+      ],
+      "glossary": [
+        {
+          "word": "labyrinth door",
+          "ipa": "/ˈlæb.ə.rɪnθ dɔːr/",
+          "meaningCn": "通往迷宫的门",
+          "meaningEn": "the entrance door to the maze"
+        },
+        {
+          "word": "beam of light",
+          "ipa": "/biːm əv laɪt/",
+          "meaningCn": "一束光",
+          "meaningEn": "a narrow stream of light"
+        },
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "underground",
+          "ipa": "/ˌʌn.dɚˈɡraʊnd/",
+          "meaningCn": "在地下的；文中形容房间",
+          "meaningEn": "below the surface of the ground"
+        },
+        {
+          "word": "carved",
+          "ipa": "/kɑːrvd/",
+          "meaningCn": "雕刻着",
+          "meaningEn": "cut into a hard surface to make a design"
+        },
+        {
+          "word": "number",
+          "ipa": "/ˈnʌmbə/",
+          "meaningCn": "数字；数目；号码",
+          "meaningEn": "a symbol or word used for counting, or an amount"
+        }
+      ]
+    },
+    {
+      "key": "ch11",
+      "number": 11,
+      "title": "The Moving Maze",
+      "paragraphs": [
+        "The ceiling opened up, revealing the night sky overhead, which was a shade paler than when they had entered the maze.",
+        "Drake’s Dragon Stone began to glow.",
+        "Rune says: Nights here are very short at this time of year. We need to hurry!",
+        "The floor carried them back above ground and then stopped.",
+        "The labyrinth was different now. Instead of stone, the walls were made of thick, green, leafy hedges.",
+        "“Let’s keep moving,” Drake said, and they made their way down the path. They turned left, then right, then right, then left again.",
+        "“I hope we’re getting closer to the Star Flute and not just going in circles again,” Drake muttered.",
+        "The Dragon Masters walked ahead of their dragons, in silence, as they made their way through the maze. Drake walked beside Rune, with Darma just behind them.",
+        "Then they all felt a rumbling in their feet. The earth shook.",
+        "Suddenly, a green hedge wall burst from the ground behind Drake and Rune! Spinning around, Drake saw that Worm, Lysa, Hema, and Darma were on the other side of the wall “Worm!” Drake yelled.",
+        "Another wall burst through the ground in front of them. Rune grabbed Drake’s arm, pulling Drake toward him.",
+        "Drake and Rune made the next turn together and continued through the maze, changing direction as more walls popped up around them.",
+        "The two boys stopped, breathless, when they came to a dark, murky pond. A wall rose up behind them, trapping them. The only way forward was through the water.",
+        "Worm, can you hear me? Drake called out with his mind Yes, Worm replied. Walls separate us now. Keep moving. We will find each other.",
+        "Rune had stepped up to the pond.",
+        "Drake joined him and stared into the water. “It looks deep. We might have to swim,” he said.",
+        "Then he realized that without Worm and Lysa, Rune wouldn’t know what he was saying.",
+        "I wish I knew the sign for swim, he thought. Drake made a paddling motion with his arms, hoping Rune would understand.",
+        "Yes, Rune signed in reply. Then he showed Drake the sign for swim. He held out his open hands in front of him, palms facing down. He moved them apart and back together in small, circular motions.",
+        "Swim Just then, Drake heard a voice in his head. But it wasn’t Worm’s!",
+        "Who dares to approach my pond? the voice said."
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch11-p01.webp",
+          "alt": "《The Moving Maze》原书插图（第 59 页）",
+          "width": 756,
+          "height": 717
+        },
+        {
+          "afterParagraph": 7,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch11-p02.webp",
+          "alt": "《The Moving Maze》原书插图（第 60 页）",
+          "width": 756,
+          "height": 363
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch11-p03.webp",
+          "alt": "《The Moving Maze》原书插图（第 61 页）",
+          "width": 678,
+          "height": 678
+        },
+        {
+          "afterParagraph": 10,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch11-p04.webp",
+          "alt": "《The Moving Maze》原书插图（第 62 页）",
+          "width": 654,
+          "height": 666
+        },
+        {
+          "afterParagraph": 15,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch11-p05.webp",
+          "alt": "《The Moving Maze》原书插图（第 63 页）",
+          "width": 594,
+          "height": 342
+        },
+        {
+          "afterParagraph": 19,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch11-p06.webp",
+          "alt": "《The Moving Maze》原书插图（第 64 页）",
+          "width": 594,
+          "height": 402
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "revealing",
+          "ipa": "/rɪˈviː.lɪŋ/",
+          "meaningCn": "显露出原来藏着的门洞",
+          "meaningEn": "making something hidden visible"
+        },
+        {
+          "word": "hedge",
+          "ipa": "/hedʒ/",
+          "meaningCn": "树篱",
+          "meaningEn": "a row of bushes planted to form a boundary"
+        },
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "separate",
+          "ipa": "/ˈseprət/",
+          "meaningCn": "分开的；独立的；各自的",
+          "meaningEn": "not joined or connected; different"
+        },
+        {
+          "word": "approach",
+          "ipa": "/əˈprəʊtʃ/",
+          "meaningCn": "靠近；接近",
+          "meaningEn": "to move closer to someone or something"
+        }
+      ]
+    },
+    {
+      "key": "ch12",
+      "number": 12,
+      "title": "The Beast’s Demand",
+      "paragraphs": [
+        "Drake looked over at Rune. His new friend’s eyes were wide with fear. Something in the pond was communicating with them both.",
+        "The Dragon Masters took a big step back from the water’s edge. The surface of the water rippled and a head emerged.",
+        "The beast had gray, slippery-looking skin and a long snout. Bright yellow eyes gleamed from its face. And a single, curled antenna grew from its head.",
+        "The voice, ancient and deep, entered Drake’s head again.",
+        "Who dares to approach my pond?",
+        "Drake took a deep breath. “I am Drake, and this is Rune,” he said. “We seek the Star Flute, and-” The beast’s eyes fixed on Drake.",
+        "To cross my pond, there is a price. What have you to give? Something shiny and rare will do.",
+        "Drake saw Rune reach for the Dragon Stone around his neck. He tapped Rune’s arm.",
+        "No, Drake signed.",
+        "Drake took the gold disc from his bag and held it out.",
+        "Ooh, gold! I love gold, the beast said.",
+        "I hope Darma won’t mind, Drake thought.",
+        "He tossed the gold disc, and the beast caught it in its mouth and gulped it down.",
+        "Delicious! You may pass, the beast said.",
+        "The beast disappeared under the water. Then the pond vanished!",
+        "The boys walked forward on the grassy path. They hadn’t gone far when a golden head came through the hedge wall. It was Hema, in goat form, munching on leaves. Drake and Rune laughed.",
+        "Hema ducked back through a large hole in the hedge, and the boys followed. Worm, Darma, and Lysa were waiting for them on the other side!",
+        "Hema transformed back into a dragon.",
+        "Darma’s Dragon Stone glowed green, and he grinned. “No, I don’t think you can chew our way to the Star Plute, Hema. Not even a dragon’s tummy could hold that many leaves.”",
+        "Then Drake heard Worm’s voice in his head.",
+        "Rune says: I can’t believe we met the Picland Beast! I have heard stories about it but never seen it. I am glad we escaped. Thank you, Drake, for giving up your gold disc.",
+        "Drake turned to Darma and added. “We ran into a monster! And I had to feed it the gold disc you gave me. I’m sorry.”",
+        "Darma smiled. “It is okay. I sensed you might need But Drake stopped listening because he heard music. Sweet, high notes came from a pathway on their right.",
+        "“Is that the sound of the Star Flute?” Drake asked Worm, taking a few steps toward the path.",
+        "Lysa tells me birds are singing that song, trying to get us lost, Worm replied. We need to move away from the sound before- Charmed by the music, Worm stopped talking to Drake, and crawled down the path. Drake, Darma, Hema, and Lysa followed him.",
+        "The birds' song led them away …"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch12-p01.webp",
+          "alt": "《The Beast’s Demand》原书插图（第 65 页）",
+          "width": 756,
+          "height": 597
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch12-p02.webp",
+          "alt": "《The Beast’s Demand》原书插图（第 66 页）",
+          "width": 366,
+          "height": 438
+        },
+        {
+          "afterParagraph": 12,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch12-p03.webp",
+          "alt": "《The Beast’s Demand》原书插图（第 67 页）",
+          "width": 642,
+          "height": 330
+        },
+        {
+          "afterParagraph": 15,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch12-p04.webp",
+          "alt": "《The Beast’s Demand》原书插图（第 68 页）",
+          "width": 654,
+          "height": 510
+        },
+        {
+          "afterParagraph": 22,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch12-p05.webp",
+          "alt": "《The Beast’s Demand》原书插图（第 69 页）",
+          "width": 756,
+          "height": 495
+        },
+        {
+          "afterParagraph": 25,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch12-p06.webp",
+          "alt": "《The Beast’s Demand》原书插图（第 70 页）",
+          "width": 690,
+          "height": 546
+        }
+      ],
+      "glossary": [
+        {
+          "word": "hedge",
+          "ipa": "/hedʒ/",
+          "meaningCn": "树篱",
+          "meaningEn": "a row of bushes planted to form a boundary"
+        },
+        {
+          "word": "ducked",
+          "ipa": "/dʌkt/",
+          "meaningCn": "急忙低头躲避",
+          "meaningEn": "quickly lowered his head to avoid something"
+        },
+        {
+          "word": "snout",
+          "ipa": "/snaʊt/",
+          "meaningCn": "动物突出的口鼻部",
+          "meaningEn": "the nose and mouth that stick out on an animal’s face"
+        },
+        {
+          "word": "vanished",
+          "ipa": "/ˈvæn.ɪʃt/",
+          "meaningCn": "突然消失了",
+          "meaningEn": "disappeared suddenly"
+        },
+        {
+          "word": "approach",
+          "ipa": "/əˈprəʊtʃ/",
+          "meaningCn": "靠近；接近",
+          "meaningEn": "to move closer to someone or something"
+        },
+        {
+          "word": "delicious",
+          "ipa": "/dɪˈlɪʃəs/",
+          "meaningCn": "美味的；好吃的",
+          "meaningEn": "having a very pleasant taste or smell"
+        }
+      ]
+    },
+    {
+      "key": "ch13",
+      "number": 13,
+      "title": "The Final Clue",
+      "paragraphs": [
+        "Drake, Darma, and the three dragons walked toward a flock of singing bluebirds. Rune ran in front of them.",
+        "Danger! Danger! he signed.",
+        "Drake saw Rune, and understood the sign. He paused.",
+        "Beyond the birds was nothing but an eerie, blue mist. Drake somehow knew the mist was dangerous.",
+        "But the music …",
+        "I have to follow the music, he thought.",
+        "Then Rune’s Dragon Stone began to glow.",
+        "Lysa blinked and a bright light shone from the symbol on her chest.",
+        "The light hit the birds, and they scattered.",
+        "The singing stopped.",
+        "But the mist remained.",
+        "Drake, Darma, Worm, and Hema stopped walking. Drake shook his head from side to side.",
+        "“Thanks, Rune,” he said. “We almost walked right into that mist.”",
+        "Rune says: The birds were trying to get us lost in that mist. We should go back in the other direction.",
+        "Rune and Lysa led the way. They turned left, and right, and then left again. The next right took them to a dead end.",
+        "This pathway ended with a tall wall made of a green hedge. Right before the hedge was a box floating in the air. It was bigger than the puzzle box-about as long as Drake’s arm. And carved on the box was a flute!",
+        "“We’ve finally found the Star Flute!” Drake cried “Just in time,” Darma remarked. “The sky is a shade lighter than it was when we began. Dawn is coming very soon.”",
+        "Drake looked at Rune and motioned to the box. Rune stepped up to the box and tried to open it, but the lid did not move. He frowned.",
+        "Rune says: It will not open.",
+        "Then Rune’s eyes widened. He pointed to the top of the box, where a rhyme was carved.",
+        "IF YOU CAME HERE ALONE, THERE IS NO HELP FOR THEE.",
+        "THE BOX WILL OPEN ONLY FOR A CIRCLE OF THREE.",
+        "The boys grinned at one another. They knew what the rhyme meant.",
+        "Drake, Darma, and Rune formed a circle around the floating box. Then they held hands.",
+        "The box opened. A silver flute floated up and hovered in the air.",
+        "“The Star Flute,” Drake whispered"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p01.webp",
+          "alt": "《The Final Clue》原书插图（第 71 页）",
+          "width": 756,
+          "height": 657
+        },
+        {
+          "afterParagraph": 8,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p02.webp",
+          "alt": "《The Final Clue》原书插图（第 72 页）",
+          "width": 678,
+          "height": 510
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p03.webp",
+          "alt": "《The Final Clue》原书插图（第 73 页）",
+          "width": 558,
+          "height": 414
+        },
+        {
+          "afterParagraph": 15,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p04.webp",
+          "alt": "《The Final Clue》原书插图（第 74 页）",
+          "width": 756,
+          "height": 795
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p05.webp",
+          "alt": "《The Final Clue》原书插图（第 75 页）",
+          "width": 756,
+          "height": 795
+        },
+        {
+          "afterParagraph": 21,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p06.webp",
+          "alt": "《The Final Clue》原书插图（第 76 页）",
+          "width": 726,
+          "height": 450
+        },
+        {
+          "afterParagraph": 25,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch13-p07.webp",
+          "alt": "《The Final Clue》原书插图（第 77 页）",
+          "width": 666,
+          "height": 870
+        }
+      ],
+      "glossary": [
+        {
+          "word": "up to",
+          "ipa": "/ʌp tuː/",
+          "meaningCn": "在打什么主意；多指偷偷做某件事",
+          "meaningEn": "doing or planning something in secret"
+        },
+        {
+          "word": "flock",
+          "ipa": "/flɑːk/",
+          "meaningCn": "一群鸟",
+          "meaningEn": "a group of birds"
+        },
+        {
+          "word": "hedge",
+          "ipa": "/hedʒ/",
+          "meaningCn": "树篱",
+          "meaningEn": "a row of bushes planted to form a boundary"
+        },
+        {
+          "word": "rhyme",
+          "ipa": "/raɪm/",
+          "meaningCn": "押韵的诗句",
+          "meaningEn": "a short piece of verse with words that sound alike at the ends"
+        },
+        {
+          "word": "carved",
+          "ipa": "/kɑːrvd/",
+          "meaningCn": "雕刻着",
+          "meaningEn": "cut into a hard surface to make a design"
+        },
+        {
+          "word": "lighter",
+          "ipa": "/ˈlaɪtə/",
+          "meaningCn": "打火机",
+          "meaningEn": "a small device that produces a flame"
+        }
+      ]
+    },
+    {
+      "key": "ch14",
+      "number": 14,
+      "title": "Lysa’s Light",
+      "paragraphs": [
+        "Drake grabbed the flute from midair. As he did so, the hedge wall in front of them swung open like a door.",
+        "The sun was rising over the horizon, casting orange rays across the ocean. They’d found the flute just in time!",
+        "Drake looked at Rune. “Thank you,” he said. “If you and Lysa had not entered the labyrinth with us, we would never have gotten the flute.”",
+        "Rune’s Dragon Stone glowed, and he grinned.",
+        "Rune says: lam glad you have what you need to continue your difficult mission. You must hurry though … Look!",
+        "He pointed to the edge of the sky, where the sky-shadow had begun to creep, covering the sun’s rays.",
+        "Darma frowned. “The sky-shadow will not stop until it covers the world,” he said.",
+        "Rune’s eyes narrowed. His Dragon Stone glowed again.",
+        "Then he climbed on Lysa’s back. The Light Dragon took off, flying toward the shadow!",
+        "“What are Rune and Lysa doing?” Drake wondered",
+        "Lysa’s whole body began to glow. A big, bright wave of light poured from the symbol on her chest.",
+        "The light pushed back the sky-shadow.",
+        "And the sky turned bright once more. Lysa stopped glowing, and she and Rune landed.",
+        "“That was amazing!” Drake cried.",
+        "Rune says: Lysa’s light can push away darkness. But the sky-shadow is too big for her powers alone. You must still use the flute to summon the Star Dragon.",
+        "Drake nodded. “I know I said 'thank you' before, but how do you sign it?” he asked.",
+        "Rune’s Dragon Stone glowed. Then he kept his right hand flat and facing himself. He put the tips of his fingers over his lips. Then he moved his hand forward and a little bit down.",
+        "Drake and Darma repeated the sign.",
+        "Rune says: I have another sign to teach you. This means “friend.”",
+        "Rune curved his first fingers on both hands into “C” shapes. Then he hooked his right finger over his left, and then hooked his left finger over his right.",
+        "“I see. It’s like two friends giving each other a hug,” Drake said. He put the flute into his bag.",
+        "He and Darma both signed to Rune: Thank you, friend!",
+        "Rune says: I will see you again, when you return the Star Flute.",
+        "Drake smiled at Rune and Lysa, and then put a hand on Worm. “Take us to Bracken!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p01.webp",
+          "alt": "《Lysa’s Light》原书插图（第 78 页）",
+          "width": 756,
+          "height": 681
+        },
+        {
+          "afterParagraph": 5,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p02.webp",
+          "alt": "《Lysa’s Light》原书插图（第 79 页）",
+          "width": 594,
+          "height": 426
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p03.webp",
+          "alt": "《Lysa’s Light》原书插图（第 80 页）",
+          "width": 741,
+          "height": 798
+        },
+        {
+          "afterParagraph": 11,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p04.webp",
+          "alt": "《Lysa’s Light》原书插图（第 81 页）",
+          "width": 756,
+          "height": 726
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p05.webp",
+          "alt": "《Lysa’s Light》原书插图（第 82 页）",
+          "width": 642,
+          "height": 618
+        },
+        {
+          "afterParagraph": 16,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p06.webp",
+          "alt": "《Lysa’s Light》原书插图（第 83 页）",
+          "width": 606,
+          "height": 666
+        },
+        {
+          "afterParagraph": 21,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p07-review-1-4471fda276.webp",
+          "alt": "《Lysa’s Light》原书插图（第 84 页）",
+          "width": 756,
+          "height": 510
+        },
+        {
+          "afterParagraph": 23,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch14-p08.webp",
+          "alt": "《Lysa’s Light》原书插图（第 85 页）",
+          "width": 714,
+          "height": 666
+        }
+      ],
+      "glossary": [
+        {
+          "word": "once more",
+          "ipa": "/wʌns mɔːr/",
+          "meaningCn": "又一次",
+          "meaningEn": "one more time"
+        },
+        {
+          "word": "hedge",
+          "ipa": "/hedʒ/",
+          "meaningCn": "树篱",
+          "meaningEn": "a row of bushes planted to form a boundary"
+        },
+        {
+          "word": "labyrinth",
+          "ipa": "/ˈlæb.ə.rɪnθ/",
+          "meaningCn": "迷宫",
+          "meaningEn": "a maze with complicated paths"
+        },
+        {
+          "word": "midair",
+          "ipa": "/ˌmɪdˈer/",
+          "meaningCn": "半空",
+          "meaningEn": "the air above the ground"
+        },
+        {
+          "word": "continue",
+          "ipa": "/kənˈtɪnjuː/",
+          "meaningCn": "继续",
+          "meaningEn": "to keep happening or doing something"
+        },
+        {
+          "word": "difficult",
+          "ipa": "/ˈdɪfɪkəlt/",
+          "meaningCn": "难的",
+          "meaningEn": "Not easy; requiring effort."
+        }
+      ]
+    },
+    {
+      "key": "ch15",
+      "number": 15,
+      "title": "Sunshine In Bracken",
+      "paragraphs": [
+        "Worm transported Drake, Darma, and Hema in a flash of green light. They landed outside of Bracken Castle.",
+        "The sky-shadow hovered over most of the kingdom. But in the farming fields, bright sunlight was shining.",
+        "“What’s that about?” Drake said. “Worm, take us there.”",
+        "Worm transported them, and they quickly realized the source of the light: Kepri! Ana stood on the field. Her Dragon Stone glowed as Kepri flew overhead. A beam of sunlight flowed from the Sun Dragon’s mouth, lighting up the plants.",
+        "Ana’s eyes lit up when she saw Drake, Darma, and their dragons.",
+        "“You’re back!” she cried. “Rori and I completed our mission to warn wizards to stop using their magic. Did you find the Star Flute?”",
+        "Drake took the flute from his bag. “We did,” he said.",
+        "“Using Kepri to make sunlight is a great idea,” Darma told Ana.",
+        "She nodded. “Thanks. It will keep the crops growing for now.” Ana pointed to the huts. “Rori and Vulcan are making fires, to help keep everyone warm. But you should go see Jean and Bo in the castle right away.”",
+        "Worm transported with Drake, Darma, and Hema to the Training Room. The boys found Jean and Bo in the classroom with Griffith.",
+        "Jean jumped up. “We have so much to tell you!” she cried.",
+        "“We have found some answers about the Star Dragon,” Bo added.",
+        "“I would love to hear more, but I must create a portal so that Hema and I can go home,” Darma said. “I sense we are needed in Suvarna.”",
+        "Back in the Training Room Drake hugged his friend good-bye. “Thanks for your help. I promise we will do everything we can to save the world. We will play the flute and summon the Star Dragon!”"
+      ],
+      "illustrations": [
+        {
+          "afterParagraph": -1,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch15-p01.webp",
+          "alt": "《Sunshine In Bracken》原书插图（第 86 页）",
+          "width": 756,
+          "height": 477
+        },
+        {
+          "afterParagraph": 3,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch15-p02.webp",
+          "alt": "《Sunshine In Bracken》原书插图（第 87 页）",
+          "width": 678,
+          "height": 618
+        },
+        {
+          "afterParagraph": 6,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch15-p03.webp",
+          "alt": "《Sunshine In Bracken》原书插图（第 88 页）",
+          "width": 582,
+          "height": 402
+        },
+        {
+          "afterParagraph": 9,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch15-p04.webp",
+          "alt": "《Sunshine In Bracken》原书插图（第 89 页）",
+          "width": 654,
+          "height": 606
+        },
+        {
+          "afterParagraph": 13,
+          "path": "stories/dragon-masters/dawn-of-the-light-dragon/ch15-p05.webp",
+          "alt": "《Sunshine In Bracken》原书插图（第 90 页）",
+          "width": 594,
+          "height": 606
+        }
+      ],
+      "glossary": [
+        {
+          "word": "in a flash",
+          "ipa": "/ɪn ə flæʃ/",
+          "meaningCn": "一眨眼之间",
+          "meaningEn": "very quickly or almost immediately"
+        },
+        {
+          "word": "for now",
+          "ipa": "/fɚ naʊ/",
+          "meaningCn": "暂时，目前",
+          "meaningEn": "for the present time"
+        },
+        {
+          "word": "portal",
+          "ipa": "/ˈpɔːr.t̬əl/",
+          "meaningCn": "传送门；连接两个地方的魔法入口",
+          "meaningEn": "a magical doorway to another place"
+        },
+        {
+          "word": "transported",
+          "ipa": "/trænˈspɔːr.tɪd/",
+          "meaningCn": "转移；文中指用魔法瞬间移到别处",
+          "meaningEn": "carried someone or something to another place"
+        },
+        {
+          "word": "farming",
+          "ipa": "/ˈfɑːmɪŋ/",
+          "meaningCn": "农业；农耕；畜牧业",
+          "meaningEn": "the activity of growing crops or keeping farm animals"
+        },
+        {
+          "word": "everything",
+          "ipa": "/ˈevriθɪŋ/",
+          "meaningCn": "一切；所有事物",
+          "meaningEn": "all things"
+        }
+      ]
+    }
+  ]
+}

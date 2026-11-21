@@ -5,6 +5,8 @@ import { createAdminSupabase, getBearerToken, getUserFromRequest, isAdminRequest
 import { ExamApiError, examFailure, examIdentifier } from '@/lib/exams/http'
 import { EXAM_MEDIA_COOKIE, fetchExamBoundMedia, readExamMediaDraft } from '@/lib/exams/media'
 
+import { fetchExamListeningCandidate } from '@/lib/exams/mediaAdmin'
+
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -16,9 +18,17 @@ export async function GET(request: NextRequest) {
     const user = await getUserFromRequest(new Request(request.url, { headers: { Authorization: `Bearer ${token}` } }))
     if (!user) throw new ExamApiError('unauthorized', 401)
     const params = request.nextUrl.searchParams
-    if ([...params.keys()].some(key => !['revisionId', 'attemptId', 'slotId', 'audience'].includes(key) || params.getAll(key).length !== 1)) throw new ExamApiError('exam_invalid_request', 400)
+    if ([...params.keys()].some(key => !['revisionId', 'attemptId', 'slotId', 'audience', 'candidateFileId', 'candidatePath'].includes(key) || params.getAll(key).length !== 1)) throw new ExamApiError('exam_invalid_request', 400)
     const slotId = examIdentifier(params.get('slotId'))
     const db = createAdminSupabase()
+    const candidate = params.has('candidateFileId') || params.has('candidatePath')
+    if (candidate) {
+      if (!params.has('revisionId') || params.has('attemptId') || params.has('audience') || !isAdminRequestUser(user)) {
+        throw new ExamApiError('forbidden', 403)
+      }
+      return await fetchExamListeningCandidate(db, examIdentifier(params.get('revisionId')), slotId,
+        params.get('candidateFileId') ?? '', params.get('candidatePath') ?? '', request.headers.get('range'), request.signal)
+    }
     let grant: ExamMediaGrant
     if (params.has('revisionId')) {
       if (!isAdminRequestUser(user) || params.has('attemptId') || params.has('audience')) throw new ExamApiError('forbidden', 403)

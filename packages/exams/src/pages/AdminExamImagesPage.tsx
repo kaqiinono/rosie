@@ -31,14 +31,18 @@ function ImagePage({ user }: { user: NonNullable<ReturnType<typeof useAuth>['use
     return () => window.removeEventListener('beforeunload', handler)
   }, [dirty])
   const select = revision || catalog.data.items[0]?.revisionId || ''
+  const chooseRevision = (value: string) => {
+    setRevision(value)
+    window.history.replaceState(null, '', `?revisionId=${encodeURIComponent(value)}`)
+  }
   const guard = (action: () => void) => { if (busy) return; if (dirty) setLeave(() => action); else action() }
   return <PageShell title="图片任务" subtitle="先自动准备图片，审查时只重裁需要调整的部分" width="full" tone="paper"
     onBack={() => guard(() => router.push('/admin/exams'))}>
     <Flex direction="column" gap="4">
       <Flex gap="3" align="end" wrap="wrap">
         <label className="min-w-0 flex-1"><Text as="p" size="2">试卷 / 训练包</Text><FormSelect value={select} disabled={busy || catalog.isLoading}
-          options={catalog.data.items.map(item => ({ value: item.revisionId, label: item.title }))}
-          onValueChange={value => guard(() => { setDirty(false); setRevision(value); window.history.replaceState(null, '', `?revisionId=${encodeURIComponent(value)}`) })} /></label>
+          options={catalog.data.items.map(item => ({ value: item.revisionId, label: `${item.title} · ${item.status === 'published' ? '已发布' : '草稿'}` }))}
+          onValueChange={value => guard(() => { setDirty(false); chooseRevision(value) })} /></label>
         <Button variant="soft" loading={refreshing} disabled={busy} onClick={() => guard(() => {
           setRefreshing(true); setRefreshError(null)
           void imageCatalogStore.refreshInBackground(user.id).catch(setRefreshError).finally(() => setRefreshing(false))
@@ -47,8 +51,12 @@ function ImagePage({ user }: { user: NonNullable<ReturnType<typeof useAuth>['use
       {(catalog.error || refreshError) != null && <Text color="red" role="alert">{imageTaskError(catalog.error ?? refreshError)}</Text>}
       <div className="relative min-h-[calc(100dvh-14rem)]">
         <LoadingOverlay visible={catalog.isLoading} placement="content" appearance="quiet" />
-        {!catalog.isLoading && !catalog.error && !catalog.data.items.length && <StickerCard>没有可处理的草稿，请先导入试卷。</StickerCard>}
-        {!catalog.isLoading && select && <Workspace key={select} user={user} revisionId={select} setDirty={setDirty} setBusy={setBusy} />}
+        {!catalog.isLoading && !catalog.error && !catalog.data.items.length && <StickerCard>没有可处理的试卷，请先导入试卷。</StickerCard>}
+        {!catalog.isLoading && select && <Workspace key={select} user={user} revisionId={select} setDirty={setDirty} setBusy={setBusy}
+          onRevisionSaved={nextId => {
+            chooseRevision(nextId)
+            void imageCatalogStore.refreshInBackground(user.id).catch(setRefreshError)
+          }} />}
       </div>
     </Flex>
     <AppDialog open={!!leave} title="离开当前裁切？" onOpenChange={open => { if (!open) setLeave(null) }}>
@@ -59,9 +67,9 @@ function ImagePage({ user }: { user: NonNullable<ReturnType<typeof useAuth>['use
   </PageShell>
 }
 
-function Workspace({ user, revisionId, setDirty, setBusy }: {
+function Workspace({ user, revisionId, setDirty, setBusy, onRevisionSaved }: {
   user: NonNullable<ReturnType<typeof useAuth>['user']>; revisionId: string
-  setDirty: (value: boolean) => void; setBusy: (value: boolean) => void
+  setDirty: (value: boolean) => void; setBusy: (value: boolean) => void; onRevisionSaved: (id: string) => void
 }) {
   const store = useMemo(() => imageWorkspaceStore(revisionId), [revisionId])
   const { data, isLoading, error } = store.useSessionData(user)
@@ -97,6 +105,11 @@ function Workspace({ user, revisionId, setDirty, setBusy }: {
     void store.refreshInBackground(user.id).then(() => { onDirty(false); setReload(value => value + 1) }).catch(setRefreshError).finally(() => { setRefreshing(false); onBusy(false) })
   }
   async function saved(receipt: ExamMediaSaveReceipt, slotId: string, region: ImageCropRegion) {
+    if (receipt.revisionId !== revisionId) {
+      onDirty(false)
+      onRevisionSaved(receipt.revisionId)
+      return
+    }
     store.patchSessionData(user.id, previous => previous ? { ...previous, version: receipt.version, bindingRevisionId: receipt.bindingRevisionId,
       tasks: previous.tasks.map(task => task.slot.id === slotId ? { ...task, savedRegion: region, binding: { name: '已保存裁图', reviewed: true },
         review: { status: 'pending', version: task.review?.version ?? null, imageKey: null } } : task) } : previous)
@@ -235,7 +248,7 @@ function TaskEditor({ userId, workspace, task, locked, onDirty, onBusy, saved, n
       if (!mounted.current) return
       setPending(null); setNotice(receipt.cleanup?.failed || receipt.cleanup?.pending
         ? '图片已上传并绑定；部分旧临时裁图尚待清理，可点击“清理临时资源”重试。'
-        : '图片已上传并绑定。整卷内容仍需审核后发布。')
+        : '图片已上传并绑定。')
       await saved(receipt, task.slot.id, operation.command.region)
       setEditing(false); setPreview(null); onDirty(false)
     } catch (failure) { if (mounted.current) setError(failure) }

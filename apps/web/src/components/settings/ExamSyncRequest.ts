@@ -6,7 +6,7 @@ import { BAIDU_AUTH_MESSAGES, createUserSessionStore, supabase, useAuth, type Us
 const stores = new Map<string, UserSessionStore<unknown | null>>()
 const messages: Record<string, string> = {
   unauthorized: '登录已过期，请重新登录。', forbidden: '仅管理员可管理考试资源。',
-  exam_conflict: '此版本已被修改，请重新读取后核对。', exam_not_editable: '只有草稿可以修改资源绑定。',
+  exam_conflict: '此版本已被修改，请重新读取后核对。', exam_not_editable: '试卷已下架或已更新，请重新选择当前试卷。',
   baidu_account_changed: '共享账号已变化，请刷新授权路径后重新选择文件。',
   exam_invalid_media_binding: '请核对授权目录、文件类型和所选资源。',
   exam_media_binding_changed: '文件或绑定已变化，请刷新后重新选择。',
@@ -27,7 +27,9 @@ export async function examSyncRequest<T>(userId: string, url: string, options: {
   const result: unknown = await response.json().catch(() => null)
   if (!response.ok) {
     const code = result && typeof result === 'object' && 'error' in result && typeof result.error === 'string' ? result.error : ''
-    throw Error(messages[code] ?? BAIDU_AUTH_MESSAGES[code] ?? '请求未完成，请稍后重试。')
+    const issues = result && typeof result === 'object' && 'issues' in result && Array.isArray(result.issues)
+      ? result.issues.flatMap(issue => typeof issue?.message === 'string' ? [issue.message] : []).join(' ') : ''
+    throw Error(issues || (messages[code] ?? BAIDU_AUTH_MESSAGES[code] ?? '请求未完成，请稍后重试。'))
   }
   if ((await supabase.auth.getSession()).data.session?.user.id !== userId) throw Error(messages.unauthorized)
   return result as T

@@ -5,7 +5,7 @@ import type { ExamListeningDirectoryRequest, ExamMediaEditor, ExamMediaSaveRecei
 import { AppDialog, LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Badge, Box, Button, Flex, Grid, Heading, Text } from '@rosie/ui/themes'
 import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
-import type { ExamDraftListItem, ExamPage } from '@/lib/exams/contracts'
+import type { ExamAdminListItem, ExamPage } from '@/lib/exams/contracts'
 import { examListeningParts, isExamAudioFile, matchExamListeningAudio } from '@/lib/exams/listeningMedia'
 import { directoryPrefix, type LessonAudioPick } from '@/lib/english-audio-types'
 import { DirectoryChooser, type SyncChosenDirectory } from './SyncDirectoryChooser'
@@ -42,8 +42,36 @@ function readExamMediaLocation(search: string) {
   }
 }
 
-function Editor({ initial, userId, paths, replace, reload, initialPart, initialSlot }: Props & {
-  initial: ExamMediaEditor; initialPart: string; initialSlot: string; replace: (editor: ExamMediaEditor) => void; reload: () => void
+function readAudioDuration(url: string, signal: AbortSignal): Promise<number> {
+  signal.throwIfAborted()
+  return new Promise((resolve, reject) => {
+    const audio = new Audio()
+    const finish = (durationMs?: number) => {
+      clearTimeout(timeout)
+      signal.removeEventListener('abort', cancel)
+      audio.onloadedmetadata = null
+      audio.onerror = null
+      audio.removeAttribute('src')
+      audio.load()
+      if (durationMs === undefined) reject(new Error('无法读取音频时长'))
+      else resolve(durationMs)
+    }
+    const cancel = () => finish()
+    const timeout = window.setTimeout(cancel, 25_000)
+    signal.addEventListener('abort', cancel, { once: true })
+    audio.preload = 'metadata'
+    audio.onloadedmetadata = () => {
+      const milliseconds = Math.round(audio.duration * 1000)
+      finish(Number.isSafeInteger(milliseconds) && milliseconds > 0 && milliseconds <= 86_400_000 ? milliseconds : undefined)
+    }
+    audio.onerror = cancel
+    audio.src = url
+    audio.load()
+  })
+}
+
+function Editor({ initial, userId, paths, replace, reload, onSaved, initialPart, initialSlot }: Props & {
+  initial: ExamMediaEditor; initialPart: string; initialSlot: string; replace: (editor: ExamMediaEditor) => void; reload: () => void; onSaved: (id: string) => void
 }) {
   const [saved, setSaved] = useState(initial)
   const parts = examListeningParts(saved.parts, saved.slots)
@@ -55,26 +83,27 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
   const [target, setTarget] = useState(() => slots.find(slot => slot.id === initialSlot)?.id
     ?? parts.find(part => initialPart === `${part.sectionId}:${part.partNumber}`)?.slots[0]?.id ?? '')
   const [picks, setPicks] = useState<Record<string, Pick>>({})
-  const [updates, setUpdates] = useState<Record<string, Update>>({})
   const [removed, setRemoved] = useState<string[]>([])
   const [message, setMessage] = useState('')
   const [directoryMessage, setDirectoryMessage] = useState<{ text: string; error?: boolean } | null>(null)
   const [matchMessage, setMatchMessage] = useState('')
   const [operation, setOperation] = useState('')
-  const [preview, setPreview] = useState<{ slotId: string; name: string; durationMs: number | null } | null>(null)
+  const [preview, setPreview] = useState<{ slotId: string; name: string } | null>(null)
   const pending = useRef<AbortController | null>(null)
   const fileHeading = useRef<HTMLHeadingElement>(null)
-  const retry = useRef<{ key: string; requestId: string } | null>(null)
+  const retry = useRef<{ key: string; body: ExamMediaSaveRequest } | null>(null)
   const directoryRetry = useRef<{ key: string; requestId: string } | null>(null)
   const { confirm, dialog } = useSyncConfirmation()
   const inventory = useEnglishFileInventory(userId, paths.generation, slots.length ? main : null)
   useEffect(() => () => pending.current?.abort(), [])
   const busy = Boolean(operation)
-  const dirty = Object.keys(picks).length > 0 || Object.keys(updates).length > 0 || removed.length > 0
+  const dirty = Object.keys(picks).length > 0 || removed.length > 0
+  const pendingAudio = slots.filter(slot => !removed.includes(slot.id) && (
+    picks[slot.id] || (slot.binding && (!slot.binding.reviewed || !slot.binding.durationMs))
+  ))
   const unmatched = slots.filter(slot => !slot.binding && !picks[slot.id])
   const active = slots.find(slot => slot.id === target) ?? unmatched[0]
   const invalidPick = main && Object.values(picks).some(pick => !pick.path.startsWith(directoryPrefix(main.path)))
-  const url = '/api/baidu/sync/exams?' + new URLSearchParams({ revisionId: saved.revisionId })
   async function saveDirectory(value: SyncChosenDirectory) {
     if (pending.current) return
     const payload: Omit<ExamListeningDirectoryRequest, 'requestId'> = {
@@ -113,30 +142,70 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
   function bindFile(file: LessonAudioPick) {
     if (!active || busy || !isExamAudioFile(file.path)) return
     setPicks(current => ({ ...current, [active.id]: { slotId: active.id, fileId: file.file_id, path: file.path, reviewed: false, durationMs: null } }))
-    setUpdates(current => { const next = { ...current }; delete next[active.id]; return next })
     setRemoved(current => current.filter(id => id !== active.id))
     setTarget('')
     setMatchMessage('')
     setMessage('')
   }
   async function save() {
-    if (!main || pending.current || !dirty || invalidPick) return
-    const payload: Omit<ExamMediaSaveRequest, 'requestId'> = {
-      revisionId: saved.revisionId, scope: 'listening', expectedVersion: saved.version, expectedBindingRevisionId: saved.bindingRevisionId,
-      accountGeneration: paths.generation, directoryId: main.directory_id, mainPath: main.path,
-      picks: Object.values(picks), updates: Object.values(updates), removeSlotIds: removed,
+    if (!main || pending.current || (!dirty && !pendingAudio.length) || invalidPick) return
+    const payload = {
+      revisionId: saved.revisionId, scope: 'listening' as const, expectedVersion: saved.version,
+      expectedBindingRevisionId: saved.bindingRevisionId, accountGeneration: paths.generation,
+      directoryId: main.directory_id, mainPath: main.path, picks: Object.values(picks), removeSlotIds: removed,
     }
     const key = JSON.stringify(payload)
-    if (retry.current?.key !== key) retry.current = { key, requestId: crypto.randomUUID() }
     const controller = new AbortController()
     pending.current = controller
     setOperation('save'); setMessage(''); setMatchMessage('')
     try {
-      await examSyncRequest<ExamMediaSaveReceipt>(userId, '/api/baidu/sync/exams', { method: 'PUT', body: { ...payload, requestId: retry.current.requestId }, signal: controller.signal })
-      const next = await examSyncRequest<ExamMediaEditor>(userId, url, { signal: controller.signal })
+      if (retry.current?.key !== key) {
+        if (pendingAudio.length) await examSyncRequest(userId, '/api/exams/media/session', { method: 'POST', signal: controller.signal })
+        const durations = new Map<string, Promise<number>>()
+        const verifiedPicks: Pick[] = []
+        const updates: Update[] = []
+        const measure = async (slot: typeof slots[number]) => {
+          const pick = picks[slot.id]
+          const params = new URLSearchParams({ revisionId: saved.revisionId, slotId: slot.id })
+          if (pick) {
+            params.set('candidateFileId', pick.fileId)
+            params.set('candidatePath', pick.path)
+          }
+          const fileId = pick?.fileId ?? slot.binding?.fileId
+          if (!fileId) return
+          const part = parts.find(item => item.slotIds.includes(slot.id))?.label ?? '听力'
+          try {
+            let duration = durations.get(fileId)
+            if (!duration) {
+              duration = readAudioDuration('/api/exams/media?' + params, controller.signal)
+              durations.set(fileId, duration)
+            }
+            const durationMs = await duration
+            if (slot.segment && slot.segment.endMs > durationMs) throw new Error('配置的片段超出音频时长')
+            if (pick) verifiedPicks.push({ ...pick, reviewed: true, durationMs })
+            else updates.push({ slotId: slot.id, reviewed: true, durationMs })
+          } catch (error) {
+            throw new Error(`${part} · ${slot.sourceTrackLabel ?? '音轨'}：${error instanceof Error ? error.message : '音频无法读取'}。`)
+          }
+        }
+        for (let offset = 0; offset < pendingAudio.length; offset += 4) {
+          const results = await Promise.allSettled(pendingAudio.slice(offset, offset + 4).map(measure))
+          const failures = results.flatMap(result => result.status === 'rejected' ? [result.reason instanceof Error ? result.reason.message : String(result.reason)] : [])
+          if (failures.length) throw new Error(failures.join(' '))
+        }
+        retry.current = { key, body: { ...payload, picks: verifiedPicks, updates, requestId: crypto.randomUUID() } }
+      }
+      const receipt = await examSyncRequest<ExamMediaSaveReceipt>(userId, '/api/baidu/sync/exams', {
+        method: 'PUT', body: retry.current.body, signal: controller.signal,
+      })
+      const nextUrl = '/api/baidu/sync/exams?' + new URLSearchParams({ revisionId: receipt.revisionId })
+      const next = await examSyncRequest<ExamMediaEditor>(userId, nextUrl, { signal: controller.signal })
       if (!controller.signal.aborted) {
-        setSaved(next); replace(next); setPicks({}); setUpdates({}); setRemoved([]); retry.current = null; setPreview(null)
-        setMessage(payload.picks.length ? '听力绑定已保存。新音轨可在试听时确认。' : '听力绑定已保存。')
+        setSaved(next)
+        if (next.revisionId === saved.revisionId) replace(next)
+        setPicks({}); setRemoved([]); retry.current = null; setPreview(null)
+        setMessage(next.status === 'published' ? '听力绑定已保存，学生端已更新。' : '听力绑定已保存。')
+        onSaved(next.revisionId)
       }
     } catch (error) {
       if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : '保存失败，请重试。')
@@ -151,23 +220,13 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
     setOperation('preview'); setMessage('')
     try {
       await examSyncRequest(userId, '/api/exams/media/session', { method: 'POST', signal: controller.signal })
-      if (!controller.signal.aborted) setPreview({ slotId: slot.id, name: slot.binding.name, durationMs: null })
+      if (!controller.signal.aborted) setPreview({ slotId: slot.id, name: slot.binding.name })
     } catch (error) {
       if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : '预览暂不可用。')
     } finally { if (pending.current === controller) { pending.current = null; if (!controller.signal.aborted) setOperation('') } }
   }
-  const previewSlot = preview && slots.find(slot => slot.id === preview.slotId)
-  const segmentOutOfRange = Boolean(previewSlot?.segment && preview?.durationMs && previewSlot.segment.endMs > preview.durationMs)
-  function confirmPreview() {
-    if (!previewSlot?.binding || !preview?.durationMs || segmentOutOfRange || message) return
-    const slotId = previewSlot.id
-    const durationMs = previewSlot.purpose === 'exam_listening' ? preview.durationMs : previewSlot.binding.durationMs
-    setUpdates(current => ({ ...current, [slotId]: { slotId, reviewed: true, durationMs } }))
-    setPreview(null)
-    setMessage('已确认音轨，请保存听力绑定。')
-  }
   const previewUrl = preview ? '/api/exams/media?' + new URLSearchParams({ revisionId: saved.revisionId, slotId: preview.slotId }) : ''
-  if (!parts.length) return <Text size="2" color="gray">此草稿没有需要绑定的听力音轨。</Text>
+  if (!parts.length) return <Text size="2" color="gray">此试卷没有需要绑定的听力音轨。</Text>
   return <Flex direction="column" gap="3" data-sync-dirty={dirty} data-sync-saving={busy}>
     <StickerCard elevation="flat">
       <Flex direction="column" gap="2">
@@ -215,10 +274,10 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
                       {matchLabel}
                     </Button>
                     <Button size="1" variant="soft" disabled={busy || !slot.binding || Boolean(pick) || removedSlot} onClick={() => void showPreview(slot)}>试听</Button>
-                    {(slot.binding || pick) && <Button size="1" variant="soft" color="gray" disabled={busy} onClick={() => {
+                    {(slot.binding || pick) && <Button size="1" variant="soft" color="gray" disabled={busy || (saved.status === 'published' && slot.required && !!slot.binding && !pick)}
+                      onClick={() => {
                       setMatchMessage('')
                       setPicks(current => { const next = { ...current }; delete next[slot.id]; return next })
-                      setUpdates(current => { const next = { ...current }; delete next[slot.id]; return next })
                       setRemoved(current => removedSlot ? current.filter(id => id !== slot.id) : slot.binding ? [...current, slot.id] : current)
                     }}>{removedSlot ? '撤销解绑' : slot.binding ? '解绑' : '撤销匹配'}</Button>}
                   </Flex>
@@ -242,20 +301,15 @@ function Editor({ initial, userId, paths, replace, reload, initialPart, initialS
     </Grid>
     {invalidPick && <Text size="2" color="red" role="alert">有待保存音轨位于当前听力目录外，请重新匹配或撤销。</Text>}
     <Flex gap="2" wrap="wrap">
-      <Button loading={operation === 'save'} disabled={busy || !dirty || !main || Boolean(invalidPick)} onClick={() => void save()}>保存本卷听力绑定</Button>
+      <Button loading={operation === 'save'} disabled={busy || (!dirty && !pendingAudio.length) || !main || Boolean(invalidPick)} onClick={() => void save()}>{saved.status === 'published' ? '保存并同步听力' : '保存听力绑定'}</Button>
       <Button variant="soft" disabled={busy} onClick={() => { if (dirty) confirm('放弃尚未保存的资源修改并重新读取？', reload); else reload() }}>重新读取</Button>
     </Flex>
     {message && !preview && <Text size="2" role="status">{message}</Text>}
     <AppDialog open={Boolean(preview)} onOpenChange={open => { if (!open) { setPreview(null); setMessage('') } }} title="试听音轨" description={preview?.name} size="preview">
       {preview && <Flex direction="column" gap="2">
-        <audio controls preload="metadata" src={previewUrl} className="w-full" onDurationChange={event => {
-          const milliseconds = Math.round(event.currentTarget.duration * 1000)
-          const durationMs = Number.isSafeInteger(milliseconds) && milliseconds > 0 && milliseconds <= 86_400_000 ? milliseconds : null
-          setPreview(current => current && { ...current, durationMs })
-        }} onError={() => setMessage('试听失败，请检查共享授权、文件位置和绑定。')} />
+        <audio controls preload="metadata" src={previewUrl} className="w-full"
+          onError={() => setMessage('试听失败，请检查共享授权、文件位置和绑定。')} />
         {message && <Text size="2" color="red" role="alert">{message}</Text>}
-        {segmentOutOfRange && <Text size="2" color="red" role="alert">此音轨短于试卷配置的片段，请核对绑定。</Text>}
-        <Flex justify="end"><Button disabled={!preview.durationMs || segmentOutOfRange || Boolean(message)} onClick={confirmPreview}>确认音轨</Button></Flex>
       </Flex>}
     </AppDialog>
     {dialog}
@@ -270,9 +324,10 @@ export default function ExamsMediaManager({ userId, paths }: Props) {
   const [selectedOverride, setSelected] = useState<string | null>(null)
   const selected = selectedOverride ?? location.revisionId
   const [reloadKey, setReloadKey] = useState(0)
+  const [savedRevisionId, setSavedRevisionId] = useState('')
   const section = useRef<HTMLDivElement>(null)
   const { confirm, dialog } = useSyncConfirmation()
-  const catalog = useExamSyncQuery<ExamPage<ExamDraftListItem>>(userId, `/api/baidu/sync/exams?page=${page}&pageSize=100`)
+  const catalog = useExamSyncQuery<ExamPage<ExamAdminListItem>>(userId, `/api/baidu/sync/exams?page=${page}&pageSize=100`)
   const editor = useExamSyncQuery<ExamMediaEditor>(userId, selected ? '/api/baidu/sync/exams?' + new URLSearchParams({ revisionId: selected }) : '')
   const items = catalog.data?.items ?? []
   const sources = [...new Map(items.map(item => [item.source.id, item.source.title])).entries()]
@@ -285,22 +340,33 @@ export default function ExamsMediaManager({ userId, paths }: Props) {
     <Heading as="h2" size="4">考试资源同步</Heading>
     {catalog.loading && <Box className="relative min-h-48"><LoadingOverlay visible placement="content" /></Box>}
     {catalog.error && <Text size="2" color="red" role="alert">{catalog.error}</Text>}
-    <Flex gap="2"><Button size="1" variant="soft" loading={catalog.refreshing} onClick={() => void catalog.refresh().catch(() => undefined)}>刷新草稿目录</Button></Flex>
+    <Flex gap="2"><Button size="1" variant="soft" loading={catalog.refreshing} onClick={() => void catalog.refresh().catch(() => undefined)}>刷新试卷列表</Button></Flex>
     {catalog.data && <>
-      {!items.length && <Text size="2" color="gray">暂无可绑定资源的草稿，请先在考试管理创建或导入内容。</Text>}
+      {!items.length && <Text size="2" color="gray">暂无可绑定资源的试卷。</Text>}
       <Grid columns={{ initial: '1', sm: '2' }} gap="2">
         <SyncSelect label="来源" value={source} empty="全部来源" options={sources.map(([value, label]) => ({ value, label }))} onValueChange={value => change(() => { setSource(value); setSelected('') })} />
-        <SyncSelect label="试卷 / 训练单元 · 草稿版本" value={selected} empty="选择草稿" options={items.filter(item => !source || item.source.id === source).map(item => ({ value: item.revisionId, label: `${item.title} · v${item.revision}` }))}
-          onValueChange={value => change(() => setSelected(value))} />
+        <SyncSelect label="试卷 / 训练单元" value={selected} empty="选择试卷" options={items.filter(item => !source || item.source.id === source).map(item => ({ value: item.revisionId, label: `${item.title} · ${item.status === 'published' ? '学生正在使用' : '草稿'}` }))}
+          onValueChange={value => change(() => { setSelected(value); setSavedRevisionId('') })} />
       </Grid>
       {(page > 1 || catalog.data.hasMore) && <Flex gap="2">
         <Button size="1" variant="soft" disabled={page === 1} onClick={() => change(() => setPage(value => value - 1))}>上一页</Button>
         <Button size="1" variant="soft" disabled={!catalog.data.hasMore} onClick={() => change(() => setPage(value => value + 1))}>下一页</Button>
       </Flex>}
     </>}
+    {savedRevisionId && savedRevisionId === selected && <Text size="2" role="status">听力绑定已保存，学生端已更新。</Text>}
     {editor.loading && <SyncPending>正在读取本套资源…</SyncPending>}
     {editor.error && <Text size="2" color="red" role="alert">{editor.error}</Text>}
     {editor.data && <Editor key={`${selected}:${reloadKey}`} initial={editor.data} initialPart={location.revisionId === selected ? location.part : ''} initialSlot={location.revisionId === selected ? location.slot : ''} userId={userId} paths={paths} replace={editor.replace}
+      onSaved={id => {
+        if (id !== selected) {
+          const url = new URL(window.location.href)
+          url.searchParams.set('revisionId', id)
+          window.history.replaceState(null, '', url)
+          setSelected(id)
+          setSavedRevisionId(id)
+          void catalog.refresh().catch(() => undefined)
+        }
+      }}
       reload={() => { void editor.refresh().then(() => setReloadKey(value => value + 1)).catch(() => undefined) }} />}
     {dialog}
   </Flex>

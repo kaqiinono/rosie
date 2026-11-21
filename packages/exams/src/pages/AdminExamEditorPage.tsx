@@ -8,13 +8,12 @@ import { AppDialog, LoadingOverlay, PageShell, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Tabs, Text, TextArea } from '@rosie/ui/themes'
 import { validateExamDraft } from '../validation'
 import type { ExamDraftInput, ValidationIssue } from '../validation/contracts'
-import type { ExamPublicationState, ExamPublicationReceipt, ExamReviewScope } from '../types/publication'
+import type { ExamPublicationState, ExamPublicationReceipt } from '../types/publication'
 import type { VocabularyLink } from '../types/content'
 import { examRequest, ExamRequestError, examErrorMessage } from '../client/examApi'
 import { clearSavedExamCatalogCache, refreshAdminCatalog } from '../client/adminCatalog'
 import { clearSavedExamImageCache } from '../client/imageTasks'
 import { clearSavedExamMediaCache } from '../client/mediaEditor'
-import { DraftText } from '../components/admin/DraftFields'
 import { ExamIssueList } from '../components/admin/ExamIssueList'
 import { ExamPaperView } from '../components/admin/ExamPaperView'
 import { ExamImageTools } from '../components/admin/ExamImageTools'
@@ -22,14 +21,14 @@ import { ExamManagementFields, focusQuestionEditor } from '../components/admin/E
 import { ExamImageDialog } from '../components/admin/ExamImageDialog'
 import { ExamSourcePage } from '../components/admin/ExamSourcePage'
 
-type DraftRecord = { draft: ExamDraftInput; version: string; createdAt: string; updatedAt: string }
-type PendingCommand = { path: string; body: string; method: 'PATCH' | 'POST'; kind: 'save' | 'review' | 'publish' | 'withdraw' | 'reopen'; draft?: ExamDraftInput; vocabulary?: { matched: number; omitted: number } }
-const REVIEW_NAMES: Record<ExamReviewScope, string> = { exam: '题面与标准答案', explanations: '完整解析与来源', rubric: '主观题评分量表' }
+type PaperStatus = Pick<ExamPublicationState, 'status' | 'version'>
+type DraftRecord = PaperStatus & { draft: ExamDraftInput; supersededBy: string | null }
+type PendingCommand = { path: string; body: string; method: 'PATCH' | 'POST'; kind: 'save' | 'publish' | 'withdraw' | 'reopen'; draft?: ExamDraftInput; vocabulary?: { matched: number; omitted: number } }
 
 function Editor({ id, userId }: { id: string; userId: string }) {
   const router = useRouter()
   const path = `/api/admin/exams/${encodeURIComponent(id)}`
-  const [publication, setPublication] = useState<ExamPublicationState | null>(null)
+  const [publication, setPublication] = useState<PaperStatus | null>(null)
   const [draft, setDraft] = useState<ExamDraftInput | null>(null)
   const [baseline, setBaseline] = useState('')
   const [raw, setRaw] = useState('')
@@ -47,9 +46,8 @@ function Editor({ id, userId }: { id: string; userId: string }) {
   const [error, setError] = useState<unknown>(null)
   const [issues, setIssues] = useState<readonly ValidationIssue[]>([])
   const [notice, setNotice] = useState('')
-  const [reason, setReason] = useState('')
   const [pending, setPending] = useState<PendingCommand | null>(null)
-  const [dialog, setDialog] = useState<'leave' | 'reload' | 'publish' | 'withdraw' | 'reopen' | null>(null)
+  const [dialog, setDialog] = useState<'leave' | 'reload' | 'withdraw' | 'reopen' | null>(null)
   const busyRef = useRef(false)
   const loadSequence = useRef(0)
   const dirty = blockEditing || rawDirty || (draft !== null && JSON.stringify(draft) !== baseline)
@@ -61,10 +59,13 @@ function Editor({ id, userId }: { id: string; userId: string }) {
     setError(null)
     setIssues([])
     try {
-      const state = await examRequest<ExamPublicationState>(userId, `${path}/reviews`, { signal })
-      const record = state.status === 'draft' ? await examRequest<DraftRecord>(userId, path, { signal }) : null
-      if (record && record.version !== state.version) throw new ExamRequestError('exam_conflict', 409)
+      const state = await examRequest<DraftRecord>(userId, `${path}?live=1`, { signal })
       if (signal?.aborted || loadSequence.current !== sequence) return
+      if (state.supersededBy) {
+        router.replace(`/admin/exams/${encodeURIComponent(state.supersededBy)}`)
+        return
+      }
+      const record = state.status === 'withdrawn' ? null : state
       setPublication(state)
       setDraft(record?.draft ?? null)
       setBaseline(record ? JSON.stringify(record.draft) : '')
@@ -80,7 +81,7 @@ function Editor({ id, userId }: { id: string; userId: string }) {
     } finally {
       if (!signal?.aborted && loadSequence.current === sequence) setLoading(false)
     }
-  }, [path, userId])
+  }, [path, router, userId])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -124,7 +125,9 @@ function Editor({ id, userId }: { id: string; userId: string }) {
           // A retried save must replay these exact matches even if the word bank has since changed.
           setPending(command)
         }
-        const receipt = await examRequest<{ version: string }>(userId, command.path, { method: command.method, body: command.body })
+        const receipt = await examRequest<{ id: string; version: string; status: PaperStatus['status'] }>(userId, command.path, {
+          method: command.method, body: command.body,
+        })
         acknowledged = true
         setDraft(savedDraft)
         setBaseline(JSON.stringify(savedDraft))
@@ -133,38 +136,37 @@ function Editor({ id, userId }: { id: string; userId: string }) {
         setPending(null)
         setBlockEditing(false)
         setMediaVersion(value => value + 1)
-        setPublication(previous => previous ? { ...previous, version: receipt.version, reviews: { exam: null, explanations: null, rubric: null }, readiness: { exam: [], explanations: [], canPublish: false } } : previous)
-        setNotice(vocabulary.omitted ? `修改已保存，自动关联 ${vocabulary.matched} 处。另有 ${vocabulary.omitted} 处超出内容包大小上限。`
+        setPublication(receipt)
+        setNotice(receipt.status === 'published' ? '已保存，学生端已更新。'
+          : vocabulary.omitted ? `修改已保存，自动关联 ${vocabulary.matched} 处。另有 ${vocabulary.omitted} 处超出内容包大小上限。`
           : vocabulary.matched ? `修改已保存，自动关联词条 ${vocabulary.matched} 处。` : '修改已保存。')
         if (nextQuestionId) setSelectedQuestionId(nextQuestionId)
-        const results = await Promise.allSettled([
+        void Promise.allSettled([
           clearSavedExamCatalogCache(userId, id),
           clearSavedExamImageCache(userId, id),
           clearSavedExamMediaCache(userId, id),
-          examRequest<ExamPublicationState>(userId, `${path}/reviews`).then(setPublication),
         ])
-        if (results.some(result => result.status === 'rejected')) {
-          setNotice('修改已保存，旧缓存已清理；部分最新数据读取失败，请点击「重新读取」。')
-        }
-      } else if (command.kind === 'review') {
-        const state = await examRequest<ExamPublicationState>(userId, command.path, { method: 'POST', body: command.body })
-        acknowledged = true
-        setPublication(state)
-        setNotice('审核记录已保存。')
+        if (receipt.id !== id) router.replace(`/admin/exams/${encodeURIComponent(receipt.id)}`)
       } else if (command.kind === 'reopen') {
-        await examRequest<ExamPublicationReceipt>(userId, command.path, { method: 'POST', body: command.body })
+        const receipt = await examRequest<ExamPublicationReceipt>(userId, command.path, { method: 'POST', body: command.body })
         acknowledged = true
         setPending(null)
         setNotice('已改回草稿，可以继续修改。')
-        await load()
+        void refreshAdminCatalog(userId).catch(() => undefined)
+        if (receipt.id !== id) router.replace(`/admin/exams/${encodeURIComponent(receipt.id)}`)
+        else await load()
       } else {
-        const receipt = await examRequest<ExamPublicationReceipt>(userId, command.path, { method: 'POST', body: command.body })
+        const receipt = await examRequest<ExamPublicationReceipt>(userId, command.path, {
+          method: 'POST', body: command.body,
+        }, command.kind === 'publish' ? 120_000 : undefined)
         acknowledged = true
-        setPublication(previous => previous ? { ...previous, status: receipt.status, version: receipt.version } : previous)
-        setDraft(null)
-        setBaseline('')
-        setRawDirty(false)
-        setNotice(receipt.status === 'published' ? '已发布。发现问题可以改回草稿继续修改。' : '已下架，已有学习记录保留。可以改回草稿继续修改。')
+        setPublication(receipt)
+        if (receipt.status === 'withdrawn') {
+          setDraft(null)
+          setBaseline('')
+          setRawDirty(false)
+        }
+        setNotice(receipt.status === 'published' ? '已发布到学生端。' : '已下架，已有学习记录保留。')
         void refreshAdminCatalog(userId).catch(() => undefined)
       }
       setPending(null)
@@ -183,21 +185,13 @@ function Editor({ id, userId }: { id: string; userId: string }) {
     if (!publication || pending || busyRef.current) return false
     const result = validateExamDraft(value, { regenerateVocabulary: true })
     if (!result.ok) { setIssues(result.issues); setError(new ExamRequestError('exam_invalid_draft', 400, result.issues)); return false }
-    return execute({ path, method: 'PATCH', kind: 'save', draft: result.value,
+    return execute({ path: `${path}?live=1`, method: 'PATCH', kind: 'save', draft: result.value,
       body: JSON.stringify({ draft: result.value, requestId: crypto.randomUUID(), expectedVersion: publication.version }) })
   }
 
   function save() {
     if (!draft || rawDirty || blockEditing) return
     void persist(draft)
-  }
-
-  function review(scope: ExamReviewScope, decision: 'approved' | 'blocked') {
-    if (!publication || dirty || pending || (decision === 'blocked' && !reason.trim())) return
-    void execute({ path: `${path}/reviews`, method: 'POST', kind: 'review', body: JSON.stringify({
-      expectedVersion: publication.version, requestId: crypto.randomUUID(), scope, decision,
-      ...(reason.trim() ? { reason: reason.trim() } : {}),
-    }) })
   }
 
   function exportDraft() {
@@ -234,7 +228,7 @@ function Editor({ id, userId }: { id: string; userId: string }) {
     setImageSlotId(slotId)
   }
 
-  return <PageShell title="试卷内容与审核" tone="paper" width="full" onBack={() => dirty || pending ? setDialog('leave') : router.push('/admin/exams')}>
+  return <PageShell title="试卷编辑" tone="paper" width="full" onBack={() => dirty || pending ? setDialog('leave') : router.push('/admin/exams')}>
     <div className="relative flex min-h-[calc(100dvh-10rem)] flex-col">
       <LoadingOverlay appearance="quiet" visible={loading} placement="content" />
       {!loading && <Flex direction="column" gap="5">
@@ -259,7 +253,7 @@ function Editor({ id, userId }: { id: string; userId: string }) {
             onRecrop={slotId => openImage(slotId, true)} /></Tabs.Content>
           <Tabs.Content value="content" className="mt-4"><div className="grid items-start gap-4 xl:grid-cols-[210px_minmax(0,1fr)_minmax(320px,0.85fr)]">
             <StickerCard as="aside" size="sm" className="xl:sticky xl:top-24 xl:max-h-[calc(100dvh-7rem)] xl:overflow-auto"><Flex direction="column" gap="3">
-              <Text weight="bold">逐题审阅 · {selectedIndex + 1}/{questions.length}</Text>
+              <Text weight="bold">逐题编辑 · {selectedIndex + 1}/{questions.length}</Text>
               {linkedWordCount > 0 && <Text size="2" color="gray">已关联 {linkedWordCount} 个词库词条</Text>}
               {draft.content.groups.map(group => <Flex key={group.id} direction="column" gap="2">
                 <Text size="2" weight="bold">{group.sectionId} · Part {group.partNumber}</Text>
@@ -283,7 +277,7 @@ function Editor({ id, userId }: { id: string; userId: string }) {
             </Flex></StickerCard>
           </div></Tabs.Content>
           <Tabs.Content value="raw"><StickerCard as="section" size="lg" className="mt-4"><Flex direction="column" gap="3">
-            <Text as="p">在这里编辑试卷的 JSON 内容包。保存会直接存储修改，审核状态请在审核区设置。</Text>
+            <Text as="p">在这里编辑试卷的 JSON 内容包。</Text>
             <TextArea aria-label="完整草稿内容包" size="3" rows={22} resize="vertical" value={raw} disabled={busy || !!pending} onChange={event => { setRaw(event.target.value); setRawDirty(true) }} />
             <Flex><Button size="3" variant="soft" loading={busy && pending?.kind === 'save'} disabled={busy || !!pending || !rawDirty} onClick={() => {
               try {
@@ -295,40 +289,40 @@ function Editor({ id, userId }: { id: string; userId: string }) {
             }}>保存修改</Button></Flex>
           </Flex></StickerCard></Tabs.Content>
         </Tabs.Root>}
-        {draft && <ExamImageDialog userId={userId} revisionId={id} slotId={imageSlotId} initialEditing={imageRecrop} onClose={() => setImageSlotId(null)} onSaved={() => { setMediaVersion(value => value + 1); void load() }} />}
+        {draft && <ExamImageDialog userId={userId} revisionId={id} slotId={imageSlotId} initialEditing={imageRecrop} onClose={() => setImageSlotId(null)} onSaved={nextId => {
+          if (nextId !== id) {
+            setImageSlotId(null)
+            void refreshAdminCatalog(userId).catch(() => undefined)
+            router.replace(`/admin/exams/${encodeURIComponent(nextId)}`)
+          } else {
+            setMediaVersion(value => value + 1)
+            void load()
+          }
+        }} />}
         {draft && <AppDialog open={sourcePage !== null} size="preview" title={`原书 PDF 第 ${sourcePage ?? 1} 页`} onOpenChange={open => { if (!open) setSourcePage(null) }}>
           <ExamSourcePage showTitle={false} userId={userId} revisionId={id} title={draft.contentSet.source.title} page={sourcePage ?? 1} />
         </AppDialog>}
         {publication && <StickerCard as="section" size="lg"><Flex id="exam-review-controls" tabIndex={-1} direction="column" gap="4">
-          <Text as="p" size="4" weight="bold">审核与发布</Text>
-          {publication.status === 'draft' && <>
-            <Text as="p">下面的检查和审核只是提醒，不会拦住发布。保存后的内容可以直接发布；发现问题可以改回草稿再改。</Text>
-            <DraftText label="审核说明（阻断时必填）" multiline value={reason} onChange={setReason} />
-            {(Object.keys(REVIEW_NAMES) as ExamReviewScope[]).map(scope => <Flex key={scope} direction="column" gap="2">
-              <Text weight="bold">{REVIEW_NAMES[scope]}</Text>
-              <Text size="2">{publication.reviews[scope]?.decision === 'approved' ? '本版本已审核' : publication.reviews[scope]?.decision === 'blocked' ? `已阻断：${publication.reviews[scope]?.reason ?? ''}` : '本版本待审核'}</Text>
-              <Flex gap="2" wrap="wrap"><Button size="3" variant="soft" disabled={busy || !!pending || dirty} onClick={() => review(scope, 'approved')}>确认已对照审核</Button>
-                <Button size="3" variant="soft" color="red" disabled={busy || !!pending || dirty || !reason.trim()} onClick={() => review(scope, 'blocked')}>标记阻断</Button></Flex>
-            </Flex>)}
-            <Text weight="bold">题目与考试准备</Text><ExamIssueList {...issueListProps} issues={publication.readiness.exam} />
-            <Text weight="bold">答案与解析准备</Text><ExamIssueList {...issueListProps} issues={publication.readiness.explanations} />
-            <Flex gap="3" wrap="wrap"><Button size="3" disabled={busy || !!pending || dirty} onClick={() => setDialog('publish')}>发布此版本</Button>
-              <Button size="3" variant="soft" asChild><Link href={`/admin/sync?panel=exams&revisionId=${encodeURIComponent(id)}`}>管理考试资源</Link></Button></Flex>
-          </>}
-          {publication.status !== 'draft' && <Flex gap="3" wrap="wrap">
-            <Button size="3" disabled={busy || !!pending} onClick={() => setDialog('reopen')}>改回草稿继续修改</Button>
-            {publication.status === 'published' && <Button size="3" color="red" variant="soft" disabled={busy || !!pending} onClick={() => setDialog('withdraw')}>下架此版本</Button>}
-          </Flex>}
-          {publication.status === 'published' && <Text as="p">学生可以开始这份试卷。要改题目或答案，先改回草稿，改完再发布。已有学习记录保留。</Text>}
-          {publication.status === 'withdrawn' && <Text as="p">已下架，不能开始新的考试。可以改回草稿继续修改，已有学习记录保留。</Text>}
+          <Text as="p" size="4" weight="bold">学生端</Text>
+          <Flex gap="3" wrap="wrap">
+            {draft && <Button size="3" variant="soft" asChild><Link href={`/admin/sync?panel=exams&revisionId=${encodeURIComponent(id)}`}>管理考试资源</Link></Button>}
+            {publication.status === 'draft' && <Button size="3" loading={busy && pending?.kind === 'publish'} disabled={busy || !!pending || dirty}
+              onClick={() => void execute({ path: `${path}/publish`, method: 'POST', kind: 'publish',
+                body: JSON.stringify({ requestId: crypto.randomUUID(), expectedVersion: publication.version }) })}>校验并发布</Button>}
+            {publication.status === 'published' && <Button size="3" color="red" variant="soft" disabled={busy || !!pending || dirty}
+              onClick={() => setDialog('withdraw')}>下架</Button>}
+            {publication.status === 'withdrawn' && <Button size="3" disabled={busy || !!pending}
+              onClick={() => setDialog('reopen')}>改回草稿</Button>}
+          </Flex>
+          {publication.status === 'draft' && <Text as="p">题目、答案和必需资源通过检查后，试卷会显示在学生端。</Text>}
+          {publication.status === 'published' && <Text as="p">保存修改后，学生下次开卷会使用更新后的试卷。</Text>}
         </Flex></StickerCard>}
       </Flex>}
     </div>
     <AppDialog open={dialog !== null} onOpenChange={open => { if (!open && !busy) setDialog(null) }} closeDisabled={busy}
-      title={dialog === 'publish' ? '发布此版本' : dialog === 'withdraw' ? '下架此版本' : dialog === 'reopen' ? '改回草稿' : '当前修改尚未保存'}>
+      title={dialog === 'withdraw' ? '下架此版本' : dialog === 'reopen' ? '改回草稿' : '当前修改尚未保存'}>
       <Flex direction="column" gap="4">
-        <Text as="p">{dialog === 'publish' ? '发布后学生可以开始这份试卷。缺图、未审核或其它问题不会拦住发布。要修改时可以改回草稿，已有学习记录保留。'
-          : dialog === 'withdraw' ? '下架后不能开始新的考试，已有学习记录和复盘保留。之后仍可以改回草稿继续修改。'
+        <Text as="p">{dialog === 'withdraw' ? '下架后不能开始新的考试，已有学习记录和复盘保留。之后仍可以改回草稿继续修改。'
           : dialog === 'reopen' ? '改回草稿后可以继续修改这份内容。学生要等再次发布才能开始新的考试，已有学习记录保留。'
           : pending ? '有一次操作尚未确认结果。建议先重试原操作；离开后请重新读取服务器状态，不要另建重复内容。'
           : '离开或重新读取会丢弃当前编辑。可先取消并导出当前修改。'}</Text>
@@ -337,9 +331,9 @@ function Editor({ id, userId }: { id: string; userId: string }) {
             const action = dialog; setDialog(null)
             if (action === 'leave') router.push('/admin/exams')
             else if (action === 'reload') void load()
-            else if (publication && (action === 'publish' || action === 'withdraw' || action === 'reopen')) void execute({ path: `${path}/${action}`, method: 'POST', kind: action,
+            else if (publication && (action === 'withdraw' || action === 'reopen')) void execute({ path: `${path}/${action}`, method: 'POST', kind: action,
               body: JSON.stringify({ requestId: crypto.randomUUID(), expectedVersion: publication.version }) })
-          }}>{dialog === 'publish' ? '确认发布' : dialog === 'withdraw' ? '确认下架' : dialog === 'reopen' ? '改回草稿' : dialog === 'reload' ? '丢弃修改并重新读取' : '离开编辑页'}</Button></Flex>
+          }}>{dialog === 'withdraw' ? '确认下架' : dialog === 'reopen' ? '改回草稿' : dialog === 'reload' ? '丢弃修改并重新读取' : '离开编辑页'}</Button></Flex>
       </Flex>
     </AppDialog>
   </PageShell>

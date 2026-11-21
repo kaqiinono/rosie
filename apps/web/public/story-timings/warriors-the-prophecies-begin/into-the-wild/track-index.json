@@ -1,0 +1,186 @@
+{
+  "chapters": {
+    "prologue": [
+      {
+        "file": "full",
+        "startMs": 0,
+        "endMs": 511443
+      }
+    ],
+    "ch01": [
+      {
+        "file": "full",
+        "startMs": 511443,
+        "endMs": 1883463
+      }
+    ],
+    "ch02": [
+      {
+        "file": "full",
+        "startMs": 1883463,
+        "endMs": 2352692
+      }
+    ],
+    "ch03": [
+      {
+        "file": "full",
+        "startMs": 2352692,
+        "endMs": 3953894
+      }
+    ],
+    "ch04": [
+      {
+        "file": "full",
+        "startMs": 3953894,
+        "endMs": 5392091
+      }
+    ],
+    "ch05": [
+      {
+        "file": "full",
+        "startMs": 5392091,
+        "endMs": 6842410
+      }
+    ],
+    "ch06": [
+      {
+        "file": "full",
+        "startMs": 6842410,
+        "endMs": 7842307
+      }
+    ],
+    "ch07": [
+      {
+        "file": "full",
+        "startMs": 7842307,
+        "endMs": 8748257
+      }
+    ],
+    "ch08": [
+      {
+        "file": "full",
+        "startMs": 8748257,
+        "endMs": 10054891
+      }
+    ],
+    "ch09": [
+      {
+        "file": "full",
+        "startMs": 10054891,
+        "endMs": 11686557
+      }
+    ],
+    "ch10": [
+      {
+        "file": "full",
+        "startMs": 11686557,
+        "endMs": 12744272
+      }
+    ],
+    "ch11": [
+      {
+        "file": "full",
+        "startMs": 12744272,
+        "endMs": 13556738
+      }
+    ],
+    "ch12": [
+      {
+        "file": "full",
+        "startMs": 13556738,
+        "endMs": 15174194
+      }
+    ],
+    "ch13": [
+      {
+        "file": "full",
+        "startMs": 15174194,
+        "endMs": 16257823
+      }
+    ],
+    "ch14": [
+      {
+        "file": "full",
+        "startMs": 16257823,
+        "endMs": 17170228
+      }
+    ],
+    "ch15": [
+      {
+        "file": "full",
+        "startMs": 17170228,
+        "endMs": 17744736
+      }
+    ],
+    "ch16": [
+      {
+        "file": "full",
+        "startMs": 17744736,
+        "endMs": 18701305
+      }
+    ],
+    "ch17": [
+      {
+        "file": "full",
+        "startMs": 18701305,
+        "endMs": 19674221
+      }
+    ],
+    "ch18": [
+      {
+        "file": "full",
+        "startMs": 19674221,
+        "endMs": 20690559
+      }
+    ],
+    "ch19": [
+      {
+        "file": "full",
+        "startMs": 20690559,
+        "endMs": 21564140
+      }
+    ],
+    "ch20": [
+      {
+        "file": "full",
+        "startMs": 21564140,
+        "endMs": 22906857
+      }
+    ],
+    "ch21": [
+      {
+        "file": "full",
+        "startMs": 22906857,
+        "endMs": 24050161
+      }
+    ],
+    "ch22": [
+      {
+        "file": "full",
+        "startMs": 24050161,
+        "endMs": 24720382
+      }
+    ],
+    "ch23": [
+      {
+        "file": "full",
+        "startMs": 24720382,
+        "endMs": 25417120
+      }
+    ],
+    "ch24": [
+      {
+        "file": "full",
+        "startMs": 25417120,
+        "endMs": 26148595
+      }
+    ],
+    "ch25": [
+      {
+        "file": "full",
+        "startMs": 26148595,
+        "endMs": 26984977
+      }
+    ]
+  }
+}

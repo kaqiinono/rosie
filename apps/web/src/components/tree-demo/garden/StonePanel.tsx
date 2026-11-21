@@ -80,6 +80,9 @@ export default function StonePanel({
     return { key, target, count, missing: Math.max(0, target - count) }
   })
   const totalMissing = progress.reduce((total, item) => total + item.missing, 0)
+  const wishLabel = canExchange ? '宝石已集齐！立即换心愿'
+    : totalMissing > 0 ? `还差 ${totalMissing} 颗宝石，去集齐换心愿` : '查看下次兑换时间'
+  const compactWishLabel = canExchange ? '换心愿' : totalMissing > 0 ? `还差 ${totalMissing} 颗` : '下次兑换'
   return (
     <StickerCard tone="paper" size="sm" elevation="md" radius="md" className="@container flex w-full flex-col">
       <div className="grid grid-cols-2 gap-x-2 gap-y-3 @min-[28rem]:grid-cols-4">
@@ -125,7 +128,8 @@ export default function StonePanel({
       <div className="mt-auto flex flex-col gap-2 pt-3">
         {mobileActions && <div className="flex flex-wrap gap-2 md:hidden">{mobileActions}</div>}
         <Button size="3" color={canExchange ? 'amber' : 'gray'} variant={canExchange ? 'solid' : 'soft'}
-          data-wish-ready={canExchange || undefined} className="tg-wish-button min-h-11 w-full whitespace-normal text-center"
+          data-wish-ready={canExchange || undefined} className="tg-wish-button min-h-11 w-full min-w-0 whitespace-nowrap text-center"
+          aria-label={wishLabel} title={wishLabel}
           disabled={busy} onClick={event => {
             if (canExchange) { onExchange(); return }
             const button = event.currentTarget
@@ -136,11 +140,10 @@ export default function StonePanel({
               .map(({ key, missing }) => `${missing} 颗${SUBJECTS[key].stone}`)
             onWishHint(remaining.length ? `还差 ${STONE_LIST.format(remaining)}哦！` : null)
           }}>
-          {canExchange ? (
-            <span><span aria-hidden="true">🎉</span> 宝石已集齐！立即换心愿</span>
-          ) : (
-            <span>{totalMissing > 0 ? `还差 ${totalMissing} 颗宝石，去集齐换心愿` : '查看下次兑换时间'} <span aria-hidden="true">›</span></span>
-          )}
+          <span aria-hidden="true" className="truncate @min-[18rem]:hidden">{compactWishLabel}</span>
+          <span aria-hidden="true" className="hidden truncate @min-[18rem]:block">
+            {canExchange ? `🎉 ${wishLabel}` : `${wishLabel} ›`}
+          </span>
         </Button>
       </div>
     </StickerCard>

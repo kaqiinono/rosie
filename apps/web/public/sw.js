@@ -24,6 +24,7 @@ registerRoute(
     url.pathname.startsWith('/api/project-media/chinese-reading-recordings/') ||
     url.pathname.startsWith('/api/project-media/english-story-recordings/') ||
     url.pathname.startsWith('/api/project-media/exam-recordings/') ||
+    url.pathname.startsWith('/api/project-media/reading/stories/') ||
     url.pathname.startsWith('/api/baidu/sync/') || url.pathname === '/api/baidu/video/materials',
   new NetworkOnly(),
 )
@@ -49,6 +50,12 @@ registerRoute(
       new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 }),
     ],
   })
+)
+
+registerRoute(
+  ({ url, request }) => request.destination === 'image' && /^thumbnail\d+\.baidupcs\.com$/.test(url.hostname)
+    && url.pathname.startsWith('/thumbnail/'),
+  new NetworkOnly({ fetchOptions: { cache: 'no-store' } }),
 )
 
 registerRoute(

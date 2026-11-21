@@ -35,6 +35,8 @@ export interface ExamAdminListItem extends ExamCatalogItem {
 
 export interface ExamDraftRecord {
   draft: ExamDraftInput
+  status: ExamAdminListItem['status']
+  supersededBy: string | null
   version: string
   createdAt: string
   updatedAt: string
@@ -45,7 +47,7 @@ export interface ExamDraftReceipt {
   contentSetId: string
   revision: number
   version: string
-  status: 'draft'
+  status: 'draft' | 'published'
   createdAt: string
   updatedAt: string
 }

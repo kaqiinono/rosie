@@ -6,7 +6,7 @@ import {
   type ExamCurrentReviews, type ExamDraftInput, type ExamPublicationReceipt,
   type ExamPublicationState, type ExamReviewDecision, type ExamReviewRecord, type ExamReviewScope,
 } from '@rosie/exams/validation'
-import { ExamApiError } from './http'
+import { ExamApiError, examIdentifier } from './http'
 import { verifyExamMediaForPublication } from './media'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -130,7 +130,7 @@ async function vocabularyIsCurrent(db: SupabaseClient, draft: ExamDraftInput): P
   })
 }
 
-async function loadPublication(db: SupabaseClient, id: string): Promise<{ state: ExamPublicationState; draft: ExamDraftInput }> {
+async function loadPublication(db: SupabaseClient, id: string, check = false): Promise<{ state: ExamPublicationState; draft: ExamDraftInput }> {
   const { data, error } = await db.rpc('read_exam_publication', { p_id: id })
   if (error) storageError(error)
   const row = object(data)
@@ -147,23 +147,28 @@ async function loadPublication(db: SupabaseClient, id: string): Promise<{ state:
   const sourceReviews = object(row.reviews)
   const reviews: ExamCurrentReviews = { exam: null, explanations: null, rubric: null }
   for (const scope of SCOPES) reviews[scope] = reviewRecord(sourceReviews[scope], id, version, scope)
-  let media: Awaited<ReturnType<typeof verifyExamMediaForPublication>> = undefined
-  let mediaFailed = false
-  try { media = await verifyExamMediaForPublication(db, validation.value) }
-  catch { mediaFailed = true }
-  const readiness = describeExamPublicationReadiness(validation.value, { version, reviews, media })
-  if (mediaFailed) {
-    readiness.exam.push({ path: '$.content.mediaBindingRevisionId', code: 'exam_media_unavailable', message: 'The current binding could not be verified against the shared account and live files.' })
+  const readiness: ExamPublicationState['readiness'] = { exam: [], explanations: [], canPublish: false }
+  if (check && row.status === 'draft') {
+    let media: Awaited<ReturnType<typeof verifyExamMediaForPublication>> = undefined
+    try { media = await verifyExamMediaForPublication(db, validation.value) }
+    catch (error) {
+      readiness.exam.push(...(error instanceof ExamApiError && error.issues?.length ? error.issues : [{
+        path: '$.content.mediaBindingRevisionId', code: 'exam_media_unavailable', message: '无法读取考试资源，请检查网盘授权和文件绑定。',
+      }]))
+    }
+    const report = describeExamPublicationReadiness(validation.value, { media })
+    readiness.exam.push(...report.exam)
+    readiness.explanations.push(...report.explanations)
+    if (!await vocabularyIsCurrent(db, validation.value)) {
+      readiness.exam.push({ path: '$.content.vocabularyLinks', code: 'exam_invalid_vocabulary_reference', message: '词汇关联与词库不一致，请重新保存试卷。' })
+    }
+    readiness.canPublish = readiness.exam.length === 0 && readiness.explanations.length === 0
   }
-  if (!await vocabularyIsCurrent(db, validation.value)) {
-    readiness.exam.push({ path: '$.content.vocabularyLinks', code: 'exam_invalid_vocabulary_reference', message: 'Vocabulary references must match the current canonical entries.' })
-  }
-  if (row.status !== 'draft') readiness.canPublish = false
   return { state: { id, version, status: row.status, reviews, readiness }, draft: validation.value }
 }
 
 export async function readExamPublication(db: SupabaseClient, id: string): Promise<ExamPublicationState> {
-  return (await loadPublication(db, id)).state
+  return (await loadPublication(db, id, true)).state
 }
 
 export async function recordExamReview(db: SupabaseClient, id: string, actorId: string, command: ExamReviewCommand): Promise<ExamPublicationState> {
@@ -178,11 +183,15 @@ export async function recordExamReview(db: SupabaseClient, id: string, actorId: 
 export async function transitionExamPublication(
   db: SupabaseClient, id: string, actorId: string, action: 'publish' | 'withdraw' | 'reopen', command: ExamPublicationCommand,
 ): Promise<ExamPublicationReceipt> {
-  const state = action === 'publish' ? await readExamPublication(db, id) : null
+  const state = action === 'publish' ? (await loadPublication(db, id, true)).state : null
+  if (state && state.version !== command.expectedVersion) throw new ExamApiError('exam_conflict', 409)
+  if (state?.status === 'draft' && !state.readiness.canPublish) {
+    throw new ExamApiError('exam_publication_blocked', 409, [...state.readiness.exam, ...state.readiness.explanations].slice(0, 100))
+  }
   const { data, error } = await db.rpc('transition_exam_publication', {
     p_id: id, p_expected_version: command.expectedVersion, p_request_id: command.requestId, p_actor: actorId, p_action: action,
-    p_review_ids: state ? Object.fromEntries(SCOPES.map(scope => [scope, state.reviews[scope]?.id ?? null])) : {},
-    p_ready: true,
+    p_review_ids: {},
+    p_ready: state?.readiness.canPublish ?? false,
   })
   if (error) {
     if (error.message === 'exam_publication_blocked' && state) {
@@ -192,6 +201,11 @@ export async function transitionExamPublication(
   }
   const row = object(data)
   const status = action === 'publish' ? 'published' : action === 'reopen' ? 'draft' : 'withdrawn'
-  if (row.id !== id || row.status !== status || row.version !== command.expectedVersion) throw new ExamApiError('exam_unavailable', 503)
-  return { id, version: uuid(row.version), status, updatedAt: date(row.updatedAt) }
+  const resultId = examIdentifier(row.id)
+  const resultVersion = uuid(row.version)
+  const copiedDraft = action === 'reopen' && resultId !== id
+  if (row.status !== status || (!copiedDraft && (resultId !== id || resultVersion !== command.expectedVersion))) {
+    throw new ExamApiError('exam_unavailable', 503)
+  }
+  return { id: resultId, version: resultVersion, status, updatedAt: date(row.updatedAt) }
 }

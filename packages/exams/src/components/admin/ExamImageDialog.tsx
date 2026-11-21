@@ -5,10 +5,11 @@ import { useAuth } from '@rosie/core'
 import { AppDialog, ImageCropper, LoadingOverlay, StickerCard } from '@rosie/ui'
 import { Button, Flex, Text } from '@rosie/ui/themes'
 import { imageRequest, imageTaskError, imageWorkspaceStore, useExamImageBlob } from '../../client/imageTasks'
+import type { ExamMediaSaveReceipt } from '../../types/media'
 import type { ExamImageCropCommand } from '../../types/imageTasks'
 
 export function ExamImageDialog({ userId, revisionId, slotId, initialEditing = false, onClose, onSaved }: {
-  userId: string; revisionId: string; slotId: string | null; initialEditing?: boolean; onClose: () => void; onSaved: () => void
+  userId: string; revisionId: string; slotId: string | null; initialEditing?: boolean; onClose: () => void; onSaved: (revisionId: string) => void
 }) {
   const store = useMemo(() => imageWorkspaceStore(revisionId), [revisionId])
   const { user } = useAuth()
@@ -30,11 +31,14 @@ export function ExamImageDialog({ userId, revisionId, slotId, initialEditing = f
     if (busy) return
     setBusy(true); setPending(operation); setError(null)
     try {
-      await imageRequest(userId, '/api/admin/exams/images/crop', { method: 'POST', body: operation.blob,
+      const response = await imageRequest(userId, '/api/admin/exams/images/crop', { method: 'POST', body: operation.blob,
         headers: { 'Content-Type': 'image/png', 'X-Exam-Crop': JSON.stringify(operation.command) } })
-      setPending(null); setEditing(false); setCropDirty(false); setNotice('图片已保存并绑定。请对照成品确认。')
-      onSaved()
-      try { await store.refreshInBackground(userId) } catch (refreshFailure) { setError(refreshFailure) }
+      const receipt = await response.json() as ExamMediaSaveReceipt
+      setPending(null); setEditing(false); setCropDirty(false); setNotice('图片已保存并绑定。')
+      onSaved(receipt.revisionId)
+      if (receipt.revisionId === revisionId) {
+        try { await store.refreshInBackground(userId) } catch (refreshFailure) { setError(refreshFailure) }
+      }
     } catch (failure) { setError(failure) }
     finally { setBusy(false) }
   }

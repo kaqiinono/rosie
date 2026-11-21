@@ -18,6 +18,7 @@ export interface ExamMediaVerification {
 
 export interface ExamMediaEditor {
   revisionId: string
+  status: 'draft' | 'published'
   testNumber: number
   version: string
   bindingRevisionId: string | null

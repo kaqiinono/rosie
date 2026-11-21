@@ -5,23 +5,38 @@ export const PART_BYTES = 4 * 1024 * 1024
 export const RECORDING_BUCKETS = ['chinese-reading-recordings', 'english-story-recordings', 'exam-recordings']
 export const PROJECT_BUCKETS = ['math', 'grammar-pages', 'word-images', 'exam-image-sources', 'reading', ...RECORDING_BUCKETS]
 
+const dragonMastersPictures = '/airosie/english/story/dragon-masters/pics'
+const privateRoots = [
+  ...['exam-image-sources', 'chinese-reading-recordings', 'record', 'reading/stories'].map(folder => `${PROJECT_ROOT}/${folder}`),
+  dragonMastersPictures,
+]
+
 /** @param {string} path */
 export function isPrivateProjectPath(path) {
   const normalized = path.toLowerCase()
-  return ['exam-image-sources', 'chinese-reading-recordings', 'record'].some(folder => {
-    const root = `${PROJECT_ROOT}/${folder}`
-    return normalized === root || normalized.startsWith(root + '/')
-  })
+  return privateRoots.some(root => normalized === root || normalized.startsWith(root + '/'))
+}
+
+/** @param {string} series @param {string} name */
+export function isStoryIllustrationName(series, name) {
+  return /^ch\d{2,}-p\d{2,}(?:-[a-z])?\.webp$/.test(name) ||
+    (series === 'dragon-masters' && /^ch\d{2,}-p\d{2,}-review-\d+-[a-f0-9]{10}\.webp$/.test(name))
 }
 
 /** @param {string} bucket @param {string} path */
 export function projectPath(bucket, path) {
+  const parts = path.split('/')
   if (!PROJECT_BUCKETS.includes(bucket) || path.length > 900 ||
-    path.split('/').some(part => !part || part === '.' || part === '..' || /[\\\u0000-\u001f\u007f]/.test(part))) {
+    parts.some(part => !part || part === '.' || part === '..' || /[\\\u0000-\u001f\u007f]/.test(part))) {
     throw Error('invalid_project_media_path')
   }
+  const [folder, series, volume, name] = parts
+  if (bucket === 'reading' && folder === 'stories' && series === 'dragon-masters' && volume && /^[a-z0-9-]+$/.test(volume)) {
+    if (parts.length === 3) return `${dragonMastersPictures}/${volume}`
+    if (parts.length === 4 && isStoryIllustrationName(series, name)) return `${dragonMastersPictures}/${volume}/${name}`
+  }
   const target = bucket === 'chinese-reading-recordings'
-    ? path.split('/').map(part => {
+    ? parts.map(part => {
         // Storage allows colons in the legacy lesson keys. Baidu rejects those directory names.
         const prefix = 'rosie-path-'
         return /[:?*"<>|]/.test(part) || part.startsWith(prefix) || part !== part.trim() || part.endsWith('.')
