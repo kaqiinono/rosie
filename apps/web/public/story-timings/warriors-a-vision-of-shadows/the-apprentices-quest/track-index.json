@@ -3,8 +3,30 @@
     "prologue": [
       {
         "file": "full",
-        "startMs": 36240,
-        "endMs": 174880,
+        "startMs": 0,
+        "endMs": 665716
+      }
+    ],
+    "ch01": [
+      {
+        "file": "full",
+        "startMs": 675430,
+        "endMs": 1635000,
+        "partial": true
+      }
+    ],
+    "ch02": [
+      {
+        "file": "full",
+        "startMs": 1634313,
+        "endMs": 3374881
+      }
+    ],
+    "ch03": [
+      {
+        "file": "full",
+        "startMs": 3378800,
+        "endMs": 5039580,
         "partial": true
       }
     ]

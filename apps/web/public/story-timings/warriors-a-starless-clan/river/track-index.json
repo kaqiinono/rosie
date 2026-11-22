@@ -4,7 +4,190 @@
       {
         "file": "part-03",
         "startMs": 80,
-        "endMs": 182460,
+        "endMs": 334220,
+        "partial": true
+      }
+    ],
+    "ch01": [
+      {
+        "file": "part-04",
+        "startMs": 3920,
+        "endMs": 1055050,
+        "partial": true
+      }
+    ],
+    "ch02": [
+      {
+        "file": "part-05",
+        "startMs": 12040,
+        "endMs": 1417300,
+        "partial": true
+      }
+    ],
+    "ch03": [
+      {
+        "file": "part-06",
+        "startMs": 3900,
+        "endMs": 972630,
+        "partial": true
+      }
+    ],
+    "ch04": [
+      {
+        "file": "part-07",
+        "startMs": 3800,
+        "endMs": 1071640,
+        "partial": true
+      }
+    ],
+    "ch05": [
+      {
+        "file": "part-08",
+        "startMs": 9400,
+        "endMs": 1357100,
+        "partial": true
+      }
+    ],
+    "ch06": [
+      {
+        "file": "part-09",
+        "startMs": 1960,
+        "endMs": 519200,
+        "partial": true
+      }
+    ],
+    "ch07": [
+      {
+        "file": "part-10",
+        "startMs": 6720,
+        "endMs": 1007720,
+        "partial": true
+      }
+    ],
+    "ch08": [
+      {
+        "file": "part-11",
+        "startMs": 10480,
+        "endMs": 820160,
+        "partial": true
+      }
+    ],
+    "ch09": [
+      {
+        "file": "part-12",
+        "startMs": 1260,
+        "endMs": 938880,
+        "partial": true
+      }
+    ],
+    "ch10": [
+      {
+        "file": "part-13",
+        "startMs": 3720,
+        "endMs": 1064700,
+        "partial": true
+      }
+    ],
+    "ch11": [
+      {
+        "file": "part-14",
+        "startMs": 3380,
+        "endMs": 720040,
+        "partial": true
+      }
+    ],
+    "ch12": [
+      {
+        "file": "part-15",
+        "startMs": 3900,
+        "endMs": 681700,
+        "partial": true
+      }
+    ],
+    "ch13": [
+      {
+        "file": "part-16",
+        "startMs": 3900,
+        "endMs": 876280
+      }
+    ],
+    "ch14": [
+      {
+        "file": "part-17",
+        "startMs": 4080,
+        "endMs": 697800,
+        "partial": true
+      }
+    ],
+    "ch15": [
+      {
+        "file": "part-18",
+        "startMs": 4080,
+        "endMs": 1005120,
+        "partial": true
+      }
+    ],
+    "ch16": [
+      {
+        "file": "part-19",
+        "startMs": 4080,
+        "endMs": 923640,
+        "partial": true
+      }
+    ],
+    "ch17": [
+      {
+        "file": "part-20",
+        "startMs": 4000,
+        "endMs": 909320,
+        "partial": true
+      }
+    ],
+    "ch18": [
+      {
+        "file": "part-21",
+        "startMs": 3960,
+        "endMs": 1079000,
+        "partial": true
+      }
+    ],
+    "ch19": [
+      {
+        "file": "part-22",
+        "startMs": 4000,
+        "endMs": 1123000,
+        "partial": true
+      }
+    ],
+    "ch20": [
+      {
+        "file": "part-23",
+        "startMs": 3720,
+        "endMs": 694260,
+        "partial": true
+      }
+    ],
+    "ch21": [
+      {
+        "file": "part-24",
+        "startMs": 6780,
+        "endMs": 684600,
+        "partial": true
+      }
+    ],
+    "ch22": [
+      {
+        "file": "part-25",
+        "startMs": 4120,
+        "endMs": 905000,
+        "partial": true
+      }
+    ],
+    "ch23": [
+      {
+        "file": "part-26",
+        "startMs": 7680,
+        "endMs": 1236680,
         "partial": true
       }
     ]

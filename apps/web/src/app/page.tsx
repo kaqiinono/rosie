@@ -26,7 +26,7 @@ const moduleTones = {
 const moduleGroups = [
   {
     id: 'daily',
-    title: '每日必练',
+    title: '日积月累',
     columns: 'sm:grid-cols-3',
     modules: [
       { href: '/time-tree', title: '生命树', description: '做作业养生命树', icon: '🌳', tone: 'green' },

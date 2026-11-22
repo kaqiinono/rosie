@@ -118,6 +118,69 @@
         "startMs": 0,
         "endMs": 559334
       }
+    ],
+    "ch17": [
+      {
+        "file": "ch17",
+        "startMs": 0,
+        "endMs": 1222504
+      }
+    ],
+    "ch18": [
+      {
+        "file": "ch18",
+        "startMs": 0,
+        "endMs": 1199647
+      }
+    ],
+    "ch19": [
+      {
+        "file": "ch19",
+        "startMs": 0,
+        "endMs": 1586354
+      }
+    ],
+    "ch20": [
+      {
+        "file": "ch20",
+        "startMs": 0,
+        "endMs": 1523278
+      }
+    ],
+    "ch21": [
+      {
+        "file": "ch21",
+        "startMs": 0,
+        "endMs": 1349146
+      }
+    ],
+    "ch22": [
+      {
+        "file": "ch22",
+        "startMs": 0,
+        "endMs": 1518749
+      }
+    ],
+    "ch23": [
+      {
+        "file": "ch23",
+        "startMs": 0,
+        "endMs": 654106
+      }
+    ],
+    "ch24": [
+      {
+        "file": "ch24",
+        "startMs": 0,
+        "endMs": 1259337
+      }
+    ],
+    "epilogue": [
+      {
+        "file": "epilogue",
+        "startMs": 0,
+        "endMs": 220447
+      }
     ]
   }
 }

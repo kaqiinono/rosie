@@ -10,7 +10,7 @@ interface Props {
   open: boolean
   onClose: () => void
   glossary: GlossaryWord[]
-  originalAudio: {
+  originalAudio?: {
     sentenceIds: ReadonlyMap<string, string>
     activeId: string | null
     error: string
@@ -46,13 +46,13 @@ export default function GlossaryPanel({ open, onClose, glossary, originalAudio }
   if (!open || !entry) return null
 
   function renderAudioControls(word: string, size: '2' | '3') {
-    const sentenceId = originalAudio.sentenceIds.get(word)
-    const playing = sentenceId === originalAudio.activeId
+    const sentenceId = originalAudio?.sentenceIds.get(word)
+    const playing = Boolean(sentenceId && sentenceId === originalAudio?.activeId)
     const label = playing ? '停止原句' : '听原句'
     return (
       <div className="flex shrink-0 items-center gap-1">
-        <SpeakButton word={word} size={size} beforeSpeak={originalAudio.onStop} />
-        {sentenceId && (
+        <SpeakButton word={word} size={size} beforeSpeak={originalAudio?.onStop} />
+        {originalAudio && sentenceId && (
           <IconButton type="button" size={size} radius="full" color="orange"
             variant={playing ? 'solid' : 'ghost'} title={label} aria-label={`${label}：${word}`}
             onClick={() => originalAudio.onToggle(sentenceId)}>
@@ -68,7 +68,7 @@ export default function GlossaryPanel({ open, onClose, glossary, originalAudio }
       open
       chrome="none"
       title="本章难点词"
-      footer={originalAudio.error ? (
+      footer={originalAudio?.error ? (
         <p role="alert" className="px-5 pb-3 text-sm font-bold text-rose-700">{originalAudio.error}</p>
       ) : undefined}
       onOpenChange={(open) => {
