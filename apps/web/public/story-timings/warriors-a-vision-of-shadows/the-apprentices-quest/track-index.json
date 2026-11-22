@@ -25,8 +25,46 @@
     "ch03": [
       {
         "file": "full",
-        "startMs": 3378800,
-        "endMs": 5039580,
+        "startMs": 3374881,
+        "endMs": 5088885
+      }
+    ],
+    "ch04": [
+      {
+        "file": "full",
+        "startMs": 5095860,
+        "endMs": 6208280,
+        "partial": true
+      }
+    ],
+    "ch05": [
+      {
+        "file": "full",
+        "startMs": 6209800,
+        "endMs": 6971520,
+        "partial": true
+      }
+    ],
+    "ch06": [
+      {
+        "file": "full",
+        "startMs": 6970491,
+        "endMs": 8185823
+      }
+    ],
+    "ch07": [
+      {
+        "file": "full",
+        "startMs": 8196440,
+        "endMs": 9164420,
+        "partial": true
+      }
+    ],
+    "ch08": [
+      {
+        "file": "full",
+        "startMs": 9176900,
+        "endMs": 9363760,
         "partial": true
       }
     ]
