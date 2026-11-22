@@ -1,6 +1,6 @@
 ---
 name: add-story
-description: Add Chinese and English story collections to the top-level Rosie 故事会 shelf at `/stories`, preserving Series → Volume → Chapter structure and integrating chapter-local vocabulary, glossary, bookmarks, and personal recordings. Use when the user asks to 添加中英文故事、录入 Story、从 PDF 导入故事书、从扫描件或文本添加故事、添加 series/volume/chapters，或 invokes `/add-story`.
+description: Add Chinese and English story collections to the top-level Rosie 故事屋 shelf at `/stories`, preserving Series → Volume → Chapter structure and integrating chapter-local vocabulary, glossary, bookmarks, and personal recordings. Use when the user asks to 添加中英文故事、录入 Story、从 PDF 导入故事书、从扫描件或文本添加故事、添加 series/volume/chapters，或 invokes `/add-story`.
 ---
 
 # 添加中英文故事集

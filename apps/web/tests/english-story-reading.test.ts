@@ -8,6 +8,8 @@ import {
   storyContentKey,
   storyRecordingStoragePath,
   storySeries,
+  storyShelfEntries,
+  warriorsCollection,
 } from '../../../packages/english/src'
 
 const warriorsCatalog = [
@@ -22,9 +24,11 @@ const warriorsCatalog = [
 ] as const
 
 describe('Warriors story catalog', () => {
-  it('lists all eight seasons in shelf order', () => {
-    const seasons = storySeries.filter(series => series.slug.startsWith('warriors-'))
-    expect(seasons.map(series => [series.seasonNumber, series.slug])).toEqual(
+  it('shows one shelf card for Warriors and lists the eight seasons inside it', () => {
+    expect(storyShelfEntries.filter(({ slug }) => slug === 'warriors' || slug.startsWith('warriors-'))).toEqual([
+      expect.objectContaining({ slug: 'warriors', language: 'en', count: 8, unit: '季' }),
+    ])
+    expect(warriorsCollection.seasons.map(({ seasonNumber, slug }) => [seasonNumber, slug])).toEqual(
       warriorsCatalog.map(([slug], index) => [index + 1, `warriors-${slug}`]),
     )
   })

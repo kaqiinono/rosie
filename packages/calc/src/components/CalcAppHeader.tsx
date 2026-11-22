@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function CalcAppHeader({
-  title = '口算天地',
+  title = '闪电速算王',
   backHref = '/',
   backLabel = '首页',
   onBack,

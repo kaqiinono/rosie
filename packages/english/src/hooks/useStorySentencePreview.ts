@@ -31,15 +31,20 @@ function readCues(text: string) {
 export function useStorySentencePreview(sources: readonly Source[] | undefined) {
   const [timings, setTimings] = useState<Timings | null>(null)
   const [range, setRange] = useState<PlaybackRange | null>(null)
-  const [activeId, setActiveId] = useState<string | null>(null)
+  const [activeCue, setActiveCue] = useState<{ id: string; timings: Timings } | null>(null)
   const [playbackError, setPlaybackError] = useState('')
   const attempt = useRef(0)
+  const running = useRef(false)
   const fail = useCallback(() => {
+    running.current = false
     setRange(null)
     setPlaybackError('试听未能完成，请重试。')
   }, [])
-  const complete = useCallback(() => setRange(null), [])
-  const { audioRef, start, dispose } = usePlaybackProgram(fail, complete)
+  const complete = useCallback(() => {
+    running.current = false
+    setRange(null)
+  }, [])
+  const { audioRef, start, dispose } = usePlaybackProgram(fail, complete, { reuseLoadedSource: true })
 
   useEffect(() => {
     if (!sources?.length) return
@@ -68,18 +73,39 @@ export function useStorySentencePreview(sources: readonly Source[] | undefined) 
 
   useEffect(() => () => {
     attempt.current += 1
+    running.current = false
     dispose()
   }, [sources, dispose])
 
   const stop = useCallback(() => {
     attempt.current += 1
-    dispose()
+    if (running.current) dispose()
+    running.current = false
     setRange(null)
+    setActiveCue(null)
     setPlaybackError('')
   }, [dispose])
 
   const current = timings && timings.sources === sources ? timings : null
   const playing = range !== null && range.timings === current
+  const activeId = activeCue?.timings === current ? activeCue?.id ?? null : null
+
+  const preload = useCallback((id: string | undefined) => {
+    const media = audioRef.current
+    const cue = id ? current?.cues.get(id)?.[0] : undefined
+    if (!media || !cue || playing || running.current) return
+
+    if (media.getAttribute('src') !== cue.src) media.src = cue.src
+    const seek = () => {
+      const start = cue.startMs / 1000
+      if (!running.current && media.getAttribute('src') === cue.src && Math.abs(media.currentTime - start) > 0.01) {
+        media.currentTime = start
+      }
+    }
+    if (media.readyState >= 1) seek()
+    else media.addEventListener('loadedmetadata', seek, { once: true })
+    return () => media.removeEventListener('loadedmetadata', seek)
+  }, [audioRef, current, playing])
 
   function syncPlayback() {
     const media = audioRef.current
@@ -87,7 +113,7 @@ export function useStorySentencePreview(sources: readonly Source[] | undefined) 
     const positionMs = media.currentTime * 1000
     const src = media.getAttribute('src')
     const cue = range.cues.find(cue => cue.src === src && positionMs >= cue.startMs && positionMs < cue.endMs)
-    setActiveId(cue?.id ?? null)
+    if (cue && cue.id !== activeId) setActiveCue({ id: cue.id, timings: range.timings })
   }
 
   async function play(sentenceIds: readonly string[]) {
@@ -95,20 +121,14 @@ export function useStorySentencePreview(sources: readonly Source[] | undefined) 
     const cues = sentenceIds.flatMap(id => current.cues.get(id) ?? [])
     const first = cues[0]
     if (!first) return
-    const steps: PlaybackProgramStep[] = []
-    for (const cue of cues) {
-      const last = steps.at(-1)
-      if (last && last.url === cue.src) {
-        last.startMs = Math.min(last.startMs, cue.startMs)
-        last.endMs = Math.max(last.endMs, cue.endMs)
-      } else {
-        steps.push({ id: cue.id, label: cue.id, url: cue.src, startMs: cue.startMs, endMs: cue.endMs, repeatCount: 1, waitAfterMs: 0 })
-      }
-    }
+    const steps: PlaybackProgramStep[] = cues.map((cue) => ({
+      id: cue.id, label: cue.id, url: cue.src, startMs: cue.startMs, endMs: cue.endMs, repeatCount: 1, waitAfterMs: 0,
+    }))
     const request = ++attempt.current
+    running.current = true
     setPlaybackError('')
     setRange({ timings: current, cues })
-    setActiveId(first.id)
+    setActiveCue({ id: first.id, timings: current })
     try {
       await start(steps)
     } catch {
@@ -117,5 +137,6 @@ export function useStorySentencePreview(sources: readonly Source[] | undefined) 
   }
 
   return { audioRef, cues: current?.cues, loading: Boolean(sources?.length && !current),
-    timingError: Boolean(current?.failed), playing, activeId: playing ? activeId : null, playbackError, play, stop, syncPlayback }
+    timingError: Boolean(current?.failed), playing, activeId: playing ? activeId : null,
+    lastPlayedId: activeId, playbackError, play, preload, stop, syncPlayback }
 }

@@ -266,10 +266,15 @@ html.en-printing .en-no-print {
   visibility: hidden !important;
 }
 
-[data-story-sentence]:is([data-story-speaking], [data-story-preview]) {
+[data-story-sentence]:is([data-story-speaking], [data-story-preview]):not([data-story-reading-mode] *),
+[data-story-sentence][aria-current="step"] {
   background-color: #fde68a;
   color: #422006;
   border-radius: 0.25rem;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+[data-story-sentence][aria-current="step"] {
+  background-color: var(--amber-4, #fef3c7);
 }

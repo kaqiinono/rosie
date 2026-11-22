@@ -71,14 +71,13 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
     mode: 'inline' | 'panel' | 'closed'
   } | null>(null)
   const [listeningCollapsed, setListeningCollapsed] = useState(false)
-  const [listeningPaused, setListeningPaused] = useState(false)
+  const [listeningPaused, setListeningPaused] = useState(true)
   const [clipReplayRequest, setClipReplayRequest] = useState(0)
   const [loadingClipIndex, setLoadingClipIndex] = useState<number | null>(null)
   const [selectedClips, setSelectedClips] = useState<number[]>([])
   const showClip = useCallback(
     (index: number) => {
       setListening({ key, index, mode: 'panel' })
-      setSelectedClips((current) => (current.includes(index) ? current : [index]))
     },
     [key],
   )
@@ -94,11 +93,19 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
       player.audioRef.current?.pause()
     }
     if (openPanel || listeningOpen) {
-      if (openPanel) setListeningCollapsed(false)
+      if (openPanel) {
+        setListeningCollapsed(false)
+        if (!listeningOpen) {
+          setListeningPaused(true)
+          setSelectedClips([])
+        }
+      } else if (!selectedClips.includes(index)) {
+        setSelectedClips([])
+      }
       showClip(index)
     } else {
       setListening({ key, index, mode: 'inline' })
-      setSelectedClips([index])
+      setSelectedClips([])
     }
   }
   const closeListening = () => setListening({ key, index: clipIndex, mode: 'closed' })
@@ -157,6 +164,7 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
   /** Two reading modes per design 2C. Defaults to 专注模式 (distraction-free reading). */
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
   const [lessonFocus, setLessonFocus] = useState(false)
+  const [largeText, setLargeText] = useState(false)
   const [preReadingOpen, setPreReadingOpen] = useState(false)
   const [glossaryOpen, setGlossaryOpen] = useState(false)
 
@@ -525,6 +533,10 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
               </Button>
               {renderLessonAudioButton('words', '全部单词音频', '2')}
             </div>
+            <label className="inline-flex items-center gap-2 whitespace-nowrap text-sm font-bold text-gray-700">
+              <Switch checked={largeText} onCheckedChange={setLargeText} color="orange" />
+              大字
+            </label>
             <label className="ml-auto inline-flex items-center gap-2 whitespace-nowrap text-sm font-bold text-gray-700">
               <Switch checked={lessonFocus} onCheckedChange={setLessonFocus} color="orange" />
               只看本课词
@@ -577,6 +589,7 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
           recallOutcomes={recallOutcomes}
           recallCounts={recallCounts}
           mode={readingMode}
+          largeText={largeText}
           renderParagraphFooter={readingMode === 'learn' ? renderQuizFooter : undefined}
         />
       </Theme>
@@ -631,6 +644,7 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
             setPaused={setListeningPaused}
             selected={selectedClips}
             setSelected={setSelectedClips}
+            largeText={largeText}
           />
         </DarkScope>
       )}

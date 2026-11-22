@@ -54,6 +54,11 @@ idle/playing/waiting/ended/failed. Program position includes repeated segments a
 or an already-held program lease reject startup. Source audio containing its own repeated
 material must be accounted for by the caller rather than doubled by the program.
 
+Consumers may opt in to `reuseLoadedSource` for a stream they preload on `audioRef`. Startup
+keeps a paused, healthy source when it matches the first step. Adjacent steps in the same
+stream reuse that media element and seek to the next authorized offset. The default source
+loading behavior still applies to exam programs.
+
 `playbackLease.ts` keeps a token-owned lease within the current client runtime. Acquisition
 pauses ordinary `usePlaylistPlayer` instances and blocks ordinary play/enqueue while held;
 a second finite program cannot take over. Release only clears its own token and does not

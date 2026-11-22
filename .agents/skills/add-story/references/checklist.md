@@ -38,7 +38,7 @@
 
 ## 集成与验证
 
-- [ ] Story 数据已注册并从 English barrel 可达；首页 /stories 故事会 能进入 Series → Volume → Chapter/full。
+- [ ] Story 数据已注册并从 English barrel 可达；首页 /stories 故事屋 能进入 Series → Volume → Chapter/full。
 - [ ] 新路由 breadcrumb 已补齐；AI catalog 按当前架构包含每章且 href/sourceRef 唯一。
 - [ ] 架构/流程变化已更新 `packages/english/AGENTS.md`；纯数据新增未制造无关文档变更。
 - [ ] 新增分辑的专项 Vitest 覆盖层级、章节数量/顺序/标题、正文排除、稳定锚点及必要录音键规则。

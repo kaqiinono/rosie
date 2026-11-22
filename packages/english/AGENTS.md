@@ -60,9 +60,13 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   proxy uses the fallback project narration for a missing or unavailable legacy lesson file.
   Textbook detail narration uses `usePlaylistPlayer` + `PlayerDock` with `showProgress`, sharing
   the list player's pause/loop controls and adding seek support. Changing passages stops the old queue.
-  Previous and Next in the listening drawer preserve the paused state. Clicking an inline
-  headphones button starts its clip from the beginning on every click. A multi-clip selection loops in passage order
-  with a one-second gap. A single selected clip uses the existing single-clip loop setting.
+  The listening drawer preloads the current clip and starts paused, with the single-read setting on.
+  Previous, Next and selection changes also pause playback. Clicking an inline headphones button
+  explicitly starts its clip from the beginning. After an explicit play, a multi-clip selection loops
+  in passage order with a one-second gap. A single selected clip uses the single-clip loop setting.
+  The textbook and story panels share a picker. Checking an outside clip extends the range, unchecking
+  an interior clip drops it and all following clips, and unchecking a boundary moves it in by one.
+  Clearing resets the range, independently of the current playback position.
   Collapsing the listening drawer keeps audio, passage highlighting, and the playback controls active.
   Closing it ends listening and cancels any pending transition to the next clip.
   The reading shelf groups textbook stages `4A` and `5A` under the top-level **厚海** collection;
@@ -87,7 +91,8 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   to the canonical Cambridge unit through `grammarRefs`. Each grammar section also supplies a
   data-driven `summary` (cards, contrasts, decision guide, reminders); `ReadingGrammarSummary`
   must stay lesson-agnostic rather than hard-code one lesson's tense rules.
-  The top-level bilingual 故事会 shelf at /stories groups series by language (en/zh).
+  The top-level bilingual 故事屋 shelf at /stories groups series by language (en/zh).
+  The Warriors card opens `/stories/warriors`, which lists seasons in order and uses the existing season URLs.
   Register collections in utils/story-data.ts as series → volume → chapter. Readers remember
   source selections per account on this device (initially empty). Only the load button fetches
   selected stages. The independent CEFR mode reads only verified senses for the selected exact
@@ -124,7 +129,10 @@ primitive with a normalized initial region and inline preview. No direct exams/E
   audit morphology and add `wordForms` only for rule-external forms or `disableGenerated` cases.
   Story reading is continuous (no synthetic pagination). A learner explicitly bookmarks the first
   and last visible complete sentences; `story_reading_progress` restores the first sentence below
-  the sticky header. Personal microphone recordings use `/airosie/project/record/english-story-recordings`
+  the sticky header. The optional 逐句阅读 toggle keeps the full text and illustrations, then starts
+  from the first visible body sentence. Its bottom controls walk the current chapter or whole volume
+  in order, independent of audio cues. Bookmarks target the highlighted sentence in this mode, and
+  exiting leaves that sentence in view. Personal microphone recordings use `/airosie/project/record/english-story-recordings`
   in Baidu and `reading_recordings` for owner-scoped metadata: recording is chapter-scoped, each chapter may own multiple independent
   clips, and there is no whole-volume recorder. Clips are compressed with `@rosie/player` and never
   reuse public narration.
@@ -438,12 +446,12 @@ spanning two original files play those ranges in order. The local import writes 
 alignment coverage, including untimed sentence IDs, under `output/warriors/audio-timings`.
 
 English story chapter/full readers use the bound Baidu chapter or narration asset and native
-WebVTT metadata tracks. 单句试听 loads the selected recording's VTT on demand and shows an
-inline control only for timed sentences. 多选 checks all timed sentences between two endpoints
-and continuously plays from the earliest start to the latest end, retaining the range for replay.
-Untimed gaps are not selectable endpoints but are part of the continuous recording. Both modes
-reuse the bound stream in a finite playback program;
-starting normal narration or closing sentence mode stops the preview. From the repo root, run
+WebVTT metadata tracks. 听记 loads the selected recording's VTT on demand, preloads the current
+timed sentence, and starts after an explicit play. The panel can play one sentence or an ordered
+range of timed sentences. Each sentence plays its own cue fragments, including fragments across
+files. The finite program reuses buffered media when the next segment uses the same stream.
+Starting normal narration, adjusting the range, or closing the panel stops the current program.
+From the repo root, run
 `python3 scripts/align-story-audio.py` to process Charlie's numbered recordings from
 `~/rosie/Charlie and the Chocolate Factory` in chapter order. The leading number maps to
 the catalog chapter number; unnumbered files are ignored. Override the folder with

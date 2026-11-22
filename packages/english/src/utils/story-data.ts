@@ -345,7 +345,7 @@ function glossaryForParagraphs(volumeSlug: string, paragraphs: string[]): Glossa
   })
 }
 
-export const storySeries: StorySeries[] = [
+const standaloneStorySeries: StorySeries[] = [
   {
     ...magicTreeHouse,
     volumes: magicTreeHouse.volumes.map((volume) => ({
@@ -358,7 +358,41 @@ export const storySeries: StorySeries[] = [
   },
   roaldDahl,
   dragonMasters,
-  ...warriorsSeries,
+]
+
+export const storySeries: StorySeries[] = [...standaloneStorySeries, ...warriorsSeries]
+
+export type StoryShelfEntry = Omit<StorySeries, 'volumes'> & {
+  count: number
+  unit: '本' | '辑' | '季'
+}
+
+function toStoryShelfEntry({ volumes, ...series }: StorySeries): StoryShelfEntry {
+  return {
+    ...series,
+    count: volumes.filter((volume) => volume.kind !== 'guide').length,
+    unit: series.seasonNumber ? '本' : '辑',
+  }
+}
+
+const warriorsSeasonEntries = warriorsSeries.map(toStoryShelfEntry)
+
+export const warriorsCollection = {
+  entry: {
+    slug: 'warriors',
+    title: 'Warriors',
+    language: 'en',
+    author: 'Erin Hunter',
+    description: 'Explore the lives of the warrior cats and their Clans.',
+    count: warriorsSeasonEntries.length,
+    unit: '季',
+  } satisfies StoryShelfEntry,
+  seasons: warriorsSeasonEntries,
+}
+
+export const storyShelfEntries = [
+  ...standaloneStorySeries.map(toStoryShelfEntry),
+  warriorsCollection.entry,
 ]
 
 export const STORY_STAGE = 'story'

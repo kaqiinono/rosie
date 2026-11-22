@@ -27,19 +27,19 @@ const moduleGroups = [
   {
     id: 'daily',
     title: '日积月累',
-    columns: 'sm:grid-cols-3',
+    columns: 'sm:grid-cols-4',
     modules: [
+      { href: '/calc', title: '闪电速算王', description: '练口算提速度', icon: '🧮', tone: 'purple' },
       { href: '/time-tree', title: '生命树', description: '做作业养生命树', icon: '🌳', tone: 'green' },
       { href: '/tasks/timetable', title: '课程表', description: '看课表和提醒', icon: '🗓️', tone: 'blue' },
-      { href: '/tomato', title: '番茄计时', description: '分段专注和休息', icon: '🍅', tone: 'rose' },
+      { href: '/stories', title: '故事屋', description: '听读中英故事', icon: '📚', tone: 'amber' },
     ],
   },
   {
     id: 'subjects',
     title: '学科提升',
-    columns: 'sm:grid-cols-3 md:grid-cols-5',
+    columns: 'sm:grid-cols-4',
     modules: [
-      { href: '/calc', title: '口算天地', description: '练口算提速度', icon: '🧮', tone: 'purple' },
       { href: '/math', title: '数学乐园', description: '学新课练数学', icon: '🔢', tone: 'blue' },
       { href: '/english', title: '英语天地', description: '背词阅读学语法', icon: '📖', tone: 'green' },
       { href: '/chinese', title: '语文园地', description: '认字写字背古诗', icon: '📜', tone: 'amber' },
@@ -53,7 +53,7 @@ const moduleGroups = [
     modules: [
       { href: '/ai', title: 'AI 助手', description: '提问和查资料', icon: '✨', tone: 'blue' },
       { href: '/mistakes', title: '错题本', description: '复习和订正错题', icon: '📕', tone: 'rose' },
-      { href: '/stories', title: '故事会', description: '听读中英故事', icon: '📚', tone: 'amber' },
+      { href: '/tomato', title: '番茄计时', description: '分段专注和休息', icon: '🍅', tone: 'rose' },
       { href: '/superpowers', title: '我的超能力', description: '测测英语词汇量', icon: '⚡', tone: 'purple' },
       { href: '/vouchers', title: '我的奖券', description: '用星星兑换奖券', icon: '⭐', tone: 'amber' },
       { href: '/draw', title: '抽一抽', description: '转转盘抽奖', icon: '🎡', tone: 'amber' },

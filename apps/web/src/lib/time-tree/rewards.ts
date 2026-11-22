@@ -59,6 +59,17 @@ export function isEarly(step: WorkStep): boolean {
     Date.parse(step.end) - Date.parse(step.start) < step.minutes * 60000
 }
 
+export function isTomatoDoubleEligible(step: WorkStep): boolean {
+  const budgetMs = step.minutes * 60_000
+  if (!budgetMs) return false
+  const elapsedMs = step.flowers
+    ? step.flowers.elapsedMs
+    : step.start && step.end
+      ? Date.parse(step.end) - Date.parse(step.start)
+      : 0
+  return elapsedMs >= budgetMs / 2 && elapsedMs < budgetMs
+}
+
 export function completionReward(tree: TreeData, step: WorkStep, day: string, early: boolean) {
   const count = tree.steps.filter((p) => p.id !== step.id && p.end && dayOf(p.end) === day).length + 1
   const baseSun = Math.max(1, step.stages.length)

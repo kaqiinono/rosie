@@ -261,7 +261,7 @@ enabled; that enabled row is the default used by normal口算 and direct entry f
 - `/admin/word-audit` — read-only data audit
 - `/admin/plans` — plan hub (math, English, Chinese roadmap plans)
 
-The home 故事会 card opens `/stories`, the shared Chinese and English story shelf. Legacy English reading story links redirect there.
+The home 故事屋 card opens `/stories`, the shared Chinese and English story shelf. Legacy English reading story links redirect there.
 
 ### Subject modules — read the package AGENTS.md, not here
 
@@ -415,7 +415,7 @@ timing, rewards and blind-box reservations. Completion always grants uncapped ba
 early timed completion doubles both. The life tree shows a three-second reward toast at the top. API responses
 provide server time for client countdown calibration. The life tree places a separate tomato card
 beside the homework drawer. Homework starts five-minute rounds. Timed completion records one tomato
-per planned round and doubles the total for early completion. Flexible flower assignments record
+per planned round. Tomato rewards double when recorded elapsed time is at least half the plan and below the full planned duration, including direct completion with recorded elapsed time. Flexible flower assignments record
 tomatoes only when the entire assignment is complete. The tomato wallet initializes from saved
 homework receipts and defaults to 10 tomatoes per gem and 100 per blind-box draw. Each gem and
 the blind box have separate PIN-protected prices that take effect the next Beijing calendar day.

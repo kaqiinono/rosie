@@ -26,7 +26,9 @@ export interface PlaybackProgramController {
  * There is no public pause/seek/rate/loop/skip API. Technical interruption ends
  * this program; the caller resumes only from a newly authorized position.
  */
-export function usePlaybackProgram(onFailure: () => void, onComplete?: () => void): PlaybackProgramController {
+export function usePlaybackProgram(onFailure: () => void, onComplete?: () => void, {
+  reuseLoadedSource = false,
+}: { reuseLoadedSource?: boolean } = {}): PlaybackProgramController {
   const audioRef = useRef<HTMLVideoElement | null>(null)
   const [status, setStatus] = useState<PlaybackProgramStatus>('idle')
   const [label, setLabel] = useState('')
@@ -40,18 +42,22 @@ export function usePlaybackProgram(onFailure: () => void, onComplete?: () => voi
     callbacks.current = { onFailure, onComplete }
   }, [onFailure, onComplete])
 
-  const dispose = useCallback(() => {
+  const reset = useCallback((keepSource: boolean) => {
     generation.current += 1
     cleanup.current?.(); cleanup.current = null
     const media = audioRef.current
-    if (media) { media.pause(); media.removeAttribute('src'); media.load() }
+    if (media) {
+      media.pause()
+      if (!keepSource) { media.removeAttribute('src'); media.load() }
+    }
     release.current?.(); release.current = null
     positionReader.current = () => position.current
   }, [])
+  const dispose = useCallback(() => reset(false), [reset])
 
   const start = useCallback(async (steps: readonly PlaybackProgramStep[], positionMs = 0) => {
-    dispose()
     const media = audioRef.current
+    reset(Boolean(reuseLoadedSource && media?.paused && !media.error && media.getAttribute('src') === steps[0]?.url))
     if (!media || !steps.length || !Number.isFinite(positionMs) || positionMs < 0 || steps.some(step => !Number.isFinite(step.startMs)
       || !Number.isFinite(step.endMs) || step.startMs < 0 || step.endMs <= step.startMs
       || !Number.isSafeInteger(step.repeatCount) || step.repeatCount < 1 || step.repeatCount > 100
@@ -96,15 +102,19 @@ export function usePlaybackProgram(onFailure: () => void, onComplete?: () => voi
         return
       }
       setStatus('playing')
-      media.src = entry.step.url
+      const sameSource = reuseLoadedSource && !media.error && media.getAttribute('src') === entry.step.url
+      if (!sameSource) media.src = entry.step.url
       media.playbackRate = 1
       media.loop = false
       let lastPosition = (entry.step.startMs + offset) / 1000
       let positioning = true
       let stallTimer: ReturnType<typeof setTimeout> | null = null
-      const ready = () => { media.currentTime = lastPosition; positioning = false }
+      const ready = () => {
+        if (!sameSource || Math.abs(media.currentTime - lastPosition) > 0.01) media.currentTime = lastPosition
+        positioning = false
+      }
       const time = () => {
-        if (positioning) return
+        if (positioning || (reuseLoadedSource && media.seeking)) return
         lastPosition = media.currentTime
         if (media.currentTime * 1000 >= entry.step.endMs - 25) next()
       }
@@ -119,7 +129,8 @@ export function usePlaybackProgram(onFailure: () => void, onComplete?: () => voi
       const stalled = () => { if (stallTimer === null) stallTimer = setTimeout(fail, 8000) }
       const playing = () => { if (stallTimer !== null) clearTimeout(stallTimer); stallTimer = null }
       positionReader.current = () => base + Math.max(0, Math.min(entry.duration, media.currentTime * 1000 - entry.step.startMs))
-      media.addEventListener('loadedmetadata', ready, { once: true })
+      if (sameSource && media.readyState >= 1) ready()
+      else media.addEventListener('loadedmetadata', ready, { once: true })
       media.addEventListener('timeupdate', time); media.addEventListener('ended', ended)
       media.addEventListener('error', fail); media.addEventListener('pause', paused)
       media.addEventListener('seeking', seeking); media.addEventListener('ratechange', rate)
@@ -134,7 +145,7 @@ export function usePlaybackProgram(onFailure: () => void, onComplete?: () => voi
       try { await media.play() } catch { fail() }
     }
     await advance(positionMs - base)
-  }, [dispose])
+  }, [dispose, reset, reuseLoadedSource])
 
   useEffect(() => () => dispose(), [dispose])
   const positionMs = useCallback(() => positionReader.current(), [])

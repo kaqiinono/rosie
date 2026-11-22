@@ -2,15 +2,18 @@ import Link from 'next/link'
 import { PageAccountRow } from '@rosie/ui'
 import type { StorySeries } from '../../utils/story-types'
 
-export default function StorySeriesView({ series }: { series: StorySeries }) {
+export default function StorySeriesView({ series, collection }: {
+  series: StorySeries
+  collection?: Pick<StorySeries, 'slug' | 'title'>
+}) {
   const books = series.volumes.filter((volume) => volume.kind !== 'guide')
   const guides = series.volumes.filter((volume) => volume.kind === 'guide')
   const CardTitle = guides.length ? 'h3' : 'h2'
   return (
     <main className="font-nunito relative z-[1] mx-auto max-w-5xl px-4 py-8 pb-24">
       <PageAccountRow>
-        <Link href="/stories" className="text-sm font-bold text-amber-700">
-          ← 返回故事会
+        <Link href={collection ? `/stories/${collection.slug}` : '/stories'} className="text-sm font-bold text-amber-700">
+          {collection ? `← 返回 ${collection.title}` : '← 返回故事屋'}
         </Link>
       </PageAccountRow>
       <header className="mt-4 rounded-3xl bg-orange-50 p-6 ring-1 ring-amber-200">

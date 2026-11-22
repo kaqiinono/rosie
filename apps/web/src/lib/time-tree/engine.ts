@@ -4,6 +4,7 @@ import {
   defaultTomatoPrices,
   homeworkTomatoReward,
   isEarly,
+  isTomatoDoubleEligible,
   tomatoPrices,
   tomatoWallet,
 } from './rewards'
@@ -193,7 +194,7 @@ function finish(tree: TreeData, s: WorkStep, end: string) {
   s.popped = s.slot === null
   const early = isEarly(s)
   Object.assign(s, completionReward(tree, s, dayOf(end), early))
-  if (!s.audit.length && s.minutes > 0) awardTomatoes(tree, s, early)
+  if (!s.audit.length && s.minutes > 0) awardTomatoes(tree, s, isTomatoDoubleEligible(s))
   tree.sun += s.sun
   tree.water += s.water
   onCompleted(tree, s, end)
@@ -216,7 +217,7 @@ function collectFlowers(tree: TreeData, step: WorkStep, action: TreeAction, end:
   step.sun = added
   step.water = added ? completionReward(tree, step, dayOf(end), false).water : 0
   if (complete && step.start && step.minutes > 0 && action.kind === 'collectFlowers') {
-    awardTomatoes(tree, step, elapsedMs < step.minutes * 60_000)
+    awardTomatoes(tree, step, isTomatoDoubleEligible(step))
   }
   tree.sun += step.sun
   tree.water += step.water

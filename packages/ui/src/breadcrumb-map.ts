@@ -71,7 +71,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['english', 'words', 'practice'], label: '单词练习' },
   { pattern: ['english', 'words', 'practice', 'pet'], label: 'PET 日常与专项' },
   { pattern: ['english', 'words', 'reading'], label: '阅读' },
-  { pattern: ['stories'], label: '故事会' },
+  { pattern: ['stories'], label: '故事屋' },
   {
     pattern: ['stories', '[seriesSlug]'],
     label: '{seriesSlug}',
@@ -80,6 +80,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
         'magic-tree-house': 'Magic Tree House',
         'roald-dahl': 'Roald Dahl Collection',
         'dragon-masters': 'Dragon Masters',
+        warriors: 'Warriors',
         'warriors-the-prophecies-begin': 'Warriors: The Prophecies Begin',
         'warriors-the-new-prophecy': 'Warriors: The New Prophecy',
         'warriors-power-of-three': 'Warriors: Power of Three',

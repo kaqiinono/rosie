@@ -41,8 +41,7 @@
       {
         "file": "full",
         "startMs": 6209800,
-        "endMs": 6971520,
-        "partial": true
+        "endMs": 6971520
       }
     ],
     "ch06": [
@@ -64,8 +63,121 @@
       {
         "file": "full",
         "startMs": 9176900,
-        "endMs": 9363760,
+        "endMs": 9999320,
         "partial": true
+      }
+    ],
+    "ch09": [
+      {
+        "file": "full",
+        "startMs": 10000320,
+        "endMs": 12366760
+      }
+    ],
+    "ch10": [
+      {
+        "file": "full",
+        "startMs": 12365740,
+        "endMs": 13294677
+      }
+    ],
+    "ch11": [
+      {
+        "file": "full",
+        "startMs": 13298680,
+        "endMs": 14107440
+      }
+    ],
+    "ch12": [
+      {
+        "file": "full",
+        "startMs": 14106447,
+        "endMs": 15035524
+      }
+    ],
+    "ch13": [
+      {
+        "file": "full",
+        "startMs": 15040030,
+        "endMs": 16703880
+      }
+    ],
+    "ch14": [
+      {
+        "file": "full",
+        "startMs": 16709230,
+        "endMs": 18014280,
+        "partial": true
+      }
+    ],
+    "ch15": [
+      {
+        "file": "full",
+        "startMs": 18018040,
+        "endMs": 19550040
+      }
+    ],
+    "ch16": [
+      {
+        "file": "full",
+        "startMs": 19549019,
+        "endMs": 20437553
+      }
+    ],
+    "ch17": [
+      {
+        "file": "full",
+        "startMs": 20437553,
+        "endMs": 21309602
+      }
+    ],
+    "ch18": [
+      {
+        "file": "full",
+        "startMs": 21309602,
+        "endMs": 21832330
+      }
+    ],
+    "ch19": [
+      {
+        "file": "full",
+        "startMs": 21832330,
+        "endMs": 22635554
+      }
+    ],
+    "ch20": [
+      {
+        "file": "full",
+        "startMs": 22639550,
+        "endMs": 23894420
+      }
+    ],
+    "ch21": [
+      {
+        "file": "full",
+        "startMs": 23893379,
+        "endMs": 24737053
+      }
+    ],
+    "ch22": [
+      {
+        "file": "full",
+        "startMs": 24737053,
+        "endMs": 25407553
+      }
+    ],
+    "ch23": [
+      {
+        "file": "full",
+        "startMs": 25407553,
+        "endMs": 26010946
+      }
+    ],
+    "ch24": [
+      {
+        "file": "full",
+        "startMs": 26015800,
+        "endMs": 27767080
       }
     ]
   }

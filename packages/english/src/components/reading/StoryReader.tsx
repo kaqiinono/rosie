@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { WordEntry } from '@rosie/core'
 import { useAuth } from '@rosie/core'
 import { STORY_CEFR_LEVELS, useStoryCefrWords } from '../../hooks/useStoryCefrWords'
@@ -17,8 +17,9 @@ import { getWordFormCandidates } from '../../utils/word-forms'
 import PassageView from './PassageView'
 import GlossaryPanel from './GlossaryPanel'
 import StoryNarration, { useStoryNarration } from './StoryNarration'
+import StoryListeningPanel from './StoryListeningPanel'
 import StoryRecorder from './StoryRecorder'
-import { Button, Checkbox, IconButton, Popover, SegmentedControl } from '@rosie/ui/themes'
+import { Button, Checkbox, Popover, SegmentedControl, Switch } from '@rosie/ui/themes'
 import { Check, LearningIcon, StickerCard } from '@rosie/ui'
 
 type Props = {
@@ -28,30 +29,26 @@ type Props = {
   viewMode: 'chapter' | 'volume'
 }
 
-type VisibleSentence = { chapterKey: string; index: number; text: string; id: string }
-type SentenceSelection = { source: string; firstId: string; lastId?: string }
+const StoryPassageView = memo(PassageView)
+const emptyMasteryMap = {}
 
-function visibleSentences(): VisibleSentence[] {
-  const topOffset = document.querySelector('[data-story-toolbar]')?.getBoundingClientRect().bottom ?? 88
-  const height = window.innerHeight
-  const all = [...document.querySelectorAll<HTMLElement>('[data-story-sentence]')]
-  const fullyVisible = all.filter((element) => {
+function storyViewport(reader: HTMLElement) {
+  return {
+    top: reader.querySelector('[data-story-toolbar]')?.getBoundingClientRect().bottom ?? 0,
+    bottom: reader.querySelector('[data-story-reading-controls]')?.getBoundingClientRect().top ?? window.innerHeight,
+  }
+}
+
+function visibleSentences(reader: HTMLElement, candidates = reader.querySelectorAll<HTMLElement>('[data-story-sentence]')) {
+  const { top, bottom } = storyViewport(reader)
+  const fullyVisible: HTMLElement[] = []
+  const partlyVisible: HTMLElement[] = []
+  for (const element of candidates) {
     const rect = element.getBoundingClientRect()
-    return rect.top >= topOffset && rect.bottom <= height
-  })
-  const candidates =
-    fullyVisible.length > 0
-      ? fullyVisible
-      : all.filter((element) => {
-          const rect = element.getBoundingClientRect()
-          return rect.bottom > topOffset && rect.top < height
-        })
-  return candidates.map((element) => ({
-    chapterKey: element.dataset.chapterKey ?? '',
-    index: Number(element.dataset.sentenceIndex),
-    text: element.dataset.sentenceText ?? '',
-    id: element.id,
-  }))
+    if (rect.bottom > top && rect.top < bottom) partlyVisible.push(element)
+    if (rect.top >= top && rect.bottom <= bottom) fullyVisible.push(element)
+  }
+  return fullyVisible.length ? fullyVisible : partlyVisible
 }
 
 function storyPassage(
@@ -93,22 +90,19 @@ function wordsInChapter(chapter: StoryChapter, byForm: Map<string, WordEntry[]>,
 
 export default function StoryReader(props: Props) {
   const { user } = useAuth()
-  return <AccountStoryReader key={user?.id ?? 'guest'} {...props} />
+  const readerKey = `${user?.id ?? 'guest'}:${props.seriesSlug}:${props.volume.slug}:${props.viewMode}:${props.chapters[0]?.key ?? ''}`
+  return <AccountStoryReader key={readerKey} {...props} />
 }
 
 function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
   const { user } = useAuth()
   const sectionUnit = volume.kind === 'guide' ? '节' : '章'
   const narration = useStoryNarration({ series: seriesSlug, volume, chapters, full: viewMode === 'volume' })
-  const [sentencePreview, setSentencePreview] = useState(false)
+  const [listeningAnchor, setListeningAnchor] = useState<string | null>(null)
+  const listeningOpen = listeningAnchor !== null
   const [glossaryChapterKey, setGlossaryChapterKey] = useState<string | null>(null)
   const [glossaryAudioId, setGlossaryAudioId] = useState<string | null>(null)
-  const [multiSelect, setMultiSelect] = useState(false)
-  const [sentenceSelection, setSentenceSelection] = useState<SentenceSelection | null>(null)
-  const preview = useStorySentencePreview(sentencePreview || glossaryChapterKey !== null ? narration.previewTracks : undefined)
-  const previewSource = narration.current?.src
-  const selection = sentenceSelection?.source === previewSource ? sentenceSelection : null
-  const selectingSentences = sentencePreview && multiSelect
+  const preview = useStorySentencePreview(listeningOpen || glossaryChapterKey !== null ? narration.previewTracks : undefined)
   const { stages, error: stageError, isLoading: loadingStages } = useStageIndex(user)
   const { selected, words: sourceWords, toggle, load, status } = useStoryWordSources(user?.id)
   const [filterMode, setFilterMode] = useState<'cefr' | 'library'>('library')
@@ -120,11 +114,14 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
   const vocab = byLevel ? cefrWords : sourceWords
   const { progress, saveProgress } = useStoryReadingProgress(user, volume.slug)
   const [readingMode, setReadingMode] = useState<'focus' | 'learn'>('focus')
+  const [largeText, setLargeText] = useState(false)
+  const readerRef = useRef<HTMLDivElement>(null)
   const [recordChapter, setRecordChapter] = useState<StoryChapter | null>(null)
   const [recordBusy, setRecordBusy] = useState(false)
   const [narrationErrorHost, setNarrationErrorHost] = useState<HTMLDivElement | null>(null)
   const [bookmarkState, setBookmarkState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const restoredRef = useRef(false)
+  const bookmarkRestoreFrame = useRef(0)
 
   const { matcher, byForm } = useMemo(() => {
     const byForm = new Map<string, WordEntry[]>()
@@ -180,29 +177,51 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
     setGlossaryAudioId(sentenceId)
     void preview.play([sentenceId])
   }
-  const timedSentenceIds = useMemo(() => {
+  const { listeningClips, orderById } = useMemo(() => {
     const cues = preview.cues
-    if (!selectingSentences || !cues?.size) return []
-    return prepared.flatMap(({ sentences }) => sentences.flat()
-      .filter(({ id }) => cues.has(id))
-      .map(({ id }) => id))
-  }, [prepared, preview.cues, selectingSentences])
-  const selectedSentenceIds = useMemo(() => {
-    if (!selection) return []
-    const first = timedSentenceIds.indexOf(selection.firstId)
-    const last = selection.lastId ? timedSentenceIds.indexOf(selection.lastId) : first
-    return first < 0 || last < 0 ? [] : timedSentenceIds.slice(Math.min(first, last), Math.max(first, last) + 1)
-  }, [selection, timedSentenceIds])
-  const selectedSentences = useMemo(() => new Set(selectedSentenceIds), [selectedSentenceIds])
-
-  function selectSentence(id: string) {
-    if (!previewSource) return
-    setSentenceSelection((previous) => {
-      if (!previous || previous.source !== previewSource || previous.lastId || !timedSentenceIds.includes(previous.firstId)) {
-        return { source: previewSource, firstId: id }
+    const listeningClips: { id: string; text: string; chapterKey: string; order: number }[] = []
+    const orderById = new Map<string, number>()
+    if (listeningOpen && cues?.size) {
+      for (const { chapter, sentences } of prepared) {
+        for (const { id, text } of sentences.flat()) {
+          const order = orderById.size
+          orderById.set(id, order)
+          if (cues.has(id)) listeningClips.push({ id, text, chapterKey: chapter.key, order })
+        }
       }
-      return previous.firstId === id ? null : { ...previous, lastId: id }
-    })
+    }
+    return { listeningClips, orderById }
+  }, [listeningOpen, prepared, preview.cues])
+  const listeningOrder = listeningAnchor ? (orderById.get(listeningAnchor) ?? 0) : 0
+  const nextListeningIndex = listeningClips.findIndex(({ order }) => order >= listeningOrder)
+  const listeningIndex = nextListeningIndex < 0 ? Math.max(0, listeningClips.length - 1) : nextListeningIndex
+  const preloadSentenceId = listeningClips[listeningIndex]?.id
+  const { preload } = preview
+  const playbackId = listeningOpen && !glossaryAudioId ? preview.lastPlayedId : null
+  const playingClip = playbackId ? listeningClips.find(({ id }) => id === playbackId) : undefined
+  const listeningSentence = playingClip ?? listeningClips[listeningIndex]
+  const listeningSentenceId = listeningSentence?.id
+  const focusedSentenceId = listeningSentenceId
+  const focusedChapterKey = listeningSentence?.chapterKey
+
+  useEffect(() => preload(preloadSentenceId), [preload, preloadSentenceId])
+
+  function closeListening() {
+    preview.stop()
+    setListeningAnchor(null)
+  }
+
+  function toggleListening() {
+    if (listeningOpen) {
+      closeListening()
+      return
+    }
+    stopGlossaryAudio()
+    const reader = readerRef.current
+    restoredRef.current = true
+    cancelAnimationFrame(bookmarkRestoreFrame.current)
+    reader?.querySelector('[data-story-sentence].reading-flash')?.classList.remove('reading-flash')
+    setListeningAnchor((reader && visibleSentences(reader)[0]?.id) ?? '')
   }
 
   useEffect(() => {
@@ -216,15 +235,38 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
     )
     const target = byId?.dataset.sentenceText === progress.startSentenceText ? byId : byText
     if (!target) return
-    requestAnimationFrame(() => {
+    bookmarkRestoreFrame.current = requestAnimationFrame(() => {
       target.scrollIntoView({ block: 'start' })
       target.classList.add('reading-flash')
       window.setTimeout(() => target.classList.remove('reading-flash'), 2000)
     })
   }, [chapters, progress])
 
+  useLayoutEffect(() => {
+    const reader = readerRef.current
+    const panel = reader?.querySelector('[data-story-reading-controls]')
+    if (!listeningOpen || !reader || !panel) return
+
+    const follow = () => {
+      reader.style.setProperty('--story-listening-height', `${panel.getBoundingClientRect().height}px`)
+      const target = listeningSentenceId && document.getElementById(listeningSentenceId)
+      if (!target) return
+      const { top, bottom } = storyViewport(reader)
+      const rect = target.getBoundingClientRect()
+      if (rect.top >= top && rect.bottom <= bottom) return
+      window.scrollBy({ top: rect.top - top - Math.max(0, (bottom - top - rect.height) / 2), behavior: 'instant' })
+    }
+    follow()
+    const observer = new ResizeObserver(follow)
+    observer.observe(panel)
+    return () => observer.disconnect()
+  }, [listeningOpen, listeningSentenceId])
+
   const markPosition = useCallback(async () => {
-    const visible = visibleSentences()
+    const reader = readerRef.current
+    if (!reader) return
+    const current = focusedSentenceId && document.getElementById(focusedSentenceId)
+    const visible = current ? [current] : visibleSentences(reader)
     const first = visible[0]
     const last = visible.at(-1)
     if (!first || !last) {
@@ -233,21 +275,22 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
     }
     setBookmarkState('saving')
     const result = await saveProgress({
-      chapterKey: first.chapterKey,
-      startSentenceIndex: first.index,
-      startSentenceText: first.text,
-      endSentenceIndex: last.index,
-      endSentenceText: last.text,
+      chapterKey: first.dataset.chapterKey ?? '',
+      startSentenceIndex: Number(first.dataset.sentenceIndex),
+      startSentenceText: first.dataset.sentenceText ?? '',
+      endSentenceIndex: Number(last.dataset.sentenceIndex),
+      endSentenceText: last.dataset.sentenceText ?? '',
       viewMode,
     })
     setBookmarkState(result.error ? 'error' : 'saved')
     if (!result.error) window.setTimeout(() => setBookmarkState('idle'), 1800)
-  }, [saveProgress, viewMode])
+  }, [focusedSentenceId, saveProgress, viewMode])
 
   const hasGlossary = chapters.some((chapter) => chapter.glossary.length > 0)
 
   const currentChapter = useCallback(() => {
-    const visibleChapterKey = visibleSentences()[0]?.chapterKey
+    const reader = readerRef.current
+    const chapterKey = focusedChapterKey ?? (reader && visibleSentences(reader)[0]?.dataset.chapterKey)
     const viewportMiddle = window.innerHeight / 2
     const nearestChapter = [...prepared]
       .reverse()
@@ -257,15 +300,19 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
           viewportMiddle,
       )
     return (
-      prepared.find((entry) => entry.chapter.key === visibleChapterKey) ??
+      prepared.find((entry) => entry.chapter.key === chapterKey) ??
       nearestChapter ??
       prepared[0]
     )
-  }, [prepared])
+  }, [prepared, focusedChapterKey])
 
   return (
-    <div className="space-y-6">
-      <video ref={preview.audioRef} hidden playsInline preload="none"
+    <div
+      ref={readerRef}
+      data-story-reading-mode={listeningOpen ? '' : undefined}
+      className={listeningOpen ? 'space-y-6 pb-[calc(var(--story-listening-height,5rem)_+_env(safe-area-inset-bottom,0px))]' : 'space-y-6'}
+    >
+      <video ref={preview.audioRef} hidden playsInline preload={listeningOpen ? 'auto' : 'none'}
         onTimeUpdate={preview.syncPlayback} onSeeked={preview.syncPlayback} />
       <StickerCard
         size="sm"
@@ -286,29 +333,22 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
           <SegmentedControl.Item value="learn">学习</SegmentedControl.Item>
           <SegmentedControl.Item value="focus">专注</SegmentedControl.Item>
         </SegmentedControl.Root>
+        <label className="inline-flex items-center gap-2 whitespace-nowrap text-sm font-bold text-text-primary">
+          <Switch checked={largeText} onCheckedChange={setLargeText} color="orange" />
+          大字
+        </label>
         <div className="flex flex-wrap items-center gap-2">
-          <StoryNarration narration={narration} errorHost={narrationErrorHost} beforePlayback={preview.stop} />
+          <StoryNarration narration={narration} errorHost={narrationErrorHost} beforePlayback={preview.stop}
+            inlinePlayer={listeningOpen} />
           {narration.previewTracks.length > 0 && (
             <Button
               type="button"
-              variant={sentencePreview ? 'solid' : 'soft'}
+              variant={listeningOpen ? 'solid' : 'soft'}
               color="orange"
-              aria-pressed={sentencePreview}
-              onClick={() => {
-                if (sentencePreview) preview.stop()
-                setSentencePreview(!sentencePreview)
-              }}
+              aria-expanded={listeningOpen}
+              onClick={toggleListening}
             >
-              单句试听
-            </Button>
-          )}
-          {sentencePreview && narration.previewTracks.length > 0 && (
-            <Button type="button" color="orange" variant={multiSelect ? 'solid' : 'soft'}
-              aria-pressed={multiSelect} onClick={() => {
-                preview.stop()
-                setMultiSelect(!multiSelect)
-              }}>
-              多选
+              逐句模式
             </Button>
           )}
           <Button variant="soft" highContrast color="amber" disabled={recordBusy}
@@ -418,26 +458,6 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             )}
           </Button>
         </div>
-        {selectingSentences && narration.previewTracks.length > 0 && (
-          <div role="group" aria-label="多句试听" className="flex w-full flex-wrap items-center gap-2">
-            <Button type="button" color="orange" disabled={!preview.playing && !selectedSentenceIds.length}
-              onClick={() => {
-                if (preview.playing) preview.stop()
-                else void preview.play(selectedSentenceIds)
-              }}>
-              {preview.playing ? '停止播放' : `播放已选（${selectedSentenceIds.length} 句）`}
-            </Button>
-            <Button type="button" variant="soft" color="gray" disabled={preview.playing || !selectedSentenceIds.length}
-              onClick={() => setSentenceSelection(null)}>
-              清空
-            </Button>
-            {!preview.playing && timedSentenceIds.length > 0 && (
-              <span className="text-sm text-text-secondary">
-                {selection?.lastId ? '再次点击句尾可重新选段' : selection ? '再选一句确定范围' : '点击首尾两句选定范围'}
-              </span>
-            )}
-          </div>
-        )}
         {recordChapter && (
           <div className="max-h-[45dvh] w-full overflow-y-auto border-t border-kid-line pt-2">
             <StoryRecorder
@@ -458,19 +478,24 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
             当前位置标记失败，请稍后重试
           </span>
         )}
-        {sentencePreview && preview.loading && <p role="status" className="w-full text-sm">正在读取逐句时间轴…</p>}
-        {sentencePreview && !preview.timingError && preview.cues?.size === 0 && (
-          <p role="status" className="w-full text-sm">
-            当前录音没有逐句时间轴。{narration.choices.length > 1 ? '可以在朗读音频中选择其他录音。' : null}
-          </p>
-        )}
-        {sentencePreview && (preview.timingError || preview.playbackError) && (
-          <p role="alert" className="w-full text-sm font-bold text-rose-700">
-            {preview.playbackError || '逐句时间轴读取失败，请重新开启单句试听。'}
-          </p>
-        )}
         <div ref={setNarrationErrorHost} className="w-full empty:hidden" />
       </StickerCard>
+
+      {listeningOpen && (
+          <StoryListeningPanel key={narration.current?.src} clips={listeningClips} index={listeningIndex}
+          largeText={largeText}
+          playbackId={playbackId} playing={preview.playing && !glossaryAudioId} loading={preview.loading}
+          error={(glossaryAudioId ? '' : preview.playbackError) || (preview.timingError ? '逐句时间轴读取失败。' : '')}
+          onSelect={(index) => {
+            const clip = listeningClips[index]
+            if (clip) setListeningAnchor(clip.id)
+          }}
+          onPlay={(ids) => {
+            setGlossaryAudioId(null)
+            void preview.play(ids)
+          }}
+          onStop={preview.stop} onClose={closeListening} />
+      )}
 
       <GlossaryPanel
         open={Boolean(glossaryChapter?.chapter.glossary.length)}
@@ -499,42 +524,18 @@ function AccountStoryReader({ seriesSlug, volume, chapters, viewMode }: Props) {
           key={chapter.key}
           id={chapter.key}
         >
-          <PassageView
+          <StoryPassageView
             passage={passage}
             lessonWords={chapterWords}
-            masteryMap={{}}
+            masteryMap={emptyMasteryMap}
             storyChapter={chapter}
             storySectionUnit={sectionUnit}
             sentenceGroups={sentences}
             mode={readingMode}
             cefrLabels={byLevel ? cefrLabels : undefined}
             listeningTarget={preview.activeId ?? undefined}
-            renderStorySentenceControl={sentencePreview && preview.cues?.size ? (sentence) => {
-              if (!preview.cues?.has(sentence.id)) return null
-              if (selectingSentences) {
-                return (
-                  <span className="relative inline-block size-0 align-baseline">
-                    <label className="absolute bottom-3 left-0 z-10 grid size-6 -translate-x-1/4 place-items-center">
-                      <Checkbox color="orange" size="1" checked={selectedSentences.has(sentence.id)}
-                        aria-label={`选择第 ${sentence.index} 句`} disabled={preview.playing}
-                        onCheckedChange={() => selectSentence(sentence.id)} />
-                    </label>
-                  </span>
-                )
-              }
-              const active = preview.activeId === sentence.id
-              const label = active ? `停止试听第 ${sentence.index} 句` : `试听第 ${sentence.index} 句`
-              return (
-                <IconButton type="button" size="2" radius="full" color="orange"
-                  variant={active ? 'solid' : 'soft'} className="mx-1 align-middle"
-                  aria-label={label} title={label} onClick={() => {
-                    if (active) preview.stop()
-                    else void preview.play([sentence.id])
-                  }}>
-                  <LearningIcon name={active ? 'pause' : 'listen'} size={16} />
-                </IconButton>
-              )
-            } : undefined}
+            storyReadingSentenceId={chapter.key === focusedChapterKey ? focusedSentenceId : undefined}
+            largeText={largeText}
           />
         </StickerCard>
       ))}

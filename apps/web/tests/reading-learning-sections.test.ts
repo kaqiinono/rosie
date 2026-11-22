@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { SAMPLE_WORDS_5A } from '../../../packages/english/src/utils/english-data-5a'
+import { toggleListeningRange } from '../../../packages/english/src/utils/listening-range'
 import {
   buildEntryMatchRegex,
   buildWordMatchRegex,
@@ -8,6 +9,23 @@ import {
   resolveMatchedWord,
   resolveReadingWordRef,
 } from '../../../packages/english/src/utils/reading-data'
+
+describe('Listening clip selection', () => {
+  it('fills a continuous range when the endpoints are picked in either order', () => {
+    expect(toggleListeningRange(toggleListeningRange([], 2), 6)).toEqual([2, 3, 4, 5, 6])
+    expect(toggleListeningRange(toggleListeningRange([], 6), 2)).toEqual([2, 3, 4, 5, 6])
+  })
+
+  it('truncates a range before the unchecked interior clip', () => {
+    expect(toggleListeningRange([2, 3, 4, 5, 6], 4)).toEqual([2, 3])
+  })
+
+  it('shrinks either boundary and clears a single unchecked clip', () => {
+    expect(toggleListeningRange([2, 3, 4], 2)).toEqual([3, 4])
+    expect(toggleListeningRange([2, 3, 4], 4)).toEqual([2, 3])
+    expect(toggleListeningRange([2], 2)).toEqual([])
+  })
+})
 
 describe('Stage 5A Unit 1 Lesson 1 reading course', () => {
   const passage = findPassageByKey('5a-u1l1')

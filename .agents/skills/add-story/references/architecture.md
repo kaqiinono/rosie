@@ -32,7 +32,7 @@
 
 ## 集成点
 
-- 首页「故事会」进入 `/stories` 展示中英文 `StoryShelf`；Story 不进入教材计划、练习或 mastery。
+- 首页「故事屋」进入 `/stories` 展示中英文 `StoryShelf`；Story 不进入教材计划、练习或 mastery。
 - 新动态路由必须更新 `packages/ui/src/breadcrumb-map.ts` 的 label/labelMap。
 - `apps/web/src/lib/ai-catalog-sync.ts` 当前逐章建立 `<english|chinese>:story:<series>:<volume>:<chapter>` 文档和章节 href；新增 Story 必须继续被聚合，除非当前架构已改变。
 - 专项回归入口是 `apps/web/tests/english-story-reading.test.ts`；为新增分辑补层级、章节顺序、正文排除项、锚点和关键审计断言。

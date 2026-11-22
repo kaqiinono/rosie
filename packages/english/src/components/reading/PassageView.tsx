@@ -46,7 +46,8 @@ interface PassageViewProps {
   sentenceGroups?: StorySentence[][]
   storyChapter?: Pick<StoryChapter, 'key' | 'number' | 'title' | 'castPrefaceParagraphs' | 'illustrations'>
   storySectionUnit?: '章' | '节'
-  renderStorySentenceControl?: (sentence: StorySentence) => ReactNode
+  storyReadingSentenceId?: string
+  largeText?: boolean
 }
 
 const LEVEL_CLASS: Record<MasteryLevel, string> = {
@@ -113,7 +114,8 @@ export default function PassageView({
   sentenceGroups,
   storyChapter,
   storySectionUnit = '章',
-  renderStorySentenceControl,
+  storyReadingSentenceId,
+  largeText = false,
 }: PassageViewProps) {
   const listeningHighlight = listeningCollapsed
     ? 'box-decoration-clone rounded-sm bg-[#fde68a]'
@@ -354,26 +356,28 @@ export default function PassageView({
     })
   }
 
+  const prefaceCount = storyChapter?.castPrefaceParagraphs ?? 0
+  const castPreface = sentenceGroups?.slice(0, prefaceCount) ?? []
+  const bodyOffset = castPreface.length ? prefaceCount + 1 : 0
+
   const renderStorySentence = (sentence: StorySentence, paragraphIndex: number, displayText?: string) => (
     <Fragment key={sentence.id}>
       <span
         id={sentence.id}
         data-chapter-key={passage.lesson}
-        data-story-sentence
+        data-story-sentence={paragraphIndex >= bodyOffset ? 'body' : ''}
         data-story-preview={listeningTarget === sentence.id ? '' : undefined}
         data-sentence-index={sentence.index}
         data-sentence-text={sentence.text}
+        aria-current={storyReadingSentenceId === sentence.id ? 'step' : undefined}
         className="scroll-mt-48 md:scroll-mt-36"
       >
         {displayText ?? renderParagraph(sentence.text, paragraphIndex * 1000 + sentence.index)}
       </span>
-      {renderStorySentenceControl?.(sentence)}{' '}
+      {' '}
     </Fragment>
   )
 
-  const prefaceCount = storyChapter?.castPrefaceParagraphs ?? 0
-  const castPreface = sentenceGroups?.slice(0, prefaceCount) ?? []
-  const bodyOffset = castPreface.length ? prefaceCount + 1 : 0
   const [spokenNumber, spokenTitle] = bodyOffset ? sentenceGroups?.[prefaceCount] ?? [] : []
   const chapterNumber = storyChapter && hasSeparateStoryChapterNumber(storyChapter)
     ? `第 ${storyChapter.number} ${storySectionUnit}`
@@ -430,14 +434,16 @@ export default function PassageView({
           </h1>
         </header>
       )}
-      <article className={`text-[20px] leading-[1.9] text-gray-800 sm:text-[22px] sm:leading-[2] ${
+      <article className={`${largeText ? 'text-[26px] sm:text-[28px]' : 'text-[20px] sm:text-[22px]'} leading-[1.9] text-gray-800 sm:leading-[2] ${
         bodyOffset ? 'space-y-4' : 'space-y-7'
       } ${storyChapter ? 'border-t border-amber-100 p-5 sm:p-7' : ''}`}>
         {passage.paragraphs.map((p, i) => i < bodyOffset ? null : (
           <Fragment key={i}>
             <div>
               {passage.paragraphTitles?.[i] && (
-                <h2 className="font-fredoka text-app-blue-dark mb-2 text-base font-black tracking-wide sm:text-lg">
+                <h2 className={`font-fredoka text-app-blue-dark mb-2 font-black tracking-wide ${
+                  largeText ? 'text-lg sm:text-xl' : 'text-base sm:text-lg'
+                }`}>
                   <span
                     data-narration-cue={`heading-${i}`}
                     className={listeningTarget === `heading-${i}` ? listeningHighlight : undefined}

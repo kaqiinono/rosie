@@ -15,8 +15,8 @@ function NarrationError({ host, message }: { host: HTMLDivElement | null; messag
   return host && createPortal(<p role="alert" className="text-sm font-bold text-rose-700">{message}</p>, host)
 }
 
-function NarrationTrack({ src, timeline, label, errorHost, beforePlayback }: {
-  src: string; timeline: string; label: string; errorHost: HTMLDivElement | null; beforePlayback: () => void
+function NarrationTrack({ src, timeline, label, errorHost, beforePlayback, inlinePlayer }: {
+  src: string; timeline: string; label: string; errorHost: HTMLDivElement | null; beforePlayback: () => void; inlinePlayer: boolean
 }) {
   const player = usePlaylistPlayer()
   const { audioRef } = player
@@ -45,6 +45,7 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback }: {
       active = next
       if (active?.hasAttribute('data-story-sentence')) {
         active.setAttribute('data-story-speaking', '')
+        if (button.current?.closest('[data-story-reading-mode]')) return
         const rect = active.getBoundingClientRect()
         const toolbar = button.current?.closest('.sticky')?.getBoundingClientRect()
         if (rect.top < (toolbar?.bottom ?? 0) || rect.bottom > window.innerHeight)
@@ -85,7 +86,7 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback }: {
         {playing ? '暂停朗读' : '朗读'}
       </span>
     </Button>
-    <PlayerDock player={player} theme="light" showProgress />
+    <PlayerDock player={player} theme="light" showProgress placement={inlinePlayer ? 'inline' : 'floating'} />
     {playbackError || failed ? <NarrationError host={errorHost} message={playbackError || '音频播放失败，请检查网盘绑定。'} />
       : noTiming && <span className="text-xs">此音频暂无逐句时间表</span>}
   </>
@@ -152,8 +153,8 @@ export function useStoryNarration({ series, volume, chapters, full }: {
   return { choices, current, previewTracks, setSelected, isLoading, error }
 }
 
-export default function StoryNarration({ narration, errorHost, beforePlayback }: {
-  narration: ReturnType<typeof useStoryNarration>; errorHost: HTMLDivElement | null; beforePlayback: () => void
+export default function StoryNarration({ narration, errorHost, beforePlayback, inlinePlayer }: {
+  narration: ReturnType<typeof useStoryNarration>; errorHost: HTMLDivElement | null; beforePlayback: () => void; inlinePlayer: boolean
 }) {
   const { choices, current, setSelected, isLoading, error } = narration
   if (!current) {
@@ -172,6 +173,6 @@ export default function StoryNarration({ narration, errorHost, beforePlayback }:
         <Select.Item key={item.slot} value={item.slot}>{item.label}</Select.Item>)}</Select.Content>
     </Select.Root>}
     <NarrationTrack key={current.playbackUrl} label={current.label} src={current.playbackUrl} errorHost={errorHost}
-      timeline={current.timeline} beforePlayback={beforePlayback} />
+      timeline={current.timeline} beforePlayback={beforePlayback} inlinePlayer={inlinePlayer} />
   </>
 }
