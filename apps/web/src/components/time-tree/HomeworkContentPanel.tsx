@@ -9,7 +9,7 @@ import { Button, Flex, Heading, Text } from '@rosie/ui/themes'
 import type { TreeAction } from '@/lib/time-tree/types'
 import PracticeResources from './PracticeResources'
 import { useHomeworkPracticeNavigation } from './TimeTreeLauncher'
-import { hasWeeklyPlanPractice, weeklyPlanPracticeTarget } from './weeklyPlanPractice'
+import { hasWeeklyPlanPractice, isDailyEnglishPlanPath, weeklyPlanPracticeTarget } from './weeklyPlanPractice'
 
 const MathPracticeContent = dynamic(() => import('./MathPracticeContent'), { loading: () => <Flex direction="column" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
 const EmbeddedCalcStartPanel = dynamic(() => import('@rosie/calc/components/EmbeddedCalcStartPanel'), { loading: () => <Flex direction="column" minHeight="256px"><LoadingOverlay visible placement="content" /></Flex> })
@@ -30,12 +30,13 @@ type Props = {
   canAppend?: boolean
   compact?: boolean
   activeHomeworkId?: string
+  scheduledDate?: string
   onEdit?: (edit: NonNullable<TreeAction['questionEdit']>, rowId?: string) => Promise<void>
   onRetry?: () => void
 }
 
 /** Render each frozen item with its own content and destination. */
-function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls, compact, name, activeHomeworkId }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect' | 'compact' | 'name' | 'activeHomeworkId'> & {
+function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, toggle, controls, compact, name, activeHomeworkId, scheduledDate }: Pick<Props, 'row' | 'href' | 'disabled' | 'onCorrect' | 'compact' | 'name' | 'activeHomeworkId' | 'scheduledDate'> & {
   title: string
   controls?: ReactNode
   expanded: boolean
@@ -52,6 +53,17 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
     : undefined
   const reading = Boolean(lessonPassage || row?.values.sentenceId || (row?.values.key && findPassageByKey(row.values.key)))
   if (calc) return <EmbeddedCalcStartPanel disabled={disabled} />
+  if (scheduledDate && isDailyEnglishPlanPath(href)) return (
+    <Flex direction="column" gap="3" minWidth="0">
+      <Button type="button" size="3" variant="soft" disabled={disabled} aria-expanded={expanded} aria-controls={detailId}
+        onClick={() => { setOpened(true); toggle() }}>
+        {expanded ? '收起单词练习' : opened ? '继续单词练习' : '开始单词练习'}
+      </Button>
+      <div id={detailId} hidden={!expanded} className="min-w-0">
+        {opened && <HomeworkWeeklyPlanPractice dailyDate={scheduledDate} disabled={disabled} />}
+      </div>
+    </Flex>
+  )
   const hasInlineContent = math || reading || !!row?.resources?.length || row?.resourceStatus === 'error' ||
     row?.values.requiresRecite === 'true' || (row?.values.contentType === 'chinese-course' && row.values.requiresRecite === 'unknown') ||
     row?.content?.some(block => block.text.trim() || block.translation?.trim())
@@ -88,7 +100,7 @@ function PracticeItemCard({ row, href, disabled, onCorrect, title, expanded, tog
 }
 
 /** Preview callers omit the editing callbacks. */
-export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, compact = false, activeHomeworkId, onEdit, onCorrect, onRetry }: Props) {
+export default function HomeworkContentPanel({ name, row, href, items, exhausted = false, loading = false, error, disabled = false, completedRows, addedRows, canAppend, compact = false, activeHomeworkId, scheduledDate, onEdit, onCorrect, onRetry }: Props) {
   const entries = items?.length ? items : [{ row, href }]
   const [expandedKey, setExpandedKey] = useState<string | null>(null)
   const weeklyPlan = hasWeeklyPlanPractice({ items: entries })
@@ -131,6 +143,7 @@ export default function HomeworkContentPanel({ name, row, href, items, exhausted
             return <PracticeItemCard controls={controls}
               onCorrect={onEdit && rowId ? async () => { if (!done) await onEdit('complete', rowId) } : onCorrect} key={key} {...item} disabled={disabled}
               compact={compactItem} name={compactItem && name !== label ? name : undefined} activeHomeworkId={activeHomeworkId}
+              scheduledDate={scheduledDate}
               title={`${done ? '✓ ' : ''}${ordinal}${label}`}
               expanded={expandedKey === key}
               toggle={() => setExpandedKey(current => current === key ? null : key)} />

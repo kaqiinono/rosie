@@ -17,6 +17,10 @@ collapse and save-error feedback. The learning content scrolls independently abo
 the footer reserves its own space and respects the device bottom safe area. Both life-tree
 details and homework details share these controls; parent time-entry forms stay in the body.
 
+The 今日英语计划 preset offers 开始单词练习 in the life-tree task drawer. The practice uses
+the task's original scheduled date, including after rescheduling or makeup. When two plans
+assign words on that date, the later-starting plan takes priority. The timer has its own start action.
+
 ## Makeup bubbles (approved 2026-11-16)
 
 Academic bubbles whose original scheduled date precedes today retain their subject color

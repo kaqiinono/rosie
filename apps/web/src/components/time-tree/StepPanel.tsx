@@ -28,7 +28,7 @@ import { HomeworkNotesDialog } from './HomeworkNotesDialog'
 import FlowerCollection from './FlowerCollection'
 import HomeworkContentPanel from './HomeworkContentPanel'
 import HomeworkTomatoTimer from './HomeworkTomatoTimer'
-import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
+import { hasWeeklyPlanPractice, isDailyEnglishPlanPath } from './weeklyPlanPractice'
 import styles from './StepPanel.module.css'
 import { finishAndPop } from './finishStep'
 import type { TreeController } from './useTimeTree'
@@ -97,7 +97,7 @@ export function StepPanel({
   const homeworkData = useHomeworkData()
   const template = homeworkData.data.find(item => item.id === step.occurrence.split('/')[0])
   const content = useMemo(() => step.practice ?? previewPractice(tree, step, template), [tree, step, template])
-  const weeklyPlan = hasWeeklyPlanPractice(content)
+  const planDrawer = hasWeeklyPlanPractice(content) || isDailyEnglishPlanPath(content?.href)
   const [localNow, setNow] = useState(Date.now)
   const now = localNow + api.clockOffsetMs
   const [editingNote, setEditingNote] = useState(false)
@@ -358,10 +358,10 @@ export function StepPanel({
         open
         title={step.name}
         description={tomato ? `番茄钟共 ${tomato.rounds} 轮，随作业计时。` : undefined}
-        size={weeklyPlan ? 'preview' : step.flowers ? 'form' : 'standard'}
+        size={planDrawer ? 'preview' : step.flowers ? 'form' : 'standard'}
         chrome="none"
         presentation="bottom-drawer"
-        compactBottomDrawer={!weeklyPlan}
+        compactBottomDrawer={!planDrawer}
         centerBottomDrawerOnDesktop
         bottomDrawerCompanion={tomato ? <HomeworkTomatoTimer progress={tomato} /> : undefined}
         onOpenChange={(v) => {
@@ -510,7 +510,7 @@ export function StepPanel({
       open
       title={step.name}
       icon={SUBJECTS[step.subject].emoji}
-      presentation={weeklyPlan ? 'bottom-drawer' : 'dialog'}
+      presentation={planDrawer ? 'bottom-drawer' : 'dialog'}
       onOpenChange={(v) => {
         if (!v) close()
       }}
@@ -688,6 +688,7 @@ function PracticePreviewPanel({ api, tree, step, homework, template, content, co
   const canAppend = editable && first >= 0 && binding?.rows.slice(first).some(row => row.values.problemId && !used.has(row.id))
   return <HomeworkContentPanel
     compact={compact}
+    scheduledDate={step.scheduled}
     activeHomeworkId={step.start && !step.end ? step.id : undefined}
     disabled={api.busy}
     completedRows={mathBatch && recorded ? rows.filter(row => recorded.includes(row.values.problemId)).map(row => row.id) : completed}

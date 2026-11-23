@@ -4,8 +4,159 @@
       {
         "file": "full",
         "startMs": 34060,
-        "endMs": 182460,
+        "endMs": 476560,
         "partial": true
+      }
+    ],
+    "ch01": [
+      {
+        "file": "full",
+        "startMs": 483900,
+        "endMs": 2229200
+      }
+    ],
+    "ch02": [
+      {
+        "file": "full",
+        "startMs": 2237120,
+        "endMs": 3817800
+      }
+    ],
+    "ch03": [
+      {
+        "file": "full",
+        "startMs": 3825240,
+        "endMs": 4916500
+      }
+    ],
+    "ch04": [
+      {
+        "file": "full",
+        "startMs": 4928220,
+        "endMs": 5430960,
+        "partial": true
+      }
+    ],
+    "ch05": [
+      {
+        "file": "full",
+        "startMs": 5438700,
+        "endMs": 6969880
+      }
+    ],
+    "ch06": [
+      {
+        "file": "full",
+        "startMs": 6977800,
+        "endMs": 8513640
+      }
+    ],
+    "ch07": [
+      {
+        "file": "full",
+        "startMs": 8518920,
+        "endMs": 9898100
+      }
+    ],
+    "ch08": [
+      {
+        "file": "full",
+        "startMs": 9905840,
+        "endMs": 11250640
+      }
+    ],
+    "ch09": [
+      {
+        "file": "full",
+        "startMs": 11255660,
+        "endMs": 12665640
+      }
+    ],
+    "ch10": [
+      {
+        "file": "full",
+        "startMs": 12673560,
+        "endMs": 14194840
+      }
+    ],
+    "ch11": [
+      {
+        "file": "full",
+        "startMs": 14202840,
+        "endMs": 15323560
+      }
+    ],
+    "ch12": [
+      {
+        "file": "full",
+        "startMs": 15331400,
+        "endMs": 16795800
+      }
+    ],
+    "ch13": [
+      {
+        "file": "full",
+        "startMs": 16803880,
+        "endMs": 17868340
+      }
+    ],
+    "ch14": [
+      {
+        "file": "full",
+        "startMs": 17881220,
+        "endMs": 19442900,
+        "partial": true
+      }
+    ],
+    "ch15": [
+      {
+        "file": "full",
+        "startMs": 19450840,
+        "endMs": 21338640
+      }
+    ],
+    "ch16": [
+      {
+        "file": "full",
+        "startMs": 21350760,
+        "endMs": 23028820,
+        "partial": true
+      }
+    ],
+    "ch17": [
+      {
+        "file": "full",
+        "startMs": 23044020,
+        "endMs": 24353400,
+        "partial": true
+      }
+    ],
+    "ch18": [
+      {
+        "file": "full",
+        "startMs": 24359020,
+        "endMs": 25603720
+      }
+    ],
+    "ch19": [
+      {
+        "file": "full",
+        "startMs": 25609700,
+        "endMs": 26958560
+      }
+    ],
+    "ch20": [
+      {
+        "file": "full",
+        "startMs": 26966320,
+        "endMs": 28127600
+      }
+    ],
+    "ch21": [
+      {
+        "file": "full",
+        "startMs": 28135740,
+        "endMs": 28372760
       }
     ]
   }

@@ -183,8 +183,7 @@
       {
         "file": "part-07",
         "startMs": 3960,
-        "endMs": 773800,
-        "partial": true
+        "endMs": 773800
       }
     ],
     "ch25": [
@@ -199,8 +198,15 @@
       {
         "file": "part-07",
         "startMs": 1615540,
-        "endMs": 2693080,
+        "endMs": 2695720,
         "partial": true
+      }
+    ],
+    "ch27": [
+      {
+        "file": "part-07",
+        "startMs": 2703680,
+        "endMs": 4023480
       }
     ]
   }

@@ -11,46 +11,40 @@ import type { WeeklyPlan, WeekDayProgress } from '@rosie/core'
 const SYSTEM_DEFAULTS = { weekStartDay: 4, newWordsPerDay: 3 }
 
 async function loadAllPlansFromCloud(userId: string): Promise<WeeklyPlan[]> {
-  try {
-    const { data, error } = await supabase
-      .from('weekly_plans')
-      .select(
-        'id, week_start, unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data',
-      )
-      .eq('user_id', userId)
-      .order('week_start', { ascending: false })
-    if (error || !data) return []
-    return data.map((row) => {
-      const { progress, weekCompletion, pendingSession } = decodeWeeklyPlanProgress(
-        row.progress_data,
-      )
-      const { days, previewLessonKeys, wordKinds, focusLessonKey, batchMode } = parsePlanDataFromSupabase(
-        row.plan_data,
-      )
-      return {
-        id: row.id as string,
-        weekStart: row.week_start,
-        unit: row.unit,
-        lesson: row.lesson,
-        weekStartDay:
-          ((row as Record<string, unknown>).week_start_day as number) ??
-          SYSTEM_DEFAULTS.weekStartDay,
-        newWordsPerDay:
-          ((row as Record<string, unknown>).new_words_per_day as number) ??
-          SYSTEM_DEFAULTS.newWordsPerDay,
-        days,
-        ...(previewLessonKeys !== undefined ? { previewLessonKeys } : {}),
-        ...(wordKinds !== undefined ? { wordKinds } : {}),
-        ...(focusLessonKey !== undefined ? { focusLessonKey } : {}),
-        ...(batchMode !== undefined ? { batchMode } : {}),
-        progress,
-        weekCompletion,
-        ...(pendingSession !== undefined ? { pendingSession } : {}),
-      }
-    })
-  } catch {
-    return []
-  }
+  const { data, error } = await supabase
+    .from('weekly_plans')
+    .select(
+      'id, week_start, unit, lesson, week_start_day, new_words_per_day, plan_data, progress_data',
+    )
+    .eq('user_id', userId)
+    .order('week_start', { ascending: false })
+  if (error) throw error
+  return (data ?? []).map((row) => {
+    const { progress, weekCompletion, pendingSession } = decodeWeeklyPlanProgress(row.progress_data)
+    const { days, previewLessonKeys, wordKinds, focusLessonKey, batchMode } = parsePlanDataFromSupabase(
+      row.plan_data,
+    )
+    return {
+      id: row.id as string,
+      weekStart: row.week_start,
+      unit: row.unit,
+      lesson: row.lesson,
+      weekStartDay:
+        ((row as Record<string, unknown>).week_start_day as number) ??
+        SYSTEM_DEFAULTS.weekStartDay,
+      newWordsPerDay:
+        ((row as Record<string, unknown>).new_words_per_day as number) ??
+        SYSTEM_DEFAULTS.newWordsPerDay,
+      days,
+      ...(previewLessonKeys !== undefined ? { previewLessonKeys } : {}),
+      ...(wordKinds !== undefined ? { wordKinds } : {}),
+      ...(focusLessonKey !== undefined ? { focusLessonKey } : {}),
+      ...(batchMode !== undefined ? { batchMode } : {}),
+      progress,
+      weekCompletion,
+      ...(pendingSession !== undefined ? { pendingSession } : {}),
+    }
+  })
 }
 
 async function saveToCloud(userId: string, plan: WeeklyPlan): Promise<string | null> {
