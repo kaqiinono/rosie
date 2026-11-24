@@ -13,6 +13,8 @@ export { todayProgressFromSummaries } from './utils/calc-today-from-summaries'
 export { calcPlannedQuestionCount } from './utils/calc-planned-question-count'
 export { useCalcMistakes } from './hooks/useCalcMistakes'
 export { categoryLabel, buildSession } from './utils/calc-helpers'
+export { calcSettingsStore } from './hooks/useCalcSettings'
+export { settleOfflineCalc } from './utils/settle-offline-calc'
 export {
   formatAnswer,
   checkAnswer,

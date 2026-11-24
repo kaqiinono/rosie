@@ -12,6 +12,7 @@ import { tomatoPrices } from '@/lib/time-tree/rewards'
 import { hasRowChanges, rowChanges } from '@/lib/time-tree/rowChanges'
 import { dayOf, isInstantHomework, shift, PRACTICE_SCHEDULE_VERSION, WEEKLY_SCHEDULE_VERSION, type TreeAction, type TreeData } from '@/lib/time-tree/types'
 import { isClosedHomeworkCycle, isMultiweekCycle } from '@/lib/time-tree/cycleHomework'
+import { canCompleteOffline, signTreeOfflineWork, verifyTreeOfflineWork } from '@/lib/offline/tree-proof'
 
 export const dynamic = 'force-dynamic'
 const authOptions = { attempts: 2, timeoutMs: 5_000 }
@@ -30,7 +31,8 @@ export async function GET(req: Request) {
   const started = performance.now()
   const params = new URL(req.url).searchParams
   const wheel = params.get('box') === 'wheel'
-  const verify = wheel ? lookupUserFromRequest : lookupUserFromClaims
+  const offline = params.get('offline') === '1'
+  const verify = wheel || offline ? lookupUserFromRequest : lookupUserFromClaims
   const { user, unreachable, reason } = await verify(req, authOptions)
   if (unreachable) {
     console.warn('[time-tree-auth]', { action: 'read', stage: 'identity', reason })
@@ -60,7 +62,11 @@ export async function GET(req: Request) {
     : await db.rpc('read_time_tree_scene', { p_user: user.id, p_today: today })
   if (error) return failure('生命树暂时无法读取。', 503)
   if (days) return NextResponse.json(data ?? { revision: 0, steps: [], spends: [] }, { headers: headers() })
-  return NextResponse.json({ revision: data?.revision ?? 0, tree: data?.tree ?? newTree(today),
+  const tree = (data?.tree ?? newTree(today)) as TreeData
+  const revision = Number(data?.revision ?? 0)
+  const offlineProofs = offline ? Object.fromEntries(tree.steps.filter(step => canCompleteOffline(step, today))
+    .map(step => [step.id, signTreeOfflineWork(user.id, step.id, revision, today)])) : undefined
+  return NextResponse.json({ revision, tree, offlineProofs,
     historyMinutes: data?.historyMinutes, homeworkRevision: data?.appliedHomework,
     syncDeferred: Boolean(data?.tree && data.tree.today !== today) }, { headers: headers() })
 }
@@ -99,11 +105,20 @@ export async function POST(req: Request) {
   let needsOnlineCheck = claims?.user?.verifiedOnline === false
   try {
     const db = createAdminSupabase()
+    const offlineCompletion = input.kind === 'completeOffline'
+    if (offlineCompletion && (
+      typeof input.id !== 'string' || !Number.isSafeInteger(input.revision) ||
+      typeof input.day !== 'string' || typeof input.start !== 'string' || typeof input.end !== 'string' ||
+      !verifyTreeOfflineWork(user.id, input.id, input.revision!, input.day,
+        input.offlineProof, input.start, input.end, new Date().toISOString())
+    )) return failure('离线作业记录需要在生命树中核对。', 409, 'offline_conflict')
     const command = input.kind === 'pop' ? { kind: 'pop', id: input.id } :
       Object.fromEntries(Object.entries(input).filter(([key]) => [
         'kind','id','name','day','notes','start','end','flowerSelection','questionEdit','rowId','problemId',
         'popOnFinish','regenerate','color','rules','tomatoPrice',
       ].includes(key)))
+    // Read the overlap window used for time records, keeping a distinct command hash.
+    if (offlineCompletion) Object.assign(command, { kind: 'record', offline: true })
     // Popping a cycle task also hands the bubble over to the next occurrence.
     if (input.kind === 'pop' && typeof input.id === 'string' && !isMultiweekCycle(input.id.split('/')[1])) {
       const fast = await db.rpc('pop_time_tree_step', { p_user: user.id, p_id: input.id, p_operation: input.operationId })
@@ -157,7 +172,7 @@ export async function POST(req: Request) {
       const revision = Number(saved?.revision ?? 0)
       const independent = input.kind === 'pop' || input.kind === 'pick' || (
         ['start','stop','finish','completeUntimed','return','move','nextDay','saveNotes','preparePractice','water',
-          'collectFlowers','editMathQuestion','answerHomeworkQuestion','skip'].includes(input.kind) &&
+          'collectFlowers','editMathQuestion','answerHomeworkQuestion','skip','completeOffline'].includes(input.kind) &&
         targetVersion != null && Number.isSafeInteger(input.revision) && input.revision! <= revision && targetVersion <= input.revision!)
       if (input.kind !== 'sync' && !independent && revision !== input.revision)
         return failure('作业进度已更新，请查看最新状态后重试。', 409, 'stale_revision')
@@ -179,6 +194,8 @@ export async function POST(req: Request) {
         else schedule(tree, templates, previousDay, shift(today, 6))
       }
       const step = tree.steps.find((s) => s.id === input.id)
+      if (offlineCompletion && (!step || !canCompleteOffline(step, input.day!) ||
+        (step.start && step.start !== input.start))) return failure('这份作业状态已变化，请在生命树中核对。', 409, 'offline_conflict')
       const editingQuestions = input.kind === 'editMathQuestion'
       const instantPop = input.kind === 'pop' && step && isInstantHomework(step)
       const settling = !step?.end && !step?.skipped && (instantPop || ['finish', 'completeUntimed', 'collectFlowers', 'record', 'skip'].includes(input.kind))

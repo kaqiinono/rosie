@@ -9,7 +9,7 @@ import HomeStatsPanel from '@/components/HomeStatsPanel'
 const TodayPlanSummary = dynamic(() => import('@/components/today/TodayPlanSummary'), {
   ssr: false,
   loading: () => (
-    <p role="status" className="text-text-muted min-h-48 text-sm sm:min-h-24">
+    <p id="home-today-title" role="status" className="text-text-muted min-h-48 text-sm sm:min-h-24">
       正在加载今日计划…
     </p>
   ),
@@ -38,12 +38,13 @@ const moduleGroups = [
   {
     id: 'subjects',
     title: '学科提升',
-    columns: 'sm:grid-cols-4',
+    columns: 'sm:grid-cols-4 lg:grid-cols-5',
     modules: [
       { href: '/math', title: '数学乐园', description: '学新课练数学', icon: '🔢', tone: 'blue' },
       { href: '/english', title: '英语天地', description: '背词阅读学语法', icon: '📖', tone: 'green' },
       { href: '/chinese', title: '语文园地', description: '认字写字背古诗', icon: '📜', tone: 'amber' },
       { href: '/exams/ket', title: '考一考', description: '练剑桥英语真题', icon: '📝', tone: 'blue' },
+      { href: '/english/theater', title: '电影剧场', description: '看电影练听力', icon: '🎬', tone: 'rose' },
     ],
   },
   {
@@ -97,14 +98,6 @@ export default function HomePage() {
         </section>
 
         <section aria-labelledby="home-today-title" className="w-full max-w-[1040px]">
-          <div className="mb-1.5 flex items-center justify-between">
-            <h2 id="home-today-title" className="text-text-primary text-sm font-bold">
-              今日计划
-            </h2>
-            <NavigationLink href="/today" className="text-sm font-bold text-[var(--accent-11)]">
-              查看全部
-            </NavigationLink>
-          </div>
           {user && <TodayPlanSummary />}
         </section>
 

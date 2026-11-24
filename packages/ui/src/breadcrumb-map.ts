@@ -67,6 +67,8 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['chinese', 'wrong'], label: '错题本' },
   { pattern: ['chinese', 'garden'], label: '识字加油站' },
   { pattern: ['english'], label: '英语' },
+  { pattern: ['english', 'theater'], label: '电影剧场' },
+  { pattern: ['english', 'theater', '[filmId]'], label: '影片播放' },
   { pattern: ['english', 'library'], label: '词库' },
   { pattern: ['english', 'words'], label: '单词' },
   { pattern: ['english', 'words', 'practice'], label: '单词练习' },

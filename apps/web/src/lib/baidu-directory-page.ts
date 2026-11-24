@@ -10,7 +10,7 @@ interface ProviderEntry {
 }
 
 export async function readBaiduDirectoryPage(
-  accessToken: string, directory: string, start: number, limit: number,
+  accessToken: string, directory: string, start: number, limit: number, signal?: AbortSignal,
 ): Promise<ProviderEntry[]> {
   const url = new URL('https://pan.baidu.com/rest/2.0/xpan/file')
   url.search = new URLSearchParams({
@@ -18,7 +18,8 @@ export async function readBaiduDirectoryPage(
     order: 'name', access_token: accessToken,
   }).toString()
   const response = await fetch(url, {
-    cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15_000),
+    cache: 'no-store', redirect: 'error',
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000),
   })
   const body = parseBaiduJson(await response.text())
   if (body.errno === -9) throw Error('baidu_directory_missing')

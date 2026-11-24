@@ -23,6 +23,7 @@ export type TodayPlanCardModel = {
   total: number | null
   subtitle: string
   pct: number
+  allDone?: boolean
   tone: {
     idleBg: string
     idleBorder: string
@@ -89,6 +90,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       href: calc.href ?? '/calc/session?mode=daily&start=1',
       done: calc.done,
       total: calc.target,
+      allDone: calc.allDone,
       subtitle: calc.allDone
         ? calc.coins > 0
           ? `🎉 完成 · 得 ${calc.coins}⭐`
@@ -116,6 +118,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       href: english.href,
       done: english.doneCount,
       total: english.total,
+      allDone: english.allDone,
       subtitle: english.allDone
         ? english.lastScore !== undefined
           ? `得分 ${english.lastScore}% 🎉`
@@ -145,6 +148,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       href: math.href ?? '/math/ny/plan/practice',
       done: math.done,
       total: math.total,
+      allDone: math.allDone,
       subtitle: math.allDone ? '全部完成 🎉' : `还剩 ${Math.max(0, math.total - math.done)} 题`,
       pct: math.total > 0 ? (math.done / math.total) * 100 : 0,
       tone: math.allDone
@@ -166,6 +170,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       href: chinese.href,
       done: chinese.done,
       total: chinese.total,
+      allDone: chinese.allDone,
       subtitle: chinese.subtitle,
       pct: chinese.pct,
       tone: chinese.allDone
@@ -197,6 +202,7 @@ function shimmerStyle(color: string): CSSProperties {
 type TodayPlanOverviewCardsProps = {
   cards: TodayPlanCardModel[]
   linkable?: boolean
+  showPracticeActions?: boolean
   className?: string
   allowReset?: boolean
   onResetToast?: (message: string) => void
@@ -236,10 +242,12 @@ function SyncStatusChip({ status }: { status: TodayPlanSyncStatus }) {
 export function TodayPlanOverviewCards({
   cards,
   linkable = false,
+  showPracticeActions = false,
   className,
   allowReset = false,
   onResetToast,
-}: TodayPlanOverviewCardsProps) {
+  offlineActions,
+}: TodayPlanOverviewCardsProps & { offlineActions?: Partial<Record<TodayPlanSubjectKey, () => void>> }) {
   const { user } = useAuth()
   const [syncBySubject, setSyncBySubject] = useState(EMPTY_SYNC)
   const [resettingKey, setResettingKey] = useState<TodayPlanSubjectKey | null>(null)
@@ -300,7 +308,7 @@ export function TodayPlanOverviewCards({
     <>
       <div className={className ?? 'grid grid-cols-2 gap-3 sm:grid-cols-4'}>
         {cards.map((card) => {
-          const sync = syncBySubject[card.key]
+          const sync = offlineActions ? 'none' : syncBySubject[card.key]
           const showActions = allowReset && sync !== 'none'
           const style = {
             background: card.tone.idleBg,
@@ -308,6 +316,36 @@ export function TodayPlanOverviewCards({
             boxShadow: card.tone.idleShadow,
           }
           const actionBorder = card.tone.idleBorder
+          const progressValue = Math.min(100, Math.max(0, card.pct))
+          const pct = Math.floor(progressValue)
+          const hasCount = typeof card.done === 'number' && card.total !== null && card.total > 0
+          const remaining = typeof card.done === 'number' ? Math.max(0, (card.total ?? 0) - card.done) : 0
+          const subtitle = showPracticeActions && card.key !== 'chinese' && card.href && !card.allDone && remaining > 0
+            ? `${remaining} ${card.key === 'english' ? '个词' : '题'}待练`
+            : card.subtitle
+          const started = sync !== 'none' || progressValue > 0 || (typeof card.done === 'number' && card.done > 0)
+          let practiceLabel = started ? '继续' : '去练习'
+          if (card.allDone) {
+            practiceLabel = card.key === 'calc' ? '再练一组' : '查看计划'
+            if (card.key === 'calc' && sync !== 'none') practiceLabel = '继续'
+          }
+          const progress = (
+            <div
+              className={`overflow-hidden rounded-full bg-black/10 ${showPracticeActions ? 'h-2 min-w-0 flex-1' : 'mt-auto h-1.5'}`}
+              role={showPracticeActions ? 'progressbar' : undefined}
+              aria-label={showPracticeActions ? `${card.label}进度` : undefined}
+              aria-valuenow={showPracticeActions && card.done !== null ? pct : undefined}
+            >
+              {card.done === null ? (
+                <div className="animate-shimmer h-full w-full rounded-full" style={shimmerStyle(card.tone.bar)} />
+              ) : (
+                <div
+                  className="h-full rounded-full transition-[width] duration-700 motion-reduce:transition-none"
+                  style={{ width: `${progressValue}%`, background: card.tone.bar }}
+                />
+              )}
+            </div>
+          )
 
           const content = (
             <>
@@ -342,32 +380,32 @@ export function TodayPlanOverviewCards({
                   </div>
                 )
               )}
+              {showPracticeActions && (hasCount || card.allDone || card.done === null) && (
+                <div className="mt-2 flex items-center gap-2">
+                  {progress}
+                  {card.done !== null && (
+                    <span aria-hidden="true" className="shrink-0 text-xs font-semibold tabular-nums"
+                      style={{ color: card.allDone ? card.tone.value : card.tone.subtitle }}>
+                      {card.allDone ? '已完成' : `${pct}%`}
+                    </span>
+                  )}
+                </div>
+              )}
               <div
-                className="mt-1 mb-2 truncate text-[10px] font-medium"
+                className={`mt-1 mb-2 truncate font-medium ${showPracticeActions ? 'text-xs' : 'text-[10px]'}`}
                 style={{ color: card.tone.subtitle }}
               >
-                {card.subtitle}
+                {subtitle}
               </div>
-              <div
-                // mt-auto pins the bar to the card bottom even when a card
-                // (e.g. 语文 boolean state) renders no number row.
-                className="mt-auto h-1.5 overflow-hidden rounded-full"
-                style={{ background: 'rgba(0,0,0,.08)' }}
-              >
-                {card.done === null ? (
-                  // Loading: full-width flowing-light sweep (done === null is
-                  // the hook's per-card loading marker) instead of an empty bar.
-                  <div
-                    className="animate-shimmer h-full w-full rounded-full"
-                    style={shimmerStyle(card.tone.bar)}
-                  />
-                ) : (
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${card.pct}%`, background: card.tone.bar }}
-                  />
-                )}
-              </div>
+              {!showPracticeActions && progress}
+              {showPracticeActions && linkable && card.href && card.done !== null && (
+                <span
+                  className="relative z-[1] mt-auto flex min-h-7 items-center self-end rounded-full px-3 text-xs font-bold text-white"
+                  style={{ background: card.allDone ? card.tone.value : card.tone.subtitle }}
+                >
+                  {practiceLabel}
+                </span>
+              )}
             </>
           )
 
@@ -412,13 +450,24 @@ export function TodayPlanOverviewCards({
             </div>
           ) : null
 
+          const offlineAction = offlineActions?.[card.key]
+          if (offlineAction) return (
+            <Button key={card.key} variant="ghost" onClick={offlineAction}
+              className="relative m-0 h-auto flex-col items-stretch gap-0 overflow-hidden rounded-2xl px-4 py-3.5 text-left"
+              style={style}>
+              {content}
+            </Button>
+          )
+
           // Content-only clickable card when no action strip.
           if (linkable && card.href && !showActions) {
             return (
               <Link
                 key={card.key}
                 href={card.href}
-                className="relative flex flex-col overflow-hidden rounded-2xl px-4 py-3.5 no-underline transition-all hover:-translate-y-0.5"
+                className="relative flex flex-col overflow-hidden rounded-2xl px-4 py-3.5 no-underline transition-transform
+                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-8)]
+                  motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none"
                 style={style}
               >
                 {content}

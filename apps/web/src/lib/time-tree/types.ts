@@ -162,6 +162,7 @@ export type ActionKind =
   | 'answerHomeworkQuestion'
   | 'finish'
   | 'completeUntimed'
+  | 'completeOffline'
   | 'skip'
   | 'pop'
   | 'return'
@@ -196,6 +197,7 @@ export interface TreeAction {
   color?: CoreSubject
   rules?: Rules
   pin?: string
+  offlineProof?: string
 }
 export interface Snapshot {
   historyMinutes?: Record<string, { completed: number; total: number }>

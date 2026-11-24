@@ -10,14 +10,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
+  const localPage = pathname === '/auth'
+
   useEffect(() => {
-    if (!loading && !user && pathname !== '/auth') {
+    if (!loading && !user && !localPage) {
       router.replace('/auth')
     }
-  }, [user, loading, pathname, router])
+  }, [user, loading, localPage, router])
 
+  if (localPage) return <>{children}</>
   if (loading) return <AuthSkeleton />
-  if (!user && pathname !== '/auth') return null
+  if (!user) return null
 
   return <>{children}</>
 }

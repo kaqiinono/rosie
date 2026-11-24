@@ -12,6 +12,9 @@ export default function BaiduAudioSessionCleanup() {
         void fetch('/api/baidu/audio/session', {
           method: 'DELETE', credentials: 'same-origin',
         }).catch(() => {})
+        void fetch('/api/theater/session', {
+          method: 'DELETE', credentials: 'same-origin',
+        }).catch(() => {})
       }
     })
     return () => data.subscription.unsubscribe()

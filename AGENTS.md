@@ -9,9 +9,14 @@ the owning package guide.
 
 **Script placement:** `scripts/` root holds ONLY long-lived, reusable CLIs (referenced by npm
 scripts, CI, skills, or docs) plus their companion data files (e.g. `grammar-page-map.json`).
+Standalone tools may live in `scripts/tools/<category>/` alongside their usage guides.
 One-off / temporary scripts (data fixes, diagnostics, migration patches, POCs, one-time SQL seeds)
-go in `scripts/tmp/` and can be deleted at any time. When moving a script between the two, fix its
-dirname-based root path resolution accordingly.
+go in `scripts/tmp/` and can be deleted at any time. When moving a script, update any references
+and dirname-based root path resolution.
+
+**Baidu share subtitles:** Run `python3 scripts/tools/movie/baidu-share-subtitles.py '<share URL>' '<code>'`
+when asked to export subtitles from a single-video Baidu Netdisk share. See the
+[movie tools guide](scripts/tools/movie/README.md).
 
 ## Monorepo layout
 
@@ -247,6 +252,9 @@ Global admin sub-pages include:
 - `/admin/sync` — shared Baidu authorization, account-scoped directory bookmarks and read-only file browsing,
   on-demand 路径 / 数学 / 英语 panels, per-lesson math replay and English lesson audio bindings. Under 英语 → Story, admins select an English series and book to bind one full-book recording and one recording per chapter. Directory APIs require an administrator.
   Shared callbacks return here. Legacy personal callbacks still return to `/setting`, which no longer displays a Netdisk card.
+  电影剧场 saves one media directory per shared Baidu account and scans it and its descendants for unbound videos.
+  MP4, MKV and RMVB drafts
+  bind the video's actual containing directory and its selected subtitle files. See [Baidu OAuth](docs/baidu-oauth.md#电影剧场媒体目录).
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/users` — account management plus per-user parent PIN reset. Parent PIN hashes live in
@@ -497,6 +505,21 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - `pnpm dev` registers the SW, but Workbox loads from CDN — full offline requires network on first load
 - When modifying offline behavior, always test in **`pnpm start` (preview) mode**, not `pnpm dev`. The SW behaves differently in development
 - After changing `public/sw.js`, hard-reload the browser (the SW update cycle is async)
+
+The home 今日计划 section prepares the device-local offline learning pack through 同步.
+With a saved pack, the home page switches to offline when the connection or online services
+are unavailable. An automatically opened offline overview returns home when services recover
+and leaves active practice open. The same four
+cards and a Life Tree list are available at `/offline` after preparing on that device.
+The Service Worker saves only its app shell. Account-scoped plan snapshots, downloaded
+math figures and the operation queue are in IndexedDB. Explicit logout clears local
+access. The same account can unlock and sync its retained work after signing in again.
+The offline queue settles ordinary calc, English weekly plan and supported numeric math
+exercises. Chinese is a progress snapshot. Life Tree's downloaded task proofs allow
+ordinary timed, unbound tasks to preserve their original Beijing date and receive base
+sunlight/water. Practice-bound and flower-collection tasks remain viewable. Math and
+English replay require migration `20261124070850_offline_learning_settlement`, applied to
+`rosie-tokyo`.
 
 ### Path Aliases
 

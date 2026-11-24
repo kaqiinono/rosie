@@ -20,7 +20,8 @@ const loading = () => <SyncPending />
 const BaiduMathVideoManager = dynamic(() => import('./BaiduMathVideoManager'), { loading })
 const EnglishAudioManager = dynamic(() => import('./EnglishAudioManager'), { loading })
 const ExamsMediaManager = dynamic(() => import('./ExamsMediaManager'), { loading })
-const tabs = ['路径', '数学', '英语', '考试'] as const
+const BaiduTheaterManager = dynamic(() => import('./BaiduTheaterManager'), { loading })
+const tabs = ['路径', '数学', '英语', '考试', '电影剧场'] as const
 type SyncTab = (typeof tabs)[number]
 
 type OpenDirectory = SyncDirectoryPage & { root: SyncDirectory }
@@ -222,6 +223,8 @@ function SyncWorkspace({ user }: { user: User }) {
                     <EnglishAudioManager key={list.generation} userId={userId} paths={list} />
                   ) : item === '考试' ? (
                     <ExamsMediaManager key={list.generation} userId={userId} paths={list} />
+                  ) : item === '电影剧场' ? (
+                    <BaiduTheaterManager key={list.generation} userId={userId} paths={list} />
                   ) : (
                     <Flex direction="column" gap="3">
                       <Flex align="center" justify="between" gap="2" wrap="wrap">

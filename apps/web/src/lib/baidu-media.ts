@@ -187,6 +187,8 @@ export async function fetchBaiduFileById(
   expectedPath?: string,
   expectedFingerprint?: BaiduFileFingerprint,
   access: 'published' | 'project' = 'published',
+  downloadTimeoutMs = 120_000,
+  videoExtension = /\.mp4$/i,
 ): Promise<Response | null> {
   const id = exactBaiduId(fsId)
   const metadata = await baiduJson(
@@ -209,7 +211,7 @@ export async function fetchBaiduFileById(
     !info.path.startsWith(prefix) ||
     info.path.slice(prefix.length).includes('/') ||
     (expectedPath && info.path !== expectedPath) ||
-    (kind === 'video' && !/\.mp4$/i.test(info.path))
+    (kind === 'video' && !videoExtension.test(info.path))
   )
     return null
   if (expectedFingerprint) {
@@ -221,7 +223,7 @@ export async function fetchBaiduFileById(
   let download = safeDownloadUrl(info.dlink)
   const headers = new Headers({ 'User-Agent': 'pan.baidu.com', 'Accept-Encoding': 'identity' })
   if (range) headers.set('Range', range)
-  const downloadSignal = AbortSignal.any([signal, AbortSignal.timeout(120_000)])
+  const downloadSignal = AbortSignal.any([signal, AbortSignal.timeout(downloadTimeoutMs)])
   for (let redirect = 0; redirect < 5; redirect += 1) {
     download.searchParams.set('access_token', token)
     const response = await fetch(download, {
@@ -257,7 +259,8 @@ export async function fetchBaiduFileById(
       !(
         kind === 'material' ||
         contentType.startsWith(`${kind}/`) ||
-        ['application/octet-stream', 'binary/octet-stream'].includes(contentType)
+        ['application/octet-stream', 'binary/octet-stream'].includes(contentType) ||
+        (kind === 'video' && contentType === 'application/x-matroska')
       )
     ) {
       await response.body?.cancel()

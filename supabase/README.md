@@ -199,3 +199,37 @@ archive in Baidu Netdisk. See [backup setup and recovery](backup.md).
 The project media cutover moves project assets and private recordings to Baidu Netdisk.
 See [project file storage](../docs/project-file-storage.md) for the source
 inventory, resumable copy, and production cleanup steps.
+
+## 电影剧场
+
+`20261124064230_english_theater.sql` 已应用到 Rosie Web 使用的 `rosie-tokyo`
+项目。迁移记录、三张表的行级安全和进度保存 RPC 已核对。影片和字幕继续存于
+百度网盘，Supabase 保存文件绑定和个人学习记录。
+
+`20261124084211_theater_video_formats.sql` 已应用到 `rosie-tokyo`。绑定记录接受
+MP4、MKV 和 RMVB，播放副本可记录文件 ID、名称及指纹。迁移历史与三个约束均已核对，
+实际网盘转码与浏览器播放待手动验收。
+
+`20261124091000_theater_media_directories.sql` 已应用到 `rosie-tokyo`。按共享百度
+账号保存剧场媒体目录，使用授权目录 ID 和并发版本。已核对迁移记录、行级安全、
+仅服务端的读写权限，以及授权目录删除后级联清理设置的外键。
+
+`20261124095602_theater_subtitle_revisions.sql` 已应用到 `rosie-tokyo`。远端已核对迁移记录、
+待同步批次唯一索引、历史索引、行级安全以及服务角色的表和同步确认函数权限。
+同步完成后将字幕绑定更新和修订归档写入同一事务。
+
+## 离线学习结算
+
+`20261124070850_offline_learning_settlement.sql` 已应用到 `rosie-tokyo`。
+数学练习和英语周计划通过账号内唯一的操作编号补传，提交与回执在同一事务保存。
+远端已核对迁移记录、私有回执表的行级安全，以及两个结算 RPC 的登录角色权限。
+匿名角色没有结算权限，浏览器角色不能读取回执表。
+
+`20261124072851_theater_subtitle_jobs.sql` 已应用到 `rosie-tokyo`。迁移记录、
+任务表的行级安全、仅服务端读取权限、任务领取函数和 Cron 注册已核对。
+电影剧场找不到可用字幕时排入百炼原声转写，完成后把 SRT 保存至影片所在网盘目录。
+
+已部署的服务通过 `THEATER_SUBTITLE_WORKER_ORIGIN`、`NEXT_PUBLIC_APP_URL`
+或 Vercel 生产域名取得公开 HTTPS 地址，首次排队时由服务端登记后台地址。
+异步转写复用百炼配置，也可用 `THEATER_ASR_BASE_URL` 和
+`THEATER_ASR_API_KEY` 单独配置。实际影片转写待验收。

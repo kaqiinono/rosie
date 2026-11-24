@@ -1,16 +1,11 @@
 import { Theme } from '@rosie/ui/themes'
 import type { Metadata, Viewport } from 'next'
 import { ServiceWorkerRegistrar } from '@rosie/ui'
-import AiFloatingAssistantHost from '@/components/AiFloatingAssistantHost'
-import TimeTreeLauncher from '@/components/time-tree/TimeTreeLauncher'
 import BaiduAudioSessionCleanup from '@/components/BaiduAudioSessionCleanup'
 import ExamSessionLifecycle from '@/components/exams/ExamSessionLifecycle'
-import { AuthProvider } from '@rosie/core'
-import { ImmersiveProvider } from '@rosie/core'
-import { TopRightBar } from '@rosie/ui'
-import { AuthGuard } from '@rosie/ui'
-import { StarHudProvider } from '@rosie/rewards'
-import { StarBurst as StarBurstOverlay } from '@rosie/rewards'
+import { AuthProvider, ImmersiveProvider } from '@rosie/core'
+import AppContent from '@/components/AppContent'
+import { OfflineAccount } from '@/components/offline/OfflineEntry'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -52,20 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           hasBackground={false}
         >
           <AuthProvider>
+            <OfflineAccount />
             <BaiduAudioSessionCleanup />
             <ExamSessionLifecycle />
             <ImmersiveProvider>
               <ServiceWorkerRegistrar />
-              <AuthGuard>
-                <StarHudProvider>
-                  <TopRightBar />
-                  <TimeTreeLauncher>
-                    {children}
-                    <AiFloatingAssistantHost />
-                  </TimeTreeLauncher>
-                  <StarBurstOverlay />
-                </StarHudProvider>
-              </AuthGuard>
+              <AppContent>{children}</AppContent>
             </ImmersiveProvider>
           </AuthProvider>
         </Theme>

@@ -17,6 +17,8 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
+export const AUTH_DEVICE_SIGN_OUT = 'rosie:device-sign-out'
+export const AUTH_PASSWORD_SIGN_IN = 'rosie:password-sign-in'
 
 function formatSignInError(error: unknown): string {
   const authError = isAuthError(error) ? error : undefined
@@ -77,7 +79,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (!error && data.user) window.dispatchEvent(new CustomEvent(AUTH_PASSWORD_SIGN_IN, { detail: data.user.id }))
       return { error: error ? formatSignInError(error) : null }
     } catch (error) {
       return { error: formatSignInError(error) }
@@ -94,11 +97,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
+    window.dispatchEvent(new Event(AUTH_DEVICE_SIGN_OUT))
     try {
       localStorage.clear()
     } catch {
       /* ignore */
     }
+    setUser(null)
     await supabase.auth.signOut()
   }
 

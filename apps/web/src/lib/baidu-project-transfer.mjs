@@ -112,7 +112,7 @@ export async function listProjectDirectoryPage(token, dir, start) {
 
 /** @param {string} token @param {string} path */
 export async function findProjectFile(token, path) {
-  const directory = path.slice(0, path.lastIndexOf('/'))
+  const directory = path.slice(0, path.lastIndexOf('/')) || '/'
   for (let start = 0; start < 100_000; start += 1000) {
     const list = await listProjectDirectoryPage(token, directory, start)
     const entry = list.find(item => item.path === path && item.isdir === 0)

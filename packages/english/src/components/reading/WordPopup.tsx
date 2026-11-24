@@ -1,7 +1,7 @@
 'use client'
 
 import { AppDialog, DarkScope } from '@rosie/ui'
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import type { WordEntry, WordMasteryInfo } from '@rosie/core'
 import type { ReadingPassage } from '../../utils/reading-data'
 import {
@@ -36,6 +36,7 @@ interface WordPopupProps {
   mastery: WordMasteryInfo | undefined
   showMastery?: boolean
   cefrLevel?: string
+  actions?: ReactNode
   onEntryChange?: (entry: WordEntry) => void
   onClose: () => void
 }
@@ -86,6 +87,7 @@ export default function WordPopup({
   mastery,
   showMastery = true,
   cefrLevel,
+  actions,
   onEntryChange,
   onClose,
 }: WordPopupProps) {
@@ -258,6 +260,8 @@ export default function WordPopup({
             )}
           </div>}
         </div>
+
+        {actions && <div className="px-5 pb-5">{actions}</div>}
 
         {currentIndex >= 0 && entries.length > 1 && (
           <div className="border-kid-line sticky bottom-0 grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-t bg-white px-5 py-3">

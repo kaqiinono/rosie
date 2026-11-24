@@ -1,11 +1,43 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/7.3.0/workbox-sw.js')
 
 const { precacheAndRoute } = workbox.precaching
-const { registerRoute, NavigationRoute } = workbox.routing
+const { registerRoute } = workbox.routing
 const { StaleWhileRevalidate, CacheFirst, NetworkFirst, NetworkOnly } = workbox.strategies
 const { ExpirationPlugin } = workbox.expiration
 const { CacheableResponsePlugin } = workbox.cacheableResponse
 const { RangeRequestsPlugin } = workbox.rangeRequests
+const offlineShell = 'rosie-offline-shell-v1'
+const offlinePath = '/offline'
+let downloadingOfflineShell
+
+async function downloadOfflineShell() {
+  const response = await fetch(offlinePath, { cache: 'reload' })
+  if (!response.ok || response.redirected || !response.headers.get('content-type')?.includes('text/html')) {
+    throw new Error('offline shell unavailable')
+  }
+  const html = await response.clone().text()
+  const assets = [...new Set(Array.from(
+    html.matchAll(/(?:src|href)="(\/_next\/static\/[^"]+)"/g),
+    (match) => match[1].replaceAll('&amp;', '&'),
+  ))]
+  if (!assets.some((asset) => /\.js(?:\?|$)/.test(asset))) throw new Error('offline scripts missing')
+  const cache = await caches.open(offlineShell)
+  await cache.addAll(assets)
+  await cache.put(offlinePath, response)
+  const retained = new Set([offlinePath, ...assets].map((asset) => new URL(asset, self.location.origin).href))
+  for (const cached of await cache.keys()) {
+    if (!retained.has(cached.url)) await cache.delete(cached)
+  }
+}
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'ROSIE_PREPARE_OFFLINE' || !event.ports[0]) return
+  downloadingOfflineShell ??= downloadOfflineShell().finally(() => { downloadingOfflineShell = undefined })
+  event.waitUntil(downloadingOfflineShell.then(
+    () => event.ports[0].postMessage({ ok: true }),
+    () => event.ports[0].postMessage({ ok: false }),
+  ))
+})
 
 precacheAndRoute([
   { url: '/manifest.json', revision: null },
@@ -18,8 +50,10 @@ precacheAndRoute([
 registerRoute(
   ({ url }) =>
     url.pathname === '/api/draw-wheel' || url.pathname.startsWith('/api/draw-wheel/') ||
+    url.pathname === '/api/time-tree' ||
     url.pathname === '/api/vocabulary-assessment' ||
     url.pathname === '/api/exams' || url.pathname.startsWith('/api/exams/') ||
+    url.pathname === '/api/theater' || url.pathname.startsWith('/api/theater/') ||
     url.pathname === '/api/admin/exams' || url.pathname.startsWith('/api/admin/exams/') ||
     url.pathname.startsWith('/api/project-media/chinese-reading-recordings/') ||
     url.pathname.startsWith('/api/project-media/english-story-recordings/') ||
@@ -31,25 +65,65 @@ registerRoute(
 
 registerRoute(
   ({ request }) => request.destination === 'document',
-  new NetworkFirst({
-    cacheName: 'pages',
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 }),
-    ],
-  })
+  async ({ event, request, url }) => {
+    const cache = await caches.open(offlineShell)
+    const saved = await cache.match(offlinePath)
+    if (url.pathname === offlinePath) {
+      try {
+        const response = await fetch(request, { signal: AbortSignal.timeout(4_000) })
+        if (response.status < 500) return response
+        return saved ?? response
+      } catch (error) {
+        if (saved) return saved
+        throw error
+      }
+    }
+    if (saved && (url.pathname === '/' || url.pathname === '/auth')) {
+      try {
+        const response = await fetch(request, { signal: AbortSignal.timeout(4_000) })
+        if (response.status < 500) return response
+      } catch {
+        // The explicitly downloaded entry is available for both startup routes.
+      }
+      return Response.redirect(new URL(offlinePath + '?auto=1', self.location.origin).href, 302)
+    }
+    try {
+      const response = await pages.handle({ event, request })
+      if (response.status < 500 || !saved) return response
+    } catch (error) {
+      if (!saved) throw error
+    }
+    return Response.redirect(new URL(offlinePath + '?auto=1', self.location.origin).href, 302)
+  },
 )
 
+const pages = new NetworkFirst({
+  cacheName: 'pages',
+  plugins: [
+    new CacheableResponsePlugin({ statuses: [0, 200] }),
+    new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 }),
+  ],
+})
+
 registerRoute(
-  ({ request }) =>
-    request.destination === 'script' || request.destination === 'style',
-  new StaleWhileRevalidate({
-    cacheName: 'static-resources',
-    plugins: [
-      new CacheableResponsePlugin({ statuses: [0, 200] }),
-      new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 }),
-    ],
-  })
+  ({ url }) => url.origin === self.location.origin && url.pathname.startsWith('/_next/static/'),
+  async ({ event, request }) => {
+    const saved = await (await caches.open(offlineShell)).match(request)
+    return saved ?? staticResources.handle({ event, request })
+  },
+)
+
+const staticResources = new StaleWhileRevalidate({
+  cacheName: 'static-resources',
+  plugins: [
+    new CacheableResponsePlugin({ statuses: [0, 200] }),
+    new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 7 * 24 * 60 * 60 }),
+  ],
+})
+
+registerRoute(
+  ({ request }) => request.destination === 'script' || request.destination === 'style',
+  staticResources,
 )
 
 registerRoute(

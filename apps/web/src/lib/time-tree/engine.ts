@@ -187,12 +187,12 @@ function awardTomatoes(tree: TreeData, step: WorkStep, early: boolean) {
   wallet.earned += earned
 }
 
-function finish(tree: TreeData, s: WorkStep, end: string) {
+function finish(tree: TreeData, s: WorkStep, end: string, offline = false) {
   if (s.end) return
   requireState(s.start, '请先开始做。')
   s.end = end
   s.popped = s.slot === null
-  const early = isEarly(s)
+  const early = !offline && isEarly(s)
   Object.assign(s, completionReward(tree, s, dayOf(end), early))
   if (!s.audit.length && s.minutes > 0) awardTomatoes(tree, s, isTomatoDoubleEligible(s))
   tree.sun += s.sun
@@ -479,6 +479,7 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
         fill(tree)
       }
       break
+    case 'completeOffline':
     case 'record': {
       if (s.end) throw new TreeConflict('这项作业已结算。')
       const start = Date.parse(action.start ?? '')
@@ -505,7 +506,12 @@ export function act(tree: TreeData, action: TreeAction, now: string) {
       s.audit.push({ at: now, previousStart: s.start, previousEnd: s.end })
       s.start = new Date(start).toISOString()
       if (s.flowers) collectFlowers(tree, s, action, new Date(end).toISOString(), now)
-      else finish(tree, s, new Date(end).toISOString())
+      else finish(tree, s, new Date(end).toISOString(), kind === 'completeOffline')
+      if (kind === 'completeOffline') {
+        s.popped = true
+        s.slot = null
+        fill(tree)
+      }
       roll(tree, day)
       break
     }

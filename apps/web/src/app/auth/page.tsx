@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@rosie/core'
 import { DarkScope } from '@rosie/ui'
 import { Button, TextField } from '@rosie/ui/themes'
+import { OfflineEntry } from '@/components/offline/OfflineEntry'
 
 function toEmail(username: string) {
   return `${username.trim().toLowerCase()}@rosie.app`
@@ -157,7 +158,10 @@ function AuthContent() {
                   minLength={6}
                 />
                 <Feedback error={error} message={message} />
-                <SubmitBtn loading={loading} label="登录" />
+                <div className="mt-1 flex items-stretch gap-2">
+                  <SubmitBtn loading={loading} label="登录" className="min-w-0 flex-1" />
+                  <OfflineEntry />
+                </div>
                 <Button
                   type="button"
                   onClick={() => {
@@ -303,7 +307,11 @@ function Feedback({ error, message }: { error: string | null; message: string | 
   return null
 }
 
-function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
+function SubmitBtn({ loading, label, className = 'mt-1 w-full' }: {
+  loading: boolean
+  label: string
+  className?: string
+}) {
   return (
     <Button
       type="submit"
@@ -311,7 +319,7 @@ function SubmitBtn({ loading, label }: { loading: boolean; label: string }) {
       variant="solid"
       color="blue"
       size="3"
-      className="mt-1 w-full"
+      className={className}
     >
       {loading ? '请稍候…' : label}
     </Button>

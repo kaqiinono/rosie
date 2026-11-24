@@ -18,6 +18,9 @@ import {
 } from '@rosie/chinese'
 import { buildTodayPlanCards, TodayPlanOverviewCards } from './TodayPlanOverview'
 import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
+import { NavigationLink, RotateCw } from '@rosie/ui'
+import { Button } from '@rosie/ui/themes'
+import { useOfflinePreparation } from '@/components/offline/OfflinePreparation'
 
 export function useTodayPlanOverview(date?: string) {
   const { user } = useAuth()
@@ -267,6 +270,7 @@ export function useTodayPlanOverview(date?: string) {
     today,
     isActualToday,
     overviewCards,
+    offlineReady: !Object.values(subjectLoading).some(Boolean),
     loadingDetails,
     englishPlan,
     englishProgress,
@@ -275,6 +279,7 @@ export function useTodayPlanOverview(date?: string) {
     hasWeeklyEnglish,
     hasEnglish,
     mathProblems,
+    mathPlanId: mathPlan?.weekStart,
     mathProgress,
     mathAllDone,
     hasMath,
@@ -294,6 +299,29 @@ export function useTodayPlanOverview(date?: string) {
 }
 
 export default function TodayPlanSummary() {
-  const { overviewCards } = useTodayPlanOverview()
-  return <TodayPlanOverviewCards cards={overviewCards} linkable />
+  const { today, overviewCards, offlineReady, englishPlan, mathPlanId, mathProblems, mathProgress } = useTodayPlanOverview()
+  const offline = useOfflinePreparation({
+    day: today, cards: overviewCards, englishPlan, mathPlanId,
+    math: mathProblems, mathDone: mathProgress.doneKeys,
+  }, offlineReady)
+
+  return <>
+    <div className="mb-1.5 flex items-center justify-between">
+      <h2 id="home-today-title" className="text-text-primary text-sm font-bold">今日计划</h2>
+      <div className="flex items-center gap-3">
+        <Button size="2" variant="ghost" color="gray" disabled={!offline.canSync} onClick={offline.sync}>
+          <RotateCw size={14} aria-hidden="true" className={offline.busy ? 'motion-safe:animate-spin' : undefined} />
+          {offline.busy ? '同步中…' : '同步'}
+        </Button>
+        <NavigationLink href="/today" aria-label="查看全部计划"
+          className="text-text-secondary inline-flex items-center gap-1 text-sm font-bold">
+          全部 <span aria-hidden="true">›</span>
+        </NavigationLink>
+      </div>
+    </div>
+    <TodayPlanOverviewCards cards={overviewCards} linkable showPracticeActions />
+    {(offline.saved || offline.error) && <p className="text-text-secondary mt-2 text-xs" role="status">
+      {[offline.saved, offline.error].filter(Boolean).join(' · ')}
+    </p>}
+  </>
 }
