@@ -185,6 +185,23 @@ function GroupedSteps({
   )
 }
 
+function DeferredSyncToast({ covered }: { covered: boolean }) {
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    if (covered || !visible) return
+    const timer = window.setTimeout(() => setVisible(false), 3000)
+    return () => window.clearTimeout(timer)
+  }, [covered, visible])
+
+  if (covered || !visible) return null
+  return (
+    <div role="status" className="pointer-events-none absolute inset-x-2 top-20 z-30 flex justify-center">
+      <StickerCard size="sm" className="text-sm">已显示上次保存的生命树，后台更新后会自动刷新。</StickerCard>
+    </div>
+  )
+}
+
 export default function LiveTree() {
   const api = useTimeTree()
   const flowerReward = useFlowerRewardToast('top')
@@ -953,6 +970,7 @@ export default function LiveTree() {
         </div>
       )}
       {flowerReward.toast}
+      {api.syncDeferred && <DeferredSyncToast key={api.user?.id} covered={Boolean(sceneNotice || flowerReward.toast)} />}
       {sceneNotice && (notice || !flowerReward.toast) && (
         <div
           role="status"

@@ -302,8 +302,8 @@ export function useTimeTree() {
     busy,
     run,
     retry,
-    message: actionError?.message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : '') ||
-      (data?.syncDeferred ? '已显示上次保存的生命树，后台更新后会自动刷新。' : ''),
+    message: actionError?.message || (error instanceof TimeTreeRequestError ? error.message : error ? '无法读取生命树，请重试。' : ''),
+    syncDeferred: data?.syncDeferred === true,
     messageCode: actionError instanceof TimeTreeRequestError ? actionError.code : undefined,
     error,
     isLoading: loading || isLoading,
