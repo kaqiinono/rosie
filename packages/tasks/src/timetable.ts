@@ -3,9 +3,11 @@ import type { CourseRule, RuleInput } from './types'
 import { atTime, dateAfter } from './time'
 
 export const DEFAULT_TIMETABLE_PREFERENCES: TimetablePreferences = { week_start: 1, show_weekends: true, start_hour: 7, end_hour: 22, hour_height: 64, hour12: false, show_teacher: true, show_location: true, default_reminder_minutes: 10 }
-const dayNumber = (date: string) => Math.floor(Date.parse(`${date}T00:00:00Z`) / 86400000)
+const DAY_MS = 86400000
+type ScheduleRule = Omit<TimetableRule, 'id' | 'user_id' | 'course_id' | 'start_time' | 'end_time'>
+const dayNumber = (date: string) => Math.floor(Date.parse(`${date}T00:00:00Z`) / DAY_MS)
 const monday = (date: string) => dayNumber(date) - (new Date(`${date}T00:00:00Z`).getUTCDay() + 6) % 7
-export function ruleOccursOn(rule: Omit<TimetableRule, 'id' | 'user_id' | 'course_id' | 'start_time' | 'end_time'>, date: string): boolean {
+export function ruleOccursOn(rule: ScheduleRule, date: string): boolean {
   if (date < rule.valid_from || (rule.valid_until && date > rule.valid_until) || (rule.disabled_from && date >= rule.disabled_from)) return false
   if (new Date(`${date}T00:00:00Z`).getUTCDay() !== rule.weekday) return false
   const anchor = rule.anchor_date || rule.valid_from
@@ -13,6 +15,46 @@ export function ruleOccursOn(rule: Omit<TimetableRule, 'id' | 'user_id' | 'cours
   const week = Math.floor((monday(date) - monday(anchor)) / 7)
   if (week < 0) return false
   return rule.recurrence === 'weeks' ? (rule.teaching_weeks || []).includes(week + 1) : week % (rule.interval_weeks || 1) === 0
+}
+
+function hasOccurrenceFrom(rule: ScheduleRule, from: string): boolean {
+  const start = from < rule.valid_from ? rule.valid_from : from
+  const anchor = rule.anchor_date || rule.valid_from
+  if (rule.recurrence === 'once') return anchor >= start && ruleOccursOn(rule, anchor)
+
+  const anchorWeek = monday(anchor)
+  const weekdayOffset = (rule.weekday + 6) % 7
+  // Use the same Monday-based week numbers as ruleOccursOn.
+  const firstWeek = Math.max(0, Math.ceil((dayNumber(start) - anchorWeek - weekdayOffset) / 7))
+  if (!Number.isFinite(firstWeek)) return false
+
+  const occursInWeek = (week: number) => {
+    const date = new Date((anchorWeek + week * 7 + weekdayOffset) * DAY_MS)
+    return ruleOccursOn(rule, date.toISOString().slice(0, 10))
+  }
+  if (rule.recurrence === 'weeks')
+    return (rule.teaching_weeks ?? []).some((week) => week - 1 >= firstWeek && occursInWeek(week - 1))
+
+  const interval = rule.interval_weeks || 1
+  return occursInWeek(Math.ceil(firstWeek / interval) * interval)
+}
+
+export function automaticCourseEffectiveDate(
+  rules: readonly ScheduleRule[],
+  preferred: string,
+  today: string,
+): string | null {
+  const canApplyFrom = (date: string) =>
+    !rules.some(
+      (rule) =>
+        rule.recurrence === 'once' &&
+        (!rule.disabled_from || rule.disabled_from > date) &&
+        (!rule.valid_until || rule.valid_until >= date) &&
+        (rule.anchor_date || rule.valid_from) < date,
+    ) && rules.some((rule) => hasOccurrenceFrom(rule, date))
+
+  if (preferred > today && canApplyFrom(preferred)) return preferred
+  return canApplyFrom(today) ? today : null
 }
 
 export function previewCourseDates(rules: RuleInput[], from: string, to: string): string[] {

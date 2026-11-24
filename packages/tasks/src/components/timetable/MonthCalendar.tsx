@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, IconButton } from '@rosie/ui/themes'
+import { IconButton } from '@rosie/ui/themes'
 import type { TimetableCourse, TimetableOccurrence } from '../../types'
 import { atTime, dateAfter, localDate } from '../../time'
 import { weekdays } from '../shared'
@@ -31,100 +31,125 @@ export default function MonthCalendar({
 }: Props) {
   const days: string[] = []
   for (let day = from; day <= to; day = dateAfter(day, 1)) days.push(day)
+  const weeks = Array.from({ length: days.length / 7 }, (_, index) =>
+    days.slice(index * 7, (index + 1) * 7),
+  )
   const today = localDate()
+  const coursesById = new Map(courses.map((course) => [course.id, course]))
 
   return (
-    <div
-      className="border-kid-line overflow-x-auto border-t focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--focus-8)]"
-      tabIndex={0}
-      role="region"
-      aria-label="月课表，可横向滚动"
+    <table
+      className="border-kid-line w-full table-fixed border-collapse border-t"
+      aria-label={`${month.slice(0, 4)}年${Number(month.slice(5))}月课表`}
     >
-      <div className="min-w-[700px]">
-        <div className="border-kid-line grid grid-cols-7 border-b bg-slate-50/70">
+      <thead className="border-kid-line border-b bg-slate-50">
+        <tr>
           {days.slice(0, 7).map((day) => (
-            <div key={day} className="py-3 text-center text-xs font-medium text-slate-500">
+            <th
+              key={day}
+              scope="col"
+              className="py-1.5 text-center text-xs font-semibold text-slate-600"
+            >
               {weekdays[new Date(day + 'T12:00:00Z').getUTCDay()]}
-            </div>
+            </th>
           ))}
-        </div>
-        <div className="grid grid-cols-7">
-          {days.map((day) => {
-            const start = +new Date(atTime(day, '00:00')),
-              end = +new Date(atTime(dateAfter(day, 1), '00:00'))
-            const lessons = occurrences.filter(
-              (row) => +new Date(row.starts_at) < end && +new Date(row.ends_at) > start,
-            )
-            const inMonth = day.startsWith(month)
-            return (
-              <section
-                key={day}
-                aria-label={day}
-                className={`border-kid-line min-h-44 border-r border-b p-2 ${day === today ? 'bg-[var(--accent-2)]' : inMonth ? 'bg-white' : 'bg-slate-50/80'}`}
-              >
-                <div className="mb-2 flex items-center justify-between gap-1">
-                  <IconButton
-                    size="2"
-                    radius="full"
-                    variant={day === today ? 'solid' : 'ghost'}
-                    color={day === today ? undefined : 'gray'}
-                    highContrast={inMonth}
-                    onClick={() => onDay(day)}
-                    aria-label={day + ' 查看日课表'}
-                    aria-current={day === today ? 'date' : undefined}
-                  >
-                    {Number(day.slice(8))}
-                  </IconButton>
-                  <IconButton
-                    size="2"
-                    variant="ghost"
-                    onClick={() => onAdd(day)}
-                    aria-label={day + ' 添加课程'}
-                  >
-                    ＋
-                  </IconButton>
-                </div>
-                <div className="space-y-1.5">
-                  {lessons.slice(0, 3).map((row) => {
-                    const course = courses.find((item) => item.id === row.course_id),
-                      color = courseColor(course)
-                    const startTime = clockTime(row.starts_at, hour12)
-                    const label = `${course?.name ?? '课程'} · ${startTime} · ${statusLabel[row.status]}`
-                    return (
-                      <div key={row.id} className="space-y-1">
-                        <time
-                          dateTime={row.starts_at}
-                          className="block truncate px-2 text-[10px] leading-3 font-normal text-slate-500 tabular-nums"
-                        >
-                          {localDate(new Date(row.starts_at)) < day && '续 · '}
-                          {startTime}
-                        </time>
-                        {/* native-ok: 课程色块按钮，底色/文字色来自每门课程的自定义颜色，需铺满单元格宽度 */}
-                        <button
+        </tr>
+      </thead>
+      <tbody>
+        {weeks.map((week) => (
+          <tr key={week[0]} className="border-kid-line h-20 border-b last:border-b-0">
+            {week.map((day) => {
+              const start = +new Date(atTime(day, '00:00'))
+              const end = +new Date(atTime(dateAfter(day, 1), '00:00'))
+              const lessons = occurrences.filter(
+                (row) => +new Date(row.starts_at) < end && +new Date(row.ends_at) > start,
+              )
+              const visibleLessons = lessons.slice(0, lessons.length > 3 ? 2 : 3)
+              const hiddenCount = lessons.length - visibleLessons.length
+              const inMonth = day.startsWith(month)
+              const isToday = day === today
+
+              return (
+                <td
+                  key={day}
+                  className={`border-kid-line border-r p-0.5 align-top last:border-r-0 sm:px-1.5 ${isToday ? 'bg-[var(--accent-2)]' : inMonth ? 'bg-white' : 'bg-slate-50'}`}
+                >
+                  <div className="mb-0.5 flex min-h-6 items-center justify-between px-0.5">
+                    <IconButton
+                      size="1"
+                      radius="full"
+                      variant={isToday ? 'solid' : 'ghost'}
+                      color={isToday ? undefined : 'gray'}
+                      highContrast={inMonth}
+                      onClick={() => onDay(day)}
+                      aria-label={day + ' 查看日课表'}
+                      aria-current={isToday ? 'date' : undefined}
+                    >
+                      <span className="flex size-4 items-center justify-center text-xs font-semibold tabular-nums">
+                        {Number(day.slice(8))}
+                      </span>
+                    </IconButton>
+                    <IconButton
+                      size="1"
+                      variant="ghost"
+                      color="gray"
+                      onClick={() => onAdd(day)}
+                      aria-label={day + ' 添加课程'}
+                    >
+                      <span className="text-xs leading-none">+</span>
+                    </IconButton>
+                  </div>
+                  <div className="flex min-w-0 flex-col gap-px">
+                    {visibleLessons.map((row) => {
+                      const course = coursesById.get(row.course_id)
+                      const color = courseColor(course)
+                      const name = course?.name ?? '课程'
+                      const startTime = clockTime(row.starts_at, hour12)
+                      const continues = localDate(new Date(row.starts_at)) < day
+                      const label = `${name} · ${continues ? '跨日续课 · ' : ''}${startTime} · ${statusLabel[row.status]}`
+                      return (
+                        <button // native-ok: 按课程自定义配色的一行色块，铺满日历单元格
+                          key={row.id}
                           type="button"
                           onClick={() => onSelect(row)}
                           aria-label={label}
                           title={label}
-                          className={`block w-full cursor-pointer truncate rounded-md px-2 py-2 text-left text-xs font-medium hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--focus-8)] active:brightness-90 ${row.status === 'cancelled' ? 'line-through' : ''}`}
+                          className={`flex w-full min-w-0 cursor-pointer items-center gap-1 rounded-sm px-0.5 text-left text-xs leading-4 hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--focus-8)] active:brightness-90 sm:px-1 ${row.status === 'cancelled' ? 'line-through' : ''}`}
                           style={{ backgroundColor: color.background, color: color.text }}
                         >
-                          {course?.name ?? '课程'}
-                          {row.status === 'cancelled' && ' · 停课'}
+                          <time
+                            dateTime={row.starts_at}
+                            className="hidden shrink-0 tabular-nums lg:inline"
+                          >
+                            {continues ? '续' : startTime}
+                          </time>
+                          <span className="min-w-0 truncate">{name}</span>
                         </button>
-                      </div>
-                    )
-                  })}
-                  {lessons.length > 3 && (
-                    <Button size="1" variant="soft" onClick={() => onDay(day)}>
-                      还有 {lessons.length - 3} 节课 →
-                    </Button>
-                  )}
-                </div>
-              </section>
-            )
-          })}
-        </div>
-      </div>
-    </div>
+                      )
+                    })}
+                    {hiddenCount > 0 && (
+                      <IconButton
+                        size="1"
+                        variant="ghost"
+                        color="gray"
+                        mx="1"
+                        my="1"
+                        className="min-w-0 max-w-full self-start"
+                        aria-label={`${day} 还有 ${hiddenCount} 节课程，查看日课表`}
+                        onClick={() => onDay(day)}
+                      >
+                        <span className="truncate text-xs leading-none tabular-nums">
+                          +{hiddenCount}
+                        </span>
+                      </IconButton>
+                    )}
+                  </div>
+                </td>
+              )
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

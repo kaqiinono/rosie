@@ -121,6 +121,11 @@ Layout: all /tasks tabs share a max-w-7xl outer container, one stable “任务�
 
 Density: date/view controls use 40–44px targets; the main date title is 18–20px and summary metrics are inline. Short time blocks prioritize the course name, adding status, location and teacher only when height permits; time text is omitted from day/week blocks and remains available in accessible labels and details; the full lesson details remain available on activation. Agenda entries are grouped under date headings. Month cells share the same emerald today marker, muted grid lines and course palette.
 
+Month view fits seven weekday columns across the available width. Compact day cells use
+one line per course and show times alongside names on wide screens. A day with more than
+three courses shows the first two and a count that opens its day view. Date arrows follow
+the active calendar granularity: one day, one week or one calendar month per click.
+
 Course form: use a white sticky action header, slate-50 canvas and white rounded groups for course information, schedule, colors and advanced settings. Labels remain visible above 16px values; 22px outline icons share a 48px (56px on wider screens) column. Input focus belongs to the whole row: emerald-50 tint plus a 2px inset emerald-600 ring. Buttons and picker options use the same inset focus treatment; solid emerald actions use a lighter emerald-300 ring. Focus must not change borders, dimensions or alignment. Course name does not autofocus on opening. Color swatches wrap, notes use a single-line-high textarea that preserves existing multiline content, subjects use a native dropdown, and the time picker uses TimetableDialog. Groups reserve 4px of inner space and each row has its own rounded-xl corners so focus rings remain clear of the outer clipping boundary.
 
 ## Verification boundary

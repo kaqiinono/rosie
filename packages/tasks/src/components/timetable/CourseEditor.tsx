@@ -7,11 +7,12 @@ import { SUBJECTS } from '../../types'
 import { dateAfter, localDate } from '../../time'
 import {
   DEFAULT_TIMETABLE_PREFERENCES,
+  automaticCourseEffectiveDate,
   previewCourseDates,
   previewOccurrences,
 } from '../../timetable'
 import { Button, IconButton, Switch, TextArea, TextField } from '@rosie/ui/themes'
-import { FormSelect } from '@rosie/ui'
+import { DatePicker, FormSelect } from '@rosie/ui'
 import { Field, useTimetable, weekdays } from '../shared'
 import TimetableDialog from './TimetableDialog'
 import CourseTimeWheel from './CourseTimeWheel'
@@ -169,12 +170,37 @@ export default function CourseEditor({
 }) {
   const { api, notify } = useTimetable()
   const [createId] = useState(() => crypto.randomUUID())
-  const initialEffective =
-    course?.effective_from && course.effective_from > localDate()
-      ? course.effective_from
-      : date < localDate()
-        ? localDate()
-        : date
+  const editing = !!course && !duplicate
+  const today = localDate()
+  const [initialSchedule] = useState(() => {
+    if (!course)
+      return { requestedEffective: today, preferredEffective: today, slots: [newSlot(date, time)] }
+
+    const preferred =
+      course.effective_from && course.effective_from > today
+        ? course.effective_from
+        : date < today
+          ? today
+          : date
+    const currentRules = api.data.rules.filter(
+      (rule) =>
+        rule.course_id === course.id &&
+        (!rule.valid_until || rule.valid_until >= today) &&
+        (rule.recurrence !== 'once' || (rule.anchor_date || rule.valid_from) >= today),
+    )
+    const rulesAt = (effective: string) =>
+      currentRules.filter((rule) => !rule.disabled_from || rule.disabled_from > effective)
+    const preferredRules = rulesAt(preferred)
+    const automaticDate = editing
+      ? automaticCourseEffectiveDate(preferredRules, preferred, today)
+      : preferred
+    const rules = automaticDate ? preferredRules : rulesAt(today)
+    return {
+      requestedEffective: preferred,
+      preferredEffective: automaticDate ?? today,
+      slots: rules.map(slotFromRule),
+    }
+  })
   const [draft, setDraft] = useState<CourseInput>(() => ({
     course_type: course?.course_type ?? 'timetabled',
     rules_revision: duplicate ? undefined : course?.rules_revision,
@@ -192,19 +218,8 @@ export default function CourseEditor({
             .default_reminder_minutes
         : course.reminder_minutes,
   }))
-  const [effective, setEffective] = useState(initialEffective)
-  const [slots, setSlots] = useState<Slot[]>(() => {
-    const rules = course
-      ? api.data.rules.filter(
-          (r) =>
-            r.course_id === course.id &&
-            (!r.disabled_from || r.disabled_from > initialEffective) &&
-            (!r.valid_until || r.valid_until >= localDate()) &&
-            (r.recurrence !== 'once' || (r.anchor_date || r.valid_from) >= localDate()),
-        )
-      : []
-    return course ? rules.map(slotFromRule) : [newSlot(date, time)]
-  })
+  const [manualEffective, setManualEffective] = useState<string | null>(null)
+  const [slots, setSlots] = useState(initialSchedule.slots)
   const flexible = draft.course_type === 'flexible'
   const [activeSlot, setActiveSlot] = useState<string | null>(null)
   const [periodStart, setPeriodStart] = useState(slots[0]?.from ?? '')
@@ -244,8 +259,7 @@ export default function CourseEditor({
     if (!flexible) setActiveSlot(slot.key)
     setDirty(true)
   }
-  const editing = !!course && !duplicate
-  const validation = useMemo(() => {
+  const draftSchedule = useMemo(() => {
     const rules: RuleInput[] = []
     for (const slot of slots) {
       if (!slot.days.length && slot.recurrence !== 'once')
@@ -265,9 +279,7 @@ export default function CourseEditor({
         return { error: '重复间隔应为 1–520 周。', rules }
       const weeks = slot.recurrence === 'weeks' ? parseWeeks(slot.weeks) : []
       if (!weeks) return { error: '填写教学周，例如 1-8,10,12；支持 1–520 周。', rules }
-      const from = slot.from
-      if (editing && slot.until && slot.until < effective) continue
-      if (slot.recurrence === 'once' && slot.anchor < (editing ? effective : from))
+      if (!editing && slot.recurrence === 'once' && slot.anchor < slot.from)
         return { error: '单次上课日期不能早于生效日期。', rules }
       const days =
         slot.recurrence === 'once' ? [new Date(`${slot.anchor}T12:00:00Z`).getUTCDay()] : slot.days
@@ -281,7 +293,7 @@ export default function CourseEditor({
           ...(flexible
             ? { kind: 'flexible' as const, start_time: null, end_time: null }
             : { kind: 'timetabled' as const, start_time: slot.start, end_time: slot.end }),
-          valid_from: from,
+          valid_from: slot.from,
           valid_until: slot.until || null,
           recurrence: slot.recurrence,
           interval_weeks: slot.interval,
@@ -289,16 +301,47 @@ export default function CourseEditor({
           teaching_weeks: weeks,
         })
     }
+    return { error: '', rules }
+  }, [slots, editing, api.data.rules, flexible])
+  const effective =
+    manualEffective ??
+    (editing && !draftSchedule.error
+      ? automaticCourseEffectiveDate(draftSchedule.rules, initialSchedule.preferredEffective, today) ?? ''
+      : '')
+  const validation = useMemo(() => {
+    if (draftSchedule.error) return draftSchedule
+    const rules = editing
+      ? draftSchedule.rules.filter((rule) => !rule.valid_until || rule.valid_until >= effective)
+      : draftSchedule.rules
+    if (editing && rules.length > 0 && !effective)
+      return {
+        error: manualEffective === null
+          ? '今天及以后没有可用的排课日期，请调整课程日期或周期。'
+          : '请选择排课规则生效日，或恢复自动选择。',
+        rules,
+      }
+    if (editing && effective && effective < today)
+      return { error: '排课规则生效日不能早于今天。', rules }
+    if (
+      editing &&
+      rules.some((rule) => rule.recurrence === 'once' && (rule.anchor_date || rule.valid_from) < effective)
+    )
+      return { error: '单次上课日期不能早于生效日期。', rules }
     const keys = rules.map(
       (rule) =>
         `${rule.weekday}:${rule.start_time}:${rule.end_time}:${rule.valid_from}:${rule.valid_until}:${rule.recurrence}:${rule.anchor_date}:${rule.interval_weeks}:${rule.teaching_weeks?.join(',')}`,
     )
     if (new Set(keys).size !== keys.length)
       return { error: '存在完全重复的星期和时段，请移除重复项。', rules }
+    if (editing && slots.length > 0 && rules.length === 0)
+      return {
+        error: `排课规则生效日（${effective}）晚于所有上课时段的结束日期。请在「更多设置」中提前生效日，或延后结束日期。`,
+        rules,
+      }
     return { error: rules.length ? '' : '至少保留一个有效上课时段。', rules }
-  }, [slots, effective, editing, api.data.rules, flexible])
+  }, [slots.length, draftSchedule, effective, editing, manualEffective, today])
   const previewFrom = editing
-    ? effective
+    ? effective || today
     : slots.reduce((first, slot) => (slot.from < first ? slot.from : first), slots[0]?.from ?? date)
   const preview = useMemo(() => {
     if (validation.error) return { rows: [], conflicts: new Set<string>() }
@@ -725,31 +768,30 @@ export default function CourseEditor({
                   </span>
                 </label>
               )}
-              <label className={`${rowClass} ${courseFieldFocusClass}`}>
+              <div className={`${rowClass} ${courseFieldFocusClass}`}>
                 <span className={iconClass}>
                   <CourseIcon kind="start" />
                 </span>
                 <span className="min-w-0 flex-1 py-3 pr-4">
                   <span className={fieldLabelClass}>开始日期</span>
-                  <TextField.Root
-                    size="2"
-                    type="date"
+                  <DatePicker
+                    label="开始日期"
                     value={periodStart}
-                    onChange={(e) => {
-                      setPeriodStart(e.target.value)
+                    onValueChange={(value) => {
+                      setPeriodStart(value)
                       setSlots((prev) =>
                         prev.map((slot) => ({
                           ...slot,
-                          from: e.target.value || date,
-                          anchor: e.target.value || date,
+                          from: value,
+                          anchor: value,
                         })),
                       )
                       setDirty(true)
                     }}
                   />
                 </span>
-              </label>
-              <label className={`${rowClass} ${courseFieldFocusClass}`}>
+              </div>
+              <div className={`${rowClass} ${courseFieldFocusClass}`}>
                 <span className={iconClass}>
                   <CourseIcon kind="end" />
                 </span>
@@ -757,19 +799,20 @@ export default function CourseEditor({
                   <span className={fieldLabelClass}>
                     结束日期<span className="ml-2 font-normal">可选</span>
                   </span>
-                  <TextField.Root
-                    size="2"
-                    type="date"
+                  <DatePicker
+                    label="结束日期"
+                    placeholder="不设结束日期"
                     min={periodStart || date}
                     value={periodEnd}
-                    onChange={(e) => {
-                      setPeriodEnd(e.target.value)
-                      setSlots((prev) => prev.map((slot) => ({ ...slot, until: e.target.value })))
+                    clearable
+                    onValueChange={(value) => {
+                      setPeriodEnd(value)
+                      setSlots((prev) => prev.map((slot) => ({ ...slot, until: value })))
                       setDirty(true)
                     }}
                   />
                 </span>
-              </label>
+              </div>
               {!flexible && (
                 <div className={rowClass}>
                   <span className={iconClass}>
@@ -799,6 +842,14 @@ export default function CourseEditor({
                 {validation.error}
               </p>
             )}
+            {editing &&
+              !validation.error &&
+              manualEffective === null &&
+              effective !== initialSchedule.requestedEffective && (
+                <p role="status" className="px-1 text-xs text-slate-600">
+                  排课规则生效日已自动调整为 {effective}。
+                </p>
+              )}
             {preview.conflicts.size > 0 && (
               <p role="status" className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
                 未来 8 周有 {preview.conflicts.size} 次上课时间重叠，请检查。
@@ -924,19 +975,31 @@ export default function CourseEditor({
                 </Field>
               )}
               {editing && (
-                <Field label="排课规则生效日">
-                  <TextField.Root
-                    size="2"
-                    type="date"
-                    required
-                    min={localDate()}
-                    value={effective}
-                    onChange={(e) => {
-                      setEffective(e.target.value)
-                      setDirty(true)
-                    }}
-                  />
-                </Field>
+                <div className="min-w-0 space-y-2">
+                  <Field label="排课规则生效日">
+                    <TextField.Root
+                      size="2"
+                      type="date"
+                      required
+                      min={today}
+                      value={effective}
+                      onChange={(e) => {
+                        setManualEffective(e.target.value)
+                        setDirty(true)
+                      }}
+                    />
+                  </Field>
+                  {manualEffective !== null && (
+                    <Button
+                      size="1"
+                      type="button"
+                      variant="soft"
+                      onClick={() => setManualEffective(null)}
+                    >
+                      恢复自动选择
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </details>

@@ -426,6 +426,8 @@ See `tree.md` for the live rules.
 
 ### Dev previews
 
+`/demos` is the central menu for standalone UI demos. Add new standalone preview links in `apps/web/src/app/demos/page.tsx`.
+
 `/dev-preview/homework-content` selects actual owner-scoped saved task content by subject and parameter row, then directly renders the same `HomeworkContentPanel` used by life-tree details. It reads `usePracticeEntries` without creating presets, binding occurrences or writing progress. Detail URLs resolve the selected row's real variables. The preview uses the current catalog; life-tree retains its frozen occurrence snapshot. See `docs/homework-content-demo.md`.
 
 `apps/web/src/app/dev-preview/**` holds visual-only demo pages with static mock data (no Supabase).

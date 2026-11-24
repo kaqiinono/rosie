@@ -15,7 +15,7 @@ import {
   Text,
   TextField,
 } from '@rosie/ui/themes'
-import type { TimetableCourse, TimetableOccurrence } from '../types'
+import type { CourseRule, TimetableCourse, TimetableOccurrence } from '../types'
 import { SUBJECTS } from '../types'
 import { dateAfter, localDate } from '../time'
 import {
@@ -51,6 +51,40 @@ const granularities = [
   ['week', '周'],
   ['month', '月'],
 ] as const
+const pageLabels = {
+  day: { previous: '前一天', current: '今天', next: '后一天' },
+  week: { previous: '上一周', current: '本周', next: '下一周' },
+  month: { previous: '上个月', current: '本月', next: '下个月' },
+  agenda: { previous: '上一时段', current: '今天', next: '下一时段' },
+}
+
+function ruleTimeRange(rule: CourseRule) {
+  return rule.kind === 'flexible'
+    ? '自由课程'
+    : `${rule.start_time.slice(0, 5)}–${rule.end_time.slice(0, 5)}`
+}
+
+function summarizeCourseRules(rules: CourseRule[]) {
+  const dateRanges = new Map<string, Set<string>>()
+  const openEnded: CourseRule[] = []
+  for (const rule of rules) {
+    if (!rule.valid_until) {
+      openEnded.push(rule)
+      continue
+    }
+    const endDate =
+      rule.disabled_from && rule.disabled_from <= rule.valid_until
+        ? dateAfter(rule.disabled_from, -1)
+        : rule.valid_until
+    if (endDate < rule.valid_from) continue
+
+    const dates = `${rule.valid_from} 至 ${endDate}`
+    const times = dateRanges.get(dates) ?? new Set<string>()
+    if (rule.kind !== 'flexible') times.add(ruleTimeRange(rule))
+    dateRanges.set(dates, times)
+  }
+  return { dateRanges, openEnded }
+}
 
 function CourseActionIcon({
   action,
@@ -189,14 +223,15 @@ export default function Timetable() {
     if (course) setSelection({ course, occurrence })
   }
   const step = view === 'day' ? 1 : view === 'agenda' ? 28 : 7
-  const navigate = (direction: number) => {
-    if (view === 'month') {
+  const navigate = (direction: -1 | 1) => {
+    setDate((current) => {
+      if (view !== 'month') return dateAfter(current, direction * step)
       const target = new Date(
-        Date.UTC(Number(date.slice(0, 4)), Number(date.slice(5, 7)) + direction, 0),
+        Date.UTC(Number(current.slice(0, 4)), Number(current.slice(5, 7)) + direction, 0),
       )
-      target.setUTCDate(Math.min(Number(date.slice(8)), target.getUTCDate()))
-      setDate(target.toISOString().slice(0, 10))
-    } else setDate(dateAfter(date, direction * step))
+      target.setUTCDate(Math.min(Number(current.slice(8)), target.getUTCDate()))
+      return target.toISOString().slice(0, 10)
+    })
   }
   const today = localDate()
   const weekDays = Array.from({ length: 7 }, (_, i) => dateAfter(week, i))
@@ -260,7 +295,12 @@ export default function Timetable() {
               ))}
             </Tabs.List>
           </div>
-          <Flex direction="column" gap="3" px={{ initial: '3', sm: '5' }} py="3">
+          <Flex
+            direction="column"
+            gap={view === 'month' ? '2' : '3'}
+            px={{ initial: '3', sm: '5' }}
+            py={view === 'month' ? '2' : '3'}
+          >
             <Flex wrap="wrap" align="center" gap="2">
               {section === 'schedule' && (
                 <SegmentedControl.Root
@@ -277,15 +317,28 @@ export default function Timetable() {
               )}
               {view !== 'courses' && (
                 <>
-                  <IconButton variant="soft" aria-label="上一时段" onClick={() => navigate(-1)}>
+                  <IconButton
+                    variant="soft"
+                    aria-label={pageLabels[view].previous}
+                    title={pageLabels[view].previous}
+                    onClick={() => navigate(-1)}
+                  >
                     ‹
                   </IconButton>
-                  <Button variant="soft" onClick={() => setDate(today)}>
-                    今天
+                  <Button variant="soft" onClick={() => setDate(localDate())}>
+                    {pageLabels[view].current}
                   </Button>
-                  <IconButton variant="soft" aria-label="下一时段" onClick={() => navigate(1)}>
+                  <IconButton
+                    variant="soft"
+                    aria-label={pageLabels[view].next}
+                    title={pageLabels[view].next}
+                    onClick={() => navigate(1)}
+                  >
                     ›
                   </IconButton>
+                  <span role="status" className="sr-only">
+                    {periodLabel}
+                  </span>
                   {view === 'day' ? (
                     dateInput
                   ) : (
@@ -633,6 +686,7 @@ export default function Timetable() {
                         (b.weekday || 7) - (a.weekday || 7) ||
                         (b.start_time ?? '').localeCompare(a.start_time ?? ''),
                     )
+                  const { dateRanges, openEnded } = summarizeCourseRules(activeRules)
                   return (
                     <article
                       key={course.id}
@@ -667,16 +721,25 @@ export default function Timetable() {
                               '教师与地点未填写'}
                           </p>
                           <div className="space-y-1.5">
-                            {activeRules.map((rule) => (
+                            {Array.from(dateRanges, ([dates, times]) => (
+                              <div key={dates} className="space-y-0.5 text-xs tabular-nums">
+                                <p className="font-medium text-slate-700">{dates}</p>
+                                {times.size > 0 && (
+                                  <p className="flex flex-wrap gap-x-2 gap-y-0.5 text-slate-600">
+                                    {Array.from(times).sort().map((time) => (
+                                      <span key={time}>{time}</span>
+                                    ))}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                            {openEnded.map((rule) => (
                               <p
                                 key={rule.id}
                                 className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xs"
                               >
                                 <span className="font-medium text-slate-700 tabular-nums">
-                                  {weekdays[rule.weekday]}{' '}
-                                  {rule.kind === 'flexible'
-                                    ? '自由课程'
-                                    : `${rule.start_time.slice(0, 5)}–${rule.end_time.slice(0, 5)}`}
+                                  {weekdays[rule.weekday]} {ruleTimeRange(rule)}
                                 </span>
                                 <span className="text-slate-500">{recurrenceLabel(rule)}</span>
                               </p>
@@ -703,7 +766,7 @@ export default function Timetable() {
                             aria-label={`编辑${course.name}`}
                             disabled={!!course.archived_at}
                             title={course.archived_at ? '恢复课程后可编辑' : undefined}
-                            onClick={() => setEditor({ course, date })}
+                            onClick={() => setEditor({ course, date: today })}
                           >
                             <CourseActionIcon action="edit" />
                             <span className="hidden whitespace-nowrap sm:@[22rem]:inline">编辑</span>
@@ -783,7 +846,7 @@ export default function Timetable() {
             setEditor({
               course: selection.course,
               duplicate,
-              date: selection.occurrence?.original_date ?? date,
+              date: selection.occurrence?.original_date ?? (duplicate ? date : today),
             })
             setSelection(null)
           }}

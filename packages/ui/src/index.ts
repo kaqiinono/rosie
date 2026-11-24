@@ -36,6 +36,8 @@ export type {
 } from './AnswerChoiceGroup'
 export { FormSelect } from './FormSelect'
 export type { FormSelectOption, FormSelectProps } from './FormSelect'
+export { DatePicker } from './DatePicker'
+export type { DatePickerProps } from './DatePicker'
 export { StickerCard } from './StickerCard'
 export { PocketMenuButton } from './PocketMenuButton'
 export { DarkScope } from './DarkScope'

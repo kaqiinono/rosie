@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { layoutOccurrences, previewOccurrences, ruleOccursOn, timetableStats } from '../../../packages/tasks/src/timetable'
+import { automaticCourseEffectiveDate, layoutOccurrences, previewOccurrences, ruleOccursOn, timetableStats } from '../../../packages/tasks/src/timetable'
 import { atTime } from '../../../packages/tasks/src/time'
 import type { CourseOccurrence, TimetableCourse, TimetableData, TimetableRule } from '../../../packages/tasks/src/types'
 
@@ -9,6 +9,21 @@ const data = (rules: TimetableRule[] = [rule]): Pick<TimetableData, 'courses' | 
 const occurrence = (id: string, start: string, end: string, status: CourseOccurrence['status'] = 'scheduled'): CourseOccurrence => ({ id, user_id: 'u', course_id: course.id, rule_id: rule.id, original_date: '2026-10-23', starts_at: atTime('2026-10-23', start), ends_at: atTime('2026-10-23', end), status })
 
 describe('timetable recurrence and identity', () => {
+  it('falls back to today when the preferred date is after the last scheduled class', () => {
+    const bounded = { ...rule, valid_until: '2026-11-08' }
+    expect(automaticCourseEffectiveDate([bounded], '2026-11-05', '2026-11-01')).toBe('2026-11-05')
+    expect(automaticCourseEffectiveDate([bounded], '2026-11-07', '2026-11-01')).toBe('2026-11-01')
+    expect(automaticCourseEffectiveDate([bounded], '2026-11-08', '2026-11-07')).toBeNull()
+  })
+
+  it('checks teaching weeks, one-off dates, and disabled rules when selecting an effective date', () => {
+    const teaching = { ...rule, recurrence: 'weeks' as const, teaching_weeks: [3, 6] }
+    expect(automaticCourseEffectiveDate([teaching], '2026-11-10', '2026-11-01')).toBe('2026-11-10')
+    expect(automaticCourseEffectiveDate([{ ...teaching, disabled_from: '2026-11-06' }], '2026-11-10', '2026-11-01')).toBeNull()
+    const single = { ...rule, recurrence: 'once' as const, anchor_date: '2026-11-06' }
+    expect(automaticCourseEffectiveDate([rule, single], '2026-11-07', '2026-11-01')).toBe('2026-11-01')
+  })
+
   it('anchors alternating weeks and includes both validity boundaries', () => {
     expect(ruleOccursOn(rule, '2026-10-23')).toBe(true)
     expect(ruleOccursOn(rule, '2026-10-30')).toBe(false)

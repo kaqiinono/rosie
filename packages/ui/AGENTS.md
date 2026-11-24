@@ -74,6 +74,7 @@ the SVG proportionally, preserving stored ink coordinates. The default compact l
 
 | 适用场景 | 指定入口 | 使用约定 |
 | --- | --- | --- |
+| 表单日期选择 | `DatePicker` from `@rosie/ui` | `label` 提供无障碍名称，`value`/`onValueChange` 使用 `YYYY-MM-DD`，空值为 `''`。可用 `min` 限制最早日期，`clearable` 开启清空，`placeholder` 自定义空值文案。由共享控件维护中文月历、键盘导航和浮层焦点。 |
 | 单选答案及独立判题反馈 | `AnswerChoiceGroup` from `@rosie/ui` | 受控 `options={[{id,label}]}`、`value`、`onValueChange`；`id`为唯一非空的题内可读标识（A/B/C），空`value`代表未选。`label`提供组的无障碍名称，`optionLang`声明选项正文语言，`disabled`禁用选择，`readOnly`用于提交后复盘且保留可读外观。`feedback={{status,correctOptionId,message}}`仅展示外部结果；调用方在提交后同时设置`readOnly`，组件不提交、不判分、不切题、不请求数据。选项用Radix RadioGroup soft与Text标签组成整行44px触控目标，反馈区预留空间。禁止业务覆盖外观或复制选项控件。 |
 | 页面级请求加载 | `LoadingOverlay` from `@rosie/ui` | 传入 `visible` 和 `placement="content"` 展示 Rosie 转圈。页面使用纵向弹性布局，加载容器占满剩余视口高度，组件在其中水平、垂直居中。 |
 | 局部刷新及提交 | `Spinner`、`Button` from `@rosie/ui/themes` | 在受影响区域显示 `Spinner` 和状态文案。提交按钮使用 `loading` 属性，并在提交期间禁用重复操作。 |
