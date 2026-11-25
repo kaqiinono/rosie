@@ -10,6 +10,31 @@ export function theaterVideoFormat(name: string): TheaterVideoFormat | undefined
 }
 export const theaterVideoStem = (name: string) => name.replace(theaterVideoExtension, '')
 export const theaterPlaybackCopyName = (name: string) => theaterVideoStem(name) + '.playback.mp4'
+export const theaterAudioExtension = /\.(mp3|m4a|aac)$/i
+export const theaterProbedAudioCodecs = new Set(['ac-3', 'ec-3', 'dtsc', 'dtse', 'dtsh', 'dtsl'])
+const theaterAudioTypes = { mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac' } as const
+
+export function theaterAudioMime(name: string) {
+  const extension = theaterAudioExtension.exec(name)?.[1].toLowerCase() as keyof typeof theaterAudioTypes | undefined
+  return extension ? theaterAudioTypes[extension] : undefined
+}
+
+export function matchTheaterAudio(videoName: string, files: TheaterDirectoryFile[]) {
+  const normalize = (name: string) => name.normalize('NFKC').toLowerCase().trim()
+  const stem = normalize(theaterVideoStem(videoName))
+  const matches = files.filter(file => theaterAudioExtension.test(file.name) &&
+    normalize(file.name.replace(theaterAudioExtension, '')) === stem)
+  return matches.length === 1 ? matches[0].fileId : ''
+}
+
+export function theaterInternalAudioUnavailable(codecs: string[] | null, audioTrackCount: number | undefined,
+  canPlayType: (type: string) => string) {
+  if (audioTrackCount === 0) return true
+  // Unknown metadata leaves playback in automatic mode with the internal track selected.
+  return codecs?.every(codec => theaterProbedAudioCodecs.has(codec) &&
+    !canPlayType(`audio/mp4; codecs="${codec}"`) &&
+    !canPlayType(`audio/x-matroska; codecs="${codec}"`)) ?? false
+}
 
 export interface TheaterFilm {
   id: string
@@ -17,6 +42,12 @@ export interface TheaterFilm {
   languages: TheaterLanguage[]
   format: TheaterVideoFormat
   hasPlaybackCopy: boolean
+  hasExternalAudio: boolean
+}
+
+export interface TheaterPlaybackFilm extends TheaterFilm {
+  videoAudioCodecs: string[] | null
+  playbackAudioCodecs: string[] | null
 }
 
 export interface TheaterAdminFilm extends TheaterFilm {
@@ -25,6 +56,7 @@ export interface TheaterAdminFilm extends TheaterFilm {
   directoryId: string | null
   videoName: string
   playbackName: string | null
+  externalAudioName: string | null
 }
 
 export interface TheaterDirectoryFile {
@@ -36,6 +68,13 @@ export interface TheaterDirectoryFile {
 export interface TheaterDirectoryInventory {
   videos: TheaterDirectoryFile[]
   subtitles: TheaterDirectoryFile[]
+  audio: TheaterDirectoryFile[]
+}
+
+export interface TheaterAudioSelection {
+  files: TheaterDirectoryFile[]
+  selectedId: string | null
+  revision: string
 }
 
 export interface TheaterMediaDirectory {
@@ -65,6 +104,10 @@ export interface TheaterCue {
 
 export type SubtitleTracks = Partial<Record<TheaterLanguage, SubtitleCue[]>>
 
+export type TheaterCueAction = 'edit' | 'split' | 'previous' | 'next' | 'remove'
+export type TheaterCueShortcut = Exclude<TheaterCueAction, 'edit'>
+export type TheaterSubtitleSelection = TheaterCue | 'insert'
+
 export interface TheaterSubtitleEdit {
   language: TheaterLanguage
   index: number
@@ -72,7 +115,15 @@ export interface TheaterSubtitleEdit {
   text: string
 }
 
-export interface TheaterSubtitleChange extends TheaterSubtitleEdit {
+export interface TheaterSubtitleSplice {
+  kind: 'timeline'
+  language: TheaterLanguage
+  index: number
+  before: SubtitleCue[]
+  after: SubtitleCue[]
+}
+
+export type TheaterSubtitleChange = (TheaterSubtitleEdit | TheaterSubtitleSplice) & {
   startMs: number
   userId: string
   savedAt: string
@@ -94,6 +145,10 @@ export interface TheaterSubtitleRevisionStatus {
 export interface TheaterSubtitles {
   tracks: SubtitleTracks
   canEdit: boolean
+  editor?: {
+    version: string
+    precision: Partial<Record<TheaterLanguage, number>>
+  }
 }
 
 export interface MatchedTheaterSubtitle {

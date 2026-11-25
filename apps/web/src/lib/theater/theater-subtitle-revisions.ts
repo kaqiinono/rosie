@@ -6,11 +6,13 @@ import { readTheaterSubtitleSource, readTheaterSubtitleBytes, decodeTheaterSubti
 import { exactBaiduId } from '../baidu-identity'
 import { readBaiduFileMetadata, type BaiduFileFingerprint } from '../baidu-media'
 import { findProjectFile, putProjectObject, sha256 } from '../baidu-project-transfer.mjs'
-import { maxSubtitleBytes, parseTheaterSubtitles, reviseTheaterSubtitle } from './subtitle-timeline'
+import { maxSubtitleBytes, parseTheaterSubtitles, reviseTheaterSubtitle, sameSubtitleCue,
+  spliceTheaterSubtitle } from './subtitle-timeline'
 import {
   theaterSubtitleLanguages,
   type SubtitleTracks, type TheaterLanguage, type TheaterSubtitleChange,
-  type TheaterSubtitleEdit, type TheaterSubtitleRevisionBatch,
+  type TheaterSubtitleEdit, type TheaterSubtitleRevisionBatch, type TheaterSubtitleSplice,
+  type TheaterSubtitles,
 } from './types'
 
 type Upload = { path: string; original: string; output: string }
@@ -28,10 +30,28 @@ async function readPending(filmId: string) {
   return data as Batch | null
 }
 
-function latestChanges(changes: TheaterSubtitleChange[], language: TheaterLanguage) {
-  const values = new Map<number, string>()
-  for (const change of changes) if (change.language === language) values.set(change.index, change.text)
-  return values
+function revisionVersion(source: TheaterSubtitleSource, pending: Batch | null) {
+  return source.film.revision + ':' + (pending?.version ?? '')
+}
+
+function applyChanges(text: string, name: string, changes: TheaterSubtitleChange[], language: TheaterLanguage) {
+  const corrections = new Map<number, string>()
+  for (const change of changes) {
+    if (change.language !== language) continue
+    if ('kind' in change) {
+      if (corrections.size) text = reviseTheaterSubtitle(text, name, corrections)
+      corrections.clear()
+      const cues = parseTheaterSubtitles(text, name, true)
+      if (change.before.some((cue, offset) => {
+        const actual = cues[change.index + offset]
+        return !actual || !sameSubtitleCue(actual, cue)
+      })) throw Error('theater_subtitle_source_conflict')
+      text = spliceTheaterSubtitle(text, name, change.index, change.before.length, change.after)
+    } else {
+      corrections.set(change.index, change.text)
+    }
+  }
+  return corrections.size ? reviseTheaterSubtitle(text, name, corrections) : text
 }
 
 async function sourceRequired(filmId: string) {
@@ -46,30 +66,32 @@ async function readBoundTrack(source: TheaterSubtitleSource, language: TheaterLa
   const bytes = await readTheaterSubtitleBytes(source.account, source.film.directory_path,
     binding.id, binding.name, binding.fingerprint, signal)
   const text = decodeTheaterSubtitle(bytes)
-  return { binding, bytes, text, cues: parseTheaterSubtitles(text, binding.name) }
+  return { binding, bytes, text }
 }
 
-export async function readTheaterEditedSubtitles(filmId: string, signal: AbortSignal): Promise<SubtitleTracks | null> {
+export async function readTheaterEditedSubtitles(filmId: string, canEdit: boolean, signal: AbortSignal):
+  Promise<TheaterSubtitles | null> {
   const source = await readTheaterSubtitleSource(filmId)
   if (!source) return null
   const pending = await readPending(filmId)
   const tracks: SubtitleTracks = {}
+  const precision: NonNullable<TheaterSubtitles['editor']>['precision'] = {}
   await Promise.all(theaterSubtitleLanguages.map(async language => {
     const output = pending?.upload_plan?.[language]?.output
     const binding = theaterSubtitleBindings(source.film, language)
     if (!binding) return
+    precision[language] = /\.ass$/i.test(binding.name) ? 10 : 1
     // A partially uploaded batch remains readable even if the original Baidu ID has changed.
     if (output) {
-      tracks[language] = parseTheaterSubtitles(output, binding.name)
+      tracks[language] = parseTheaterSubtitles(output, binding.name, true)
       return
     }
     const original = await readBoundTrack(source, language, signal)
     if (!original) return
-    const changes = pending ? latestChanges(pending.changes, language) : new Map<number, string>()
-    tracks[language] = original.cues.map((cue, index) =>
-      changes.has(index) ? { ...cue, text: changes.get(index)! } : cue)
+    const text = applyChanges(original.text, binding.name, pending?.changes ?? [], language)
+    tracks[language] = parseTheaterSubtitles(text, binding.name, true)
   }))
-  return tracks
+  return { tracks, canEdit, ...(canEdit ? { editor: { version: revisionVersion(source, pending), precision } } : {}) }
 }
 
 export async function readTheaterRevisionStatus(filmId: string, page: number) {
@@ -89,11 +111,14 @@ export async function readTheaterRevisionStatus(filmId: string, page: number) {
   }
 }
 
-export async function saveTheaterSubtitleEdits(filmId: string, userId: string, edits: TheaterSubtitleEdit[], signal: AbortSignal) {
+export async function saveTheaterSubtitleEdits(filmId: string, userId: string,
+  edits: (TheaterSubtitleEdit | TheaterSubtitleSplice)[], version: string | undefined, signal: AbortSignal) {
   const source = await sourceRequired(filmId)
   const pending = await readPending(filmId)
   if (pending?.upload_plan || pending?.lease_until && Date.parse(pending.lease_until) > Date.now())
     throw Error('theater_subtitle_sync_locked')
+  if ((version && version !== revisionVersion(source, pending)) ||
+      (!version && pending?.changes.some(change => 'kind' in change))) throw Error('theater_subtitle_source_conflict')
   const changes = [...(pending?.changes ?? [])]
   const changeCount = changes.length
   const now = new Date().toISOString()
@@ -101,16 +126,25 @@ export async function saveTheaterSubtitleEdits(filmId: string, userId: string, e
     const updates = edits.filter(edit => edit.language === language)
     if (!updates.length) continue
     const track = await readBoundTrack(source, language, signal)
-    const latest = latestChanges(changes, language)
     if (!track) throw Error('theater_subtitle_source_conflict')
-    for (const { index, before, text } of updates) {
-      const cue = track.cues[index]
-      if (!cue || (latest.get(index) ?? cue.text) !== before) throw Error('theater_subtitle_source_conflict')
-      if (text === before) continue
-      changes.push({ index, language, text, before, startMs: cue.startMs, userId, savedAt: now })
-      latest.set(index, text)
+    const original = applyChanges(track.text, track.binding.name, changes, language)
+    const cues = parseTheaterSubtitles(original, track.binding.name, true)
+    for (const edit of updates) {
+      const { index } = edit
+      if ('kind' in edit) {
+        const before = edit.before.map(({ startMs, endMs, text }) => ({ startMs, endMs, text }))
+        const after = edit.after.map(({ startMs, endMs, text }) => ({ startMs, endMs, text }))
+        changes.push({ kind: 'timeline', language, index, before, after,
+          startMs: (before[0] ?? after[0]).startMs, userId, savedAt: now })
+      } else {
+        const { before, text } = edit
+        const cue = cues[index]
+        if (!cue || cue.text !== before) throw Error('theater_subtitle_source_conflict')
+        if (text !== before) changes.push({ language, index, before, text, startMs: cue.startMs, userId, savedAt: now })
+      }
     }
-    if (Buffer.byteLength(reviseTheaterSubtitle(track.text, track.binding.name, latest)) > maxSubtitleBytes)
+    const output = applyChanges(original, track.binding.name, changes.slice(changeCount), language)
+    if (Buffer.byteLength(output) > maxSubtitleBytes)
       throw Error('theater_subtitle_too_long')
   }
   if (changes.length === changeCount) return
@@ -127,11 +161,10 @@ export async function saveTheaterSubtitleEdits(filmId: string, userId: string, e
 async function buildUploadPlan(source: TheaterSubtitleSource, changes: TheaterSubtitleChange[], signal: AbortSignal) {
   const plan: UploadPlan = {}
   for (const language of theaterSubtitleLanguages) {
-    const latest = latestChanges(changes, language)
-    if (!latest.size) continue
+    if (!changes.some(change => change.language === language)) continue
     const track = await readBoundTrack(source, language, signal)
     if (!track) throw Error('theater_subtitle_source_conflict')
-    const output = reviseTheaterSubtitle(track.text, track.binding.name, latest)
+    const output = applyChanges(track.text, track.binding.name, changes, language)
     if (Buffer.byteLength(output) > maxSubtitleBytes) throw Error('theater_subtitle_too_long')
     plan[language] = { path: track.binding.path, original: sha256(track.bytes), output }
   }

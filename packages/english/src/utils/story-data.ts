@@ -2,6 +2,7 @@ import { roaldDahl } from './story-roald-dahl'
 import { magicTreeHouse } from './story-magic-tree-house'
 import { dragonMasters } from './story-dragon-masters'
 import { warriorsSeries } from './story-warriors'
+import { winnieTheWitch } from './story-winnie-the-witch'
 import type { GlossaryWord } from './reading-data'
 import type { StorySeries } from './story-types'
 
@@ -358,6 +359,7 @@ const standaloneStorySeries: StorySeries[] = [
   },
   roaldDahl,
   dragonMasters,
+  winnieTheWitch,
 ]
 
 export const storySeries: StorySeries[] = [...standaloneStorySeries, ...warriorsSeries]

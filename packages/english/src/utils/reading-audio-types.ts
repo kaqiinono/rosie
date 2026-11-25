@@ -41,3 +41,9 @@ export function isReadingAudioFile(file: File): boolean {
 export function lessonAudioUrl(key: string, slot: string) {
   return baiduReadingAudioUrl(key) + '?asset=' + encodeURIComponent(slot)
 }
+
+export function audioAlignmentUrl(key: string, slot?: string) {
+  const query = new URLSearchParams({ key })
+  if (slot) query.set('slot', slot)
+  return '/api/baidu/audio/alignment?' + query
+}

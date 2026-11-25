@@ -13,9 +13,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ film
   const { filmId } = await params
   if (!validTheaterId(filmId)) return theaterError('影片不存在。', 404)
   try {
-    const tracks = await readTheaterEditedSubtitles(filmId, request.signal)
-    if (!tracks) return theaterError('影片已下架或暂不可播放。', 404)
-    return NextResponse.json({ tracks, canEdit: isAdminRequestUser(user) }, { headers: theaterPrivateHeaders })
+    const subtitles = await readTheaterEditedSubtitles(filmId, isAdminRequestUser(user), request.signal)
+    if (!subtitles) return theaterError('影片已下架或暂不可播放。', 404)
+    return NextResponse.json(subtitles, { headers: theaterPrivateHeaders })
   } catch (error) {
     return theaterRequestError(error)
   }

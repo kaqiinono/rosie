@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { getUserFromRequest, isAdminRequestUser } from '@/lib/api-auth'
 import { getBaiduAccountContext } from '@/lib/baidu-token'
 import {
-  attachTheaterPlaybackCopy, readTheaterAdminCatalog, readTheaterDirectoryInventory, saveTheaterFilm,
-  setTheaterPublication, theaterError,
+  attachTheaterPlaybackCopy, readTheaterAdminCatalog, readTheaterAudioSelection, readTheaterDirectoryInventory,
+  saveTheaterFilm, setTheaterExternalAudio, setTheaterPublication, theaterError,
   theaterPrivateHeaders, theaterRequestError,
 } from '@/lib/baidu-theater'
 import { validTheaterId } from '@/lib/theater/types'
@@ -28,21 +28,35 @@ async function manageTheater(request: Request) {
       if (request.method === 'POST') {
         const title = typeof input.title === 'string' ? input.title.trim() : ''
         const { directoryId, videoId, enId, zhId } = input
+        const audioId = input.audioId ?? null
         if (!title || title.length > 120 || !validTheaterId(directoryId) || !validFileId(videoId) ||
             (enId !== null && !validFileId(enId)) || (zhId !== null && !validFileId(zhId)) || enId === zhId)
           return theaterError('请填写片名并选择视频和至少一份字幕。', 400)
-        await saveTheaterFilm(account, { title, directoryId, videoId, enId, zhId }, request.signal)
+        if (audioId !== null && !validFileId(audioId)) return theaterError('请选择有效的外部音轨。', 400)
+        await saveTheaterFilm(account, { title, directoryId, videoId, enId, zhId, audioId }, request.signal)
         return new Response(null, { status: 204, headers: theaterPrivateHeaders })
       }
       if (!validTheaterId(input.id) || !validTheaterId(input.revision))
         return theaterError('影片信息有误，请重新读取片库。', 400)
       if (request.method === 'PATCH') {
-        await attachTheaterPlaybackCopy(account, input.id, input.revision)
+        if (input.action === 'externalAudio') {
+          if (input.audioId !== null && !validFileId(input.audioId)) return theaterError('请选择有效的外部音轨。', 400)
+          const saved = await setTheaterExternalAudio(account, input.id, input.revision, input.audioId, request.signal)
+          return NextResponse.json(saved, { headers: theaterPrivateHeaders })
+        }
+        await attachTheaterPlaybackCopy(account, input.id, input.revision, request.signal)
         return new Response(null, { status: 204, headers: theaterPrivateHeaders })
       }
       if (typeof input.published !== 'boolean') return theaterError('影片上架状态有误。', 400)
       await setTheaterPublication(account, input.id, input.revision, input.published)
       return new Response(null, { status: 204, headers: theaterPrivateHeaders })
+    }
+    const audioFilmId = query.get('audioFilmId')
+    if (audioFilmId !== null) {
+      if (!validTheaterId(audioFilmId)) return theaterError('影片信息有误，请重新读取片库。', 400)
+      const files = await readTheaterAudioSelection(account, audioFilmId,
+        AbortSignal.any([request.signal, AbortSignal.timeout(45_000)]))
+      return NextResponse.json(files, { headers: theaterPrivateHeaders })
     }
     const directoryId = query.get('directoryId')
     if (directoryId !== null) {

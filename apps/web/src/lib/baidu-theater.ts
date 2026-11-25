@@ -12,9 +12,12 @@ import {
 } from './baidu-media'
 import { findProjectFile, isPrivateProjectPath } from './baidu-project-transfer.mjs'
 import { getBaiduAccountContext } from './baidu-token'
+import { readMatroskaAudioCodecs, readMp4AudioCodecs } from './theater/audio-metadata'
 import { maxSubtitleBytes, parseTheaterSubtitles } from './theater/subtitle-timeline'
 import {
   theaterSubtitleLanguages,
+  theaterAudioExtension,
+  theaterAudioMime,
   theaterPlaybackCopyName,
   theaterVideoExtension,
   theaterVideoFormat,
@@ -23,10 +26,12 @@ import {
   type MatchedTheaterSubtitle,
   type TheaterSubtitleMatchResult,
   type TheaterAdminFilm,
+  type TheaterAudioSelection,
   type TheaterDirectoryFile,
   type TheaterDirectoryInventory,
   type TheaterMediaDirectory,
   type TheaterFilm,
+  type TheaterPlaybackFilm,
   type TheaterLanguage,
 } from './theater/types'
 
@@ -38,7 +43,7 @@ export const theaterPrivateHeaders = {
 }
 
 type Account = Awaited<ReturnType<typeof getBaiduAccountContext>>
-const filmFields = 'id,title,directory_id,directory_path,video_file_id,video_name,playback_file_id,playback_name,subtitle_en_file_id,subtitle_en_name,subtitle_zh_file_id,subtitle_zh_name,file_fingerprints,published,revision'
+const filmFields = 'id,title,directory_id,directory_path,video_file_id,video_name,playback_file_id,playback_name,external_audio_file_id,external_audio_name,video_audio_codecs,playback_audio_codecs,subtitle_en_file_id,subtitle_en_name,subtitle_zh_file_id,subtitle_zh_name,file_fingerprints,published,revision'
 
 interface FilmRow {
   id: string
@@ -49,11 +54,15 @@ interface FilmRow {
   video_name: string
   playback_file_id: string | null
   playback_name: string | null
+  external_audio_file_id: string | null
+  external_audio_name: string | null
+  video_audio_codecs: string[] | null
+  playback_audio_codecs: string[] | null
   subtitle_en_file_id: string | null
   subtitle_en_name: string | null
   subtitle_zh_file_id: string | null
   subtitle_zh_name: string | null
-  file_fingerprints: Partial<Record<'video' | 'playback' | TheaterLanguage, BaiduFileFingerprint>>
+  file_fingerprints: Partial<Record<'video' | 'playback' | 'audio' | TheaterLanguage, BaiduFileFingerprint | null>>
   published: boolean
   revision: string
 }
@@ -73,7 +82,7 @@ export function theaterRequestError(error: unknown) {
   if (code === 'theater_duplicate') return theaterError('这份视频已有上架的版本，请先下架旧版本。', 409)
   if (code === 'theater_directory_setting_conflict')
     return theaterError('媒体目录已被更新，请重新打开电影剧场后再更改。', 409)
-  if (code === 'theater_invalid_source') return theaterError('请从选定的授权目录选择视频和字幕文件。', 400)
+  if (code === 'theater_invalid_source') return theaterError('请从授权目录选择影片，并从影片同目录选择字幕和音轨。', 400)
   if (code === 'theater_subtitle_too_long') return theaterError('字幕文件过大，请选择小于 2 MB 的字幕。', 400)
   if (code === 'theater_directory_too_large')
     return theaterError('此目录文件太多，请选择范围更小的影片目录。', 422)
@@ -123,6 +132,7 @@ function publicFilm(row: FilmRow): TheaterFilm {
     languages: theaterSubtitleLanguages.filter(language => row[`subtitle_${language}_file_id` as const]),
     format: theaterVideoFormat(row.video_name) ?? 'mp4',
     hasPlaybackCopy: Boolean(row.playback_file_id),
+    hasExternalAudio: Boolean(row.external_audio_file_id),
   }
 }
 
@@ -147,7 +157,7 @@ export async function readTheaterAdminCatalog(account: Account): Promise<Theater
   if (error) throw error
   return (data as FilmRow[]).map(row => ({
     ...publicFilm(row), published: row.published && row.directory_id !== null, revision: row.revision, directoryId: row.directory_id,
-    videoName: row.video_name, playbackName: row.playback_name,
+    videoName: row.video_name, playbackName: row.playback_name, externalAudioName: row.external_audio_name,
   }))
 }
 
@@ -160,9 +170,11 @@ async function publishedFilm(filmId: string) {
   return { film, account }
 }
 
-export async function readTheaterFilm(filmId: string) {
+export async function readTheaterFilm(filmId: string): Promise<TheaterPlaybackFilm | null> {
   const source = await publishedFilm(filmId)
-  return source ? publicFilm(source.film) : null
+  if (!source) return null
+  return { ...publicFilm(source.film), videoAudioCodecs: source.film.video_audio_codecs,
+    playbackAudioCodecs: source.film.playback_audio_codecs }
 }
 
 function checkSource(file: BaiduFileMetadata | null, directory: string, extensions: RegExp) {
@@ -170,6 +182,46 @@ function checkSource(file: BaiduFileMetadata | null, directory: string, extensio
       sourceName(file.path, directory).includes('/') || !withinTheaterRoot(file.path, directory) ||
       !extensions.test(file.path) || (!file.md5 && !file.modifiedAt)) throw Error('theater_invalid_source')
   return file
+}
+
+async function probeVideoAudio(account: Account, directory: string, id: string, name: string,
+  fingerprint: BaiduFileFingerprint, signal: AbortSignal) {
+  const format = theaterVideoFormat(name)
+  if (format !== 'mp4' && format !== 'mkv') return null
+  const probeSignal = AbortSignal.any([signal, AbortSignal.timeout(10_000)])
+  async function read(offset: number, length: number) {
+    probeSignal.throwIfAborted()
+    const end = offset + length - 1
+    const response = await fetchBaiduFileById(id, directory, `bytes=${offset}-${end}`, probeSignal,
+      'video', account.accessToken, prefixFor(directory) + name, fingerprint, 'published', 10_000, theaterVideoExtension)
+    if (!response?.body || response.status !== 206 ||
+        response.headers.get('content-range') !== `bytes ${offset}-${end}/${fingerprint.size}`) {
+      await response?.body?.cancel()
+      throw Error('Invalid media range')
+    }
+    const reader = response.body.getReader()
+    const bytes = Buffer.alloc(length)
+    let position = 0
+    try {
+      while (position < length) {
+        const chunk = await reader.read()
+        if (chunk.done || chunk.value.length > length - position) throw Error('Invalid media range length')
+        bytes.set(chunk.value, position)
+        position += chunk.value.length
+      }
+      return bytes
+    } finally {
+      await reader.cancel().catch(() => {})
+      reader.releaseLock()
+    }
+  }
+  try {
+    return format === 'mkv'
+      ? readMatroskaAudioCodecs(await read(0, Math.min(fingerprint.size, 512 * 1024)))
+      : await readMp4AudioCodecs(fingerprint.size, read)
+  } catch {
+    return null
+  }
 }
 
 function fingerprintOf({ size, md5, modifiedAt }: BaiduFileMetadata): BaiduFileFingerprint {
@@ -234,6 +286,7 @@ export async function readTheaterDirectoryInventory(
   const folders = [root]
   const videos = new Map<string, TheaterDirectoryFile>()
   const subtitles = new Map<string, TheaterDirectoryFile>()
+  const audio = new Map<string, TheaterDirectoryFile>()
   const pageSize = 500
 
   async function scan(directory: string) {
@@ -250,7 +303,8 @@ export async function readTheaterDirectoryInventory(
           folders.push(row.path)
         }
         if (row.isdir !== 0) continue
-        const kind = videoInventoryPattern.test(name) ? videos : subtitlePattern.test(name) ? subtitles : null
+        const kind = videoInventoryPattern.test(name) ? videos : subtitlePattern.test(name) ? subtitles
+          : theaterAudioExtension.test(name) ? audio : null
         if (!kind) continue
         const fileId = exactBaiduId(row.fs_id)
         kind.set(fileId, { fileId, name, folder: directory === root ? '' : sourceName(directory, root) })
@@ -290,7 +344,8 @@ export async function readTheaterDirectoryInventory(
   signal.throwIfAborted()
   const byPath = (a: TheaterDirectoryFile, b: TheaterDirectoryFile) =>
     a.folder.localeCompare(b.folder, 'zh-CN') || a.name.localeCompare(b.name, 'zh-CN', { numeric: true })
-  return { videos: [...videos.values()].sort(byPath), subtitles: [...subtitles.values()].sort(byPath) }
+  return { videos: [...videos.values()].sort(byPath), subtitles: [...subtitles.values()].sort(byPath),
+    audio: [...audio.values()].sort(byPath) }
 }
 
 async function requireCurrentTheaterAccount(account: Account) {
@@ -353,30 +408,102 @@ export async function saveTheaterFilm(account: Account, input: {
   videoId: string
   enId: string | null
   zhId: string | null
+  audioId: string | null
 }, signal: AbortSignal) {
-  const [source, englishMeta, chineseMeta] = await Promise.all([
+  const [source, englishMeta, chineseMeta, audioMeta] = await Promise.all([
     readTheaterGenerationSource(account, input),
     input.enId ? readBaiduFileMetadata(exactBaiduId(input.enId), account.accessToken) : null,
     input.zhId ? readBaiduFileMetadata(exactBaiduId(input.zhId), account.accessToken) : null,
+    input.audioId ? readBaiduFileMetadata(exactBaiduId(input.audioId), account.accessToken) : null,
   ])
   const { root, directory, video } = source
   const en = input.enId ? checkSource(englishMeta, directory, subtitlePattern) : null
   const zh = input.zhId ? checkSource(chineseMeta, directory, subtitlePattern) : null
-  const files = { video: fingerprintOf(video), en: en ? fingerprintOf(en) : null, zh: zh ? fingerprintOf(zh) : null }
-  await Promise.all([en, zh].map(file => file && subtitleFile(account, directory, file.id,
-    sourceName(file.path, directory), fingerprintOf(file), signal)))
+  const audio = input.audioId ? checkSource(audioMeta, directory, theaterAudioExtension) : null
+  const files = { video: fingerprintOf(video), en: en ? fingerprintOf(en) : null, zh: zh ? fingerprintOf(zh) : null,
+    audio: audio ? fingerprintOf(audio) : null }
+  const videoName = sourceName(video.path, directory)
+  const [codecs] = await Promise.all([
+    audio ? probeVideoAudio(account, directory, video.id, videoName, files.video, signal) : null,
+    ...[en, zh].map(file => file && subtitleFile(account, directory, file.id,
+      sourceName(file.path, directory), fingerprintOf(file), signal)),
+  ] as const)
   await requireCurrentTheaterAccount(account)
   if (await readTheaterDirectory(account, input.directoryId) !== root) throw Error('theater_conflict')
   signal.throwIfAborted()
   const { error: insertError } = await filmTable().insert({
     title: input.title, account_id: account.accountId, account_generation: account.generation,
     directory_id: input.directoryId, directory_path: directory,
-    video_file_id: video.id, video_name: sourceName(video.path, directory),
+    video_file_id: video.id, video_name: videoName, video_audio_codecs: codecs,
+    external_audio_file_id: audio?.id ?? null, external_audio_name: audio ? sourceName(audio.path, directory) : null,
     subtitle_en_file_id: en?.id ?? null, subtitle_en_name: en ? sourceName(en.path, directory) : null,
     subtitle_zh_file_id: zh?.id ?? null, subtitle_zh_name: zh ? sourceName(zh.path, directory) : null,
     file_fingerprints: files,
   })
   if (insertError) throw insertError
+}
+
+export async function readTheaterAudioSelection(account: Account, id: string, signal: AbortSignal): Promise<TheaterAudioSelection> {
+  const { data, error } = await scopedFilms(account).eq('id', id).maybeSingle()
+  if (error) throw error
+  const film = data as FilmRow | null
+  if (!film || !await directoryStillBound(account, film)) throw Error('theater_conflict')
+  const directory = film.directory_path
+  const files = new Map<string, TheaterDirectoryFile>()
+  const pageSize = 500
+  for (let offset = 0; ; offset += pageSize) {
+    signal.throwIfAborted()
+    const rows = await readBaiduDirectoryPage(account.accessToken, directory, offset, pageSize, signal)
+    for (const row of rows) {
+      if (row.isdir !== 0 || typeof row.path !== 'string' || !withinTheaterRoot(row.path, directory)) continue
+      const name = sourceName(row.path, directory)
+      if (name.includes('/') || !theaterAudioExtension.test(name)) continue
+      const fileId = exactBaiduId(row.fs_id)
+      files.set(fileId, { fileId, name, folder: '' })
+    }
+    if (rows.length < pageSize) break
+  }
+  await requireCurrentTheaterAccount(account)
+  if (!await directoryStillBound(account, film)) throw Error('theater_conflict')
+  signal.throwIfAborted()
+  const selectedId = film.external_audio_file_id
+  if (selectedId && film.external_audio_name && !files.has(selectedId))
+    files.set(selectedId, { fileId: selectedId, name: film.external_audio_name + '（网盘中未找到）', folder: '' })
+  return { files: [...files.values()].sort((a, b) => a.name.localeCompare(b.name, 'zh-CN', { numeric: true })),
+    selectedId, revision: film.revision }
+}
+
+export async function setTheaterExternalAudio(account: Account, id: string, revision: string,
+  audioId: string | null, signal: AbortSignal) {
+  const { data, error } = await scopedFilms(account).eq('id', id).eq('revision', revision).maybeSingle()
+  if (error) throw error
+  const film = data as FilmRow | null
+  if (!film || !await directoryStillBound(account, film)) throw Error('theater_conflict')
+  const directory = film.directory_path
+  const audio = audioId ? checkSource(await readBaiduFileMetadata(audioId, account.accessToken), directory, theaterAudioExtension) : null
+  const original = film.file_fingerprints.video
+  const copy = film.file_fingerprints.playback
+  const [videoCodecs, playbackCodecs] = await Promise.all([
+    film.video_audio_codecs ?? (audio && original
+      ? probeVideoAudio(account, directory, film.video_file_id, film.video_name, original, signal) : null),
+    film.playback_audio_codecs ?? (audio && copy && film.playback_file_id && film.playback_name
+      ? probeVideoAudio(account, directory, film.playback_file_id, film.playback_name, copy, signal) : null),
+  ])
+  await requireCurrentTheaterAccount(account)
+  if (!await directoryStillBound(account, film)) throw Error('theater_conflict')
+  signal.throwIfAborted()
+  const name = audio ? sourceName(audio.path, directory) : null
+  const nextRevision = crypto.randomUUID()
+  const result = await filmTable().update({
+    external_audio_file_id: audio?.id ?? null, external_audio_name: name,
+    video_audio_codecs: videoCodecs, playback_audio_codecs: playbackCodecs,
+    file_fingerprints: { ...film.file_fingerprints, audio: audio ? fingerprintOf(audio) : null },
+    revision: nextRevision,
+  }).eq('account_id', account.accountId).eq('account_generation', account.generation)
+    .eq('id', id).eq('revision', revision).select('id').maybeSingle()
+  if (result.error) throw result.error
+  if (!result.data) throw Error('theater_conflict')
+  return { revision: nextRevision, externalAudioName: name }
 }
 
 function subtitleNameMatch(videoStem: string, name: string): { language: TheaterLanguage | null } | null {
@@ -475,6 +602,7 @@ export async function setTheaterPublication(account: Account, id: string, revisi
     const sources = [
       ['video', film.video_file_id, film.video_name],
       ['playback', film.playback_file_id, film.playback_name],
+      ['audio', film.external_audio_file_id, film.external_audio_name],
       ['en', film.subtitle_en_file_id, film.subtitle_en_name],
       ['zh', film.subtitle_zh_file_id, film.subtitle_zh_name],
     ] as const
@@ -505,7 +633,7 @@ export async function findTheaterPlaybackCopy(account: Account, directory: strin
   return { copy, name }
 }
 
-export async function attachTheaterPlaybackCopy(account: Account, id: string, revision: string) {
+export async function attachTheaterPlaybackCopy(account: Account, id: string, revision: string, signal: AbortSignal) {
   const { data, error } = await scopedFilms(account).eq('id', id).eq('revision', revision).maybeSingle()
   if (error) throw error
   const film = data as FilmRow | null
@@ -516,15 +644,32 @@ export async function attachTheaterPlaybackCopy(account: Account, id: string, re
   const result = await findTheaterPlaybackCopy(account, film.directory_path, film.video_name)
   if (!result) throw Error('theater_playback_copy_missing')
   const { copy, name } = result
+  const codecs = film.external_audio_file_id
+    ? await probeVideoAudio(account, film.directory_path, copy.id, name, fingerprintOf(copy), signal) : null
   await requireCurrentTheaterAccount(account)
   if (!await directoryStillBound(account, film)) throw Error('theater_invalid_source')
+  signal.throwIfAborted()
   const updated = await filmTable().update({
     playback_file_id: copy.id, playback_name: name,
+    playback_audio_codecs: codecs,
     file_fingerprints: { ...film.file_fingerprints, playback: fingerprintOf(copy) }, revision: crypto.randomUUID(),
   }).eq('account_id', account.accountId).eq('account_generation', account.generation)
     .eq('id', id).eq('revision', revision).select('id').maybeSingle()
   if (updated.error) throw updated.error
   if (!updated.data) throw Error('theater_conflict')
+}
+
+export async function streamTheaterAudio(filmId: string, range: string | null, signal: AbortSignal) {
+  const source = await publishedFilm(filmId)
+  if (!source) return null
+  const { account, film } = source
+  const { external_audio_file_id: id, external_audio_name: name } = film
+  const fingerprint = film.file_fingerprints.audio
+  const contentType = name ? theaterAudioMime(name) : undefined
+  if (!id || !name || !fingerprint || !contentType) return null
+  const upstream = await fetchBaiduFileById(id, film.directory_path, range, signal, 'audio', account.accessToken,
+    prefixFor(film.directory_path) + name, fingerprint)
+  return upstream ? { upstream, contentType } : null
 }
 
 export async function streamTheaterFilm(filmId: string, range: string | null, signal: AbortSignal, playbackCopy = false) {

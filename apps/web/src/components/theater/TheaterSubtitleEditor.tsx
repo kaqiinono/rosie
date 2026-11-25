@@ -1,29 +1,41 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { AppDialog, StickerCard } from '@rosie/ui'
-import { AlertDialog, Button, Flex, Text, TextArea } from '@rosie/ui/themes'
+import { AlertDialog, Button, Flex, Text } from '@rosie/ui/themes'
 import { requestTheater } from '@/lib/theater/client'
-import { theaterTime } from '@/lib/theater/subtitle-timeline'
+import { subtitleTimestamp, theaterSubtitleShortcut, theaterTime } from '@/lib/theater/subtitle-timeline'
 import {
-  theaterLanguageLabel, theaterSubtitleLanguages,
-  type SubtitleTracks, type TheaterCue, type TheaterSubtitleEdit,
-  type TheaterSubtitleRevisionBatch, type TheaterSubtitleRevisionStatus, type TheaterSubtitles,
+  theaterLanguageLabel, type SubtitleTracks, type TheaterCueShortcut, type TheaterLanguage,
+  type TheaterSubtitleEdit, type TheaterSubtitleSplice,
+  type TheaterSubtitleRevisionBatch, type TheaterSubtitleRevisionStatus, type TheaterSubtitles, type TheaterSubtitleSelection,
 } from '@/lib/theater/types'
+import TheaterCueEditDialog, { type SubtitleEditorPlayback } from './TheaterCueEditDialog'
+
+export type SubtitleListEditing = {
+  locked: boolean
+  applyShortcut: (language: TheaterLanguage, index: number, action: TheaterCueShortcut) => void
+}
 
 type Props = {
   filmId: string
   userId: string
   tracks: SubtitleTracks
-  cue: TheaterCue | null
+  selection: TheaterSubtitleSelection | null
+  editor: NonNullable<TheaterSubtitles['editor']>
+  playback: SubtitleEditorPlayback
+  openInsert: () => void
   closeEditor: () => void
-  onTracksChange: (tracks: SubtitleTracks) => void
+  onTracksChange: (subtitles: TheaterSubtitles) => void
+  renderList: (editing: SubtitleListEditing) => ReactNode
 }
 
 type Operation = 'read' | 'save' | 'sync' | 'delete'
 type Confirmation = { kind: 'sync' } | { kind: 'delete'; batchId: string }
 
-export default function TheaterSubtitleEditor({ filmId, userId, tracks, cue, closeEditor, onTracksChange }: Props) {
+export default function TheaterSubtitleEditor({
+  filmId, userId, tracks, selection, editor, playback, openInsert, closeEditor, onTracksChange, renderList,
+}: Props) {
   const baseUrl = '/api/theater/' + filmId
   const revisionUrl = baseUrl + '/subtitle-revisions'
   const [status, setStatus] = useState<TheaterSubtitleRevisionStatus | null>(null)
@@ -73,17 +85,34 @@ export default function TheaterSubtitleEditor({ filmId, userId, tracks, cue, clo
 
   async function refreshTracks(signal: AbortSignal) {
     const result = await requestTheater<TheaterSubtitles>(userId, baseUrl + '/subtitles', { signal })
-    if (!signal.aborted) onTracksChange(result.tracks)
+    if (!signal.aborted) onTracksChange(result)
   }
 
-  function save(edits: TheaterSubtitleEdit[]) {
+  function save(edit: TheaterSubtitleEdit | TheaterSubtitleSplice, fromDialog: boolean) {
     void run('save', async signal => {
-      await requestTheater(userId, revisionUrl, { method: 'PATCH', body: JSON.stringify(edits), signal })
-      if (signal.aborted) return
-      closeEditor()
-      setNotice('台词修订已保存。')
-      await Promise.all([readStatus(page, signal), refreshTracks(signal)])
+      await requestTheater(userId, revisionUrl, { method: 'PATCH', body: JSON.stringify({ version: editor.version, edits: [edit] }), signal })
+      const results = await Promise.allSettled([refreshTracks(signal), readStatus(page, signal)])
+      if (!signal.aborted) {
+        if (fromDialog) closeEditor()
+        setNotice('台词修订已保存。')
+      }
+      const failed = results.find(result => result.status === 'rejected')
+      if (failed?.status === 'rejected') throw failed.reason
     })
+  }
+
+  function applyShortcut(language: TheaterLanguage, index: number, action: TheaterCueShortcut) {
+    if (active.current || status?.syncStarted) return
+    const track = tracks[language]
+    const step = editor.precision[language]
+    if (!track || !step) return
+    const edit = theaterSubtitleShortcut(track, language, index, action, step, playback.position())
+    if (!edit || edit.after.some(entry => !entry.text || entry.text.length > 1800)) {
+      setNotice('')
+      setError('无法直接完成这项操作。点击铅笔调整台词后再保存。')
+      return
+    }
+    save(edit, false)
   }
 
   function proceed(action: Confirmation) {
@@ -111,21 +140,27 @@ export default function TheaterSubtitleEditor({ filmId, userId, tracks, cue, clo
 
   return <>
     <Flex gap="2" align="center" wrap="wrap">
+      <Button type="button" variant="soft" disabled={!Object.keys(editor.precision).length || busy !== null || !!status?.syncStarted}
+        onClick={openInsert}>插入新句</Button>
       <Button type="button" variant="soft" disabled={!pending || busy !== null}
         loading={busy === 'sync'} onClick={() => setConfirm({ kind: 'sync' })}>同步到百度网盘</Button>
       <Button type="button" variant="ghost" disabled={!status || busy !== null}
         onClick={() => setHistoryOpen(true)}>修订记录{pending ? ' · ' + pending.changes.length + ' 条待同步' : ''}</Button>
     </Flex>
-    {!cue && !historyOpen && <>
+    {!selection && !historyOpen && <>
       {issue}
+      {busy === 'save' && <Text role="status" size="2">正在保存台词…</Text>}
       {notice && <Text role="status" size="2">{notice}</Text>}
       {error && <Button type="button" variant="ghost" disabled={busy !== null}
         onClick={() => void run('read', async signal => {
           await Promise.all([readStatus(page, signal), refreshTracks(signal)])
         })}>刷新字幕及修订</Button>}
     </>}
-    {cue && <CueEditDialog key={cue.id} cue={cue} tracks={tracks} saving={busy === 'save'}
-      locked={busy === 'sync' || !!status?.syncStarted} error={error} onSave={save} onClose={closeEditor} />}
+    {renderList({ locked: busy !== null || !!status?.syncStarted, applyShortcut })}
+    {selection && <TheaterCueEditDialog key={selection === 'insert' ? selection : selection.id}
+      selection={selection} tracks={tracks} precision={editor.precision} playback={playback} saving={busy === 'save'}
+      waiting={busy === 'read' || busy === 'delete'}
+      locked={busy === 'sync' || !!status?.syncStarted} error={error} onSave={edit => save(edit, true)} onClose={closeEditor} />}
     <AppDialog open={historyOpen} onOpenChange={setHistoryOpen} title="台词修订记录" size="form">
       <Flex direction="column" gap="3">
         {issue}
@@ -159,53 +194,6 @@ export default function TheaterSubtitleEditor({ filmId, userId, tracks, cue, clo
   </>
 }
 
-function CueEditDialog({ cue, tracks, saving, locked, error, onClose, onSave }: {
-  cue: TheaterCue
-  tracks: SubtitleTracks
-  saving: boolean
-  locked: boolean
-  error: string
-  onClose: () => void
-  onSave: (edits: TheaterSubtitleEdit[]) => void
-}) {
-  const [edits, setEdits] = useState(() => theaterSubtitleLanguages.flatMap(language =>
-    (cue.sourceCues?.[language] ?? []).flatMap(index => {
-      const entry = tracks[language]?.[index]
-      return entry ? [{ language, index, before: entry.text, text: entry.text, startMs: entry.startMs }] : []
-    })))
-  const changed = edits.filter(edit => edit.text.trim() !== edit.before)
-  function submit(event: FormEvent) {
-    event.preventDefault()
-    if (saving || locked || !changed.length || changed.some(edit => !edit.text.trim())) return
-    onSave(changed.map(({ language, index, before, text }) => ({ language, index, before, text: text.trim() })))
-  }
-
-  return <AppDialog open closeDisabled={saving} onOpenChange={open => { if (!open) onClose() }}
-    title="编辑台词" description={'播放位置 ' + theaterTime(cue.startMs)} size="form">
-    <form onSubmit={submit}>
-      <Flex direction="column" gap="3">
-        {edits.map((edit, offset) => <Flex direction="column" gap="1" key={edit.language + ':' + edit.index}>
-          <Text as="label" size="2" weight="medium" htmlFor={'theater-edit-' + offset}>
-            {theaterLanguageLabel[edit.language]} · {theaterTime(edit.startMs)}
-          </Text>
-          <TextArea id={'theater-edit-' + offset} value={edit.text} disabled={saving || locked} maxLength={1800}
-            onChange={event => {
-              const text = event.target.value
-              setEdits(current => current.map((entry, index) => index === offset ? { ...entry, text } : entry))
-            }} />
-        </Flex>)}
-        {locked && <Text size="2" color="gray">请先完成当前批次的网盘同步，再继续编辑。</Text>}
-        {error && <Text size="2" color="red" role="alert">{error}</Text>}
-        <Flex justify="end" gap="2">
-          <Button type="button" variant="soft" color="gray" disabled={saving} onClick={onClose}>取消</Button>
-          <Button type="submit" loading={saving}
-            disabled={locked || saving || !changed.length || changed.some(edit => !edit.text.trim())}>保存修订</Button>
-        </Flex>
-      </Flex>
-    </form>
-  </AppDialog>
-}
-
 function RevisionBatch({ batch, onClear, disabled }: {
   batch: TheaterSubtitleRevisionBatch
   onClear?: () => void
@@ -221,8 +209,18 @@ function RevisionBatch({ batch, onClear, disabled }: {
       <Flex direction="column" gap="2" mt="2">
         {batch.changes.map((change, index) => <Flex key={index} direction="column" gap="1">
           <Text size="2" weight="medium">{theaterLanguageLabel[change.language]} · {theaterTime(change.startMs)}</Text>
-          <Text size="2" color="gray" className="whitespace-pre-wrap break-words">{'原文 ' + change.before}</Text>
-          <Text size="2" className="whitespace-pre-wrap break-words">{'修订 ' + change.text}</Text>
+          {'kind' in change ? <>
+            <Text size="2" weight="medium">{change.before.length === 0 ? '插入新句' : change.after.length === 0
+              ? '删除句子' : change.after.length === 2 ? '拆分句子' : '合并句子'}</Text>
+            {[change.before, change.after].map((entries, group) => entries.map((entry, offset) =>
+              <Text key={group + ':' + offset} size="2" color={group === 0 ? 'gray' : undefined}
+                className="whitespace-pre-wrap wrap-break-word">
+                {group === 0 ? '原文 ' : '修订 '}{subtitleTimestamp(entry.startMs)} – {subtitleTimestamp(entry.endMs)}{'\n'}{entry.text}
+              </Text>))}
+          </> : <>
+            <Text size="2" color="gray" className="whitespace-pre-wrap break-words">{'原文 ' + change.before}</Text>
+            <Text size="2" className="whitespace-pre-wrap break-words">{'修订 ' + change.text}</Text>
+          </>}
         </Flex>)}
         {onClear && <Flex><Button type="button" size="2" variant="soft" color="red"
           disabled={disabled} onClick={onClear}>清理记录</Button></Flex>}

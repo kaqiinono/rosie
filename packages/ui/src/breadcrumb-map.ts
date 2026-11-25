@@ -83,6 +83,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
         'magic-tree-house': 'Magic Tree House',
         'roald-dahl': 'Roald Dahl Collection',
         'dragon-masters': 'Dragon Masters',
+        'winnie-the-witch': 'Winnie the Witch',
         warriors: 'Warriors',
         'warriors-the-prophecies-begin': 'Warriors: The Prophecies Begin',
         'warriors-the-new-prophecy': 'Warriors: The New Prophecy',
@@ -100,6 +101,8 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
     label: '{volumeSlug}',
     labelMap: {
       volumeSlug: {
+        'winnie-the-witch': 'Winnie the Witch',
+        'winnie-in-space': 'Winnie in Space',
         'charlie-and-the-chocolate-factory': 'Charlie and the Chocolate Factory',
         'charlie-and-the-great-glass-elevator': 'Charlie and the Great Glass Elevator',
         'danny-the-champion-of-the-world': 'Danny the Champion of the World',
@@ -235,6 +238,8 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['setting', 'calc', 'new'], label: '新增策略' },
   { pattern: ['setting', 'calc', '[strategyId]'], label: '编辑策略' },
   { pattern: ['admin'], label: '管理' },
+  { pattern: ['admin', 'tools'], label: '内容工具箱' },
+  { pattern: ['admin', 'tools', 'audio-alignment'], label: '音文对齐' },
   { pattern: ['admin', 'exams'], label: '考试管理' },
   { pattern: ['admin', 'exams', 'attempts'], label: '用户作答与批改' },
   { pattern: ['admin', 'exams', 'images'], label: '图片任务' },

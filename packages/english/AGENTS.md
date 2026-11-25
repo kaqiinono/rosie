@@ -424,6 +424,13 @@ unmounts the reader and stops its audio without discarding the entry editor.
 
 ### Story narration
 
+The admin toolbox at `/admin/tools/audio-alignment` edits bound Story and textbook tracks.
+Story readers consume live WebVTT and use the packaged timeline for unmanaged tracks.
+Textbook reading uses the same marks for narration highlights and for single-read intervals
+on separately bound listening clips. The web app owns the catalog adapters. A mark is
+applied to its bound file and exact sentence segmentation. Saving updates the current
+timeline immediately.
+
 Store shared story narration under the series directory in `/airosie/english/story/`.
 Dragon Masters uses `dragon-masters/<NN - Book Title>/` with the book title, chapter number
 and chapter title in each MP3 filename. When copying recordings, verify the audio matches,

@@ -11,6 +11,8 @@ import { getWordFormCandidates, type WordFormMatch } from './word-forms'
 export interface GlossaryWord {
   word: string
   ipa?: string
+  /** Additional verbatim forms that link the passage text to this card. */
+  matchForms?: string[]
   /** Chinese gloss with POS tag, e.g. "n. 牛羚，角马". Required. */
   meaningCn: string
   /** Short English definition. Optional but recommended for lookup richness. */
@@ -6407,10 +6409,13 @@ export function blankWordInSentence(sentence: string, word: string | WordEntry):
  */
 export function buildGlossaryRegex(glossary: GlossaryWord[]): RegExp | null {
   if (glossary.length === 0) return null
-  const stems = glossary.flatMap((g) => expandStems(g.word))
-  const sorted = stems.slice().sort((a, b) => b.length - a.length)
-  const pattern = sorted.map(escapeRegex).join('|')
-  return new RegExp(`\\b(${pattern})${INFLECTION_SUFFIX}\\b`, 'gi')
+  const forms = glossary.flatMap(({ word, matchForms = [] }) => [
+    ...expandStems(word).map((text) => ({ text, suffix: INFLECTION_SUFFIX })),
+    ...matchForms.map((text) => ({ text, suffix: '' })),
+  ])
+  forms.sort((a, b) => b.text.length - a.text.length)
+  const pattern = forms.map(({ text, suffix }) => escapeRegex(text) + suffix).join('|')
+  return new RegExp(`\\b(?:${pattern})\\b`, 'gi')
 }
 
 /** Resolve a matched fragment to its glossary entry (inflection-tolerant). */
@@ -6418,11 +6423,12 @@ export function resolveGlossaryMatch(
   matchedText: string,
   glossary: GlossaryWord[],
 ): GlossaryWord | null {
+  const lower = matchedText.toLowerCase()
   const stems = deinflectCandidates(matchedText)
   let best: GlossaryWord | null = null
   for (const g of glossary) {
     const w = g.word.toLowerCase()
-    if (stems.includes(w)) {
+    if (stems.includes(w) || g.matchForms?.some((form) => form.toLowerCase() === lower)) {
       if (!best || g.word.length > best.word.length) best = g
     }
   }

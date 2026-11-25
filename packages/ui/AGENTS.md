@@ -83,6 +83,7 @@ the SVG proportionally, preserving stored ink coordinates. The default compact l
 | 悬浮入口右上角关闭 | `FloatingLauncherCloseButton` from `@rosie/ui` | 父容器提供定位，传入 `label`、可选 `title` 和 `onClose`。生命树和机器人共用。 |
 | 通用按钮、Tab、表单和其他标准控件 | 从 `@rosie/ui/themes` 按名称导入，如 `Button`、`Tabs`、`TextField`、`Select` | 使用官方组件及其变体。主要操作使用实色按钮，次要操作使用 `soft`。 |
 | 表单单选下拉 | `FormSelect` from `@rosie/ui` | 传 `value`、`onValueChange`、`options={[{value,label}]}`，`size` 选尺寸；`value=""` 的「全部 / 未选择」选项可直接使用（组件内部处理 Radix 的空值限制）。`className` 只写宽度等布局。需要分组或自定义项时再直接用 `Select`。 |
+| 关键词搜索下拉 | `SearchableFormSelect` from `@rosie/ui` | 共用 `FormSelect` 的选项和选中值，按名称和标识筛选，支持输入法、方向键、回车与 Escape。 |
 | 链接样式操作按钮 | `LinkButton` from `@rosie/ui` | 页面内操作传入 `onClick`，原生下载链接传入 `href` 和 `download`。 |
 | 卡片、面板、统计块、列表项容器 | `StickerCard` from `@rosie/ui` | 外观只用 `tone`（white / paper / accent / success / warning / danger / info）、`size`（none / sm / md / lg）、`elevation`（flat / sm / md / lg）、`radius`（md / lg）、`interactive` 选择；`className` 只写布局（宽高、栅格、间距、定位）。语义区块用 `as`（section / article / li …）。可点击链接卡用 `asChild` 套在 `<Link>` 上。禁止手写 `rounded-* border-2 bg-white shadow-sticker*` 拼卡片，`pnpm lint:visual` 的 `hand-card` 规则会拦截。 |
 | 深色沉浸区域（口算、英语单词模块、英语计划管理、题海）里的 Radix 控件 | `DarkScope` from `@rosie/ui` | 包在区域最外层，嵌套 Radix `Theme appearance="dark"`；区域内的 `Button` / `TextField` / `AppDialog` 自动取深色。不要给单个控件手写深色类名。 |

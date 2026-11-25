@@ -69,6 +69,15 @@ const PERSONAL_TOOLS: SettingTool[] = [
 
 export const ADMIN_TOOLS: SettingTool[] = [
   {
+    href: '/admin/tools',
+    emoji: '🛠️',
+    title: '内容工具箱',
+    description: '标记故事和教材朗读的时间轴。',
+    from: 'rgba(251,191,36,0.16)',
+    to: 'rgba(249,115,22,0.08)',
+    ring: 'rgba(245,158,11,0.28)',
+  },
+  {
     href: '/admin/users',
     emoji: '👥',
     title: '用户管理',

@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   transpilePackages: getRosiePackages(),
+  outputFileTracingIncludes: {
+    '/api/admin/audio-alignment': ['./public/story-timings/**/*'],
+    '/api/baidu/audio/alignment': ['./public/story-timings/**/track-index.json'],
+  },
 
   redirects: async () => [
     { source: '/english/words/reading/story/:path*', destination: '/stories/:path*', permanent: true },

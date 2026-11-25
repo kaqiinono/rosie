@@ -2,6 +2,14 @@
 
 This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
+## 数据迁移执行偏好
+
+当前任务需要 Supabase 数据或结构迁移时，由代理在同一任务中自动应用并核对结果。此操作已有用户授权，无需再次确认或交给用户手动执行。仅在遇到必须由用户处理的阻塞时请用户介入，并说明原因。
+
+先从应用配置核对目标项目，再检查远端迁移历史和依赖。只应用当前任务所需且尚未执行的迁移，禁止使用 `--include-all` 强推。完成后读取远端迁移记录和相关结构或数据，按远端版本同步本地文件和状态文档。已应用的迁移只核对记录。数据库重置、破坏性操作和无关迁移另行授权。构建、测试仍由用户手动执行。
+
+迁移 API 和 session pooler 的使用方法见 [Supabase 迁移指南](supabase/README.md#forward-migrations)。
+
 For long-running, repeatable maintenance work (knowledge sync, catalog generation, audits, and
 similar bulk jobs), prefer a resumable local CLI under `scripts/` over agent-driven manual loops.
 Such scripts should be idempotent, observable, rate-limit aware, safe to rerun, and documented in
@@ -249,12 +257,25 @@ button in `AccountBar` links to `/setting`; legacy personal `/admin/calc`, `/adm
 
 Global admin sub-pages include:
 
+- `/admin/tools/audio-alignment` — annotate existing Story narration, textbook narration and
+  bound textbook listening audio. Each confirmed mark takes effect immediately. The
+  `20261125083627_audio_alignment` migration stores the current marks per track. The reading
+  API serves WebVTT for Story and interval data for textbook reading. Existing timing data
+  is brought in on the first save for a track.
+
 - `/admin/sync` — shared Baidu authorization, account-scoped directory bookmarks and read-only file browsing,
   on-demand 路径 / 数学 / 英语 panels, per-lesson math replay and English lesson audio bindings. Under 英语 → Story, admins select an English series and book to bind one full-book recording and one recording per chapter. Directory APIs require an administrator.
   Shared callbacks return here. Legacy personal callbacks still return to `/setting`, which no longer displays a Netdisk card.
   电影剧场 saves one media directory per shared Baidu account and scans it and its descendants for unbound videos.
   MP4, MKV and RMVB drafts
   bind the video's actual containing directory and its selected subtitle files. See [Baidu OAuth](docs/baidu-oauth.md#电影剧场媒体目录).
+  The theater subtitle editor saves per-language text, split, merge, insert and delete revisions
+  in the existing versioned batch. Playback reads pending revisions immediately. Administrators
+  sync the batch to the bound subtitle files when ready.
+  An optional same-directory MP3, M4A or AAC track can be selected on creation or edited on an existing film.
+  The player keeps internal audio as the automatic default and uses the external track when it can determine
+  that the current video source lacks usable audio. Manual selection is available on films with a bound track.
+  Migration `20261125105801_theater_external_audio.sql` is applied to `rosie-tokyo`.
 
 - `/admin/awards` — stars & voucher management (was previously at `/admin`)
 - `/admin/users` — account management plus per-user parent PIN reset. Parent PIN hashes live in
@@ -585,6 +606,3 @@ Task-entry rows also hold display content and multiple media references. Opening
 English sentence and Chinese reading/recognition/words/poem/accumulation content comes from
 existing source data. See `docs/task-practice-entries.md` for resource discovery and refresh behavior.
 
-## 数据迁移执行偏好
-
-默认由代理自动执行开发任务所需的数据迁移并核对结果。仅在必须由用户操作时请用户介入，并说明具体阻塞。先按应用环境配置核对目标 Supabase 项目，再确认远端历史和依赖。仅应用当前任务所需迁移，不使用 `--include-all` 强推。成功后核对远端记录及必要的只读元数据，并同步本地迁移版本与状态文档。此授权不包含无关数据删除或数据库重置；构建、测试仍按用户的手动控制规则执行。

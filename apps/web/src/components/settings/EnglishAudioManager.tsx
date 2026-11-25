@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Badge, Box, Button, Card, Flex, Grid, Heading, Separator, Switch, Text } from '@rosie/ui/themes'
 import { SyncSelect, useSyncConfirmation } from './SyncControls'
 import { invalidateSessionStore } from '@rosie/core'
@@ -10,6 +12,7 @@ import { LoadStatus, request, useQuery } from './EnglishSyncRequest'
 import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
 import { directoryPrefix, type LessonAudioEditor, type LessonAudioPick } from '@/lib/english-audio-types'
 import { matchEnglishAudio } from '@/lib/english-audio-match'
+import { alignmentWorkbenchUrl } from '@/lib/audio-alignment-contract'
 
 type Lesson = { stage: string; unit: string; unitTitle?: string; lesson: string; title: string; key: string }
 type Props = { userId: string; paths: SyncDirectoryList }
@@ -175,6 +178,7 @@ function Bindings({ userId, paths, initial, lessonKey, url, reload }: Props & { 
 }
 
 export default function EnglishAudioManager({ userId, paths }: Props) {
+  const router = useRouter()
   const catalog = useQuery<Lesson[]>(userId, '/api/baidu/sync/english')
   const [selectedStage, setSelectedStage] = useState('')
   const [unit, setUnit] = useState('')
@@ -207,6 +211,13 @@ export default function EnglishAudioManager({ userId, paths }: Props) {
         onValueChange={v => changeSelection(() => setLesson(v))} />
     </Grid>}
     <LoadStatus {...editor} />
+    {editor.data && lesson && <Flex justify="end">
+      <Button asChild variant="soft"><Link href={alignmentWorkbenchUrl(lesson)} onClick={event => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+        event.preventDefault()
+        changeSelection(() => router.push(alignmentWorkbenchUrl(lesson)))
+      }}>音文对齐</Link></Button>
+    </Flex>}
     {editor.data && <Bindings key={url} initial={editor.data} lessonKey={lesson} url={url} reload={editor.retry} userId={userId} paths={paths} />}
     {dialog}
   </Flex>

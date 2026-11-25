@@ -6,13 +6,14 @@ import { Badge, Button, Flex, Heading, Text, TextField } from '@rosie/ui/themes'
 import type { SyncDirectoryList } from '@/app/api/baidu/sync/directories/route'
 import { requestTheater } from '@/lib/theater/client'
 import {
-  theaterLanguageLabel, theaterPlaybackCopyName, theaterVideoFormat, theaterVideoStem,
-  type MatchedTheaterSubtitle, type TheaterAdminFilm, type TheaterDirectoryInventory, type TheaterSubtitleJob,
+  matchTheaterAudio, theaterLanguageLabel, theaterPlaybackCopyName, theaterVideoFormat, theaterVideoStem,
+  type MatchedTheaterSubtitle, type TheaterAdminFilm, type TheaterAudioSelection, type TheaterDirectoryInventory, type TheaterSubtitleJob,
   type TheaterMediaDirectory, type TheaterMediaDirectorySettings, type TheaterSubtitleMatchResult,
 } from '@/lib/theater/types'
 import { SyncPending, SyncSelect, useSyncConfirmation } from './SyncControls'
 
 type TheaterOperation = 'catalog' | 'directory' | 'files' | 'match' | 'transcribe' | 'save' | 'publish' | 'retry' | 'import' | 'copy'
+  | 'audioFiles' | 'audioSave'
 
 const jobActive = (state: TheaterSubtitleJob['state']) =>
   state === 'queued' || state === 'transcribing' || state === 'writing'
@@ -35,6 +36,8 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
   const [videoId, setVideoId] = useState('')
   const [enId, setEnId] = useState('')
   const [zhId, setZhId] = useState('')
+  const [audioId, setAudioId] = useState('')
+  const [audioEdit, setAudioEdit] = useState<(TheaterAudioSelection & { filmId: string; value: string }) | null>(null)
   const [shareLink, setShareLink] = useState('')
   const [shareCode, setShareCode] = useState('')
   const [shareFeedback, setShareFeedback] = useState<{ kind: 'error' | 'success'; message: string } | null>(null)
@@ -59,6 +62,7 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
   const selectedVideo = videos.find(file => file.fileId === videoId)
   const directorySubtitles = selectedVideo
     ? inventory?.subtitles.filter(file => file.folder === selectedVideo.folder) ?? [] : []
+  const directoryAudio = selectedVideo ? inventory?.audio?.filter(file => file.folder === selectedVideo.folder) ?? [] : []
   const generatedSubtitle = job?.subtitle
   const subtitles = [...new Map([
     ...directorySubtitles, ...(matched?.tracks ?? []), ...(generatedSubtitle ? [generatedSubtitle] : []),
@@ -67,7 +71,8 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
   const canGenerateSubtitles = needsSubtitle && matched && !matched.tracks.length && !matched.failedCount &&
     !matched.remainingCount && !job
   const showTranscription = (job && jobActive(job.state)) || (needsSubtitle && (canGenerateSubtitles || job || jobError))
-  const dirty = Boolean(title || videoId || enId || zhId)
+  const dirtyAudioEdit = audioEdit && audioEdit.value !== (audioEdit.selectedId ?? '')
+  const dirty = Boolean(title || videoId || enId || zhId || audioId || dirtyAudioEdit)
 
   const run = useCallback(async (operation: TheaterOperation, action: (signal: AbortSignal) => Promise<void>) => {
     const previous = pending.current
@@ -182,6 +187,7 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
     setVideoId('')
     setEnId('')
     setZhId('')
+    setAudioId('')
     resetShareInput()
     setMatched(null)
     resetSubtitleJob()
@@ -206,6 +212,7 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
       if (signal.aborted) return
       setInventory(result)
       if (videoId && !result.videos.some(file => file.fileId === videoId)) resetFilmDraft()
+      else if (audioId && !result.audio?.some(file => file.fileId === audioId)) setAudioId('')
     })
   }
 
@@ -262,6 +269,8 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
     setVideoId(id)
     setEnId('')
     setZhId('')
+    const candidates = inventory?.audio?.filter(file => file.folder === video?.folder) ?? []
+    setAudioId(video ? matchTheaterAudio(video.name, candidates) : '')
     resetShareInput()
     setMatched(null)
     resetSubtitleJob()
@@ -327,7 +336,7 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
     if (!title.trim() || !directoryId || !videoId || !(enId || zhId) || enId === zhId) return
     void run('save', async signal => {
       await requestTheater(userId, catalogUrl, { method: 'POST', signal, body: JSON.stringify({
-        title: title.trim(), directoryId, videoId, enId: enId || null, zhId: zhId || null,
+        title: title.trim(), directoryId, videoId, enId: enId || null, zhId: zhId || null, audioId: audioId || null,
       }) })
       if (signal.aborted) return
       setInventory(current => current && { ...current, videos: current.videos.filter(file => file.fileId !== videoId) })
@@ -364,10 +373,34 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
     })
   }
 
+  function openAudioEdit(film: TheaterAdminFilm) {
+    void run('audioFiles', async signal => {
+      const result = await requestTheater<TheaterAudioSelection>(userId, catalogUrl + '&audioFilmId=' + film.id, { signal })
+      if (signal.aborted) return
+      setAudioEdit({ ...result, filmId: film.id,
+        value: result.selectedId ?? matchTheaterAudio(film.videoName, result.files) })
+    })
+  }
+
+  function saveAudioEdit() {
+    if (!audioEdit) return
+    const { filmId, revision, value } = audioEdit
+    void run('audioSave', async signal => {
+      const saved = await requestTheater<Pick<TheaterAdminFilm, 'revision' | 'externalAudioName'>>(userId, catalogUrl, {
+        method: 'PATCH', signal, body: JSON.stringify({ action: 'externalAudio', id: filmId, revision, audioId: value || null }),
+      })
+      if (signal.aborted) return
+      setFilms(current => current?.map(film => film.id === filmId
+        ? { ...film, ...saved, hasExternalAudio: Boolean(saved.externalAudioName) } : film) ?? null)
+      setAudioEdit(null)
+      setNotice(saved.externalAudioName ? '已保存外部音轨。' : '已解除外部音轨绑定。')
+    })
+  }
+
   const disabled = busy !== null
   const shareDisabled = disabled && busy !== 'match'
   return (
-    <Flex direction="column" gap="4" data-sync-saving={busy === 'directory' || busy === 'save' || busy === 'publish' || busy === 'import' || busy === 'copy'}
+    <Flex direction="column" gap="4" data-sync-saving={busy === 'directory' || busy === 'save' || busy === 'publish' || busy === 'import' || busy === 'copy' || busy === 'audioSave'}
       data-sync-dirty={dirty}>
       <Flex wrap="wrap" align="center" justify="between" gap="2">
         <Heading as="h2" size="4">电影剧场</Heading>
@@ -376,6 +409,7 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
       {notice && <Text role="status" size="2">{notice}</Text>}
       {error && <Text role="alert" size="2" color="red">{error}</Text>}
       {busy === 'catalog' && <SyncPending>正在读取片库…</SyncPending>}
+      {busy === 'audioFiles' && <SyncPending>正在查找同目录音轨…</SyncPending>}
       {mediaDirectory !== undefined && <StickerCard as="section" size="sm" elevation="flat">
         <Flex direction="column" gap="2">
           <Flex align="center" justify="between" gap="2" wrap="wrap">
@@ -434,6 +468,10 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
                 <SyncSelect label="中文字幕" value={zhId} options={subtitles.filter(file => file.value !== enId)}
                   empty="不绑定中文字幕" disabled={disabled} onValueChange={setZhId} />
               </div>
+              <SyncSelect label="外部音轨（备用）" value={audioId}
+                options={directoryAudio.map(file => ({ value: file.fileId, label: file.name }))}
+                empty="不绑定外部音轨" disabled={disabled} onValueChange={setAudioId} />
+              {!directoryAudio.length && <Text size="2" color="gray">影片同目录没有 MP3、M4A 或 AAC 音频。</Text>}
               <StickerCard as="section" size="sm" tone="paper" elevation="flat">
                 <Flex direction="column" gap="2">
                   <Flex align="center" justify="between" gap="2" wrap="wrap">
@@ -523,6 +561,7 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
             <Flex direction="column" gap="1" minWidth="0">
               <Text weight="bold" className="break-words">{film.title}</Text>
               <Text size="2" color="gray" className="break-all">{film.videoName}</Text>
+              {film.externalAudioName && <Text size="2" color="gray" className="break-all">备用音轨 · {film.externalAudioName}</Text>}
               <Flex gap="2" wrap="wrap">
                 <Badge color={film.published ? 'green' : 'gray'}>{film.published ? '已上架' : '未上架'}</Badge>
                 {film.languages.map(language => <Badge key={language}>{theaterLanguageLabel[language]}字幕</Badge>)}
@@ -532,6 +571,8 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
             </Flex>
             <Flex direction="column" gap="2" align="start" minWidth="0">
               <Flex gap="2" wrap="wrap">
+                <Button type="button" variant="soft" disabled={disabled || !film.directoryId}
+                  onClick={() => openAudioEdit(film)}>{film.externalAudioName ? '修改外部音轨' : '绑定外部音轨'}</Button>
                 {film.format !== 'mp4' && <Button type="button" variant="soft"
                   disabled={disabled || !film.directoryId} onClick={() => attachPlaybackCopy(film)}>
                   {film.playbackName ? '重新关联 MP4 副本' : '关联 MP4 副本'}
@@ -544,6 +585,17 @@ export default function BaiduTheaterManager({ userId, paths }: { userId: string;
               </Text>}
             </Flex>
           </Flex>
+          {audioEdit?.filmId === film.id && <Flex direction="column" gap="2" mt="3">
+            <SyncSelect label="外部音轨（备用）" value={audioEdit.value}
+              options={audioEdit.files.map(file => ({ value: file.fileId, label: file.name }))}
+              empty="不绑定外部音轨" disabled={disabled}
+              onValueChange={value => setAudioEdit({ ...audioEdit, value })} />
+            {!audioEdit.files.length && <Text size="2" color="gray">影片同目录没有 MP3、M4A 或 AAC 音频。</Text>}
+            <Flex gap="2" wrap="wrap">
+              <Button type="button" disabled={disabled || !dirtyAudioEdit} loading={busy === 'audioSave'} onClick={saveAudioEdit}>保存音轨</Button>
+              <Button type="button" variant="soft" disabled={disabled} onClick={() => setAudioEdit(null)}>取消</Button>
+            </Flex>
+          </Flex>}
         </StickerCard>
       ))}
       {dialog}

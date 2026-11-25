@@ -111,6 +111,15 @@ export default function ListeningDrawer({
     }
   }, [currentKey, index, attempt, paused, replayRequest, reportLoading, playToken])
 
+  const [singleStart, singleEnd] = clip.singleRead
+  useEffect(() => {
+    const el = audio.current
+    if (!playSingleRead || !el || el.readyState < 1 || el.paused) return
+    if (el.currentTime < singleStart || el.currentTime >= singleEnd + SINGLE_READ_WAIT_SECONDS) {
+      el.currentTime = singleStart
+    }
+  }, [playSingleRead, singleStart, singleEnd])
+
   function navigateClip(button: 'previous' | 'next') {
     audio.current?.pause()
     setPaused(true)

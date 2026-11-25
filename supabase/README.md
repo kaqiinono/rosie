@@ -20,6 +20,11 @@ or a current schema dump. Do not use production as a reset target.
 
 ## Forward migrations
 
+Agents apply and verify migrations required by the current task under the standing
+authorization in [AGENTS.md](../AGENTS.md#数据迁移执行偏好). Confirm the target project
+and remote history first. When using the connected migration API, send only the intended
+migration and use its recorded version for the local filename.
+
 Create a new timestamped SQL file with `supabase migration new <name>`.
 The direct database endpoint resets connections from this environment. Use
 `scripts/supabase-migrations.mjs`, which routes the CLI through the linked
@@ -52,6 +57,13 @@ directory. Do not also run it through the retired custom runner.
 
 The legacy files and snapshot are retained for audit and recovery. Existing
 references to old file paths should point to `legacy-migrations/`.
+
+## Audio alignment
+
+`20261125083627_audio_alignment.sql` was applied to `rosie-tokyo` on 2026-11-25
+through the Supabase migration API. Read-back confirmed the migration record, RLS on
+`audio_alignments`, service-role access for the timing RPCs, and the existing
+whole-book narration binding for Winnie in Space.
 
 ## Vocabulary assessment
 
@@ -224,6 +236,10 @@ MP4、MKV 和 RMVB，播放副本可记录文件 ID、名称及指纹。迁移�
 `20261124095602_theater_subtitle_revisions.sql` 已应用到 `rosie-tokyo`。远端已核对迁移记录、
 待同步批次唯一索引、历史索引、行级安全以及服务角色的表和同步确认函数权限。
 同步完成后将字幕绑定更新和修订归档写入同一事务。
+
+`20261125105801_theater_external_audio.sql` 于 2026-11-25 通过 Supabase 迁移 API
+应用到 `rosie-tokyo`。远端已核对迁移记录、四个可空音轨字段、已验证的外置音轨约束、
+片库行级安全及服务角色读取权限。片库字段查询已恢复，浏览器播放待手动验收。
 
 ## 离线学习结算
 

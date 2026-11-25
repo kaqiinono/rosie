@@ -7,7 +7,7 @@ import { LearningIcon } from '@rosie/ui'
 import { useAuth, useBaiduMediaError } from '@rosie/core'
 import { Button, Select } from '@rosie/ui/themes'
 import { useBaiduReadingAudio } from '../../hooks/useBaiduReadingAudio'
-import { lessonAudioUrl } from '../../utils/reading-audio-types'
+import { audioAlignmentUrl, lessonAudioUrl } from '../../utils/reading-audio-types'
 import type { StoryChapter, StoryVolume } from '../../utils/story-types'
 import { storyNarrationTracks } from '../../utils/story-narration-tracks'
 
@@ -26,6 +26,7 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback, inlin
   const activeTrack = player.current?.url === src
   const playing = activeTrack && player.isPlaying && !player.isPaused
   const [noTiming, setNoTiming] = useState(false)
+  const [timingRequest, setTimingRequest] = useState(0)
   const [failed, setFailed] = useState(false)
   useEffect(() => {
     const media = audioRef.current
@@ -33,6 +34,7 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback, inlin
     const track = document.createElement('track')
     track.kind = 'metadata'
     track.src = timeline
+    track.onload = () => setNoTiming(false)
     track.onerror = () => setNoTiming(true)
     media.appendChild(track)
     const cues = track.track
@@ -57,17 +59,19 @@ function NarrationTrack({ src, timeline, label, errorHost, beforePlayback, inlin
     sync()
     return () => {
       cues.removeEventListener('cuechange', sync)
+      track.onload = null
       track.onerror = null
       track.remove()
       active?.removeAttribute('data-story-speaking')
     }
-  }, [audioRef, activeTrack, timeline])
+  }, [audioRef, activeTrack, timeline, timingRequest])
   return <>
     <Button ref={button} type="button" variant="soft" highContrast color="orange"
       loading={loading} aria-pressed={playing} aria-label={playing ? '暂停朗读' : '播放朗读'}
       onClick={async () => {
         beforePlayback()
         if (activeTrack && player.isPlaying) {
+          if (player.isPaused) setTimingRequest(request => request + 1)
           player.togglePause()
           return
         }
@@ -135,7 +139,8 @@ export function useStoryNarration({ series, volume, chapters, full }: {
         label,
         src,
         playbackUrl: range && range.endMs > range.startMs ? `${src}#t=${range.startMs / 1000},${range.endMs / 1000}` : src,
-        timeline: `${base}/${item.file}.vtt`,
+        timeline: item.file === 'title' || item.file === 'credits'
+          ? `${base}/${item.file}.vtt` : audioAlignmentUrl(key, item.slot),
       }]
     })
   }, [base, chapter, chapters, hasAudio, index, key, volume])

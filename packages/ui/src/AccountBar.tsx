@@ -35,6 +35,9 @@ export default function AccountBar({ variant = 'default' }: AccountBarProps) {
           <DropdownMenu.Label className="wrap-anywhere whitespace-normal">当前账号：{account}</DropdownMenu.Label>
           <DropdownMenu.Separator />
           <DropdownMenu.Item asChild>
+            <Link href="/">返回首页</Link>
+          </DropdownMenu.Item>
+          <DropdownMenu.Item asChild>
             <Link href="/setting">用户配置</Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item color="red" onSelect={() => void signOut()}>

@@ -1,5 +1,28 @@
 # Rosie design context
 
+## Theater subtitle editing
+
+The subtitle list opens the shared editor with the selected language and cue. The editor
+keeps the selection fixed while auditioning a range. Split and insert offer a playhead
+and editable timestamps. The delete confirmation shows the sentence before saving.
+Each subtitle row keeps the timestamp on the left and the actions on the right.
+The subtitle list and current dialogue share borderless action strips with evenly spaced,
+equal-width cells. Each strip stays on the same line as its timestamp or heading.
+Both views highlight the same dialogue cue, including when playback pauses or buffers.
+The pencil opens the editor. Split, merge and delete save directly from the row for
+its primary language, with the existing editing controls still available in the editor.
+Saving refreshes the timeline in place. Baidu sync stays an explicit action in the list.
+
+## Audio alignment
+
+The admin toolbox pairs a scrollable sentence list with the selected sentence, the original
+audio and two timestamp controls. On narrow screens, the marking controls lead. The default
+list shows pending sentences. Saving or marking a sentence as skipped takes effect immediately
+and moves to the next pending sentence. An error keeps the selected sentence and both marks
+available for correction. Keyboard and touch users share the same marking and save actions.
+In 全部, the sentence list scrolls to the audio position and the editor follows saved timing
+ranges. Previewing a selection or editing an unsaved range keeps the edit target pinned.
+
 ## Running bubble completion (approved 2026-11-16)
 
 Starting a task keeps its content panel mounted and open, with the timer and completion

@@ -23,6 +23,8 @@ import {
   ListeningDrawer,
   playableListeningClips,
   lessonAudioUrl,
+  audioAlignmentUrl,
+  readingSegments,
   useAudioSlots,
   PassageView,
 } from '@rosie/english'
@@ -34,6 +36,7 @@ import { GlossaryPanel } from '@rosie/english'
 import { ReadingLearningSections } from '@rosie/english'
 import { DarkScope, LearningIcon } from '@rosie/ui'
 import { Button, Flex, IconButton, SegmentedControl, Spinner, Switch, Theme } from '@rosie/ui/themes'
+import type { AudioMarks } from '@/lib/audio-alignment-contract'
 
 const LEGEND: { level: MasteryLevel; label: string; dot: string }[] = [
   { level: 0, label: '未掌握', dot: 'bg-amber-400' },
@@ -64,7 +67,38 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
 
   const passage = findPassageByKey(key)
   const { data: slots } = useAudioSlots(user)
-  const clips = useMemo(() => playableListeningClips(passage, slots), [passage, slots])
+  const [timingRequest, setTimingRequest] = useState(0)
+  const [currentTiming, setCurrentTiming] = useState<{ key: string; userId: string; tracks: Record<string, AudioMarks> } | null>(null)
+  const userId = user?.id
+  const hasBoundAudio = slots.some(slot => slot.startsWith(key + '#'))
+  useEffect(() => {
+    if (!userId || !hasBoundAudio) return
+    const controller = new AbortController()
+    void fetch(audioAlignmentUrl(key), { signal: controller.signal, cache: 'no-store' })
+      .then(response => response.ok ? response.json() : null)
+      .then(tracks => {
+        if (tracks && !controller.signal.aborted) setCurrentTiming({ key, userId, tracks })
+      })
+      .catch(() => {})
+    return () => controller.abort()
+  }, [key, userId, hasBoundAudio, timingRequest])
+  const tracks = currentTiming?.key === key && currentTiming.userId === userId ? currentTiming.tracks : undefined
+  const readingPassage = useMemo(() => {
+    if (!passage || !tracks?.narration || audioUrl !== lessonAudioUrl(key, 'narration')) return passage
+    return {
+      ...passage,
+      narrationCues: passage.paragraphs.map((_, paragraph) => readingSegments(passage, paragraph).map((_, sentence) => {
+        const mark = tracks.narration[`${paragraph}-${sentence}`]
+        return (mark?.status === 'timed' ? [mark.startMs / 1000, mark.endMs / 1000] : [0, 0]) as [number, number]
+      })),
+    }
+  }, [passage, tracks, audioUrl, key])
+  const clips = useMemo(() => playableListeningClips(passage, slots).map(clip => {
+    const mark = tracks?.['clip:' + clip.target]?.[clip.target]
+    return clip.sourceUrl && mark?.status === 'timed'
+      ? { ...clip, singleRead: [mark.startMs / 1000, mark.endMs / 1000] as [number, number] }
+      : clip
+  }), [passage, slots, tracks])
   const [listening, setListening] = useState<{
     key: string
     index: number
@@ -86,6 +120,7 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
   const clipIndex = listening?.key === key ? listening.index : 0
   const target = listeningActive ? clips[clipIndex]?.target : undefined
   const selectClip = (index: number, openPanel = false) => {
+    setTimingRequest(request => request + 1)
     if (loadingNarration) {
       stop()
       setLoadingNarration(false)
@@ -499,6 +534,7 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
                     window.alert('未找到本课朗读音频')
                     return
                   }
+                  setTimingRequest(request => request + 1)
                   if (narrationActive && player.isPlaying) {
                     player.togglePause()
                   } else {
@@ -574,7 +610,7 @@ export default function ReadingPassageDetail({ passageKey: key, scrollContainerR
       {/* Passage body */}
       <Theme appearance="light" hasBackground={false} className="ring-kid-line rounded-2xl bg-white p-5 ring-1 sm:p-7">
         <PassageView
-          passage={passage}
+          passage={readingPassage ?? passage}
           lessonWords={visibleWords}
           masteryMap={masteryMap}
           focusWord={focusWord}

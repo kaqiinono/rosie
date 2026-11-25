@@ -55,6 +55,7 @@ registerRoute(
     url.pathname === '/api/exams' || url.pathname.startsWith('/api/exams/') ||
     url.pathname === '/api/theater' || url.pathname.startsWith('/api/theater/') ||
     url.pathname === '/api/admin/exams' || url.pathname.startsWith('/api/admin/exams/') ||
+    url.pathname === '/api/admin/audio-alignment' || url.pathname === '/api/baidu/audio/alignment' ||
     url.pathname.startsWith('/api/project-media/chinese-reading-recordings/') ||
     url.pathname.startsWith('/api/project-media/english-story-recordings/') ||
     url.pathname.startsWith('/api/project-media/exam-recordings/') ||

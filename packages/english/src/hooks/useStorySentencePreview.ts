@@ -2,31 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePlaybackProgram, type PlaybackProgramStep } from '@rosie/player'
+import { readStoryCues } from '../utils/story-timing'
 
 type Bounds = { startMs: number; endMs: number }
 type Source = { src: string; timeline: string }
 type LocatedCue = Bounds & { id: string; src: string }
 type Timings = { sources: readonly Source[]; cues: Map<string, LocatedCue[]>; failed: boolean }
 type PlaybackRange = { timings: Timings; cues: LocatedCue[] }
-
-function timestampMs(value: string) {
-  const [hours, minutes, seconds] = value.split(':').map(Number)
-  return Math.round((hours * 3600 + minutes * 60 + seconds) * 1000)
-}
-
-function readCues(text: string) {
-  const cues = new Map<string, Bounds>()
-  const pattern = /^([a-z0-9-]+-s\d+)\r?\n(\d{2,}:[0-5]\d:[0-5]\d\.\d{3})[ \t]+-->[ \t]+(\d{2,}:[0-5]\d:[0-5]\d\.\d{3})(?=[ \t\r\n]|$)/gm
-  if (!/^\uFEFF?WEBVTT(?:[ \t\r\n]|$)/.test(text)) return cues
-  for (const [, id, start, end] of text.matchAll(pattern)) {
-    const startMs = timestampMs(start)
-    const endMs = timestampMs(end)
-    if (Number.isSafeInteger(startMs) && Number.isSafeInteger(endMs) && startMs < endMs) {
-      cues.set(id, { startMs, endMs })
-    }
-  }
-  return cues
-}
 
 export function useStorySentencePreview(sources: readonly Source[] | undefined) {
   const [timings, setTimings] = useState<Timings | null>(null)
@@ -51,10 +33,10 @@ export function useStorySentencePreview(sources: readonly Source[] | undefined) 
     const controller = new AbortController()
     void (async () => {
       const tracks = await Promise.allSettled(sources.map(async source => {
-        const response = await fetch(source.timeline, { signal: controller.signal })
+        const response = await fetch(source.timeline, { signal: controller.signal, cache: 'no-store' })
         if (response.status === 404) return []
         if (!response.ok) throw new Error('Story timing unavailable')
-        return Array.from(readCues(await response.text()), ([id, bounds]) => ({ ...bounds, id, src: source.src }))
+        return Array.from(readStoryCues(await response.text()), ([id, bounds]) => ({ ...bounds, id, src: source.src }))
       }))
       if (controller.signal.aborted) return
       const cues = new Map<string, LocatedCue[]>()

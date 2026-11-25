@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { storyNarrationTracks } from '../../../packages/english/src/utils/story-narration-tracks'
+import { formatStoryCues, readStoryCues } from '../../../packages/english/src/utils/story-timing'
 import {
+  buildGlossaryRegex,
   findStoryChapter,
   findStorySeries,
   findStoryVolume,
+  resolveGlossaryMatch,
   splitStorySentences,
   storyContentKey,
   storyRecordingStoragePath,
@@ -11,6 +14,96 @@ import {
   storyShelfEntries,
   warriorsCollection,
 } from '../../../packages/english/src'
+
+describe('Story WebVTT', () => {
+  it('uses the same sentence IDs and original-audio millisecond ranges for highlighting and replay', () => {
+    const vtt = formatStoryCues([
+      { id: 'ch01-s007', startMs: 660_510, endMs: 662_045 },
+      { id: 'ch01-s003', startMs: 61_210, endMs: 62_100 },
+    ])
+    expect(vtt).toContain('00:11:00.510 --> 00:11:02.045')
+    expect([...readStoryCues(vtt)]).toEqual([
+      ['ch01-s003', { startMs: 61_210, endMs: 62_100 }],
+      ['ch01-s007', { startMs: 660_510, endMs: 662_045 }],
+    ])
+  })
+})
+
+describe('Winnie the Witch story catalog', () => {
+  it('adds the original picture book as volume 1 and keeps the existing volume 11', () => {
+    const series = findStorySeries(storySeries, 'winnie-the-witch')!
+    expect(series.volumes.map(({ number, slug }) => [number, slug])).toEqual([
+      [1, 'winnie-the-witch'], [11, 'winnie-in-space'],
+    ])
+    const volume = findStoryVolume(series, 'winnie-the-witch')!
+    const chapter = findStoryChapter(volume, 'ch01')!
+    const sentences = splitStorySentences(chapter).flat()
+    expect(sentences[0]).toMatchObject({
+      id: 'ch01-s001', text: 'Winnie the Witch lived in a black house in the forest.',
+    })
+    expect(sentences.at(-1)?.text).toBe('And now, Winnie can see Wilbur no matter where he sits.')
+    expect(chapter.paragraphs).toHaveLength(25)
+    expect(chapter.paragraphs.join(' ')).not.toMatch(/\p{Script=Han}/u)
+    expect(chapter.illustrations?.map(({ afterParagraph }) => afterParagraph)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 19, 20, 21, 22, 24,
+    ])
+    expect(storyNarrationTracks(volume, volume.chapters)).toEqual([
+      expect.objectContaining({ slot: 'narration', file: 'full', filename: 'winnie-the-witch.mp3' }),
+    ])
+  })
+
+  it('links the original picture book’s glossary headwords to the forms in its text', () => {
+    const series = findStorySeries(storySeries, 'winnie-the-witch')!
+    const chapter = findStoryChapter(findStoryVolume(series, 'winnie-the-witch')!, 'ch01')!
+    expect(chapter.glossary).toHaveLength(30)
+    const matches = chapter.paragraphs.join(' ').matchAll(buildGlossaryRegex(chapter.glossary)!)
+    const linked = new Map(Array.from(matches, ([text]) =>
+      [text, resolveGlossaryMatch(text, chapter.glossary)?.word] as const,
+    ))
+    expect(linked.get('turned three somersaults')).toBe('turn somersaults')
+    expect(linked.get('couldn’t see him at all')).toBe('not … at all')
+    expect(linked.get('tripped over')).toBe('trip over')
+    expect(new Set(linked.values())).toEqual(new Set(chapter.glossary.map(({ word }) => word)))
+  })
+
+  it('registers Winnie in Space as one illustrated story with a whole-book recording', () => {
+    const series = findStorySeries(storySeries, 'winnie-the-witch')!
+    const volume = findStoryVolume(series, 'winnie-in-space')!
+    expect(storyShelfEntries).toContainEqual(expect.objectContaining({
+      slug: series.slug, title: 'Winnie the Witch', language: 'en', count: 2,
+    }))
+    expect(volume.number).toBe(11)
+    expect(volume.chapters.map(({ key }) => key)).toEqual(['ch01'])
+
+    const chapter = findStoryChapter(volume, 'ch01')!
+    const sentences = splitStorySentences(chapter).flat()
+    expect(sentences[0]).toMatchObject({
+      id: 'ch01-s001', text: 'Winnie the Witch loved to look through her telescope at the night sky.',
+    })
+    expect(sentences.at(-1)?.text).toBe('He was very glad to be home.')
+    const body = chapter.paragraphs.join(' ')
+    expect(body).toContain('scrap metal rocket')
+    expect(body).not.toMatch(/scrap metal rocker|text copyright|nine planets|\p{Script=Han}/iu)
+    expect(chapter.illustrations?.map(({ path }) => path)).toEqual(Array.from({ length: 12 }, (_, i) =>
+      `stories/winnie-the-witch/winnie-in-space/ch01-p${String(i + 1).padStart(2, '0')}.webp`,
+    ))
+    expect(chapter.illustrations?.every(({ afterParagraph }) => afterParagraph >= -1 && afterParagraph < chapter.paragraphs.length)).toBe(true)
+    expect(storyNarrationTracks(volume, volume.chapters)).toEqual([
+      expect.objectContaining({ slot: 'narration', file: 'full', filename: 'winnie-in-space.mp3' }),
+    ])
+  })
+
+  it('matches every requested glossary entry in the story', () => {
+    const series = findStorySeries(storySeries, 'winnie-the-witch')!
+    const chapter = findStoryChapter(findStoryVolume(series, 'winnie-in-space')!, 'ch01')!
+    expect(chapter.glossary).toHaveLength(33)
+    const body = chapter.paragraphs.join(' ')
+    const knownWords = new Set(Array.from(body.matchAll(buildGlossaryRegex(chapter.glossary)!), ([word]) =>
+      resolveGlossaryMatch(word, chapter.glossary)?.word,
+    ))
+    expect(knownWords).toEqual(new Set(chapter.glossary.map(({ word }) => word)))
+  })
+})
 
 const warriorsCatalog = [
   ['the-prophecies-begin', ['into-the-wild', 'fire-and-ice', 'forest-of-secrets', 'rising-storm', 'a-dangerous-path', 'the-darkest-hour'], [25, 30, 30, 30, 27, 30]],
