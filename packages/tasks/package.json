@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "@rosie/core": "workspace:*",
-    "@rosie/ui": "workspace:*"
+    "@rosie/ui": "workspace:*",
+    "@svar-ui/react-core": "2.6.2",
+    "@svar-ui/react-gantt": "2.8.3"
   },
   "peerDependencies": {
     "react": "^19.0.0",

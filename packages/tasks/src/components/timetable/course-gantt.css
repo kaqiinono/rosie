@@ -1,0 +1,79 @@
+.tasks-course-gantt-panel {
+  position: absolute;
+  inset: 0;
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+}
+
+.tasks-course-gantt-chart {
+  /* SVAR reads the hex value when it draws the timeline grid. */
+  --tasks-course-gantt-line: #ededed;
+  border: 1px solid var(--tasks-course-gantt-line);
+}
+
+.tasks-course-gantt-chart .wx-willow-theme {
+  height: 100%;
+  --wx-font-family: var(--font-sans);
+  --wx-gantt-border-color: var(--tasks-course-gantt-line);
+  --wx-gantt-border: 1px solid var(--tasks-course-gantt-line);
+  --wx-gantt-select-color: var(--accent-3);
+  --wx-gantt-task-color: transparent;
+  --wx-gantt-task-border: 0;
+  --wx-gantt-task-border-color: transparent;
+  --wx-gantt-bar-shadow: none;
+}
+
+.tasks-course-gantt-chart .wx-gantt .wx-resizer {
+  background-color: transparent;
+}
+
+.tasks-course-gantt-legend {
+  border-top: 1px solid var(--tasks-course-gantt-line);
+}
+
+.tasks-course-gantt-chart .wx-gantt .wx-bar.wx-task {
+  border: 0;
+  pointer-events: none;
+}
+
+.tasks-course-gantt-chart .tasks-course-gantt-current {
+  background-color: var(--accent-4);
+}
+
+.tasks-course-gantt-span {
+  position: absolute;
+  top: 30%;
+  height: 40%;
+  border-radius: 4px;
+  background-color: currentColor;
+  cursor: default;
+  pointer-events: auto;
+}
+
+.tasks-course-gantt-span[data-status="flexible"] {
+  top: 12%;
+  height: 15%;
+}
+
+.tasks-course-gantt-span[data-status="cancelled"] {
+  top: 75%;
+  height: 12%;
+  color: var(--gray-9);
+}
+
+@media (orientation: portrait) {
+  .tasks-course-gantt-panel {
+    inset: 50% auto auto 50%;
+    width: 100vh;
+    width: 100dvh;
+    height: 100vw;
+    height: 100dvw;
+    transform: translate(-50%, -50%) rotate(90deg);
+    padding: max(0.75rem, env(safe-area-inset-right))
+      max(0.75rem, env(safe-area-inset-bottom))
+      max(0.75rem, env(safe-area-inset-left))
+      max(0.75rem, env(safe-area-inset-top));
+  }
+}

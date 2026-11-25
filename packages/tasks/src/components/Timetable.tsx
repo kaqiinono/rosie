@@ -29,6 +29,7 @@ import CalendarGrid from './timetable/CalendarGrid'
 import MonthCalendar from './timetable/MonthCalendar'
 import CourseEditor from './timetable/CourseEditor'
 import CourseDetails from './timetable/CourseDetails'
+import CourseGantt from './timetable/CourseGantt'
 import CalendarSettings from './timetable/CalendarSettings'
 import { clockTime, courseColor, statusLabel } from './timetable/presentation'
 import { StickerCard } from '@rosie/ui'
@@ -158,7 +159,9 @@ export default function Timetable() {
       initialAction?: 'detail' | 'archive'
     } | null>(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [showGantt, setShowGantt] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
+  const ganttButton = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search),
       requested = params.get('date')
@@ -389,7 +392,12 @@ export default function Timetable() {
               </Button>
               <CalendarSettings calendarId={calendar} onCalendarChange={setCalendar} />
               {section === 'courses' && (
-                <Button onClick={() => setEditor({ date })}>新建课程</Button>
+                <>
+                  <Button ref={ganttButton} variant="soft" aria-haspopup="dialog" onClick={() => setShowGantt(true)}>
+                    甘特图
+                  </Button>
+                  <Button onClick={() => setEditor({ date })}>新建课程</Button>
+                </>
               )}
             </Flex>
             <div id="timetable-filters" hidden={!showFilters}>
@@ -830,6 +838,12 @@ export default function Timetable() {
           </Tabs.Content>
         </Tabs.Root>
       </StickerCard>
+      {showGantt && (
+        <CourseGantt courses={courses} data={api.data} today={today} weekStartsOn={preferences.week_start}
+          calendar={api.data.calendars.find((item) => item.id === calendar)} showCancelled={showCancelled}
+          returnFocusRef={ganttButton} onOpenCourse={(course) => setSelection({ course })}
+          onClose={() => setShowGantt(false)} />
+      )}
       {editor && (
         <CourseEditor
           {...editor}
