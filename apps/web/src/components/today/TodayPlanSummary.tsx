@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { todayStr, useAuth } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
 import { useMathWeeklyPlan } from '@rosie/math-kit/hooks/useMathWeeklyPlan'
@@ -17,6 +17,7 @@ import {
   formatPlanQuizTypes,
 } from '@rosie/chinese'
 import { buildTodayPlanCards, TodayPlanOverviewCards } from './TodayPlanOverview'
+import TodayProgressBackup from './TodayProgressBackup'
 import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
 import { NavigationLink, RotateCw } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
@@ -117,12 +118,15 @@ export function useTodayPlanOverview(date?: string) {
           ? 100
           : 0
 
+  const chinesePracticeHref = chineseActivePlan && chineseBatchKeys.length > 0
+    ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
+    : undefined
   const chineseHref = chinesePlanCleared
     ? '/chinese/weekly'
     : chineseActivePlan && chineseHasTodayRun
       ? '/chinese/weekly'
-      : chineseActivePlan && chineseBatchKeys.length > 0
-        ? buildChinesePlanPracticeHref(chineseActivePlan, chineseBatchKeys)
+      : chinesePracticeHref
+        ? chinesePracticeHref
         : chinese.currentNode
           ? `${chineseRoute(chinese.bookSlug, 'chars/practice')}?lessons=${encodeURIComponent(chinese.currentNode.lessonKey)}`
           : chineseRoute(chinese.bookSlug, 'daily')
@@ -164,15 +168,14 @@ export function useTodayPlanOverview(date?: string) {
 
   // Active adaptive wins over weekly.
   // Done today → detail/hub; incomplete → practice.
-  const englishHref = overviewAdaptive
-    ? adaptiveToday?.allDone
-      ? `/english/words/adaptive/${overviewAdaptive.id}`
-      : `/english/words/adaptive/${overviewAdaptive.id}/practice`
+  const englishPlanHref = overviewAdaptive
+    ? `/english/words/adaptive/${overviewAdaptive.id}`
     : englishPlan?.id
-      ? englishDone
-        ? `/english/words/weekly/${englishPlan.id}`
-        : `/english/words/weekly/${englishPlan.id}/practice`
-      : '/english/words/daily'
+      ? `/english/words/weekly/${englishPlan.id}`
+      : undefined
+  const englishPracticeHref = englishPlanHref && `${englishPlanHref}/practice`
+  const englishPlanDone = overviewAdaptive ? adaptiveToday?.allDone : englishDone
+  const englishHref = (englishPlanDone ? englishPlanHref : englishPracticeHref) ?? '/english/words/daily'
 
   const allOverviewCards = buildTodayPlanCards({
     calc: {
@@ -203,6 +206,7 @@ export function useTodayPlanOverview(date?: string) {
           : (adaptiveHistoryRow?.allDone ?? false)
         : englishDone,
       href: englishHref,
+      resumeHref: englishPracticeHref,
       subtitle: overviewAdaptive
         ? isActualToday
           ? adaptiveToday
@@ -238,6 +242,7 @@ export function useTodayPlanOverview(date?: string) {
       pct: chinesePct,
       allDone: chineseDone,
       href: chineseHref,
+      resumeHref: chinesePracticeHref,
     },
   })
 
@@ -300,26 +305,42 @@ export function useTodayPlanOverview(date?: string) {
 
 export default function TodayPlanSummary() {
   const { today, overviewCards, offlineReady, englishPlan, mathPlanId, mathProblems, mathProgress } = useTodayPlanOverview()
+  const [resetToast, setResetToast] = useState<string | null>(null)
   const offline = useOfflinePreparation({
     day: today, cards: overviewCards, englishPlan, mathPlanId,
     math: mathProblems, mathDone: mathProgress.doneKeys,
   }, offlineReady)
 
+  useEffect(() => {
+    if (!resetToast) return
+    const timer = window.setTimeout(() => setResetToast(null), 3200)
+    return () => window.clearTimeout(timer)
+  }, [resetToast])
+
   return <>
-    <div className="mb-1.5 flex items-center justify-between">
-      <h2 id="home-today-title" className="text-text-primary text-sm font-bold">今日计划</h2>
-      <div className="flex items-center gap-3">
-        <Button size="2" variant="ghost" color="gray" disabled={!offline.canSync} onClick={offline.sync}>
-          <RotateCw size={14} aria-hidden="true" className={offline.busy ? 'motion-safe:animate-spin' : undefined} />
-          {offline.busy ? '同步中…' : '同步'}
-        </Button>
-        <NavigationLink href="/today" aria-label="查看全部计划"
-          className="text-text-secondary inline-flex items-center gap-1 text-sm font-bold">
-          全部 <span aria-hidden="true">›</span>
-        </NavigationLink>
+    <TodayProgressBackup renderHeader={(backupButton) => (
+      <div className="mb-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <h2 id="home-today-title" className="text-text-primary text-sm font-bold">今日计划</h2>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {backupButton}
+          <Button size="1" variant="ghost" color="gray" disabled={!offline.canSync} onClick={offline.sync}>
+            <RotateCw size={14} aria-hidden="true" className={offline.busy ? 'motion-safe:animate-spin' : undefined} />
+            {offline.busy ? '离线同步中…' : '离线同步'}
+          </Button>
+          <NavigationLink href="/today" aria-label="查看全部计划"
+            className="text-text-secondary inline-flex items-center gap-1 text-sm font-bold">
+            全部 <span aria-hidden="true">›</span>
+          </NavigationLink>
+        </div>
       </div>
-    </div>
-    <TodayPlanOverviewCards cards={overviewCards} linkable showPracticeActions />
+    )} />
+    {resetToast && (
+      <p className="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900"
+        role="status">
+        {resetToast}
+      </p>
+    )}
+    <TodayPlanOverviewCards cards={overviewCards} linkable showProgressPercent allowReset onResetToast={setResetToast} />
     {(offline.saved || offline.error) && <p className="text-text-secondary mt-2 text-xs" role="status">
       {[offline.saved, offline.error].filter(Boolean).join(' · ')}
     </p>}

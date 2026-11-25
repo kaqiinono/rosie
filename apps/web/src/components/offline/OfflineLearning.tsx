@@ -69,7 +69,7 @@ export default function OfflineLearning() {
           <Button asChild variant="soft"><a href={user ? '/' : '/auth'}>{user ? '返回在线首页' : '尝试登录'}</a></Button>
         </header>
         {owner && saved?.owner !== owner ? <p role="status">正在打开本机内容…</p> :
-          !pack || !state ? <StickerCard>这台设备还没有可用的离线内容。联网登录后，在首页「今日计划」点「同步」。</StickerCard> : <>
+          !pack || !state ? <StickerCard>这台设备还没有可用的离线内容。联网登录后，在首页「今日计划」点「离线同步」。</StickerCard> : <>
             {activity ? <Button className="self-start" variant="soft" onClick={() => setActivity(undefined)}>返回学习单</Button> :
               <>
                 <h2 className="text-sm font-bold">今日计划</h2>

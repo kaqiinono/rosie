@@ -19,9 +19,11 @@ export type TodayPlanCardModel = {
   label: string
   icon: string
   href: string | null
+  resumeHref?: string
   done: number | string | null
   total: number | null
   subtitle: string
+  subtitleRepeatsProgress?: boolean
   pct: number
   allDone?: boolean
   tone: {
@@ -60,6 +62,7 @@ export type BuildTodayPlanCardsInput = {
     lastScore?: number
     allDone: boolean
     href: string
+    resumeHref?: string
     /** Overrides default 「N 个新词待学」 when set */
     subtitle?: string
   }
@@ -76,6 +79,7 @@ export type BuildTodayPlanCardsInput = {
     pct: number
     allDone: boolean
     href: string
+    resumeHref?: string
   }
 }
 
@@ -98,6 +102,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
         : calc.done > 0
           ? `正确率 ${calc.accuracy}%`
           : '今日还未练习',
+      subtitleRepeatsProgress: !calc.allDone && calc.done === 0,
       pct: calc.target > 0 ? Math.min(100, (calc.done / calc.target) * 100) : 0,
       tone: calc.allDone
         ? DONE_TONE
@@ -116,6 +121,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       label: '英语',
       icon: '📖',
       href: english.href,
+      resumeHref: english.resumeHref,
       done: english.doneCount,
       total: english.total,
       allDone: english.allDone,
@@ -124,6 +130,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
           ? `得分 ${english.lastScore}% 🎉`
           : (english.subtitle ?? '今日任务已完成 🎉')
         : (english.subtitle ?? `${english.total} 个词待练`),
+      subtitleRepeatsProgress: !english.allDone && english.subtitle === undefined,
       pct: english.allDone
         ? 100
         : english.total > 0
@@ -146,10 +153,12 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       label: '数学',
       icon: '📐',
       href: math.href ?? '/math/ny/plan/practice',
+      resumeHref: '/math/ny/plan/practice',
       done: math.done,
       total: math.total,
       allDone: math.allDone,
       subtitle: math.allDone ? '全部完成 🎉' : `还剩 ${Math.max(0, math.total - math.done)} 题`,
+      subtitleRepeatsProgress: !math.allDone,
       pct: math.total > 0 ? (math.done / math.total) * 100 : 0,
       tone: math.allDone
         ? DONE_TONE
@@ -168,6 +177,7 @@ export function buildTodayPlanCards(input: BuildTodayPlanCardsInput): TodayPlanC
       label: '语文',
       icon: '📜',
       href: chinese.href,
+      resumeHref: chinese.resumeHref,
       done: chinese.done,
       total: chinese.total,
       allDone: chinese.allDone,
@@ -202,7 +212,7 @@ function shimmerStyle(color: string): CSSProperties {
 type TodayPlanOverviewCardsProps = {
   cards: TodayPlanCardModel[]
   linkable?: boolean
-  showPracticeActions?: boolean
+  showProgressPercent?: boolean
   className?: string
   allowReset?: boolean
   onResetToast?: (message: string) => void
@@ -242,7 +252,7 @@ function SyncStatusChip({ status }: { status: TodayPlanSyncStatus }) {
 export function TodayPlanOverviewCards({
   cards,
   linkable = false,
-  showPracticeActions = false,
+  showProgressPercent = false,
   className,
   allowReset = false,
   onResetToast,
@@ -310,6 +320,7 @@ export function TodayPlanOverviewCards({
         {cards.map((card) => {
           const sync = offlineActions ? 'none' : syncBySubject[card.key]
           const showActions = allowReset && sync !== 'none'
+          const resumeHref = card.resumeHref ?? card.href
           const style = {
             background: card.tone.idleBg,
             border: `1.5px solid ${card.tone.idleBorder}`,
@@ -319,22 +330,13 @@ export function TodayPlanOverviewCards({
           const progressValue = Math.min(100, Math.max(0, card.pct))
           const pct = Math.floor(progressValue)
           const hasCount = typeof card.done === 'number' && card.total !== null && card.total > 0
-          const remaining = typeof card.done === 'number' ? Math.max(0, (card.total ?? 0) - card.done) : 0
-          const subtitle = showPracticeActions && card.key !== 'chinese' && card.href && !card.allDone && remaining > 0
-            ? `${remaining} ${card.key === 'english' ? '个词' : '题'}待练`
-            : card.subtitle
-          const started = sync !== 'none' || progressValue > 0 || (typeof card.done === 'number' && card.done > 0)
-          let practiceLabel = started ? '继续' : '去练习'
-          if (card.allDone) {
-            practiceLabel = card.key === 'calc' ? '再练一组' : '查看计划'
-            if (card.key === 'calc' && sync !== 'none') practiceLabel = '继续'
-          }
+          const showSubtitle = !(showProgressPercent && hasCount && card.subtitleRepeatsProgress)
           const progress = (
             <div
-              className={`overflow-hidden rounded-full bg-black/10 ${showPracticeActions ? 'h-2 min-w-0 flex-1' : 'mt-auto h-1.5'}`}
-              role={showPracticeActions ? 'progressbar' : undefined}
-              aria-label={showPracticeActions ? `${card.label}进度` : undefined}
-              aria-valuenow={showPracticeActions && card.done !== null ? pct : undefined}
+              className={`overflow-hidden rounded-full bg-black/10 ${showProgressPercent ? 'h-2 min-w-0 flex-1' : 'mt-auto h-1.5'}`}
+              role={showProgressPercent ? 'progressbar' : undefined}
+              aria-label={showProgressPercent ? `${card.label}进度` : undefined}
+              aria-valuenow={showProgressPercent && card.done !== null ? pct : undefined}
             >
               {card.done === null ? (
                 <div className="animate-shimmer h-full w-full rounded-full" style={shimmerStyle(card.tone.bar)} />
@@ -380,7 +382,7 @@ export function TodayPlanOverviewCards({
                   </div>
                 )
               )}
-              {showPracticeActions && (hasCount || card.allDone || card.done === null) && (
+              {showProgressPercent && (hasCount || card.allDone || card.done === null) && (
                 <div className="mt-2 flex items-center gap-2">
                   {progress}
                   {card.done !== null && (
@@ -391,21 +393,15 @@ export function TodayPlanOverviewCards({
                   )}
                 </div>
               )}
-              <div
-                className={`mt-1 mb-2 truncate font-medium ${showPracticeActions ? 'text-xs' : 'text-[10px]'}`}
-                style={{ color: card.tone.subtitle }}
-              >
-                {subtitle}
-              </div>
-              {!showPracticeActions && progress}
-              {showPracticeActions && linkable && card.href && card.done !== null && (
-                <span
-                  className="relative z-[1] mt-auto flex min-h-7 items-center self-end rounded-full px-3 text-xs font-bold text-white"
-                  style={{ background: card.allDone ? card.tone.value : card.tone.subtitle }}
+              {showSubtitle && (
+                <div
+                  className={`mt-1 mb-2 truncate font-medium ${showProgressPercent ? 'text-xs' : 'text-[10px]'}`}
+                  style={{ color: card.tone.subtitle }}
                 >
-                  {practiceLabel}
-                </span>
+                  {card.subtitle}
+                </div>
               )}
+              {!showProgressPercent && progress}
             </>
           )
 
@@ -420,9 +416,9 @@ export function TodayPlanOverviewCards({
                 background: 'rgba(255,255,255,.45)',
               }}
             >
-              {card.href && (
+              {resumeHref && (
                 <Link
-                  href={card.href}
+                  href={resumeHref}
                   className={`${actionCellClass} no-underline`}
                   style={{ color: card.tone.value }}
                   onClick={(e) => e.stopPropagation()}

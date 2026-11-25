@@ -22,6 +22,9 @@ export const SUBJECTS: Record<Subject, string> = {
   other: '未分类',
 }
 export type OwnedRow = { id: string; user_id: string }
+export const COURSE_PRIORITIES = ['P0', 'P1', 'P2', 'P3', 'P4'] as const
+export type CoursePriority = (typeof COURSE_PRIORITIES)[number]
+export const DEFAULT_COURSE_PRIORITY: CoursePriority = 'P2'
 export type TimetableCourse = OwnedRow & {
   credits?: number | null
   reminder_minutes?: number | null
@@ -30,6 +33,7 @@ export type TimetableCourse = OwnedRow & {
   course_type?: 'timetabled' | 'flexible'
   name: string
   subject: Subject
+  priority?: CoursePriority
   created_at: string
   calendar_id?: string | null
   teacher?: string

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import {
   useAuth,
   countLocalPendingSessions,
@@ -9,7 +9,9 @@ import {
 } from '@rosie/core'
 import { Button } from '@rosie/ui/themes'
 
-export default function TodayProgressBackup() {
+export default function TodayProgressBackup({ renderHeader }: {
+  renderHeader?: (backupButton: ReactNode) => ReactNode
+}) {
   const { user } = useAuth()
   const [unsyncedCount, setUnsyncedCount] = useState(0)
   const [totalPending, setTotalPending] = useState(0)
@@ -86,37 +88,43 @@ export default function TodayProgressBackup() {
 
   if (!user) return null
 
+  const backupButton = (
+    <Button
+      type="button"
+      onClick={() => void handleSync()}
+      disabled={syncing}
+      title={title}
+      variant="soft"
+      color={allSynced ? 'green' : unsyncedCount > 0 ? 'amber' : 'gray'}
+      radius="full"
+      size="1"
+    >
+      <span aria-hidden>{syncing ? '⏳' : allSynced ? '✓' : '☁️'}</span>
+      <span>{label}</span>
+      {!syncing && unsyncedCount > 0 && (
+        <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-extrabold text-white">
+          {unsyncedCount}
+        </span>
+      )}
+    </Button>
+  )
+  const feedback = toast && (
+    <div
+      className="my-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] font-bold text-amber-900"
+      role="status"
+    >
+      {toast}
+    </div>
+  )
+  if (renderHeader) return <>{renderHeader(backupButton)}{feedback}</>
+
   return (
     <div className="mx-auto mb-3 max-w-[960px] px-4 sm:px-6">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-text-primary text-sm font-bold">各科进度</h2>
-        <Button
-          type="button"
-          onClick={() => void handleSync()}
-          disabled={syncing}
-          title={title}
-          variant="soft"
-          color={allSynced ? 'green' : unsyncedCount > 0 ? 'amber' : 'gray'}
-          radius="full"
-          size="1"
-        >
-          <span aria-hidden>{syncing ? '⏳' : allSynced ? '✓' : '☁️'}</span>
-          <span>{label}</span>
-          {!syncing && unsyncedCount > 0 && (
-            <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-extrabold text-white">
-              {unsyncedCount}
-            </span>
-          )}
-        </Button>
+        {backupButton}
       </div>
-      {toast && (
-        <div
-          className="mt-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] font-bold text-amber-900"
-          role="status"
-        >
-          {toast}
-        </div>
-      )}
+      {feedback}
     </div>
   )
 }

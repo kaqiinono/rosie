@@ -155,6 +155,13 @@ No application build or tests were run.
 2026-11-19 via the connected migration API. Read-back confirmed the migration version and
 the validated `task_homework_estimated_minutes_check` constraint allowing 0–120 minutes.
 
+## Course priority
+
+`20261125035931_task_course_priority.sql` was applied to `rosie-tokyo` on 2026-11-25
+via the connected migration API. Read-back confirmed the P2 default, the validated
+P0–P4 constraint, authenticated access to the owner-checked priority RPC, and
+priority handling in the course save and semester copy functions.
+
 ## Life-tree tomato wallet and diary
 
 `20261120012236_time_tree_shared_reward_wheel.sql` was applied to the hosted project on

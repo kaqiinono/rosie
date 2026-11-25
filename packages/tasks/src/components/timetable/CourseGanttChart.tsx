@@ -6,7 +6,7 @@ import { Gantt, Willow, type IColumnConfig, type ITask } from '@svar-ui/react-ga
 import { Button, Flex, Text } from '@rosie/ui/themes'
 import { courseColor } from '../../courseColors'
 import { dateAfter } from '../../time'
-import { SUBJECTS, type TimetableCourse, type TimetableData } from '../../types'
+import { DEFAULT_COURSE_PRIORITY, SUBJECTS, type TimetableCourse, type TimetableData } from '../../types'
 import {
   buildCourseTimelines, calendarWeekStart, courseChartScale, timelineStatusLabels, type GanttScale,
 } from './courseGanttTimeline'
@@ -38,7 +38,7 @@ function CourseCell({ row }: Parameters<NonNullable<IColumnConfig['cell']>>[0]) 
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold">{course.name}</span>
         <span className="block truncate text-xs font-normal text-[var(--gray-11)]">
-          {SUBJECTS[course.subject]}{course.archived_at && ' · 已归档'}
+          {course.priority ?? DEFAULT_COURSE_PRIORITY} · {SUBJECTS[course.subject]}{course.archived_at && ' · 已归档'}
         </span>
       </span>
     </Button>
@@ -68,7 +68,7 @@ function CourseBar({ data }: { data: ITask }) {
 }
 
 export default function CourseGanttChart({
-  courses, data, from, to, today, scale, weekStartsOn, showCancelled, onOpenCourse,
+  courses, data, from, to, today, scale, weekStartsOn, showCancelled, hideEmptyCourses, onOpenCourse,
 }: {
   courses: TimetableCourse[]
   data: Pick<TimetableData, 'rules' | 'exceptions'>
@@ -78,9 +78,13 @@ export default function CourseGanttChart({
   scale: GanttScale
   weekStartsOn: 0 | 1
   showCancelled: boolean
+  hideEmptyCourses: boolean
   onOpenCourse: (course: TimetableCourse) => void
 }) {
-  const rows = useMemo(() => buildCourseTimelines(courses, data, from, to, showCancelled), [courses, data, from, to, showCancelled])
+  const rows = useMemo(() => {
+    const timelines = buildCourseTimelines(courses, data, from, to, showCancelled)
+    return hideEmptyCourses ? timelines.filter(row => row.spans.length > 0) : timelines
+  }, [courses, data, from, to, showCancelled, hideEmptyCourses])
   const timelines = useMemo(() => new Map(rows.map(row => [row.course.id, row])), [rows])
   const axis = useMemo(() => courseChartScale(scale, from, to, weekStartsOn), [scale, from, to, weekStartsOn])
   // One transparent SVAR task establishes the row and scale. The task template draws only scheduled date spans.
@@ -102,6 +106,10 @@ export default function CourseGanttChart({
   const range = useMemo(() => ({ start: chartDate(axis.start), end: chartDate(axis.end) }), [axis])
   const hasFlexible = rows.some(row => row.spans.some(span => span.status === 'flexible'))
   const hasCancelled = rows.some(row => row.spans.some(span => span.status === 'cancelled'))
+
+  if (!rows.length) {
+    return <Text as="p" size="2" color="gray" role="status">所选时间范围内没有符合筛选的排课。</Text>
+  }
 
   return (
     <TimelineContext.Provider value={{ timelines, position: axis.position, onOpenCourse }}>

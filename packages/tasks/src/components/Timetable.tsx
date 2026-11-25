@@ -16,7 +16,7 @@ import {
   TextField,
 } from '@rosie/ui/themes'
 import type { CourseRule, TimetableCourse, TimetableOccurrence } from '../types'
-import { SUBJECTS } from '../types'
+import { DEFAULT_COURSE_PRIORITY, SUBJECTS } from '../types'
 import { dateAfter, localDate } from '../time'
 import {
   DEFAULT_TIMETABLE_PREFERENCES,
@@ -205,6 +205,9 @@ export default function Timetable() {
       `${course.name} ${course.teacher ?? ''} ${course.location ?? ''}`
         .toLocaleLowerCase()
         .includes(query.trim().toLocaleLowerCase()),
+  )
+  const coursesByPriority = [...courses].sort((a, b) =>
+    (a.priority ?? DEFAULT_COURSE_PRIORITY).localeCompare(b.priority ?? DEFAULT_COURSE_PRIORITY),
   )
   const courseIds = new Set(courses.map((course) => course.id)),
     allRows = previewOccurrences(api.data, from, to).filter((row) => courseIds.has(row.course_id))
@@ -680,8 +683,9 @@ export default function Timetable() {
               </div>
             ) : (
               <div className="border-kid-line grid gap-4 border-t bg-slate-50/50 p-4 sm:grid-cols-2 sm:p-6 xl:grid-cols-3">
-                {courses.map((course) => {
+                {coursesByPriority.map((course) => {
                   const color = courseColor(course)
+                  const priority = course.priority ?? DEFAULT_COURSE_PRIORITY
                   const activeRules = api.data.rules
                     .filter(
                       (r) =>
@@ -713,6 +717,9 @@ export default function Timetable() {
                             {course.name}
                           </strong>
                           <span className="flex shrink-0 items-center gap-1.5">
+                            <Badge color="gray" variant="surface" aria-label={`优先级 ${priority}`}>
+                              {priority}
+                            </Badge>
                             <Badge color="gray" variant="surface">
                               {SUBJECTS[course.subject]}
                             </Badge>
@@ -839,7 +846,7 @@ export default function Timetable() {
         </Tabs.Root>
       </StickerCard>
       {showGantt && (
-        <CourseGantt courses={courses} data={api.data} today={today} weekStartsOn={preferences.week_start}
+        <CourseGantt courses={coursesByPriority} data={api.data} today={today} weekStartsOn={preferences.week_start}
           calendar={api.data.calendars.find((item) => item.id === calendar)} showCancelled={showCancelled}
           returnFocusRef={ganttButton} onOpenCourse={(course) => setSelection({ course })}
           onClose={() => setShowGantt(false)} />

@@ -489,8 +489,9 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - `WeeklyPlan` / `MathWeeklyPlan` — stored in Supabase (`weekly_plans` / `math_weekly_plans` tables); each plan includes `weekStartDay` and `newWordsPerDay`/`problemsPerDay` as dedicated integer columns
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
 - The home page asynchronously loads the four daily progress cards (口算、英语、数学、语文)
-  above the menu, with direct practice links. 「查看全部」 opens `/today` for details and progress backup. The separate
-  home learning overview loads only when expanded.
+  above the menu, with direct practice links. The header offers cloud backup of unfinished practice.
+  Cards with local pending progress offer resume and clear actions. 「全部」 opens `/today` for plan
+  details and the 「记录」 entry.
 
 ### PWA
 
@@ -506,7 +507,7 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - When modifying offline behavior, always test in **`pnpm start` (preview) mode**, not `pnpm dev`. The SW behaves differently in development
 - After changing `public/sw.js`, hard-reload the browser (the SW update cycle is async)
 
-The home 今日计划 section prepares the device-local offline learning pack through 同步.
+The home 今日计划 section prepares the device-local offline learning pack through 离线同步.
 With a saved pack, the home page switches to offline when the connection or online services
 are unavailable. An automatically opened offline overview returns home when services recover
 and leaves active practice open. The same four
@@ -586,4 +587,4 @@ existing source data. See `docs/task-practice-entries.md` for resource discovery
 
 ## 数据迁移执行偏好
 
-用户已明确授权：后续开发任务涉及的数据迁移由代理自动执行并核对结果，不再要求用户手动操作或重复确认。仅应用当前任务所需迁移；先确认项目、远端历史和依赖，不夹带无关待执行迁移，不使用 `--include-all` 强推。成功后核对远端记录及必要的只读元数据，并同步本地迁移版本与状态文档。此授权不包含无关数据删除或数据库重置；构建、测试仍按用户的手动控制规则执行。
+默认由代理自动执行开发任务所需的数据迁移并核对结果。仅在必须由用户操作时请用户介入，并说明具体阻塞。先按应用环境配置核对目标 Supabase 项目，再确认远端历史和依赖。仅应用当前任务所需迁移，不使用 `--include-all` 强推。成功后核对远端记录及必要的只读元数据，并同步本地迁移版本与状态文档。此授权不包含无关数据删除或数据库重置；构建、测试仍按用户的手动控制规则执行。

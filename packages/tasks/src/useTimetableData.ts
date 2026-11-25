@@ -1,7 +1,7 @@
 'use client'
 
 import { createUserSessionStore, supabase, useAuth } from '@rosie/core'
-import type { TimetableData, TimetableCourse, CourseInput, RuleInput } from './types'
+import type { TimetableData, TimetableCourse, CourseInput, CoursePriority, RuleInput } from './types'
 
 const tables = {
   preferences: 'task_timetable_preferences',
@@ -62,6 +62,8 @@ export function useTimetableData() {
 
   const saveCourse = (course: CourseInput, rules: RuleInput[], effective?: string) =>
     mutateRpc('task_save_course', { p_course: course, p_rules: rules, p_effective_from: effective ?? null })
+  const setCoursePriority = (course: TimetableCourse, priority: CoursePriority) =>
+    mutateRpc('task_set_course_priority', { p_course: course.id, p_revision: course.rules_revision ?? null, p_priority: priority })
   const setArchived = (course: TimetableCourse, archived: boolean) =>
     mutateRpc('task_set_course_archived', { p_course: course.id, p_revision: course.rules_revision, p_archived: archived })
   const copyCalendar = async (source: string, target: string, name: string, start: string, end: string | null) =>
@@ -86,5 +88,5 @@ export function useTimetableData() {
     await store.refreshInBackground(userId).catch(() => {})
   }
 
-  return { ...state, user, refresh, save, saveCourse, setArchived, copyCalendar, removeException }
+  return { ...state, user, refresh, save, saveCourse, setCoursePriority, setArchived, copyCalendar, removeException }
 }

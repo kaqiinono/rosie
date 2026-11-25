@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import type { CourseInput, RuleInput, TimetableCourse } from '../../types'
 import type { CourseRule } from '../../types'
-import { SUBJECTS } from '../../types'
+import { COURSE_PRIORITIES, DEFAULT_COURSE_PRIORITY, SUBJECTS, type CoursePriority } from '../../types'
 import { dateAfter, localDate } from '../../time'
 import {
   DEFAULT_TIMETABLE_PREFERENCES,
@@ -20,6 +20,10 @@ import { COURSE_COLORS, clockTime, courseColor } from './presentation'
 import { courseFieldFocusClass, courseFocusClass } from './courseFormStyles'
 
 const COURSE_SUBJECTS = ['chinese', 'english', 'math', 'art', 'science', 'sports'] as const
+const coursePriorityOptions = COURSE_PRIORITIES.map((value) => ({
+  value,
+  label: value === 'P0' ? 'P0（最高）' : value === 'P4' ? 'P4（最低）' : value,
+}))
 type Slot = {
   key: string
   days: number[]
@@ -41,7 +45,7 @@ const fieldLabelClass = 'mb-1 block text-xs font-medium text-slate-500'
 function CourseIcon({
   kind,
 }: {
-  kind: 'book' | 'subject' | 'note' | 'cycle' | 'start' | 'end' | 'reminder'
+  kind: 'book' | 'subject' | 'priority' | 'note' | 'cycle' | 'start' | 'end' | 'reminder'
 }) {
   const paths = {
     book: (
@@ -57,6 +61,7 @@ function CourseIcon({
         <rect x="14" y="14" width="7" height="7" rx="1.5" />
       </>
     ),
+    priority: <path d="M5 21V4m0 1c4-5 8 4 14 0v10c-6 4-10-5-14 0" />,
     note: (
       <>
         <rect x="5" y="4" width="14" height="18" rx="2" />
@@ -230,6 +235,10 @@ export default function CourseEditor({
     [discard, setDiscard] = useState(false),
     [saving, setSaving] = useState(false),
     [error, setError] = useState('')
+  const initialPriority = course?.priority ?? DEFAULT_COURSE_PRIORITY
+  const [priority, setPriority] = useState(initialPriority)
+  const priorityChanged = priority !== initialPriority
+  const priorityOnly = editing && priorityChanged && !dirty
   const edit = (patch: Partial<CourseInput>) => {
     setDraft((prev) => ({ ...prev, ...patch }))
     setDirty(true)
@@ -384,7 +393,7 @@ export default function CourseEditor({
       : []
   const close = () => {
     if (!saving) {
-      if (dirty) setDiscard(true)
+      if (dirty || priorityChanged) setDiscard(true)
       else onClose()
     }
   }
@@ -425,27 +434,33 @@ export default function CourseEditor({
           const invalid = e.currentTarget.querySelector<
             HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
           >('input:invalid, select:invalid, textarea:invalid')
-          if (!e.currentTarget.checkValidity()) {
+          if (!priorityOnly && !e.currentTarget.checkValidity()) {
             invalid?.setAttribute('aria-invalid', 'true')
             invalid?.setAttribute('aria-describedby', 'course-save-error')
             invalid?.focus()
             setError('请检查必填项、日期范围和输入长度。')
             return
           }
-          if (!draft.name.trim() || validation.error) {
+          if (!priorityOnly && (!draft.name.trim() || validation.error)) {
             setError(validation.error || '请输入课程名称。')
             return
           }
           setSaving(true)
           setError('')
           try {
-            const payload = {
-              ...draft,
-              name: draft.name.trim(),
-              ...(editing ? { id: course.id } : { create_id: createId }),
+            if (priorityOnly) {
+              await api.setCoursePriority(course, priority)
+              notify('课程优先级已保存')
+            } else {
+              const payload = {
+                ...draft,
+                name: draft.name.trim(),
+                priority,
+                ...(editing ? { id: course.id } : { create_id: createId }),
+              }
+              await api.saveCourse(payload, validation.rules, editing ? effective : undefined)
+              notify('课程与时段已保存')
             }
-            await api.saveCourse(payload, validation.rules, editing ? effective : undefined)
-            notify('课程与时段已保存')
             onClose()
           } catch (cause) {
             setError(
@@ -478,7 +493,7 @@ export default function CourseEditor({
           <Button
             type="submit"
             loading={saving}
-            disabled={saving || !!validation.error || !draft.name.trim()}
+            disabled={saving || (!priorityOnly && (!!validation.error || !draft.name.trim()))}
             className="justify-self-end"
           >
             保存
@@ -526,6 +541,21 @@ export default function CourseEditor({
                   />
                 </span>
               </label>
+              <div className={`${rowClass} ${courseFieldFocusClass}`}>
+                <span className={iconClass}>
+                  <CourseIcon kind="priority" />
+                </span>
+                <div className="min-w-0 flex-1 py-3 pr-4">
+                  <span className={fieldLabelClass}>优先级</span>
+                  <FormSelect
+                    size="2"
+                    ariaLabel="课程优先级"
+                    value={priority}
+                    onValueChange={(value) => setPriority(value as CoursePriority)}
+                    options={coursePriorityOptions}
+                  />
+                </div>
+              </div>
               <label className={`${rowClass} ${courseFieldFocusClass}`}>
                 <span className={iconClass}>
                   <CourseIcon kind="note" />
