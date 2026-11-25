@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { todayStr, useAuth } from '@rosie/core'
 import { useWeeklyPlan, useAdaptiveTodayProgress } from '@rosie/english'
@@ -19,7 +20,7 @@ import {
 import { buildTodayPlanCards, TodayPlanOverviewCards } from './TodayPlanOverview'
 import TodayProgressBackup from './TodayProgressBackup'
 import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
-import { NavigationLink, RotateCw } from '@rosie/ui'
+import { RotateCw } from '@rosie/ui'
 import { Button } from '@rosie/ui/themes'
 import { useOfflinePreparation } from '@/components/offline/OfflinePreparation'
 
@@ -327,11 +328,11 @@ export default function TodayPlanSummary() {
             <RotateCw size={14} aria-hidden="true" className={offline.busy ? 'motion-safe:animate-spin' : undefined} />
             {offline.busy ? '离线同步中…' : '离线同步'}
           </Button>
-          <NavigationLink href="/today"
-            className="text-text-secondary inline-flex size-11 shrink-0 items-center justify-center rounded-full text-2xl font-bold hover:bg-[var(--gray-3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-8)]">
-            <span className="sr-only">查看全部计划</span>
-            <span aria-hidden="true">›</span>
-          </NavigationLink>
+          <Button asChild size="1" variant="soft" color="gray" radius="full" className="min-w-11">
+            <Link href="/today" aria-label="查看全部计划">
+              <span aria-hidden="true" className="text-lg leading-none">›</span>
+            </Link>
+          </Button>
         </div>
       </div>
     )} />
