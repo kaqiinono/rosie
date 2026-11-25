@@ -88,9 +88,9 @@ export default function TheaterSubtitleEditor({
     if (!signal.aborted) onTracksChange(result)
   }
 
-  function save(edit: TheaterSubtitleEdit | TheaterSubtitleSplice, fromDialog: boolean) {
+  function save(edits: (TheaterSubtitleEdit | TheaterSubtitleSplice)[], fromDialog: boolean) {
     void run('save', async signal => {
-      await requestTheater(userId, revisionUrl, { method: 'PATCH', body: JSON.stringify({ version: editor.version, edits: [edit] }), signal })
+      await requestTheater(userId, revisionUrl, { method: 'PATCH', body: JSON.stringify({ version: editor.version, edits }), signal })
       const results = await Promise.allSettled([refreshTracks(signal), readStatus(page, signal)])
       if (!signal.aborted) {
         if (fromDialog) closeEditor()
@@ -112,7 +112,7 @@ export default function TheaterSubtitleEditor({
       setError('无法直接完成这项操作。点击铅笔调整台词后再保存。')
       return
     }
-    save(edit, false)
+    save([edit], false)
   }
 
   function proceed(action: Confirmation) {
@@ -160,7 +160,7 @@ export default function TheaterSubtitleEditor({
     {selection && <TheaterCueEditDialog key={selection === 'insert' ? selection : selection.id}
       selection={selection} tracks={tracks} precision={editor.precision} playback={playback} saving={busy === 'save'}
       waiting={busy === 'read' || busy === 'delete'}
-      locked={busy === 'sync' || !!status?.syncStarted} error={error} onSave={edit => save(edit, true)} onClose={closeEditor} />}
+      locked={busy === 'sync' || !!status?.syncStarted} error={error} onSave={edits => save(edits, true)} onClose={closeEditor} />}
     <AppDialog open={historyOpen} onOpenChange={setHistoryOpen} title="台词修订记录" size="form">
       <Flex direction="column" gap="3">
         {issue}

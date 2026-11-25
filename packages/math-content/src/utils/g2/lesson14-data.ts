@@ -1,4 +1,14 @@
 import type { ProblemSet } from '@rosie/core'
+import { createElement } from 'react'
+import {
+  FrogFigure,
+  SnailFigure,
+  ShortestGridFigure,
+  AvoidJunctionFigure,
+  EitherJunctionFigure,
+  SchoolRoadFigure,
+  LibraryRoadFigure,
+} from '../../components/lesson/g2/lesson14/Figure/HomeworkFigures'
 
 export const LESSON_TIP = '先选一个方便分类的条件，再逐类按固定顺序列举。'
 
@@ -21,10 +31,12 @@ export const LESSON_SUMMARY = [
 ]
 
 export const PROBLEM_TYPES = [
-  { tag: 'ordered', icon: '📅', label: '有序分堆', desc: '按天数分类，先拆数再排序' },
+  { tag: 'ordered', icon: '📅', label: '有序分堆', desc: '先拆数，再按先后顺序或位置排列' },
   { tag: 'unordered', icon: '📚', label: '无序分堆', desc: '按不降原则列举，交换顺序只算一次' },
   { tag: 'counts', icon: '🍎', label: '按数量分类', desc: '先固定一种物品的个数，再枚举其余搭配' },
   { tag: 'coins', icon: '🪙', label: '硬币枚举', desc: '按枚数或面值分类，检查金额和数量限制' },
+  { tag: 'tree', icon: '🌳', label: '树形图', desc: '按每一步的选择分支，排除不符合条件的走法' },
+  { tag: 'routes', icon: '🗺️', label: '路线计数', desc: '沿允许的方向逐点标数，求到达终点的走法' },
 ] as const
 
 export const TAG_STYLE: Record<string, string> = {
@@ -32,6 +44,8 @@ export const TAG_STYLE: Record<string, string> = {
   unordered: 'bg-emerald-100 text-emerald-800',
   counts: 'bg-sky-100 text-sky-800',
   coins: 'bg-amber-100 text-amber-800',
+  tree: 'bg-violet-100 text-violet-800',
+  routes: 'bg-indigo-100 text-indigo-800',
 }
 
 export const PROBLEMS: ProblemSet = {
@@ -218,7 +232,271 @@ export const PROBLEMS: ProblemSet = {
       "finalUnit": "种"
     }
   ],
-  homework: [],
+  homework: [
+    {
+      "id": "2-14-H1",
+      "title": "练习1 · 分三天吃苹果",
+      "tag": "ordered",
+      "tagLabel": "有序分堆",
+      "difficulty": 2,
+      "text": "妈妈买了6个苹果，纳纳准备3天吃完（每天都要吃），他有多少种不同的吃法？",
+      "analysis": [
+        "把6拆成三个正整数，按从小到大写下来，只有1＋1＋4、1＋2＋3、2＋2＋2。",
+        "1、1、4有3种排法，因为可以选哪天吃4个。1、2、3有6种排法。每天都吃2个只有1种排法。",
+        "一共有3＋6＋1＝10种吃法。"
+      ],
+      "type": "none",
+      "finalQ": "有多少种不同的吃法？",
+      "finalAns": 10,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H2",
+      "title": "练习2 · 两数之和大于10",
+      "tag": "unordered",
+      "tagLabel": "无序分堆",
+      "difficulty": 2,
+      "text": "从1～8中每次取两个不同的数相加，和大于10的共有多少种取法？",
+      "analysis": [
+        "每次把较小的数写在前面，固定较小数后再找搭档。较小数是1或2时，和最大也只有10。",
+        "较小数是3、4、5、6、7时，较大数分别可以取8，7或8，6或7或8，7或8，以及8。",
+        "共有1＋2＋3＋2＋1＝9种取法。"
+      ],
+      "type": "none",
+      "finalQ": "共有多少种取法？",
+      "finalAns": 9,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H3",
+      "title": "练习3 · 两数之和不是3的倍数",
+      "tag": "unordered",
+      "tagLabel": "无序分堆",
+      "difficulty": 2,
+      "text": "从1、2、3、4、5、6这些数中，任取两个数，使它们的和不是3的倍数，则有多少种取法？",
+      "analysis": [
+        "按较小的数分类。较小数是1时，可以搭3、4、6。较小数是2时，可以搭3、5、6。",
+        "较小数是3时，可以搭4、5。较小数是4或5时，都只能搭6。",
+        "共有3＋3＋2＋1＋1＝10种取法。"
+      ],
+      "type": "none",
+      "finalQ": "有多少种取法？",
+      "finalAns": 10,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H4",
+      "title": "练习4 · 四人互换卡片",
+      "tag": "tree",
+      "tagLabel": "树形图",
+      "difficulty": 3,
+      "text": "立立和他的三个好朋友每人做了一张卡片，放在桌子上，然后每人去拿一张，但不能拿自己做的那一张。问：一共有多少种不同的方法？",
+      "analysis": [
+        "把四个人记为A、B、C、D，他们做的卡片分别记为a、b、c、d。先按A拿哪一张分类。",
+        "A拿b时，按A、B、C、D的顺序，四人拿到的卡片可以是（b，a，d，c）、（b，c，d，a）、（b，d，a，c），共3种。",
+        "A拿c或d时，交换其他三个人的名称就能得到同样多的拿法。因此一共有3×3＝9种。"
+      ],
+      "type": "none",
+      "finalQ": "一共有多少种不同的方法？",
+      "finalAns": 9,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H5",
+      "title": "练习5 · 一元钱换角币",
+      "tag": "coins",
+      "tagLabel": "硬币枚举",
+      "difficulty": 2,
+      "text": "人民币角币的面值有五角、二角、一角三种。要把一元钱换成角币，有多少种换法？",
+      "analysis": [
+        "一元等于10角。先定5角硬币的枚数，再挑2角硬币，最后用1角硬币补足。",
+        "取2枚5角硬币已经凑满，有1种。取1枚5角硬币，2角硬币可以取0～2枚，有3种。取0枚5角硬币，2角硬币可以取0～5枚，有6种。",
+        "一共有1＋3＋6＝10种换法。"
+      ],
+      "type": "none",
+      "finalQ": "有多少种换法？",
+      "finalAns": 10,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H6",
+      "title": "练习6 · 数字和等于26",
+      "tag": "ordered",
+      "tagLabel": "有序分堆",
+      "difficulty": 3,
+      "text": "1995的数字和是1＋9＋9＋5＝24。问：小于2000的四位数中，数字和等于26的数共有多少个？",
+      "analysis": [
+        "这些四位数的千位是1，另外三个数位上的数字之和必须是25。",
+        "三个数位都填9时和为27。要减少2，可以让其中一位由9变成7，也可以让其中两位各由9变成8。",
+        "因此后三位只能由9、9、7或9、8、8组成。第一组有3种排法，第二组也有3种排法，共6个数。"
+      ],
+      "type": "none",
+      "finalQ": "数字和等于26的数共有多少个？",
+      "finalAns": 6,
+      "finalUnit": "个",
+    },
+    {
+      "id": "2-14-H7",
+      "title": "练习7 · 红灯不相邻",
+      "tag": "unordered",
+      "tagLabel": "无序分堆",
+      "difficulty": 3,
+      "text": "约约要把6个彩灯排成一列，其中有2个红灯、4个绿灯。如果两个红灯不相邻，则有多少种不同的排法？（其中“红绿红绿绿绿”与“绿绿绿红绿红”算作一种。）",
+      "analysis": [
+        "先把6个位置从左到右编为1～6。较靠左的红灯在第1、2、3、4位时，另一盏红灯分别有4、3、2、1个位置可以选，共10种。",
+        "把一排灯反过来看，只有红灯在（1，6）或（2，5）时，原排法和反过来的排法完全相同。",
+        "其余8种排法每两种合为一种，所以共有2＋8÷2＝6种排法。"
+      ],
+      "type": "none",
+      "finalQ": "有多少种不同的排法？",
+      "finalAns": 6,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H8",
+      "title": "练习8 · 青蛙跳四次",
+      "tag": "tree",
+      "tagLabel": "树形图",
+      "difficulty": 3,
+      "text": "一只青蛙在A、B、C三点之间跳动。若青蛙从A点跳起，跳4次仍回到A点，则这只青蛙一共有多少种不同的跳法？",
+      "figureNode": createElement(FrogFigure),
+      "analysis": [
+        "先画树形图，按第一跳去B还是去C分类。每次跳到另一个点，第四跳必须回A。",
+        "第一跳去B时，可以走A→B→A→B→A、A→B→A→C→A、A→B→C→B→A，共3种。",
+        "第一跳去C时，交换B和C，同样有3种。因此一共有3＋3＝6种。"
+      ],
+      "type": "none",
+      "finalQ": "一共有多少种不同的跳法？",
+      "finalAns": 6,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H9",
+      "title": "练习9 · 先胜三局",
+      "tag": "tree",
+      "tagLabel": "树形图",
+      "difficulty": 3,
+      "text": "思思和辰辰两人下象棋，每局都分出胜负，直到一方先胜三局为止，先胜三局者胜。整个比赛过程有多少种情况？",
+      "analysis": [
+        "先只数思思赢下比赛的情况，最后一局一定是思思赢。按辰辰赢0、1、2局分类。",
+        "辰辰赢0局，思思连赢3局，有1种。辰辰赢1局，可以在前三局选出一局让辰辰赢，有3种。辰辰赢2局，可以在前四局选出两局让辰辰赢，有6种。",
+        "思思赢下比赛有1＋3＋6＝10种。辰辰赢下比赛也有10种，所以共有20种。"
+      ],
+      "type": "none",
+      "finalQ": "整个比赛过程有多少种情况？",
+      "finalAns": 20,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H10",
+      "title": "练习10 · 蜗牛爬线段",
+      "tag": "tree",
+      "tagLabel": "树形图",
+      "difficulty": 3,
+      "text": "如图，一只蜗牛从A点出发，要沿着某条线段爬到C点。同一个点或同一条线段只能经过一次，这只蜗牛最多有多少种不同的爬法？",
+      "figureNode": createElement(SnailFigure),
+      "analysis": [
+        "第一步到E，可以走E→C、E→F→C、E→D→C。若从F再去B，就只能回到已经走过的A或F，所以这条分支走不通。",
+        "第一步到F，可以走F→C、F→E→C、F→E→D→C。第一步到B，下一步只能到F，再从F按这三种走法到C。",
+        "按第一步分成三组，共有3＋3＋3＝9种爬法。"
+      ],
+      "type": "none",
+      "finalQ": "最多有多少种不同的爬法？",
+      "finalAns": 9,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H11",
+      "title": "练习11 · 方格中的最短路线",
+      "tag": "routes",
+      "tagLabel": "路线计数",
+      "difficulty": 2,
+      "text": "如图所示，沿线段从A到B有多少条最短路线？",
+      "figureNode": createElement(ShortestGridFigure),
+      "analysis": [
+        "从左下角的A走到右上角的B，每条最短路线都要向右3步、向上3步。",
+        "用标数法，在A标1。每个路口的走法数等于它左边路口与下边路口的走法数之和。边界上只有一种走法。",
+        "从下往上逐行标数，依次是（1，1，1，1）、（1，2，3，4）、（1，3，6，10）、（1，4，10，20）。B处标20，所以有20条最短路线。"
+      ],
+      "type": "none",
+      "finalQ": "有多少条最短路线？",
+      "finalAns": 20,
+      "finalUnit": "条",
+    },
+    {
+      "id": "2-14-H12",
+      "title": "练习12 · 经过B且避开C",
+      "tag": "routes",
+      "tagLabel": "路线计数",
+      "difficulty": 3,
+      "text": "如图为一幅街道图，需要从A出发走到D，要求必须经过十字路口B，但不经过C。那么有多少条最短路线？",
+      "figureNode": createElement(AvoidJunctionFigure),
+      "analysis": [
+        "先数A到B。最短路线需要右走2步、上走2步，用标数法可知共有6条。",
+        "从B去D的最短路线不能向右起步，因为右边紧邻C。先向上走一步后，还要右走2步、上走1步，向上的一步有3个位置可选。",
+        "A到B的每条路线都能接上B到D的任意一条合格路线，所以一共有6×3＝18条。"
+      ],
+      "type": "none",
+      "finalQ": "有多少条最短路线？",
+      "finalAns": 18,
+      "finalUnit": "条",
+    },
+    {
+      "id": "2-14-H13",
+      "title": "练习13 · 经过C或D",
+      "tag": "routes",
+      "tagLabel": "路线计数",
+      "difficulty": 4,
+      "text": "如图所示，从A点到B点，如果要求经过C点或D点，那么最短路线有多少条？",
+      "figureNode": createElement(EitherJunctionFigure),
+      "analysis": [
+        "最短路线只能向右或向上。C在D的左上方，因此一条最短路线不能同时经过C和D。",
+        "经过C：用标数法，A到C需要右3步、上4步，得到35条。C到B需要右5步、上2步，得到21条。共有35×21＝735条。",
+        "经过D：A到D需要右6步、上2步，得到28条。D到B需要右2步、上4步，得到15条。共有28×15＝420条。",
+        "两类没有重叠，一共有735＋420＝1155条最短路线。"
+      ],
+      "type": "none",
+      "finalQ": "符合条件的最短路线有多少条？",
+      "finalAns": 1155,
+      "finalUnit": "条",
+    },
+    {
+      "id": "2-14-H14",
+      "title": "练习14 · 从家走到学校",
+      "tag": "routes",
+      "tagLabel": "路线计数",
+      "difficulty": 3,
+      "text": "纳纳家到学校的道路如下图所示，只能沿图中向右或向下的方向走。从纳纳家到学校有几种不同的走法？",
+      "figureNode": createElement(SchoolRoadFigure),
+      "analysis": [
+        "在纳纳家标1。从上到下、从左到右给路口标数，只把左边和上边有道路直接连到该点的走法数相加。",
+        "从上到下每排路口的标数依次是（1，1，1，1）、（1，2）、（1，2，2，3）、（2，4）、（1，3，7，10）。",
+        "学校在右下角。它左边的路口有7种走法，上边的路口有3种走法，所以共有7＋3＝10种。"
+      ],
+      "type": "none",
+      "finalQ": "从纳纳家到学校有几种走法？",
+      "finalAns": 10,
+      "finalUnit": "种",
+    },
+    {
+      "id": "2-14-H15",
+      "title": "练习15 · 找图书馆",
+      "tag": "routes",
+      "tagLabel": "路线计数",
+      "difficulty": 4,
+      "text": "立立在一年中去图书馆56次，路线如图所示。立立家在P点。他每次都走最短路线，56次所走的路线互不相同，恰好走遍了从P点到图书馆的所有最短路线。A、B、C、D、E中，哪个点是图书馆？请填写编号（1代表A，2代表B，3代表C，4代表D，5代表E）。",
+      "figureNode": createElement(LibraryRoadFigure),
+      "analysis": [
+        "在P点标1。最短路线只能向右或向下，给每个路口标数时，把上边和左边沿道路能直接到达该点的走法数相加。",
+        "E所在一排从左到右标1、3、6、10、15、21、28、36。湖的左下角标35。湖下边的两个中间路口只能从左边到达，都标35。C可以从上方的E或左边的路口到达，有36＋35＝71条。",
+        "继续标数，得到A有84条、B有56条、D有15条。恰好有56条最短路线的是B点，所以填2。"
+      ],
+      "type": "none",
+      "finalQ": "哪个点是图书馆？请填写编号。",
+      "finalAns": 2,
+      "finalUnit": "号",
+    },
+  ],
   workbook: [],
   supplement: [],
 }

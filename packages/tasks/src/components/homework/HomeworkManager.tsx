@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { StickerCard } from '@rosie/ui'
 import {
   AlertDialog,
@@ -33,9 +33,11 @@ export default function HomeworkManager({
   api,
   notify,
   onPreview,
+  renderPracticeSummary,
 }: {
   api: Api
   onPreview?: (homework: Homework) => void
+  renderPracticeSummary?: (homework: Homework) => ReactNode
   notify: (message: string) => void
 }) {
   const { data } = api
@@ -256,6 +258,7 @@ export default function HomeworkManager({
                   <Text as="p" size="2" color="gray">
                     {describeSchedule(item, { weeklyGroups: item.cycle === 'weekly' && item.subject !== 'life' })}
                   </Text>
+                  {renderPracticeSummary?.(item)}
                   {item.notes && (
                     <Text as="p" size="2" color="gray" className="break-words whitespace-pre-wrap">
                       {item.notes}

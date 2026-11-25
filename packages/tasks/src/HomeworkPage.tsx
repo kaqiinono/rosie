@@ -9,9 +9,10 @@ import type { Homework } from './homework'
 import HomeworkManager from './components/homework/HomeworkManager'
 import { TASK_SECTIONS, sectionHref, type TaskSection } from './components/taskSections'
 
-export default function HomeworkPage({ children, onPreview }: {
+export default function HomeworkPage({ children, onPreview, renderPracticeSummary }: {
   children?: ReactNode
   onPreview?: (homework: Homework) => void
+  renderPracticeSummary?: (homework: Homework) => ReactNode
 }) {
   const router = useRouter()
   const api = useHomeworkData()
@@ -94,7 +95,7 @@ export default function HomeworkPage({ children, onPreview }: {
                 </div>
                 <Tabs.Content value="homework">
                   {children}
-                  <HomeworkManager api={api} notify={notify} onPreview={onPreview} />
+                  <HomeworkManager api={api} notify={notify} onPreview={onPreview} renderPracticeSummary={renderPracticeSummary} />
                 </Tabs.Content>
               </Tabs.Root>
             </StickerCard>

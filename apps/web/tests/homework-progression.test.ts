@@ -5,7 +5,7 @@ import { defaultPracticeProgression, scheduledPracticeRow } from '../../../packa
 import type { PracticeBinding } from '../../../packages/tasks/src/practiceEntries'
 import { newTree } from '@/lib/time-tree/engine'
 import { schedule } from '@/lib/time-tree/schedule'
-import { previewPractice } from '@/lib/time-tree/practicePreview'
+import { previewHomeworkCard, previewPractice } from '@/lib/time-tree/practicePreview'
 
 function homework(overrides: Partial<Homework> = {}, anchor = '2026-11-16'): Homework {
   const task: Homework = {
@@ -26,6 +26,26 @@ const rowOn = (task: Homework, day: string, occurrence?: string) =>
   scheduledPracticeRow(task.practice_binding!, day, occurrence).row?.id
 
 describe('homework occurrence progression', () => {
+  it('keeps the completed current assignment on the card when an earlier one is still pending', () => {
+    const task = homework({ include_weekends: true })
+    const tree = newTree('2026-11-16')
+    schedule(tree, [task], tree.today, '2026-11-19')
+    tree.today = '2026-11-18'
+    const current = tree.steps.find(step => step.scheduled === tree.today)!
+    current.end = '2026-11-18T04:00:00Z'
+    current.practice!.items![0].row.label = '已分配的课程'
+    const preview = previewHomeworkCard(tree, task)
+    expect(preview?.step?.id).toBe(current.id)
+    expect(preview?.content?.items?.[0].row.label).toBe('已分配的课程')
+  })
+
+  it('uses the generated weekly start when deriving a missing weekly card snapshot', () => {
+    const task = homework({ cycle: 'weekly', start_weekday: 1, end_weekday: 5, times_per_week: 1 })
+    task.practice_binding!.progression!.mode = 'daily'
+    const tree = newTree('2026-11-19')
+    expect(previewHomeworkCard(tree, task)?.content?.row?.id).toBe('1')
+  })
+
   it('advances on weekday assignments only, including a weekend anchor', () => {
     const task = homework({}, '2026-11-21')
     expect(rowOn(task, '2026-11-23')).toBe('1')

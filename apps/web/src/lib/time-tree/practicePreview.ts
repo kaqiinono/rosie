@@ -1,5 +1,6 @@
-import { entryHref, scheduledPracticeRow, type Homework, type PracticeBinding, type PracticeEntryRow } from '@rosie/tasks'
-import type { TreeData, WorkStep } from './types'
+import { entryHref, homeworkPeriod, scheduledPracticeRow, type Homework, type PracticeBinding, type PracticeEntryRow } from '@rosie/tasks'
+import { dayOf, shift, type TreeData, type WorkStep } from './types'
+import { usesWeeklyHomework, weeklyOccurrence } from './weeklyHomework'
 
 export type PracticePreview = {
   name: string
@@ -9,6 +10,46 @@ export type PracticePreview = {
   items?: { row: PracticeEntryRow; href: string }[]
   exhausted: boolean
   provisional: boolean
+}
+
+export function homeworkCardWindow(tree: TreeData, homework: Homework) {
+  const { today } = tree
+  const period = homeworkPeriod(homework, today)
+  if (!period || today > period.end) return null
+  const created = dayOf(homework.created_at)
+  if (created > today) return null
+  if (usesWeeklyHomework(homework)) {
+    return { occurrence: weeklyOccurrence(homework.id, period.start), start: period.start, practiceDay: period.start }
+  }
+  const prefix = `${homework.id}/${homework.cycle}/${period.start}/`
+  const count = tree.steps.find(step => step.cycleTarget && step.deadline === period.end && step.occurrence.startsWith(prefix))?.cycleTarget ?? period.count
+  const elapsed = Math.round((Date.parse(today) - Date.parse(period.start)) / 86400000)
+  const ordinal = Math.ceil((elapsed + 1) * count / period.span) - 1
+  const start = shift(period.start, Math.floor(ordinal * period.span / count))
+  const practiceDay = [start, created, tree.firstDay].sort().at(-1)!
+  return { occurrence: prefix + ordinal, start, practiceDay }
+}
+
+/** Management cards and their dialog resolve the same original occurrence, including completed work. */
+export function previewHomeworkCard(tree: TreeData, homework: Homework) {
+  const binding = homework.practice_binding
+  if (!binding) {
+    const step = tree.steps.filter(item => item.occurrence.startsWith(`${homework.id}/`) && !item.end && !item.skipped)
+      .sort((a, b) => a.scheduled.localeCompare(b.scheduled) || a.id.localeCompare(b.id))[0]
+    return step ? { step, content: null, date: step.scheduled, blocked: false } : null
+  }
+  const window = homeworkCardWindow(tree, homework)
+  if (!window) return null
+  const peers = tree.steps.filter(step => step.occurrence === window.occurrence)
+  const step = peers.find(item => !item.end && !item.skipped) ??
+    peers.find(item => item.flowers?.complete) ?? peers.find(item => item.practice) ?? peers[0]
+  const saved = step && (step.practice !== undefined || step.end || step.skipped) ? step
+    : peers.find(item => item.practice?.key === binding.key)
+  const active = !binding.progression && binding.rows.length ? tree.practiceProgress?.[binding.key]?.activeOccurrence : null
+  const blocked = !saved && !!active && active !== window.occurrence
+  const content = saved ? previewPractice(tree, saved, homework)
+    : blocked ? null : previewHomeworkPractice(tree, binding, window.practiceDay, window.occurrence)
+  return { step, content, date: step?.scheduled ?? window.practiceDay, blocked }
 }
 
 /** A list preview never reserves an occurrence, advances a cursor or changes a snapshot. */

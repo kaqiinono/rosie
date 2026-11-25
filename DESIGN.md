@@ -2,7 +2,8 @@
 
 ## Theater subtitle editing
 
-The subtitle list opens the shared editor with the selected language and cue. The editor
+The subtitle editor shows the selected cue's English and Chinese text together and
+saves corrections in one request. Timeline operations select one source cue. The editor
 keeps the selection fixed while auditioning a range. Split and insert offer a playhead
 and editable timestamps. The delete confirmation shows the sentence before saving.
 Each subtitle row keeps the timestamp on the left and the actions on the right.

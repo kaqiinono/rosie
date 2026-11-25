@@ -2,7 +2,10 @@
 export type LessonSourceBtn = { key: string; label: string }
 
 export const LESSON_SOURCE_BTNS: Record<string, LessonSourceBtn[]> = {
-  '2-14': [{ key: 'lesson', label: '📖 课堂' }],
+  '2-14': [
+    { key: 'lesson', label: '📖 课堂' },
+    { key: 'homework', label: '✏️ 课后巩固' },
+  ],
   '2-13': [
     { key: 'pretest', label: '📝 课前测' },
     { key: 'lesson', label: '📖 课堂' },

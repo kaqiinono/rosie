@@ -28,8 +28,8 @@ export default function AudioAlignmentWorkbench({ initialKey }: { initialKey: st
   const [saving, setSaving] = useState(false)
   const allChoices = catalog.data ?? []
   const modules = new Map(allChoices.map(choice => [choice.module, choice.moduleLabel]))
-  const module = selectedModule || allChoices.find(choice => choice.key === key)?.module || allChoices[0]?.module
-  const choices = allChoices.filter(choice => choice.module === module)
+  const activeModule = selectedModule || allChoices.find(choice => choice.key === key)?.module || allChoices[0]?.module
+  const choices = allChoices.filter(choice => choice.module === activeModule)
   const selected = choices.find(choice => choice.key === key)
   const tracks = useQuery<AlignmentTrack[]>(userId, selected ? endpoint + '?' + new URLSearchParams({ key }) : '')
   const slot = tracks.data?.find(track => track.slot === trackSlot)?.slot ?? tracks.data?.[0]?.slot
@@ -38,7 +38,7 @@ export default function AudioAlignmentWorkbench({ initialKey }: { initialKey: st
 
   return <div className="space-y-4">
     <StickerCard as="section" size="md" className="space-y-3">
-      {module && <SegmentedControl.Root aria-label="内容来源" value={module} disabled={saving} onValueChange={value => {
+      {activeModule && <SegmentedControl.Root aria-label="内容来源" value={activeModule} disabled={saving} onValueChange={value => {
         setModule(value)
         setKey('')
         setTrackSlot('')

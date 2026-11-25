@@ -9,7 +9,7 @@ const RAW_COURSES: CourseCardData[] = [
     description: '先分类，再按顺序枚举，用有序分堆、无序分堆和按面值分类解决计数问题。',
     icon: '🔢',
     lectureNum: '第 14 讲',
-    tags: ['分类枚举', '有序与无序分堆', '10 道互动题'],
+    tags: ['分类枚举', '有序与无序分堆', '25 道互动题'],
     variant: 'blue',
   },
   {

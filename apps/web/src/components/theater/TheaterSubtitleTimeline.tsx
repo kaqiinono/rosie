@@ -81,8 +81,11 @@ export default function TheaterSubtitleTimeline({ cues, positionRequest, childre
 
   useEffect(() => {
     if (!positionRequest || handledRequest.current === positionRequest) return
-    handledRequest.current = positionRequest
-    jumpToCue(Math.max(0, cueIndexAtOrBefore(cues, positionRequest.positionMs)))
+    const frame = requestAnimationFrame(() => {
+      handledRequest.current = positionRequest
+      jumpToCue(Math.max(0, cueIndexAtOrBefore(cues, positionRequest.positionMs)))
+    })
+    return () => cancelAnimationFrame(frame)
   }, [cues, jumpToCue, positionRequest])
 
   useLayoutEffect(() => {

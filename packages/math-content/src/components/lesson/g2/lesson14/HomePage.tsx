@@ -5,6 +5,7 @@ import type { ProblemSet } from '@rosie/core'
 import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
 import LessonSummary from '@rosie/math-kit/components/shared/LessonSummary'
 import { LessonSummaryVideos } from '@rosie/math-kit/components/shared/ProblemVideoReplay'
+import { flattenProblemSet } from '@rosie/math-kit/utils/problem-set-helpers'
 import { StickerCard } from '@rosie/ui'
 import {
   KNOWLEDGE_POINTS,
@@ -25,8 +26,9 @@ export default function HomePage({
   practiceCount: Record<string, number>
   correctCount: Record<string, number>
 }) {
-  const attempted = problems.lesson.filter((problem) => (practiceCount[problem.id] ?? 0) > 0).length
-  const mastered = problems.lesson.filter((problem) => (correctCount[problem.id] ?? 0) >= 3).length
+  const allProblems = flattenProblemSet(problems)
+  const attempted = allProblems.filter((problem) => (practiceCount[problem.id] ?? 0) > 0).length
+  const mastered = allProblems.filter((problem) => (correctCount[problem.id] ?? 0) >= 3).length
 
   return (
     <div>
@@ -68,7 +70,7 @@ export default function HomePage({
               className={`rounded-lg p-3 no-underline hover:shadow-sticker ${TAG_STYLE[type.tag]}`}
             >
               <div className="mb-1 text-sm font-bold">
-                {type.icon} {type.label} · {problems.lesson.filter((p) => p.tag === type.tag).length}题
+                {type.icon} {type.label} · {allProblems.filter((p) => p.tag === type.tag).length}题
               </div>
               <p className="text-xs leading-relaxed">{type.desc}</p>
             </Link>
@@ -83,10 +85,16 @@ export default function HomePage({
           </Link>
         </StickerCard>
         <StickerCard asChild interactive elevation="sm" radius="md">
+          <Link href={`${BASE}/homework`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">✏️ 课后巩固</div>
+            <p className="text-text-muted text-xs">共 {problems.homework.length} 题</p>
+          </Link>
+        </StickerCard>
+        <StickerCard asChild interactive elevation="sm" radius="md">
           <Link href={`${BASE}/alltest`} className="no-underline">
             <div className="mb-1 text-sm font-bold">🎯 综合题库</div>
             <p className="text-text-muted text-xs">
-              已练 {attempted}/{problems.lesson.length} · 掌握 {mastered}/{problems.lesson.length}
+              已练 {attempted}/{allProblems.length} · 掌握 {mastered}/{allProblems.length}
             </p>
           </Link>
         </StickerCard>

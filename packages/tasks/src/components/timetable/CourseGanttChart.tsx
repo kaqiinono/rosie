@@ -15,7 +15,7 @@ import '@svar-ui/react-gantt/all.css'
 type CourseTimeline = ReturnType<typeof buildCourseTimelines>[number]
 const TimelineContext = createContext<{
   timelines: ReadonlyMap<string, CourseTimeline>
-  position: (date: string) => number
+  positionPercent: (date: string) => number
   onOpenCourse: (course: TimetableCourse) => void
 } | null>(null)
 
@@ -54,15 +54,15 @@ function CourseBar({ data }: { data: ITask }) {
   const { course, spans } = timeline
   const color = courseColor(course)
   return spans.map(span => {
-    const start = context.position(span.from)
-    const end = context.position(span.to)
+    const start = context.positionPercent(span.from)
+    const end = context.positionPercent(span.to)
     const last = dateAfter(span.to, -1)
     const dates = last === span.from ? span.from : `${span.from} 至 ${last}`
     const label = `${course.name}，${dates}，${timelineStatusLabels[span.status]}`
     return (
       <span key={`${span.status}:${span.from}`} role="img" aria-label={label} title={label}
         className="tasks-course-gantt-span" data-status={span.status}
-        style={{ left: start, width: end - start, color: span.status === 'cancelled' ? undefined : color.value }} />
+        style={{ left: `${start}%`, width: `${end - start}%`, color: span.status === 'cancelled' ? undefined : color.value }} />
     )
   })
 }
@@ -111,8 +111,12 @@ export default function CourseGanttChart({
     return <Text as="p" size="2" color="gray" role="status">所选时间范围内没有符合筛选的排课。</Text>
   }
 
+  // SVAR widens the full-range task to fill the chart. Position spans relative to that task.
+  const timelineWidth = axis.position(axis.end)
+  const positionPercent = (date: string) => axis.position(date) / timelineWidth * 100
+
   return (
-    <TimelineContext.Provider value={{ timelines, position: axis.position, onOpenCourse }}>
+    <TimelineContext.Provider value={{ timelines, positionPercent, onOpenCourse }}>
       <div className="min-h-0 flex-1">
         <Locale words={zhWeek[weekStartsOn]}>
           <Willow fonts={false}>

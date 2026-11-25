@@ -1,45 +1,49 @@
 'use client'
 
-import { homeworkPeriod, type Homework } from '@rosie/tasks'
+import type { Homework } from '@rosie/tasks'
 import { AppDialog } from '@rosie/ui'
 import { Button, Flex, Text } from '@rosie/ui/themes'
-import { previewHomeworkPractice, previewPractice } from '@/lib/time-tree/practicePreview'
-import { usesWeeklyHomework, weeklyOccurrence } from '@/lib/time-tree/weeklyHomework'
+import type { previewHomeworkCard } from '@/lib/time-tree/practicePreview'
 import HomeworkContentPanel from './HomeworkContentPanel'
-import { useTimeTree } from './useTimeTree'
 import { hasWeeklyPlanPractice } from './weeklyPlanPractice'
 
-export default function HomeworkCardPreview({ homework, onClose }: {
+export default function HomeworkCardPreview({ homework, current, wordGroups, loading, error, onRetry, onClose }: {
   homework: Homework
+  current: ReturnType<typeof previewHomeworkCard>
+  wordGroups?: { scope: string; words: string[] }[]
+  loading: boolean
+  error?: string
+  onRetry: () => void
   onClose: () => void
 }) {
-  const api = useTimeTree()
-  const tree = api.tree
-  const step = tree?.steps
-    .filter(item => item.occurrence.split('/')[0] === homework.id && !item.end && !item.skipped)
-    .sort((a, b) => a.scheduled.localeCompare(b.scheduled) || a.id.localeCompare(b.id))[0]
-  const week = tree && usesWeeklyHomework(homework) ? homeworkPeriod(homework, tree.today) : null
-  const content = homework.subject !== 'life' && tree
-    ? step
-      ? previewPractice(tree, step, homework)
-      : previewHomeworkPractice(tree, homework.practice_binding, tree.today, week ? weeklyOccurrence(homework.id, week.start) : undefined)
-    : null
+  const content = current?.content
+  const step = current?.step
   const hasPractice = homework.subject !== 'life' && !!homework.practice_binding
   const notes = step?.notes || homework.notes
 
   return (
     <AppDialog open title={homework.name} presentation={hasWeeklyPlanPractice(content) ? 'bottom-drawer' : 'dialog'} onOpenChange={open => { if (!open) onClose() }}>
       <Flex direction="column" gap="3">
-        {hasPractice && (
+        {wordGroups?.filter(group => group.words.length).map(({ scope, words }) =>
+          <Flex key={scope} direction="column" gap="1" minWidth="0">
+            <Text as="p" size="2" weight="bold">{scope || '单词'}</Text>
+            <Text as="p" size="2" className="wrap-anywhere">{words.join('、')}</Text>
+          </Flex>)}
+        {hasPractice && !current && !loading && !error && <Text size="2">本期暂无排期。</Text>}
+        {hasPractice && current && !content && !loading && !error && <Text size="2">
+          {current.blocked ? '等待上次作业完成。' : '暂无练习内容。'}
+        </Text>}
+        {hasPractice && (content || loading || error) && (
           <HomeworkContentPanel
             name={content?.name}
             row={content?.row}
             href={content?.href}
             items={content?.items}
             exhausted={content?.exhausted}
-            loading={api.isLoading}
-            error={api.error ? api.message : undefined}
-            onRetry={api.retry}
+            loading={loading}
+            error={error}
+            scheduledDate={current?.date}
+            onRetry={onRetry}
           />
         )}
         {notes && <Text className="whitespace-pre-wrap break-words">{notes}</Text>}

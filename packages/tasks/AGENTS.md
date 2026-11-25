@@ -21,9 +21,10 @@ are left to the user: verify new vs existing defaults, weekends off/on, preserve
 split tasks and an already-started weekend task.
 
 The production life tree at /time-tree generates owner-scoped occurrences from these templates.
-Homework cards expose a preview through the web-provided callback. Web reuses
-`HomeworkContentPanel` from the bubble detail panel, using the earliest unfinished occurrence
-snapshot or a read-only template/cursor preview when no occurrence exists.
+Homework cards with a practice binding expose 本期内容 through the web-provided renderer.
+The card and `HomeworkContentPanel` preview share the current scheduled occurrence, including
+completed snapshots. When no snapshot exists, web derives the display from the schedule or
+legacy cursor without reserving it. Word plans show assigned words by unit and lesson.
 Hosted migration `20261119140300_task_homework_zero_minutes.sql` allows a zero estimate. A zero-minute academic
 occurrence pops on click and completes with one flower and the base rewards. Moving between zero and
 a positive estimate updates occurrences that have never started, including any split steps.

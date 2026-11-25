@@ -20,6 +20,7 @@ import TheaterSubtitleEditor, { type SubtitleListEditing } from './TheaterSubtit
 import TheaterSubtitleTimeline, { type SubtitlePositionRequest } from './TheaterSubtitleTimeline'
 import { useTheaterProgress } from './useTheaterProgress'
 import { useTheaterExternalAudio } from './useTheaterExternalAudio'
+import styles from './TheaterPlayer.module.css'
 
 type CaptionMode = 'both' | 'en' | 'zh' | 'off'
 type Loop = { startMs: number; endMs: number; cueId?: string }
@@ -44,14 +45,10 @@ const playbackRates = ['0.5', '0.75', '0.8', '1', '1.25', '1.5', '2']
 const dialogueWindowSize = 5
 
 function CueActionStrip({ label, cells, children }: { label: string; cells: number; children: ReactNode }) {
-  return <Flex direction="row" align="center" wrap="nowrap" gap="1" role="group" aria-label={label}
-    style={{ width: `${cells * 2 + (cells - 1) * 0.25}rem` }}
-    className="ml-auto min-w-0 max-w-full [&>span]:min-w-0 [&>span]:flex-1
-      [&_button]:m-0! [&_button]:inline-flex! [&_button]:h-7! [&_button]:w-full! [&_button]:min-w-0!
-      [&_button]:items-center! [&_button]:justify-center! [&_button]:rounded-none! [&_button]:p-0!
-      [&_button:focus-visible]:-outline-offset-2!">
+  return <div role="group" aria-label={label} className={styles.cueActionStrip}
+    style={{ gridTemplateColumns: `repeat(${cells}, minmax(0, 1fr))`, width: `${cells * 2 + (cells - 1) * 0.25}rem` }}>
     {children}
-  </Flex>
+  </div>
 }
 
 function vttLine(text: string) {
@@ -473,22 +470,21 @@ function FilmWorkspace({ resource, userId, onReload, onTracksChange }: {
               className={`min-w-0 border-t px-1.5 pb-1 first:border-t-transparent ${continuation
                 ? 'border-t-transparent pt-0.5' : 'border-kid-line pt-1'} ${highlighted ? 'rounded-lg bg-[var(--accent-3)]' : ''}`}>
               <Flex direction="row" gap="1" align="center" wrap="nowrap" className="mb-0.5">
-                <Button type="button" size="1" variant="ghost" color={highlighted ? undefined : 'gray'}
-                  className="m-0! h-6! shrink-0 px-0.5! py-0! tabular-nums"
+                <Button type="button" size="1" variant="soft" radius="medium" color={highlighted ? undefined : 'gray'}
+                  data-soft-outline="none" className="m-0! h-6! min-w-12 shrink-0 px-1.5! py-0! tabular-nums"
                   aria-label={'跳到 ' + stamp + '，' + (cue.en ?? cue.zh)}
                   onClick={() => chooseCue(cue)}>{stamp.padStart(5, '0')}</Button>
                 <CueActionStrip label={stamp + ' 的字幕操作'} cells={editing ? 7 : 2}>
-                  <Flex as="span" align="center" justify="center">
+                  <span>
                     <IconButton type="button" size="1" variant={looping ? 'soft' : 'ghost'}
                       color={looping ? undefined : 'gray'} title="单句复读" data-soft-outline="none"
                       aria-label={`复读 ${stamp} 的台词`} aria-pressed={looping} disabled={reading || videoError}
                       onClick={() => looping ? setPlaybackLoop(null) : loopCue(cue)}>
                       <RotateCw size={15} aria-hidden="true" />
                     </IconButton>
-                  </Flex>
-                  <Flex as="span" align="center" justify="center">{favoriteButton(cue)}</Flex>
-                  {editing && subtitleActions.map(({ action, label, Icon }) => <Flex as="span" key={action}
-                    align="center" justify="center">
+                  </span>
+                  <span>{favoriteButton(cue)}</span>
+                  {editing && subtitleActions.map(({ action, label, Icon }) => <span key={action}>
                     <IconButton type="button" size="1" color={action === 'remove' ? 'red' : 'gray'}
                       variant="ghost" title={action === 'edit' ? label : theaterLanguageLabel[language] + ' · ' + label}
                       aria-label={stamp + ' · ' + label} disabled={editing.locked || index === undefined ||
@@ -500,7 +496,7 @@ function FilmWorkspace({ resource, userId, onReload, onTracksChange }: {
                       }}>
                       <Icon size={15} aria-hidden="true" />
                     </IconButton>
-                  </Flex>)}
+                  </span>)}
                 </CueActionStrip>
               </Flex>
               <div className="min-w-0 whitespace-pre-wrap wrap-break-word">
@@ -600,31 +596,31 @@ function FilmWorkspace({ resource, userId, onReload, onTracksChange }: {
                 <Heading as="h2" size="2">当前台词</Heading>
               </Flex>
               {dialogueCue && <CueActionStrip label="当前台词操作" cells={4}>
-                <Flex as="span" align="center" justify="center">
+                <span>
                   {!dialogueNotice && dialogueCue.en && dialogueCue.zh && <IconButton type="button" size="1" color="gray"
                     variant={showTranslation ? 'soft' : 'ghost'} aria-pressed={showTranslation} data-soft-outline="none"
                     title={showTranslation ? '隐藏译文' : '显示译文'} aria-label="显示当前句译文"
                     onClick={() => setTranslationCueId(showTranslation ? null : dialogueCue.id)}>
                     {showTranslation ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
                   </IconButton>}
-                </Flex>
-                <Flex as="span" align="center" justify="center">
+                </span>
+                <span>
                   {!dialogueNotice && <IconButton type="button" size="1" variant={dialogueLooping ? 'soft' : 'ghost'}
                     color={dialogueLooping ? undefined : 'gray'} title="单句复读" data-soft-outline="none"
                     aria-label="复读当前台词" aria-pressed={dialogueLooping} disabled={reading || videoError}
                     onClick={() => dialogueLooping ? setPlaybackLoop(null) : loopCue(dialogueCue)}>
                     <RotateCw size={15} aria-hidden="true" />
                   </IconButton>}
-                </Flex>
-                <Flex as="span" align="center" justify="center">
+                </span>
+                <span>
                   <Button type="button" size="1" variant="ghost" color="gray" title="切换倍速"
                     className="text-xs! leading-none! font-bold tabular-nums"
                     aria-label={`当前 ${rate} 倍，切换到 ${rate === '0.8' ? '1' : '0.8'} 倍`}
                     onClick={() => changeRate(rate === '0.8' ? '1' : '0.8')}>
                     {rate === '1' ? '1.0' : rate}×
                   </Button>
-                </Flex>
-                <Flex as="span" align="center" justify="center">{favoriteButton(dialogueCue)}</Flex>
+                </span>
+                <span>{favoriteButton(dialogueCue)}</span>
               </CueActionStrip>}
             </Flex>
             {dialogueCue ? <ul className="mt-2 grid min-w-0 gap-1">

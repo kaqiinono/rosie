@@ -6,6 +6,7 @@ import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
 import LessonProblemDetailHeader from '@rosie/math-kit/components/shared/LessonProblemDetailHeader'
 import LessonProblemNavBar from '@rosie/math-kit/components/shared/LessonProblemNavBar'
 import ProblemAnswerSection from '@rosie/math-kit/components/shared/ProblemAnswerSection'
+import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureImage'
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
@@ -47,6 +48,11 @@ export default function ProblemDetail({
         className="text-text-secondary [&>strong]:text-text-primary rounded-lg border-l-3 border-teal-300 bg-teal-50 px-3.5 py-3 text-sm leading-relaxed [&>strong]:font-bold"
         dangerouslySetInnerHTML={{ __html: sanitizeProblemText(problem.text) }}
       />
+      {problem.figureNode && (
+        <div className="mt-3">
+          <ProblemFigureImage problem={problem} />
+        </div>
+      )}
     </div>
   )
   const answerDom = (
