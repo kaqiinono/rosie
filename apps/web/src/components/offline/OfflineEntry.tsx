@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AUTH_DEVICE_SIGN_OUT, AUTH_PASSWORD_SIGN_IN, useAuth } from '@rosie/core'
 import { Button } from '@rosie/ui/themes'
 import { getOfflineOwner, OFFLINE_CHANGED, getOfflineSyncStatus, readOfflineState, setOfflineOwner,
@@ -33,24 +33,23 @@ export function useOfflineOwner() {
 export function OfflineAccount() {
   const { user } = useAuth()
   const userId = user?.id
-  const stopped = useRef(0)
-
   useEffect(() => {
+    let revision = 0
     const lock = () => {
-      stopped.current++
+      revision++
       setOfflineOwner(null)
     }
     const unlock = (event: Event) => {
       const owner = (event as CustomEvent<string>).detail
-      const attempt = ++stopped.current
+      const attempt = ++revision
       void readOfflineState(owner).then((state) => {
-        if (stopped.current === attempt && state?.pack) setOfflineOwner(owner)
+        if (revision === attempt && state?.pack) setOfflineOwner(owner)
       }).catch(() => undefined)
     }
     window.addEventListener(AUTH_DEVICE_SIGN_OUT, lock)
     window.addEventListener(AUTH_PASSWORD_SIGN_IN, unlock)
     return () => {
-      stopped.current++
+      revision++
       window.removeEventListener(AUTH_DEVICE_SIGN_OUT, lock)
       window.removeEventListener(AUTH_PASSWORD_SIGN_IN, unlock)
     }
@@ -121,7 +120,7 @@ export function OfflineEntry() {
 
   return (
     <Button asChild size="3" variant="outline" color="gray">
-      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- The service worker handles a document navigation. */}
+      {/* The service worker handles a document navigation. */}
       <a href="/offline">离线使用</a>
     </Button>
   )

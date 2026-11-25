@@ -1409,6 +1409,7 @@ body[data-embed="tree"] .stage-card::before { display: none; }
 body[data-embed="tree"] .main-grid { grid-template-columns: minmax(0, 1fr); }
 body[data-embed="tree"] .stage-card {
   background: transparent; border: 0; border-radius: 0; box-shadow: none;
+  /* visual-ok: 生命树嵌入模式关闭独立转盘的毛玻璃效果。 */
   backdrop-filter: none; -webkit-backdrop-filter: none;
   overflow: visible; padding: 16px;
 }

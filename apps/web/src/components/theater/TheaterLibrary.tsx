@@ -45,7 +45,7 @@ function Library({ userId }: { userId: string }) {
     <main className="mx-auto flex min-h-[100dvh] w-full max-w-[1040px] flex-col gap-4 px-4 pb-8 pt-14 sm:px-6">
       <PageBreadcrumb variant="inline" />
       <Heading as="h1" size="7">电影剧场</Heading>
-      {!data && !error && <div className="relative min-h-48 flex-1"><LoadingOverlay placement="content" /></div>}
+      {!data && !error && <div className="relative min-h-48 flex-1"><LoadingOverlay visible placement="content" /></div>}
       {error && <StickerCard><Flex gap="3" align="center" wrap="wrap">
         <Text role="alert">{error}</Text>
         <Button onClick={() => { setError(''); setAttempt(value => value + 1) }}>重新读取</Button>

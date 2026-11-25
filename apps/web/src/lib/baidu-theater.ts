@@ -120,7 +120,7 @@ function publicFilm(row: FilmRow): TheaterFilm {
   return {
     id: row.id,
     title: row.title,
-    languages: theaterSubtitleLanguages.filter(language => row['subtitle_' + language + '_file_id' as const]),
+    languages: theaterSubtitleLanguages.filter(language => row[`subtitle_${language}_file_id` as const]),
     format: theaterVideoFormat(row.video_name) ?? 'mp4',
     hasPlaybackCopy: Boolean(row.playback_file_id),
   }

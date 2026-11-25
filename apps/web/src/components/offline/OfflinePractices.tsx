@@ -134,14 +134,15 @@ export function EnglishPractice({ state, change }: Props) {
 }
 
 function LocalImage({ blob, alt }: { blob: Blob; alt: string }) {
-  const [url, setUrl] = useState<string>()
+  const image = useRef<HTMLImageElement>(null)
   useEffect(() => {
-    const current = URL.createObjectURL(blob)
-    setUrl(current)
-    return () => URL.revokeObjectURL(current)
+    if (!image.current) return
+    const url = URL.createObjectURL(blob)
+    image.current.src = url
+    return () => URL.revokeObjectURL(url)
   }, [blob])
   // eslint-disable-next-line @next/next/no-img-element
-  return url && <img src={url} alt={alt} className="mx-auto max-h-72 max-w-full object-contain" />
+  return <img ref={image} alt={alt} className="mx-auto max-h-72 max-w-full object-contain" />
 }
 
 function assignmentKey(question: OfflineMathQuestion, day: string) {
@@ -212,22 +213,22 @@ export function MathPractice({ state, change }: Props) {
 }
 
 export function TreePractice({ state, change }: Props) {
-  const [clock, setClock] = useState(0)
+  const [clock, setClock] = useState(Date.now)
   const { record, saving, feedback } = useRecording(change)
   const tree = state.pack?.tree
   useEffect(() => {
-    setClock(Date.now())
     const timer = window.setInterval(() => setClock(Date.now()), 1_000)
     return () => window.clearInterval(timer)
   }, [])
   if (!tree) return null
+  const today = dayOf(new Date(clock))
   return <>
     {!tree.tasks.length && <StickerCard>这份学习单没有作业。</StickerCard>}
     {tree.tasks.map((task) => {
       const saved = state.tasks[task.id]
       const startedAt = saved?.startedAt ?? task.start
-      const seconds = startedAt && clock ? Math.max(0, Math.floor((clock - Date.parse(startedAt)) / 1_000)) : 0
-      const canRecord = task.canComplete && task.proof && task.planned === dayOf(new Date(clock || Date.now()))
+      const seconds = startedAt ? Math.max(0, Math.floor((clock - Date.parse(startedAt)) / 1_000)) : 0
+      const canRecord = task.canComplete && task.proof && task.planned === today
       return <StickerCard key={task.id} className="grid gap-2">
         <h2 className="font-bold">{task.name}</h2>
         {task.notes && <p className="whitespace-pre-line text-sm">{task.notes}</p>}

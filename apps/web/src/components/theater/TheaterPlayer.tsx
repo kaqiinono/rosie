@@ -30,22 +30,34 @@ function vttLine(text: string) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n{2,}/g, '\n')
 }
 
-function useCaptionUrls(cues: TheaterCue[], showBoth: boolean) {
-  const [urls, setUrls] = useState<Partial<Record<CaptionMode, string>>>({})
+function buildCaptionVtt(cues: TheaterCue[], showBoth: boolean) {
+  const captions: Partial<Record<typeof captionModes[number], string>> = {}
+  for (const mode of captionModes) {
+    if (mode === 'both' && !showBoth) continue
+    const lines = cues.flatMap(cue => {
+      const text = mode === 'both' ? [cue.en, cue.zh].filter(Boolean).join('\n') : cue[mode]
+      return text ? [vttTime(cue.startMs) + ' --> ' + vttTime(cue.endMs) + '\n' + vttLine(text)] : []
+    })
+    if (lines.length) captions[mode] = 'WEBVTT\n\n' + lines.join('\n\n')
+  }
+  return captions
+}
+
+function CaptionTrack({ vtt, mode, active, onLoad }: {
+  vtt: string
+  mode: typeof captionModes[number]
+  active: boolean
+  onLoad: () => void
+}) {
+  const track = useRef<HTMLTrackElement>(null)
   useEffect(() => {
-    const next: Partial<Record<CaptionMode, string>> = {}
-    for (const mode of captionModes) {
-      if (mode === 'both' && !showBoth) continue
-      const lines = cues.flatMap(cue => {
-        const text = mode === 'both' ? [cue.en, cue.zh].filter(Boolean).join('\n') : cue[mode]
-        return text ? [vttTime(cue.startMs) + ' --> ' + vttTime(cue.endMs) + '\n' + vttLine(text)] : []
-      })
-      if (lines.length) next[mode] = URL.createObjectURL(new Blob(['WEBVTT\n\n' + lines.join('\n\n')], { type: 'text/vtt' }))
-    }
-    setUrls(next)
-    return () => Object.values(next).forEach(url => URL.revokeObjectURL(url))
-  }, [cues, showBoth])
-  return urls
+    if (!track.current) return
+    const url = URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }))
+    track.current.src = url
+    return () => URL.revokeObjectURL(url)
+  }, [vtt])
+  return <track ref={track} kind="subtitles" srcLang={mode === 'en' ? 'en' : 'zh'}
+    label={captionLabels[mode]} default={active} onLoad={onLoad} />
 }
 
 export default function TheaterPlayer({ filmId }: { filmId: string }) {
@@ -92,7 +104,7 @@ function TheaterLoader({ filmId, userId }: { filmId: string; userId: string }) {
     <main className="mx-auto flex min-h-[100dvh] w-full max-w-[1200px] flex-col gap-4 px-4 pb-8 pt-14 sm:px-6">
       <PageBreadcrumb variant="inline" />
       <Heading as="h1" size="7" className="break-words">{resource?.film.title ?? '电影剧场'}</Heading>
-      {!resource && !error && <div className="relative min-h-48 flex-1"><LoadingOverlay placement="content" /></div>}
+      {!resource && !error && <div className="relative min-h-48 flex-1"><LoadingOverlay visible placement="content" /></div>}
       {error && <StickerCard><Flex gap="3" align="center" wrap="wrap">
         <Text role="alert">{error}</Text>
         <Button onClick={() => { setError(''); setAttempt(value => value + 1) }}>重试</Button>
@@ -141,7 +153,8 @@ function FilmWorkspace({ resource, userId, onReload, onTracksChange }: {
   }, [film.format, film.hasPlaybackCopy])
   const source = sources[sourceIndex]
   const mediaRoot = '/api/theater/' + film.id
-  const captionUrls = useCaptionUrls(cues, film.languages.length === 2)
+  const showBothCaptions = film.languages.length === 2
+  const captions = useMemo(() => buildCaptionVtt(cues, showBothCaptions), [cues, showBothCaptions])
   const current = useMemo(() => activeTheaterCue(cues, time), [cues, time])
   const learningCue = selected ? cues.find(cue => cue.id === selected.id) ?? selected : current
   const queryText = query.trim().toLowerCase()
@@ -235,7 +248,7 @@ function FilmWorkspace({ resource, userId, onReload, onTracksChange }: {
       if (track.mode !== mode) track.mode = mode
     }
   }, [audioRef, caption])
-  useEffect(() => { applyCaptions() }, [applyCaptions, captionUrls])
+  useEffect(() => { applyCaptions() }, [applyCaptions, captions])
 
   function tick(video: HTMLVideoElement) {
     if (video.seeking) return
@@ -369,11 +382,13 @@ function FilmWorkspace({ resource, userId, onReload, onTracksChange }: {
                 } else pause()
               }}
               onError={failPlaybackSource}>
-              {captionModes.map(mode => captionUrls[mode] && <track key={mode} kind="subtitles"
-                src={captionUrls[mode]} srcLang={mode === 'en' ? 'en' : 'zh'} label={captionLabels[mode]}
-                default={caption === mode} onLoad={applyCaptions} />)}
+              {captionModes.map(mode => {
+                const vtt = captions[mode]
+                return vtt && <CaptionTrack key={mode} vtt={vtt} mode={mode}
+                  active={caption === mode} onLoad={applyCaptions} />
+              })}
             </video>}
-            {reading && <LoadingOverlay placement="content" />}
+            {reading && <LoadingOverlay visible placement="content" />}
           </div>
           {isBuffering && <Text role="status" size="2" color="gray">正在缓冲…</Text>}
           {videoError && <Flex gap="2" align="center" wrap="wrap">

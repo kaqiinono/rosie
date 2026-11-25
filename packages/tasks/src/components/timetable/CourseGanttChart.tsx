@@ -27,9 +27,9 @@ const zhWeek = {
 }
 const yearMonth = (date: Date) => `${date.getFullYear()}年${date.getMonth() + 1}月`
 
-function CourseCell({ row }: { row: { id?: string | number } }) {
+function CourseCell({ row }: Parameters<NonNullable<IColumnConfig['cell']>>[0]) {
   const context = useContext(TimelineContext)
-  const course = context?.timelines.get(String(row.id))?.course
+  const course = 'id' in row && typeof row.id === 'string' ? context?.timelines.get(row.id)?.course : undefined
   if (!course || !context) return null
   return (
     <Button type="button" size="1" variant="ghost" color="gray" title={course.name}

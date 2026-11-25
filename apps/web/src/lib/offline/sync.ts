@@ -112,7 +112,7 @@ export function syncOfflineQueue(owner: string): Promise<string | undefined> {
     }
     return error
   }
-  const operation = (navigator.locks
+  const operation = Promise.resolve(navigator.locks
     ? navigator.locks.request('rosie-offline-sync:' + owner, flush)
     : flush()).finally(() => running.delete(owner))
   running.set(owner, operation)
