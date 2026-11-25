@@ -20,8 +20,8 @@ import {
 import { buildTodayPlanCards, TodayPlanOverviewCards } from './TodayPlanOverview'
 import TodayProgressBackup from './TodayProgressBackup'
 import { useAdaptiveDailyHistory } from './useAdaptiveDailyHistory'
-import { RotateCw } from '@rosie/ui'
-import { Button } from '@rosie/ui/themes'
+import { ChevronDown, RotateCw } from '@rosie/ui'
+import { Button, IconButton } from '@rosie/ui/themes'
 import { useOfflinePreparation } from '@/components/offline/OfflinePreparation'
 
 export function useTodayPlanOverview(date?: string) {
@@ -328,11 +328,11 @@ export default function TodayPlanSummary() {
             <RotateCw size={14} aria-hidden="true" className={offline.busy ? 'motion-safe:animate-spin' : undefined} />
             {offline.busy ? '离线同步中…' : '离线同步'}
           </Button>
-          <Button asChild size="1" variant="soft" color="gray" radius="full" className="min-w-11">
+          <IconButton asChild size="1" variant="soft" color="gray" radius="full">
             <Link href="/today" aria-label="查看全部计划">
-              <span aria-hidden="true" className="text-lg leading-none">›</span>
+              <ChevronDown size={16} aria-hidden="true" className="-rotate-90" />
             </Link>
-          </Button>
+          </IconButton>
         </div>
       </div>
     )} />
