@@ -323,13 +323,14 @@ export default function TodayPlanSummary() {
         <h2 id="home-today-title" className="text-text-primary text-sm font-bold">今日计划</h2>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {backupButton}
-          <Button size="1" variant="ghost" color="gray" disabled={!offline.canSync} onClick={offline.sync}>
+          <Button size="1" variant="soft" color="gray" radius="full" disabled={!offline.canSync} onClick={offline.sync}>
             <RotateCw size={14} aria-hidden="true" className={offline.busy ? 'motion-safe:animate-spin' : undefined} />
             {offline.busy ? '离线同步中…' : '离线同步'}
           </Button>
-          <NavigationLink href="/today" aria-label="查看全部计划"
-            className="text-text-secondary inline-flex items-center gap-1 text-sm font-bold">
-            全部 <span aria-hidden="true">›</span>
+          <NavigationLink href="/today"
+            className="text-text-secondary inline-flex size-11 shrink-0 items-center justify-center rounded-full text-2xl font-bold hover:bg-[var(--gray-3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-8)]">
+            <span className="sr-only">查看全部计划</span>
+            <span aria-hidden="true">›</span>
           </NavigationLink>
         </div>
       </div>

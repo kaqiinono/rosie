@@ -490,7 +490,7 @@ Both math and English share a weekly plan system with the same Thursday-start we
 - `useWeeklyPlan` / `useMathWeeklyPlan` — hooks managing plan generation and daily progress
 - The home page asynchronously loads the four daily progress cards (口算、英语、数学、语文)
   above the menu, with direct practice links. The header offers cloud backup of unfinished practice.
-  Cards with local pending progress offer resume and clear actions. 「全部」 opens `/today` for plan
+  Cards with local pending progress offer resume and clear actions. The chevron opens `/today` for plan
   details and the 「记录」 entry.
 
 ### PWA
