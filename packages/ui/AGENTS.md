@@ -43,6 +43,7 @@ Radix trigger attributes, and includes keyboard focus and reduced-motion feedbac
 tone/radius/padding, omit both outline and elevation. `variant="quote"` is a content-width strip
 with a gray fill and a left bar only; tone and elevation do not apply. The default `outlined` variant is unchanged.
 Use this for dense exam questions and image choices instead of nested outlined cards.
+Use `sky`, `violet`, `peach` and `mint` tones for stable category colors, such as subjects in the homework checklist.
 `LetterChoiceButton` / `JudgmentIconButton appearance="quiet"` provide regular 32px borderless circles,
 bold labels, gray resting fill and deep-blue selected fill with white foreground. Keyboard
 focus retains an explicit outline. `demonstration` disables interaction while preserving the

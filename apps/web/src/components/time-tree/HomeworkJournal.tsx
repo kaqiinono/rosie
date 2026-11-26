@@ -8,6 +8,7 @@ import { LearningIcon, StickerCard } from '@rosie/ui'
 import { Badge, Button, Flex, Text } from '@rosie/ui/themes'
 import { clock, dayOf, elapsed, shift, timing, type WorkStep } from '@/lib/time-tree/types'
 import { bubbleSubject } from '@/components/tree-demo/garden/model'
+import HomeworkChecklist from './HomeworkChecklist'
 import { treeDates, useTimeTree, useTreeHistory } from './useTimeTree'
 import { StepPanel, TreeWait } from './StepPanel'
 import { useFlowerRewardToast } from './useFlowerRewardToast'
@@ -106,9 +107,9 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
   const weekday = new Date(date + 'T12:00Z').getUTCDay()
   const from = period === 'week' ? shift(date, -(weekday + 6) % 7) : date.slice(0, 7) + '-01'
   const until = period === 'week' ? shift(from, 7) : shift(from, 32).slice(0, 7) + '-01'
-  const days = treeDates(from, shift(until, -1))
+  const days = calendar ? treeDates(from, shift(until, -1)) : []
   const api = useTreeHistory(scene, days)
-  const records = api.tree?.steps
+  const records = calendar ? api.tree?.steps : undefined
   const byDay = useMemo(() => journalDays(records ?? []), [records])
   if (!api.tree)
     return (
@@ -126,7 +127,6 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
   const step = tree.steps.find((s) => s.id === id)
   const planned = tree.steps.filter((s) => !s.skipped && s.planned === date && !isWeeklyPartialReceipt(s))
   const finished = tree.steps.filter((s) => s.end && dayOf(s.end) === date)
-  const overdue = tree.steps.filter((s) => !s.skipped && !s.end && s.planned !== null && s.planned < date)
   const parked = calendar
     ? tree.steps.filter((s) => !s.skipped && !s.end && s.planned === null && s.scheduled === date)
     : []
@@ -161,7 +161,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
       <Flex direction="column" gap="3">
         <Flex gap="2" align="center" wrap="wrap">
           <Text as="div" size="5" weight="bold">
-            {calendar ? '作业日历' : '今天的作业'}
+            {calendar ? '作业日历' : '作业清单'}
           </Text>
           <RegenerateHomework api={api} />
           <Button asChild size="1" variant="soft">
@@ -173,7 +173,7 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             </Button>
           )}
         </Flex>
-        {calendar && summary && (
+        {calendar ? (
           <>
             <Flex gap="2" align="center" wrap="wrap">
               <Button
@@ -243,50 +243,40 @@ export default function HomeworkJournal({ calendar = false }: { calendar?: boole
             <Text size="1" color="gray">
               日期下方为计划件数 / 实际完成件数
             </Text>
-          </>
-        )}
-        <Text weight="bold">{date} · 当天计划 · 预计 {estimatedMinutes(planned)} 分钟</Text>
-        <Flex gap="2" wrap="wrap">
-          {planned.length ? planned.map(row) : <Text size="2">当天没有排入作业。</Text>}
-        </Flex>
-        {calendar && (
-          <>
+            <Text weight="bold">{date} · 当天计划 · 预计 {estimatedMinutes(planned)} 分钟</Text>
+            <Flex gap="2" wrap="wrap">
+              {planned.length ? planned.map(row) : <Text size="2">当天没有排入作业。</Text>}
+            </Flex>
             <Text weight="bold">当天完成与收工记录</Text>
             <Flex gap="2" wrap="wrap">
               {finished.length ? finished.map(row) : <Text size="2">还没有完成记录。</Text>}
             </Flex>
+            {skipped.length > 0 && (
+              <>
+                <Badge color="gray">当天不用做</Badge>
+                <Flex gap="2" wrap="wrap">{skipped.map(row)}</Flex>
+              </>
+            )}
+            {parked.length > 0 && (
+              <>
+                <Badge color="gray">当天未排期</Badge>
+                <Flex gap="2" wrap="wrap">{parked.map(row)}</Flex>
+              </>
+            )}
+            {step && (
+              <StepPanel
+                key={step.id}
+                api={api}
+                step={step}
+                select={setId}
+                close={() => setId(null)}
+                onFinished={flowerReward.showReward}
+                homework
+              />
+            )}
           </>
-        )}
-        {skipped.length > 0 && (
-          <>
-            <Badge color="gray">当天不用做</Badge>
-            <Flex gap="2" wrap="wrap">{skipped.map(row)}</Flex>
-          </>
-        )}
-        {parked.length > 0 && (
-          <>
-            <Badge color="gray">当天未排期</Badge>
-            <Flex gap="2" wrap="wrap">{parked.map(row)}</Flex>
-          </>
-        )}
-        {!calendar && overdue.length > 0 && (
-          <>
-            <Badge color="amber">补做计划 · 预计 {estimatedMinutes(overdue)} 分钟</Badge>
-            <Flex gap="2" wrap="wrap">
-              {overdue.map(row)}
-            </Flex>
-          </>
-        )}
-        {step && (
-          <StepPanel
-            key={step.id}
-            api={api}
-            step={step}
-            select={setId}
-            close={() => setId(null)}
-            onFinished={finished => flowerReward.showReward(finished)}
-            homework
-          />
+        ) : (
+          <HomeworkChecklist api={api} tree={tree} onFinished={flowerReward.showReward} />
         )}
       </Flex>
     </StickerCard>

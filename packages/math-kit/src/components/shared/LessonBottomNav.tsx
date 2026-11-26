@@ -16,6 +16,7 @@ type BottomNavItem = {
 type LessonThemeConfig = {
   basePath: string
   activeColor: string
+  secondarySection?: 'homework' | 'supplement'
 }
 
 type Props = {
@@ -28,6 +29,7 @@ function buildPathMap(base: string): Record<string, string> {
     home: base,
     lesson: `${base}/lesson`,
     homework: `${base}/homework`,
+    supplement: `${base}/supplement`,
     workbook: `${base}/workbook`,
     alltest: `${base}/alltest`,
     pretest: `${base}/pretest`,
@@ -41,7 +43,11 @@ export default function LessonBottomNav({ config, useLessonContext }: Props) {
   const pathname = usePathname()
   const { wrongIds } = useLessonContext()
   const pathMap = buildPathMap(config.basePath)
-  const lessonPages = NAV_PAGES.filter(p => BOTTOM_KEYS.has(p.key))
+  const lessonPages = NAV_PAGES.filter(p => BOTTOM_KEYS.has(p.key)).map(p =>
+    p.key === 'homework' && config.secondarySection === 'supplement'
+      ? { key: 'supplement', icon: '📒', label: '附加题' }
+      : p,
+  )
   const visiblePages: BottomNavItem[] = [
     ...lessonPages,
     { key: 'notes', icon: '📝', label: '笔记' },

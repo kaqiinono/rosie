@@ -106,6 +106,7 @@ import { PROBLEMS as G2Lesson10PROBLEMS, PROBLEM_TYPES as G2Lesson10PT, TAG_STYL
 import { PROBLEMS as G2Lesson12PROBLEMS, PROBLEM_TYPES as G2Lesson12PT, TAG_STYLE as G2Lesson12TS } from '@rosie/math-content/utils/g2/lesson12-data'
 import { PROBLEMS as G2Lesson13PROBLEMS, PROBLEM_TYPES as G2Lesson13PT, TAG_STYLE as G2Lesson13TS } from '@rosie/math-content/utils/g2/lesson13-data'
 import { PROBLEMS as G2Lesson14PROBLEMS, PROBLEM_TYPES as G2Lesson14PT, TAG_STYLE as G2Lesson14TS } from '@rosie/math-content/utils/g2/lesson14-data'
+import { PROBLEMS as G2Lesson15PROBLEMS, PROBLEM_TYPES as G2Lesson15PT, TAG_STYLE as G2Lesson15TS } from '@rosie/math-content/utils/g2/lesson15-data'
 import { PROBLEMS as G2Lesson5PROBLEMS, PROBLEM_TYPES as G2Lesson5PT, TAG_STYLE as G2Lesson5TS } from '@rosie/math-content/utils/g2/lesson5-data'
 import { PROBLEMS as G2Lesson4PROBLEMS, PROBLEM_TYPES as G2Lesson4PT, TAG_STYLE as G2Lesson4TS } from '@rosie/math-content/utils/g2/lesson4-data'
 import { PROBLEMS as G2Lesson3PROBLEMS, PROBLEM_TYPES as G2Lesson3PT, TAG_STYLE as G2Lesson3TS } from '@rosie/math-content/utils/g2/lesson3-data'
@@ -398,6 +399,16 @@ export const SEA_LESSONS: SeaLessonMeta[] = [
     tagStyle: G2Lesson14TS,
     types: G2Lesson14PT.map((t) => ({ tag: t.tag, label: t.label })),
     problems: G2Lesson14PROBLEMS,
+  },
+  {
+    id: '2-15',
+    title: '第15讲·几何图形认知',
+    shortTitle: '15·几何图形',
+    icon: '📐',
+    badgeClass: 'bg-teal-100 text-teal-700',
+    tagStyle: G2Lesson15TS,
+    types: G2Lesson15PT.map((t) => ({ tag: t.tag, label: t.label })),
+    problems: G2Lesson15PROBLEMS,
   },
   {
     id: '2-6',

@@ -14,6 +14,10 @@ export type StickerCardTone =
   | 'warning'
   | 'danger'
   | 'info'
+  | 'sky'
+  | 'violet'
+  | 'peach'
+  | 'mint'
 export type StickerCardSize = 'none' | 'sm' | 'md' | 'lg'
 export type StickerCardElevation = 'flat' | 'sm' | 'md' | 'lg'
 export type StickerCardRadius = 'md' | 'lg' | 'left' | 'right' | 'none'
@@ -22,7 +26,7 @@ export type StickerCardProps = Omit<HTMLAttributes<HTMLElement>, 'color'> & {
   children?: ReactNode
   /** 渲染的元素，默认 div。列表项用 li，导航用 nav，语义区块用 section / article。 */
   as?: 'div' | 'section' | 'article' | 'aside' | 'nav' | 'li' | 'header' | 'footer'
-  /** 底色：white 通用；paper 奶油色（嵌套在白卡里的次级块）；accent 强调；其余为状态色。 */
+  /** 通用、状态和分类底色。sky / violet / peach / mint 可用于稳定的类别配色。 */
   tone?: StickerCardTone
   /** Dashed uses a dashed outline. Soft has no outline or shadow. Quote is a gray strip with a left bar. */
   variant?: 'outlined' | 'dashed' | 'soft' | 'quote'
@@ -46,6 +50,10 @@ const TONE: Record<StickerCardTone, string> = {
   warning: 'bg-amber-50 border-amber-300',
   danger: 'bg-red-50 border-red-200',
   info: 'bg-sky-50 border-sky-200',
+  sky: 'bg-sky-50 border-sky-200',
+  violet: 'bg-violet-50 border-violet-200',
+  peach: 'bg-orange-50 border-orange-200',
+  mint: 'bg-green-50 border-green-200',
 }
 
 const SIZE: Record<StickerCardSize, string> = {

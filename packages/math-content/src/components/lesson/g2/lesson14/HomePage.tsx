@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import type { ProblemSet } from '@rosie/core'
 import LessonHomeTitle from '@rosie/math-kit/components/shared/LessonHomeTitle'
@@ -9,10 +10,12 @@ import { flattenProblemSet } from '@rosie/math-kit/utils/problem-set-helpers'
 import { StickerCard } from '@rosie/ui'
 import {
   KNOWLEDGE_POINTS,
+  LESSON_IMAGE_BASE,
   LESSON_SUMMARY,
   LESSON_TIP,
   PROBLEM_TYPES,
   TAG_STYLE,
+  WARMUP_QUESTION,
 } from '../../../../utils/g2/lesson14-data'
 
 const BASE = '/math/ny/2/14'
@@ -49,6 +52,18 @@ export default function HomePage({
         </LessonHomeTitle>
       </div>
       <StickerCard as="section" elevation="sm" radius="md" className="mb-4">
+        <h2 className="mb-3 text-base font-bold text-teal-900">课前活动</h2>
+        <p className="text-text-secondary mb-3 text-sm">{WARMUP_QUESTION}</p>
+        <Image
+          src={`${LESSON_IMAGE_BASE}/activity.png`}
+          alt="两排共六件不同的上衣，下方是三条不同的裤子"
+          width={744}
+          height={716}
+          sizes="224px"
+          className="mx-auto h-auto w-full max-w-56 rounded-lg"
+        />
+      </StickerCard>
+      <StickerCard as="section" elevation="sm" radius="md" className="mb-4">
         <h2 className="mb-3 text-base font-bold text-teal-900">知识要点</h2>
         <ul className="text-text-secondary list-disc space-y-2 pl-5 text-sm leading-relaxed">
           {KNOWLEDGE_POINTS.map((point) => <li key={point}>{point}</li>)}
@@ -79,6 +94,12 @@ export default function HomePage({
       </StickerCard>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <StickerCard asChild interactive elevation="sm" radius="md">
+          <Link href={`${BASE}/pretest`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">📝 课前测</div>
+            <p className="text-text-muted text-xs">共 {problems.pretest.length} 题</p>
+          </Link>
+        </StickerCard>
+        <StickerCard asChild interactive elevation="sm" radius="md">
           <Link href={`${BASE}/lesson`} className="no-underline">
             <div className="mb-1 text-sm font-bold">📖 课堂讲解</div>
             <p className="text-text-muted text-xs">共 {problems.lesson.length} 题</p>
@@ -88,6 +109,12 @@ export default function HomePage({
           <Link href={`${BASE}/homework`} className="no-underline">
             <div className="mb-1 text-sm font-bold">✏️ 课后巩固</div>
             <p className="text-text-muted text-xs">共 {problems.homework.length} 题</p>
+          </Link>
+        </StickerCard>
+        <StickerCard asChild interactive elevation="sm" radius="md">
+          <Link href={`${BASE}/supplement`} className="no-underline">
+            <div className="mb-1 text-sm font-bold">📒 附加题</div>
+            <p className="text-text-muted text-xs">共 {problems.supplement?.length ?? 0} 题</p>
           </Link>
         </StickerCard>
         <StickerCard asChild interactive elevation="sm" radius="md">

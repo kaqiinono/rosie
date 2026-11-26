@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import type { Problem } from '@rosie/core'
 import { getMasteryLevel } from '@rosie/core'
 import { useProblemAnswer } from '@rosie/math-kit/hooks/useProblemAnswer'
@@ -10,7 +11,7 @@ import ProblemFigureImage from '@rosie/math-kit/components/shared/ProblemFigureI
 import ProblemSolutionPanel from '@rosie/math-kit/components/shared/ProblemSolutionPanel'
 import ProblemWorkspace from '@rosie/math-kit/components/shared/ProblemWorkspace'
 import { sanitizeProblemText } from '@rosie/math-kit/utils/sanitize-problem-text'
-import { Badge } from '@rosie/ui/themes'
+import { Badge, Button } from '@rosie/ui/themes'
 import { LESSON_TIP } from '../../../../utils/g2/lesson14-data'
 import { useG2Lesson14 } from './G2Lesson14Provider'
 
@@ -92,6 +93,15 @@ export default function ProblemDetail({
         defaultSolutionOpen={defaultSolutionOpen}
         problem={problem}
       />
+      {mode === 'full' && problem.id === '2-14-L14' && (
+        <div className="my-3">
+          <Button asChild variant="soft">
+            <Link href="/math/ny/2/14/homework/2-14-H11">
+              例题14练一练 · 方格中的最短路线
+            </Link>
+          </Button>
+        </div>
+      )}
       {mode === 'full' && positionLabel && (
         <LessonProblemNavBar
           prevHref={prevHref}

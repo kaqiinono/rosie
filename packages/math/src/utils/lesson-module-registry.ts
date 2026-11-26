@@ -264,38 +264,47 @@ import { PROBLEMS as G2Lesson10PROBLEMS, TAG_STYLE as G2Lesson10TAG_STYLE } from
 import { PROBLEMS as G2Lesson12PROBLEMS, TAG_STYLE as G2Lesson12TAG_STYLE } from '@rosie/math-content/utils/g2/lesson12-data'
 import { PROBLEMS as G2Lesson13PROBLEMS, TAG_STYLE as G2Lesson13TAG_STYLE } from '@rosie/math-content/utils/g2/lesson13-data'
 import { PROBLEMS as G2Lesson14PROBLEMS, TAG_STYLE as G2Lesson14TAG_STYLE } from '@rosie/math-content/utils/g2/lesson14-data'
+import { PROBLEMS as G2Lesson15PROBLEMS, TAG_STYLE as G2Lesson15TAG_STYLE } from '@rosie/math-content/utils/g2/lesson15-data'
 import G2Lesson10Provider, { useG2Lesson10 } from '@rosie/math-content/components/lesson/g2/lesson10/G2Lesson10Provider'
 import G2Lesson12Provider, { useG2Lesson12 } from '@rosie/math-content/components/lesson/g2/lesson12/G2Lesson12Provider'
 import G2Lesson13Provider, { useG2Lesson13 } from '@rosie/math-content/components/lesson/g2/lesson13/G2Lesson13Provider'
 import G2Lesson14Provider, { useG2Lesson14 } from '@rosie/math-content/components/lesson/g2/lesson14/G2Lesson14Provider'
+import G2Lesson15Provider, { useG2Lesson15 } from '@rosie/math-content/components/lesson/g2/lesson15/G2Lesson15Provider'
 import G2Lesson10HomePage from '@rosie/math-content/components/lesson/g2/lesson10/HomePage'
 import G2Lesson12HomePage from '@rosie/math-content/components/lesson/g2/lesson12/HomePage'
 import G2Lesson13HomePage from '@rosie/math-content/components/lesson/g2/lesson13/HomePage'
 import G2Lesson14HomePage from '@rosie/math-content/components/lesson/g2/lesson14/HomePage'
+import G2Lesson15HomePage from '@rosie/math-content/components/lesson/g2/lesson15/HomePage'
 import G2Lesson10AppHeader from '@rosie/math-content/components/lesson/g2/lesson10/AppHeader'
 import G2Lesson12AppHeader from '@rosie/math-content/components/lesson/g2/lesson12/AppHeader'
 import G2Lesson13AppHeader from '@rosie/math-content/components/lesson/g2/lesson13/AppHeader'
 import G2Lesson14AppHeader from '@rosie/math-content/components/lesson/g2/lesson14/AppHeader'
+import G2Lesson15AppHeader from '@rosie/math-content/components/lesson/g2/lesson15/AppHeader'
 import G2Lesson10Sidebar from '@rosie/math-content/components/lesson/g2/lesson10/Sidebar'
 import G2Lesson12Sidebar from '@rosie/math-content/components/lesson/g2/lesson12/Sidebar'
 import G2Lesson13Sidebar from '@rosie/math-content/components/lesson/g2/lesson13/Sidebar'
 import G2Lesson14Sidebar from '@rosie/math-content/components/lesson/g2/lesson14/Sidebar'
+import G2Lesson15Sidebar from '@rosie/math-content/components/lesson/g2/lesson15/Sidebar'
 import G2Lesson10BottomNav from '@rosie/math-content/components/lesson/g2/lesson10/BottomNav'
 import G2Lesson12BottomNav from '@rosie/math-content/components/lesson/g2/lesson12/BottomNav'
 import G2Lesson13BottomNav from '@rosie/math-content/components/lesson/g2/lesson13/BottomNav'
 import G2Lesson14BottomNav from '@rosie/math-content/components/lesson/g2/lesson14/BottomNav'
+import G2Lesson15BottomNav from '@rosie/math-content/components/lesson/g2/lesson15/BottomNav'
 import G2Lesson10FilterPanel from '@rosie/math-content/components/lesson/g2/lesson10/FilterPanel'
 import G2Lesson12FilterPanel from '@rosie/math-content/components/lesson/g2/lesson12/FilterPanel'
 import G2Lesson13FilterPanel from '@rosie/math-content/components/lesson/g2/lesson13/FilterPanel'
 import G2Lesson14FilterPanel from '@rosie/math-content/components/lesson/g2/lesson14/FilterPanel'
+import G2Lesson15FilterPanel from '@rosie/math-content/components/lesson/g2/lesson15/FilterPanel'
 import G2Lesson10ProblemList from '@rosie/math-content/components/lesson/g2/lesson10/ProblemList'
 import G2Lesson12ProblemList from '@rosie/math-content/components/lesson/g2/lesson12/ProblemList'
 import G2Lesson13ProblemList from '@rosie/math-content/components/lesson/g2/lesson13/ProblemList'
 import G2Lesson14ProblemList from '@rosie/math-content/components/lesson/g2/lesson14/ProblemList'
+import G2Lesson15ProblemList from '@rosie/math-content/components/lesson/g2/lesson15/ProblemList'
 import G2Lesson10ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson10/ProblemDetail'
 import G2Lesson12ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson12/ProblemDetail'
 import G2Lesson13ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson13/ProblemDetail'
 import G2Lesson14ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson14/ProblemDetail'
+import G2Lesson15ProblemDetail from '@rosie/math-content/components/lesson/g2/lesson15/ProblemDetail'
 
 export type LessonModule = {
   PROBLEMS: ProblemSet
@@ -779,6 +788,20 @@ export const LESSON_MODULES: Record<string, LessonModule> = {
     FilterPanel: G2Lesson14FilterPanel,
     ProblemList: G2Lesson14ProblemList,
     ProblemDetail: G2Lesson14ProblemDetail,
+    layoutBgClass: 'bg-teal-50',
+  },
+  '2-15': {
+    PROBLEMS: G2Lesson15PROBLEMS,
+    TAG_STYLE: G2Lesson15TAG_STYLE,
+    Provider: G2Lesson15Provider,
+    useLesson: useG2Lesson15,
+    HomePage: G2Lesson15HomePage,
+    AppHeader: G2Lesson15AppHeader,
+    Sidebar: G2Lesson15Sidebar,
+    BottomNav: G2Lesson15BottomNav,
+    FilterPanel: G2Lesson15FilterPanel,
+    ProblemList: G2Lesson15ProblemList,
+    ProblemDetail: G2Lesson15ProblemDetail,
     layoutBgClass: 'bg-teal-50',
   },
 }

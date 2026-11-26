@@ -4,12 +4,21 @@ import {gradeOf, lessonIdFromHref} from './lesson-grade'
 
 const RAW_COURSES: CourseCardData[] = [
   {
+    href: '/math/ny/2/15',
+    title: '几何图形认知',
+    description: '认识平面和立体图形，练习剪拼、正方体展开与立体染色。',
+    icon: '📐',
+    lectureNum: '第 15 讲',
+    tags: ['平面与立体', '展开图与染色', '19 道互动题'],
+    variant: 'blue',
+  },
+  {
     href: '/math/ny/2/14',
     title: '枚举法进阶',
     description: '先分类，再按顺序枚举，用有序分堆、无序分堆和按面值分类解决计数问题。',
     icon: '🔢',
     lectureNum: '第 14 讲',
-    tags: ['分类枚举', '有序与无序分堆', '25 道互动题'],
+    tags: ['分类枚举', '有序与无序分堆', '40 道互动题'],
     variant: 'blue',
   },
   {
@@ -18,7 +27,7 @@ const RAW_COURSES: CourseCardData[] = [
     description: '分类枚举与最不利原则，结合树数、间隔数和两端情况解决植树及楼梯问题。',
     icon: '🌳',
     lectureNum: '第 13 讲',
-    tags: ['抽屉原理', '植树与间隔', '56 道互动题'],
+    tags: ['抽屉原理', '植树与间隔', '63 道互动题'],
     variant: 'amber',
   },
   {

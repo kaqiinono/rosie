@@ -22,7 +22,7 @@ export const SUBJECTS: Record<SubjectKey, SubjectMeta> = {
   chinese: { label: '语文', emoji: '📖', color: '#ef4444', deep: '#b91c1c', tint: '#fecaca', stone: '红玛瑙' },
   math: { label: '数学', emoji: '🔢', color: '#facc15', deep: '#a16207', tint: '#fef08a', stone: '黄水晶' },
   english: { label: '英语', emoji: '🔤', color: '#3b82f6', deep: '#1d4ed8', tint: '#bfdbfe', stone: '蓝宝石' },
-  life: { label: '生活', emoji: '🌱', color: '#22c55e', deep: '#15803d', tint: '#bbf7d0', stone: '绿松石' },
+  life: { label: '习惯', emoji: '🌱', color: '#22c55e', deep: '#15803d', tint: '#bbf7d0', stone: '绿松石' },
 }
 
 // ---------- 参数（本期固定的部分） ----------

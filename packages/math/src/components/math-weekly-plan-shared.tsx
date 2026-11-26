@@ -313,6 +313,16 @@ export const MATH_PLAN_LESSONS = [
     desc: '分类枚举·有序与无序分堆·硬币枚举',
   },
   {
+    id: '2-15',
+    label: '第15讲 · 几何图形认知',
+    short: '几何图形',
+    emoji: '📐',
+    color: 'rgba(20,184,166,1)',
+    bg: 'rgba(20,184,166,.08)',
+    border: 'rgba(20,184,166,.3)',
+    desc: '平面与立体·正方体展开·立体染色',
+  },
+  {
     id: '2-6',
     label: '第6讲 · 简单枚举',
     short: '简单枚举',

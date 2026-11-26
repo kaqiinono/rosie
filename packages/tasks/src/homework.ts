@@ -10,7 +10,7 @@ export const HOMEWORK_SUBJECTS: Record<HomeworkSubject, string> = {
   chinese: '语文',
   math: '数学',
   english: '英语',
-  life: '生活',
+  life: '习惯',
 }
 export const HOMEWORK_CYCLES: Record<HomeworkCycle, string> = {
   daily: '每天',

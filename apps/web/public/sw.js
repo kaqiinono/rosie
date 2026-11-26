@@ -6,6 +6,7 @@ const { StaleWhileRevalidate, CacheFirst, NetworkFirst, NetworkOnly } = workbox.
 const { ExpirationPlugin } = workbox.expiration
 const { CacheableResponsePlugin } = workbox.cacheableResponse
 const { RangeRequestsPlugin } = workbox.rangeRequests
+const isDevelopment = new URLSearchParams(self.location.search).get('dev') === '1'
 const offlineShell = 'rosie-offline-shell-v1'
 const offlinePath = '/offline'
 let downloadingOfflineShell
@@ -108,10 +109,13 @@ const pages = new NetworkFirst({
 
 registerRoute(
   ({ url }) => url.origin === self.location.origin && url.pathname.startsWith('/_next/static/'),
-  async ({ event, request }) => {
-    const saved = await (await caches.open(offlineShell)).match(request)
-    return saved ?? staticResources.handle({ event, request })
-  },
+  // Turbopack can reuse development chunk URLs after their exports change.
+  isDevelopment
+    ? new NetworkOnly({ fetchOptions: { cache: 'no-store' } })
+    : async ({ event, request }) => {
+        const saved = await (await caches.open(offlineShell)).match(request)
+        return saved ?? staticResources.handle({ event, request })
+      },
 )
 
 const staticResources = new StaleWhileRevalidate({

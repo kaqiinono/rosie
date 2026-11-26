@@ -40,6 +40,7 @@ import { PROBLEMS as G2Lesson10PROBLEMS } from '@rosie/math-content/utils/g2/les
 import { PROBLEMS as G2Lesson12PROBLEMS } from '@rosie/math-content/utils/g2/lesson12-data'
 import { PROBLEMS as G2Lesson13PROBLEMS } from '@rosie/math-content/utils/g2/lesson13-data'
 import { PROBLEMS as G2Lesson14PROBLEMS } from '@rosie/math-content/utils/g2/lesson14-data'
+import { PROBLEMS as G2Lesson15PROBLEMS } from '@rosie/math-content/utils/g2/lesson15-data'
 import { PROBLEMS as G2Lesson5PROBLEMS } from '@rosie/math-content/utils/g2/lesson5-data'
 import { PROBLEMS as G2Lesson4PROBLEMS } from '@rosie/math-content/utils/g2/lesson4-data'
 import { PROBLEMS as G2Lesson3PROBLEMS } from '@rosie/math-content/utils/g2/lesson3-data'
@@ -91,6 +92,7 @@ const LESSON_DATA: Record<string, ProblemSet> = {
   '2-12': G2Lesson12PROBLEMS,
   '2-13': G2Lesson13PROBLEMS,
   '2-14': G2Lesson14PROBLEMS,
+  '2-15': G2Lesson15PROBLEMS,
   '2-5': G2Lesson5PROBLEMS,
   '2-4': G2Lesson4PROBLEMS,
   '2-3': G2Lesson3PROBLEMS,
@@ -126,6 +128,7 @@ const LESSON_NAMES: Record<string, string> = {
   '2-12': '盈亏问题初步',
   '2-13': '抽屉原理初步与植树问题',
   '2-14': '枚举法进阶',
+  '2-15': '几何图形认知',
   '2-5': '找规律',
   '2-4': '差倍问题',
   '2-3': '等量代换与归一问题',

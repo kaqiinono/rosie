@@ -210,7 +210,7 @@ export default function LiveTree() {
   const [stepId, setStep] = useState<string | null>(null)
   const desktop = useSyncExternalStore(subscribeStatusLayout, inlineStatus, serverStatus)
   const [packedPreference, setPackedPreference] = useLocalStorage<boolean | null>('rosie:time-tree:panels-packed', null)
-  const panelsPacked = packedPreference ?? !desktop
+  const panelsPacked = packedPreference ?? true
   const [taskDays, setTaskDays] = useState<string[] | null>(null)
   const [dialog, show] = useState<'' | 'wilt' | 'later' | 'diary' | 'box' | 'wish' | 'flower' | 'fruitList' | 'tomato'>('')
   const [diaryPage, setDiaryPage] = useState(0)
