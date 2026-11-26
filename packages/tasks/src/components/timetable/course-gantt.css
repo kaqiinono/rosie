@@ -29,6 +29,10 @@
   background-color: transparent;
 }
 
+.tasks-course-gantt-chart .wx-chart {
+  touch-action: pan-x pan-y;
+}
+
 .tasks-course-gantt-legend {
   border-top: 1px solid var(--tasks-course-gantt-line);
 }

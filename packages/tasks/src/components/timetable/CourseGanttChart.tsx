@@ -10,6 +10,7 @@ import { DEFAULT_COURSE_PRIORITY, SUBJECTS, type TimetableCourse, type Timetable
 import {
   buildCourseTimelines, calendarWeekStart, courseChartScale, timelineStatusLabels, type GanttScale,
 } from './courseGanttTimeline'
+import { useCourseGanttPinchZoom } from './useCourseGanttPinchZoom'
 import '@svar-ui/react-gantt/all.css'
 
 type CourseTimeline = ReturnType<typeof buildCourseTimelines>[number]
@@ -104,6 +105,8 @@ export default function CourseGanttChart({
     return scale === 'day' ? [{ unit: 'month', step: 1, format: yearMonth }, detail] : [detail]
   }, [scale, today, weekStartsOn])
   const range = useMemo(() => ({ start: chartDate(axis.start), end: chartDate(axis.end) }), [axis])
+  const timelineWidth = axis.position(axis.end)
+  const { chartRef, ganttRef } = useCourseGanttPinchZoom(axis.cellWidth, Math.round(timelineWidth / axis.cellWidth))
   const hasFlexible = rows.some(row => row.spans.some(span => span.status === 'flexible'))
   const hasCancelled = rows.some(row => row.spans.some(span => span.status === 'cancelled'))
 
@@ -112,15 +115,14 @@ export default function CourseGanttChart({
   }
 
   // SVAR widens the full-range task to fill the chart. Position spans relative to that task.
-  const timelineWidth = axis.position(axis.end)
   const positionPercent = (date: string) => axis.position(date) / timelineWidth * 100
 
   return (
     <TimelineContext.Provider value={{ timelines, positionPercent, onOpenCourse }}>
-      <div className="min-h-0 flex-1">
+      <div key={`${scale}:${axis.start}:${axis.end}`} ref={chartRef} className="min-h-0 flex-1">
         <Locale words={zhWeek[weekStartsOn]}>
           <Willow fonts={false}>
-            <Gantt key={`${scale}:${axis.start}:${axis.end}`} readonly autoScale={false}
+            <Gantt ref={ganttRef} readonly autoScale={false}
               tasks={tasks} columns={columns} taskTemplate={CourseBar} scales={scales} lengthUnit={scale}
               start={range.start} end={range.end} cellWidth={axis.cellWidth} cellHeight={52} scaleHeight={30} />
           </Willow>

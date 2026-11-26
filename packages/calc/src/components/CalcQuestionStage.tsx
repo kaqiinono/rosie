@@ -3,9 +3,8 @@
 /**
  * Shared "question stage" — the equation + answer-surface area of a calc screen.
  *
- * This is the single source of truth for how each answer型 is laid out, so the
- * type-preview demo (`/calc/demo`) and the real session (`/calc/session`) stay
- * pixel-for-pixel identical: tweak the styling here and both update at once.
+ * The type preview (`/dev-preview/calc`) and the real session (`/calc/session`)
+ * share the equation layout and answer surfaces defined here.
  *
  * Layout per type (all fill their flex-column parent, keypad pinned to bottom):
  *   · 数字键盘 (int / decimal / 逆运算挖空): inline AnswerBox in the equation +

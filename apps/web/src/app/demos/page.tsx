@@ -24,6 +24,12 @@ const demos = [
     icon: <LearningIcon name="learn" size={28} />,
   },
   {
+    href: '/dev-preview/calc',
+    title: '口算题型',
+    description: '试做横式、分数、商余和竖式，调试键盘与作答反馈。',
+    icon: <LearningIcon name="calculator" size={28} />,
+  },
+  {
     href: '/dev-preview/chinese-cards',
     title: '语文生字卡',
     description: '比较有词组和无词组的卡面，检查翻面效果。',

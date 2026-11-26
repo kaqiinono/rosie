@@ -18,6 +18,7 @@ export const BREADCRUMB_ROUTES: BreadcrumbRoute[] = [
   { pattern: ['chinese', '[bookSlug]', 'poems', '[id]'], label: '古诗背诵' },
   { pattern: ['setting', 'task-entries'], label: '作业内容管理' },
   { pattern: ['demos'], label: 'Demo 总入口' },
+  { pattern: ['dev-preview', 'calc'], label: '口算题型预览' },
   { pattern: ['dev-preview', 'exams'], label: '考一考答题预览' },
   { pattern: ['dev-preview', 'homework-content'], label: '作业内容预览' },
   { pattern: ['superpowers'], label: '我的超能力' },
